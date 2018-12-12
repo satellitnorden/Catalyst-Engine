@@ -27,11 +27,7 @@
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/LowDetailGrassVegetationColorRenderPass.h>
-#include <Rendering/Engine/RenderPasses/LowDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailSolidVegetationRenderPass.h>
-#include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationColorRenderPass.h>
-#include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>

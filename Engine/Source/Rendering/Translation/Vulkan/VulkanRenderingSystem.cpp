@@ -718,66 +718,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the low detail grass vegetation color fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the low detail grass vegetation color vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationColorVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the low detail grass vegetation depth fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationDepthFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the low detail grass vegetation depth vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationDepthVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
 		//Initialize the low detail solid vegetation fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetLowDetailSolidVegetationFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::LowDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the medium detail grass vegetation color fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the medium detail grass vegetation color vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationColorVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the medium detail grass vegetation depth fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationDepthFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the medium detail grass vegetation depth vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationDepthVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -1017,7 +961,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 16 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 12 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1137,16 +1081,17 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor)]
-			= VulkanUtilities::CreateSubpassDescription(	1,
-															&terrainColorInputAttachmentReference,
-															static_cast<uint32>(highDetailTerrainColorAttachmentReferences.Size()),
-															highDetailTerrainColorAttachmentReferences.Data(),
-															&depthAttachmentReference,
-															0,
-															nullptr);
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor)] =
+								VulkanUtilities::CreateSubpassDescription(	1,
+																			&terrainColorInputAttachmentReference,
+																			static_cast<uint32>(highDetailTerrainColorAttachmentReferences.Size()),
+																			highDetailTerrainColorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
 
-		subpassDescriptions[2] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicPhysical)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1154,7 +1099,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[3] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1162,7 +1108,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1170,7 +1117,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1178,7 +1126,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			0,
 																			nullptr,
@@ -1186,7 +1135,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1194,39 +1144,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			0,
-																			nullptr,
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[9] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[10] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			0,
-																			nullptr,
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[11] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[12] = VulkanUtilities::CreateSubpassDescription(	1,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DirectionalShadow)] =
+									VulkanUtilities::CreateSubpassDescription(	1,
 																				&normalDepthInputAttachmentReference,
 																				1,
 																				&directionalShadowColorAttachmentReference,
@@ -1243,7 +1162,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		constexpr VkAttachmentReference sceneColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL) };
 
-		subpassDescriptions[13] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Lighting)] =
+								VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
 																			lightingInputAttachmentReferences.Data(),
 																			1,
 																			&sceneColorAttachmentReference,
@@ -1251,7 +1171,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[14] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Sky)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			1,
 																			&sceneColorAttachmentReference,
@@ -1259,7 +1180,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[15] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicOutline)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			1,
 																			&sceneColorAttachmentReference,
@@ -1272,120 +1194,88 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkSubpassDependency, NUMBER_OF_SCENE_BUFFER_SUBPASSES - 1> subpassDependencies
 		{
-			VulkanUtilities::CreateSubpassDependency(	0,
-														1,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	1,
-														2,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicPhysical),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	2,
-														3,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicPhysical),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	3,
-														4,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	4,
-														5,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	5,
-														6,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	6,
-														7,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	7,
-														8,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DirectionalShadow),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	8,
-														9,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	9,
-														10,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DirectionalShadow),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Lighting),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	10,
-														11,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	11,
-														12,
-														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	12,
-														13,
-														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	13,
-														14,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Lighting),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Sky),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	14,
-														15,
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::Sky),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicOutline),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,

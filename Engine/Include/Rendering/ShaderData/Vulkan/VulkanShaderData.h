@@ -31,15 +31,7 @@
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationColorFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationColorVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationColorFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationColorVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationDepthFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
