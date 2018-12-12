@@ -214,6 +214,24 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr bool operator==(const Vector3 &other) NOEXCEPT
+	{
+		return	_X == other._X
+				&& _Y == other._Y
+				&& _Z == other._Z;
+	}
+
+	/*
+	*	Inquality operator overload.
+	*/
+	FORCE_INLINE constexpr bool operator!=(const Vector3 &other) NOEXCEPT
+	{
+		return !(*this == other);
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	Type operator[](const uint64 index) const NOEXCEPT

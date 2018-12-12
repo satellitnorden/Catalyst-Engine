@@ -56,7 +56,13 @@ namespace ClairvoyantWorldUtilities
 		transformation->SetTranslation(position);
 		transformation->SetScale(Vector3<float>(scale, scale, scale));
 
-		Matrix4 rotationMatrix{ Matrix4::Orientation(terrainNormal, Vector3<float>::UP) };
+		Matrix4 rotationMatrix;
+
+		if (terrainNormal != Vector3<float>::UP)
+		{
+			rotationMatrix = Matrix4::Orientation(terrainNormal, Vector3<float>::UP);
+		}
+
 		rotationMatrix.Rotate(rotation);
 
 		*transformation = *transformation * rotationMatrix;

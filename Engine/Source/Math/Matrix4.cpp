@@ -51,29 +51,30 @@ NO_DISCARD Matrix4 Matrix4::Orientation(const Vector3<float> &normal, const Vect
 	Vector3<float> axis{ Vector3<float>::Normalize(rotationAxis) };
 	Vector3<float> temp{ (1.0f - c) * axis };
 
-	Matrix4 Rotate;
-	Rotate._Matrix[0]._X = c + temp._X * axis._X;
-	Rotate._Matrix[0]._Y = temp._X * axis._Y + s * axis._Z;
-	Rotate._Matrix[0]._Z = temp._X * axis._Z - s * axis._Y;
+	Matrix4 rotate;
 
-	Rotate._Matrix[1]._X = temp._Y * axis._X - s * axis._Z;
-	Rotate._Matrix[1]._Y = c + temp._Y * axis._Y;
-	Rotate._Matrix[1]._Z = temp._Y * axis._Z + s * axis._X;
+	rotate._Matrix[0]._X = c + temp._X * axis._X;
+	rotate._Matrix[0]._Y = temp._X * axis._Y + s * axis._Z;
+	rotate._Matrix[0]._Z = temp._X * axis._Z - s * axis._Y;
 
-	Rotate._Matrix[2]._X = temp._Z * axis._X + s * axis._Y;
-	Rotate._Matrix[2]._Y = temp._Z * axis._Y - s * axis._X;
-	Rotate._Matrix[2]._Z = c + temp._Z * axis._Z;
+	rotate._Matrix[1]._X = temp._Y * axis._X - s * axis._Z;
+	rotate._Matrix[1]._Y = c + temp._Y * axis._Y;
+	rotate._Matrix[1]._Z = temp._Y * axis._Z + s * axis._X;
+
+	rotate._Matrix[2]._X = temp._Z * axis._X + s * axis._Y;
+	rotate._Matrix[2]._Y = temp._Z * axis._Y - s * axis._X;
+	rotate._Matrix[2]._Z = c + temp._Z * axis._Z;
 
 	Matrix4 identity;
 
-	Matrix4 Result;
+	Matrix4 result;
 
-	Result._Matrix[0] = identity._Matrix[0] * Rotate._Matrix[0]._X + identity._Matrix[1] * Rotate._Matrix[0]._Y + identity._Matrix[2] * Rotate._Matrix[0]._Z;
-	Result._Matrix[1] = identity._Matrix[0] * Rotate._Matrix[1]._X + identity._Matrix[1] * Rotate._Matrix[1]._Y + identity._Matrix[2] * Rotate._Matrix[1]._Z;
-	Result._Matrix[2] = identity._Matrix[0] * Rotate._Matrix[2]._X + identity._Matrix[1] * Rotate._Matrix[2]._Y + identity._Matrix[2] * Rotate._Matrix[2]._Z;
-	Result._Matrix[3] = identity._Matrix[3];
+	result._Matrix[0] = identity._Matrix[0] * rotate._Matrix[0]._X + identity._Matrix[1] * rotate._Matrix[0]._Y + identity._Matrix[2] * rotate._Matrix[0]._Z;
+	result._Matrix[1] = identity._Matrix[0] * rotate._Matrix[1]._X + identity._Matrix[1] * rotate._Matrix[1]._Y + identity._Matrix[2] * rotate._Matrix[1]._Z;
+	result._Matrix[2] = identity._Matrix[0] * rotate._Matrix[2]._X + identity._Matrix[1] * rotate._Matrix[2]._Y + identity._Matrix[2] * rotate._Matrix[2]._Z;
+	result._Matrix[3] = identity._Matrix[3];
 
-	return Result;
+	return result;
 }
 
 /*
