@@ -5,11 +5,11 @@
 #include <Core/Containers/StaticArray.h>
 
 //Vegetation.
-#include <Vegetation/GrassVegetationModel.h>
 #include <Vegetation/GrassVegetationMaterial.h>
+#include <Vegetation/GrassVegetationModel.h>
+#include <Vegetation/GrassVegetationPatchRenderInformation.h>
 #include <Vegetation/GrassVegetationTypeProperties.h>
 #include <Vegetation/VegetationPatchInformation.h>
-#include <Vegetation/VegetationPatchRenderInformation.h>
 
 class GrassVegetationTypeInformation final
 {
@@ -29,6 +29,6 @@ public:
 	StaticArray<VegetationPatchInformation, 9> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<VegetationPatchRenderInformation, 9> _PatchRenderInformations;
+	StaticArray<GrassVegetationPatchRenderInformation, 9> _PatchRenderInformations;
 
 };

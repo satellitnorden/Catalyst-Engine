@@ -326,16 +326,17 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h" />
   </ItemGroup>
   <ItemGroup>

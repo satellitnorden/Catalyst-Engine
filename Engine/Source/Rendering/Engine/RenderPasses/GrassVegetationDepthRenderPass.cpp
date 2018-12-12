@@ -176,9 +176,6 @@ void GrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 	//Wait for the grass vegetation culling to finish.
 	CullingSystem::Instance->WaitForGrassVegetationCulling();
 
-	//Wait for the grass vegetation level of detail to finish.
-	LevelOfDetailSystem::Instance->WaitForGrassVegetationLevelOfDetail();
-
 	for (const GrassVegetationTypeInformation &information : *informations)
 	{
 		//Bind the model vertex and index buffer.
@@ -200,12 +197,11 @@ void GrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 
-		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
+		for (const GrassVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
 			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations == 0
-				|| renderInformation._LevelOfDetail != VegetationLevelOfDetail::High)
+				|| renderInformation._NumberOfTransformations == 0)
 			{
 				continue;
 			}

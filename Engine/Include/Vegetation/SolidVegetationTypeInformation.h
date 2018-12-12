@@ -9,9 +9,9 @@
 #include <Rendering/Engine/PhysicalModel.h>
 
 //Vegetation.
+#include <Vegetation/SolidVegetationPatchRenderInformation.h>
 #include <Vegetation/SolidVegetationTypeProperties.h>
 #include <Vegetation/VegetationPatchInformation.h>
-#include <Vegetation/VegetationPatchRenderInformation.h>
 
 class SolidVegetationTypeInformation final
 {
@@ -31,6 +31,6 @@ public:
 	StaticArray<VegetationPatchInformation, 25> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<VegetationPatchRenderInformation, 25> _PatchRenderInformations;
+	StaticArray<SolidVegetationPatchRenderInformation, 25> _PatchRenderInformations;
 
 };

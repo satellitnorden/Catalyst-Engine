@@ -18,12 +18,6 @@ DEFINE_SINGLETON(LevelOfDetailSystem);
 void LevelOfDetailSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize all level of detail tasks.
-	_LevelOfDetailTasks[UNDERLYING(LevelOfDetailTask::GrassVegetation)]._Function = [](void *const RESTRICT)
-	{
-		LevelOfDetailSystem::Instance->LevelOfDetailGrassVegetation();
-	};
-	_LevelOfDetailTasks[UNDERLYING(LevelOfDetailTask::GrassVegetation)]._Arguments = nullptr;
-
 	_LevelOfDetailTasks[UNDERLYING(LevelOfDetailTask::SolidVegetation)]._Function = [](void *const RESTRICT)
 	{
 		LevelOfDetailSystem::Instance->LevelOfDetailSolidVegetation();
@@ -40,26 +34,6 @@ void LevelOfDetailSystem::CullingUpdateSystemSynchronous(const UpdateContext *co
 	for (Task &task : _LevelOfDetailTasks)
 	{
 		TaskSystem::Instance->ExecuteTask(&task);
-	}
-}
-
-/*
-*	Calculates level of detail for grass vegetation.
-*/
-void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
-{
-	//Iterate over all grass vegetation type informations and determine their level of detail.
-	DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
-
-	for (GrassVegetationTypeInformation &information : *informations)
-	{
-		//Cache the grid size.
-		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE };
-
-		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-		{
-			information._PatchRenderInformations[i]._LevelOfDetail = VegetationLevelOfDetail::High;
-		}
 	}
 }
 

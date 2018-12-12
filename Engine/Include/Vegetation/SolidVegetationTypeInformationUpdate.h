@@ -22,6 +22,6 @@ public:
 	VegetationPatchInformation _NewPatchInformation;
 
 	//The new patch render information.
-	VegetationPatchRenderInformation _NewPatchRenderInformation;
+	SolidVegetationPatchRenderInformation _NewPatchRenderInformation;
 
 };
