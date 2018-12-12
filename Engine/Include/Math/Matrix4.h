@@ -90,6 +90,11 @@ public:
 	Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT;
 
 	/*
+	*	Returns whether or not this matrix is valid.
+	*/
+	NO_DISCARD bool IsValid() const NOEXCEPT;
+
+	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
 	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }

@@ -260,6 +260,27 @@ Vector4<float> Matrix4::operator*(const Vector4<float> &vector) const NOEXCEPT
 }
 
 /*
+	*	Returns whether or not this matrix is valid.
+	*/
+NO_DISCARD bool Matrix4::IsValid() const NOEXCEPT
+{
+	//If any of the values in this matrix is NaN, it is considered invalid.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		for (uint8 j{ 0 }; j < 4; ++j)
+		{
+			if (CatalystBaseMath::IsNan(_Matrix[i][j]))
+			{
+				return false;
+			}
+		}
+	}
+
+	//The matrix passed all tests.
+	return true;
+}
+
+/*
 *	Returns the translation.
 */
 Vector3<float> Matrix4::GetTranslation() const NOEXCEPT

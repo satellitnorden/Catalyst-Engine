@@ -186,6 +186,14 @@ public:
 	}
 
 	/*
+	*	Returns whether or not a floating point number is NaN (not a number).
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool IsNan(const float number) NOEXCEPT
+	{
+		return !(number == number);
+	}
+
+	/*
 	*	Returns whether or not an integer is odd or not.
 	*/
 	template <typename Type>
