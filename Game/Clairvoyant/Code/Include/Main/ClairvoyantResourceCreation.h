@@ -26,6 +26,16 @@ private:
 	static void CreateGrassVegetationResourceCollection() NOEXCEPT;
 
 	/*
+	*	Creates the location intermediate resources.
+	*/
+	static void CreateLocationIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the location resource collection.
+	*/
+	static void CreateLocationResourceCollection() NOEXCEPT;
+
+	/*
 	*	Creates the terrain intermediate resources.
 	*/
 	static void CreateTerrainIntermediateResources() NOEXCEPT;
