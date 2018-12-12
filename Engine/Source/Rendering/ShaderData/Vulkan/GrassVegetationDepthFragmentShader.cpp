@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/GrassVegetationDepthFragmentShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetHighDetailGrassVegetationDepthFragmentShaderData(DynamicArray<byte> &data)
+	void GetGrassVegetationDepthFragmentShaderData(DynamicArray<byte> &data)
 	{
 		data.UpsizeFast(5696);
 

@@ -23,8 +23,8 @@
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
-#include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationColorRenderPass.h>
-#include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/GrassVegetationColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/GrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailSolidVegetationRenderPass.h>

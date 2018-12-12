@@ -815,8 +815,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailGrassVegetationDepth)] = HighDetailGrassVegetationDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailGrassVegetationColor)] = HighDetailGrassVegetationColorRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::GrassVegetationDepth)] = GrassVegetationDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::GrassVegetationColor)] = GrassVegetationColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();

@@ -676,31 +676,31 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the high detail grass vegetation color fragment shader module.
+		//Initialize the grass vegetation color fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetGrassVegetationColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the high detail grass vegetation color vertex shader module.
+		//Initialize the grass vegetation color vertex shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationColorVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanShaderData::GetGrassVegetationColorVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
-		//Initialize the high detail grass vegetation depth fragment shader module.
+		//Initialize the grass vegetation depth fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationDepthFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetGrassVegetationDepthFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the high detail grass vegetation depth vertex shader module.
+		//Initialize the grass vegetation depth vertex shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationDepthVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanShaderData::GetGrassVegetationDepthVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -1126,7 +1126,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth)] =
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationDepth)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			0,
@@ -1135,7 +1135,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor)] =
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationColor)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
@@ -1235,22 +1235,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationDepth),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationDepth),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor),
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationColor),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailGrassVegetationColor),
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationColor),
 														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DirectionalShadow),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,

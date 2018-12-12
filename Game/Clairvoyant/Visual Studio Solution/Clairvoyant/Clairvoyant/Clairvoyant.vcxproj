@@ -252,8 +252,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationColorRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationDepthRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LowDetailSolidVegetationRenderPass.cpp" />
@@ -286,10 +286,10 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LightingFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailSolidVegetationFragmentShader.cpp" />

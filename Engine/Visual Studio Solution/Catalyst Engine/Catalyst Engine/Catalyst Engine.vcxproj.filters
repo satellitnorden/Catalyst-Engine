@@ -903,24 +903,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorVertexShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -1112,6 +1094,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h">
       <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\GrassVegetationColorRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\GrassVegetationDepthRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1415,24 +1415,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationDepthRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorVertexShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
@@ -1546,6 +1528,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp">
       <Filter>Rendering\Source\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\GrassVegetationColorRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\GrassVegetationDepthRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
