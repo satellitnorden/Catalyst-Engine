@@ -23,7 +23,7 @@ namespace VegetationUtilities
 		{
 			Matrix4 newTransformation;
 
-			if (properties._PlacementFunction(box, &newTransformation))
+			properties._PlacementFunction(box, &newTransformation);
 			{
 				transformations->EmplaceSlow(newTransformation);
 			}

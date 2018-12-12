@@ -141,10 +141,14 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassVegetationMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\BarrelMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TowerMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\BarrelModel.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TestModel.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassVegetationModel.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassVegetationModel.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassVegetationModel.cr");
 
 		ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}

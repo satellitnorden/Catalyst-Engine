@@ -13,7 +13,7 @@ namespace ClairvoyantWorldUtilities
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const bool grass, const bool sand, const bool snow, const bool underwater, const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3<float> &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+	bool GenerateTransformation(const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3<float> &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 	{
 		//Generate a random position.
 		Vector3<float> position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
@@ -22,44 +22,6 @@ namespace ClairvoyantWorldUtilities
 		if (!TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y))
 		{
 			return false;
-		}
-
-		//Determine where it is spawning.
-		if (position._Y < 0.0f)
-		{
-			//Spawning underwater.
-			if (!underwater)
-			{
-				return false;
-			}
-		}
-
-		else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
-		{
-			//Spawning on sand.
-			if (!sand)
-			{
-				return false;
-			}
-		}
-
-		else if (	position._Y > ClairvoyantWorldConstants::SAND_BLEND_END
-					&& position._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
-		{
-			//Spawning on grass.
-			if (!grass)
-			{
-				return false;
-			}
-		}
-
-		else
-		{
-			//Spawning on snow.
-			if (!snow)
-			{
-				return false;
-			}
 		}
 
 		//Get the terrain normal.

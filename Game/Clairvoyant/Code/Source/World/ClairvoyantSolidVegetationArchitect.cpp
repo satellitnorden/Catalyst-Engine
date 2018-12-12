@@ -47,7 +47,6 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 
 		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
 	}
-	*/
 
 	{
 		//Add the rock volcanic solid vegetation type.
@@ -96,4 +95,5 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 
 		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
 	}
+	*/
 }
