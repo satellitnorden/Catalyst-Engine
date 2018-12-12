@@ -30,7 +30,8 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
 	//Load the resource collection.
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
-	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\TerrainResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection.crc");
 
 	//Set the environment materials/blend.
 #if defined(CATALYST_ENABLE_OCEAN)

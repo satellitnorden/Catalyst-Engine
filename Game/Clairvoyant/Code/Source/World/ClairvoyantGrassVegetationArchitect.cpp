@@ -37,18 +37,18 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			return ClairvoyantWorldUtilities::GenerateTransformation(0.5f, 0.25f, 0.2f, 0.4f, Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassVegetationMaterial")) };
 
 		properties._CutoffDistance = 250.0f;
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("LowDetailDefaultGrassModel")), material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("LowDetailDefaultGrassVegetationModel")), material);
 
 		properties._CutoffDistance = 125.0f;
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("MediumDetailDefaultGrassModel")), material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("MediumDetailDefaultGrassVegetationModel")), material);
 
 		properties._CutoffDistance = 62.5f;
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("HighDetailDefaultGrassModel")), material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("HighDetailDefaultGrassVegetationModel")), material);
 	}
 }

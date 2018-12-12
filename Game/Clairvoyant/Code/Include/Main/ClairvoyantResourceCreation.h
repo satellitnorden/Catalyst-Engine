@@ -16,6 +16,16 @@ public:
 private:
 
 	/*
+	*	Creates the grass vegetation intermediate resources.
+	*/
+	static void CreateGrassVegetationIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the grass vegetation resource collection.
+	*/
+	static void CreateGrassVegetationResourceCollection() NOEXCEPT;
+
+	/*
 	*	Creates the terrain intermediate resources.
 	*/
 	static void CreateTerrainIntermediateResources() NOEXCEPT;
