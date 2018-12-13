@@ -33,8 +33,8 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 */
 vec3 CalculateWindModulator(vec3 position)
 {
-    float xModulator = sin(position.x + position.y  + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(position.x + position.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.0f;
-    float zModulator = cos(position.z + position.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(position.z + position.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.0f;
+    float xModulator = sin(position.x + position.y + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(position.x + position.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.25f;
+    float zModulator = cos(position.z + position.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(position.z + position.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.25f;
 
     return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z) * windSpeed * VEGETATION_WIND_AFFECTION;
 }
