@@ -218,7 +218,7 @@ void MediumDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
-		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
+		for (const SolidVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
 			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
