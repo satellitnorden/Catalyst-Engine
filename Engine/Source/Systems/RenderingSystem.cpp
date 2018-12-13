@@ -92,6 +92,9 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize all common render data table layouts.
 	InitializeCommonRenderDataTableLayouts();
 
+	//Pre-initialize the global render data.
+	PreInitializeGlobalRenderData();
+
 	//Initialize the common environment materials.
 	InitializeCommonEnvironmentMaterials();
 
@@ -109,8 +112,8 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
 
-	//Initialize the global render data.
-	InitializeGlobalRenderData();
+	//Post-initialize the global render data.
+	PostInitializeGlobalRenderData();
 
 	//Post-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
@@ -696,9 +699,9 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 }
 
 /*
-*	Initializes the global render data.
+*	Pre-initializes the global render data.
 */
-void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
+void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 {
 	//Get the number of frame buffers.
 	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
@@ -730,18 +733,6 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 			BindSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 
-		//Bind a placeholder texture to all global texture slots.
-		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
-		{
-			BindSampledImageToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
-		}
-
-		//Bind a placeholder texture to all terrain height texture slots.
-		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
-		{
-			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-		}
-
 		//Create the terrain patch data buffer.
 		_GlobalRenderData._TerrainPatchDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
 	
@@ -765,6 +756,30 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++i)
 	{
 		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
+	}
+}
+
+/*
+*	Post-initializes the global render data.
+*/
+void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
+{
+	//Get the number of frame buffers.
+	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
+
+	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
+	{
+		//Bind a placeholder texture to all global texture slots.
+		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
+		{
+			BindSampledImageToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
+		}
+
+		//Bind a placeholder texture to all terrain height texture slots.
+		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		}
 	}
 }
 

@@ -42,6 +42,9 @@ public:
 	//Denotes whether or not to simulate physics.
 	bool _SimulatePhysics;
 
+	//The mass.
+	float _Mass;
+
 	//Denotes the initial velocity.
 	Vector3<float> _InitialVelocity;
 

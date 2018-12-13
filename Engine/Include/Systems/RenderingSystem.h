@@ -473,9 +473,14 @@ private:
 	EnvironmentMaterial _DefaultDayEnvironmentMaterial;
 
 	/*
-	*	Initializes the global render data.
+	*	Pre-initializes the global render data.
 	*/
-	void InitializeGlobalRenderData() NOEXCEPT;
+	void PreInitializeGlobalRenderData() NOEXCEPT;
+
+	/*
+	*	Post-initializes the global render data.
+	*/
+	void PostInitializeGlobalRenderData() NOEXCEPT;
 
 	/*
 	*	Initializes all depth buffers.

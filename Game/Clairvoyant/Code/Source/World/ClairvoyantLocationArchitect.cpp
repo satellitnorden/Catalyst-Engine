@@ -50,6 +50,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_Scale = Vector3<float>(50.0f, 1'000.0f, 50.0f);
 			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 			data->_SimulatePhysics = false;
+			data->_Mass = 0.0f;
 			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
@@ -103,6 +104,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 						data->_Scale = Vector3<float>(50.0f, 50.0f, 50.0f);
 						data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 						data->_SimulatePhysics = false;
+						data->_Mass = 0.0f;
 						data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 						EntityCreationSystem::Instance->RequestInitialization(building, data, false);

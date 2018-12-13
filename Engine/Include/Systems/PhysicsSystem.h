@@ -57,6 +57,12 @@ public:
 
 private:
 
+	//The gravitational direction.
+	Vector3<float> _GravitationalDirection{ PhysicsConstants::GRAVITATIONAL_DIRECTION };
+
+	//The gravitational speed.
+	float _GravitationalSpeed{ PhysicsConstants::GRAVITATIONAL_SPEED };
+
 	//The wind direction.
 	Vector3<float> _WindDirection{ Vector3<float>::Normalize(Vector3<float>::RIGHT + Vector3<float>::FORWARD) };
 
@@ -77,5 +83,10 @@ private:
 	*	Casts a ray against the terrain.
 	*/
 	void CastRayTerrain(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
+
+	/*
+	*	Simulates physics on dynamic physical entities.
+	*/
+	void SimulatePhysicsDynamicPhysical(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 };

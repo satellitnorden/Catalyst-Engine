@@ -11,6 +11,9 @@
 //Rendering.
 #include <Rendering/Engine/Viewer.h>
 
+//Resources.
+#include <Resources/ResourceLoader.h>
+
 //Systems.
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/InputSystem.h>
@@ -112,25 +115,21 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	//Spawn... Boxes. (:
 	if (state->_X == ButtonState::Pressed)
 	{
-		const Ray ray{ Viewer::Instance->GetPosition(), Viewer::Instance->GetForwardVector(), FLOAT_MAXIMUM };
-		RayCastResult result;
-
-		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
-
 		DynamicPhysicalEntity *const RESTRICT box{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
 
 		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
 		data->_Properties = EntityInitializationData::EntityProperty::None;
-		data->_PhysicalFlags = PhysicalFlag::Outline | PhysicalFlag::Physical;
-		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
-		data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
-		data->_Position = result._HitPosition;
-		data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
+		data->_PhysicalFlags = PhysicalFlag::Physical;
+		data->_Model = ResourceLoader::GetPhysicalModel(HashString("BoxModel"));
+		data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BoxMaterial"));
+		data->_Position = Viewer::Instance->GetPosition() + Viewer::Instance->GetForwardVector();
+		data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
 		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 		data->_OutlineColor = Vector3<float>(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
-		data->_SimulatePhysics = false;
-		data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+		data->_SimulatePhysics = true;
+		data->_Mass = 1.0f;
+		data->_InitialVelocity = Viewer::Instance->GetForwardVector() * 10.0f;
 
 		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
 	}
@@ -242,6 +241,7 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 		data->_OutlineColor = Vector3<float>(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 		data->_SimulatePhysics = false;
+		data->_Mass = 10.0f;
 		data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
