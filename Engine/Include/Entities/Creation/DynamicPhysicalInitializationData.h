@@ -39,4 +39,10 @@ public:
 	//The outline color.
 	Vector3<float> _OutlineColor;
 
+	//Denotes whether or not to simulate physics.
+	bool _SimulatePhysics;
+
+	//Denotes the initial velocity.
+	Vector3<float> _InitialVelocity;
+
 };

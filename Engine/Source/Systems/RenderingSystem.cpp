@@ -622,6 +622,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	DynamicPhysicalRenderComponent &physicalRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->_ComponentsIndex] };
 	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->_ComponentsIndex] };
 	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->_ComponentsIndex] };
+	PhysicsComponent &physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents()[entity->_ComponentsIndex] };
 
 	//Initialize the outline render component.
 	outlineRenderComponent._PhysicalFlags = data->_PhysicalFlags;
@@ -644,6 +645,10 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	transformComponent._Position = data->_Position;
 	transformComponent._Rotation = data->_Rotation;
 	transformComponent._Scale = data->_Scale;
+
+	//Initialize the physics component.
+	physicsComponent._SimulatePhysics = data->_SimulatePhysics;
+	physicsComponent._Velocity = data->_InitialVelocity;
 }
 
 /*

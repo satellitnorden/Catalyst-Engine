@@ -10,6 +10,7 @@
 #include <Components/FrustumCullingComponent.h>
 #include <Components/ParticleSystemComponent.h>
 #include <Components/ParticleSystemRenderComponent.h>
+#include <Components/PhysicsComponent.h>
 #include <Components/PointLightComponent.h>
 #include <Components/SpotLightComponent.h>
 #include <Components/TransformComponent.h>
@@ -58,13 +59,23 @@ public:																																	\
 private:																																\
 	static DynamicArray<FOURTH_COMPONENT> _ ## ENTITY_CLASS ## FOURTH_COMPONENT ## s;
 
+/*
+*	Declares an entity class with five components.
+*/
+#define DECLARE_ENTITY_CLASS_WITH_FIVE_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT, FOURTH_COMPONENT, FIFTH_COMPONENT)	\
+DECLARE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT, FOURTH_COMPONENT)							\
+public:																																					\
+	RESTRICTED static NO_DISCARD FIFTH_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIFTH_COMPONENT ## s() NOEXCEPT;								\
+private:																																				\
+	static DynamicArray<FIFTH_COMPONENT> _ ## ENTITY_CLASS ## FIFTH_COMPONENT ## s;
+
 //Forward declarations.
 class Entity;
 
 class ComponentManager final
 {
 
-	DECLARE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
+	DECLARE_ENTITY_CLASS_WITH_FIVE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent, PhysicsComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);

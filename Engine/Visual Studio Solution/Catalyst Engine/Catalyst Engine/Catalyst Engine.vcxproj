@@ -52,6 +52,7 @@
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\PhysicsComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h" />

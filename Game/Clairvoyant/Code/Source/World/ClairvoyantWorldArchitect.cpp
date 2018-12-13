@@ -80,6 +80,8 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 			data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
 			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+			data->_SimulatePhysics = false;
+			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 		}
@@ -112,6 +114,8 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 			data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
 			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+			data->_SimulatePhysics = false;
+			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 		}
