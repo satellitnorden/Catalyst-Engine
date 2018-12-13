@@ -19,7 +19,10 @@ namespace VegetationUtilities
 		const Vector3<float> worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * gridSize) };
 		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * (gridSize * 0.5f), worldPosition + properties._CutoffDistance * (gridSize * 0.5f) };
 
-		for (uint32 i = 0; i < properties._Density; ++i)
+		//Calculate the number of placements.
+		uint32 placements{ static_cast<uint32>((properties._CutoffDistance * gridSize) * (properties._CutoffDistance * gridSize) * properties._Density) };
+
+		for (uint32 i = 0; i < placements; ++i)
 		{
 			Matrix4 newTransformation;
 

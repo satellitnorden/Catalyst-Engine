@@ -11,13 +11,6 @@
 #include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
 
-//Clairvoyant grass vegetation architect constants.
-namespace ClairvoyantGrassVegetationArchitectConstants
-{
-	constexpr float MEDIUM_DETAIL_DISTANCE{ 62.5f };
-	constexpr float LOW_DETAIL_DISTANCE{ 125.0f };
-}
-
 /*
 *	Initializes the Clairvoyant grass vegetation architect.
 */
@@ -27,9 +20,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		//Add the default grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._Density = 1'000;
+		properties._Density = 0.25f;
 		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)

@@ -20,8 +20,8 @@ public:
 	//The cutoff distance.
 	float _CutoffDistance;
 
-	//The density.
-	uint32 _Density;
+	//The density, expressed as placement per square meter.
+	float _Density;
 
 	//The placement function.
 	VegetationPlacementFunction _PlacementFunction;
