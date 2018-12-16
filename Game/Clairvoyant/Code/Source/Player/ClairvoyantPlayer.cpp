@@ -128,10 +128,15 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 		data->_OutlineColor = Vector3<float>(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 		data->_SimulatePhysics = true;
-		data->_Mass = 1.0f;
+		data->_Mass = 10.0f;
 		data->_InitialVelocity = Viewer::Instance->GetForwardVector() * 10.0f;
 
 		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
+	}
+
+	if (state->_Y == ButtonState::Pressed)
+	{
+		PhysicsSystem::Instance->AddImpulse(Viewer::Instance->GetPosition() - Vector3<float>(0.0f, 2.5f, 0.0f), 100.0f, 100.0f);
 	}
 }
 

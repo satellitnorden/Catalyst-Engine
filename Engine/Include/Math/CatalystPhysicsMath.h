@@ -48,4 +48,12 @@ namespace CatalystPhysicsMath
 		return mass * (CatalystPhysicsMathConstants::GRAVITATIONAL_DIRECTION * CatalystPhysicsMathConstants::GRAVITATIONAL_SPEED);
 	}
 
+	/*
+	*	Given an incoming direction and a normel, calculate the reflected direction.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> CalculateReflectedDirection(const Vector3<float> &incoming, const Vector3<float> &normal) NOEXCEPT
+	{
+		return incoming - 2.0f * Vector3<float>::DotProduct(incoming, normal) * normal;
+	}
+
 }

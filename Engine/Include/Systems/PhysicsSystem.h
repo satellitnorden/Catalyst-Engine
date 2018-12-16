@@ -34,6 +34,11 @@ public:
 	void CastRay(const PhysicsChannel channels, const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
+	*	Adds an impulse at a position.
+	*/
+	void AddImpulse(const Vector3<float> &position, const float radius, const float power) NOEXCEPT;
+
+	/*
 	*	Returns the wind direction.
 	*/
 	const Vector3<float>& GetWindDirection() const NOEXCEPT { return _WindDirection; }

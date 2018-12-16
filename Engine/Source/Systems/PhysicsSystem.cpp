@@ -54,6 +54,35 @@ void PhysicsSystem::CastRay(const PhysicsChannel channels, const Ray &ray, RayCa
 }
 
 /*
+*	Adds an impulse at a position.
+*/
+void PhysicsSystem::AddImpulse(const Vector3<float> &position, const float radius, const float power) NOEXCEPT
+{
+	//Iterate over all dynamic physical components and add the impulse.
+	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
+	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents() };
+	TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
+
+	for (uint64 i{ 0 }; i < numberOfDynamicPhysicalComponents; ++i, ++physicsComponent, ++transformComponent)
+	{
+		//Don't add the impulse on dynamic physical entities that doesn't simulate physics.
+		if (!physicsComponent->_SimulatePhysics)
+		{
+			continue;
+		}
+
+		//Calculate the impulse weight.
+		const float impulseWeight{ 1.0f - CatalystBaseMath::Minimum<float>(Vector3<float>::Length(transformComponent->_Position - position) / radius, 1.0f) };
+
+		//Calculate the impulse direction.
+		const Vector3<float> impulseDirection{ Vector3<float>::Normalize(transformComponent->_Position - position) };
+
+		//Apply the impulse to the velocity.
+		physicsComponent->_Velocity += CatalystPhysicsMath::CalculateAcceleration(impulseDirection * power * impulseWeight, physicsComponent->_Mass);
+	}
+}
+
+/*
 *	Casts a ray against dynamic physical entities.
 */
 void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
@@ -138,7 +167,11 @@ void PhysicsSystem::SimulatePhysicsDynamicPhysical(const UpdateContext *const RE
 		if (terrainHeight > transformComponent->_Position._Y)
 		{
 			transformComponent->_Position._Y = terrainHeight;
-			physicsComponent->_Velocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+			Vector3<float> terrainNormal;
+			TerrainSystem::Instance->GetTerrainNormalAtPosition(transformComponent->_Position, &terrainNormal);
+
+			physicsComponent->_Velocity = CatalystPhysicsMath::CalculateReflectedDirection(Vector3<float>::Normalize(physicsComponent->_Velocity), terrainNormal) * Vector3<float>::Length(physicsComponent->_Velocity) / physicsComponent->_Mass;
 		}
 	}
 }
