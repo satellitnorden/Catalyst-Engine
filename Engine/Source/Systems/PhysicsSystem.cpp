@@ -9,6 +9,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/CatalystPhysicsMath.h>
 #include <Math/CatalystVectorMath.h>
 #include <Math/Vector3.h>
 
@@ -118,11 +119,14 @@ void PhysicsSystem::SimulatePhysicsDynamicPhysical(const UpdateContext *const RE
 			continue;
 		}
 
-		//Calculate the gravitational acceleration.
-		const float gravitationalAcceleration{ _GravitationalSpeed };
+		//Calculate the net force acting upon this object, starting with the gravitational force.
+		Vector3<float> force{ CatalystPhysicsMath::CalculateGravitationalForce(physicsComponent->_Mass) };
 
-		//Apply the gravitational acceleration to the velocity.
-		physicsComponent->_Velocity += _GravitationalDirection * gravitationalAcceleration * context->_DeltaTime;
+		//Calculate the acceleration.
+		Vector3<float> acceleration{ CatalystPhysicsMath::CalculateAcceleration(force, physicsComponent->_Mass) };
+
+		//Apply the acceleration to the velocity.
+		physicsComponent->_Velocity += acceleration * context->_DeltaTime;
 
 		//Apply the velocity to the position.
 		transformComponent->_Position += physicsComponent->_Velocity * context->_DeltaTime;

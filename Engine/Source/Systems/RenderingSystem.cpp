@@ -651,6 +651,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 
 	//Initialize the physics component.
 	physicsComponent._SimulatePhysics = data->_SimulatePhysics;
+	physicsComponent._Mass = data->_Mass;
 	physicsComponent._Velocity = data->_InitialVelocity;
 }
 

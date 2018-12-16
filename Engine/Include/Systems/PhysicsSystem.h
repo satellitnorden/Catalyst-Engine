@@ -57,12 +57,6 @@ public:
 
 private:
 
-	//The gravitational direction.
-	Vector3<float> _GravitationalDirection{ PhysicsConstants::GRAVITATIONAL_DIRECTION };
-
-	//The gravitational speed.
-	float _GravitationalSpeed{ PhysicsConstants::GRAVITATIONAL_SPEED };
-
 	//The wind direction.
 	Vector3<float> _WindDirection{ Vector3<float>::Normalize(Vector3<float>::RIGHT + Vector3<float>::FORWARD) };
 

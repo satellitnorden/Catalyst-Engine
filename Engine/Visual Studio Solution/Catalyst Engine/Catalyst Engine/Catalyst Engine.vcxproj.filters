@@ -1119,6 +1119,9 @@
     <ClInclude Include="..\..\..\Include\Components\PhysicsComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

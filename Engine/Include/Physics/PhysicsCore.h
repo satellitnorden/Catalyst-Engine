@@ -6,13 +6,6 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Physics constants.
-namespace PhysicsConstants
-{
-	constexpr float GRAVITATIONAL_SPEED{ 9.78'049f };
-	constexpr Vector3<float> GRAVITATIONAL_DIRECTION{ 0.0f, -1.0f, 0.0f };
-}
-
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {

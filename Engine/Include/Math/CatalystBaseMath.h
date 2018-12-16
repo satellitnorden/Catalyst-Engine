@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Catalyst Math constants.
+//Catalyst base math constants.
 namespace CatalystBaseMathConstants
 {
 	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
