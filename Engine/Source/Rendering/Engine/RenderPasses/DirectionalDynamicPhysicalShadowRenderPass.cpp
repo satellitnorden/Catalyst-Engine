@@ -93,7 +93,7 @@ void DirectionalDynamicPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Front);
+	SetCullMode(CullMode::Back);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);

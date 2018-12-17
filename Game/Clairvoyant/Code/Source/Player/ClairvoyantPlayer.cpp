@@ -136,7 +136,7 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 
 	if (state->_Y == ButtonState::Pressed)
 	{
-		PhysicsSystem::Instance->AddImpulse(Viewer::Instance->GetPosition() - Vector3<float>(0.0f, 2.5f, 0.0f), 100.0f, 100.0f);
+		PhysicsSystem::Instance->AddImpulse(Viewer::Instance->GetPosition() - Vector3<float>(0.0f, 5.0f, 0.0f), 100.0f, 200.0f);
 	}
 }
 
