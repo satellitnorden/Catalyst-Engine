@@ -28,9 +28,10 @@ DEFINE_SINGLETON(ClairvoyantGameSystem);
 */
 void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
-	//Load the resource collection.
+	//Load the resource collections.
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantLocationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection.crc");
 
@@ -46,7 +47,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	//ClairvoyantLocationArchitect::Initialize();
 
 	//Initialize the Clairvoyant solid vegetation architect.
-	//ClairvoyantSolidVegetationArchitect::Initialize();
+	ClairvoyantSolidVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant terrain architect.
 	ClairvoyantTerrainArchitect::Initialize();

@@ -26,6 +26,16 @@ private:
 	static void CreateGrassVegetationResourceCollection() NOEXCEPT;
 
 	/*
+	*	Creates the solid vegetation intermediate resources.
+	*/
+	static void CreateSolidVegetationIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the solid vegetation resource collection.
+	*/
+	static void CreateSolidVegetationResourceCollection() NOEXCEPT;
+
+	/*
 	*	Creates the location intermediate resources.
 	*/
 	static void CreateLocationIntermediateResources() NOEXCEPT;

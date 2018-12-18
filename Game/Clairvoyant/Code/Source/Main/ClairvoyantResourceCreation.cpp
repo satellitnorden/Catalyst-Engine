@@ -101,6 +101,7 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 	}
 
 	CreateGrassVegetationIntermediateResources();
+	CreateSolidVegetationIntermediateResources();
 	CreateLocationIntermediateResources();
 	CreateTerrainIntermediateResources();
 #endif
@@ -122,6 +123,7 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 	}
 
 	CreateGrassVegetationResourceCollection();
+	CreateSolidVegetationResourceCollection();
 	CreateLocationResourceCollection();
 	CreateTerrainResourceCollection();
 #endif
@@ -189,6 +191,37 @@ void ClairvoyantResourceCreation::CreateGrassVegetationResourceCollection() NOEX
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\Vegetation\\HighDetailDefaultGrassVegetationModel.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\Vegetation\\MediumDetailDefaultGrassVegetationModel.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\Vegetation\\LowDetailDefaultGrassVegetationModel.cr");
+
+	ResourceCollectionCreator::CreateResourceCollection(parameters);
+}
+
+/*
+*	Creates the solid vegetation intermediate resources.
+*/
+void ClairvoyantResourceCreation::CreateSolidVegetationIntermediateResources() NOEXCEPT
+{
+	{
+		//Create the broken fence model.
+		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\BrokenFenceModel";
+		parameters._ID = "BrokenFenceModel";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\BrokenFence.fbx";
+
+		PhysicalModelCreator::CreatePhysicalModel(parameters);
+	}
+}
+
+/*
+*	Creates the solid vegetation resource collection.
+*/
+void ClairvoyantResourceCreation::CreateSolidVegetationResourceCollection() NOEXCEPT
+{
+	//Create the resource collection.
+	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
+
+	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\BrokenFenceModel.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
