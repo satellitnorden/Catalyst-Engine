@@ -29,7 +29,7 @@ public:
 				return 0;
 			}
 #endif
-			case RenderPassMainStage::DirectionalShadow:
+			case RenderPassMainStage::DirectionalShadowMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow);
 			}
@@ -38,32 +38,48 @@ public:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::TerrainDepth);
 			}
+
+			case RenderPassMainStage::DirectionalShadowCalculation:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadow);
+			}
+
+			case RenderPassMainStage::Lighting:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);
+			}
+
 			case RenderPassMainStage::ParticleSystem:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
 			}
+
 			case RenderPassMainStage::WorldPosition:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::WorldPosition);
 			}
+
 #if !defined(CATALYST_FINAL)
 			case RenderPassMainStage::Debug:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox);
 			}
 #endif
+
 #if defined(CATALYST_ENABLE_OCEAN)
 			case RenderPassMainStage::Ocean:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
 			}
 #endif
+
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 			case RenderPassMainStage::VolumetricFog:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
 #endif
+
 			case RenderPassMainStage::BloomHorizontal:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomHorizontal);

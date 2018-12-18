@@ -34,7 +34,7 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Scene);
+	SetMainStage(RenderPassMainStage::DirectionalShadowCalculation);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalShadow);

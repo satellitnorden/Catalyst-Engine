@@ -33,7 +33,7 @@ DynamicOutlineRenderPass::DynamicOutlineRenderPass() NOEXCEPT
 void DynamicOutlineRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Scene);
+	SetMainStage(RenderPassMainStage::Lighting);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DynamicOutline);

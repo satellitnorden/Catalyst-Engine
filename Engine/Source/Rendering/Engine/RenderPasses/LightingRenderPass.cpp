@@ -38,7 +38,7 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Scene);
+	SetMainStage(RenderPassMainStage::Lighting);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Lighting);

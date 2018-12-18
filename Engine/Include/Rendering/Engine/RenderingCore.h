@@ -34,8 +34,10 @@ using UniformBufferHandle = void *RESTRICT;
 enum class RenderPassMainStage : uint8
 {
 	None,
-	DirectionalShadow,
+	DirectionalShadowMapping,
 	Scene,
+	DirectionalShadowCalculation,
+	Lighting,
 	WorldPosition,
 	ParticleSystem,
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -63,7 +65,7 @@ enum class RenderPassMainStage : uint8
 */
 enum class RenderPassSubStage : uint8
 {
-	//Directional shadow main stage.
+	//Directional shadow mapping main stage.
 	DirectionalTerrainShadow,
 	DirectionalDynamicPhysicalShadow,
 	DirectionalSolidVegetationShadow,
@@ -77,7 +79,11 @@ enum class RenderPassSubStage : uint8
 	LowDetailSolidVegetation,
 	GrassVegetationDepth,
 	GrassVegetationColor,
+
+	//Directional shadow calculation main stage.
 	DirectionalShadow,
+
+	//Lighting main stage.
 	Lighting,
 	Sky,
 	DynamicOutline,

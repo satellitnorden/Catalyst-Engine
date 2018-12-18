@@ -36,7 +36,7 @@ DirectionalTerrainShadowRenderPass::DirectionalTerrainShadowRenderPass() NOEXCEP
 void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::DirectionalShadow);
+	SetMainStage(RenderPassMainStage::DirectionalShadowMapping);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalTerrainShadow);
