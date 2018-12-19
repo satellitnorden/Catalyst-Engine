@@ -13,8 +13,14 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec4 vertexLayerWeights;
 layout (location = 3) in vec2 vertexTextureCoordinate;
 
+//Out parameters.
+layout (location = 0) out vec3 fragmentNormal;
+
 void main()
 {	
+	//Calculate the fragment normal.
+	fragmentNormal = vec3(0.0f, 1.0f, 0.0f);
+
     //Set the position.
     gl_Position = viewMatrix * vec4(vertexPosition, 1.0f);
 }

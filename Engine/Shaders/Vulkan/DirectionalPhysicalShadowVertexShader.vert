@@ -19,7 +19,13 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec3 vertexTangent;
 layout (location = 3) in vec2 vertexTextureCoordinate;
 
+//Out parameters.
+layout (location = 0) out vec3 fragmentNormal;
+
 void main()
 {
-  gl_Position = directionalLightViewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+	//Calculate the fragment normal.
+	fragmentNormal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0.0f)));
+
+	gl_Position = directionalLightViewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
 }

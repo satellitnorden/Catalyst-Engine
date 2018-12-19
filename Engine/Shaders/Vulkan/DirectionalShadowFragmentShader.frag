@@ -9,8 +9,6 @@
 
 //Preprocessor defines.
 #define MAXIMUM_OFFSET (0.00025f)
-#define MINIMUM_SHADOW_BIAS (0.002f)
-#define MAXIMUM_SHADOW_BIAS (0.004f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -46,8 +44,7 @@ void main()
 
     //Calculate the shadow multiplier.
     float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).x;
-    float compare = directionalLightShadowMapCoordinate.z - mix(MAXIMUM_SHADOW_BIAS, MINIMUM_SHADOW_BIAS, max(dot(fragmentNormal, -directionalLightDirection), 0.0f));
-    float shadowMultiplier = compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f;
+    float shadowMultiplier = directionalLightShadowMapCoordinate.z >= 1.0f || directionalLightShadowMapCoordinate.z < directionalDepth ? 1.0f : 0.0f;
 
     //Write the fragment.
     directionalShadow = vec4(shadowMultiplier, 0.0f, 0.0f, 0.0f);
