@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #pragma once
 
 //Core.
@@ -49,4 +48,3 @@ private:
 	void RenderInternal() NOEXCEPT;
 
 };
-#endif

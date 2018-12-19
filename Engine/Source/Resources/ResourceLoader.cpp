@@ -8,9 +8,7 @@
 #include <Resources/EnvironmentMaterialData.h>
 #include <Resources/GrassVegetationMaterialData.h>
 #include <Resources/GrassVegetationModelData.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
-#endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
@@ -25,9 +23,7 @@
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
 Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
 Map<HashString, GrassVegetationModel> ResourceLoader::_GrassVegetationModels;
-#if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
-#endif
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
@@ -90,14 +86,12 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-#if defined(CATALYST_ENABLE_OCEAN)
 			case ResourceType::OceanMaterial:
 			{
 				LoadOceanMaterial(file);
 
 				break;
 			}
-#endif
 
 			case ResourceType::ParticleMaterial:
 			{
@@ -268,7 +262,6 @@ void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEX
 	RenderingSystem::Instance->CreateGrassVegetationModel(data, _GrassVegetationModels[resourceID]);
 }
 
-#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Given a file, load an ocean material.
 */
@@ -317,7 +310,6 @@ void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Create the ocean material via the rendering system.
 	RenderingSystem::Instance->CreateOceanMaterial(oceanMaterialData, _OceanMaterials[resourceID]);
 }
-#endif
 
 /*
 *	Given a file, load a particle material.

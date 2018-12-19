@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -52,4 +51,3 @@ static OceanRenderingData GetDefaultOceanRenderingData() NOEXCEPT
 	
 	return data;
 }
-#endif

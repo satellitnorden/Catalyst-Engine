@@ -5,10 +5,8 @@
 
 //Rendering.
 #include <Rendering/Engine/RenderPasses/AntiAliasingRenderPass.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
-#endif
 #include <Rendering/Engine/RenderPasses/BloomHorizontalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomVerticalRenderPass.h>
 #if !defined(CATALYST_FINAL)
@@ -36,7 +34,5 @@
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
-#endif
 #include <Rendering/Engine/RenderPasses/WorldPositionRenderPass.h>

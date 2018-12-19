@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -44,4 +43,3 @@ namespace CommonOceanMaterialData
 	}
 
 }
-#endif

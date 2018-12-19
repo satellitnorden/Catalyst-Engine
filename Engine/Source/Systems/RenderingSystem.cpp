@@ -15,16 +15,12 @@
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CommonEnvironmentMaterialData.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/CommonOceanMaterialData.h>
-#endif
 #include <Rendering/Engine/CommonParticleMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
 #include <Rendering/Engine/DynamicUniformData.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
-#endif
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingUtilities.h>
@@ -38,9 +34,7 @@
 #include <Resources/EnvironmentMaterialData.h>
 #include <Resources/GrassVegetationMaterialData.h>
 #include <Resources/GrassVegetationModelData.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
-#endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 
@@ -98,10 +92,8 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize the common environment materials.
 	InitializeCommonEnvironmentMaterials();
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	//Initialize the common ocean materials.
 	InitializeCommonOceanMaterials();
-#endif
 
 	//Initialize the common particle materials.
 	InitializeCommonParticleMaterials();
@@ -546,7 +538,6 @@ void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData 
 	model._IndexCount = static_cast<uint32>(data._Indices.Size());
 }
 
-#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Creates an ocean material.
 */
@@ -565,7 +556,6 @@ void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMa
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._NormalTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._FoamTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
 }
-#endif
 
 /*
 *	Creates a physical model.
@@ -846,15 +836,11 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::WorldPosition)] = WorldPositionRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
-#if defined(CATALYST_ENABLE_OCEAN)
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AboveOcean)] = AboveOceanRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BelowOcean)] = BelowOceanRenderPass::Instance.Get();
-#endif
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal)] = DepthOfFieldHorizontalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DepthOfFieldVertical)] = DepthOfFieldVerticalRenderPass::Instance.Get();
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	_RenderPasses[UNDERLYING(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
-#endif
 #if !defined(CATALYST_FINAL)
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
@@ -910,7 +896,6 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 	}
 }
 
-#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Initializes the common ocean materials.
 */
@@ -923,7 +908,6 @@ void RenderingSystem::InitializeCommonOceanMaterials() NOEXCEPT
 		CreateOceanMaterial(data, _CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
 	}
 }
-#endif
 
 /*
 *	Initializes the common particle materials.
@@ -1023,7 +1007,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::EnvironmentMaterial)]);
 	}
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the ocean render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
@@ -1034,7 +1017,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::OceanMaterial)]);
 	}
-#endif
 
 	{
 		//Initialize the particle system render data table layout.

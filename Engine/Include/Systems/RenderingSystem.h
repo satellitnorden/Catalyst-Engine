@@ -14,9 +14,7 @@
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/GlobalRenderData.h>
-#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
-#endif
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
@@ -33,9 +31,7 @@ class GrassVegetationMaterial;
 class GrassVegetationMaterialData;
 class GrassVegetationModel;
 class GrassVegetationModelData;
-#if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
-#endif
 class ParticleMaterialData;
 class ParticleSystemEntity;
 class ParticleSystemInitializationData;
@@ -65,7 +61,6 @@ public:
 		NumberOfCommonEnvironmentMaterials
 	};
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	//Enumeration covering all common ocean materials.
 	enum class CommonOceanMaterial : uint8
 	{
@@ -73,7 +68,6 @@ public:
 
 		NumberOfCommonOceanMaterials
 	};
-#endif
 
 	//Enumeration covering all common particle materials.
 	enum class CommonParticleMaterial : uint8
@@ -202,7 +196,6 @@ public:
 		return _CommonEnvironmentMaterials[UNDERLYING(commonEnvironmentMaterial)];
 	}
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the given common ocean material.
 	*/
@@ -210,7 +203,6 @@ public:
 	{
 		return _CommonOceanMaterials[UNDERLYING(commonOceanMaterial)];
 	}
-#endif
 
 	/*
 	*	Returns the given common particle material.
@@ -378,12 +370,10 @@ public:
 	*/
 	void CreateGrassVegetationModel(const GrassVegetationModelData &data, GrassVegetationModel &model) NOEXCEPT;
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Creates an ocean material.
 	*/
 	void CreateOceanMaterial(const OceanMaterialData &data, OceanMaterial &material) const NOEXCEPT;
-#endif
 
 	/*
 	*	Creates a physical model.
@@ -452,10 +442,8 @@ private:
 	//Container for all common environment materials.
 	StaticArray<EnvironmentMaterial, UNDERLYING(CommonEnvironmentMaterial::NumberOfCommonEnvironmentMaterials)> _CommonEnvironmentMaterials;
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	//Container for all common ocean materials.
 	StaticArray<OceanMaterial, UNDERLYING(CommonOceanMaterial::NumberOfCommonOceanMaterials)> _CommonOceanMaterials;
-#endif
 
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
@@ -512,12 +500,10 @@ private:
 	*/
 	void InitializeCommonEnvironmentMaterials() NOEXCEPT;
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Initializes the common ocean materials.
 	*/
 	void InitializeCommonOceanMaterials() NOEXCEPT;
-#endif
 
 	/*
 	*	Initializes the common particle materials.

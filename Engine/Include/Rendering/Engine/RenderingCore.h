@@ -41,15 +41,11 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowVerticalBlur,
 	Lighting,
 	WorldPosition,
-#if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
-#endif
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
 	ParticleSystem,
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFog,
-#endif
 #if !defined(CATALYST_FINAL)
 	Debug,
 #endif
@@ -99,11 +95,9 @@ enum class RenderPassSubStage : uint8
 	//World position main stage.
 	WorldPosition,
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
 	AboveOcean,
 	BelowOcean,
-#endif
 
 	//Depth of field horizontal main stage.
 	DepthOfFieldHorizontal,
@@ -114,10 +108,8 @@ enum class RenderPassSubStage : uint8
 	//Particle system main stage.
 	ParticleSystem,
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	//Volumetric fog main stage.
 	VolumetricFog,
-#endif
 
 #if !defined(CATALYST_FINAL)
 	//Debug.
@@ -212,9 +204,7 @@ enum class CommonRenderDataTableLayout : uint8
 	Global,
 	EnvironmentMaterial,
 	GrassMaterial,
-#if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
-#endif
 	ParticleSystem,
 	GaussianBlur,
 
@@ -257,10 +247,8 @@ enum class Sampler : uint8
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
-#if defined(CATALYST_ENABLE_OCEAN)
 	AboveOceanFragment,
 	BelowOceanFragment,
-#endif
 	BloomHorizontalFragment,
 	BloomVerticalFragment,
 	BoxBlurFragment,
@@ -301,9 +289,7 @@ enum class Shader : uint8
 	TerrainVertex,
 	ToneMappingFragment,
 	ViewportVertex,
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,
-#endif
 	WorldPositionFragment,
 
 	NumberOfShaders,

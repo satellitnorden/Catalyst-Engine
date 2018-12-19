@@ -37,7 +37,6 @@ public:
 	*/
 	void SetSaturationStrength(const float newSaturationStrength) NOEXCEPT { _SaturationStrength = newSaturationStrength; }
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	/*
 	*	Returns the volumetric fog distance.
 	*/
@@ -47,7 +46,6 @@ public:
 	*	Sets the volumetric fog distance.
 	*/
 	void SetVolumetricFogDistance(const float newVolumetricFogDistance) NOEXCEPT { _VolumetricFogDistance = newVolumetricFogDistance; }
-#endif
 
 private:
 
@@ -57,9 +55,7 @@ private:
 	//The saturation strength.
 	float _SaturationStrength{ 1.0f };
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	//The volumetric fog distance.
 	float _VolumetricFogDistance{ 100.0f };
-#endif
 
 };

@@ -36,9 +36,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection.crc");
 
 	//Set the environment materials/blend.
-#if defined(CATALYST_ENABLE_OCEAN)
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
-#endif
 
 	//Initialize the Clairvoyant grass vegetation architect.
 	ClairvoyantGrassVegetationArchitect::Initialize();

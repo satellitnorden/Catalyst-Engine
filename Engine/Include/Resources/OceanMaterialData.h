@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -25,4 +24,3 @@ public:
 	DynamicArray<DynamicArray<byte>> _FoamData;
 
 };
-#endif

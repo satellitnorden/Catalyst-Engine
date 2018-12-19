@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_OCEAN)
 //Header file.
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 
@@ -169,4 +168,3 @@ void AboveOceanRenderPass::RenderInternal() NOEXCEPT
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
 }
-#endif

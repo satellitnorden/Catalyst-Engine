@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 //Header file.
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
 
@@ -168,4 +167,3 @@ void VolumetricFogRenderPass::RenderInternal() NOEXCEPT
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
 }
-#endif

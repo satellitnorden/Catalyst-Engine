@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -22,4 +21,3 @@ public:
 	RenderDataTableHandle _RenderDataTable;
 
 };
-#endif

@@ -550,14 +550,12 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
-#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the above ocean fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetAboveOceanFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::AboveOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-#endif
 
 	{
 		//Initialize the anti-aliasing fragment shader module.
@@ -566,14 +564,12 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[UNDERLYING(Shader::AntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the below ocean fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetBelowOceanFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::BelowOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-#endif
 
 	{
 		//Initialize the bloom horizontal fragment shader module.
@@ -836,14 +832,12 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	{
 		//Initialize the volumetric fog fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetVolumetricFogFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-#endif
 
 	{
 		//Initialize the world position fragment shader module.
@@ -1778,7 +1772,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	}
 #endif
 
-#if defined(CATALYST_ENABLE_OCEAN)
 	//Initialize the ocean render pass.
 	{
 		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 2 };
@@ -1864,9 +1857,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._ShouldClear = false;
 	}
-#endif
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	//Initialize the volumetric fog render pass.
 	{
 		constexpr uint64 NUMBER_OF_VOLUMETRIC_FOG_SUBPASSES{ 1 };
@@ -1933,7 +1924,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::VolumetricFog)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::VolumetricFog)]._ShouldClear = false;
 	}
-#endif
 
 	//Initialize the bloom horizontal render pass.
 	{
@@ -2455,7 +2445,6 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			currentStage = renderPass->GetMainStage();
 
-#if defined(CATALYST_ENABLE_OCEAN)
 			//Specialization - Copy scene to scene intermediate for the ocean render pass.
 			if (currentStage == RenderPassMainStage::Ocean)
 			{
@@ -2500,7 +2489,6 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
 			}
-#endif
 
 			if (_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._ShouldClear)
 			{

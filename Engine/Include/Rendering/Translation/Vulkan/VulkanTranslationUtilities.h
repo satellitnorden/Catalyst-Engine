@@ -76,19 +76,15 @@ public:
 			}
 #endif
 
-#if defined(CATALYST_ENABLE_OCEAN)
 			case RenderPassMainStage::Ocean:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
 			}
-#endif
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 			case RenderPassMainStage::VolumetricFog:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
-#endif
 
 			case RenderPassMainStage::BloomHorizontal:
 			{
