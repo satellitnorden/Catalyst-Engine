@@ -41,10 +41,12 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowVerticalBlur,
 	Lighting,
 	WorldPosition,
-	ParticleSystem,
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
+	DepthOfFieldHorizontal,
+	DepthOfFieldVertical,
+	ParticleSystem,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFog,
 #endif
@@ -53,8 +55,6 @@ enum class RenderPassMainStage : uint8
 #endif
 	BloomHorizontal,
 	BloomVertical,
-	DepthOfFieldHorizontal,
-	DepthOfFieldVertical,
 	ToneMapping,
 	AntiAliasing,
 
@@ -99,14 +99,20 @@ enum class RenderPassSubStage : uint8
 	//World position main stage.
 	WorldPosition,
 
-	//Particle system main stage.
-	ParticleSystem,
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
 	AboveOcean,
 	BelowOcean,
 #endif
+
+	//Depth of field horizontal main stage.
+	DepthOfFieldHorizontal,
+
+	//Depth of field vertical main stage.
+	DepthOfFieldVertical,
+
+	//Particle system main stage.
+	ParticleSystem,
 
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	//Volumetric fog main stage.
@@ -124,12 +130,6 @@ enum class RenderPassSubStage : uint8
 
 	//Bloom vertical main stage.
 	BloomVertical,
-
-	//Depth of field horizontal main stage.
-	DepthOfFieldHorizontal,
-
-	//Depth of field vertical main stage.
-	DepthOfFieldVertical,
 
 	//Tone mapping main stage.
 	ToneMapping,
