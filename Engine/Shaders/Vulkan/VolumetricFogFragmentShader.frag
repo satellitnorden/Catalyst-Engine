@@ -9,7 +9,7 @@
 
 //Preprocessor defines.
 #define VOLUMETRIC_FOG_DISTANCE (10.0f)
-#define VOLUMETRIC_FOG_RAY_STEPS (16)
+#define VOLUMETRIC_FOG_RAY_STEPS (32)
 #define VOLUMETRIC_FOG_DENSITY_PER_STEP (1.0f / VOLUMETRIC_FOG_RAY_STEPS)
 
 //Push constant data.
@@ -68,5 +68,5 @@ void main()
     vec3 fogColor = directionalLightColor * directionalLightIntensity;
 
     //Write the fragment
-    fragment = vec4(fogColor, accumulatedFog * accumulatedFog * density);
+    fragment = vec4(fogColor, pow(accumulatedFog, 2.0f) * density);
 }
