@@ -49,7 +49,6 @@ float CalculateOceanColorWeight(float distanceToBottomSquared);
 vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared);
 vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared);
 vec3 CalculateSceneWorldPosition();
-vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth);
 float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum);
 
 /*
@@ -231,21 +230,7 @@ vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared)
 vec3 CalculateSceneWorldPosition()
 {
     //Calculate the scene world position.
-    return texture(sceneNormalDepthTexture, fragmentTextureCoordinate).xyz;
-}
-
-/*
-*   Calculates the world position.
-*/
-vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
+    return CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w);
 }
 
 /*

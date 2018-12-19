@@ -39,7 +39,6 @@ glslangValidator.exe -V TerrainVertexShader.vert -o 					TerrainVertexShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VolumetricFogFragmentShader.frag -o 				VolumetricFogFragmentShader.spv
-glslangValidator.exe -V WorldPositionFragmentShader.frag -o 				WorldPositionFragmentShader.spv
 
 VulkanShaderBuilder.exe
 

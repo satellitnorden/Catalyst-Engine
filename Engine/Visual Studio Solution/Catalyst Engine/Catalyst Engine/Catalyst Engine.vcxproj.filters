@@ -1059,12 +1059,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\WorldPositionFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\WorldPositionRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSampler.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
@@ -1531,12 +1525,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\WorldPositionFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\WorldPositionRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSampler.cpp">
       <Filter>Rendering\Source\API\Vulkan</Filter>

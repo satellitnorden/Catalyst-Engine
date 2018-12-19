@@ -838,13 +838,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetVolumetricFogFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-
-	{
-		//Initialize the world position fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetWorldPositionFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::WorldPositionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
 }
 
 /*
@@ -1513,73 +1506,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Lighting)]._ShouldClear = false;
 	}
 
-	//Initialize the world position render pass.
-	{
-		constexpr uint64 NUMBER_OF_SUBPASSES{ 1 };
-
-		constexpr uint32 NORMAL_DEPTH_INDEX{ 0 };
-
-		VulkanRenderPassCreationParameters renderPassParameters;
-
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
-		{
-			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_LOAD,
-															VK_ATTACHMENT_STORE_OP_STORE,
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_GENERAL,
-															VK_IMAGE_LAYOUT_GENERAL)
-		};
-
-		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
-
-		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
-		{
-			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
-		};
-
-		VkSubpassDescription subpassDescription
-		{
-			VulkanUtilities::CreateSubpassDescription(	0,
-														nullptr,
-														1,
-														colorAttachmentReferences.Data(),
-														nullptr,
-														0,
-														nullptr)
-		};
-
-		renderPassParameters._SubpassDescriptionCount = 1;
-		renderPassParameters._SubpassDescriptions = &subpassDescription;
-
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
-
-		//Create the framebuffer.
-		VulkanFramebufferCreationParameters framebufferParameters;
-
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._RenderPass->Get();
-
-		StaticArray<VkImageView, 1> attachments
-		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView()
-		};
-
-		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::WorldPosition)]._ShouldClear = false;
-	}
-
 	//Initialize the particle system render pass.
 	{
 		constexpr uint64 NUMBER_OF_SUBPASSES{ 1 };
@@ -1994,7 +1920,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom vertical  render pass.
+	//Initialize the bloom vertical render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 

@@ -64,11 +64,6 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
 			}
 
-			case RenderPassMainStage::WorldPosition:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::WorldPosition);
-			}
-
 #if !defined(CATALYST_FINAL)
 			case RenderPassMainStage::Debug:
 			{

@@ -40,7 +40,6 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
 	Lighting,
-	WorldPosition,
 	Ocean,
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
@@ -91,9 +90,6 @@ enum class RenderPassSubStage : uint8
 	Lighting,
 	Sky,
 	DynamicOutline,
-
-	//World position main stage.
-	WorldPosition,
 
 	//Ocean main stage.
 	AboveOcean,
@@ -290,7 +286,6 @@ enum class Shader : uint8
 	ToneMappingFragment,
 	ViewportVertex,
 	VolumetricFogFragment,
-	WorldPositionFragment,
 
 	NumberOfShaders,
 

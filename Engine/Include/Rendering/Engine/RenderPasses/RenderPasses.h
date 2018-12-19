@@ -35,4 +35,3 @@
 #include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
-#include <Rendering/Engine/RenderPasses/WorldPositionRenderPass.h>
