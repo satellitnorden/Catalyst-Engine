@@ -6,12 +6,14 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystShadowUtilities.glsl"
 
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in float fragmentLengthFactor;
+layout (location = 0) in vec3 fragmentNormal;
+layout (location = 1) in float fragmentLengthFactor;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -28,6 +30,6 @@ void main()
     else
     {
         //Write the depth.
-        fragment = vec4(gl_FragCoord.z, 0.0f, 0.0f, 0.0f);
+        fragment = vec4(gl_FragCoord.z + CalculateDirectionalShadowBias(fragmentNormal), 0.0f, 0.0f, 0.0f);
     }
 }

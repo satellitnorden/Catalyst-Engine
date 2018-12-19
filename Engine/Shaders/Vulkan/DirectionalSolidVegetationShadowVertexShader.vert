@@ -23,10 +23,14 @@ layout (location = 3) in vec2 vertexTextureCoordinate;
 layout (location = 4) in mat4 transformationMatrix;
 
 //Out parameters.
-layout (location = 0) out float fragmentLengthFactor;
+layout (location = 0) out vec3 fragmentNormal;
+layout (location = 1) out float fragmentLengthFactor;
 
 void main()
 {
+    //Calculate the fragment normal.
+    fragmentNormal = normalize(vec3(transformationMatrix * vec4(vertexNormal, 0.0f)));
+    
     //Calculate the transformed position.
     vec4 transformedPosition = transformationMatrix * vec4(vertexPosition, 1.0);
 
