@@ -26,8 +26,8 @@ public:
 	//The wind speed.
 	float _WindSpeed;
 
-	//The volumetric fog distance.
-	float _VolumetricFogDistance;
+	//The volumetric fog density.
+	float _VolumetricFogDensity;
 
 	//The depth of field distance.
 	float _DepthOfFieldDistance;

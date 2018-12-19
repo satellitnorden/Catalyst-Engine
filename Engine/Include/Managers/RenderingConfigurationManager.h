@@ -38,14 +38,14 @@ public:
 	void SetSaturationStrength(const float newSaturationStrength) NOEXCEPT { _SaturationStrength = newSaturationStrength; }
 
 	/*
-	*	Returns the volumetric fog distance.
+	*	Returns the volumetric fog density.
 	*/
-	float GetVolumetricFogDistance() const NOEXCEPT { return _VolumetricFogDistance; }
+	float GetVolumetricFogDensity() const NOEXCEPT { return _VolumetricFogDensity; }
 
 	/*
-	*	Sets the volumetric fog distance.
+	*	Sets the volumetric fog density.
 	*/
-	void SetVolumetricFogDistance(const float newVolumetricFogDistance) NOEXCEPT { _VolumetricFogDistance = newVolumetricFogDistance; }
+	void SetVolumetricFogDensity(const float newVolumetricFogDensity) NOEXCEPT { _VolumetricFogDensity = newVolumetricFogDensity; }
 
 private:
 
@@ -55,7 +55,7 @@ private:
 	//The saturation strength.
 	float _SaturationStrength{ 1.0f };
 
-	//The volumetric fog distance.
-	float _VolumetricFogDistance{ 100.0f };
+	//The volumetric fog density.
+	float _VolumetricFogDensity{ 0.1f };
 
 };

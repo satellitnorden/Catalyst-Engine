@@ -8,14 +8,14 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SHADOW_BIAS 0.0025f
+#define VOLUMETRIC_FOG_DISTANCE (10.0f)
+#define VOLUMETRIC_FOG_RAY_STEPS (16)
+#define VOLUMETRIC_FOG_DENSITY_PER_STEP (1.0f / VOLUMETRIC_FOG_RAY_STEPS)
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) float fogLengthSquared;
-    layout (offset = 4) float fogMinimumHeight;
-    layout (offset = 8) float fogMaximumHeight;
+	layout (offset = 0) float density;
 };
 
 //In parameters.
@@ -31,55 +31,42 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
     //Calculate the scene world position.
-    vec3 sceneWorldPosition = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).xyz;
+    vec3 sceneWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w);
 
-    //Calculate the distance to the scene world position.
-    float distanceToSceneWorldPosition = LengthSquared3(sceneWorldPosition - cameraWorldPosition);
-
-    //Calculate the fog weight.
-    float distanceWeight = min(distanceToSceneWorldPosition / fogLengthSquared, 1.0f);
-
-    float heightWeight = 1.0f - clamp((sceneWorldPosition.y - fogMinimumHeight) / (fogMaximumHeight - fogMinimumHeight), 0.0f, 1.0f);
-
-    float fogWeight = distanceWeight * heightWeight;
-    fogWeight *= fogWeight;
-
-    //Calculate the fog color.
-    vec3 fogColor = vec3(1.0f, 1.0f, 1.0f) * 0.01f + directionalLightColor * (directionalLightIntensity * 0.25f);
-
-    //Write the fragment.
-    fragment = vec4(fogColor, fogWeight);
-
-    /*
-    //Calculate the ray direction, distance and step.
+    //Calculate the ray direction.
     vec3 rayDirection = normalize(sceneWorldPosition - cameraWorldPosition);
-    float distanceToScenePositionSquared = LengthSquared3(sceneWorldPosition - cameraWorldPosition);
-    float rayDistance = min(rayDistanceSquared, distanceToScenePositionSquared);
-    vec3 rayStep = rayDirection * (sqrt(rayDistance) / numberOfRaySteps);
 
-    //Calculate the ray properties.
-    float densityPerStep = density / numberOfRaySteps;
+    //Calculate the ray distance.
+    float rayDistance = min(length(sceneWorldPosition - cameraWorldPosition), VOLUMETRIC_FOG_DISTANCE);
+
+    //Calculate the ray step.
+    vec3 rayStep = rayDirection * (rayDistance / VOLUMETRIC_FOG_RAY_STEPS);
+
+    //Start off at the camera position.
     vec3 currentPosition = cameraWorldPosition;
 
     //Perform the ray.
-    vec3 accumulatedFog = vec3(0.0f);
+    float accumulatedFog = 0.0f;
 
-    for (int i = 0; i < numberOfRaySteps; ++i)
+    for (int i = 0; i < VOLUMETRIC_FOG_RAY_STEPS; ++i)
     {
+        //Calculate the directional shadow map coordinate.
     	vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(currentPosition, 1.0f);
 	    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
 
+        //Sample the depth.
 	    float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r;
-	    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
 
-        bool isNotInShadow = compare >= 1.0f || compare < directionalDepth;
+        bool isInShadow = directionalLightShadowMapCoordinate.z < 1.0f && directionalLightShadowMapCoordinate.z > directionalDepth;
 
-	    accumulatedFog += isNotInShadow ? directionalLightColor * directionalLightIntensity * densityPerStep : vec3(0.0f);
+	    accumulatedFog += isInShadow ? 0.0f : VOLUMETRIC_FOG_DENSITY_PER_STEP;
 
 	    currentPosition += rayStep;
     }
 
+    //Calculate the fog color.
+    vec3 fogColor = directionalLightColor * directionalLightIntensity;
+
     //Write the fragment
-    fragment = vec4(accumulatedFog, 1.0f);
-    */
+    fragment = vec4(fogColor, accumulatedFog * accumulatedFog * density);
 }
