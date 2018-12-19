@@ -44,6 +44,16 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadow);
 			}
 
+			case RenderPassMainStage::DirectionalShadowHorizontalBlur:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadowHorizontalBlur);
+			}
+
+			case RenderPassMainStage::DirectionalShadowVerticalBlur:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadowVerticalBlur);
+			}
+
 			case RenderPassMainStage::Lighting:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);

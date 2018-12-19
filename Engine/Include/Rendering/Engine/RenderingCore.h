@@ -37,6 +37,8 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowMapping,
 	Scene,
 	DirectionalShadowCalculation,
+	DirectionalShadowHorizontalBlur,
+	DirectionalShadowVerticalBlur,
 	Lighting,
 	WorldPosition,
 	ParticleSystem,
@@ -82,6 +84,12 @@ enum class RenderPassSubStage : uint8
 
 	//Directional shadow calculation main stage.
 	DirectionalShadow,
+
+	//Directional shadow horizontal blur main stage.
+	DirectionalShadowHorizontalBlur,
+
+	//Directional shadow horizontal blur main stage.
+	DirectionalShadowVerticalBlur,
 
 	//Lighting main stage.
 	Lighting,
@@ -397,10 +405,10 @@ class GaussianBlurData final
 public:
 
 	//The direction.
-	Vector2<float> direction;
+	Vector2<float> _Direction;
 
 	//The inverse resolution.
-	Vector2<float> inverseResolution;
+	Vector2<float> _InverseResolution;
 };
 
 /*

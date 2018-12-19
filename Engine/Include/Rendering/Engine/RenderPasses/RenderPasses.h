@@ -18,7 +18,9 @@
 #include <Rendering/Engine/RenderPasses/DepthOfFieldHorizontalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DepthOfFieldVerticalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DirectionalShadowHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DirectionalShadowVerticalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalSolidVegetationShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
