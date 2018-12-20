@@ -18,7 +18,6 @@ layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-layout (location = 1) out vec4 normalDepth;
 
 /*
 *   Calculates the directional light.
@@ -105,5 +104,4 @@ void main()
 
     //Write the fragment.
     fragment = vec4(finalFragment, blendFactor);
-    normalDepth = vec4(fragmentWorldPosition, blendFactor);
 }

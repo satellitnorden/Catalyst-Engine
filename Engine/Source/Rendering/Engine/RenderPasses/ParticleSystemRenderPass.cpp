@@ -52,9 +52,8 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
