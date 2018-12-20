@@ -200,14 +200,14 @@ bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *con
 */
 void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 {
-	constexpr float MINIMUM_SUN_INTENSITY{ 10.0f };
+	constexpr float MINIMUM_SUN_INTENSITY{ 1.0f };
 	constexpr float MAXIMUM_SUN_INTENSITY{ 100.0f };
 
-	constexpr float MINIMUM_WIND_SPEED{ 4.0f };
-	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
+	constexpr float MINIMUM_WIND_SPEED{ 0.5f };
+	constexpr float MAXIMUM_WIND_SPEED{ 20.0f };
 
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
-	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.02f };
+	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.025f };
 
 	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.2f };
 	constexpr float MAXIMUM_DEPTH_OF_FIELD_DISTANCEY{ 49'152.0f };
