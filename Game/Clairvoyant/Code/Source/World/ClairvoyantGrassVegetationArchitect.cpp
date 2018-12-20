@@ -20,7 +20,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		//Add the default grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._Thickness = 0.5f;
+		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -29,8 +29,8 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("Grass1GrassVegetationMaterial")) };
 
-		properties._CutoffDistance = 100.0f;
-		properties._Density = 0.15f;
+		properties._CutoffDistance = 250.0f;
+		properties._Density = 0.05f;
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetationModel")), material);
 
