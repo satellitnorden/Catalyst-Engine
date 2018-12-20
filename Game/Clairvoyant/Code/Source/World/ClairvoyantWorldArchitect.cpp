@@ -92,11 +92,11 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 		//Create the boxes!
 		constexpr StaticArray<Vector3<float>, 5> positions
 		{
-			Vector3<float>(5.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, -0.55f),
-			Vector3<float>(5.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, 0.55f),
-			Vector3<float>(5.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, 0.55f),
-			Vector3<float>(5.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, -0.55f),
-			Vector3<float>(5.0f, 0.0f, 0.0f) + Vector3<float>(0.0f, 1.f, 0.0f)
+			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, -0.55f),
+			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, 0.55f),
+			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, 0.55f),
+			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, -0.55f),
+			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.0f, 1.f, 0.0f)
 		};
 
 		for (uint8 i{ 0 }; i < 5; ++i)
@@ -113,6 +113,65 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 			TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
 			data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
 			data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
+			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
+			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+			data->_SimulatePhysics = false;
+			data->_Mass = 0.0f;
+			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
+		}
+	}
+
+	{
+		//Create... More boxes!
+		constexpr StaticArray<Vector3<float>, 27> positions
+		{
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
+
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
+
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
+			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
+		};
+
+		for (uint8 i{ 0 }; i < 27; ++i)
+		{
+			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+			data->_Properties = EntityInitializationData::EntityProperty::None;
+			data->_PhysicalFlags = PhysicalFlag::Physical;
+			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+			data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+			float terrainHeight;
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
+			data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
+			data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
 			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 			data->_SimulatePhysics = false;
