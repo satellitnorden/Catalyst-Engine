@@ -31,6 +31,11 @@ layout (set = 4, binding = 1) uniform sampler2D oceanFoamTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
+layout (location = 1) out vec4 normalDepth;
+
+//Globals.
+vec4 normalDepthTextureSampler;
+vec4 belowOceanNormalDepth;
 
 //Forward declarations.
 vec3 CalculateAboveOceanFragment(vec3 sceneWorldPosition);
@@ -155,6 +160,12 @@ vec3 CalculateOceanFragment(vec3 endPoint)
     //Calculate the scene color.
     vec3 sceneColor = CalculateSceneColor(normal, distanceToEndPointSquared);
 
+    //Calculate the depth.
+    vec4 screenSpacePosition = viewMatrix * vec4(endPoint, 1.0f);
+    float depth = screenSpacePosition.z / screenSpacePosition.w;
+
+    belowOceanNormalDepth = vec4(normal, depth);
+
     //Calculate the below ocean fragment.
     return mix(sceneColor, calculatedOceanColor, oceanColorWeight);
 }
@@ -214,10 +225,12 @@ void main()
     if (sceneWorldPosition.y > 0.0f)
     {
         fragment = vec4(CalculateAboveOceanFragment(sceneWorldPosition), 1.0f);
+        normalDepth = belowOceanNormalDepth;
     }
 
     else
     {
         fragment = vec4(CalculateBelowOceanFragment(sceneWorldPosition), 1.0f);
+        normalDepth = belowOceanNormalDepth;
     }
 }

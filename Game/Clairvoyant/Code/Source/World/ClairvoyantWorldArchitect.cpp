@@ -209,30 +209,33 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
 	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.02f };
 
+	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.2f };
+	constexpr float MAXIMUM_DEPTH_OF_FIELD_DISTANCEY{ 49'152.0f };
+
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._SunColor = Vector3<float>(0.75f, 0.75f, 1.0f);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._SunIntensity = 0.0f;
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_SPEED, MAXIMUM_WIND_SPEED);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._VolumetricFogDensity = CatalystBaseMath::RandomFloatInRange(MINIMUM_VOLUMETRIC_FOG_DENSITY, MAXIMUM_VOLUMETRIC_FOG_DENSITY);
-	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._DepthOfFieldDistance = 98'304.0f * 0.5f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._DepthOfFieldDistance = CatalystBaseMath::RandomFloatInRange(MINIMUM_DEPTH_OF_FIELD_DISTANCE, MAXIMUM_DEPTH_OF_FIELD_DISTANCEY);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("MorningEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._SunColor = Vector3<float>(1.0f, 0.75f, 0.75f);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._SunIntensity = 0.1f;
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_SPEED, MAXIMUM_WIND_SPEED);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._VolumetricFogDensity = CatalystBaseMath::RandomFloatInRange(MINIMUM_VOLUMETRIC_FOG_DENSITY, MAXIMUM_VOLUMETRIC_FOG_DENSITY);
-	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._DepthOfFieldDistance = 98'304.0f * 0.5f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._DepthOfFieldDistance = CatalystBaseMath::RandomFloatInRange(MINIMUM_DEPTH_OF_FIELD_DISTANCE, MAXIMUM_DEPTH_OF_FIELD_DISTANCEY);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._EnvironmentMaterial = RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunColor = Vector3<float>(1.0f, 1.0f, 0.75f);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunIntensity = CatalystBaseMath::RandomFloatInRange(MINIMUM_SUN_INTENSITY, MAXIMUM_SUN_INTENSITY);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_SPEED, MAXIMUM_WIND_SPEED);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._VolumetricFogDensity = CatalystBaseMath::RandomFloatInRange(MINIMUM_VOLUMETRIC_FOG_DENSITY, MAXIMUM_VOLUMETRIC_FOG_DENSITY);
-	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._DepthOfFieldDistance = 98'304.0f * 0.5f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._DepthOfFieldDistance = CatalystBaseMath::RandomFloatInRange(MINIMUM_DEPTH_OF_FIELD_DISTANCE, MAXIMUM_DEPTH_OF_FIELD_DISTANCEY);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("EveningEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._SunColor = Vector3<float>(0.75f, 1.0f, 1.0f);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._SunIntensity = 0.1f;
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_SPEED, MAXIMUM_WIND_SPEED);
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._VolumetricFogDensity = CatalystBaseMath::RandomFloatInRange(MINIMUM_VOLUMETRIC_FOG_DENSITY, MAXIMUM_VOLUMETRIC_FOG_DENSITY);
-	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._DepthOfFieldDistance = 98'304.0f * 0.5f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._DepthOfFieldDistance = CatalystBaseMath::RandomFloatInRange(MINIMUM_DEPTH_OF_FIELD_DISTANCE, MAXIMUM_DEPTH_OF_FIELD_DISTANCEY);
 }
 
 /*

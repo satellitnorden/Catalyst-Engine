@@ -1703,13 +1703,23 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 2 };
 
 		constexpr uint32 SCENE_INDEX{ 0 };
+		constexpr uint32 NORMAL_DEPTH_INDEX{ 1 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
 			//Scene.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL),
+
+			//Normal/depth.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1721,16 +1731,17 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
 		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
-		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		constexpr StaticArray<const VkAttachmentReference, 2> colorAttachmentReferences
 		{
-			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_OCEAN_SUBPASSES> subpassDescriptions
 		{
 			VulkanUtilities::CreateSubpassDescription(	0,
 														nullptr,
-														1,
+														static_cast<uint32>(colorAttachmentReferences.Size()),
 														colorAttachmentReferences.Data(),
 														nullptr,
 														0,
@@ -1738,7 +1749,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDescription(	0,
 														nullptr,
-														1,
+														static_cast<uint32>(colorAttachmentReferences.Size()),
 														colorAttachmentReferences.Data(),
 														nullptr,
 														0,
@@ -1769,9 +1780,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 1> attachments
+		StaticArray<VkImageView, 2> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1780,7 +1792,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._ShouldClear = false;
 	}
 

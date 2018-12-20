@@ -34,6 +34,11 @@ layout (set = 4, binding = 1) uniform sampler2D oceanFoamTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
+layout (location = 1) out vec4 normalDepth;
+
+//Globals.
+vec4 normalDepthTextureSampler;
+vec4 belowOceanNormalDepth;
 
 //Forward declarations.
 vec3 CalculateAboveOceanFragment();
@@ -125,6 +130,12 @@ vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
 
     //Apply directional lighting.
     finalOceanColor += CalculateDirectionalLight(reflectionDirection);
+
+    //Calculate the depth.
+    vec4 screenSpacePosition = viewMatrix * vec4(intersectionPoint, 1.0f);
+    float depth = screenSpacePosition.z / screenSpacePosition.w;
+
+    belowOceanNormalDepth = vec4(normal, depth);
 
     return finalOceanColor;
 }
@@ -229,8 +240,11 @@ vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared)
 */
 vec3 CalculateSceneWorldPosition()
 {
+	//Sample the normal depth texture.
+	normalDepthTextureSampler = texture(sceneNormalDepthTexture, fragmentTextureCoordinate);
+
     //Calculate the scene world position.
-    return CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w);
+    return CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
 }
 
 /*
@@ -250,10 +264,12 @@ void main()
     if (sceneWorldPosition.y > 0.0f)
     {
         fragment = vec4(CalculateAboveOceanFragment(), 1.0f);
+        normalDepth = normalDepthTextureSampler;
     }
 
     else
     {
         fragment = vec4(CalculateBelowOceanFragment(sceneWorldPosition), 1.0f);
+        normalDepth = belowOceanNormalDepth;
     }
 }

@@ -56,8 +56,9 @@ void BelowOceanRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::Scene);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(5);
