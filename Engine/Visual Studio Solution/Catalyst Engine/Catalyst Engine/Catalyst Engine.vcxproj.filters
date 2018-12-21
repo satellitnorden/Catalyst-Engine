@@ -70,9 +70,6 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{467fae4e-8006-49b1-bbe4-ecc32d8bc84e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Physics\Include">
-      <UniqueIdentifier>{a4e0f938-dc3a-443c-84a5-80dbe4da459d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{e9eb1d75-d1d1-48f5-b0ea-8ca229b96f0b}</UniqueIdentifier>
     </Filter>
@@ -243,6 +240,21 @@
     </Filter>
     <Filter Include="Rendering\Source\Translation\OpenGL">
       <UniqueIdentifier>{82b89528-5da7-444b-ad42-3a86e3350c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Include">
+      <UniqueIdentifier>{a4e0f938-dc3a-443c-84a5-80dbe4da459d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Include\Master">
+      <UniqueIdentifier>{c08ad5a0-5e3a-46eb-a3cf-be7f7d9cfa6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Include\Abstraction">
+      <UniqueIdentifier>{54854aa8-e9d4-4bb3-bb3d-e795b4ef870d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source">
+      <UniqueIdentifier>{cb9815fa-6eb0-406a-8d8e-0619d2c273e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source\Abstraction">
+      <UniqueIdentifier>{3a0b548e-34ba-4485-a7a1-87c7840561fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -684,12 +696,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Ray.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
@@ -863,9 +869,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VulkanShaderData.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
-      <Filter>Physics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h">
       <Filter>Vegetation\Include</Filter>
@@ -1127,6 +1130,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\OpenGL\OpenGLRenderingSystem.h">
       <Filter>Rendering\Include\Translation\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Master\PhysicsCore.h">
+      <Filter>Physics\Include\Master</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Master\Ray.h">
+      <Filter>Physics\Include\Master</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Master\RayCastResult.h">
+      <Filter>Physics\Include\Master</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXPhysicsSystem.h">
+      <Filter>Physics\Include\Abstraction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1567,6 +1582,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp">
       <Filter>Rendering\Source\Translation\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

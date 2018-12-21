@@ -28,19 +28,9 @@ public:
 	InputSystem() NOEXCEPT { }
 
 	/*
-	*	Initializes the input system.
+	*	Updates the input system synchronously.
 	*/
-	void InitializeSystem() NOEXCEPT;
-
-	/*
-	*	Pre-updates the input system synchronously during the opening update phase.
-	*/
-	void PreOpeningUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Post-updates the input system synchronously during the opening update phase.
-	*/
-	void PostOpeningUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the current gamepad state.
@@ -90,10 +80,5 @@ private:
 
 	//The touch state.
 	TouchState _TouchState;
-
-	/*
-	*	Updates the input system asynchronously.
-	*/
-	void UpdateSystemAsynchronous() NOEXCEPT;
 
 };

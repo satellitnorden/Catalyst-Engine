@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Physics.
-#include <Physics/PhysicsCore.h>
+#include <Physics/Master/PhysicsCore.h>
 
 //Catalyst physics math constants.
 namespace CatalystPhysicsMathConstants

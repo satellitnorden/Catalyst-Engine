@@ -21,18 +21,18 @@ namespace TimeOfDaySystemConstants
 void TimeOfDaySystem::Initialize() NOEXCEPT
 {
 	//Register the time of day system for updates.
-	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
+	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
 
 	//Update this once to the starting time.
 	UpdateContext context;
 	context._DeltaTime = ((TimeOfDaySystemConstants::STARTING_TIME * 60.0f) * 60.0f) / TimeOfDaySystemConstants::TIME_MULTIPLIER;
-	OpeningUpdateAsynchronous(&context);
+	LogicUpdateAsynchronous(&context);
 }
 
 /*
 *	Updates the time of day system asynchronously during the opening update phase.
 */
-bool TimeOfDaySystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool TimeOfDaySystem::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Convert the delta time from seconds, to minutes and then to hours and increment the current time.
 	_CurrentTime += ((context->_DeltaTime / 60.0f) / 60.0f) * TimeOfDaySystemConstants::TIME_MULTIPLIER;

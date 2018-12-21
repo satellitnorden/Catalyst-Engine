@@ -79,9 +79,4 @@ void UpdateSystem::RegisterAsynchronous ## PHASE(Updateable *const RESTRICT newU
 }
 
 //Define the update system phases.
-DEFINE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(LogicUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(PhysicsUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(CullingUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(RenderingUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(ClosingUpdate);

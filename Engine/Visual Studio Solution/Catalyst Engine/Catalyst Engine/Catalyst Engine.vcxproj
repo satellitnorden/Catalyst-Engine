@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -128,9 +128,10 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
-    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Ray.h" />
-    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Master\PhysicsCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Master\Ray.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Master\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
@@ -353,6 +354,7 @@
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />

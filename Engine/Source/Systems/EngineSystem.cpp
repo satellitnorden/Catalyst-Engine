@@ -38,8 +38,8 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	//Initialize all systems.
 	CullingSystem::Instance->InitializeSystem();
 	EntityPlacementSystem::Instance->InitializeSystem();
-	InputSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
+	PhysicsSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
 	TerrainSystem::Instance->InitializeSystem(_ProjectConfiguration._TerrainConfiguration);
@@ -68,62 +68,37 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	context._DeltaTime = _DeltaTime;
 	context._TotalTime = _TotalTime;
 
-	//Pre-update the platform.
+	/*
+	*	Pre-update phase.
+	*/
 	CatalystPlatform::PreUpdate(&context);
 
 	/*
-	*	Opening update phase.
+	*	Update phase.
 	*/
-	UpdateSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
-	InputSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
-	InputSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
-
-	/*
-	*	Logic update phase.
-	*/
+	InputSystem::Instance->UpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
-
-	/*
-	*	Physics update phase.
-	*/
-	UpdateSystem::Instance->PrePhysicsUpdateSystemSynchronous(&context);
-	PhysicsSystem::Instance->PhysicsUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostPhysicsUpdateSystemSynchronous(&context);
-
-	/*
-	*	Culling update phase.
-	*/
-	UpdateSystem::Instance->PreCullingUpdateSystemSynchronous(&context);
+	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	CullingSystem::Instance->CullingUpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->CullingUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostCullingUpdateSystemSynchronous(&context);
-
-	/*
-	*	Rendering update phase.
-	*/
-	UpdateSystem::Instance->PreRenderingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
 	DebugRenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
 #endif
 	RenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostRenderingUpdateSystemSynchronous(&context);
 
 	/*
-	*	Closing update phase.
+	*	Post-update phase.
 	*/
-	UpdateSystem::Instance->PreClosingUpdateSystemSynchronous(&context);
 	EntityCreationSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
 	DebugRenderingSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #endif
-	UpdateSystem::Instance->PostClosingUpdateSystemSynchronous(&context);
-
-	//Post-update the platform.
 	CatalystPlatform::PostUpdate(&context);
 
-	//Executes the sequential update.
+	/*
+	*	Sequential update phase.
+	*/
 	ExecuteSequentialUpdate();
 }
 

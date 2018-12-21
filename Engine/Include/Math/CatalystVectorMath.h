@@ -10,7 +10,7 @@
 #include <Math/Vector4.h>
 
 //Physics.
-#include <Physics/Ray.h>
+#include <Physics/Master/Ray.h>
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>

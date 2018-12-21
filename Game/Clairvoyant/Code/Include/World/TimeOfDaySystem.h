@@ -26,7 +26,7 @@ public:
 	/*
 	*	Updates the time of day system asynchronously during the opening update phase.
 	*/
-	bool OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Returns the current time.
