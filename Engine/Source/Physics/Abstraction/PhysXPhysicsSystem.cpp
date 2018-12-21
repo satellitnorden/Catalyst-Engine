@@ -2,6 +2,9 @@
 //Header file.
 #include <Physics/Abstraction/PhysXPhysicsSystem.h>
 
+//PhysX.
+#include <ThirdParty/PhysX/PxPhysicsAPI.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(PhysXPhysicsSystem);
 
