@@ -128,7 +128,10 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Master\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Master\Ray.h" />
     <ClInclude Include="..\..\..\Include\Physics\Master\RayCastResult.h" />
@@ -354,7 +357,7 @@
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />

@@ -21,7 +21,7 @@ DEFINE_SINGLETON(PhysicsSystem);
 
 //Define the physics system.
 #if defined(CATALYST_PHYSICS_PHYSX)
-	#include <Physics/Abstraction/PhysXPhysicsSystem.h>
+	#include <Physics/Abstraction/PhysX/PhysXPhysicsSystem.h>
 	#define PHYSICS_SYSTEM PhysXPhysicsSystem
 #endif
 

@@ -256,6 +256,12 @@
     <Filter Include="Physics\Source\Abstraction">
       <UniqueIdentifier>{3a0b548e-34ba-4485-a7a1-87c7840561fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Include\Abstraction\PhysX">
+      <UniqueIdentifier>{3b34ac0c-8764-434b-b375-a10d08c5bf32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source\Abstraction\PhysX">
+      <UniqueIdentifier>{f1053b36-8c18-4466-bdb8-7c014bfe0224}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1140,8 +1146,17 @@
     <ClInclude Include="..\..\..\Include\Physics\Master\RayCastResult.h">
       <Filter>Physics\Include\Master</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXPhysicsSystem.h">
-      <Filter>Physics\Include\Abstraction</Filter>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h">
+      <Filter>Physics\Include\Abstraction\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h">
+      <Filter>Physics\Include\Abstraction\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h">
+      <Filter>Physics\Include\Abstraction\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h">
+      <Filter>Physics\Include\Abstraction\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1583,8 +1598,8 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp">
       <Filter>Rendering\Source\Translation\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp">
-      <Filter>Physics\Source\Abstraction</Filter>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

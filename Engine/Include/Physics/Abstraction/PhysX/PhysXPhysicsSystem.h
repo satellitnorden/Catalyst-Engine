@@ -5,6 +5,11 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Physics.
+#include <Physics/Abstraction/PhysX/PhysxAllocatorCallback.h>
+#include <Physics/Abstraction/PhysX/PhysxErrorCallback.h>
+#include <Physics/Abstraction/PhysX/PhysxCore.h>
+
 class PhysXPhysicsSystem final
 {
 
@@ -35,6 +40,17 @@ public:
 	*	Releases the PhysX physics system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+private:
+
+	//The foundation object.
+	physx::PxFoundation *RESTRICT _Foundation;
+
+	//The allocator callback.
+	PhysxAllocatorCallback _AllocatorCallback;
+
+	//The error callback.
+	PhysxErrorCallback _ErrorCallback;
 
 };
 #endif

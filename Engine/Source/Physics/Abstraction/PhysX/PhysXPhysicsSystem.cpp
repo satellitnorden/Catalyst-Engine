@@ -1,9 +1,6 @@
 #if defined(CATALYST_PHYSICS_PHYSX)
 //Header file.
-#include <Physics/Abstraction/PhysXPhysicsSystem.h>
-
-//PhysX.
-#include <ThirdParty/PhysX/PxPhysicsAPI.h>
+#include <Physics/Abstraction/PhysX/PhysXPhysicsSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(PhysXPhysicsSystem);
@@ -13,7 +10,8 @@ DEFINE_SINGLETON(PhysXPhysicsSystem);
 */
 void PhysXPhysicsSystem::InitializeSystem() NOEXCEPT
 {
-
+	//Create the foundation.
+	//_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _AllocatorCallback, _ErrorCallback);
 }
 
 /*
