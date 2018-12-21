@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
 
@@ -10,7 +11,7 @@
 /*
 *	Begins the command buffer.
 */
-void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT
+void CommandBuffer::Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT
 {
 	//Cache the Vulkan render pass sub stage data.
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
@@ -25,7 +26,7 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 /*
 *	Binds an index buffer.
 */
-void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT
+void CommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
 	_CommandBuffer.CommandBindIndexBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), offset);
@@ -34,7 +35,7 @@ void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RES
 /*
 *	Binds a render data table.
 */
-void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT
+void CommandBuffer::BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT
 {
 	//Cache the Vulkan render pass sub stage data.
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
@@ -46,7 +47,7 @@ void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const
 /*
 *	Binds a number of vertex buffers.
 */
-void VulkanTranslationCommandBuffer::BindVertexBuffer(const RenderPass *const RESTRICT renderPass, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT
+void CommandBuffer::BindVertexBuffer(const RenderPass *const RESTRICT renderPass, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT
 {
 	//Bind the vertex buffers.
 	_CommandBuffer.CommandBindVertexBuffers(binding, 1, &static_cast<const VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), reinterpret_cast<const VkDeviceSize *const RESTRICT>(offset));
@@ -55,7 +56,7 @@ void VulkanTranslationCommandBuffer::BindVertexBuffer(const RenderPass *const RE
 /*
 *	Draws.
 */
-void VulkanTranslationCommandBuffer::Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
+void CommandBuffer::Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
 {
 	//Draw.
 	_CommandBuffer.CommandDraw(vertexCount, instanceCount);
@@ -64,7 +65,7 @@ void VulkanTranslationCommandBuffer::Draw(const RenderPass *const RESTRICT rende
 /*
 *	Draws indexed.
 */
-void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
+void CommandBuffer::DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
 {
 	//Draw indexed.
 	_CommandBuffer.CommandDrawIndexed(indexCount, instanceCount);
@@ -73,7 +74,7 @@ void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRIC
 /*
 *	Pushes constants.
 */
-void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT
+void CommandBuffer::PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT
 {
 	//Cache the Vulkan render pass sub stage data.
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
@@ -85,8 +86,9 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 /*
 *	Ends the command buffer.
 */
-void VulkanTranslationCommandBuffer::End(const RenderPass *const RESTRICT) NOEXCEPT
+void CommandBuffer::End(const RenderPass *const RESTRICT) NOEXCEPT
 {
 	//End the command buffer.
 	_CommandBuffer.End();
 }
+#endif

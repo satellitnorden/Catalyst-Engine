@@ -365,7 +365,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	{
 		VulkanCommandBuffer pipelineCommandBuffer;
 		pipelineCommandPool->AllocateSecondaryCommandBuffer(pipelineCommandBuffer);
-		renderPass->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanTranslationCommandBuffer)>()) VulkanTranslationCommandBuffer(pipelineCommandBuffer));
+		renderPass->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
 	}
 }
 
@@ -2442,7 +2442,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//Record the execute commands.
 		if (renderPass->IncludeInRender())
 		{
-			currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+			currentPrimaryCommandBuffer->CommandExecuteCommands(renderPass->GetCurrentCommandBuffer()->GetVulkanCommandBuffer().Get());
 		}
 	}
 
