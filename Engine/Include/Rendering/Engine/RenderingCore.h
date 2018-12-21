@@ -16,7 +16,7 @@ namespace RenderingConstants
 /*
 *	Type aliases.
 */
-using OpaqueHandle = void *RESTRICT;
+using OpaqueHandle = void *RESTRICT; //Opaque handle that represents abstract data.
 
 using ConstantBufferHandle = void *RESTRICT;
 using DepthBufferHandle = void *RESTRICT;

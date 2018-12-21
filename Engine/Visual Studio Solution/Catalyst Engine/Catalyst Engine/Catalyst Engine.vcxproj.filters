@@ -238,6 +238,12 @@
     <Filter Include="Entities\Source\Types">
       <UniqueIdentifier>{0d438a91-5012-47eb-bb85-16d016f8be17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Translation\OpenGL">
+      <UniqueIdentifier>{653d4b4e-2fdf-48ed-b300-a7f62114f020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Translation\OpenGL">
+      <UniqueIdentifier>{82b89528-5da7-444b-ad42-3a86e3350c5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1119,6 +1125,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\OpenGL\OpenGLRenderingSystem.h">
+      <Filter>Rendering\Include\Translation\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1552,6 +1561,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\OpenGLRenderingSystem.cpp">
+      <Filter>Rendering\Source\Translation\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp">
+      <Filter>Rendering\Source\Translation\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

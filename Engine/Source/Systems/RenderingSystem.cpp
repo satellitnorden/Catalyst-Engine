@@ -52,9 +52,12 @@
 DEFINE_SINGLETON(RenderingSystem);
 
 //Define the current rendering system.
-#if defined(CATALYST_RENDERING_VULKAN)
-#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
-#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
+#if defined(CATALYST_RENDERING_OPENGL)
+	#include <Rendering/Translation/OpenGL/OpenGLRenderingSystem.h>
+	#define CURRENT_RENDERING_SYSTEM OpenGLRenderingSystem
+#elif defined(CATALYST_RENDERING_VULKAN)
+	#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
+	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
 #endif
 
 /*
