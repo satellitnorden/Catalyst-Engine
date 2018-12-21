@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering\Engine\RenderPasses\RenderPass.h>
 
+//Rendering.
+#include <Rendering/Engine/CommandBuffer.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>

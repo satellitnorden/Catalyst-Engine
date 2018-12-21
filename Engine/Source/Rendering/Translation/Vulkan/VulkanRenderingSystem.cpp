@@ -15,12 +15,12 @@
 #include <Math/CatalystBaseMath.h>
 
 //Rendering.
+#include <Rendering/Engine/CommandBuffer.h>
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/Viewer.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
-#include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
@@ -364,8 +364,8 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
 	{
-		VulkanCommandBuffer pipelineCommandBuffer;
-		pipelineCommandPool->AllocateSecondaryCommandBuffer(pipelineCommandBuffer);
+		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
+		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
 		renderPass->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
 	}
 }
@@ -2443,7 +2443,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//Record the execute commands.
 		if (renderPass->IncludeInRender())
 		{
-			currentPrimaryCommandBuffer->CommandExecuteCommands(renderPass->GetCurrentCommandBuffer()->GetVulkanCommandBuffer().Get());
+			currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
 		}
 	}
 
