@@ -12,6 +12,9 @@ void PhysXPhysicsSystem::InitializeSystem() NOEXCEPT
 {
 	//Create the foundation.
 	_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _AllocatorCallback, _ErrorCallback);
+
+	//Create the physics.
+	_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_Foundation, physx::PxTolerancesScale(), false, nullptr);
 }
 
 /*
@@ -27,6 +30,10 @@ void PhysXPhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const REST
 */
 void PhysXPhysicsSystem::ReleaseSystem() NOEXCEPT
 {
+	//Release the physics.
+	_Physics->release();
 
+	//Release the foundation.
+	_Foundation->release();
 }
 #endif

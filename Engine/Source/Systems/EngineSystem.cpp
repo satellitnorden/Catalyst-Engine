@@ -109,13 +109,14 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
 
-	//Release the task systm first so that all asynchronous tasks are finished before releasing anything else.
+	//Release the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->ReleaseSystem();
 
 	//Release the platform.
 	CatalystPlatform::Release();
 
 	//Release all systems.
+	PhysicsSystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
 }
 

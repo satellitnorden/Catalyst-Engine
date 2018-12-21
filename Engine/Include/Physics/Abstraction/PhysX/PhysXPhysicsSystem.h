@@ -46,6 +46,9 @@ private:
 	//The foundation object.
 	physx::PxFoundation *RESTRICT _Foundation;
 
+	//The physics object.
+	physx::PxPhysics *RESTRICT _Physics;
+
 	//The allocator callback.
 	PhysxAllocatorCallback _AllocatorCallback;
 
