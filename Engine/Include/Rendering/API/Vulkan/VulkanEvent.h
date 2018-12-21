@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -47,3 +48,4 @@ private:
 	void CreateEventCreateInfo(VkEventCreateInfo &eventCreateInfo) const NOEXCEPT;
 
 };
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanFence.h>
 
@@ -62,3 +63,4 @@ void VulkanFence::WaitFor() const NOEXCEPT
 	//Wait for this Vulkan fence.
 	while (vkWaitForFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &_VulkanFence, VK_TRUE, 0) == VK_TIMEOUT);
 }
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -40,3 +41,4 @@ private:
 	void CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphoreCreateInfo) const NOEXCEPT;
 
 };
+#endif

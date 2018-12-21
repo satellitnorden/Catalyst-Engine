@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanAllocator.h>
 
@@ -24,3 +25,4 @@ uint32 VulkanAllocator::FindMemoryTypeIndex(const uint32 typeFilter, const VkMem
 {
 	return 0;
 }
+#endif

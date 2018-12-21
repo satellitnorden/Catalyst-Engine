@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanSampler.h>
 
@@ -50,3 +51,4 @@ void VulkanSampler::CreateSamplerCreateInfo(VkSamplerCreateInfo &samplerCreateIn
 	samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 	samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 }
+#endif

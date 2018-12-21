@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -55,3 +56,4 @@ private:
 	void CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) const NOEXCEPT;
 
 };
+#endif

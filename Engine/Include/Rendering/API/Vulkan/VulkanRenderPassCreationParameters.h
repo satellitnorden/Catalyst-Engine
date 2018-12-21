@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -27,3 +28,4 @@ public:
 	const VkSubpassDependency *RESTRICT _SubpassDependencies;
 
 };
+#endif

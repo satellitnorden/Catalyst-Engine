@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanQueue.h>
 
@@ -90,3 +91,4 @@ void VulkanQueue::CreatePresentInfo(VkPresentInfoKHR &presentInfo, const VulkanS
 	presentInfo.pImageIndices = imageIndex;
 	presentInfo.pResults = nullptr;
 }
+#endif

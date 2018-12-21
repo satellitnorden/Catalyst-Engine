@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanEvent.h>
 
@@ -53,3 +54,4 @@ void VulkanEvent::CreateEventCreateInfo(VkEventCreateInfo &eventCreateInfo) cons
 	eventCreateInfo.pNext = nullptr;
 	eventCreateInfo.flags = 0;
 }
+#endif

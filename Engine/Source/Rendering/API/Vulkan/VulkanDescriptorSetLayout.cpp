@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
 
@@ -37,3 +38,4 @@ void VulkanDescriptorSetLayout::CreateDescriptorSetLayoutCreateInfo(VkDescriptor
 	descriptorSetLayoutCreateInfo.bindingCount = descriptorSetLayoutBindingCount;
 	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings;
 }
+#endif

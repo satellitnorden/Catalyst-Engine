@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanCommandPool.h>
 
@@ -65,3 +66,4 @@ void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &com
 	commandPoolCreateInfo.flags = flags;
 	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
 }
+#endif

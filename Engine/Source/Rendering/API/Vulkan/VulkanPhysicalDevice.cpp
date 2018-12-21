@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
 
@@ -178,3 +179,4 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
+#endif

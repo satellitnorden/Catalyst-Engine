@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanFramebuffer.h>
 
@@ -41,3 +42,4 @@ void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &fra
 	framebufferCreateInfo.height = parameters._Extent.height;
 	framebufferCreateInfo.layers = 1;
 }
+#endif

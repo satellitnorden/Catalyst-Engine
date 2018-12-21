@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanPipeline.h>
 
@@ -308,3 +309,4 @@ void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateIn
 	graphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 	graphicsPipelineCreateInfo.basePipelineIndex = -1;
 }
+#endif

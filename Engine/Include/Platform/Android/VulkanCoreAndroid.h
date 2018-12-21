@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #if defined(CATALYST_PLATFORM_ANDROID)
 
 #pragma once
@@ -205,4 +206,5 @@ public:
 	static void CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurface) NOEXCEPT;
 
 };
+#endif
 #endif

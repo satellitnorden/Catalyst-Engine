@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanSemaphore.h>
 
@@ -35,3 +36,4 @@ void VulkanSemaphore::CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphore
 	semaphoreCreateInfo.pNext = nullptr;
 	semaphoreCreateInfo.flags = 0;
 }
+#endif

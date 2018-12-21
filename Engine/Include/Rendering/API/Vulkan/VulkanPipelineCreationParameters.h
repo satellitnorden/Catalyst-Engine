@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -105,3 +106,4 @@ public:
 	const VulkanRenderPass *RESTRICT _RenderPass{ nullptr };
 
 };
+#endif

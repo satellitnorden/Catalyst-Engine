@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #if defined(CATALYST_PLATFORM_WINDOWS)
 
 #pragma once
@@ -44,4 +45,5 @@ namespace PlatformVulkan
 
 }
 
+#endif
 #endif

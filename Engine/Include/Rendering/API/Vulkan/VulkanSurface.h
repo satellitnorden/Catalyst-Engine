@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -32,3 +33,4 @@ private:
 	VkSurfaceKHR _VulkanSurface;
 
 };
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -38,3 +39,4 @@ private:
 	VkExtent2D _Extent;
 
 };
+#endif

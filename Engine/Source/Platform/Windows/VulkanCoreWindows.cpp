@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Header file.
 #include <Platform/Windows/VulkanCoreWindows.h>
@@ -30,4 +31,5 @@ namespace PlatformVulkan
 	}
 
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanStorageBuffer.h>
 
@@ -98,3 +99,4 @@ void VulkanStorageBuffer::CreateWriteDescriptorSet() NOEXCEPT
 	_VulkanWriteDescriptorSet.pBufferInfo = &_VulkanDescriptorBufferInfo;
 	_VulkanWriteDescriptorSet.pTexelBufferView = nullptr;
 }
+#endif

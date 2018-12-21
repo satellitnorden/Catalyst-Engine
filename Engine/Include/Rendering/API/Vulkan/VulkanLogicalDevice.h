@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -91,3 +92,4 @@ private:
 	void ReleaseQueues() NOEXCEPT;
 
 };
+#endif

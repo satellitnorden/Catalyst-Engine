@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanDepthBuffer.h>
 
@@ -65,3 +66,4 @@ VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const NOEXCEPT
 
 	return VK_FORMAT_UNDEFINED;
 }
+#endif

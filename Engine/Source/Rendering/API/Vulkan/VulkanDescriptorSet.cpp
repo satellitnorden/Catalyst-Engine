@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
 
@@ -30,3 +31,4 @@ void VulkanDescriptorSet::CreateDescriptorSetAllocateInfo(VkDescriptorSetAllocat
 	descriptorSetAllocateInfo.descriptorSetCount = 1;
 	descriptorSetAllocateInfo.pSetLayouts = &vulkanDescriptorSetLayout.Get();
 }
+#endif

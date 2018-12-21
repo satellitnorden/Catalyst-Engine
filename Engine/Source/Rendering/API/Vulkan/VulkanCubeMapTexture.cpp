@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanCubeMapTexture.h>
 
@@ -71,3 +72,4 @@ void VulkanCubeMapTexture::Release() NOEXCEPT
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
 }
+#endif

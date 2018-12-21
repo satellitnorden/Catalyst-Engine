@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -137,4 +138,5 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(#function, result); }
 #else
 	#define VULKAN_ERROR_CHECK(function) function
+#endif
 #endif

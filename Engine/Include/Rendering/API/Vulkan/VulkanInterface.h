@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -316,3 +317,4 @@ private:
 	VulkanCommandPool GetNewCommandPool(const uint32 queueFamilyIndex) NOEXCEPT;
 
 };
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
 
@@ -390,3 +391,4 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Transfer)]);
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanDescriptorPool.h>
 
@@ -118,3 +119,4 @@ void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreate
 	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32>(descriptorPoolSizes.Size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.Data();
 }
+#endif

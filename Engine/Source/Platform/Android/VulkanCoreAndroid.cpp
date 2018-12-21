@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #if defined(CATALYST_PLATFORM_ANDROID)
 //Header file.
 #include <Platform/Windows/VulkanCoreAndroid.h>
@@ -346,4 +347,5 @@ PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
 PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
 PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
 PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
+#endif
 #endif

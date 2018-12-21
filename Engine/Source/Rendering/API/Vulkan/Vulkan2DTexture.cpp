@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/Vulkan2DTexture.h>
 
@@ -84,3 +85,4 @@ void Vulkan2DTexture::Release() NOEXCEPT
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
 }
+#endif

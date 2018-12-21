@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
@@ -559,3 +560,4 @@ void VulkanInterface::DestroyUniformBuffer(VulkanUniformBuffer *const RESTRICT u
 	_VulkanUniformBuffers.Erase(uniformBuffer);
 	MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanUniformBuffer)>(uniformBuffer);
 }
+#endif

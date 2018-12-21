@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
@@ -2461,3 +2462,4 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
 }
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanShaderModule.h>
 
@@ -40,3 +41,4 @@ void VulkanShaderModule::CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &
 	shaderModuleCreateInfo.codeSize = shaderDataSize;
 	shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32*>(shaderData);
 }
+#endif

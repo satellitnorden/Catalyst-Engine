@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -51,3 +52,4 @@ private:
 	VkFormat FindMostDesirableDepthBufferFormat() const NOEXCEPT;
 
 };
+#endif

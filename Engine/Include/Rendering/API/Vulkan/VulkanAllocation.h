@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -34,3 +35,4 @@ public:
 	uint32 _Offset;
 
 };
+#endif

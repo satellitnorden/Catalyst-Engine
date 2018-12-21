@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanRenderPass.h>
 
@@ -49,3 +50,4 @@ void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &render
 	renderPassCreateInfo.dependencyCount = parameters._SubpassDependencyCount;
 	renderPassCreateInfo.pDependencies = parameters._SubpassDependencies;
 }
+#endif

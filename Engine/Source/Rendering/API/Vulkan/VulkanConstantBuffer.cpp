@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanConstantBuffer.h>
 
@@ -74,3 +75,4 @@ void VulkanConstantBuffer::UploadData(const void *const RESTRICT *const RESTRICT
 	//Free the staging device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
 }
+#endif

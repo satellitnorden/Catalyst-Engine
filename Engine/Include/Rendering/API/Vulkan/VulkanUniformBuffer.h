@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -49,3 +50,4 @@ private:
 	VkDeviceSize _UniformBufferSize;
 
 };
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanInstance.h>
 
@@ -88,3 +89,4 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
 	createInstanceInfo.ppEnabledExtensionNames = (const char *const *) extensions.Data();
 }
+#endif

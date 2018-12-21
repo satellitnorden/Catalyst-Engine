@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -37,3 +38,4 @@ private:
 	void CreateSamplerCreateInfo(VkSamplerCreateInfo &samplerCreateInfo, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) const NOEXCEPT;
 
 };
+#endif

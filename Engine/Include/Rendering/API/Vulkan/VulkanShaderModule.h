@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -48,3 +49,4 @@ private:
 	void CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const void* const shaderData, const uint64 shaderDataSize) const NOEXCEPT;
 
 };
+#endif

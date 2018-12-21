@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanErrorReporting.h>
 
@@ -54,4 +55,5 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 
 	return VK_FALSE;
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanSurface.h>
 
@@ -20,3 +21,4 @@ void VulkanSurface::Release() NOEXCEPT
 	//Destroy the Vulkan surface.
 	vkDestroySurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), _VulkanSurface, nullptr);
 }
+#endif

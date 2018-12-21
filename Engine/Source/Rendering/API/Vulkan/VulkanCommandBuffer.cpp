@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanCommandBuffer.h>
 
@@ -315,3 +316,4 @@ void VulkanCommandBuffer::CreateSecondaryCommandBufferBeginInfo(VkCommandBufferB
 	commandBufferBeginInfo.flags = commandBufferUsageFlags;
 	commandBufferBeginInfo.pInheritanceInfo = inheritanceInfo;
 }
+#endif

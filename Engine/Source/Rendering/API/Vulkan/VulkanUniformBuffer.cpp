@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanUniformBuffer.h>
 
@@ -40,3 +41,4 @@ void VulkanUniformBuffer::UploadData(const void *RESTRICT newData) const NOEXCEP
 	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<uint64>(_UniformBufferSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory);
 }
+#endif

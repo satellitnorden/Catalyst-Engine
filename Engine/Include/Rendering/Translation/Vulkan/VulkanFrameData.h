@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -81,3 +82,4 @@ private:
 	DynamicArray<VulkanFence *RESTRICT> _Fences;
 
 };
+#endif

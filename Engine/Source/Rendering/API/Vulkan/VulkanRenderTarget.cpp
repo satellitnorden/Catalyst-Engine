@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/API/Vulkan/VulkanRenderTarget.h>
 
@@ -42,3 +43,4 @@ void VulkanRenderTarget::Release() NOEXCEPT
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
 }
+#endif
