@@ -11,7 +11,7 @@ DEFINE_SINGLETON(PhysXPhysicsSystem);
 void PhysXPhysicsSystem::InitializeSystem() NOEXCEPT
 {
 	//Create the foundation.
-	//_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _AllocatorCallback, _ErrorCallback);
+	_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _AllocatorCallback, _ErrorCallback);
 }
 
 /*
