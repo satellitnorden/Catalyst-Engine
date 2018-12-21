@@ -127,9 +127,9 @@ void RenderingSystem::PostInitializeSystem()
 }
 
 /*
-*	Updates the rendering system synchronously during the rendering update phase.
+*	Updates the rendering system synchronously.
 */
-void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();

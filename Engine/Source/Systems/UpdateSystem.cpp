@@ -14,50 +14,6 @@ DEFINE_SINGLETON(UpdateSystem);
 *	Defines an update system phase.
 */
 #define DEFINE_UPDATE_SYSTEM_PHASE(PHASE)																				\
-void UpdateSystem::Pre ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT				\
-{																														\
-	for (AsynchronousUpdateData &data : _Asynchronous ## PHASE ## s)													\
-	{																													\
-		data._Context = context;																						\
-		data._Task._Arguments = &data;																					\
-		TaskSystem::Instance->ExecuteTask(&data._Task);																	\
-	}																													\
-}																														\
-																														\
-void UpdateSystem::Post ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT				\
-{																														\
-	for (uint64 i = 0; i < _Synchronous ## PHASE ## s.Size();)															\
-	{																													\
-		if (!_Synchronous ## PHASE ## s[i]->PHASE ## Synchronous(context))												\
-		{																												\
-			_Synchronous ## PHASE ## s.EraseAt(i);																		\
-		}																												\
-																														\
-		else																											\
-		{																												\
-			++i;																										\
-		}																												\
-	}																													\
-																														\
-	for (AsynchronousUpdateData &data : _Asynchronous ## PHASE ## s)													\
-	{																													\
-		data._Task.WaitFor();																							\
-	}																													\
-																														\
-	for (uint64 i = 0; i < _Asynchronous ## PHASE ## s.Size();)															\
-	{																													\
-		if (_Asynchronous ## PHASE ## s[i]._ShouldDeRegister)															\
-		{																												\
-			_Asynchronous ## PHASE ## s.EraseAt(i);																		\
-		}																												\
-																														\
-		else																											\
-		{																												\
-			++i;																										\
-		}																												\
-	}																													\
-}																														\
-																														\
 void UpdateSystem::RegisterSynchronous ## PHASE(Updateable *const RESTRICT newUpdate)									\
 {																														\
 	_Synchronous ## PHASE ## s.EmplaceSlow(newUpdate);																	\
@@ -80,3 +36,47 @@ void UpdateSystem::RegisterAsynchronous ## PHASE(Updateable *const RESTRICT newU
 
 //Define the update system phases.
 DEFINE_UPDATE_SYSTEM_PHASE(LogicUpdate);
+
+/*
+*	Updates the update system synchronously.
+*/
+void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	for (AsynchronousUpdateData &data : _AsynchronousLogicUpdates)
+	{
+		data._Context = context;
+		data._Task._Arguments = &data;
+		TaskSystem::Instance->ExecuteTask(&data._Task);
+	}
+
+	for (uint64 i = 0; i < _SynchronousLogicUpdates.Size();)
+	{
+		if (!_SynchronousLogicUpdates[i]->LogicUpdateSynchronous(context))
+		{
+			_SynchronousLogicUpdates.EraseAt(i);
+		}
+		
+		else
+		{
+			++i;
+		}
+	}
+	
+	for (AsynchronousUpdateData &data : _AsynchronousLogicUpdates)
+	{
+		data._Task.WaitFor();
+	}
+
+	for (uint64 i = 0; i < _AsynchronousLogicUpdates.Size();)
+	{
+		if (_AsynchronousLogicUpdates[i]._ShouldDeRegister)
+		{
+			_AsynchronousLogicUpdates.EraseAt(i);
+		}
+		
+		else
+		{
+			++i;
+		}
+	}
+}

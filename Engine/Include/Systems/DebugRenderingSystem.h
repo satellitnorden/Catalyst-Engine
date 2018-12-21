@@ -106,14 +106,14 @@ public:
 	}
 
 	/*
-	*	Updates the debug rendering system synchronously during the rendering update phase.
+	*	Updates the debug rendering system system synchronously.
 	*/
-	void RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Updates the debug rendering system synchronously during the closing update phase.
+	*	Post-updates the update system synchronously.
 	*/
-	void ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the axis-aligned bounding box debug render data.

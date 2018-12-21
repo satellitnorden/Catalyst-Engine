@@ -26,9 +26,9 @@ void LevelOfDetailSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Updates the level of detail sustem during the culling update phase.
+*	Updates the level of detail system synchronously.
 */
-void LevelOfDetailSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void LevelOfDetailSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Fire off all level of detail tasks.
 	for (Task &task : _LevelOfDetailTasks)

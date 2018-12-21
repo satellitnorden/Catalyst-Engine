@@ -72,28 +72,27 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*	Pre-update phase.
 	*/
 	CatalystPlatform::PreUpdate(&context);
+	InputSystem::Instance->UpdateSystemSynchronous(&context);
 
 	/*
 	*	Update phase.
 	*/
-	InputSystem::Instance->UpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->UpdateSystemSynchronous(&context);
 	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
-	CullingSystem::Instance->CullingUpdateSystemSynchronous(&context);
-	LevelOfDetailSystem::Instance->CullingUpdateSystemSynchronous(&context);
+	CullingSystem::Instance->UpdateSystemSynchronous(&context);
+	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
+	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
 #endif
-	RenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
 
 	/*
 	*	Post-update phase.
 	*/
-	EntityCreationSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::Instance->ClosingUpdateSystemSynchronous(&context);
+	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 #endif
+	EntityCreationSystem::Instance->PostUpdateSystemSynchronous(&context);
 	CatalystPlatform::PostUpdate(&context);
 
 	/*

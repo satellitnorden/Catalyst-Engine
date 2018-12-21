@@ -27,9 +27,9 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the level of detail sustem during the culling update phase.
+	*	Updates the level of detail system synchronously.
 	*/
-	void CullingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Waits for the solid vegetation level of detail to finish.

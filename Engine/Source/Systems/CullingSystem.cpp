@@ -50,9 +50,9 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Updates the culling sustem during the culling update phase.
+*	Updates the culling system synchronously.
 */
-void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Fire off all culling tasks.
 	for (Task &task : _CullingTasks)

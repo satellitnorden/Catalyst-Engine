@@ -23,9 +23,9 @@
 DEFINE_SINGLETON(EntityCreationSystem);
 
 /*
-*	Updates the entity creation system synchronously during the closing update phase.
+*	Post-updates the entity creation system synchronously.
 */
-void EntityCreationSystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void EntityCreationSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Process the initialization queue.
 	ProcessInitializationQueue();

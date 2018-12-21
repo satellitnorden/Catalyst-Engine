@@ -15,8 +15,6 @@
 */
 #define DECLARE_UPDATE_SYSTEM_PHASE(PHASE)															\
 public:																								\
-	void Pre ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
-	void Post ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
 	void RegisterSynchronous ## PHASE(Updateable *const RESTRICT newUpdate);						\
 	void RegisterAsynchronous ## PHASE(Updateable *const RESTRICT newUpdate);						\
 private:																							\
@@ -57,6 +55,11 @@ public:
 	*	Default constructor.
 	*/
 	UpdateSystem() NOEXCEPT { }
+
+	/*
+	*	Updates the update system synchronously.
+	*/
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	//Declare the update system phases.
 	DECLARE_UPDATE_SYSTEM_PHASE(LogicUpdate);

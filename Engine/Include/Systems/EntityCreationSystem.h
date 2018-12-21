@@ -29,9 +29,9 @@ public:
 	}
 
 	/*
-	*	Updates the entity creation system synchronously during the closing update phase.
+	*	Post-updates the entity creation system synchronously.
 	*/
-	void ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Creates a new entity.

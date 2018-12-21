@@ -28,9 +28,9 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the culling sustem during the culling update phase.
+	*	Updates the culling system synchronously.
 	*/
-	void CullingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Waits for the grass vegetation culling to finish.
