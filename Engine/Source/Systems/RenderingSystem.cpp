@@ -28,7 +28,6 @@
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/Viewer.h>
-#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
@@ -53,8 +52,9 @@
 DEFINE_SINGLETON(RenderingSystem);
 
 //Define the current rendering system.
-#if defined(CATALYST_PLATFORM_WINDOWS) || defined(CATALYST_PLATFORM_ANDROID)
-	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
+#if defined(CATALYST_RENDERING_VULKAN)
+#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
+#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
 #endif
 
 /*
