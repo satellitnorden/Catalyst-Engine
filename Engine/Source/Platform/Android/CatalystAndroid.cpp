@@ -1,4 +1,4 @@
-#if defined(CATALYST_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID)
 //Header file.
 #include <Platform/Android/CatalystAndroid.h>
 

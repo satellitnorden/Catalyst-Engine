@@ -1,4 +1,4 @@
-#if defined(CATALYST_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID)
 
 #pragma once
 

@@ -1,4 +1,4 @@
-#if defined(CATALYST_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID)
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *

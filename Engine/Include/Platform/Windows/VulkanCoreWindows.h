@@ -1,4 +1,4 @@
-#if defined(CATALYST_WINDOWS)
+#if defined(CATALYST_PLATFORM_WINDOWS)
 
 #pragma once
 

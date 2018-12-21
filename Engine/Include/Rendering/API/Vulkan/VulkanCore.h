@@ -4,9 +4,9 @@
 #include <Core/Core/CatalystCore.h>
 
 //Platform.
-#if defined(CATALYST_WINDOWS)
+#if defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/VulkanCoreWindows.h>
-#elif defined(CATALYST_ANDROID)
+#elif defined(CATALYST_PLATFORM_ANDROID)
 	#include <Platform/Android/VulkanCoreAndroid.h>
 #endif
 
