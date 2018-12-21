@@ -49,6 +49,9 @@ private:
 	//The physics object.
 	physx::PxPhysics *RESTRICT _Physics;
 
+	//The scene object.
+	physx::PxScene *RESTRICT _Scene;
+
 	//The allocator callback.
 	PhysxAllocatorCallback _AllocatorCallback;
 
