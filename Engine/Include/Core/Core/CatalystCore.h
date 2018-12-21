@@ -21,14 +21,3 @@
 
 //Platform.
 #include <Platform/General/Platform.h>
-
-//Enumeration covering all update phases.
-enum class UpdatePhase : uint8
-{
-	OpeningUpdate,
-	LogicUpdate,
-	PhysicsUpdate,
-	CullingUpdate,
-	RenderingUpdate,
-	ClosingUpdate
-};

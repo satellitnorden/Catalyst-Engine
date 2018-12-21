@@ -74,7 +74,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Opening update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::OpeningUpdate;
 	UpdateSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
@@ -83,14 +82,12 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Logic update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::LogicUpdate;
 	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
 
 	/*
 	*	Physics update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::PhysicsUpdate;
 	UpdateSystem::Instance->PrePhysicsUpdateSystemSynchronous(&context);
 	PhysicsSystem::Instance->PhysicsUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostPhysicsUpdateSystemSynchronous(&context);
@@ -98,7 +95,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Culling update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::CullingUpdate;
 	UpdateSystem::Instance->PreCullingUpdateSystemSynchronous(&context);
 	CullingSystem::Instance->CullingUpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->CullingUpdateSystemSynchronous(&context);
@@ -107,7 +103,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Rendering update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::RenderingUpdate;
 	UpdateSystem::Instance->PreRenderingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
 	DebugRenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
@@ -118,7 +113,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Closing update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::ClosingUpdate;
 	UpdateSystem::Instance->PreClosingUpdateSystemSynchronous(&context);
 	EntityCreationSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)

@@ -45,14 +45,6 @@ public:
 	}
 
 	/*
-	*	Returns the current update phase.
-	*/
-	UpdatePhase GetCurrentUpdatePhase() const NOEXCEPT
-	{
-		return _CurrentUpdatePhase;
-	}
-
-	/*
 	*	Returns the delta time.
 	*/
 	float GetDeltaTime() const NOEXCEPT
@@ -98,9 +90,6 @@ private:
 
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
-
-	//Denotes the current update phase.
-	UpdatePhase _CurrentUpdatePhase;
 
 	//Denotes the delta time.
 	float _DeltaTime{ 0.0f };
