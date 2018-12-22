@@ -262,6 +262,12 @@
     <Filter Include="Physics\Source\Abstraction\PhysX">
       <UniqueIdentifier>{f1053b36-8c18-4466-bdb8-7c014bfe0224}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Include\Abstraction\Catalyst">
+      <UniqueIdentifier>{6b401e5a-c0ad-4431-a9e7-1c161ffa46ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source\Abstraction\Catalyst">
+      <UniqueIdentifier>{8b3d4183-0f9d-47a4-bcef-425a9ff3f0d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1158,6 +1164,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.h">
+      <Filter>Physics\Include\Abstraction\Catalyst</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1600,6 +1609,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
       <Filter>Physics\Source\Abstraction\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

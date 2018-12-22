@@ -91,9 +91,4 @@ private:
 	*/
 	void CastRayTerrain(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
 
-	/*
-	*	Simulates physics on dynamic physical entities.
-	*/
-	void SimulatePhysicsDynamicPhysical(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
 };

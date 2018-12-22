@@ -501,6 +501,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
