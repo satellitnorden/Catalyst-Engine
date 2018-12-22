@@ -132,6 +132,7 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXCPUDispatcher.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Master\PhysicsCore.h" />

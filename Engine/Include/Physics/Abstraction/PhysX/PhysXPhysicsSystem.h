@@ -9,6 +9,7 @@
 #include <Physics/Abstraction/PhysX/PhysxAllocatorCallback.h>
 #include <Physics/Abstraction/PhysX/PhysxErrorCallback.h>
 #include <Physics/Abstraction/PhysX/PhysxCore.h>
+#include <Physics/Abstraction/PhysX/PhysXCPUDispatcher.h>
 
 class PhysXPhysicsSystem final
 {
@@ -43,6 +44,15 @@ public:
 
 private:
 
+	//The CPU dispatcher.
+	PhysXCPUDispatcher _CPUDistpatcher;
+
+	//The allocator callback.
+	PhysxAllocatorCallback _AllocatorCallback;
+
+	//The error callback.
+	PhysxErrorCallback _ErrorCallback;
+
 	//The foundation object.
 	physx::PxFoundation *RESTRICT _Foundation;
 
@@ -52,11 +62,10 @@ private:
 	//The scene object.
 	physx::PxScene *RESTRICT _Scene;
 
-	//The allocator callback.
-	PhysxAllocatorCallback _AllocatorCallback;
-
-	//The error callback.
-	PhysxErrorCallback _ErrorCallback;
+	/*
+	*	Creates the scene description.
+	*/
+	void CreateSceneDescription(physx::PxSceneDesc *const RESTRICT sceneDescription) NOEXCEPT;
 
 };
 #endif
