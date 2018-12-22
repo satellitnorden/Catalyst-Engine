@@ -21,6 +21,14 @@ public:
 	}
 
 	/*
+	*	Allocates an aligned chunk of memory.
+	*/
+	RESTRICTED static void *const RESTRICT AllocateAlignedMemory(const uint64 alignment, const uint64 size) NOEXCEPT
+	{
+		return malloc(size);
+	}
+
+	/*
 	*	Reallocates a chunk of memory previously allocated with AllocateMemory().
 	*/
 	template <typename Type>

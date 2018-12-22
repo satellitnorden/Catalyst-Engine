@@ -1167,6 +1167,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.h">
       <Filter>Physics\Include\Abstraction\Catalyst</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h">
+      <Filter>Physics\Include\Abstraction\PhysX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

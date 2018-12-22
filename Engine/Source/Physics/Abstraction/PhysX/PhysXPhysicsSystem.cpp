@@ -2,6 +2,12 @@
 //Header file.
 #include <Physics/Abstraction/PhysX/PhysXPhysicsSystem.h>
 
+//Math.
+#include <Math/CatalystPhysicsMath.h>
+
+//Physics.
+#include <Physics/Abstraction/PhysX/PhysXAbstractionUtilities.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(PhysXPhysicsSystem);
 
@@ -24,6 +30,9 @@ void PhysXPhysicsSystem::InitializeSystem() NOEXCEPT
 
 	//Create the scene description.
 	physx::PxSceneDesc sceneDescription{ tolerancesScale };
+
+	sceneDescription.gravity = PhysXAbstractionUtilities::ToPhysXVector(CatalystPhysicsMathConstants::GRAVITATIONAL_DIRECTION * CatalystPhysicsMathConstants::GRAVITATIONAL_SPEED);
+	//sceneDescription.filterShader = physx::PxDefaultSimulationFilterShader;
 
 	//Create the scene.
 	_Scene = _Physics->createScene(sceneDescription);

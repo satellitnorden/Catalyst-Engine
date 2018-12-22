@@ -129,6 +129,7 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h" />
