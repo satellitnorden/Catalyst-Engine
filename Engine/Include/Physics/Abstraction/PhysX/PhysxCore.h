@@ -1,5 +1,10 @@
 #pragma once
 
+//Preprocessor defines.
+#if defined(CATALYST_FINAL)
+	#define NDEBUG
+#endif
+
 //Core.
 #include <Core/Core/CatalystCore.h>
 

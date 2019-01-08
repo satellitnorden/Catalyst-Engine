@@ -115,6 +115,7 @@
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h" />
+    <ClInclude Include="..\..\..\Include\Math\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector3.h" />

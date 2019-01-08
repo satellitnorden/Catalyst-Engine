@@ -1173,6 +1173,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXCPUDispatcher.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\SimplexNoise.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

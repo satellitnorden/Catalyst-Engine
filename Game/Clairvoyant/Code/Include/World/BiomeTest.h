@@ -5,7 +5,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/PerlinNoise.h>
+#include <Math/SimplexNoise.h>
 #include <Math/Vector3.h>
 
 class BiomeTest final
@@ -62,7 +62,7 @@ private:
 		const float Y{ position._Z / 100'000.0f };
 
 		//Calculate the height.
-		return PerlinNoise::GenerateOctaved(X, Y, RandomOffset(), 10, 2.0f, 0.5f);
+		return SimplexNoise::GenerateIQFBM(Vector2<float>(X, Y), 15, 2.0f, 0.5f, 0.0f);
 	}
 
 	/*

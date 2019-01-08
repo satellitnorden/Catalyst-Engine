@@ -207,7 +207,8 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MAXIMUM_WIND_SPEED{ 10.0f };
 
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
-	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.025f };
+	//constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.025f };
+	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
 
 	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.2f };
 	constexpr float MAXIMUM_DEPTH_OF_FIELD_DISTANCEY{ 49'152.0f };
