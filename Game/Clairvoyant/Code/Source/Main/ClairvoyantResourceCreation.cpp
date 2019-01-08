@@ -93,9 +93,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 	}
 
 	CreateGrassVegetationResourceCollection();
-	//CreateSolidVegetationResourceCollection();
-	//CreateLocationResourceCollection();
-	//CreateTerrainResourceCollection();
+	CreateSolidVegetationResourceCollection();
+	CreateLocationResourceCollection();
+	CreateTerrainResourceCollection();
 #endif
 }
 
