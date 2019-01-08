@@ -50,25 +50,27 @@ public:
 	/*
 	*	Generates a value with derivaties in the range [-1.0f, 1.0f] at the given coordinates.
 	*/
-	FORCE_INLINE static NO_DISCARD Vector3<float> GenerateDerivaties(const Vector2<float> &coordinates, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float> GenerateDerivaties(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
 	{
 		//Define constants.,
 		constexpr float F2{ 0.366025403f };
 		constexpr float G2{ 0.211324865f };
 
+		Vector2<float> seededCoordinate{ coordinate + seed };
+
 		float n0, n1, n2;
 
-		float s = (coordinates._X + coordinates._Y) * F2;
-		float xs = coordinates._X + s;
-		float ys = coordinates._Y + s;
+		float s = (seededCoordinate._X + seededCoordinate._Y) * F2;
+		float xs = seededCoordinate._X + s;
+		float ys = seededCoordinate._Y + s;
 		int32 i = CatalystBaseMath::Floor<int32>(xs);
 		int32 j = CatalystBaseMath::Floor<int32>(ys);
 
 		float t = static_cast<float>(i + j) * G2;
 		float X0 = i - t;
 		float Y0 = j - t;
-		float x0 = coordinates._X - X0;
-		float y0 = coordinates._Y - Y0;
+		float x0 = seededCoordinate._X - X0;
+		float y0 = seededCoordinate._Y - Y0;
 
 		int32 i1, j1;
 		if (x0 > y0) { i1 = 1; j1 = 0; }

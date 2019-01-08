@@ -10,6 +10,9 @@
 #include <Rendering/Engine/CPUTexture2D.h>
 #include <Rendering/Engine/TextureData.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Terrain.
 #include <Terrain/TerrainCore.h>
 #include <Terrain/TerrainProperties.h>
