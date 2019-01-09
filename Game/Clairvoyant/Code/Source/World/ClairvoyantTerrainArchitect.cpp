@@ -31,8 +31,8 @@ namespace ClairvoyantTerrainArchitectConstants
 	constexpr float TERRAIN_MINIMUM_FLATNESS{ 0.5f };
 	constexpr float TERRAIN_MAXIMUM_FLATNESS{ 1.0f };
 
-	constexpr float TERRAIN_MINIMUM_GAIN{ 0.4f };
-	constexpr float TERRAIN_MAXIMUM_GAIN{ 0.6f };
+	constexpr float TERRAIN_MINIMUM_GAIN{ 0.425f };
+	constexpr float TERRAIN_MAXIMUM_GAIN{ 0.575f };
 
 	constexpr float TERRAIN_MINIMUM_HEIGHT_OVER_WATER{ 0.0f };
 	constexpr float TERRAIN_MAXIMUM_HEIGHT_OVER_WATER{ 0.5f };
