@@ -5,14 +5,11 @@
 #include <Core/Algorithms/HashAlgorithms.h>
 #include <Core/Containers/StaticArray.h>
 
+//Clairvoyant.
+#include <World/BiomeKingsmeadow.h>
+
 //Math.
 #include <Math/PerlinNoise.h>
-
-//World.
-#include <World/BiomeTest.h>
-#include <World/BiomeDesert.h>
-#include <World/BiomeGrass.h>
-#include <World/BiomeSnow.h>
 
 namespace ClairvoyantBiomeArchitectConstants
 {
@@ -24,6 +21,9 @@ namespace ClairvoyantBiomeArchitectConstants
 */
 void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT
 {
+	weights->At(UNDERLYING(ClairvoyantBiome::Crossroads)) = 1.0f;
+
+	/*
 	//Calculate the biome step.
 	constexpr float BIOME_STEP{ 1.0f / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };
 
@@ -40,50 +40,28 @@ void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &
 	//Calculate the weights.
 	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
 	{
-		if (true)
-		{
-			weights->At(biome) = biome == UNDERLYING(ClairvoyantBiome::Test) ? 1.0f : 0.0f;
-		}
-
-		else
-		{
-			weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
-		}
+		weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
 	}
+	*/
 }
 
 /*
-*	Returns the biome height at the given position.
+*	Returns the material of the given biome of that given position.
 */
-float ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
+uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
 {
 	switch (biome)
 	{
-		case ClairvoyantBiome::Test:
+		case ClairvoyantBiome::Crossroads:
 		{
-			return BiomeTest::Height(position);
-		}
-
-		case ClairvoyantBiome::Desert:
-		{
-			return BiomeDesert::Height(position);
-		}
-
-		case ClairvoyantBiome::Grass:
-		{
-			return BiomeGrass::Height(position);
-		}
-
-		case ClairvoyantBiome::Snow:
-		{
-			return BiomeSnow::Height(position);
+			return BiomeKingsmeadow::Material(position);
 		}
 
 		default:
 		{
-			ASSERT(false, "There should probably be a case here. ):");
+			ASSERT(false, "Invalid case!");
 
-			return 0.0f;
+			return 0;
 		}
 	}
 }

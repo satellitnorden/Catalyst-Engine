@@ -22,8 +22,8 @@ public:
 	static void GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT;
 
 	/*
-	*	Returns the biome height at the given position.
+	*	Returns the material of the given biome of that given position.
 	*/
-	static float GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
+	static uint8 GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
 
 };

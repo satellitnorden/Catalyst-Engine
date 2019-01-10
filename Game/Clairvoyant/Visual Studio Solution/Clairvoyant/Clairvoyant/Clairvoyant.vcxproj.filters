@@ -545,19 +545,10 @@
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\BiomeDesert.h">
-      <Filter>Clairvoyant Code\World\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\BiomeSnow.h">
-      <Filter>Clairvoyant Code\World\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\BiomeGrass.h">
-      <Filter>Clairvoyant Code\World\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\BiomeTest.h">
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeKingsmeadow.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>
