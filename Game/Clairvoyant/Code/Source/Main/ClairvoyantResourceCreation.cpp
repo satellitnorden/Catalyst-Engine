@@ -105,6 +105,71 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 void ClairvoyantResourceCreation::CreateGrassVegetationIntermediateResources() NOEXCEPT
 {
 	{
+		//Create the flower 1 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_1_Material";
+		parameters._ID = "GrassVegetation_Flower_1_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_1\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_1\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
+	{
+		//Create the flower 2 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_2_Material";
+		parameters._ID = "GrassVegetation_Flower_2_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_2\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_2\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_2\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
+	{
+		//Create the flower 3 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_3_Material";
+		parameters._ID = "GrassVegetation_Flower_3_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_3\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_3\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_3\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
+	{
+		//Create the flower 4 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_4_Material";
+		parameters._ID = "GrassVegetation_Flower_4_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_4\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_4\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_4\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
+	{
+		//Create the flower 5 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_5_Material";
+		parameters._ID = "GrassVegetation_Flower_5_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_5\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_5\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Flower_5\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
+	{
 		//Create the grass 1 material.
 		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Grass_1_Material";
@@ -137,6 +202,11 @@ void ClairvoyantResourceCreation::CreateGrassVegetationResourceCollection() NOEX
 	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_2_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_3_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_4_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_5_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Grass_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Default_Model.cr");
 

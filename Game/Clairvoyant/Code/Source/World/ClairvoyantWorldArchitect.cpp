@@ -52,135 +52,6 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 
 	//Register the Clairvoyant world architect for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
-
-	{
-		//Create the barrels!
-		constexpr StaticArray<Vector3<float>, 5> positions
-		{
-			Vector3<float>(-0.55f, 0.0f, -0.55f),
-			Vector3<float>(-0.55f, 0.0f, 0.55f),
-			Vector3<float>(0.55f, 0.0f, 0.55f),
-			Vector3<float>(0.55f, 0.0f, -0.55f),
-			Vector3<float>(0.0f, 1.25f, 0.0f)
-		};
-
-		for (uint8 i{ 0 }; i < 5; ++i)
-		{
-			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
-
-			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_PhysicalFlags = PhysicalFlag::Physical;
-			data->_Model = ResourceLoader::GetPhysicalModel(HashString("BarrelModel"));
-			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BarrelMaterial"));
-			float terrainHeight;
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
-			data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
-			data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
-			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_SimulatePhysics = false;
-			data->_Mass = 0.0f;
-			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-
-			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
-		}
-	}
-	
-	{
-		//Create the boxes!
-		constexpr StaticArray<Vector3<float>, 5> positions
-		{
-			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, -0.55f),
-			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(-0.55f, 0.0f, 0.55f),
-			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, 0.55f),
-			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.55f, 0.0f, -0.55f),
-			Vector3<float>(10.0f, 0.0f, 0.0f) + Vector3<float>(0.0f, 1.f, 0.0f)
-		};
-
-		for (uint8 i{ 0 }; i < 5; ++i)
-		{
-			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
-
-			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_PhysicalFlags = PhysicalFlag::Physical;
-			data->_Model = ResourceLoader::GetPhysicalModel(HashString("BoxModel"));
-			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BoxMaterial"));
-			float terrainHeight;
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
-			data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
-			data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
-			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_SimulatePhysics = false;
-			data->_Mass = 0.0f;
-			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-
-			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
-		}
-	}
-
-	{
-		//Create... More boxes!
-		constexpr StaticArray<Vector3<float>, 27> positions
-		{
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 0.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
-
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 2.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
-
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(-2.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(0.0f, 0.0f, 2.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, -2.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 0.0f),
-			Vector3<float>(-10.0f, 4.5f, 0.0f) + Vector3<float>(2.0f, 0.0f, 2.0f),
-		};
-
-		for (uint8 i{ 0 }; i < 27; ++i)
-		{
-			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
-
-			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_PhysicalFlags = PhysicalFlag::Physical;
-			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
-			data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
-			float terrainHeight;
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
-			data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
-			data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
-			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_SimulatePhysics = false;
-			data->_Mass = 0.0f;
-			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-
-			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
-		}
-	}
 }
 
 /*
@@ -203,12 +74,11 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MINIMUM_SUN_INTENSITY{ 1.0f };
 	constexpr float MAXIMUM_SUN_INTENSITY{ 100.0f };
 
-	constexpr float MINIMUM_WIND_SPEED{ 1.0f };
-	constexpr float MAXIMUM_WIND_SPEED{ 10.0f };
+	constexpr float MINIMUM_WIND_SPEED{ 2.0f };
+	constexpr float MAXIMUM_WIND_SPEED{ 20.0f };
 
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
-	//constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.025f };
-	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
+	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.025f };
 
 	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.2f };
 	constexpr float MAXIMUM_DEPTH_OF_FIELD_DISTANCEY{ 49'152.0f };
