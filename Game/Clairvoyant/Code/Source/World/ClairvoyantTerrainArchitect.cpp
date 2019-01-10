@@ -6,6 +6,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/Matrix2.h>
 #include <Math/SimplexNoise.h>
 #include <Math/Vector3.h>
 #include <Math/Vector4.h>
@@ -29,9 +30,6 @@ namespace ClairvoyantTerrainArchitectConstants
 
 	constexpr float TERRAIN_MINIMUM_FLATNESS{ 0.5f };
 	constexpr float TERRAIN_MAXIMUM_FLATNESS{ 1.0f };
-
-	constexpr float TERRAIN_MINIMUM_GAIN{ 0.475f };
-	constexpr float TERRAIN_MAXIMUM_GAIN{ 0.525f  };
 
 	constexpr float TERRAIN_MINIMUM_HEIGHT_OVER_WATER{ 0.0f };
 	constexpr float TERRAIN_MAXIMUM_HEIGHT_OVER_WATER{ 0.5f };
@@ -244,17 +242,17 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3<float> &position, float *const RESTRICT height) NOEXCEPT
 {
 	//Define constants.
-	constexpr float LACUNARITY{ 2.0f };
+	constexpr float GAIN{ 0.5f };
 	constexpr float NOISE_SCALE{ 100'000.0f };
+	constexpr Matrix2 TRANSFORMATION{ 0.8f, -0.6f, 0.6f, 0.8f };
 	constexpr uint8 OCTAVES{ 12 };
 
 	//Calculate the coordinate.
-	const Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
+	Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
 
 	//Generate properties.
 	const float flatness{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_FLATNESS, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_FLATNESS, (SimplexNoise::Generate(coordinate, GetRandomOffset(0)) + 1.0f) * 0.5f) };
-	const float gain{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_GAIN, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_GAIN, (SimplexNoise::Generate(coordinate, GetRandomOffset(1)) + 1.0f) * 0.5f) };
-	const float heighOverWater{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_HEIGHT_OVER_WATER, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_HEIGHT_OVER_WATER, (SimplexNoise::Generate(coordinate, GetRandomOffset(2)) + 1.0f) * 0.5f) };
+	const float heighOverWater{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_HEIGHT_OVER_WATER, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_HEIGHT_OVER_WATER, (SimplexNoise::Generate(coordinate, GetRandomOffset(1)) + 1.0f) * 0.5f) };
 	
 	//Start off at zero.
 	*height = 0.0f;
@@ -267,15 +265,16 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 
 	for (uint8 i{ 0 }; i < OCTAVES; ++i)
 	{
-		Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate * frequency, GetRandomOffset(i + 3)) };
+		Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 2)) };
 
 		derivaties._X += noise._Y;
 		derivaties._Y += noise._Z;
 
 		*height += amplitude * noise._X / (1.0f + derivaties._X * derivaties._X + derivaties._Y * derivaties._Y);
 
-		frequency *= LACUNARITY;
-		amplitude *= gain;
+		amplitude *= GAIN;
+
+		coordinate = TRANSFORMATION * coordinate * 2.0f;
 	}
 
 	//Apply the height.

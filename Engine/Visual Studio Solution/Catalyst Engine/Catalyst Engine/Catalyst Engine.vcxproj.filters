@@ -1176,6 +1176,9 @@
     <ClInclude Include="..\..\..\Include\Math\SimplexNoise.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Matrix2.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -112,6 +112,7 @@
     <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\GridPoint3.h" />
+    <ClInclude Include="..\..\..\Include\Math\Matrix2.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h" />
