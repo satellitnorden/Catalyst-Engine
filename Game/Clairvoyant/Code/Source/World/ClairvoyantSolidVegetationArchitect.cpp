@@ -24,7 +24,7 @@ namespace ClairvoyantSolidVegetationArchitectConstants
 void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 {
 	{
-		//Add the broken fence solid vegetation type.
+		//Add the rock solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
 		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
@@ -33,7 +33,7 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._Density = 0.0001f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(0.75f, 0.0f, 0.05f, 0.1f, Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(0.7f, 0.0f, 0.05f, 0.1f, Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
@@ -43,6 +43,30 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Rock_1_Model"));
 
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("SolidVegetation_Rock_1_Material")) };
+
+		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
+	}
+
+	{
+		//Add the rock solid vegetation type.
+		SolidVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantSolidVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
+		properties._CutoffDistance = 1'000.0f;
+		properties._Density = 0.0001f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldUtilities::GenerateTransformation(0.8f, 0.0f, 0.05f, 0.1f, Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+
+		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Tree_1_Model"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Tree_1_Model"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Tree_1_Model"));
+
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("SolidVegetation_Tree_1_Material")) };
 
 		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
 	}
