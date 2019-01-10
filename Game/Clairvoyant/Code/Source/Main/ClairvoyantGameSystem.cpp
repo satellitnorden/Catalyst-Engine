@@ -39,7 +39,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 
 	//Initialize the Clairvoyant grass vegetation architect.
-	//ClairvoyantGrassVegetationArchitect::Initialize();
+	ClairvoyantGrassVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant location architect.
 	//ClairvoyantLocationArchitect::Initialize();
