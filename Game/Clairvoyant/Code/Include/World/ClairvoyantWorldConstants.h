@@ -16,7 +16,8 @@ namespace ClairvoyantWorldConstants
 //Enumeration covering all Clairvoyant biomes.
 enum class ClairvoyantBiome : uint8
 {
-	Crossroads,
+	KingsMeadow,
+	NorthHollow,
 
 	NumberOfClairvoyantBiomes
 };
@@ -26,6 +27,7 @@ enum class ClairvoyantTerrainMaterial : uint8
 {
 	Grass_1,
 	Rock_1,
+	Snow_1,
 
 	NumberOfClairvoyantTerrainMaterials
 };

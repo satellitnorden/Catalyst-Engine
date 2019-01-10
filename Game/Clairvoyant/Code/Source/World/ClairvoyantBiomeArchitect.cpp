@@ -6,7 +6,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Clairvoyant.
-#include <World/BiomeKingsmeadow.h>
+#include <World/BiomeKingsMeadow.h>
+#include <World/BiomeNorthHollow.h>
 
 //Math.
 #include <Math/PerlinNoise.h>
@@ -17,32 +18,59 @@ namespace ClairvoyantBiomeArchitectConstants
 }
 
 /*
+*	Returns the biome weight for the given biome at the given position.
+*/
+float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const Vector3<float> &position, const ClairvoyantBiome biome) NOEXCEPT
+{
+	//Get the height at the position.
+	float height;
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &height);
+
+	//Start off at zero.
+	float weight{ 0.0f };
+
+	//Add the height increase.
+	weight += GetBiomeHeightWeightIncrease(biome, height);
+
+	//Return the weight.
+	return weight;
+}
+
+/*
+*	Returns the biome height weight increase for the given biome.
+*/
+float ClairvoyantBiomeArchitect::GetBiomeHeightWeightIncrease(const ClairvoyantBiome biome, const float height) NOEXCEPT
+{
+	switch (biome)
+	{
+		case ClairvoyantBiome::KingsMeadow:
+		{
+			return BiomeKingsMeadow::HeightWeightIncrease(height);
+		}
+
+		case ClairvoyantBiome::NorthHollow:
+		{
+			return BiomeNorthHollow::HeightWeightIncrease(height);
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return 0.0f;
+		}
+	}
+}
+
+/*
 *	Returns the biome weight at the given position.
 */
 void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT
 {
-	weights->At(UNDERLYING(ClairvoyantBiome::Crossroads)) = 1.0f;
-
-	/*
-	//Calculate the biome step.
-	constexpr float BIOME_STEP{ 1.0f / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };
-
-	//Calculate the random offset.
-	static const float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1'000.0f) };
-
-	//Calculate the coordinates.
-	const float coordinateX{ position._X / (ClairvoyantBiomeArchitectConstants::BIOME_SIZE) };
-	const float coordinateY{ position._Z / (ClairvoyantBiomeArchitectConstants::BIOME_SIZE) };
-
-	//Calculate the noise.
-	const float noise{ CatalystBaseMath::SmoothStep<1>(PerlinNoise::GenerateNormalized(coordinateX, coordinateY, randomOffset)) };
-
-	//Calculate the weights.
-	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
+	for (uint8 i{ 0 }; i < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++i)
 	{
-		weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
+		weights->At(i) = GetBiomeWeightAtPosition(position, static_cast<ClairvoyantBiome>(i));
 	}
-	*/
 }
 
 /*
@@ -52,9 +80,14 @@ uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBio
 {
 	switch (biome)
 	{
-		case ClairvoyantBiome::Crossroads:
+		case ClairvoyantBiome::KingsMeadow:
 		{
-			return BiomeKingsmeadow::Material(position);
+			return BiomeKingsMeadow::Material(position);
+		}
+
+		case ClairvoyantBiome::NorthHollow:
+		{
+			return BiomeNorthHollow::Material(position);
 		}
 
 		default:

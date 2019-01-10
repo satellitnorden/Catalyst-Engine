@@ -17,6 +17,16 @@ class ClairvoyantBiomeArchitect final
 public:
 
 	/*
+	*	Returns the biome weight for the given biome at the given position.
+	*/
+	static float GetBiomeWeightAtPosition(const Vector3<float> &position, const ClairvoyantBiome biome) NOEXCEPT;
+
+	/*
+	*	Returns the biome height weight increase for the given biome at the given position.
+	*/
+	static float GetBiomeHeightWeightIncrease(const ClairvoyantBiome biome, const float height) NOEXCEPT;
+
+	/*
 	*	Returns the biome weights at the given position.
 	*/
 	static void GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT;

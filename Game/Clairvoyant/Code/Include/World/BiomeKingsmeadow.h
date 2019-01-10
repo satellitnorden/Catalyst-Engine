@@ -14,7 +14,7 @@
 //Systems.
 #include <Systems/TerrainSystem.h>
 
-class BiomeKingsmeadow final
+class BiomeKingsMeadow final
 {
 
 public:
@@ -38,40 +38,12 @@ public:
 		}
 	}
 
-private:
-
 	/*
-	*	Returns a random seed.
+	*	Returns the height weight increase.
 	*/
-	static float RandomSeed(const uint8 index) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float HeightWeightIncrease(const float height) NOEXCEPT
 	{
-		switch (index)
-		{
-			case 0:
-			{
-				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return seed;
-			}
-
-			case 1:
-			{
-				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return seed;
-			}
-
-			case 2:
-			{
-				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return seed;
-			}
-		}
-
-		ASSERT(false, "Invalid case!");
-
-		return 0.0f;
+		return height < 10'000.0f ? 1.0f : 0.0f;
 	}
 
 };

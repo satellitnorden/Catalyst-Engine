@@ -235,6 +235,7 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 	//Register all terrain materials.
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 1.0f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Rock_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Rock_1_Material")), 1.0f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Snow_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")), 1.0f);
 }
 
 /*
@@ -287,12 +288,13 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 	StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> biomeWeights;
 	ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(worldPosition, &biomeWeights);
 
-	Pair<float, uint8> highestBiomeWeight{ 0.0f, 0 };
+	Pair<float, uint8> highestBiomeWeight{ -FLOAT_MAXIMUM, 0 };
 
 	for (uint8 i{ 0 }; i < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++i)
 	{
-		if (biomeWeights[i] > 0.0f && biomeWeights[i] > highestBiomeWeight._First)
+		if (biomeWeights[i] > highestBiomeWeight._First)
 		{
+			highestBiomeWeight._First = biomeWeights[i];
 			highestBiomeWeight._Second = ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(static_cast<ClairvoyantBiome>(i), worldPosition);
 		}
 	}

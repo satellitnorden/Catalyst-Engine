@@ -11,8 +11,8 @@
 #include <OceanMaterialCreator.h>
 
 //Preprocessor defines.
-#define CREATE_INTERMEDIATE_RESOURCES true
-#define CREATE_RESOURCE_COLLECTION true
+#define CREATE_INTERMEDIATE_RESOURCES false
+#define CREATE_RESOURCE_COLLECTION false
 
 /*
 *	Creates resources for the Clairvoyant project.
@@ -291,6 +291,23 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 	}
+
+	{
+		//Create the terrain snow 1 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material";
+		parameters._ID = "Terrain_Snow_1_Material";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = nullptr;
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
 }
 
 /*
@@ -304,6 +321,7 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection";
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Rock_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
