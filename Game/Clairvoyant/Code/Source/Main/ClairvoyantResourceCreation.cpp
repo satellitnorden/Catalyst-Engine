@@ -72,8 +72,8 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	CreateGrassVegetationIntermediateResources();
-	//CreateSolidVegetationIntermediateResources();
+	//CreateGrassVegetationIntermediateResources();
+	CreateSolidVegetationIntermediateResources();
 	//CreateLocationIntermediateResources();
 	//CreateTerrainIntermediateResources();
 #endif
@@ -92,8 +92,8 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	CreateGrassVegetationResourceCollection();
-	//CreateSolidVegetationResourceCollection();
+	//CreateGrassVegetationResourceCollection();
+	CreateSolidVegetationResourceCollection();
 	//CreateLocationResourceCollection();
 	//CreateTerrainResourceCollection();
 #endif
@@ -219,12 +219,27 @@ void ClairvoyantResourceCreation::CreateGrassVegetationResourceCollection() NOEX
 void ClairvoyantResourceCreation::CreateSolidVegetationIntermediateResources() NOEXCEPT
 {
 	{
-		//Create the broken fence model.
+		//Create the rock 1 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Material";
+		parameters._ID = "SolidVegetation_Rock_1_Material";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\AmbientOcclusion.png";
+		parameters._VariantFile = nullptr;
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the rock 1 model.
 		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
 
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\BrokenFenceModel";
-		parameters._ID = "BrokenFenceModel";
-		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\BrokenFence.fbx";
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Model";
+		parameters._ID = "SolidVegetation_Rock_1_Model";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\Model.fbx";
 
 		PhysicalModelCreator::CreatePhysicalModel(parameters);
 	}
@@ -239,7 +254,8 @@ void ClairvoyantResourceCreation::CreateSolidVegetationResourceCollection() NOEX
 	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection";
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\BrokenFenceModel.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Model.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
