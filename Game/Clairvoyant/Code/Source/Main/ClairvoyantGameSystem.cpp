@@ -42,7 +42,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	ClairvoyantGrassVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant location architect.
-	//ClairvoyantLocationArchitect::Initialize();
+	ClairvoyantLocationArchitect::Initialize();
 
 	//Initialize the Clairvoyant solid vegetation architect.
 	ClairvoyantSolidVegetationArchitect::Initialize();

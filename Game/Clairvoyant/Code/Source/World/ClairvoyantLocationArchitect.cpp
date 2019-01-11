@@ -33,150 +33,62 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 	{
 		//Find the most appropriate position.
 		Vector3<float> position{ FindMostAppropriatePosition(AxisAlignedBoundingBox(box._Minimum + Vector3<float>(500.0f, 0.0f, 500.0f), box._Maximum - Vector3<float>(500.0f, 0.0f, 500.0f)), 1'000.0f) };
-		position._Y += 500.0f;
 
+		constexpr uint8 NUMBER_OF_BUILDINGS{ 100 };
+
+		//Create some "buildings"!
+		DynamicArray<Vector3<float>> previousPositions;
+
+		for (uint8 i{ 0 }; i < NUMBER_OF_BUILDINGS; ++i)
 		{
-			//Create the tower!
-			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
-
-			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_PhysicalFlags = PhysicalFlag::Physical;
-			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
-			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
-			data->_Position = position;
-			data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3<float>(50.0f, 1'000.0f, 50.0f);
-			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_SimulatePhysics = false;
-			data->_Mass = 0.0f;
-			data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-
-			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
-
-			entities->EmplaceSlow(cube);
-		}
-
-		{
-			constexpr uint8 NUMBER_OF_BUILDINGS{ 20 };
-
-			//Create some more "buildings"!
-			DynamicArray<Vector3<float>> previousPositions;
-
-			previousPositions.EmplaceSlow(position);
-
-			for (uint8 i{ 0 }; i < NUMBER_OF_BUILDINGS; ++i)
+			for (uint8 j{ 0 }; j < 10; ++j)
 			{
-				for (uint8 j{ 0 }; j < 10; ++j)
+				//Generate a random position.
+				const Vector3<float> testPosition{ CatalystBaseMath::RandomFloatInRange(position._X - 500.0f, position._X + 500.0f), 0.0f, CatalystBaseMath::RandomFloatInRange(position._Z - 500.0f, position._Z + 500.0f) };
+
+				//If this position is too close to any other position, discard it.
+				bool tooClose{ false };
+
+				for (const Vector3<float> &previousPosition : previousPositions)
 				{
-					//Generate a random position.
-					const Vector3<float> testPosition{ CatalystBaseMath::RandomFloatInRange(position._X - 500.0f, position._X + 500.0f), 0.0f, CatalystBaseMath::RandomFloatInRange(position._Z - 500.0f, position._Z + 500.0f) };
-
-					//If this position is too close to any other position, discard it.
-					bool tooClose{ false };
-
-					for (const Vector3<float> &previousPosition : previousPositions)
+					if (Vector3<float>::LengthSquaredXZ(previousPosition - testPosition) < 12.5f * 12.5f)
 					{
-						if (Vector3<float>::LengthSquaredXZ(previousPosition - testPosition) < 52.5f * 52.5f)
-						{
-							tooClose = true;
-
-							break;
-						}
-					}
-
-					if (!tooClose)
-					{
-						//Create a "building" at this position.
-						DynamicPhysicalEntity *const RESTRICT building{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
-
-						DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-						data->_Properties = EntityInitializationData::EntityProperty::None;
-						data->_PhysicalFlags = PhysicalFlag::Physical;
-						data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
-						data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
-						data->_Position = testPosition;
-						TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
-						data->_Position._Y += 25.0f;
-						data->_Rotation = Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
-						data->_Scale = Vector3<float>(50.0f, 50.0f, 50.0f);
-						data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
-						data->_SimulatePhysics = false;
-						data->_Mass = 0.0f;
-						data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-
-						EntityCreationSystem::Instance->RequestInitialization(building, data, false);
-
-						entities->EmplaceSlow(building);
-						previousPositions.EmplaceSlow(data->_Position);
+						tooClose = true;
 
 						break;
 					}
 				}
+
+				if (!tooClose)
+				{
+					//Create a "building" at this position.
+					DynamicPhysicalEntity *const RESTRICT building{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+					DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+					data->_Properties = EntityInitializationData::EntityProperty::None;
+					data->_PhysicalFlags = PhysicalFlag::Physical;
+					data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+					data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+					data->_Position = testPosition;
+					TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
+					data->_Position._Y += 2.0f;
+					data->_Rotation = Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
+					data->_Scale = Vector3<float>(10.0f, 4.0f, 8.0f);
+					data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+					data->_SimulatePhysics = false;
+					data->_Mass = 0.0f;
+					data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+					EntityCreationSystem::Instance->RequestInitialization(building, data, false);
+
+					entities->EmplaceSlow(building);
+					previousPositions.EmplaceSlow(data->_Position);
+
+					break;
+				}
 			}
 		}
-
-		{
-			//Create the light!
-			constexpr StaticArray<Vector3<float>, 4> colors
-			{
-				Vector3<float>(1.0f, 0.0f, 0.0f),
-				Vector3<float>(0.0f, 1.0f, 1.0f),
-				Vector3<float>(1.0f, 0.1f, 0.0f),
-				Vector3<float>(0.1f, 0.0f, 1.0f)
-			};
-
-			PointLightEntity *const RESTRICT light{ EntityCreationSystem::Instance->CreateEntity<PointLightEntity>() };
-
-			PointLightInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<PointLightInitializationData>() };
-
-			data->_Enabled = true;
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_Color = colors[CatalystBaseMath::RandomIntegerInRange<uint64>(0, 3)];
-			data->_Position = position + Vector3<float>(0.0f, 600.0f, 0.0f);
-			data->_Intensity = 1.0f;
-			data->_AttenuationDistance = 2'500.0f;
-
-			EntityCreationSystem::Instance->RequestInitialization(light, data, false);
-
-			entities->EmplaceSlow(light);
-		}
-
-		{
-			constexpr StaticArray<Vector3<float>, 4> colors
-			{
-				Vector3<float>(1.0f, 0.0f, 0.0f),
-				Vector3<float>(0.0f, 1.0f, 1.0f),
-				Vector3<float>(1.0f, 0.1f, 0.0f),
-				Vector3<float>(0.1f, 0.0f, 1.0f)
-			};
-
-			//Create a particle system!
-			ParticleSystemEntity *const RESTRICT particles{ EntityCreationSystem::Instance->CreateEntity<ParticleSystemEntity>() };
-
-			ParticleSystemInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
-
-			data->_Properties = EntityInitializationData::EntityProperty::None;
-			data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
-			data->_ParticleSystemProperties._Properties = ParticleSystemProperty::AffectedByWind | ParticleSystemProperty::Looping;
-			data->_ParticleSystemProperties._FadeTime = 0.1f;
-			data->_ParticleSystemProperties._Lifetime = 1.0f;
-			data->_ParticleSystemProperties._SpawnFrequency = 0.0001f;
-			data->_ParticleSystemProperties._MinimumScale = Vector2<float>(1.25f, 1.25f);
-			data->_ParticleSystemProperties._MaximumScale = Vector2<float>(2.5f, 2.5f);
-			data->_ParticleSystemProperties._MinimumPosition = Vector3<float>(-25.0f, 0.0f, -25.0f);
-			data->_ParticleSystemProperties._MaximumPosition = Vector3<float>(25.0f, 0.0f, 25.0f);
-			data->_ParticleSystemProperties._MinimumVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
-			data->_ParticleSystemProperties._MaximumVelocity = Vector3<float>(0.0f, 500.0f, 0.0f);
-			data->_Position = position + Vector3<float>(0.0f, 500.0f, 0.0f);
-
-			EntityCreationSystem::Instance->RequestInitialization(particles, data, false);
-
-			entities->EmplaceSlow(particles);
-		}
-
 	}, 10'000.0f);
 }
 
