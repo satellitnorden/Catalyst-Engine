@@ -89,13 +89,13 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\EveningEnvironmentMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\DefaultOceanMaterial.cr");
 
-		//ResourceCollectionCreator::CreateResourceCollection(parameters);
+		ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	//CreateGrassVegetationResourceCollection();
+	CreateGrassVegetationResourceCollection();
 	CreateSolidVegetationResourceCollection();
-	//CreateLocationResourceCollection();
-	//CreateTerrainResourceCollection();
+	CreateLocationResourceCollection();
+	CreateTerrainResourceCollection();
 #endif
 }
 
