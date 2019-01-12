@@ -38,11 +38,8 @@ public:
 	/*
 	*	Returns the material for this biome.
 	*/
-	FORCE_INLINE static NO_DISCARD uint8 Material(const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD uint8 Material(const Vector3<float> &position, const float height, const Vector3<float> &normal) NOEXCEPT
 	{
-		Vector3<float> normal;
-		TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &normal);
-
 		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f)
 		{
 			return UNDERLYING(ClairvoyantTerrainMaterial::Grass_1);

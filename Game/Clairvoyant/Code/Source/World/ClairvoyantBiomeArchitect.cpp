@@ -36,18 +36,18 @@ void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &
 /*
 *	Returns the material of the given biome of that given position.
 */
-uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
+uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position, const float height, const Vector3<float> &normal) NOEXCEPT
 {
 	switch (biome)
 	{
 		case ClairvoyantBiome::KingsMeadow:
 		{
-			return BiomeKingsMeadow::Material(position);
+			return BiomeKingsMeadow::Material(position, height, normal);
 		}
 
 		case ClairvoyantBiome::NorthHollow:
 		{
-			return BiomeNorthHollow::Material(position);
+			return BiomeNorthHollow::Material(position, height, normal);
 		}
 
 		default:

@@ -25,7 +25,7 @@ public:
 	/*
 	*	Returns the material of the given biome of that given position.
 	*/
-	static uint8 GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
+	static uint8 GetBiomeMaterialAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position, const float height, const Vector3<float> &normal) NOEXCEPT;
 
 private:
 

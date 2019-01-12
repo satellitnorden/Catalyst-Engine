@@ -296,7 +296,7 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 		if (biomeWeights[i] > highestBiomeWeight._First)
 		{
 			highestBiomeWeight._First = biomeWeights[i];
-			highestBiomeWeight._Second = ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(static_cast<ClairvoyantBiome>(i), worldPosition);
+			highestBiomeWeight._Second = ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(static_cast<ClairvoyantBiome>(i), worldPosition, height, normal);
 		}
 	}
 
