@@ -20,7 +20,23 @@ class BiomeNorthHollow final
 public:
 
 	/*
-	*	Returns the biome material.
+	*	Returns the ideal precipitation for this biome.
+	*/
+	FORCE_INLINE static NO_DISCARD float IdealPrecipitation() NOEXCEPT
+	{
+		return 0.0f;
+	}
+
+	/*
+	*	Returns the ideal temperature for this biome.
+	*/
+	FORCE_INLINE static NO_DISCARD float IdealTemperature() NOEXCEPT
+	{
+		return 0.0f;
+	}
+
+	/*
+	*	Returns the material for this biome.
 	*/
 	FORCE_INLINE static NO_DISCARD uint8 Material(const Vector3<float> &position) NOEXCEPT
 	{
@@ -36,14 +52,6 @@ public:
 		{
 			return UNDERLYING(ClairvoyantTerrainMaterial::Rock_1);
 		}
-	}
-
-	/*
-	*	Returns the height weight increase.
-	*/
-	FORCE_INLINE static NO_DISCARD float HeightWeightIncrease(const float height) NOEXCEPT
-	{
-		return height < 10'000.0f ? 0.0f : 1.0f;
 	}
 
 };

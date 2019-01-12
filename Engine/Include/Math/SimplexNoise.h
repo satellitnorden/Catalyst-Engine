@@ -135,6 +135,14 @@ public:
 	}
 
 	/*
+	*	Generates a value in the range [0.0f, 1.0f] at the given coordinates.
+	*/
+	FORCE_INLINE static NO_DISCARD float GenerateNormalized(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
+	{
+		return (Generate(coordinate, seed) + 1.0f) * 0.5f;
+	}
+
+	/*
 	*	Generates a value with derivaties in the range [-1.0f, 1.0f] at the given coordinates.
 	*/
 	FORCE_INLINE static NO_DISCARD Vector3<float> GenerateDerivaties(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
