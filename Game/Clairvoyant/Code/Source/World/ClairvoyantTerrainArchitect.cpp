@@ -231,9 +231,10 @@ static float GetRandomOffset(const uint8 index) NOEXCEPT
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 1.0f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Rock_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Rock_1_Material")), 1.0f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Snow_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")), 1.0f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 0.5f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Rock_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Rock_1_Material")), 0.5f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")), 0.5f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Snow_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")), 0.5f);
 }
 
 /*

@@ -8,6 +8,7 @@
 //Clairvoyant.
 #include <World/BiomeKingsMeadow.h>
 #include <World/BiomeNorthHollow.h>
+#include <World/BiomeWalkerValley.h>
 
 //Math.
 #include <Math/PerlinNoise.h>
@@ -48,6 +49,11 @@ uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBio
 		case ClairvoyantBiome::NorthHollow:
 		{
 			return BiomeNorthHollow::Material(position, height, normal);
+		}
+
+		case ClairvoyantBiome::WalkerValley:
+		{
+			return BiomeWalkerValley::Material(position, height, normal);
 		}
 
 		default:
@@ -112,6 +118,11 @@ float ClairvoyantBiomeArchitect::GetBiomeIdealPrecipitation(const ClairvoyantBio
 			return BiomeNorthHollow::IdealPrecipitation();
 		}
 
+		case ClairvoyantBiome::WalkerValley:
+		{
+			return BiomeWalkerValley::IdealPrecipitation();
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");
@@ -136,6 +147,11 @@ float ClairvoyantBiomeArchitect::GetBiomeIdealTemperature(const ClairvoyantBiome
 		case ClairvoyantBiome::NorthHollow:
 		{
 			return BiomeNorthHollow::IdealTemperature();
+		}
+
+		case ClairvoyantBiome::WalkerValley:
+		{
+			return BiomeWalkerValley::IdealTemperature();
 		}
 
 		default:

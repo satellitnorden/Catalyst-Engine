@@ -357,6 +357,7 @@
     <ClInclude Include="..\..\..\Code\Include\World\BiomeKingsMeadow.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeNorthHollow.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeProperties.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeWalkerValley.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h" />

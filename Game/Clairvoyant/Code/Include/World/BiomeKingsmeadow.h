@@ -24,7 +24,7 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD float IdealPrecipitation() NOEXCEPT
 	{
-		return 0.5f;
+		return 1.0f;
 	}
 
 	/*
@@ -32,7 +32,7 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD float IdealTemperature() NOEXCEPT
 	{
-		return 0.5f;
+		return 1.0f;
 	}
 
 	/*

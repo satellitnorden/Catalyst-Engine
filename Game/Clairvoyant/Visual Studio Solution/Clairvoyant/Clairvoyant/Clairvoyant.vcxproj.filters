@@ -557,5 +557,8 @@
     <ClInclude Include="..\..\..\Code\Include\World\BiomeProperties.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeWalkerValley.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

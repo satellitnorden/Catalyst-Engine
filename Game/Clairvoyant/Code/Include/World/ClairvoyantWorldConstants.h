@@ -18,6 +18,7 @@ enum class ClairvoyantBiome : uint8
 {
 	KingsMeadow,
 	NorthHollow,
+	WalkerValley,
 
 	NumberOfClairvoyantBiomes
 };
@@ -27,6 +28,7 @@ enum class ClairvoyantTerrainMaterial : uint8
 {
 	Grass_1,
 	Rock_1,
+	Sand_1,
 	Snow_1,
 
 	NumberOfClairvoyantTerrainMaterials
