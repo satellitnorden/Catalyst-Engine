@@ -16,8 +16,8 @@ namespace ClairvoyantWorldConstants
 //Enumeration covering all Clairvoyant biomes.
 enum class ClairvoyantBiome : uint8
 {
-	KingsMeadow,
 	NorthHollow,
+	SilverGarden,
 	WalkerValley,
 
 	NumberOfClairvoyantBiomes
@@ -27,7 +27,10 @@ enum class ClairvoyantBiome : uint8
 enum class ClairvoyantTerrainMaterial : uint8
 {
 	Grass_1,
+	Grass_2,
+	Leaves_1,
 	Rock_1,
+	Roots_1,
 	Sand_1,
 	Snow_1,
 

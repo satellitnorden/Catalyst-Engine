@@ -7925,7 +7925,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			32,
+			0,
 			65,
 			32,
 			0,

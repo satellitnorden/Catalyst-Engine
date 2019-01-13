@@ -6,8 +6,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Clairvoyant.
-#include <World/BiomeKingsMeadow.h>
 #include <World/BiomeNorthHollow.h>
+#include <World/BiomeSilverGarden.h>
 #include <World/BiomeWalkerValley.h>
 
 //Math.
@@ -41,14 +41,14 @@ uint8 ClairvoyantBiomeArchitect::GetBiomeMaterialAtPosition(const ClairvoyantBio
 {
 	switch (biome)
 	{
-		case ClairvoyantBiome::KingsMeadow:
-		{
-			return BiomeKingsMeadow::Material(position, height, normal);
-		}
-
 		case ClairvoyantBiome::NorthHollow:
 		{
 			return BiomeNorthHollow::Material(position, height, normal);
+		}
+
+		case ClairvoyantBiome::SilverGarden:
+		{
+			return BiomeSilverGarden::Material(position, height, normal);
 		}
 
 		case ClairvoyantBiome::WalkerValley:
@@ -95,7 +95,7 @@ void ClairvoyantBiomeArchitect::GetBiomePropertiesAtPosition(const Vector3<float
 */
 float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const BiomeProperties &properties, const ClairvoyantBiome biome) NOEXCEPT
 {
-	return biome == ClairvoyantBiome::KingsMeadow ? 1.0f : 0.0f;
+	return biome == ClairvoyantBiome::SilverGarden ? 1.0f : 0.0f;
 
 	/*
 	//Calculate the weight.
@@ -112,14 +112,14 @@ float ClairvoyantBiomeArchitect::GetBiomeIdealPrecipitation(const ClairvoyantBio
 {
 	switch (biome)
 	{
-		case ClairvoyantBiome::KingsMeadow:
-		{
-			return BiomeKingsMeadow::IdealPrecipitation();
-		}
-
 		case ClairvoyantBiome::NorthHollow:
 		{
 			return BiomeNorthHollow::IdealPrecipitation();
+		}
+
+		case ClairvoyantBiome::SilverGarden:
+		{
+			return BiomeSilverGarden::IdealPrecipitation();
 		}
 
 		case ClairvoyantBiome::WalkerValley:
@@ -143,14 +143,14 @@ float ClairvoyantBiomeArchitect::GetBiomeIdealTemperature(const ClairvoyantBiome
 {
 	switch (biome)
 	{
-		case ClairvoyantBiome::KingsMeadow:
-		{
-			return BiomeKingsMeadow::IdealTemperature();
-		}
-
 		case ClairvoyantBiome::NorthHollow:
 		{
 			return BiomeNorthHollow::IdealTemperature();
+		}
+
+		case ClairvoyantBiome::SilverGarden:
+		{
+			return BiomeSilverGarden::IdealTemperature();
 		}
 
 		case ClairvoyantBiome::WalkerValley:

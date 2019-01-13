@@ -354,9 +354,9 @@
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\SoakCamera.h" />
-    <ClInclude Include="..\..\..\Code\Include\World\BiomeKingsMeadow.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeNorthHollow.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeProperties.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeSilverGarden.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeWalkerValley.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />

@@ -9,10 +9,7 @@
 
 //Preprocessor defines.
 #define BLEND_SMOOTHING (1.0f)
-#define MATERIAL_TEXTURE_RESOLUTION (64.0f)
-#define MATERIAL_TEXTURE_RESOLUTION_SQUARED (4096.0f)
-#define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
-#define HEIGHT_INFLUENCE (10.0f)
+#define HEIGHT_INFLUENCE (8.0f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
