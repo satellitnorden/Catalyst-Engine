@@ -30,6 +30,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 	constexpr float MINIMUM_WIND_MODULATOR_FACTOR{ 0.1f };
 	constexpr float MAXIMUM_WIND_MODULATOR_FACTOR{ 0.2f };
 
+	/*
 	{
 		//Add the flower 1 grass vegetation type.
 		GrassVegetationTypeProperties properties;
@@ -124,6 +125,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetation_Default_Model")), material);
 	}
+	*/
 
 	{
 		//Add the grass 1 grass vegetation type.
@@ -138,7 +140,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Grass_1_Material")) };
 
 		properties._CutoffDistance = ClairvoyantGrassVegetationArchitectConstants::GRASS_CUTOFF_DISTANCE;
-		properties._Density = 0.1f;
+		properties._Density = 0.125f;
 		properties._WindModulatorFactor = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_MODULATOR_FACTOR, MAXIMUM_WIND_MODULATOR_FACTOR);
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetation_Default_Model")), material);

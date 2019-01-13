@@ -72,9 +72,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	//CreateGrassVegetationIntermediateResources();
+	CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
-	CreateTerrainIntermediateResources();
+	//CreateTerrainIntermediateResources();
 	//CreateWorldIntermediateResources();
 #endif
 
@@ -92,9 +92,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	//CreateGrassVegetationResourceCollection();
+	CreateGrassVegetationResourceCollection();
 	//CreateSolidVegetationResourceCollection();
-	CreateTerrainResourceCollection();
+	//CreateTerrainResourceCollection();
 	//CreateWorldResourceCollection();
 #endif
 }
@@ -234,38 +234,12 @@ void ClairvoyantResourceCreation::CreateSolidVegetationIntermediateResources() N
 	}
 
 	{
-		//Create the tree 1 material.
-		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Tree_1_Material";
-		parameters._ID = "SolidVegetation_Tree_1_Material";
-		parameters._MipmapLevels = 9;
-		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Tree_1\\Albedo.png";
-		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Tree_1\\NormalMap.png";
-		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Tree_1\\Roughness.png";
-		parameters._MetallicFile = nullptr;
-		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Tree_1\\AmbientOcclusion.png";
-		parameters._VariantFile = nullptr;
-		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
-	}
-
-	{
 		//Create the rock 1 model.
 		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Model";
 		parameters._ID = "SolidVegetation_Rock_1_Model";
 		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Rock_1\\Model.fbx";
-
-		PhysicalModelCreator::CreatePhysicalModel(parameters);
-	}
-
-	{
-		//Create the tree 1 model.
-		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Tree_1_Model";
-		parameters._ID = "SolidVegetation_Tree_1_Model";
-		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\SolidVegetation\\Tree_1\\Model.fbx";
 
 		PhysicalModelCreator::CreatePhysicalModel(parameters);
 	}
@@ -281,9 +255,7 @@ void ClairvoyantResourceCreation::CreateSolidVegetationResourceCollection() NOEX
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection";
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Material.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Tree_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Rock_1_Model.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\SolidVegetation_Tree_1_Model.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
