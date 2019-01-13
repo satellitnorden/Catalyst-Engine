@@ -32,14 +32,14 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection.crc");
-	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantLocationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantWorldResourceCollection.crc");
 
 	//Set the environment materials/blend.
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 
 	//Initialize the Clairvoyant grass vegetation architect.
-	//ClairvoyantGrassVegetationArchitect::Initialize();
+	ClairvoyantGrassVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant location architect.
 	//ClairvoyantLocationArchitect::Initialize();

@@ -95,9 +95,13 @@ void ClairvoyantBiomeArchitect::GetBiomePropertiesAtPosition(const Vector3<float
 */
 float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const BiomeProperties &properties, const ClairvoyantBiome biome) NOEXCEPT
 {
+	return biome == ClairvoyantBiome::KingsMeadow ? 1.0f : 0.0f;
+
+	/*
 	//Calculate the weight.
 	return	GetBiomePrecipitationWeightIncrease(properties._Precipitation, GetBiomeIdealPrecipitation(biome))
 			+ GetBiomeTemperatureWeightIncrease(properties._Temperature, GetBiomeIdealTemperature(biome));
+	*/
 }
 
 

@@ -50,6 +50,28 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 	//Initialize the particles.
 	InitializeParticles();
 
+	{
+		//Create a shrine. Lol.
+		DynamicPhysicalEntity *const RESTRICT shrine{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+		data->_Properties = EntityInitializationData::EntityProperty::None;
+		data->_PhysicalFlags = PhysicalFlag::Physical;
+		data->_Model = ResourceLoader::GetPhysicalModel(HashString("World_Shrine_Model"));
+		data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("World_Shrine_Material"));
+		data->_Position = Vector3<float>(0.0f, 0.0f, 0.0f);
+		TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
+		data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+		data->_SimulatePhysics = false;
+		data->_Mass = 0.0f;
+		data->_InitialVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+		EntityCreationSystem::Instance->RequestInitialization(shrine, data, false);
+	}
+
 	//Register the Clairvoyant world architect for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
 }
@@ -72,15 +94,15 @@ bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *con
 void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 {
 	constexpr float MINIMUM_SUN_INTENSITY{ 1.0f };
-	constexpr float MAXIMUM_SUN_INTENSITY{ 100.0f };
+	constexpr float MAXIMUM_SUN_INTENSITY{ 99.0f };
 
 	constexpr float MINIMUM_WIND_SPEED{ 2.0f };
-	constexpr float MAXIMUM_WIND_SPEED{ 20.0f };
+	constexpr float MAXIMUM_WIND_SPEED{ 19.5f };
 
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 0.0f };
 	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 0.02f };
 
-	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.2f };
+	constexpr float MINIMUM_DEPTH_OF_FIELD_DISTANCE{ 4'915.0f };
 	constexpr float MAXIMUM_DEPTH_OF_FIELD_DISTANCEY{ 49'152.0f };
 
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial"));

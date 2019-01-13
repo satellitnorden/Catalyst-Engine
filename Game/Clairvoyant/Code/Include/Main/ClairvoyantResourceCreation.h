@@ -36,16 +36,6 @@ private:
 	static void CreateSolidVegetationResourceCollection() NOEXCEPT;
 
 	/*
-	*	Creates the location intermediate resources.
-	*/
-	static void CreateLocationIntermediateResources() NOEXCEPT;
-
-	/*
-	*	Creates the location resource collection.
-	*/
-	static void CreateLocationResourceCollection() NOEXCEPT;
-
-	/*
 	*	Creates the terrain intermediate resources.
 	*/
 	static void CreateTerrainIntermediateResources() NOEXCEPT;
@@ -54,5 +44,15 @@ private:
 	*	Creates the terrain resource collection.
 	*/
 	static void CreateTerrainResourceCollection() NOEXCEPT;
+
+	/*
+	*	Creates the world intermediate resources.
+	*/
+	static void CreateWorldIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the world resource collection.
+	*/
+	static void CreateWorldResourceCollection() NOEXCEPT;
 
 };

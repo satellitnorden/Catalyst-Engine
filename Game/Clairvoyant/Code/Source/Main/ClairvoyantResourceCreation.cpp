@@ -74,8 +74,8 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 
 	//CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
-	//CreateLocationIntermediateResources();
-	CreateTerrainIntermediateResources();
+	//CreateTerrainIntermediateResources();
+	CreateWorldIntermediateResources();
 #endif
 
 #if CREATE_RESOURCE_COLLECTION
@@ -94,8 +94,8 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 
 	//CreateGrassVegetationResourceCollection();
 	//CreateSolidVegetationResourceCollection();
-	//CreateLocationResourceCollection();
-	CreateTerrainResourceCollection();
+	//CreateTerrainResourceCollection();
+	CreateWorldResourceCollection();
 #endif
 }
 
@@ -289,85 +289,6 @@ void ClairvoyantResourceCreation::CreateSolidVegetationResourceCollection() NOEX
 }
 
 /*
-*	Creates the location intermediate resources.
-*/
-void ClairvoyantResourceCreation::CreateLocationIntermediateResources() NOEXCEPT
-{
-	{
-		//Create the barrel material.
-		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\BarrelMaterial";
-		parameters._ID = "BarrelMaterial";
-		parameters._MipmapLevels = 9;
-		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Barrel\\Albedo.png";
-		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Barrel\\NormalMap.png";
-		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Barrel\\Roughness.png";
-		parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Barrel\\Metallic.png";
-		parameters._AmbientOcclusionFile = nullptr;
-		parameters._VariantFile = nullptr;
-
-		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
-	}
-
-	{
-		//Create the box material.
-		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\BoxMaterial";
-		parameters._ID = "BoxMaterial";
-		parameters._MipmapLevels = 9;
-		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Box\\Albedo.png";
-		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Box\\NormalMap.png";
-		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Box\\Roughness.png";
-		parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Box\\Metallic.png";
-		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Location\\Box\\AmbientOcclusion.png";
-		parameters._VariantFile = nullptr;
-
-		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
-	}
-
-	{
-		//Create the barrel model.
-		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\BarrelModel";
-		parameters._ID = "BarrelModel";
-		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Location\\Barrel.fbx";
-
-		PhysicalModelCreator::CreatePhysicalModel(parameters);
-	}
-
-	{
-		//Create the box model.
-		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\BoxModel";
-		parameters._ID = "BoxModel";
-		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Location\\Box.fbx";
-
-		PhysicalModelCreator::CreatePhysicalModel(parameters);
-	}
-}
-
-/*
-*	Creates the location resource collection.
-*/
-void ClairvoyantResourceCreation::CreateLocationResourceCollection() NOEXCEPT
-{
-	//Create the resource collection.
-	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
-
-	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantLocationResourceCollection";
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\BarrelMaterial.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\BoxMaterial.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\BarrelModel.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\BoxModel.cr");
-
-	ResourceCollectionCreator::CreateResourceCollection(parameters);
-}
-
-/*
 *	Creates the terrain intermediate resources.
 */
 void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
@@ -454,6 +375,55 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Rock_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Sand_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material.cr");
+
+	ResourceCollectionCreator::CreateResourceCollection(parameters);
+}
+
+/*
+*	Creates the world intermediate resources.
+*/
+void ClairvoyantResourceCreation::CreateWorldIntermediateResources() NOEXCEPT
+{
+	{
+		//Create the shrine material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\World_Shrine_Material";
+		parameters._ID = "World_Shrine_Material";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Models\\World\\Shrine\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Models\\World\\Shrine\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Models\\World\\Shrine\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Models\\World\\Shrine\\AmbientOcclusion.png";
+		parameters._VariantFile = nullptr;
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the shrine model.
+		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\World_Shrine_Model";
+		parameters._ID = "World_Shrine_Model";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\World\\Shrine\\Model.fbx";
+
+		PhysicalModelCreator::CreatePhysicalModel(parameters);
+	}
+}
+
+/*
+*	Creates the world resource collection.
+*/
+void ClairvoyantResourceCreation::CreateWorldResourceCollection() NOEXCEPT
+{
+	//Create the resource collection.
+	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
+
+	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantWorldResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\World_Shrine_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\World_Shrine_Model.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
