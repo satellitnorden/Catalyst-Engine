@@ -28,11 +28,8 @@ namespace ClairvoyantTerrainArchitectConstants
 {
 	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
 
-	constexpr float TERRAIN_MINIMUM_FLATNESS{ 0.5f };
-	constexpr float TERRAIN_MAXIMUM_FLATNESS{ 1.0f };
-
-	constexpr float TERRAIN_MINIMUM_HEIGHT_OVER_WATER{ 0.0f };
-	constexpr float TERRAIN_MAXIMUM_HEIGHT_OVER_WATER{ 0.5f };
+	constexpr float TERRAIN_MINIMUM_HEIGHT_OVER_WATER{ -0.1f };
+	constexpr float TERRAIN_MAXIMUM_HEIGHT_OVER_WATER{ 0.1f };
 }
 
 /*
@@ -244,42 +241,74 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 {
 	//Define constants.
 	constexpr float GAIN{ 0.5f };
-	constexpr float NOISE_SCALE{ 100'000.0f };
+	constexpr float PROPERTIES_NOISE_SCALE{ 1'000'000.0f };
+	constexpr float LANDSCAPE_NOISE_SCALE{ 100'000.0f };
+	constexpr float DETAIL_NOISE_SCALE{ 10'000.0f };
 	constexpr Matrix2 TRANSFORMATION{ 0.8f, -0.6f, 0.6f, 0.8f };
-	constexpr uint8 OCTAVES{ 12 };
+	constexpr uint8 LANDSCAPE_OCTAVES{ 5 };
+	constexpr uint8 DETAIL_OCTAVES{ 10 };
 
-	//Calculate the coordinate.
-	Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
+	//Generate the properties.
+	float landscapeAmplitude;
+	float landscapeSmoothness;
+	float detailAmplitude;
+	float heighOverWater;
 
-	//Generate properties.
-	const float flatness{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_FLATNESS, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_FLATNESS, (SimplexNoise::Generate(coordinate, GetRandomOffset(0)) + 1.0f) * 0.5f) };
-	const float heighOverWater{ CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_HEIGHT_OVER_WATER, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_HEIGHT_OVER_WATER, (SimplexNoise::Generate(coordinate, GetRandomOffset(1)) + 1.0f) * 0.5f) };
-	
+	{
+		Vector2<float> coordinate{ position._X / PROPERTIES_NOISE_SCALE, position._Z / PROPERTIES_NOISE_SCALE };
+
+		landscapeAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(0)));
+		landscapeSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
+		detailAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 0.2f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(2)));
+		heighOverWater = CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainArchitectConstants::TERRAIN_MINIMUM_HEIGHT_OVER_WATER, ClairvoyantTerrainArchitectConstants::TERRAIN_MAXIMUM_HEIGHT_OVER_WATER, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
+	}
+
 	//Start off at zero.
 	*height = 0.0f;
 
-	//Apply the octaves.
-	Vector2<float> derivaties{ 0.0f, 0.0f };
-
-	float amplitude{ 1.0f };
-	float frequency{ 1.0f };
-
-	for (uint8 i{ 0 }; i < OCTAVES; ++i)
+	//Apply the landscape noise.
 	{
-		Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 2)) };
+		Vector2<float> coordinate{ position._X / LANDSCAPE_NOISE_SCALE, position._Z / LANDSCAPE_NOISE_SCALE };
 
-		derivaties._X += noise._Y;
-		derivaties._Y += noise._Z;
+		float amplitude{ landscapeAmplitude };
+		float frequency{ 1.0f };
 
-		*height += amplitude * noise._X / (1.0f + derivaties._X * derivaties._X + derivaties._Y * derivaties._Y);
+		for (uint8 i{ 0 }; i < LANDSCAPE_OCTAVES; ++i)
+		{
+			const float noise{ SimplexNoise::GenerateNormalized(coordinate * frequency, GetRandomOffset(i + 4)) };
 
-		amplitude *= GAIN;
+			*height += CatalystBaseMath::LinearlyInterpolate(noise, CatalystBaseMath::SmoothStep<5>(noise), landscapeSmoothness) * amplitude;
 
-		coordinate = TRANSFORMATION * coordinate * 2.0f;
+			amplitude *= 0.5f;
+			frequency *= 2.0f;
+		}
+	}
+
+	//Apply the detail noise.
+	{
+		Vector2<float> coordinate{ position._X / DETAIL_NOISE_SCALE, position._Z / DETAIL_NOISE_SCALE };
+
+		Vector2<float> derivaties{ 0.0f, 0.0f };
+
+		float amplitude{ detailAmplitude };
+
+		for (uint8 i{ 0 }; i < DETAIL_OCTAVES; ++i)
+		{
+			Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 4 + LANDSCAPE_OCTAVES)) };
+
+			derivaties._X += noise._Y;
+			derivaties._Y += noise._Z;
+
+			*height += amplitude * noise._X / (1.0f + derivaties._X * derivaties._X + derivaties._Y * derivaties._Y);
+
+			amplitude *= GAIN;
+
+			coordinate = TRANSFORMATION * coordinate * 2.0f;
+		}
 	}
 
 	//Apply the height.
-	*height = (*height * flatness + heighOverWater) * ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
+	*height = (*height + heighOverWater) * ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
 }
 
 /*
