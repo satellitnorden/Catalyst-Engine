@@ -44,26 +44,60 @@ public:
 		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f)
 		{
 			//Define constants.
-			constexpr float NOISE_SCALE_1{ 1'000.0f };
-			constexpr float NOISE_SCALE_2{ 100.0f };
-			constexpr float NOISE_SCALE_3{ 10.0f };
+			constexpr float GAIN{ 0.8f };
+			constexpr float NOISE_SCALE{ 10'000.0f };
+			constexpr uint8 OCTAVES{ 10 };
 
-			//Calculate the coordinates.
-			Vector2<float> coordinate1{ position._X / NOISE_SCALE_1, position._Z / NOISE_SCALE_1 };
-			Vector2<float> coordinate2{ position._X / NOISE_SCALE_2, position._Z / NOISE_SCALE_2 };
-			Vector2<float> coordinate3{ position._X / NOISE_SCALE_3, position._Z / NOISE_SCALE_3 };
+			//Calculate the coordinate.
+			Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
 
 			//Calculate the properties.
-			const float property1{ SimplexNoise::GenerateNormalized(coordinate1, RandomSeed(0)) };
-			const float property2{ SimplexNoise::GenerateNormalized(coordinate1, RandomSeed(1)) };
+			float property1{ 0.0f };
+			float property2{ 0.0f };
+
+			{
+				float amplitude{ 1.0f };
+				float frequency{ 1.0f };
+				float total{ 0.0f };
+
+				for (uint8 i{ 0 }; i < OCTAVES; ++i)
+				{
+					property1 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(i)) * amplitude;
+
+					total += amplitude;
+
+					amplitude *= GAIN;
+					frequency *= 2.0f;
+				}
+
+				property1 /= total;
+			}
+
+			{
+				float amplitude{ 1.0f };
+				float frequency{ 1.0f };
+				float total{ 0.0f };
+
+				for (uint8 i{ 0 }; i < OCTAVES; ++i)
+				{
+					property2 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(OCTAVES + i)) * amplitude;
+
+					total += amplitude;
+
+					amplitude *= GAIN;
+					frequency *= 2.0f;
+				}
+
+				property2 /= total;
+			}
 
 			//Pick the most fitting material.
 			constexpr StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> potentialMaterials
 			{
-				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 1.0f, 1.0f, 1.0f),
-				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_2, 0.05f, 0.0f, 1.0f),
-				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Leaves_1, -0.75f, 1.0f, 0.0f),
-				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Roots_1, -0.85f, 0.0f, 0.0f)
+				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 0.3f, 1.0f, 1.0f),
+				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_2, -0.1f, 0.0f, 1.0f),
+				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Leaves_1, -0.1f, 1.0f, 0.0f),
+				Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Roots_1, -0.45f, 0.0f, 0.0f)
 			};
 
 			float bestWeight{ -FLOAT_MAXIMUM };
@@ -72,8 +106,6 @@ public:
 			for (uint8 i{ 0 }; i < potentialMaterials.Size(); ++i)
 			{
 				const float potentialMaterialWeight{	potentialMaterials[i]._Second
-														+ SimplexNoise::GenerateNormalized(coordinate2, RandomSeed((i * 2) + 2))
-														+ SimplexNoise::GenerateNormalized(coordinate3, RandomSeed((i * 2) + 1 + 2))
 														+ (1.0f - CatalystBaseMath::Absolute(property1 - potentialMaterials[i]._Third))
 														+ (1.0f - CatalystBaseMath::Absolute(property2 - potentialMaterials[i]._Fourth)) };
 
@@ -166,6 +198,76 @@ private:
 			}
 
 			case 9:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 10:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 11:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 12:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 13:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 14:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 15:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 16:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 17:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 18:
+			{
+				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return seed;
+			}
+
+			case 19:
 			{
 				static float seed{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
 
