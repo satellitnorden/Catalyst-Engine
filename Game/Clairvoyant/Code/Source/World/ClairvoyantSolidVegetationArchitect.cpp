@@ -2,6 +2,7 @@
 #include <World/ClairvoyantSolidVegetationArchitect.h>
 
 //Clairvoyant.
+#include <World/ClairvoyantWorldConstants.h>
 #include <World/ClairvoyantWorldUtilities.h>
 
 //Resources.
@@ -14,7 +15,7 @@
 //Clairvoyant grass vegetation architect constants.
 namespace ClairvoyantSolidVegetationArchitectConstants
 {
-	constexpr float MEDIUM_DETAIL_DISTANCE{ 250.5f };
+	constexpr float MEDIUM_DETAIL_DISTANCE{ 250.0f };
 	constexpr float LOW_DETAIL_DISTANCE{ 500.0f };
 }
 
@@ -29,8 +30,8 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 
 		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantSolidVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 0.0001f;
+		properties._CutoffDistance = ClairvoyantWorldConstants::ROCKS_CUTOFF_DISTANCE;
+		properties._Density = 0.00015f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldUtilities::GenerateTransformation(0.7f, 0.0f, 0.1f, 0.2f, Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);

@@ -2,6 +2,7 @@
 #include <World/ClairvoyantGrassVegetationArchitect.h>
 
 //Clairvoyant.
+#include <World/ClairvoyantWorldConstants.h>
 #include <World/ClairvoyantWorldUtilities.h>
 
 //Math.
@@ -13,13 +14,6 @@
 //Systems.
 #include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
-
-//Clairvoyant grass vegetation architect constants.
-namespace ClairvoyantGrassVegetationArchitectConstants
-{
-	constexpr float PLANTS_CUTOFF_DISTANCE{ 1'000.0f };
-	constexpr float GRASS_CUTOFF_DISTANCE{ 250.0f };
-}
 
 /*
 *	Initializes the Clairvoyant grass vegetation architect.
@@ -43,7 +37,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Fern_1_Material")) };
 
-		properties._CutoffDistance = ClairvoyantGrassVegetationArchitectConstants::PLANTS_CUTOFF_DISTANCE;
+		properties._CutoffDistance = ClairvoyantWorldConstants::PLANTS_CUTOFF_DISTANCE;
 		properties._Density = 0.0035f;
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetation_Fern_1_Model")), material);
@@ -61,7 +55,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Grass_1_Material")) };
 
-		properties._CutoffDistance = ClairvoyantGrassVegetationArchitectConstants::GRASS_CUTOFF_DISTANCE;
+		properties._CutoffDistance = ClairvoyantWorldConstants::GRASS_CUTOFF_DISTANCE;
 		properties._Density = 0.175f;
 		properties._WindModulatorFactor = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_MODULATOR_FACTOR, MAXIMUM_WIND_MODULATOR_FACTOR);
 

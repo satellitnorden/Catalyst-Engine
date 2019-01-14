@@ -266,8 +266,8 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 		landscapeGain = CatalystBaseMath::LinearlyInterpolate(0.4f, 0.6f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
 		landscapeSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(2)));
 		detailAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 0.25f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(3)));
-		detailGain = CatalystBaseMath::LinearlyInterpolate(0.475f, 0.525f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
-		detailSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
+		detailGain = CatalystBaseMath::LinearlyInterpolate(0.45f, 0.55f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
+		detailSmoothness = CatalystBaseMath::LinearlyInterpolate(0.2f, 0.8f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
 		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.125f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(6)));
 	}
 

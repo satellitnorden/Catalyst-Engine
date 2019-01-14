@@ -53,9 +53,9 @@ public:
 		constexpr StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> POTENTIAL_CLIFF_MATERIALS
 		{
 			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_1, 0.0f, 1.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_2, 0.0f, 0.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_3, 0.0f, 1.0f, 0.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_4, 0.0f, 0.0f, 0.0f)
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_3, 0.0f, 0.0f, 1.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_1, 0.0f, 1.0f, 0.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_3, 0.0f, 0.0f, 0.0f)
 		};
 		constexpr uint8 OCTAVES{ 10 };
 
