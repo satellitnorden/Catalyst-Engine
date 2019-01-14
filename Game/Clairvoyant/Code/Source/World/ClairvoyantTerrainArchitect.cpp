@@ -248,7 +248,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 	constexpr float DETAIL_NOISE_SCALE{ 10'000.0f };
 	constexpr Matrix2 TRANSFORMATION{ 0.8f, -0.6f, 0.6f, 0.8f };
 	constexpr uint8 LANDSCAPE_OCTAVES{ 5 };
-	constexpr uint8 DETAIL_OCTAVES{ 7 };
+	constexpr uint8 DETAIL_OCTAVES{ 8 };
 
 	//Generate the properties.
 	float landscapeAmplitude;
@@ -256,6 +256,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 	float landscapeSmoothness;
 	float detailAmplitude;
 	float detailGain;
+	float detailSmoothness;
 	float heighOverWater;
 
 	{
@@ -266,7 +267,8 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 		landscapeSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(2)));
 		detailAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 0.25f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(3)));
 		detailGain = CatalystBaseMath::LinearlyInterpolate(0.475f, 0.525f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
-		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.125f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
+		detailSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
+		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.125f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(6)));
 	}
 
 	//Start off at zero.
@@ -302,8 +304,8 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 		{
 			Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 5 + LANDSCAPE_OCTAVES)) };
 
-			derivaties._X += noise._Y;
-			derivaties._Y += noise._Z;
+			derivaties._X += noise._Y * detailSmoothness;
+			derivaties._Y += noise._Z * detailSmoothness;
 
 			*height += amplitude * noise._X / (1.0f + derivaties._X * derivaties._X + derivaties._Y * derivaties._Y);
 
