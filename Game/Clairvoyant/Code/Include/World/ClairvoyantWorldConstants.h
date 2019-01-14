@@ -26,10 +26,13 @@ enum class ClairvoyantBiome : uint8
 //Enumeration covering all Clairvoyant terrain materials.
 enum class ClairvoyantTerrainMaterial : uint8
 {
+	Cliff_1,
+	Cliff_2,
+	Cliff_3,
+	Cliff_4,
 	Grass_1,
 	Grass_2,
 	Leaves_1,
-	Rock_1,
 	Roots_1,
 	Sand_1,
 	Snow_1,

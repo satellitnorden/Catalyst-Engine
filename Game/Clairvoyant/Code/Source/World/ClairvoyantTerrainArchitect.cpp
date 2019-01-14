@@ -225,10 +225,13 @@ static float GetRandomOffset(const uint8 index) NOEXCEPT
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_1_Material")), 0.25f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_2_Material")), 0.25f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_3), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_3_Material")), 0.25f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_4), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_4_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Leaves_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Leaves_1_Material")), 0.25f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Rock_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Rock_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Roots_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Roots_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Snow_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")), 0.25f);
@@ -259,10 +262,10 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 		Vector2<float> coordinate{ position._X / PROPERTIES_NOISE_SCALE, position._Z / PROPERTIES_NOISE_SCALE };
 
 		landscapeAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(0)));
-		landscapeGain = CatalystBaseMath::LinearlyInterpolate(0.45f, 0.55f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
+		landscapeGain = CatalystBaseMath::LinearlyInterpolate(0.4f, 0.6f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
 		landscapeSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(2)));
 		detailAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 0.25f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(3)));
-		detailGain = CatalystBaseMath::LinearlyInterpolate(0.45f, 0.55f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
+		detailGain = CatalystBaseMath::LinearlyInterpolate(0.475f, 0.525f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
 		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.125f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
 	}
 

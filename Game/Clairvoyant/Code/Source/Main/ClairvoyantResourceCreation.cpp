@@ -72,9 +72,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	CreateGrassVegetationIntermediateResources();
+	//CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
-	//CreateTerrainIntermediateResources();
+	CreateTerrainIntermediateResources();
 	//CreateWorldIntermediateResources();
 #endif
 
@@ -92,10 +92,10 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	CreateGrassVegetationResourceCollection();
-	CreateSolidVegetationResourceCollection();
+	//CreateGrassVegetationResourceCollection();
+	//CreateSolidVegetationResourceCollection();
 	CreateTerrainResourceCollection();
-	CreateWorldResourceCollection();
+	//CreateWorldResourceCollection();
 #endif
 }
 
@@ -266,12 +266,80 @@ void ClairvoyantResourceCreation::CreateSolidVegetationResourceCollection() NOEX
 void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 {
 	{
+		//Create the terrain cliff 1 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_1_Material";
+		parameters._ID = "Terrain_Cliff_1_Material";
+		parameters._MipmapLevels = 8;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_1\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_1\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_1\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_1\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the terrain cliff 2 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_2_Material";
+		parameters._ID = "Terrain_Cliff_2_Material";
+		parameters._MipmapLevels = 8;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_2\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_2\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_2\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_2\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_2\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the terrain cliff 3 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_3_Material";
+		parameters._ID = "Terrain_Cliff_3_Material";
+		parameters._MipmapLevels = 8;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_3\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_3\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_3\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_3\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_3\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the terrain cliff 3 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_4_Material";
+		parameters._ID = "Terrain_Cliff_4_Material";
+		parameters._MipmapLevels = 8;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_4\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_4\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_4\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_4\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_4\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
 		//Create the terrain grass 1 material.
 		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_1_Material";
 		parameters._ID = "Terrain_Grass_1_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_1\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_1\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_1\\Roughness.png";
@@ -288,7 +356,7 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_2_Material";
 		parameters._ID = "Terrain_Grass_2_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_2\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_2\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Grass_2\\Roughness.png";
@@ -305,7 +373,7 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Leaves_1_Material";
 		parameters._ID = "Terrain_Leaves_1_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Leaves_1\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Leaves_1\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Leaves_1\\Roughness.png";
@@ -317,29 +385,12 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 	}
 
 	{
-		//Create the terrain rock 1 material.
-		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Rock_1_Material";
-		parameters._ID = "Terrain_Rock_1_Material";
-		parameters._MipmapLevels = 9;
-		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Rock_1\\Albedo.png";
-		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Rock_1\\NormalMap.png";
-		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Rock_1\\Roughness.png";
-		parameters._MetallicFile = nullptr;
-		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Rock_1\\AmbientOcclusion.png";
-		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Rock_1\\Displacement.png";
-
-		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
-	}
-
-	{
 		//Create the terrain roots 1 material.
 		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Roots_1_Material";
 		parameters._ID = "Terrain_Roots_1_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\Roughness.png";
@@ -356,7 +407,7 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Sand_1_Material";
 		parameters._ID = "Terrain_Sand_1_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Sand_1\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Sand_1\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Sand_1\\Roughness.png";
@@ -373,7 +424,7 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material";
 		parameters._ID = "Terrain_Snow_1_Material";
-		parameters._MipmapLevels = 9;
+		parameters._MipmapLevels = 8;
 		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\Albedo.png";
 		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\NormalMap.png";
 		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow_1\\Roughness.png";
@@ -394,10 +445,13 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_2_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_3_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Cliff_4_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_2_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Leaves_1_Material.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Rock_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Roots_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Sand_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material.cr");

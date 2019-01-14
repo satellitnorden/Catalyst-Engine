@@ -47,7 +47,7 @@ public:
 
 		else
 		{
-			return UNDERLYING(ClairvoyantTerrainMaterial::Rock_1);
+			return UNDERLYING(ClairvoyantTerrainMaterial::Cliff_1);
 		}
 	}
 
