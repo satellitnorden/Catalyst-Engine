@@ -9,13 +9,13 @@ public:
 	//The first value.
 	FirstType _First;
 
-	//The second valuye.
+	//The second value.
 	SecondType _Second;
 
 	/*
 	*	Default constructor.
 	*/
-	Pair() NOEXCEPT
+	constexpr Pair() NOEXCEPT
 	{
 
 	}
@@ -23,7 +23,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Pair(const FirstType &initialFirst, const SecondType &initialSecond) NOEXCEPT
+	constexpr Pair(const FirstType &initialFirst, const SecondType &initialSecond) NOEXCEPT
 		:
 		_First(initialFirst),
 		_Second(initialSecond)

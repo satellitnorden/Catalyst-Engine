@@ -75,6 +75,8 @@
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\Quadruple.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Updateable.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h" />
