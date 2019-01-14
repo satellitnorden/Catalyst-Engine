@@ -72,9 +72,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	//CreateGrassVegetationIntermediateResources();
+	CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
-	CreateTerrainIntermediateResources();
+	//CreateTerrainIntermediateResources();
 	//CreateWorldIntermediateResources();
 #endif
 
@@ -92,9 +92,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	//CreateGrassVegetationResourceCollection();
+	CreateGrassVegetationResourceCollection();
 	//CreateSolidVegetationResourceCollection();
-	CreateTerrainResourceCollection();
+	//CreateTerrainResourceCollection();
 	//CreateWorldResourceCollection();
 #endif
 }
@@ -104,6 +104,19 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 */
 void ClairvoyantResourceCreation::CreateGrassVegetationIntermediateResources() NOEXCEPT
 {
+	{
+		//Create the fern 1 material.
+		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Fern_1_Material";
+		parameters._ID = "GrassVegetation_Fern_1_Material";
+		parameters._MaskMipmapLevels = 3;
+		parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Fern_1\\Mask.png";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Fern_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\GrassVegetation\\Fern_1\\NormalMap.png";
+		GrassMaterialCreator::CreateGrassMaterial(parameters);
+	}
+
 	{
 		//Create the flower 1 material.
 		GrassMaterialCreator::GrassMaterialCreationParameters parameters;
@@ -183,6 +196,16 @@ void ClairvoyantResourceCreation::CreateGrassVegetationIntermediateResources() N
 	}
 
 	{
+		//Create the fern 1 grass vegetation model.
+		GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Fern_1_Model";
+		parameters._ID = "GrassVegetation_Fern_1_Model";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\GrassVegetation\\GrassVegetation_Fern_1_Model.fbx";
+		parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Z;
+		GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
+	}
+
+	{
 		//Create the default grass vegetation model.
 		GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Default_Model";
@@ -202,12 +225,14 @@ void ClairvoyantResourceCreation::CreateGrassVegetationResourceCollection() NOEX
 	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Fern_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_2_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_3_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_4_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Flower_5_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Grass_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Fern_1_Model.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\GrassVegetation_Default_Model.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
