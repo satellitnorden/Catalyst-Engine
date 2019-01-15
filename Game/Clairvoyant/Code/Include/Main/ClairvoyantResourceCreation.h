@@ -16,6 +16,16 @@ public:
 private:
 
 	/*
+	*	Creates the debris vegetation intermediate resources.
+	*/
+	static void CreateDebrisVegetationIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the debris vegetation resource collection.
+	*/
+	static void CreateDebrisVegetationResourceCollection() NOEXCEPT;
+
+	/*
 	*	Creates the grass vegetation intermediate resources.
 	*/
 	static void CreateGrassVegetationIntermediateResources() NOEXCEPT;

@@ -30,6 +30,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
 	//Load the resource collections.
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantDebrisVegetationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantGrassVegetationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantSolidVegetationResourceCollection.crc");
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantTerrainResourceCollection.crc");

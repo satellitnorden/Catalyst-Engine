@@ -72,7 +72,8 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	CreateGrassVegetationIntermediateResources();
+	CreateDebrisVegetationIntermediateResources();
+	//CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
 	//CreateTerrainIntermediateResources();
 	//CreateWorldIntermediateResources();
@@ -92,11 +93,59 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
+	CreateDebrisVegetationResourceCollection();
 	//CreateGrassVegetationResourceCollection();
 	//CreateSolidVegetationResourceCollection();
-	CreateTerrainResourceCollection();
+	//CreateTerrainResourceCollection();
 	//CreateWorldResourceCollection();
 #endif
+}
+
+/*
+*	Creates the debris vegetation intermediate resources.
+*/
+void ClairvoyantResourceCreation::CreateDebrisVegetationIntermediateResources() NOEXCEPT
+{
+	{
+		//Create the branches 1 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\DebrisVegetation_Branches_1_Material";
+		parameters._ID = "DebrisVegetation_Branches_1_Material";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Models\\DebrisVegetation\\Branches_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Models\\DebrisVegetation\\Branches_1\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Models\\DebrisVegetation\\Branches_1\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Models\\DebrisVegetation\\Branches_1\\AmbientOcclusion.png";
+		parameters._VariantFile = nullptr;
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the branches 1 model.
+		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\DebrisVegetation_Branches_1_Model";
+		parameters._ID = "DebrisVegetation_Branches_1_Model";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\DebrisVegetation\\Branches_1\\Model.fbx";
+
+		PhysicalModelCreator::CreatePhysicalModel(parameters);
+	}
+}
+
+/*
+*	Creates the debris vegetation resource collection.
+*/
+void ClairvoyantResourceCreation::CreateDebrisVegetationResourceCollection() NOEXCEPT
+{
+	//Create the resource collection.
+	ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
+
+	parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantDebrisVegetationResourceCollection";
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\DebrisVegetation_Branches_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\DebrisVegetation_Branches_1_Model.cr");
+
+	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }
 
 /*
