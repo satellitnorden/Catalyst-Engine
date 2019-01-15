@@ -26,8 +26,6 @@ enum class ClairvoyantTerrainMaterial : uint8
 {
 	Cliff_1,
 	Cliff_2,
-	Cliff_3,
-	Cliff_4,
 	Grass_1,
 	Grass_2,
 	Leaves_1,

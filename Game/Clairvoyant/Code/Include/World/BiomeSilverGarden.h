@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/Triple.h>
 #include <Core/General/Quadruple.h>
 
 //Clairvoyant.
@@ -45,73 +46,97 @@ public:
 		constexpr float NOISE_SCALE{ 10'000.0f };
 		constexpr StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> POTENTIAL_GROUND_MATERIALS
 		{
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 0.1f, 1.0f, 1.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 0.125f, 1.0f, 1.0f),
 			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_2, 0.0f, 0.0f, 1.0f),
 			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Leaves_1, 0.0f, 1.0f, 0.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Roots_1, -0.1f, 0.0f, 0.0f)
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Roots_1, -0.125f, 0.0f, 0.0f)
 		};
-		constexpr StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> POTENTIAL_CLIFF_MATERIALS
+		constexpr StaticArray<ClairvoyantTerrainMaterial, 2> POTENTIAL_CLIFF_MATERIALS
 		{
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_1, 0.0f, 1.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_3, 0.0f, 0.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_1, 0.0f, 1.0f, 0.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Cliff_3, 0.0f, 0.0f, 0.0f)
+			ClairvoyantTerrainMaterial::Cliff_1,
+			ClairvoyantTerrainMaterial::Cliff_2
 		};
 		constexpr uint8 OCTAVES{ 10 };
 
-		//Calculate the coordinate.
-		Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
-
-		//Calculate the properties.
-		float property1{ 0.0f };
-		float property2{ 0.0f };
-
+		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f)
 		{
-			float frequency{ 1.0f };
+			//Calculate the coordinate.
+			Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Z / NOISE_SCALE };
 
-			for (uint8 i{ 0 }; i < OCTAVES; ++i)
+			//Calculate the properties.
+			float property1{ 0.0f };
+			float property2{ 0.0f };
+
 			{
-				property1 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(i));
+				float frequency{ 1.0f };
 
-				frequency *= 2.0f;
+				for (uint8 i{ 0 }; i < OCTAVES; ++i)
+				{
+					property1 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(i));
+
+					frequency *= 2.0f;
+				}
+
+				property1 *= 0.1f;
 			}
 
-			property1 *= 0.1f;
-		}
-
-		{
-			float frequency{ 1.0f };
-
-			for (uint8 i{ 0 }; i < OCTAVES; ++i)
 			{
-				property2 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(OCTAVES + i));
+				float frequency{ 1.0f };
 
-				frequency *= 2.0f;
+				for (uint8 i{ 0 }; i < OCTAVES; ++i)
+				{
+					property2 += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(OCTAVES + i));
+
+					frequency *= 2.0f;
+				}
+
+				property2 *= 0.1f;
 			}
 
-			property2 *= 0.1f;
-		}
+			//Pick the most fitting material.
+			float bestWeight{ -FLOAT_MAXIMUM };
+			ClairvoyantTerrainMaterial bestMaterial{ POTENTIAL_GROUND_MATERIALS[0]._First };
 
-		//Pick the most fitting material.
-		const StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> *const RESTRICT potentialMaterials{ Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f ? &POTENTIAL_GROUND_MATERIALS : &POTENTIAL_CLIFF_MATERIALS };
-
-		float bestWeight{ -FLOAT_MAXIMUM };
-		ClairvoyantTerrainMaterial bestMaterial{ potentialMaterials->At(0)._First };
-
-		for (uint8 i{ 0 }; i < potentialMaterials->Size(); ++i)
-		{
-			const float potentialMaterialWeight{	potentialMaterials->At(i)._Second
-													+ (1.0f - CatalystBaseMath::Absolute(property1 - potentialMaterials->At(i)._Third))
-													+ (1.0f - CatalystBaseMath::Absolute(property2 - potentialMaterials->At(i)._Fourth)) };
-
-			if (bestWeight < potentialMaterialWeight)
+			for (uint8 i{ 0 }; i < POTENTIAL_GROUND_MATERIALS.Size(); ++i)
 			{
-				bestWeight = potentialMaterialWeight;
-				bestMaterial = potentialMaterials->At(i)._First;
+				const float potentialMaterialWeight{	POTENTIAL_GROUND_MATERIALS[i]._Second
+														+ (1.0f - CatalystBaseMath::Absolute(property1 - POTENTIAL_GROUND_MATERIALS[i]._Third))
+														+ (1.0f - CatalystBaseMath::Absolute(property2 - POTENTIAL_GROUND_MATERIALS[i]._Fourth)) };
+
+				if (bestWeight < potentialMaterialWeight)
+				{
+					bestWeight = potentialMaterialWeight;
+					bestMaterial = POTENTIAL_GROUND_MATERIALS[i]._First;
+				}
 			}
+
+			return static_cast<uint8>(bestMaterial);
 		}
 
-		return static_cast<uint8>(bestMaterial);
+		else
+		{
+			//Calculate the coordinate.
+			Vector2<float> coordinate{ position._X / NOISE_SCALE, position._Y / NOISE_SCALE };
+
+			//Calculate the property.
+			float property{ 0.0f };
+
+			{
+				float frequency{ 1.0f };
+
+				for (uint8 i{ 0 }; i < OCTAVES; ++i)
+				{
+					frequency += SimplexNoise::GenerateNormalized(coordinate * frequency, RandomSeed(i));
+
+					frequency *= 2.0f;
+				}
+
+				frequency *= 0.1f;
+			}
+
+			//Pick the most fitting material.
+			return static_cast<uint8>(property >= 0.5f ? POTENTIAL_CLIFF_MATERIALS[0] : POTENTIAL_CLIFF_MATERIALS[1]);
+		}
 	}
 
 private:

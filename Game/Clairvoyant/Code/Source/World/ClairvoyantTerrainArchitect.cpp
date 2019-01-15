@@ -30,8 +30,8 @@ namespace ClairvoyantTerrainArchitectConstants
 }
 
 /*
-	*	Returns a random offset.
-	*/
+*	Returns a random offset.
+*/
 static float GetRandomOffset(const uint8 index) NOEXCEPT
 {
 	constexpr float MAXIMUM_OFFSET{ 1.0f };
@@ -226,9 +226,7 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_1_Material")), 0.25f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_2_Material")), 0.25f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_3), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_3_Material")), 0.25f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_4), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_4_Material")), 0.25f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Cliff_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_3_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Leaves_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Leaves_1_Material")), 0.25f);
