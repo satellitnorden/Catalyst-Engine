@@ -261,12 +261,12 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 		Vector2<float> coordinate{ position._X / PROPERTIES_NOISE_SCALE, position._Z / PROPERTIES_NOISE_SCALE };
 
 		landscapeAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(0)));
-		landscapeGain = CatalystBaseMath::LinearlyInterpolate(0.4f, 0.6f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
+		landscapeGain = CatalystBaseMath::LinearlyInterpolate(0.375f, 0.625f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(1)));
 		landscapeSmoothness = CatalystBaseMath::LinearlyInterpolate(0.0f, 1.0f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(2)));
 		detailAmplitude = CatalystBaseMath::LinearlyInterpolate(0.0f, 0.25f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(3)));
 		detailGain = CatalystBaseMath::LinearlyInterpolate(0.45f, 0.55f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(4)));
-		detailSmoothness = CatalystBaseMath::LinearlyInterpolate(0.2f, 0.8f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
-		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.125f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(6)));
+		detailSmoothness = CatalystBaseMath::LinearlyInterpolate(0.225f, 0.775f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(5)));
+		heighOverWater = CatalystBaseMath::LinearlyInterpolate(-0.15f, 0.075f, SimplexNoise::GenerateNormalized(coordinate, GetRandomOffset(6)));
 	}
 
 	//Start off at zero.
@@ -281,7 +281,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 
 		for (uint8 i{ 0 }; i < LANDSCAPE_OCTAVES; ++i)
 		{
-			const float noise{ SimplexNoise::GenerateNormalized(coordinate * frequency, GetRandomOffset(i + 5)) };
+			const float noise{ SimplexNoise::GenerateNormalized(coordinate * frequency, GetRandomOffset(i + 6)) };
 
 			*height += CatalystBaseMath::LinearlyInterpolate(noise, CatalystBaseMath::SmoothStep<3>(noise), landscapeSmoothness) * amplitude;
 
@@ -300,7 +300,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 
 		for (uint8 i{ 0 }; i < DETAIL_OCTAVES; ++i)
 		{
-			Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 5 + LANDSCAPE_OCTAVES)) };
+			Vector3<float> noise{ SimplexNoise::GenerateDerivaties(coordinate, GetRandomOffset(i + 6 + LANDSCAPE_OCTAVES)) };
 
 			derivaties._X += noise._Y * detailSmoothness;
 			derivaties._Y += noise._Z * detailSmoothness;

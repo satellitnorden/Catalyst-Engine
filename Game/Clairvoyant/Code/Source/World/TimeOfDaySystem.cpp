@@ -2,6 +2,7 @@
 #include <World/TimeOfDaySystem.h>
 
 //Systems.
+#include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/UpdateSystem.h>
 
@@ -13,6 +14,7 @@ namespace TimeOfDaySystemConstants
 {
 	constexpr float STARTING_TIME{ 0.0f };
 	constexpr float TIME_MULTIPLIER{ 100.0f };
+	constexpr float CONTROLLER_TIME_MULTIPLIER{ 1'000.0f };
 }
 
 /*
@@ -36,6 +38,19 @@ bool TimeOfDaySystem::LogicUpdateAsynchronous(const UpdateContext *const RESTRIC
 {
 	//Convert the delta time from seconds, to minutes and then to hours and increment the current time.
 	_CurrentTime += ((context->_DeltaTime / 60.0f) / 60.0f) * TimeOfDaySystemConstants::TIME_MULTIPLIER;
+
+	//Speed up time based on controller.
+	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };
+
+	if (state->_DpadUp == ButtonState::Pressed || state->_DpadUp == ButtonState::PressedHold)
+	{
+		_CurrentTime += ((context->_DeltaTime / 60.0f) / 60.0f) * TimeOfDaySystemConstants::CONTROLLER_TIME_MULTIPLIER;
+	}
+
+	if (state->_DpadDown == ButtonState::Pressed || state->_DpadDown == ButtonState::PressedHold)
+	{
+		_CurrentTime -= ((context->_DeltaTime / 60.0f) / 60.0f) * TimeOfDaySystemConstants::CONTROLLER_TIME_MULTIPLIER;
+	}
 
 	//If the the clock goes over 24.0f, that means the clock has wrapped around to midnight.
 	while (_CurrentTime > 24.0f)
