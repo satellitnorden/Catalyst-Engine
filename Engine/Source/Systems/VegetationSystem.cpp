@@ -59,6 +59,28 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 }
 
 /*
+*	Adds a debris vegetation type.
+*/
+void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT
+{
+	//Create the new debris vegetation information.
+	_DebrisVegetationTypeInformations.EmplaceSlow();
+	DebrisVegetationTypeInformation *const RESTRICT information{ &_DebrisVegetationTypeInformations.Back() };
+
+	//Just copy the properties, the model and the material.
+	information->_Properties = properties;
+	information->_Model = model;
+	information->_Material = material;
+
+	//Fill in the patch and the patch render informations.
+	for (uint8 i = 0; i < 9; ++i)
+	{
+		information->_PatchInformations[i]._Valid = false;
+		information->_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
+	}
+}
+
+/*
 *	Adds a grass vegetation type.
 */
 void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassVegetationModel &model, const GrassVegetationMaterial &material) NOEXCEPT
@@ -110,6 +132,33 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 	//Update the current vegetation type to update.
 	switch (_VegetationTypeToUpdate)
 	{
+		case VegetationType::Debris:
+		{
+			//Return early if there's no debris vegetation type information to update.
+			if (!_DebrisVegetationTypeInformationUpdate._Information)
+			{
+				return;
+			}
+
+			for (const uint8 index : _DebrisVegetationTypeInformationUpdate._PatchesToInvalidate)
+			{
+				VegetationUtilities::InvalidatePatch(_DebrisVegetationTypeInformationUpdate._Information, index);
+			}
+
+			for (uint64 i = 0, size = _DebrisVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+			{
+				if (!_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+				{
+					_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchInformation;
+					_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation;
+
+					break;
+				}
+			}
+
+			break;
+		}
+
 		case VegetationType::Grass:
 		{
 			//Return early if there's no grass vegetation type information to update.
@@ -174,6 +223,13 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Update the current vegetation type to update.
 	switch (_VegetationTypeToUpdate)
 	{
+		case VegetationType::Debris:
+		{
+			UpdateDebrisVegetationAsynchronous();
+
+			break;
+		}
+
 		case VegetationType::Grass:
 		{
 			UpdateGrassVegetationAsynchronous();
@@ -196,6 +252,147 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 			break;
 		}
 #endif
+	}
+}
+
+/*
+*	Updates the debris vegetation asynchonously.
+*/
+void VegetationSystem::UpdateDebrisVegetationAsynchronous() NOEXCEPT
+{
+	//Cache the viewer position.
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+
+	//Reset the debris vegetation type information update.
+	_DebrisVegetationTypeInformationUpdate._Information = nullptr;
+
+	//Update all debris vegetation type informations.
+	for (DebrisVegetationTypeInformation &information : _DebrisVegetationTypeInformations)
+	{
+		//Calculate the current grid point based on the current viewer position.
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance) };
+
+		//Create an array with the valid grid positions.
+		StaticArray<GridPoint2, 9> validGridPoints
+		{
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
+
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+		};
+
+		//Construct the sorting data.
+		class SortingData final
+		{
+
+		public:
+
+			//The current viewer position.
+			Vector3<float> _ViewerPosition;
+
+			//The cutoff distance.
+			float _CutoffDistance;
+		};
+
+		SortingData sortingData;
+
+		sortingData._ViewerPosition = viewerPosition;
+		sortingData._CutoffDistance = information._Properties._CutoffDistance;
+
+		//Sort the array so that the closest grid point is first.
+		SortingAlgorithms::InsertionSort<GridPoint2>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint2 *const RESTRICT first, const GridPoint2 *const RESTRICT second)
+		{
+			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
+
+			const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance) };
+			const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance) };
+
+			return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
+		});
+
+		//Construct the update.
+		DebrisVegetationTypeInformationUpdate update;
+
+		update._Information = &information;
+		update._NewPatchInformation._Valid = false;
+
+		//Determine the patch indices to invalidate.
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch is already invalid, no need to invalidate it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			bool valid{ false };
+
+			for (const GridPoint2 &gridPoint : validGridPoints)
+			{
+				if (information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					valid = true;
+
+					break;
+				}
+			}
+
+			if (!valid)
+			{
+				update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
+			}
+		}
+
+		//Determine the patches to update.
+		for (const GridPoint2 &gridPoint : validGridPoints)
+		{
+			bool exists{ false };
+
+			for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+			{
+				if (information._PatchInformations[i]._Valid && information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					exists = true;
+
+					break;
+				}
+			}
+
+			if (!exists)
+			{
+				//Construct the update.
+				DynamicArray<Matrix4> transformations;
+				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
+				VegetationUtilities::GenerateTransformations(	gridPoint,
+																information._Properties,
+																&transformations,
+																&update._NewPatchRenderInformation._TransformationsBuffer,
+																&update._NewPatchRenderInformation._NumberOfTransformations);
+
+				update._NewPatchInformation._Valid = true;
+				update._NewPatchInformation._GridPoint = gridPoint;
+				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
+																						information._Model._AxisAlignedBoundingBox,
+																						&update._NewPatchInformation._AxisAlignedBoundingBox);
+
+				break;
+			}
+		}
+
+		//If the new update is valid, copy it and return.
+		if (!update._PatchesToInvalidate.Empty() || update._NewPatchInformation._Valid)
+		{
+			_DebrisVegetationTypeInformationUpdate = update;
+
+			return;
+		}
 	}
 }
 

@@ -9,6 +9,7 @@
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomHorizontalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomVerticalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DebrisVegetationRenderPass.h>
 #if !defined(CATALYST_FINAL)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>

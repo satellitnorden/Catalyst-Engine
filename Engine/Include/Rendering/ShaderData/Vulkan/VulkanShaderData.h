@@ -14,6 +14,8 @@
 #include <Rendering/ShaderData/Vulkan/BloomHorizontalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomVerticalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/DebrisVegetationFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/DebrisVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxFragmentShader.h>

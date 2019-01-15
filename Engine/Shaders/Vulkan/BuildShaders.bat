@@ -4,6 +4,8 @@ glslangValidator.exe -V BelowOceanFragmentShader.frag -o 				BelowOceanFragmentS
 glslangValidator.exe -V BloomHorizontalFragmentShader.frag -o 				BloomHorizontalFragmentShader.spv
 glslangValidator.exe -V BloomVerticalFragmentShader.frag -o 				BloomVerticalFragmentShader.spv
 glslangValidator.exe -V BoxBlurFragmentShader.frag -o 					BoxBlurFragmentShader.spv
+glslangValidator.exe -V DebrisVegetationFragmentShader.frag -o 				DebrisVegetationFragmentShader.spv
+glslangValidator.exe -V DebrisVegetationVertexShader.vert -o 				DebrisVegetationVertexShader.spv
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxFragmentShader.frag -o 		DebugAxisAlignedBoundingBoxFragmentShader.spv
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugAxisAlignedBoundingBoxVertexShader.spv
 glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxFragmentShader.spv

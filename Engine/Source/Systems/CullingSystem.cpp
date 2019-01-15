@@ -24,6 +24,12 @@ DEFINE_SINGLETON(CullingSystem);
 void CullingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize all culling tasks.
+	_CullingTasks[UNDERLYING(CullingTask::DebrisVegetation)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullDebrisVegetation();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::DebrisVegetation)]._Arguments = nullptr;
+
 	_CullingTasks[UNDERLYING(CullingTask::GrassVegetation)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullGrassVegetation();
@@ -58,6 +64,50 @@ void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT 
 	for (Task &task : _CullingTasks)
 	{
 		TaskSystem::Instance->ExecuteTask(&task);
+	}
+}
+
+/*
+*	Culls debris vegetation.
+*/
+void CullingSystem::CullDebrisVegetation() NOEXCEPT
+{
+	//Get the current frustum planes.
+	const StaticArray<Vector4<float>, 6> *const RESTRICT directionalLightFrustumPlanes{ LightingSystem::Instance->GetDirectionalLight()->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT viewerFrustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+
+	//Iterate over all debris vegetation type informations, and cull the grid points that is too far away from the viewer.
+	for (DebrisVegetationTypeInformation &information : *VegetationSystem::Instance->GetDebrisVegetationTypeInformations())
+	{
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch isn't even valid, don't test it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			//Test this patch's axis-aligned bounding box against the current frustum planes.
+			if (RenderingUtilities::IsWithinViewFrustum(*viewerFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			{
+				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
+
+			else
+			{
+				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
+
+			if (RenderingUtilities::IsWithinViewFrustum(*directionalLightFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			{
+				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
+			}
+
+			else
+			{
+				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
+			}
+		}
 	}
 }
 

@@ -15,6 +15,7 @@ using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, M
 //Enumeration covering all vegetation types.
 enum class VegetationType : uint8
 {
+	Debris,
 	Grass,
 	Solid,
 

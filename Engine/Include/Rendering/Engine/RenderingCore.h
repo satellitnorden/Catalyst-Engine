@@ -72,6 +72,7 @@ enum class RenderPassSubStage : uint8
 	TerrainColor,
 	DynamicPhysical,
 	SolidVegetation,
+	DebrisVegetation,
 	GrassVegetationDepth,
 	GrassVegetationColor,
 
@@ -246,6 +247,8 @@ enum class Shader : uint8
 	BloomHorizontalFragment,
 	BloomVerticalFragment,
 	BoxBlurFragment,
+	DebrisVegetationFragment,
+	DebrisVegetationVertex,
 #if !defined(CATALYST_FINAL)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,

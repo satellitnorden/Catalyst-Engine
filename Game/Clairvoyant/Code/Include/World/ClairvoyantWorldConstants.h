@@ -7,6 +7,7 @@
 namespace ClairvoyantWorldConstants
 {
 	constexpr float GRASS_CUTOFF_DISTANCE{ 250.0f };
+	constexpr float BRANCHES_CUTOFF_DISTANCE{ 500.0f };
 	constexpr float PLANTS_CUTOFF_DISTANCE{ 1'000.0f };
 	constexpr float ROCKS_CUTOFF_DISTANCE{ 2'000.0f };
 }

@@ -4,6 +4,7 @@
 //Clairvoyant.
 #include <Player/ClairvoyantPlayer.h>
 #include <Player/SoakCamera.h>
+#include <World/ClairvoyantDebrisVegetationArchitect.h>
 #include <World/ClairvoyantGrassVegetationArchitect.h>
 #include <World/ClairvoyantLocationArchitect.h>
 #include <World/ClairvoyantSolidVegetationArchitect.h>
@@ -38,6 +39,9 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Set the environment materials/blend.
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
+
+	//Initialize the Clairvoyant debris vegetation architect.
+	ClairvoyantDebrisVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant grass vegetation architect.
 	ClairvoyantGrassVegetationArchitect::Initialize();

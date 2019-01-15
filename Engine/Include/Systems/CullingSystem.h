@@ -33,6 +33,14 @@ public:
 	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Waits for the debris vegetation culling to finish.
+	*/
+	void WaitForDebrisVegetationCulling() const NOEXCEPT
+	{
+		_CullingTasks[UNDERLYING(CullingTask::DebrisVegetation)].WaitFor();
+	}
+
+	/*
 	*	Waits for the grass vegetation culling to finish.
 	*/
 	void WaitForGrassVegetationCulling() const NOEXCEPT
@@ -69,6 +77,7 @@ private:
 	//Enumeration covering all culling tasks.
 	enum class CullingTask : uint8
 	{
+		DebrisVegetation,
 		GrassVegetation,
 		ParticleSystems,
 		SolidVegetation,
@@ -79,6 +88,11 @@ private:
 
 	//Container for all culling tasks.
 	StaticArray<Task, UNDERLYING(CullingTask::NumberOfCullingTasks)> _CullingTasks;
+
+	/*
+	*	Culls debris vegetation.
+	*/
+	void CullDebrisVegetation() NOEXCEPT;
 
 	/*
 	*	Culls grass vegetation.

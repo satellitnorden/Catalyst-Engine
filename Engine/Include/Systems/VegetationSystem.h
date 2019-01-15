@@ -10,6 +10,8 @@
 #include <Multithreading/Task.h>
 
 //Vegetation.
+#include <Vegetation/DebrisVegetationTypeInformation.h>
+#include <Vegetation/DebrisVegetationTypeInformationUpdate.h>
 #include <Vegetation/GrassVegetationTypeInformation.h>
 #include <Vegetation/GrassVegetationTypeInformationUpdate.h>
 #include <Vegetation/SolidVegetationTypeInformation.h>
@@ -37,6 +39,27 @@ public:
 	*	Updates the vegetation system sequentially.
 	*/
 	void SequentialUpdateSystemSynchronous() NOEXCEPT;
+
+	/*
+	*	Adds a debris vegetation type.
+	*/
+	void AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT;
+
+	/*
+	*	Returns the debris vegetation type informations, const.
+	*/
+	RESTRICTED NO_DISCARD const DynamicArray<DebrisVegetationTypeInformation> *const RESTRICT GetDebrisVegetationTypeInformations() const NOEXCEPT
+	{
+		return &_DebrisVegetationTypeInformations;
+	}
+
+	/*
+	*	Returns the debris vegetation type informations, non-const.
+	*/
+	RESTRICTED NO_DISCARD DynamicArray<DebrisVegetationTypeInformation> *const RESTRICT GetDebrisVegetationTypeInformations() NOEXCEPT
+	{
+		return &_DebrisVegetationTypeInformations;
+	}
 
 	/*
 	*	Adds a grass vegetation type.
@@ -88,6 +111,12 @@ private:
 	//The vegetation type to update.
 	VegetationType _VegetationTypeToUpdate{ VegetationType::NumberOfVegetationTypes };
 
+	//The debris vegetation type information update.
+	DebrisVegetationTypeInformationUpdate _DebrisVegetationTypeInformationUpdate;
+
+	//The debris vegetation type informations.
+	DynamicArray<DebrisVegetationTypeInformation> _DebrisVegetationTypeInformations;
+
 	//The grass vegetation type information update.
 	GrassVegetationTypeInformationUpdate _GrassVegetationTypeInformationUpdate;
 
@@ -109,6 +138,11 @@ private:
 	*	Updates the vegetation system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
+
+	/*
+	*	Updates the debris vegetation asynchonously.
+	*/
+	void UpdateDebrisVegetationAsynchronous() NOEXCEPT;
 
 	/*
 	*	Updates the grass vegetation asynchonously.

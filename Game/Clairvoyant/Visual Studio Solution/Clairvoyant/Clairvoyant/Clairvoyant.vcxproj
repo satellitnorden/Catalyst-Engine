@@ -244,6 +244,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BelowOceanRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BloomHorizontalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebrisVegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DepthOfFieldHorizontalRenderPass.cpp" />
@@ -275,6 +276,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomVerticalFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebrisVegetationFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebrisVegetationVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugBoxFragmentShader.cpp" />
@@ -340,6 +343,7 @@
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\SoakCamera.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantBiomeArchitect.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantDebrisVegetationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantGrassVegetationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantLocationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantSolidVegetationArchitect.cpp" />
@@ -358,6 +362,7 @@
     <ClInclude Include="..\..\..\Code\Include\World\BiomeSilverGarden.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeWalkerValley.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantDebrisVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantSolidVegetationArchitect.h" />
