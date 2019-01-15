@@ -83,7 +83,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 /*
 *	Adds a solid vegetation type.
 */
-void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> &models, const PhysicalMaterial &material) NOEXCEPT
+void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT
 {
 	//Create the new solid vegetation information.
 	_SolidVegetationTypeInformations.EmplaceSlow();
@@ -91,7 +91,7 @@ void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypePropertie
 
 	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
-	information->_Models = models;
+	information->_Model = model;
 	information->_Material = material;
 
 	//Fill in the patch and the patch render informations.
@@ -464,7 +464,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 				update._NewPatchInformation._Valid = true;
 				update._NewPatchInformation._GridPoint = gridPoint;
 				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
-																						information._Models[0]._AxisAlignedBoundingBox,
+																						information._Model._AxisAlignedBoundingBox,
 																						&update._NewPatchInformation._AxisAlignedBoundingBox);
 
 				break;

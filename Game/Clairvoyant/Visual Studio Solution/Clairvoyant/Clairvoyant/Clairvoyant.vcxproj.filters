@@ -78,6 +78,9 @@
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantLocationArchitect.cpp">
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantBiomeArchitect.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -93,6 +96,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\ParticleSystemEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\PointLightEntity.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\DirectionalLight.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -106,6 +112,12 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp">
@@ -150,6 +162,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanDescriptorSetLayout.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanEvent.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -181,6 +196,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanRenderTarget.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanSampler.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanSemaphore.cpp">
@@ -231,7 +249,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowHorizontalBlurRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.cpp">
@@ -246,16 +270,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationColorRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationDepthRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LightingRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LowDetailSolidVegetationRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\MediumDetailSolidVegetationRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\ParticleSystemRenderPass.cpp">
@@ -265,6 +286,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\SolidVegetationRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\TerrainColorRenderPass.cpp">
@@ -339,6 +363,18 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -378,6 +414,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\SkyFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\SolidVegetationFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\SolidVegetationVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -397,6 +436,15 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\OpenGL\OpenGLRenderingSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
@@ -451,57 +499,6 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\PointLightEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanSampler.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantBiomeArchitect.cpp">
-      <Filter>Clairvoyant Code\World\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationColorRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassVegetationDepthRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowHorizontalBlurRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\OpenGL\OpenGLRenderingSystem.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,9 +17,6 @@ public:
 	//The visibility.
 	VisibilityFlag _Visibility;
 
-	//The level of detail.
-	VegetationLevelOfDetail _LevelOfDetail{ VegetationLevelOfDetail::Low };
-
 	//The transformations buffer.
 	ConstantBufferHandle _TransformationsBuffer;
 

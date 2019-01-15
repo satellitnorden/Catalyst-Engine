@@ -701,31 +701,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the high detail solid vegetation fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailSolidVegetationFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::HighDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
 		//Initialize the lighting fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetLightingFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the low detail solid vegetation fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailSolidVegetationFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::LowDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the medium detail solid vegetation fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailSolidVegetationFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::MediumDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -789,6 +768,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSkyFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the solid vegetation fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetSolidVegetationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::SolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -949,7 +935,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene render pass.
 	{
-		constexpr uint64 NUMBER_OF_SUBPASSES{ 8 };
+		constexpr uint64 NUMBER_OF_SUBPASSES{ 6 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1066,25 +1052,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation)] =
-								VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation)] =
-								VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation)] =
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::SolidVegetation)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
@@ -1133,30 +1101,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::DynamicPhysical),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::SolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation),
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailSolidVegetation),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation),
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT),
-
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailSolidVegetation),
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::SolidVegetation),
 														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::GrassVegetationDepth),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,

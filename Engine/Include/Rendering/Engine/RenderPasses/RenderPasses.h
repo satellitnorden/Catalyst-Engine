@@ -25,12 +25,10 @@
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/GrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/GrassVegetationDepthRenderPass.h>
-#include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/LowDetailSolidVegetationRenderPass.h>
-#include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
+#include <Rendering/Engine/RenderPasses/SolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>

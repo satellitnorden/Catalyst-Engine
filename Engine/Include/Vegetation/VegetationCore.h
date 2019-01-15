@@ -12,16 +12,6 @@
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);
 
-//Enumeration covering all vegetation level of details.
-enum class VegetationLevelOfDetail : uint8
-{
-	Low,
-	Medium,
-	High,
-
-	NumberOfVegetationLevelOfDetails
-};
-
 //Enumeration covering all vegetation types.
 enum class VegetationType : uint8
 {

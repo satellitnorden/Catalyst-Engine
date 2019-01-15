@@ -12,13 +12,6 @@
 #include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
 
-//Clairvoyant grass vegetation architect constants.
-namespace ClairvoyantSolidVegetationArchitectConstants
-{
-	constexpr float MEDIUM_DETAIL_DISTANCE{ 250.0f };
-	constexpr float LOW_DETAIL_DISTANCE{ 500.0f };
-}
-
 /*
 *	Initializes the Clairvoyant solid vegetation architect.
 */
@@ -28,8 +21,6 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		//Add the rock 1 solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantSolidVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = ClairvoyantWorldConstants::ROCKS_CUTOFF_DISTANCE;
 		properties._Density = 0.00015f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -37,14 +28,8 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 			return ClairvoyantWorldUtilities::GenerateTransformation(0.7f, 0.0f, 0.1f, 0.2f, Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
-		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
-
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Rock_1_Model"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Rock_1_Model"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Rock_1_Model"));
-
-		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("SolidVegetation_Rock_1_Material")) };
-
-		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddSolidVegetationType(	properties,
+															ResourceLoader::GetPhysicalModel(HashString("SolidVegetation_Rock_1_Model")),
+															ResourceLoader::GetPhysicalMaterial(HashString("SolidVegetation_Rock_1_Material")));
 	}
 }

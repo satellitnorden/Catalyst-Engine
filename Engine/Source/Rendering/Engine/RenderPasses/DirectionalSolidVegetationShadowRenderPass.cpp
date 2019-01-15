@@ -7,7 +7,6 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/VegetationSystem.h>
 
@@ -172,9 +171,6 @@ void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
 	//Wait for the solid vegetation culling to finish.
 	CullingSystem::Instance->WaitForSolidVegetationCulling();
 
-	//Wait for the solid vegetation level of detail to finish.
-	LevelOfDetailSystem::Instance->WaitForSolidVegetationLevelOfDetail();
-
 	for (const SolidVegetationTypeInformation &information : *informations)
 	{
 		//Bind the model vertex and index buffer.
@@ -199,12 +195,12 @@ void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 0, information._Models[UNDERLYING(renderInformation._LevelOfDetail)]._Buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, information._Models[UNDERLYING(renderInformation._LevelOfDetail)]._Buffer, information._Models[UNDERLYING(renderInformation._LevelOfDetail)]._IndexOffset);
+			commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
 			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Models[UNDERLYING(renderInformation._LevelOfDetail)]._IndexCount, renderInformation._NumberOfTransformations);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
 		}
 	}
 
