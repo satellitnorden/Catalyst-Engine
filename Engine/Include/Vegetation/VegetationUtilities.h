@@ -13,14 +13,14 @@ namespace VegetationUtilities
 	*	Generates the transformations.
 	*/
 	template <typename Type>
-	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, const float gridSize, DynamicArray<Matrix4> *const RESTRICT transformations, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, DynamicArray<Matrix4> *const RESTRICT transformations, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Construct the box.
-		const Vector3<float> worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * gridSize) };
-		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * (gridSize * 0.5f), worldPosition + properties._CutoffDistance * (gridSize * 0.5f) };
+		const Vector3<float> worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance) };
+		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * 0.5f, worldPosition + properties._CutoffDistance * 0.5f };
 
 		//Calculate the number of placements.
-		uint32 placements{ static_cast<uint32>((properties._CutoffDistance * gridSize) * (properties._CutoffDistance * gridSize) * properties._Density) };
+		uint32 placements{ static_cast<uint32>(properties._CutoffDistance * properties._CutoffDistance * properties._Density) };
 
 		for (uint32 i = 0; i < placements; ++i)
 		{

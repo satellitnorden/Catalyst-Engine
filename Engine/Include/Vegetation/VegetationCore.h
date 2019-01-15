@@ -9,13 +9,6 @@
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
-//Vegetation constants.
-namespace VegetationConstants
-{
-	constexpr float GRASS_VEGETATION_GRID_SIZE{ 1.0f };
-	constexpr float SOLID_VEGETATION_GRID_SIZE{ 0.35f };
-}
-
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);
 

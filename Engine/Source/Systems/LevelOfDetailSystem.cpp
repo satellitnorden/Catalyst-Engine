@@ -48,7 +48,7 @@ void LevelOfDetailSystem::LevelOfDetailSolidVegetation() NOEXCEPT
 	for (SolidVegetationTypeInformation &information : *informations)
 	{
 		//Cache the grid size.
-		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE };
+		const float gridSize{ information._Properties._CutoffDistance };
 
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
 		{
