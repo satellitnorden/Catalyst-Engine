@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
 template <typename Type>
@@ -22,13 +23,24 @@ public:
 	ArrayProxy() NOEXCEPT = delete;
 
 	/*
+	*	Constructor taking a dynamic array.
+	*/
+	ArrayProxy(const DynamicArray<Type> &array) NOEXCEPT
+		:
+		_Array(array.Data()),
+		_Length(array.Size())
+	{
+
+	}
+
+	/*
 	*	Constructor taking a static array.
 	*/
 	template <uint64 LENGTH>
-	ArrayProxy(const StaticArray<Type, LENGTH> &staticArray) NOEXCEPT
+	ArrayProxy(const StaticArray<Type, LENGTH> &array) NOEXCEPT
 		:
-		_Array(staticArray.begin()),
-		_Length(staticArray.Size())
+		_Array(array.Data()),
+		_Length(array.Size())
 	{
 
 	}

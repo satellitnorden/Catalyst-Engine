@@ -348,8 +348,8 @@
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantLocationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantSolidVegetationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainArchitect.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantVegetationPlacement.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantWorldArchitect.cpp" />
-    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantWorldUtilities.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\TimeOfDaySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -367,9 +367,9 @@
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantSolidVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainArchitect.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantVegetationPlacement.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldConstants.h" />
-    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldUtilities.h" />
     <ClInclude Include="..\..\..\Code\Include\World\EnvironmentParameters.h" />
     <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h" />
   </ItemGroup>

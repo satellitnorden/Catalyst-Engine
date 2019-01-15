@@ -69,9 +69,6 @@
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainArchitect.cpp">
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantWorldUtilities.cpp">
-      <Filter>Clairvoyant Code\World\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantSolidVegetationArchitect.cpp">
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
@@ -513,6 +510,9 @@
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantDebrisVegetationArchitect.cpp">
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantVegetationPlacement.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -545,9 +545,6 @@
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldUtilities.h">
-      <Filter>Clairvoyant Code\World\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantSolidVegetationArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
@@ -570,6 +567,9 @@
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantDebrisVegetationArchitect.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantVegetationPlacement.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,8 +2,8 @@
 #include <World/ClairvoyantGrassVegetationArchitect.h>
 
 //Clairvoyant.
+#include <World/ClairvoyantVegetationPlacement.h>
 #include <World/ClairvoyantWorldConstants.h>
-#include <World/ClairvoyantWorldUtilities.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>
@@ -32,7 +32,16 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_MODULATOR_FACTOR, MAXIMUM_WIND_MODULATOR_FACTOR);
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(0.5f, 0.0f, 0.03f, 0.06f, Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
+
+			properties._Rotation = Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f));
+			properties._AxisAlignedBoundingBox = &box;
+			properties._MinimumAngle = 0.5f;
+			properties._MinimumScale = 0.03f;
+			properties._MaximumScale = 0.06f;
+			properties._Transformation = transformation;
+
+			return ClairvoyantVegetationPlacement::GenerateTransformation(properties);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Fern_1_Material")) };
@@ -50,7 +59,16 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._Thickness = 0.5f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(0.5f, 0.0f, 0.5f, 1.0f, Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
+
+			properties._Rotation = Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f));
+			properties._AxisAlignedBoundingBox = &box;
+			properties._MinimumAngle = 0.5f;
+			properties._MinimumScale = 0.5f;
+			properties._MaximumScale = 1.0f;
+			properties._Transformation = transformation;
+
+			return ClairvoyantVegetationPlacement::GenerateTransformation(properties);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Grass_1_Material")) };
