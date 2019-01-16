@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/ArrayProxy.h>
 
 //Math.
 #include <Math/Matrix4.h>
@@ -14,6 +15,38 @@
 
 namespace ClairvoyantVegetationPlacement
 {
+
+	/*
+	*	Terrain material weight definition.
+	*/
+	class TerrainMaterialWeight final
+	{
+
+	public:
+
+		/*
+		*	Default constructor, prohibited - must be constructed with the proper arguments.
+		*/
+		constexpr TerrainMaterialWeight() NOEXCEPT = delete;
+
+		/*
+		*	Constructor taking the material and the weight.
+		*/
+		constexpr TerrainMaterialWeight(const ClairvoyantTerrainMaterial initialMaterial, const float initialWeight) NOEXCEPT
+			:
+			_Material(initialMaterial),
+			_Weight(initialWeight)
+		{
+
+		}
+
+		//The material.
+		ClairvoyantTerrainMaterial _Material;
+
+		//The weight.
+		float _Weight;
+
+	};
 
 	/*
 	*	Transformation generation properties. definition.
@@ -32,8 +65,8 @@ namespace ClairvoyantVegetationPlacement
 		//The maximum scale.
 		float _MaximumScale;
 
-		//The material.
-		ClairvoyantTerrainMaterial _Material;
+		//The material weights.
+		ArrayProxy<TerrainMaterialWeight> _MaterialWeights;
 
 	};
 

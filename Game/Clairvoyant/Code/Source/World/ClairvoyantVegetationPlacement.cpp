@@ -31,7 +31,22 @@ namespace ClairvoyantVegetationPlacement
 		}
 
 		//Test the material.
-		if (static_cast<ClairvoyantTerrainMaterial>(material) != properties._Material)
+		float materialWeight{ 0.0f };
+
+		for (const TerrainMaterialWeight terrainMaterialWeight : properties._MaterialWeights)
+		{
+			if (terrainMaterialWeight._Material == static_cast<ClairvoyantTerrainMaterial>(material))
+			{
+				materialWeight = terrainMaterialWeight._Weight;
+			}
+		}
+
+		if (materialWeight == 0.0f)
+		{
+			return false;
+		}
+
+		if (materialWeight < 1.0f && !CatalystBaseMath::RandomChance(materialWeight))
 		{
 			return false;
 		}

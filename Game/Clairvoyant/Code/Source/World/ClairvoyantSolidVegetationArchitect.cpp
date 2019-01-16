@@ -25,12 +25,20 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._Density = 0.000225f; //0.000025f step
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
+			constexpr StaticArray<ClairvoyantVegetationPlacement::TerrainMaterialWeight, 4> materialWeights
+			{
+				ClairvoyantVegetationPlacement::TerrainMaterialWeight(ClairvoyantTerrainMaterial::Grass_1, 0.5f),
+				ClairvoyantVegetationPlacement::TerrainMaterialWeight(ClairvoyantTerrainMaterial::Grass_2, 0.5f),
+				ClairvoyantVegetationPlacement::TerrainMaterialWeight(ClairvoyantTerrainMaterial::Leaves_1, 0.25f),
+				ClairvoyantVegetationPlacement::TerrainMaterialWeight(ClairvoyantTerrainMaterial::Stone_1, 1.0f)
+			};
+
 			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
 
 			properties._Rotation = Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f));
 			properties._MinimumScale = 0.1f;
 			properties._MaximumScale = 0.2f;
-			properties._Material = ClairvoyantTerrainMaterial::Leaves_1;
+			properties._MaterialWeights = materialWeights;
 
 			return ClairvoyantVegetationPlacement::GenerateTransformation(properties, box, transformation);
 		};
