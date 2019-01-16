@@ -22,7 +22,7 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		SolidVegetationTypeProperties properties;
 
 		properties._CutoffDistance = ClairvoyantWorldConstants::ROCKS_CUTOFF_DISTANCE;
-		properties._Density = 0.0002f; //0.000025f step
+		properties._Density = 0.000225f; //0.000025f step
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
