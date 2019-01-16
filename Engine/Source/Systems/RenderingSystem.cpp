@@ -36,6 +36,7 @@
 #include <Resources/OceanMaterialData.h>
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
+#include <Resources/TreeVegetationModelData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -47,6 +48,7 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
+#include <Vegetation/TreeVegetationModel.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -529,7 +531,7 @@ void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData 
 {
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(GrassVegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
 	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
 	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
@@ -606,6 +608,25 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 	physicalMaterial._AlbedoTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._AlbedoTexture);
 	physicalMaterial._NormalMapTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._NormalMapTexture);
 	physicalMaterial._MaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._MaterialPropertiesTexture);
+}
+
+/*
+*	Creates a tree vegetation model.
+*/
+void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT
+{
+	//Create the vertex and index buffer.
+	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
+	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
+
+	//Set up the treee vegetation model.
+	model._AxisAlignedBoundingBox._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
+	model._AxisAlignedBoundingBox._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
+	model._Buffer = buffer;
+	model._IndexOffset = modelDataSizes[0];
+	model._IndexCount = static_cast<uint32>(data._Indices.Size());
 }
 
 /*

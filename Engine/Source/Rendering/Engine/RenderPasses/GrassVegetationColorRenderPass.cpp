@@ -11,7 +11,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Vegetation.
-#include <Vegetation/GrassVegetationVertex.h>
+#include <Vegetation/VegetationVertex.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(GrassVegetationColorRenderPass);
@@ -88,23 +88,23 @@ void GrassVegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Position));
+										offsetof(VegetationVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Normal));
+										offsetof(VegetationVertex, _Normal));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Tangent));
+										offsetof(VegetationVertex, _Tangent));
 	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(GrassVegetationVertex, _TextureCoordinate));
+										offsetof(VegetationVertex, _TextureCoordinate));
 	AddVertexInputAttributeDescription(	4,
 										0,
 										VertexInputAttributeDescription::Format::X32SignedFloat,
-										offsetof(GrassVegetationVertex, _ModulatorFactor));
+										offsetof(VegetationVertex, _ModulatorFactor));
 	AddVertexInputAttributeDescription(	5,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
@@ -124,7 +124,7 @@ void GrassVegetationColorRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);
-	AddVertexInputBindingDescription(0, sizeof(GrassVegetationVertex), VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(0, sizeof(VegetationVertex), VertexInputBindingDescription::InputRate::Vertex);
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.

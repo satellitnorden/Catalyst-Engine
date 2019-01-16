@@ -42,6 +42,8 @@ class PhysicalModelData;
 class RenderPass;
 class Resolution;
 class TextureData;
+class TreeVegetationModel;
+class TreeVegetationModelData;
 
 class RenderingSystem final
 {
@@ -389,6 +391,11 @@ public:
 	*	Creates a physical material.
 	*/
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
+
+	/*
+	*	Creates a tree vegetation model.
+	*/
+	void CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT;
 
 	/*
 	*	Initializes a dynamic physical entity.

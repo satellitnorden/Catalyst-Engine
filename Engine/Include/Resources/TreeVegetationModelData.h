@@ -6,7 +6,7 @@
 //Vegetation.
 #include <Vegetation/VegetationVertex.h>
 
-class GrassVegetationModelData final
+class TreeVegetationModelData final
 {
 
 public:

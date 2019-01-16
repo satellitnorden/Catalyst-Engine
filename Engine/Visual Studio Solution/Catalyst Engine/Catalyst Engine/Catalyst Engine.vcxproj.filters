@@ -798,9 +798,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
@@ -1172,6 +1169,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h">
+      <Filter>Resources\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -301,6 +301,7 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
@@ -339,14 +340,15 @@
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />

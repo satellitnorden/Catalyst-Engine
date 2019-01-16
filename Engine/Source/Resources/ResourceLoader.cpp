@@ -14,6 +14,7 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
+#include <Resources/TreeVegetationModelData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -27,6 +28,7 @@ Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
+Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
 
 /*
 *	Given a file path, load a resource collection.
@@ -110,6 +112,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
+
+				break;
+			}
+
+			case ResourceType::TreeVegetationModel:
+			{
+				LoadTreeVegetationModel(file);
 
 				break;
 			}
@@ -248,7 +257,7 @@ void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEX
 
 	//Read the vertices.
 	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(GrassVegetationVertex) * numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(VegetationVertex) * numberOfVertices);
 
 	//Read the number of indices.
 	uint64 numberOfIndices;
@@ -442,4 +451,39 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, _PhysicalModels[resourceID]);
+}
+
+/*
+*	Given a file, load a tree vegetation model.
+*/
+void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the grass vegetation model data in the tree vegetation model data structure.
+	TreeVegetationModelData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the extent of the tree vegetation model.
+	file.Read(&data._Extent, sizeof(float));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	data._Vertices.UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(VegetationVertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	data._Indices.UpsizeFast(numberOfIndices);
+	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Create the tree vegetation model via the rendering system.
+	RenderingSystem::Instance->CreateTreeVegetationModel(data, _TreeVegetationModels[resourceID]);
 }
