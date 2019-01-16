@@ -23,7 +23,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal at the given position.
 	*/
-	static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal) NOEXCEPT
+	static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr) NOEXCEPT
 	{
 		constexpr float offset{ 1.0f };
 
@@ -44,6 +44,11 @@ namespace TerrainGeneralUtilities
 		const Vector3<float> normal4{ Vector3<float>::CrossProduct(left - center, down - center) };
 
 		*normal = Vector3<float>::Normalize(normal1 + normal2 + normal3 + normal4);
+
+		if (height)
+		{
+			*height = center._Y;
+		}
 	}
 
 	/*

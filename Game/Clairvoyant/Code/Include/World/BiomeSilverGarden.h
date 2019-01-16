@@ -46,10 +46,10 @@ public:
 		constexpr float NOISE_SCALE{ 10'000.0f };
 		constexpr StaticArray<Quadruple<ClairvoyantTerrainMaterial, float, float, float>, 4> POTENTIAL_GROUND_MATERIALS
 		{
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 0.125f, 1.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_2, 0.0f, 0.0f, 1.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Leaves_1, 0.0f, 1.0f, 0.0f),
-			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Roots_1, -0.125f, 0.0f, 0.0f)
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_1, 0.0f, 1.0f, 1.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Grass_2, -0.05f, 0.0f, 0.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Leaves_1, -0.1f, 1.0f, 0.0f),
+			Quadruple<ClairvoyantTerrainMaterial, float, float, float>(ClairvoyantTerrainMaterial::Stone_1, -0.15f, 0.0f, 1.0f)
 		};
 		constexpr StaticArray<ClairvoyantTerrainMaterial, 2> POTENTIAL_CLIFF_MATERIALS
 		{

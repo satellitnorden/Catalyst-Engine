@@ -9,6 +9,9 @@
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
+//World.
+#include <World/ClairvoyantWorldConstants.h>
+
 namespace ClairvoyantVegetationPlacement
 {
 
@@ -23,26 +26,20 @@ namespace ClairvoyantVegetationPlacement
 		//The rotation.
 		Vector3<float> _Rotation;
 
-		//The axis-aligned bounding box.
-		const AxisAlignedBoundingBox *RESTRICT _AxisAlignedBoundingBox;
-
-		//The minimum angle.
-		float _MinimumAngle;
-
 		//The minimum scale.
 		float _MinimumScale;
 
 		//The maximum scale.
 		float _MaximumScale;
 
-		//The transformation.
-		Matrix4 *RESTRICT _Transformation;
+		//The material.
+		ClairvoyantTerrainMaterial _Material;
 
 	};
 
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const TransformationGenerationProperties &properties) NOEXCEPT;
+	bool GenerateTransformation(const TransformationGenerationProperties &properties, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
 
 }

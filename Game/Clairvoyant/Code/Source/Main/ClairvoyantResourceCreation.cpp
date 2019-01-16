@@ -72,10 +72,10 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//OceanMaterialCreator::CreateOceanMaterial(parameters);
 	}
 
-	CreateDebrisVegetationIntermediateResources();
+	//CreateDebrisVegetationIntermediateResources();
 	//CreateGrassVegetationIntermediateResources();
 	//CreateSolidVegetationIntermediateResources();
-	//CreateTerrainIntermediateResources();
+	CreateTerrainIntermediateResources();
 	//CreateWorldIntermediateResources();
 #endif
 
@@ -93,10 +93,10 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		//ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}
 
-	CreateDebrisVegetationResourceCollection();
+	//CreateDebrisVegetationResourceCollection();
 	//CreateGrassVegetationResourceCollection();
 	//CreateSolidVegetationResourceCollection();
-	//CreateTerrainResourceCollection();
+	CreateTerrainResourceCollection();
 	//CreateWorldResourceCollection();
 #endif
 }
@@ -425,23 +425,6 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 	}
 
 	{
-		//Create the terrain roots 1 material.
-		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
-
-		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Roots_1_Material";
-		parameters._ID = "Terrain_Roots_1_Material";
-		parameters._MipmapLevels = 8;
-		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\Albedo.png";
-		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\NormalMap.png";
-		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\Roughness.png";
-		parameters._MetallicFile = nullptr;
-		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\AmbientOcclusion.png";
-		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Roots_1\\Displacement.png";
-
-		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
-	}
-
-	{
 		//Create the terrain sand 1 material.
 		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
@@ -474,6 +457,23 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 	}
+
+	{
+		//Create the terrain stone 1 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Terrain_Stone_1_Material";
+		parameters._ID = "Terrain_Stone_1_Material";
+		parameters._MipmapLevels = 8;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Stone_1\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Stone_1\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Stone_1\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Stone_1\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Stone_1\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
 }
 
 /*
@@ -490,9 +490,9 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Grass_2_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Leaves_1_Material.cr");
-	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Roots_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Sand_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Snow_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Terrain_Stone_1_Material.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }

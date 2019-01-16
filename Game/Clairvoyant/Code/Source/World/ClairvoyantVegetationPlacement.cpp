@@ -13,58 +13,43 @@ namespace ClairvoyantVegetationPlacement
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const TransformationGenerationProperties &properties) NOEXCEPT
+	bool GenerateTransformation(const TransformationGenerationProperties &properties, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 	{
 		//Generate a random position.
-		Vector3<float> position{	CatalystBaseMath::RandomFloatInRange(properties._AxisAlignedBoundingBox->_Minimum._X, properties._AxisAlignedBoundingBox->_Maximum._X),
+		Vector3<float> position{	CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X),
 									0.0f,
-									CatalystBaseMath::RandomFloatInRange(properties._AxisAlignedBoundingBox->_Minimum._Z, properties._AxisAlignedBoundingBox->_Maximum._Z) };
+									CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z) };
 
-		//Get the terrain height.
-		if (!TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y))
+		//Retrieve the height, normal and material of the terrain.
+		float height;
+		Vector3<float> normal;
+		uint8 material;
+
+		if (!TerrainSystem::Instance->GetTerrainMaterialAtPosition(position, &material, &height, &normal))
 		{
 			return false;
 		}
 
-		//Get the terrain normal.
-		Vector3<float> terrainNormal;
-
-		if (!TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &terrainNormal))
+		//Test the material.
+		if (static_cast<ClairvoyantTerrainMaterial>(material) != properties._Material)
 		{
 			return false;
 		}
 
-		//Handle spawning based on angle.
-		const float angle{ CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(terrainNormal, Vector3<float>::UP), 0.0f) };
-
-		if (angle < properties._MinimumAngle)
-		{
-			return false;
-		}
-
-		const float scaledAngle{ CatalystBaseMath::Scale(angle, properties._MinimumAngle, 1.0f, 0.0f, 1.0f) };
-
-		if (!CatalystBaseMath::RandomChance(scaledAngle))
-		{
-			return false;
-		}
+		//Set the height.
+		position._Y = height;
 
 		//Generate the transformation!
 		const float scale{ CatalystBaseMath::RandomFloatInRange(properties._MinimumScale, properties._MaximumScale) };
 
-		properties._Transformation->SetTranslation(position);
-		properties._Transformation->SetScale(Vector3<float>(scale, scale, scale));
+		transformation->SetTranslation(position);
+		transformation->SetScale(Vector3<float>(scale, scale, scale));
 
-		Matrix4 rotationMatrix;
-
-		if (terrainNormal != Vector3<float>::UP)
-		{
-			rotationMatrix = Matrix4::Orientation(terrainNormal, Vector3<float>::UP);
-		}
+		Matrix4 rotationMatrix{ Matrix4::Orientation(normal, Vector3<float>::UP) };
 
 		rotationMatrix.Rotate(properties._Rotation);
 
-		*properties._Transformation = *properties._Transformation * rotationMatrix;
+		*transformation = *transformation * rotationMatrix;
 
 		return true;
 	}

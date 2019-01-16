@@ -35,19 +35,17 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
 
 			properties._Rotation = Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f));
-			properties._AxisAlignedBoundingBox = &box;
-			properties._MinimumAngle = 0.5f;
 			properties._MinimumScale = 0.03f;
 			properties._MaximumScale = 0.06f;
-			properties._Transformation = transformation;
+			properties._Material = ClairvoyantTerrainMaterial::Grass_2;
 
-			return ClairvoyantVegetationPlacement::GenerateTransformation(properties);
+			return ClairvoyantVegetationPlacement::GenerateTransformation(properties, box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Fern_1_Material")) };
 
 		properties._CutoffDistance = ClairvoyantWorldConstants::PLANTS_CUTOFF_DISTANCE;
-		properties._Density = 0.0035f;
+		properties._Density = 0.004f; //0.00025f step
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetation_Fern_1_Model")), material);
 	}
@@ -62,19 +60,17 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			ClairvoyantVegetationPlacement::TransformationGenerationProperties properties;
 
 			properties._Rotation = Vector3<float>(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f));
-			properties._AxisAlignedBoundingBox = &box;
-			properties._MinimumAngle = 0.5f;
 			properties._MinimumScale = 0.5f;
 			properties._MaximumScale = 1.0f;
-			properties._Transformation = transformation;
+			properties._Material = ClairvoyantTerrainMaterial::Grass_1;
 
-			return ClairvoyantVegetationPlacement::GenerateTransformation(properties);
+			return ClairvoyantVegetationPlacement::GenerateTransformation(properties, box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetation_Grass_1_Material")) };
 
 		properties._CutoffDistance = ClairvoyantWorldConstants::GRASS_CUTOFF_DISTANCE;
-		properties._Density = 0.175f;
+		properties._Density = 0.275f; //0.025f step
 		properties._WindModulatorFactor = CatalystBaseMath::RandomFloatInRange(MINIMUM_WIND_MODULATOR_FACTOR, MAXIMUM_WIND_MODULATOR_FACTOR);
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetation_Default_Model")), material);

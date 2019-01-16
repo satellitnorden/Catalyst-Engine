@@ -30,9 +30,9 @@ enum class ClairvoyantTerrainMaterial : uint8
 	Grass_1,
 	Grass_2,
 	Leaves_1,
-	Roots_1,
 	Sand_1,
 	Snow_1,
+	Stone_1,
 
 	NumberOfClairvoyantTerrainMaterials
 };

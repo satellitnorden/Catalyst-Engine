@@ -230,9 +230,9 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Grass_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Leaves_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Leaves_1_Material")), 0.25f);
-	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Roots_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Roots_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")), 0.25f);
 	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Snow_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")), 0.25f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Stone_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Stone_1_Material")), 0.25f);
 }
 
 /*
