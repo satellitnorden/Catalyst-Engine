@@ -15,6 +15,12 @@ public:
 	//The vegetation type information to update.
 	GrassVegetationTypeInformation *RESTRICT _Information;
 
+	//Denotes whether or not this is a level of detail update.
+	bool _LevelOfDetailUpdate;
+
+	//The index.
+	uint8 _Index;
+
 	//The patch indices to invalidate.
 	DynamicArray<uint8> _PatchesToInvalidate;
 

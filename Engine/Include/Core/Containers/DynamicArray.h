@@ -66,17 +66,7 @@ public:
 	~DynamicArray() NOEXCEPT
 	{
 		//This dynamic array might have been moved from, thus we need to test the array pointer.
-		if (_Array)
-		{
-			//Call the destructor on all objects in the array.
-			for (uint64 i = 0; i < _Size; ++i)
-			{
-				_Array[i].~Type();
-			}
-
-			//Free the memory used by the array.
-			MemoryUtilities::FreeMemory(_Array);
-		}
+		DestroyArray();
 	}
 
 	/*
@@ -84,6 +74,8 @@ public:
 	*/
 	void operator=(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
+		DestroyArray();
+
 		ReserveConstruct(otherDynamicArray._Capacity);
 		_Size = otherDynamicArray._Size;
 
@@ -95,6 +87,8 @@ public:
 	*/
 	void operator=(DynamicArray &&otherDynamicArray) NOEXCEPT
 	{
+		DestroyArray();
+
 		_Array = otherDynamicArray._Array;
 		_Size = otherDynamicArray._Size;
 		_Capacity = otherDynamicArray._Capacity;
@@ -408,6 +402,27 @@ private:
 
 	//The current capacity of this dynamic array.
 	uint64 _Capacity;
+
+	/*
+	*	Destroys the underlying array.
+	*/
+	void DestroyArray() NOEXCEPT
+	{
+		if (_Array)
+		{
+			//Call the destructor on all objects in the array.
+			for (uint64 i = 0; i < _Size; ++i)
+			{
+				_Array[i].~Type();
+			}
+
+			//Free the memory used by the array.
+			MemoryUtilities::FreeMemory(_Array);
+
+			//Set it to nullptr.
+			_Array = nullptr;
+		}
+	}
 
 	/*
 	*	Reserves a new chunk of memory, changing the array's capacity, without copying over the old array.

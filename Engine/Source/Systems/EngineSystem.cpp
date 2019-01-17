@@ -55,13 +55,16 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 /*
 *	Updates the engine system synchronously.
 */
-void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
+void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Update the delta time.
-	_DeltaTime = newDeltaTime;
+	_DeltaTime = deltaTime;
 
 	//Update the total time.
 	_TotalTime += _DeltaTime;
+
+	//Update the total frames.
+	++_TotalFrames;
 
 	//Construct the update context.
 	UpdateContext context;

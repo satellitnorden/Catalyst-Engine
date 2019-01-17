@@ -29,7 +29,7 @@ public:
 	/*
 	*	Updates the engine system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT;
+	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Returns the project configuration.
 	*/
-	const CatalystProjectConfiguration& GetProjectConfiguration() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const CatalystProjectConfiguration& GetProjectConfiguration() const NOEXCEPT
 	{
 		return _ProjectConfiguration;
 	}
@@ -47,7 +47,7 @@ public:
 	/*
 	*	Returns the delta time.
 	*/
-	float GetDeltaTime() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float GetDeltaTime() const NOEXCEPT
 	{
 		return _DeltaTime;
 	}
@@ -55,9 +55,17 @@ public:
 	/*
 	*	Returns the total time.
 	*/
-	float GetTotalTime() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float GetTotalTime() const NOEXCEPT
 	{
 		return _TotalTime;
+	}
+
+	/*
+	*	Returns the total frames.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetTotalFrames() const NOEXCEPT
+	{
+		return _TotalFrames;
 	}
 
 	/*
@@ -96,6 +104,9 @@ private:
 
 	//Denotes the total game time.
 	float _TotalTime{ 0.0f };
+
+	//Denotes the total frames.
+	std::atomic<uint64> _TotalFrames{ 0 };
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> _ShouldTerminate{ false };

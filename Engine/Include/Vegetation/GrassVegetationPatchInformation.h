@@ -23,6 +23,12 @@ public:
 	//The grid point.
 	GridPoint2 _GridPoint;
 
+	//The transformations.
+	DynamicArray<Matrix4> _Transformations;
+
+	//The timestamp.
+	uint64 _TimeStamp;
+
 	//The axis aligned bounding boxes.
 	StaticArray<AxisAlignedBoundingBox, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> _AxisAlignedBoundingBoxes;
 

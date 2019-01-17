@@ -18,7 +18,7 @@ layout (set = 1, binding = 0) uniform sampler2D maskTexture;
 void main()
 {
     //Discard this fragment according to the mask texture.
-    if (fragmentLengthFactor == 0.0f
+    if (fragmentLengthFactor < 0.5f
         || fragmentLengthFactor < RandomFloat(gl_FragCoord.xyz)
         || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {

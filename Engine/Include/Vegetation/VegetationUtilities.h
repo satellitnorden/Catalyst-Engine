@@ -16,8 +16,10 @@ namespace VegetationUtilities
 	*	Generates the transformations.
 	*/
 	template <typename Type>
-	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, DynamicArray<Matrix4> *const RESTRICT transformations, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, DynamicArray<Matrix4> *const RESTRICT transformations) NOEXCEPT
 	{
+		ASSERT(transformations->Empty(), "Transformations array must be empty!");
+
 		//Construct the box.
 		const Vector3<float> worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance) };
 		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * 0.5f, worldPosition + properties._CutoffDistance * 0.5f };
@@ -29,70 +31,47 @@ namespace VegetationUtilities
 		{
 			Matrix4 newTransformation;
 
-			properties._PlacementFunction(box, &newTransformation);
+			if (properties._PlacementFunction(box, &newTransformation))
 			{
 				transformations->EmplaceSlow(newTransformation);
 			}
 		}
-
-		if (!transformations->Empty())
-		{
-			RenderingUtilities::CreateTransformationsBuffer(*transformations, buffer);
-			*numberOfTransformations = static_cast<uint32>(transformations->Size());
-		}
-
-		else
-		{
-			*numberOfTransformations = 0;
-		}
 	}
 
 	/*
-	*	Generates the grass vegetation transformations.
+	*	Sorts a set of transformations into different level of details.
 	*/
-	static void GenerateGrassVegetationTransformations(	const GridPoint2 &gridPoint,
-														const GrassVegetationTypeProperties &properties,
-														StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT transformations,
-														StaticArray<ConstantBufferHandle, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT buffers,
-														StaticArray<uint32, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
+	void SortTransformations(	const DynamicArray<Matrix4> &transformations,
+								const GrassVegetationTypeProperties &properties,
+								StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
+								StaticArray<ConstantBufferHandle, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT buffers,
+								StaticArray<uint32, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Cache the viewer position.
 		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
-		//Construct the box.
-		const Vector3<float> worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance) };
-		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * 0.5f, worldPosition + properties._CutoffDistance * 0.5f };
-
-		//Calculate the number of placements.
-		uint32 placements{ static_cast<uint32>(properties._CutoffDistance * properties._CutoffDistance * properties._Density) };
-
-		for (uint32 i = 0; i < placements; ++i)
+		for (const Matrix4 &transformation : transformations)
 		{
-			Matrix4 newTransformation;
+			//Calculate the distance to the viewer.
+			const float distanceToViewer{ Vector3<float>::Length(viewerPosition - transformation.GetTranslation()) };
 
-			properties._PlacementFunction(box, &newTransformation);
+			if (distanceToViewer > properties._LowDetailDistance)
 			{
-				//Calculate the distance to the viewer.
-				const float distanceToViewer{ Vector3<float>::Length(viewerPosition - newTransformation.GetTranslation()) };
+				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
+			}
 
-				if (distanceToViewer > properties._LowDetailDistance)
-				{
-					transformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Low)).EmplaceSlow(newTransformation);
-				}
-				
-				else
-				{
-					transformations->At(UNDERLYING(GrassVegetationLevelOfDetail::High)).EmplaceSlow(newTransformation);
-				}
+			else
+			{
+				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::High)).EmplaceSlow(transformation);
 			}
 		}
 
 		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 		{
-			if (!transformations->At(i).Empty())
+			if (!levelOfDetailTransformations->At(i).Empty())
 			{
-				RenderingUtilities::CreateTransformationsBuffer(transformations->At(i), &buffers->At(i));
-				numberOfTransformations->At(i) = static_cast<uint32>(transformations->At(i).Size());
+				RenderingUtilities::CreateTransformationsBuffer(levelOfDetailTransformations->At(i), &buffers->At(i));
+				numberOfTransformations->At(i) = static_cast<uint32>(levelOfDetailTransformations->At(i).Size());
 			}
 
 			else
@@ -128,11 +107,13 @@ namespace VegetationUtilities
 
 		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 		{
-			information->_PatchRenderInformations[i]._Visibilities[index] = VisibilityFlag::None;
+			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
 
 			if (information->_PatchRenderInformations[index]._NumberOfTransformations[i] > 0)
 			{
 				RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
+
+				information->_PatchRenderInformations[index]._TransformationsBuffers[i] = nullptr;
 			}
 		}
 	}
