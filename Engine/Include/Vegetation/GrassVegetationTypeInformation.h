@@ -7,9 +7,9 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
+#include <Vegetation/GrassVegetationPatchInformation.h>
 #include <Vegetation/GrassVegetationPatchRenderInformation.h>
 #include <Vegetation/GrassVegetationTypeProperties.h>
-#include <Vegetation/VegetationPatchInformation.h>
 
 class GrassVegetationTypeInformation final
 {
@@ -26,7 +26,7 @@ public:
 	GrassVegetationMaterial _Material;
 
 	//The patch informations.
-	StaticArray<VegetationPatchInformation, 9> _PatchInformations;
+	StaticArray<GrassVegetationPatchInformation, 9> _PatchInformations;
 
 	//The patch render informations.
 	StaticArray<GrassVegetationPatchRenderInformation, 9> _PatchRenderInformations;

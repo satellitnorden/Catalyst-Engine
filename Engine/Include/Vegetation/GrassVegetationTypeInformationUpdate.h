@@ -19,7 +19,7 @@ public:
 	DynamicArray<uint8> _PatchesToInvalidate;
 
 	//The new patch information.
-	VegetationPatchInformation _NewPatchInformation;
+	GrassVegetationPatchInformation _NewPatchInformation;
 
 	//The new patch render information.
 	GrassVegetationPatchRenderInformation _NewPatchRenderInformation;

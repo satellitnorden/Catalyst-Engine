@@ -130,15 +130,18 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 				continue;
 			}
 
-			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			//Test this patch's axis-aligned bounding boxes against the current frustum planes.
+			for (uint8 j{ 0 }; j < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++j)
 			{
-				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
-			}
+				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
+				{
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
 
-			else
-			{
-				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+				else
+				{
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
 			}
 		}
 	}

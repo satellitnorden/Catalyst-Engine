@@ -342,6 +342,7 @@
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />

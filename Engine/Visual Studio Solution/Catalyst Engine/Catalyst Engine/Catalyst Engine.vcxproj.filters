@@ -1197,6 +1197,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailGrassVegetationDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -98,7 +98,11 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 	for (uint8 i = 0; i < 9; ++i)
 	{
 		information->_PatchInformations[i]._Valid = false;
-		information->_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
+
+		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+		{
+			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
+		}
 	}
 }
 
@@ -169,7 +173,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 
 			for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
 			{
-				VegetationUtilities::InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
+				VegetationUtilities::InvalidateGrassVegetationPatch(_GrassVegetationTypeInformationUpdate._Information, index);
 			}
 
 			for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
@@ -509,19 +513,28 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 			if (!exists)
 			{
 				//Construct the update.
-				DynamicArray<Matrix4> transformations;
-				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
-				VegetationUtilities::GenerateTransformations(	gridPoint,
-																information._Properties,
-																&transformations,
-																&update._NewPatchRenderInformation._TransformationsBuffer,
-																&update._NewPatchRenderInformation._NumberOfTransformations);
+				StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> transformations;
+
+				for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				{
+					update._NewPatchRenderInformation._Visibilities[i] = VisibilityFlag::None;
+				}
+
+				VegetationUtilities::GenerateGrassVegetationTransformations(	gridPoint,
+																				information._Properties,
+																				&transformations,
+																				&update._NewPatchRenderInformation._TransformationsBuffers,
+																				&update._NewPatchRenderInformation._NumberOfTransformations);
 
 				update._NewPatchInformation._Valid = true;
 				update._NewPatchInformation._GridPoint = gridPoint;
-				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
-																						information._Model._AxisAlignedBoundingBox,
-																						&update._NewPatchInformation._AxisAlignedBoundingBox);
+
+				for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				{
+					RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations[i],
+																							information._Model._AxisAlignedBoundingBox,
+																							&update._NewPatchInformation._AxisAlignedBoundingBoxes[i]);
+				}
 
 				break;
 			}

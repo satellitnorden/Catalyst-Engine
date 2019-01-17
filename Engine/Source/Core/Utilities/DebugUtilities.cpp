@@ -39,13 +39,14 @@ namespace DebugUtilities
 	*/
 	void DebugRenderGrassVegetationAxisAlignedBoundingBoxes() NOEXCEPT
 	{
+		/*
 		const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
 
 		uint64 counter{ 0 };
 
 		for (const GrassVegetationTypeInformation &information : *informations)
 		{
-			for (const VegetationPatchInformation &patchInformation : information._PatchInformations)
+			for (const GrassVegetationPatchInformation &patchInformation : information._PatchInformations)
 			{
 				if (patchInformation._Valid)
 				{
@@ -58,6 +59,7 @@ namespace DebugUtilities
 				}
 			}
 		}
+		*/
 	}
 
 	/*

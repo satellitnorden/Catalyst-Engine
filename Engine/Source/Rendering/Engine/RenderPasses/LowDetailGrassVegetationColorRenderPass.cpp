@@ -169,7 +169,7 @@ void LowDetailGrassVegetationColorRenderPass::RenderInternal() NOEXCEPT
 	const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
 
 	//If there's none to render - render none.
-	if (true || informations->Empty())
+	if (informations->Empty())
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -212,17 +212,17 @@ void LowDetailGrassVegetationColorRenderPass::RenderInternal() NOEXCEPT
 		for (const GrassVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(GrassVegetationLevelOfDetail::Low)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(GrassVegetationLevelOfDetail::Low)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(GrassVegetationLevelOfDetail::Low)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(GrassVegetationLevelOfDetail::Low)]);
 		}
 	}
 

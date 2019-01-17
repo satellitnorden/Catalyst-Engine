@@ -21,3 +21,12 @@ enum class VegetationType : uint8
 
 	NumberOfVegetationTypes
 };
+
+//Enumeration covering all grass vegetion level of details.
+enum class GrassVegetationLevelOfDetail : uint8
+{
+	Low,
+	High,
+
+	NumberOfGrassVegetationLevelOfDetails
+};

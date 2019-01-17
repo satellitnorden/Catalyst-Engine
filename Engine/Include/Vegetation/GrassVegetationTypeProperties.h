@@ -11,6 +11,9 @@ class GrassVegetationTypeProperties final
 
 public:
 
+	//The placement function.
+	VegetationPlacementFunction _PlacementFunction;
+
 	//The cutoff distance.
 	float _CutoffDistance;
 
@@ -23,7 +26,7 @@ public:
 	//The wind modulator factor.
 	float _WindModulatorFactor;
 
-	//The placement function.
-	VegetationPlacementFunction _PlacementFunction;
+	//The low detail distance.
+	float _LowDetailDistance;
 
 };
