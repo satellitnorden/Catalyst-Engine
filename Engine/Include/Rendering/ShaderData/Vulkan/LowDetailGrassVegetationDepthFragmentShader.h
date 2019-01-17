@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetLowDetailSolidVegetationFragmentShaderData(DynamicArray<byte> &data);
+	void GetLowDetailGrassVegetationDepthFragmentShaderData(DynamicArray<byte> &data);
 }

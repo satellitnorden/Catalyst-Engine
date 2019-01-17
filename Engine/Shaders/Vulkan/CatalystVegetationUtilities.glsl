@@ -4,7 +4,7 @@
 //Preprocessor defines.
 #define MAXIMUM_WIND_SPEED (30.0f)
 #define INVERSE_MAXIMUM_WIND_SPEED (0.033333f)
-#define WIND_SPEED_TIME_MULTIPLIER 4.75f
+#define WIND_SPEED_TIME_MULTIPLIER 4.25f
 
 /*
 *   Given a world position, calculates the wind modulator for grass vegetation.
@@ -29,9 +29,9 @@ vec3 CalculateWindModulator(vec3 position, vec3 normal)
     float mediumScaleZ = windDirection.z + PHI * sin(EULERS_NUMBER * (position.x + position.y + position.z + timeFactor));
 
     //Small scale motion.
-    vec3 smallScale = vec3(	INVERSE_PI * 4.0f * sin(PI * (position.x + position.y + position.z + timeFactor)),
-    						INVERSE_PI * 1.0f * sin(EULERS_NUMBER * (position.x + position.y + position.z + timeFactor)),
-    						INVERSE_PI * 2.0f * sin(DOUBLE_PI * (position.x + position.y + position.z + timeFactor))) * normal;
+    vec3 smallScale = vec3(	INVERSE_PI * 8.0f * sin(PI * (position.x + position.y + position.z + timeFactor)),
+    						INVERSE_PI * 2.0f * sin(EULERS_NUMBER * (position.x + position.y + position.z + timeFactor)),
+    						INVERSE_PI * 4.0f * sin(DOUBLE_PI * (position.x + position.y + position.z + timeFactor))) * normal;
 
     return vec3(largeScaleX + mediumScaleX + smallScale.x, smallScale.y, largeScaleZ + mediumScaleZ + smallScale.z) * windSpeedMultiplier;
 }

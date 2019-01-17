@@ -75,6 +75,8 @@ enum class RenderPassSubStage : uint8
 	DebrisVegetation,
 	GrassVegetationDepth,
 	GrassVegetationColor,
+	LowDetailGrassVegetationDepth,
+	LowDetailGrassVegetationColor,
 
 	//Directional shadow calculation main stage.
 	DirectionalShadow,
@@ -267,6 +269,10 @@ enum class Shader : uint8
 	GrassVegetationDepthFragment,
 	GrassVegetationDepthVertex,
 	LightingFragment,
+	LowDetailGrassVegetationColorFragment,
+	LowDetailGrassVegetationColorVertex,
+	LowDetailGrassVegetationDepthFragment,
+	LowDetailGrassVegetationDepthVertex,
 	OutlineFragment,
 	ParticleSystemFragment,
 	ParticleSystemGeometry,
