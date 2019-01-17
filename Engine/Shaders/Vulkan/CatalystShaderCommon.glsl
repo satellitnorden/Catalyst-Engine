@@ -117,8 +117,10 @@ layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)
+#define DOUBLE_PI (6.283185f)
 #define INVERSE_PI (0.318309f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
+#define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
 
 /*
 *   Defines the bit at the specified index.

@@ -6,9 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-
-//Preprocessor defines.
-#define VEGETATION_WIND_AFFECTION 0.15f
+#include "CatalystVegetationUtilities.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -28,22 +26,12 @@ layout (location = 5) in mat4 vertexTransformationMatrix;
 layout (location = 0) out mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) out vec2 fragmentTextureCoordinate;
 
-/*
-*   Calculates the wind modulator.
-*/
-vec3 CalculateWindModulator(vec3 position)
-{
-    float xModulator = sin(position.x + position.y + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(position.x + position.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.25f;
-    float zModulator = cos(position.z + position.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(position.z + position.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.25f;
-
-    return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z) * windSpeed * VEGETATION_WIND_AFFECTION;
-}
 
 void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * windModulatorFactor * vertexModulatorFactor;
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition, vertexNormal) * windModulatorFactor * vertexModulatorFactor;
 
     //Calculate the fragment tangent space matrix.
     vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));
