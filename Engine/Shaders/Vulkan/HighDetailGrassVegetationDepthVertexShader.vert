@@ -27,7 +27,6 @@ layout (location = 5) in mat4 vertexTransformationMatrix;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
-layout (location = 1) out float fragmentLengthFactor;
 
 void main()
 {
@@ -37,10 +36,6 @@ void main()
 
     //Pass along the fragment texture coordinate.
     fragmentTextureCoordinate = vertexTextureCoordinate;
-
-    //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared3(finalVertexPosition - cameraWorldPosition);
-    fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);

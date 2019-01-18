@@ -27,10 +27,10 @@
 #include <Rendering/ShaderData/Vulkan/DirectionalSolidVegetationShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalTerrainShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/GrassVegetationColorFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/GrassVegetationColorVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/GrassVegetationDepthFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/GrassVegetationDepthVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationColorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationColorVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationColorVertexShader.h>
