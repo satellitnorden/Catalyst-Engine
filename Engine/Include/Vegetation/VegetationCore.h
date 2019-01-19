@@ -26,6 +26,7 @@ enum class VegetationType : uint8
 enum class GrassVegetationLevelOfDetail : uint8
 {
 	Low,
+	Medium,
 	High,
 
 	NumberOfGrassVegetationLevelOfDetails

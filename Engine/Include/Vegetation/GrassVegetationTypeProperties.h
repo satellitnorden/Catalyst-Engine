@@ -29,4 +29,7 @@ public:
 	//The low detail distance.
 	float _LowDetailDistance;
 
+	//The medium detail distance.
+	float _MediumDetailDistance;
+
 };

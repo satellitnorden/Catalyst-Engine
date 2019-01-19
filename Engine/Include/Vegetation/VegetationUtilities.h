@@ -60,6 +60,11 @@ namespace VegetationUtilities
 				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
 			}
 
+			else if (distanceToViewer > properties._MediumDetailDistance)
+			{
+				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Medium)).EmplaceSlow(transformation);
+			}
+
 			else
 			{
 				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::High)).EmplaceSlow(transformation);
