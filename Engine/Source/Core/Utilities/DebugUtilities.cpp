@@ -86,6 +86,7 @@ namespace DebugUtilities
 	*/
 	void DebugRenderSolidVegetationAxisAlignedBoundingBoxes() NOEXCEPT
 	{
+		/*
 		const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
 
 		uint64 counter{ 0 };
@@ -105,6 +106,7 @@ namespace DebugUtilities
 				}
 			}
 		}
+		*/
 	}
 
 	/*

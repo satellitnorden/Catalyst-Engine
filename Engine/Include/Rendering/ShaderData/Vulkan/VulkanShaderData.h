@@ -31,6 +31,8 @@
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailSolidVegetationFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailSolidVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailDebrisVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailDebrisVegetationVertexShader.h>
@@ -38,12 +40,16 @@
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailDebrisVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailDebrisVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationDepthVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/MediumDetailSolidVegetationFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/MediumDetailSolidVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemGeometryShader.h>
@@ -53,8 +59,6 @@
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ShadowMapFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/SolidVegetationFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/SolidVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>

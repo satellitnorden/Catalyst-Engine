@@ -139,19 +139,4 @@ private:
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
-	/*
-	*	Updates the debris vegetation asynchonously.
-	*/
-	void UpdateDebrisVegetationAsynchronous() NOEXCEPT;
-
-	/*
-	*	Updates the grass vegetation asynchonously.
-	*/
-	void UpdateGrassVegetationAsynchronous() NOEXCEPT;
-
-	/*
-	*	Updates the solid vegetation asynchonously.
-	*/
-	void UpdateSolidVegetationAsynchronous() NOEXCEPT;
-
 };

@@ -173,10 +173,9 @@ void CullingSystem::CullParticleSystems() NOEXCEPT
 void CullingSystem::CullSolidVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT directionalLightFrustumPlanes{ LightingSystem::Instance->GetDirectionalLight()->GetFrustumPlanes() };
-	const StaticArray<Vector4<float>, 6> *const RESTRICT viewerFrustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
-	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
+	//Iterate over all solid vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -187,25 +186,18 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 				continue;
 			}
 
-			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			if (RenderingUtilities::IsWithinViewFrustum(*viewerFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			//Test this patch's axis-aligned bounding boxes against the current frustum planes.
+			for (uint8 j{ 0 }; j < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++j)
 			{
-				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
-			}
+				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
+				{
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
 
-			else
-			{
-				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
-			}
-
-			if (RenderingUtilities::IsWithinViewFrustum(*directionalLightFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
-			{
-				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
-			}
-
-			else
-			{
-				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
+				else
+				{
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
 			}
 		}
 	}

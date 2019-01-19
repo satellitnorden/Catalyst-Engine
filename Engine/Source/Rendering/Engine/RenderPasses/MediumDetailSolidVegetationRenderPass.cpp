@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/DirectionalSolidVegetationShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,9 +11,12 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DirectionalSolidVegetationShadowRenderPass);
+DEFINE_SINGLETON(MediumDetailSolidVegetationRenderPass);
 
-class PushConstantData final
+/*
+*	Vertex push constant data definition.
+*/
+class VertexPushConstantData final
 {
 
 public:
@@ -25,49 +28,66 @@ public:
 };
 
 /*
+*	Fragment push constant data definition.
+*/
+class FragmentPushConstantData final
+{
+
+public:
+
+	int32 _AlbedoTextureIndex;
+	int32 _NormalMapTextureIndex;
+	int32 _MaterialPropertiesTextureIndex;
+
+};
+
+/*
 *	Default constructor.
 */
-DirectionalSolidVegetationShadowRenderPass::DirectionalSolidVegetationShadowRenderPass() NOEXCEPT
+MediumDetailSolidVegetationRenderPass::MediumDetailSolidVegetationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		DirectionalSolidVegetationShadowRenderPass::Instance->InitializeInternal();
+		MediumDetailSolidVegetationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the directional solid vegetation shadow render pass.
+*	Initializes the medium detail solid vegetation render pass.
 */
-void DirectionalSolidVegetationShadowRenderPass::InitializeInternal() NOEXCEPT
+void MediumDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::DirectionalShadowMapping);
+	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DirectionalSolidVegetationShadow);
+	SetSubStage(RenderPassSubStage::MediumDetailSolidVegetation);
 
 	//Set the shaders.
-	SetVertexShader(Shader::DirectionalSolidVegetationShadowVertex);
+	SetVertexShader(Shader::MediumDetailSolidVegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DirectionalSolidVegetationShadowFragment);
+	SetFragmentShader(Shader::MediumDetailSolidVegetationFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::DirectionalLight);
+	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::DirectionalShadowMap);
+	SetNumberOfRenderTargets(3);
+	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
+	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
@@ -110,7 +130,7 @@ void DirectionalSolidVegetationShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetDirectionalShadowMapResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -119,23 +139,23 @@ void DirectionalSolidVegetationShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
-	SetDepthCompareOperator(CompareOperator::Less);
+	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(false);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(BIT(0));
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		DirectionalSolidVegetationShadowRenderPass::Instance->RenderInternal();
+		MediumDetailSolidVegetationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -143,9 +163,9 @@ void DirectionalSolidVegetationShadowRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the directional solid vegetation shadow.
+*	Renders the medium detail solid vegetation.
 */
-void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
+void MediumDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the solid vegetion type informations.
 	const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
@@ -176,31 +196,40 @@ void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
 
-		//Pust constants.
-		PushConstantData data;
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
 
-		data._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);
-		data._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
-		data._InverseHalfCutoffDistanceSquared = 1.0f / data._HalfCutoffDistanceSquared;
+		//Push constants.
+		VertexPushConstantData vertexData;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
+		vertexData._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);
+		vertexData._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
+		vertexData._InverseHalfCutoffDistanceSquared = 1.0f / vertexData._HalfCutoffDistanceSquared;
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+		FragmentPushConstantData fragmentData;
+
+		fragmentData._AlbedoTextureIndex = information._Material._AlbedoTextureIndex;
+		fragmentData._NormalMapTextureIndex = information._Material._NormalMapTextureIndex;
+		fragmentData._MaterialPropertiesTextureIndex = information._Material._MaterialPropertiesTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		for (const SolidVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::High)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::Medium)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::Medium)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::High)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::Medium)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::Medium)]);
 		}
 	}
 

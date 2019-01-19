@@ -110,21 +110,6 @@ namespace VegetationUtilities
 	}
 
 	/*
-	*	Invalidates a grass vegetation patch at the given index for the given vegetation type information.
-	*/
-	static void InvalidateSolidVegetationPatch(SolidVegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT
-	{
-		//Invalidate the patch.
-		information->_PatchInformations[index]._Valid = false;
-		information->_PatchRenderInformations[index]._Visibility = VisibilityFlag::None;
-
-		if (information->_PatchRenderInformations[index]._NumberOfTransformations > 0)
-		{
-			RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
-		}
-	}
-
-	/*
 	*	Updates a vegetation type.
 	*/
 	template <typename TYPE_INFORMATION_TYPE, typename UPDATE_TYPE>

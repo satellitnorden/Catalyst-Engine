@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/SolidVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/LowDetailSolidVegetationRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,7 +11,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(SolidVegetationRenderPass);
+DEFINE_SINGLETON(LowDetailSolidVegetationRenderPass);
 
 /*
 *	Vertex push constant data definition.
@@ -44,32 +44,32 @@ public:
 /*
 *	Default constructor.
 */
-SolidVegetationRenderPass::SolidVegetationRenderPass() NOEXCEPT
+LowDetailSolidVegetationRenderPass::LowDetailSolidVegetationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		SolidVegetationRenderPass::Instance->InitializeInternal();
+		LowDetailSolidVegetationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the solid vegetation render pass.
+*	Initializes the low detail solid vegetation render pass.
 */
-void SolidVegetationRenderPass::InitializeInternal() NOEXCEPT
+void LowDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::SolidVegetation);
+	SetSubStage(RenderPassSubStage::LowDetailSolidVegetation);
 
 	//Set the shaders.
-	SetVertexShader(Shader::SolidVegetationVertex);
+	SetVertexShader(Shader::LowDetailSolidVegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::SolidVegetationFragment);
+	SetFragmentShader(Shader::LowDetailSolidVegetationFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -155,7 +155,7 @@ void SolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		SolidVegetationRenderPass::Instance->RenderInternal();
+		LowDetailSolidVegetationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -163,9 +163,9 @@ void SolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the solid vegetation.
+*	Renders the low detail solid vegetation.
 */
-void SolidVegetationRenderPass::RenderInternal() NOEXCEPT
+void LowDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the solid vegetion type informations.
 	const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
@@ -219,17 +219,17 @@ void SolidVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const SolidVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::Low)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::Low)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::Low)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::Low)]);
 		}
 	}
 

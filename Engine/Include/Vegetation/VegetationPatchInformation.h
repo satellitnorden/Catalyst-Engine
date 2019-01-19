@@ -20,7 +20,13 @@ public:
 	//The grid point.
 	GridPoint2 _GridPoint;
 
-	//The axis aligned bounding box.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	//The transformations.
+	DynamicArray<Matrix4> _Transformations;
+
+	//The timestamp.
+	uint64 _TimeStamp;
+
+	//The axis aligned bounding boxes.
+	StaticArray<AxisAlignedBoundingBox, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 };
