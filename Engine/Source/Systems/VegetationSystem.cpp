@@ -77,7 +77,11 @@ void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypePropert
 	for (uint8 i = 0; i < 9; ++i)
 	{
 		information->_PatchInformations[i]._Valid = false;
-		information->_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
+
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		{
+			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
+		}
 	}
 }
 
@@ -100,7 +104,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}
@@ -139,25 +143,38 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 	{
 		case VegetationType::Debris:
 		{
-			//Return early if there's no debris vegetation type information to update.
-			if (!_DebrisVegetationTypeInformationUpdate._Information)
+			if (_DebrisVegetationTypeInformationUpdate._LevelOfDetailUpdate)
 			{
-				return;
-			}
-
-			for (const uint8 index : _DebrisVegetationTypeInformationUpdate._PatchesToInvalidate)
-			{
-				VegetationUtilities::InvalidatePatch(_DebrisVegetationTypeInformationUpdate._Information, index);
-			}
-
-			for (uint64 i = 0, size = _DebrisVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
-			{
-				if (!_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
 				{
-					_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchInformation;
-					_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation;
+					if (_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_DebrisVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
+					{
+						RenderingSystem::Instance->DestroyConstantBuffer(_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_DebrisVegetationTypeInformationUpdate._Index]._TransformationsBuffers[i]);
+					}
+				}
 
-					break;
+				_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._TimeStamp = _DebrisVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp;
+				_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._AxisAlignedBoundingBoxes = _DebrisVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes;
+				_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._TransformationsBuffers = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers;
+				_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations;
+			}
+
+			else
+			{
+				for (const uint8 index : _DebrisVegetationTypeInformationUpdate._PatchesToInvalidate)
+				{
+					VegetationUtilities::InvalidatePatch(_DebrisVegetationTypeInformationUpdate._Information, index);
+				}
+
+				for (uint64 i = 0, size = _DebrisVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+				{
+					if (!_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+					{
+						_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchInformation;
+						_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation;
+
+						break;
+					}
 				}
 			}
 
@@ -168,7 +185,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 		{
 			if (_GrassVegetationTypeInformationUpdate._LevelOfDetailUpdate)
 			{
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
 				{
 					if (_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
 					{
@@ -186,7 +203,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 			{
 				for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
 				{
-					VegetationUtilities::InvalidateGrassVegetationPatch(_GrassVegetationTypeInformationUpdate._Information, index);
+					VegetationUtilities::InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
 				}
 
 				for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
@@ -214,7 +231,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 
 			for (const uint8 index : _SolidVegetationTypeInformationUpdate._PatchesToInvalidate)
 			{
-				VegetationUtilities::InvalidatePatch(_SolidVegetationTypeInformationUpdate._Information, index);
+				VegetationUtilities::InvalidateSolidVegetationPatch(_SolidVegetationTypeInformationUpdate._Information, index);
 			}
 
 			for (uint64 i = 0, size = _SolidVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
@@ -278,149 +295,8 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 */
 void VegetationSystem::UpdateDebrisVegetationAsynchronous() NOEXCEPT
 {
-	//Cache the viewer position.
-	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
-
-	//Reset the debris vegetation type information update.
-	_DebrisVegetationTypeInformationUpdate._Information = nullptr;
-
-	//Update all debris vegetation type informations.
-	for (DebrisVegetationTypeInformation &information : _DebrisVegetationTypeInformations)
-	{
-		//Calculate the current grid point based on the current viewer position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance) };
-
-		//Create an array with the valid grid positions.
-		StaticArray<GridPoint2, 9> validGridPoints
-		{
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
-
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-		};
-
-		//Construct the sorting data.
-		class SortingData final
-		{
-
-		public:
-
-			//The current viewer position.
-			Vector3<float> _ViewerPosition;
-
-			//The cutoff distance.
-			float _CutoffDistance;
-		};
-
-		SortingData sortingData;
-
-		sortingData._ViewerPosition = viewerPosition;
-		sortingData._CutoffDistance = information._Properties._CutoffDistance;
-
-		//Sort the array so that the closest grid point is first.
-		SortingAlgorithms::InsertionSort<GridPoint2>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint2 *const RESTRICT first, const GridPoint2 *const RESTRICT second)
-		{
-			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
-
-			const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance) };
-			const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance) };
-
-			return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
-		});
-
-		//Construct the update.
-		DebrisVegetationTypeInformationUpdate update;
-
-		update._Information = &information;
-		update._NewPatchInformation._Valid = false;
-
-		//Determine the patch indices to invalidate.
-		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-		{
-			//If this patch is already invalid, no need to invalidate it.
-			if (!information._PatchInformations[i]._Valid)
-			{
-				continue;
-			}
-
-			bool valid{ false };
-
-			for (const GridPoint2 &gridPoint : validGridPoints)
-			{
-				if (information._PatchInformations[i]._GridPoint == gridPoint)
-				{
-					valid = true;
-
-					break;
-				}
-			}
-
-			if (!valid)
-			{
-				update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
-			}
-		}
-
-		//Determine the patches to update.
-		for (const GridPoint2 &gridPoint : validGridPoints)
-		{
-			bool exists{ false };
-
-			for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-			{
-				if (information._PatchInformations[i]._Valid && information._PatchInformations[i]._GridPoint == gridPoint)
-				{
-					exists = true;
-
-					break;
-				}
-			}
-
-			if (!exists)
-			{
-				//Construct the update.
-				DynamicArray<Matrix4> transformations;
-				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
-				VegetationUtilities::GenerateTransformations(	gridPoint,
-																information._Properties,
-																&transformations);
-
-				if (!transformations.Empty())
-				{
-					RenderingUtilities::CreateTransformationsBuffer(transformations, &update._NewPatchRenderInformation._TransformationsBuffer);
-					update._NewPatchRenderInformation._NumberOfTransformations = static_cast<uint32>(transformations.Size());
-				}
-
-				else
-				{
-					update._NewPatchRenderInformation._NumberOfTransformations = 0;
-				}
-
-				update._NewPatchInformation._Valid = true;
-				update._NewPatchInformation._GridPoint = gridPoint;
-				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
-																						information._Model._AxisAlignedBoundingBox,
-																						&update._NewPatchInformation._AxisAlignedBoundingBox);
-
-				break;
-			}
-		}
-
-		//If the new update is valid, copy it and return.
-		if (!update._PatchesToInvalidate.Empty() || update._NewPatchInformation._Valid)
-		{
-			_DebrisVegetationTypeInformationUpdate = update;
-
-			return;
-		}
-	}
+	VegetationUtilities::UpdateVegetationType(	_DebrisVegetationTypeInformations,
+												&_DebrisVegetationTypeInformationUpdate);
 }
 
 /*
@@ -428,198 +304,8 @@ void VegetationSystem::UpdateDebrisVegetationAsynchronous() NOEXCEPT
 */
 void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 {
-	//Cache the viewer position.
-	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
-
-	//Reset vegetation type information update.
-	_GrassVegetationTypeInformationUpdate._Information = nullptr;
-	_GrassVegetationTypeInformationUpdate._PatchesToInvalidate.ClearFast();
-	_GrassVegetationTypeInformationUpdate._NewPatchInformation._Transformations.ClearFast();
-
-	//Update all vegetation type informations.
-	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
-	{
-		//Calculate the current grid point based on the current viewer position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance) };
-
-		//Create an array with the valid grid positions.
-		StaticArray<GridPoint2, 9> validGridPoints
-		{
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
-
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-		};
-
-		//Construct the sorting data.
-		class SortingData final
-		{
-
-		public:
-
-			//The current viewer position.
-			Vector3<float> _ViewerPosition;
-
-			//The cutoff distance.
-			float _CutoffDistance;
-		};
-
-		SortingData sortingData;
-
-		sortingData._ViewerPosition = viewerPosition;
-		sortingData._CutoffDistance = information._Properties._CutoffDistance;
-
-		//Sort the array so that the closest grid point is first.
-		SortingAlgorithms::InsertionSort<GridPoint2>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint2 *const RESTRICT first, const GridPoint2 *const RESTRICT second)
-		{
-			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
-
-			const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance) };
-			const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance) };
-
-			return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
-		});
-
-		//Construct the update.
-		_GrassVegetationTypeInformationUpdate._Information = &information;
-		_GrassVegetationTypeInformationUpdate._NewPatchInformation._Valid = false;
-
-		//Determine the patch indices to invalidate.
-		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-		{
-			//If this patch is already invalid, no need to invalidate it.
-			if (!information._PatchInformations[i]._Valid)
-			{
-				continue;
-			}
-
-			bool valid{ false };
-
-			for (const GridPoint2 &gridPoint : validGridPoints)
-			{
-				if (information._PatchInformations[i]._GridPoint == gridPoint)
-				{
-					valid = true;
-
-					break;
-				}
-			}
-
-			if (!valid)
-			{
-				_GrassVegetationTypeInformationUpdate._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
-			}
-		}
-
-		//Determine the patches to update.
-		for (const GridPoint2 &gridPoint : validGridPoints)
-		{
-			bool exists{ false };
-
-			for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-			{
-				if (information._PatchInformations[i]._Valid && information._PatchInformations[i]._GridPoint == gridPoint)
-				{
-					exists = true;
-
-					break;
-				}
-			}
-
-			if (!exists)
-			{
-				//Construct the update.
-				_GrassVegetationTypeInformationUpdate._NewPatchInformation._Valid = true;
-				_GrassVegetationTypeInformationUpdate._NewPatchInformation._GridPoint = gridPoint;
-
-				//Generate the transformations.
-				VegetationUtilities::GenerateTransformations(	gridPoint,
-																information._Properties,
-																&_GrassVegetationTypeInformationUpdate._NewPatchInformation._Transformations);
-
-				//Sort the transformations.
-				StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
-
-				VegetationUtilities::SortTransformations(	_GrassVegetationTypeInformationUpdate._NewPatchInformation._Transformations,
-															information._Properties,
-															&levelOfDetailTransformations,
-															&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers,
-															&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations);
-
-				_GrassVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
-				
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
-				{
-					_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._Visibilities[i] = VisibilityFlag::None;
-				}
-
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
-				{
-					RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																							information._Model._AxisAlignedBoundingBox,
-																							&_GrassVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes[i]);
-				}
-
-				break;
-			}
-		}
-
-		//If the new update is valid, return.
-		if (!_GrassVegetationTypeInformationUpdate._PatchesToInvalidate.Empty() || _GrassVegetationTypeInformationUpdate._NewPatchInformation._Valid)
-		{
-			_GrassVegetationTypeInformationUpdate._LevelOfDetailUpdate = false;
-			_GrassVegetationTypeInformationUpdate._Index = 0;
-
-			return;
-		}
-	}
-
-	//If no patches needs to be added or replaced, update the level of detail on the patch with the oldest timestamp.
-	uint64 oldestTimeStamp{ UINT64_MAXIMUM };
-	uint8 index{ UINT8_MAXIMUM };
-
-	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
-	{
-		for (uint8 i{ 0 }; i < information._PatchInformations.Size(); ++i)
-		{
-			if (information._PatchInformations[i]._Valid && oldestTimeStamp > information._PatchInformations[i]._TimeStamp)
-			{
-				_GrassVegetationTypeInformationUpdate._Information = &information;
-				oldestTimeStamp = information._PatchInformations[i]._TimeStamp;
-				index = i;
-			}
-		}
-	}
-
-	//Denote that this is a level of detail update.
-	_GrassVegetationTypeInformationUpdate._LevelOfDetailUpdate = true;
-	_GrassVegetationTypeInformationUpdate._Index = index;
-
-	//Construct the update.
-	_GrassVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
-
-	//Sort the transformations.
-	StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
-
-	VegetationUtilities::SortTransformations(	_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[index]._Transformations,
-												_GrassVegetationTypeInformationUpdate._Information->_Properties,
-												&levelOfDetailTransformations,
-												&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers,
-												&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations);
-
-	for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
-	{
-		RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																				_GrassVegetationTypeInformationUpdate._Information->_Model._AxisAlignedBoundingBox,
-																				&_GrassVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes[i]);
-	}
+	VegetationUtilities::UpdateVegetationType(	_GrassVegetationTypeInformations,
+												&_GrassVegetationTypeInformationUpdate);
 }
 
 /*

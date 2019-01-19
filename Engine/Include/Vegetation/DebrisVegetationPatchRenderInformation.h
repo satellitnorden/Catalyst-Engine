@@ -15,12 +15,12 @@ class DebrisVegetationPatchRenderInformation final
 public:
 
 	//The visibility.
-	VisibilityFlag _Visibility;
+	StaticArray<VisibilityFlag, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _Visibilities;
 
-	//The transformations buffer.
-	ConstantBufferHandle _TransformationsBuffer;
+	//The transformations buffers.
+	StaticArray<ConstantBufferHandle, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _TransformationsBuffers;
 
 	//The number of transformations.
-	uint32 _NumberOfTransformations;
+	StaticArray<uint32, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _NumberOfTransformations;
 
 };

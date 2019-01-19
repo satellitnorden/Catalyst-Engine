@@ -29,5 +29,5 @@ enum class VegetationLevelOfDetail : uint8
 	Medium,
 	High,
 
-	NumberOfGrassVegetationLevelOfDetails
+	NumberOfVegetationLevelOfDetails
 };

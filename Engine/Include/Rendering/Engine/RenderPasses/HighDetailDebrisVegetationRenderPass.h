@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class DebrisVegetationRenderPass final : public RenderPass
+class HighDetailDebrisVegetationRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DebrisVegetationRenderPass);
+	DECLARE_SINGLETON(HighDetailDebrisVegetationRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	DebrisVegetationRenderPass() NOEXCEPT;
+	HighDetailDebrisVegetationRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the debris vegetation render pass.
+	*	Initializes the high detail debris vegetation render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the debris vegetation.
+	*	Renders the high detail debris vegetation.
 	*/
 	void RenderInternal() NOEXCEPT;
 

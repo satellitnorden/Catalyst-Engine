@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/DebrisVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailDebrisVegetationRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,7 +11,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DebrisVegetationRenderPass);
+DEFINE_SINGLETON(HighDetailDebrisVegetationRenderPass);
 
 /*
 *	Vertex push constant data definition.
@@ -44,32 +44,32 @@ public:
 /*
 *	Default constructor.
 */
-DebrisVegetationRenderPass::DebrisVegetationRenderPass() NOEXCEPT
+HighDetailDebrisVegetationRenderPass::HighDetailDebrisVegetationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		DebrisVegetationRenderPass::Instance->InitializeInternal();
+		HighDetailDebrisVegetationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the debris vegetation render pass.
+*	Initializes the high detail debris vegetation render pass.
 */
-void DebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
+void HighDetailDebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DebrisVegetation);
+	SetSubStage(RenderPassSubStage::HighDetailDebrisVegetation);
 
 	//Set the shaders.
-	SetVertexShader(Shader::DebrisVegetationVertex);
+	SetVertexShader(Shader::HighDetailDebrisVegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DebrisVegetationFragment);
+	SetFragmentShader(Shader::HighDetailDebrisVegetationFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -155,7 +155,7 @@ void DebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		DebrisVegetationRenderPass::Instance->RenderInternal();
+		HighDetailDebrisVegetationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -163,9 +163,9 @@ void DebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the debris vegetation.
+*	Renders the high detail vegetation.
 */
-void DebrisVegetationRenderPass::RenderInternal() NOEXCEPT
+void HighDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the debris vegetion type informations.
 	const DynamicArray<DebrisVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetDebrisVegetationTypeInformations() };
@@ -219,17 +219,17 @@ void DebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const DebrisVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::High)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::High)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)]);
 		}
 	}
 

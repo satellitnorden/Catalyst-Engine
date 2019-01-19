@@ -12,7 +12,7 @@
 //Vegetation.
 #include <Vegetation/VegetationCore.h>
 
-class GrassVegetationPatchInformation final
+class DebrisVegetationPatchInformation final
 {
 
 public:
