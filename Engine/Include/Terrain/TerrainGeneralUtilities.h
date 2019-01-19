@@ -25,6 +25,32 @@ namespace TerrainGeneralUtilities
 	*/
 	static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr) NOEXCEPT
 	{
+		/*
+		constexpr float OFFSET{ 1.0f };
+
+		float left;
+		float up;
+		float right;
+		float down;
+
+		properties._HeightFunction(properties, position - Vector3<float>(OFFSET, 0.0f, 0.0f), &left);
+		properties._HeightFunction(properties, position + Vector3<float>(0.0f, 0.0f, OFFSET), &up);
+		properties._HeightFunction(properties, position + Vector3<float>(OFFSET, 0.0f, 0.0f), &right);
+		properties._HeightFunction(properties, position - Vector3<float>(0.0f, 0.0f, OFFSET), &down);
+
+		normal->_X = left - right;
+		normal->_Y = 2.0f;
+		normal->_Z = down - up;
+
+		normal->Normalize();
+
+		if (height)
+		{
+			properties._HeightFunction(properties, position, height);
+		}
+		*/
+
+		/*
 		constexpr float offset{ 1.0f };
 
 		Vector3<float> left{ position._X - offset, 0.0f, position._Z };
@@ -48,6 +74,28 @@ namespace TerrainGeneralUtilities
 		if (height)
 		{
 			*height = center._Y;
+		}
+		*/
+
+		constexpr float OFFSET{ 1.0f };
+
+		float center;
+		float up;
+		float right;
+
+		properties._HeightFunction(properties, position, &center);
+		properties._HeightFunction(properties, position + Vector3<float>(0.0f, 0.0f, OFFSET), &up);
+		properties._HeightFunction(properties, position + Vector3<float>(OFFSET, 0.0f, 0.0f), &right);
+		
+		normal->_X = center - right;
+		normal->_Y = 1.0f;
+		normal->_Z = center - up;
+
+		normal->Normalize();
+
+		if (height)
+		{
+			*height = center;
 		}
 	}
 
