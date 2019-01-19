@@ -100,7 +100,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}
@@ -168,7 +168,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 		{
 			if (_GrassVegetationTypeInformationUpdate._LevelOfDetailUpdate)
 			{
-				for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 				{
 					if (_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
 					{
@@ -545,7 +545,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 																&_GrassVegetationTypeInformationUpdate._NewPatchInformation._Transformations);
 
 				//Sort the transformations.
-				StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
+				StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
 
 				VegetationUtilities::SortTransformations(	_GrassVegetationTypeInformationUpdate._NewPatchInformation._Transformations,
 															information._Properties,
@@ -555,12 +555,12 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 
 				_GrassVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
 				
-				for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 				{
 					_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._Visibilities[i] = VisibilityFlag::None;
 				}
 
-				for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 				{
 					RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
 																							information._Model._AxisAlignedBoundingBox,
@@ -606,7 +606,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 	_GrassVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
 
 	//Sort the transformations.
-	StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
+	StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> levelOfDetailTransformations;
 
 	VegetationUtilities::SortTransformations(	_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[index]._Transformations,
 												_GrassVegetationTypeInformationUpdate._Information->_Properties,
@@ -614,7 +614,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 												&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers,
 												&_GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations);
 
-	for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+	for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 	{
 		RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
 																				_GrassVegetationTypeInformationUpdate._Information->_Model._AxisAlignedBoundingBox,

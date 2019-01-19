@@ -43,9 +43,9 @@ namespace VegetationUtilities
 	*/
 	void SortTransformations(	const DynamicArray<Matrix4> &transformations,
 								const GrassVegetationTypeProperties &properties,
-								StaticArray<DynamicArray<Matrix4>, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
-								StaticArray<ConstantBufferHandle, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT buffers,
-								StaticArray<uint32, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
+								StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
+								StaticArray<ConstantBufferHandle, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT buffers,
+								StaticArray<uint32, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Cache the viewer position.
 		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
@@ -57,21 +57,21 @@ namespace VegetationUtilities
 
 			if (distanceToViewer > properties._LowDetailDistance)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
 			}
 
 			else if (distanceToViewer > properties._MediumDetailDistance)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::Medium)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::Medium)).EmplaceSlow(transformation);
 			}
 
 			else
 			{
-				levelOfDetailTransformations->At(UNDERLYING(GrassVegetationLevelOfDetail::High)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::High)).EmplaceSlow(transformation);
 			}
 		}
 
-		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 		{
 			if (!levelOfDetailTransformations->At(i).Empty())
 			{
@@ -110,7 +110,7 @@ namespace VegetationUtilities
 		//Invalidate the patch.
 		information->_PatchInformations[index]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
 

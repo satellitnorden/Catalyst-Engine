@@ -22,8 +22,8 @@ enum class VegetationType : uint8
 	NumberOfVegetationTypes
 };
 
-//Enumeration covering all grass vegetion level of details.
-enum class GrassVegetationLevelOfDetail : uint8
+//Enumeration covering all vegetion level of details.
+enum class VegetationLevelOfDetail : uint8
 {
 	Low,
 	Medium,

@@ -30,6 +30,6 @@ public:
 	uint64 _TimeStamp;
 
 	//The axis aligned bounding boxes.
-	StaticArray<AxisAlignedBoundingBox, UNDERLYING(GrassVegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> _AxisAlignedBoundingBoxes;
+	StaticArray<AxisAlignedBoundingBox, UNDERLYING(VegetationLevelOfDetail::NumberOfGrassVegetationLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 };

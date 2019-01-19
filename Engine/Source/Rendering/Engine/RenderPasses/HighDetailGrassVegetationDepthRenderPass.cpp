@@ -200,17 +200,17 @@ void HighDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const GrassVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(GrassVegetationLevelOfDetail::High)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(GrassVegetationLevelOfDetail::High)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::High)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(GrassVegetationLevelOfDetail::High)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::High)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(GrassVegetationLevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)]);
 		}
 	}
 
