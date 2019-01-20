@@ -66,13 +66,6 @@ namespace VegetationUtilities
 	template <typename TYPE>
 	void ProcessUpdate(TYPE *const RESTRICT update) NOEXCEPT
 	{
-		/*
-		if (!update->_Information)
-		{
-			return;
-		}
-		*/
-
 		if (update->_LevelOfDetailUpdate)
 		{
 			for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
