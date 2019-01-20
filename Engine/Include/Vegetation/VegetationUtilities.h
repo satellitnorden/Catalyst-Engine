@@ -163,6 +163,7 @@ namespace VegetationUtilities
 		//Reset the vegetation type information update.
 		update->_Information = nullptr;
 		update->_PatchesToInvalidate.ClearFast();
+		update->_NewPatchInformation._Valid = false;
 		update->_NewPatchInformation._Transformations.ClearFast();
 
 		//Update all vegetation type informations.
