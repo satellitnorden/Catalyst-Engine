@@ -147,120 +147,21 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 	{
 		case VegetationType::Debris:
 		{
-			if (_DebrisVegetationTypeInformationUpdate._LevelOfDetailUpdate)
-			{
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
-				{
-					if (_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_DebrisVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
-					{
-						RenderingSystem::Instance->DestroyConstantBuffer(_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_DebrisVegetationTypeInformationUpdate._Index]._TransformationsBuffers[i]);
-					}
-				}
-
-				_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._TimeStamp = _DebrisVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp;
-				_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._AxisAlignedBoundingBoxes = _DebrisVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes;
-				_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._TransformationsBuffers = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers;
-				_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations;
-			}
-
-			else
-			{
-				for (const uint8 index : _DebrisVegetationTypeInformationUpdate._PatchesToInvalidate)
-				{
-					VegetationUtilities::InvalidatePatch(_DebrisVegetationTypeInformationUpdate._Information, index);
-				}
-
-				for (uint64 i = 0, size = _DebrisVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
-				{
-					if (!_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
-					{
-						_DebrisVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchInformation;
-						_DebrisVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _DebrisVegetationTypeInformationUpdate._NewPatchRenderInformation;
-
-						break;
-					}
-				}
-			}
+			VegetationUtilities::ProcessUpdate(&_DebrisVegetationTypeInformationUpdate);
 
 			break;
 		}
 
 		case VegetationType::Grass:
 		{
-			if (_GrassVegetationTypeInformationUpdate._LevelOfDetailUpdate)
-			{
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
-				{
-					if (_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
-					{
-						RenderingSystem::Instance->DestroyConstantBuffer(_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._TransformationsBuffers[i]);
-					}
-				}
-
-				_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._TimeStamp = _GrassVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp;
-				_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[_GrassVegetationTypeInformationUpdate._Index]._AxisAlignedBoundingBoxes = _GrassVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes;
-				_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._TransformationsBuffers = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers;
-				_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_GrassVegetationTypeInformationUpdate._Index]._NumberOfTransformations = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations;
-			}
-			
-			else
-			{
-				for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
-				{
-					VegetationUtilities::InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
-				}
-
-				for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
-				{
-					if (!_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
-					{
-						_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchInformation;
-						_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation;
-
-						break;
-					}
-				}
-			}
+			VegetationUtilities::ProcessUpdate(&_GrassVegetationTypeInformationUpdate);
 
 			break;
 		}
 
 		case VegetationType::Solid:
 		{
-			if (_SolidVegetationTypeInformationUpdate._LevelOfDetailUpdate)
-			{
-				for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
-				{
-					if (_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_SolidVegetationTypeInformationUpdate._Index]._NumberOfTransformations[i] > 0)
-					{
-						RenderingSystem::Instance->DestroyConstantBuffer(_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_SolidVegetationTypeInformationUpdate._Index]._TransformationsBuffers[i]);
-					}
-				}
-
-				_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[_SolidVegetationTypeInformationUpdate._Index]._TimeStamp = _SolidVegetationTypeInformationUpdate._NewPatchInformation._TimeStamp;
-				_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[_SolidVegetationTypeInformationUpdate._Index]._AxisAlignedBoundingBoxes = _SolidVegetationTypeInformationUpdate._NewPatchInformation._AxisAlignedBoundingBoxes;
-				_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_SolidVegetationTypeInformationUpdate._Index]._TransformationsBuffers = _SolidVegetationTypeInformationUpdate._NewPatchRenderInformation._TransformationsBuffers;
-				_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[_SolidVegetationTypeInformationUpdate._Index]._NumberOfTransformations = _SolidVegetationTypeInformationUpdate._NewPatchRenderInformation._NumberOfTransformations;
-			}
-
-			else
-			{
-				for (const uint8 index : _SolidVegetationTypeInformationUpdate._PatchesToInvalidate)
-				{
-					VegetationUtilities::InvalidatePatch(_SolidVegetationTypeInformationUpdate._Information, index);
-				}
-
-				for (uint64 i = 0, size = _SolidVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
-				{
-					if (!_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
-					{
-						_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _SolidVegetationTypeInformationUpdate._NewPatchInformation;
-						_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _SolidVegetationTypeInformationUpdate._NewPatchRenderInformation;
-
-						break;
-					}
-				}
-			}
+			VegetationUtilities::ProcessUpdate(&_SolidVegetationTypeInformationUpdate);
 
 			break;
 		}

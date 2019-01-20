@@ -39,6 +39,77 @@ namespace VegetationUtilities
 	}
 
 	/*
+	*	Invalidates a patch at the given index for the given vegetation type information.
+	*/
+	template <typename Type>
+	static void InvalidatePatch(Type *const RESTRICT information, const uint8 index) NOEXCEPT
+	{
+		//Invalidate the patch.
+		information->_PatchInformations[index]._Valid = false;
+
+		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		{
+			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
+
+			if (information->_PatchRenderInformations[index]._NumberOfTransformations[i] > 0)
+			{
+				RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
+
+				information->_PatchRenderInformations[index]._TransformationsBuffers[i] = nullptr;
+			}
+		}
+	}
+
+	/*
+	*	Processes a vegetation type update.
+	*/
+	template <typename TYPE>
+	void ProcessUpdate(TYPE *const RESTRICT update) NOEXCEPT
+	{
+		/*
+		if (!update->_Information)
+		{
+			return;
+		}
+		*/
+
+		if (update->_LevelOfDetailUpdate)
+		{
+			for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+			{
+				if (update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations[i] > 0)
+				{
+					RenderingSystem::Instance->DestroyConstantBuffer(update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers[i]);
+				}
+			}
+
+			update->_Information->_PatchInformations[update->_Index]._TimeStamp = update->_NewPatchInformation._TimeStamp;
+			update->_Information->_PatchInformations[update->_Index]._AxisAlignedBoundingBoxes = update->_NewPatchInformation._AxisAlignedBoundingBoxes;
+			update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers = update->_NewPatchRenderInformation._TransformationsBuffers;
+			update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations = update->_NewPatchRenderInformation._NumberOfTransformations;
+		}
+
+		else
+		{
+			for (const uint8 index : update->_PatchesToInvalidate)
+			{
+				VegetationUtilities::InvalidatePatch(update->_Information, index);
+			}
+
+			for (uint64 i = 0, size = update->_Information->_PatchInformations.Size(); i < size; ++i)
+			{
+				if (!update->_Information->_PatchInformations[i]._Valid)
+				{
+					update->_Information->_PatchInformations[i] = update->_NewPatchInformation;
+					update->_Information->_PatchRenderInformations[i] = update->_NewPatchRenderInformation;
+
+					break;
+				}
+			}
+		}
+	}
+
+	/*
 	*	Sorts a set of transformations into different level of details.
 	*/
 	template <typename TYPE>
@@ -83,28 +154,6 @@ namespace VegetationUtilities
 			else
 			{
 				numberOfTransformations->At(i) = 0;
-			}
-		}
-	}
-
-	/*
-	*	Invalidates a patch at the given index for the given vegetation type information.
-	*/
-	template <typename Type>
-	static void InvalidatePatch(Type *const RESTRICT information, const uint8 index) NOEXCEPT
-	{
-		//Invalidate the patch.
-		information->_PatchInformations[index]._Valid = false;
-
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
-		{
-			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
-
-			if (information->_PatchRenderInformations[index]._NumberOfTransformations[i] > 0)
-			{
-				RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
-
-				information->_PatchRenderInformations[index]._TransformationsBuffers[i] = nullptr;
 			}
 		}
 	}
