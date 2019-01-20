@@ -196,8 +196,8 @@ void LowDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffers[UNDERLYING(LevelOfDetail::Low)], &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._Buffers[UNDERLYING(LevelOfDetail::Low)], information._Model._IndexOffsets[UNDERLYING(LevelOfDetail::Low)]);
 
 		//Push constants.
 		VertexPushConstantData vertexData;
@@ -219,17 +219,17 @@ void LowDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const DebrisVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(VegetationLevelOfDetail::High)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::High)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(VegetationLevelOfDetail::High)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations[UNDERLYING(VegetationLevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCounts[UNDERLYING(LevelOfDetail::Low)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)]);
 		}
 	}
 

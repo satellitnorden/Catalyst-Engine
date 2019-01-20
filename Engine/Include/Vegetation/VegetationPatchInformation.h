@@ -27,6 +27,6 @@ public:
 	uint64 _TimeStamp;
 
 	//The axis aligned bounding boxes.
-	StaticArray<AxisAlignedBoundingBox, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _AxisAlignedBoundingBoxes;
+	StaticArray<AxisAlignedBoundingBox, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 };

@@ -430,24 +430,28 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
-	//Read the extent of the physical model.
-	file.Read(&physicalModelData._Extent, sizeof(float));
+	//Load the models.
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		//Read the extent of the physical model.
+		file.Read(&physicalModelData._Extents[i], sizeof(float));
 
-	//Read the number of vertices.
-	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
+		//Read the number of vertices.
+		uint64 numberOfVertices;
+		file.Read(&numberOfVertices, sizeof(uint64));
 
-	//Read the vertices.
-	physicalModelData._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(physicalModelData._Vertices.Data(), sizeof(PhysicalVertex) * numberOfVertices);
+		//Read the vertices.
+		physicalModelData._Vertices[i].UpsizeFast(numberOfVertices);
+		file.Read(physicalModelData._Vertices[i].Data(), sizeof(PhysicalVertex) * numberOfVertices);
 
-	//Read the number of indices.
-	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
+		//Read the number of indices.
+		uint64 numberOfIndices;
+		file.Read(&numberOfIndices, sizeof(uint64));
 
-	//Read the indices.
-	physicalModelData._Indices.UpsizeFast(numberOfIndices);
-	file.Read(physicalModelData._Indices.Data(), sizeof(uint32) * numberOfIndices);
+		//Read the indices.
+		physicalModelData._Indices[i].UpsizeFast(numberOfIndices);
+		file.Read(physicalModelData._Indices[i].Data(), sizeof(uint32) * numberOfIndices);
+	}
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, _PhysicalModels[resourceID]);

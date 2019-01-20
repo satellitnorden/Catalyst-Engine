@@ -78,7 +78,7 @@ void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypePropert
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}
@@ -104,7 +104,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}
@@ -130,7 +130,7 @@ void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypePropertie
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}

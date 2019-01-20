@@ -9,6 +9,7 @@
 
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
@@ -36,8 +37,14 @@ public:
 		//The resource id.
 		const char *RESTRICT _ID;
 
-		//The file path.
-		const char *RESTRICT _File;
+		//The low detail file path.
+		const char *RESTRICT _LowDetailFile;
+
+		//The medium detail file path.
+		const char *RESTRICT _MediumDetailFile;
+
+		//The high detail file path.
+		const char *RESTRICT _HighDetailFile;
 
 	};
 
@@ -61,32 +68,37 @@ public:
 		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
-		//Load the model.
-		DynamicArray<PhysicalVertex> vertices;
-		DynamicArray<uint32> indices;
-		float extent{ 0.0f };
+		//Load the models.
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		{
+			const char *const RESTRICT modelFile{ i == 0 ? parameters._LowDetailFile : i == 1 ? parameters._MediumDetailFile : parameters._HighDetailFile };
 
-		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(parameters._File, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+			DynamicArray<PhysicalVertex> vertices;
+			DynamicArray<uint32> indices;
+			float extent{ 0.0f };
 
-		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
+			Assimp::Importer modelImporter;
+			const aiScene *modelScene = modelImporter.ReadFile(modelFile, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
-		//Write the extent to the file.
-		file.Write(&extent, sizeof(float));
+			ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
 
-		//Write the size of the vertices to the file.
-		const uint64 sizeOfVertices{ vertices.Size() };
-		file.Write(&sizeOfVertices, sizeof(uint64));
+			//Write the extent to the file.
+			file.Write(&extent, sizeof(float));
 
-		//Write the vertices to the file.
-		file.Write(vertices.Data(), sizeof(PhysicalVertex) * sizeOfVertices);
+			//Write the size of the vertices to the file.
+			const uint64 sizeOfVertices{ vertices.Size() };
+			file.Write(&sizeOfVertices, sizeof(uint64));
 
-		//Write the size of the indices to the file.
-		const uint64 sizeOfIndices{ indices.Size() };
-		file.Write(&sizeOfIndices, sizeof(uint64));
+			//Write the vertices to the file.
+			file.Write(vertices.Data(), sizeof(PhysicalVertex) * sizeOfVertices);
 
-		//Write the vertices to the file.
-		file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+			//Write the size of the indices to the file.
+			const uint64 sizeOfIndices{ indices.Size() };
+			file.Write(&sizeOfIndices, sizeof(uint64));
+
+			//Write the vertices to the file.
+			file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+		}
 
 		//Close the file.
 		file.Close();

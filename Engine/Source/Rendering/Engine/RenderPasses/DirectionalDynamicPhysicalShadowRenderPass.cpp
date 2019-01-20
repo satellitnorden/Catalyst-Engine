@@ -155,15 +155,15 @@ void DirectionalDynamicPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
 
-		if (previousBuffer != renderComponent->_Model._Buffer)
+		if (previousBuffer != renderComponent->_Model._Buffers[UNDERLYING(LevelOfDetail::High)])
 		{
-			previousBuffer = renderComponent->_Model._Buffer;
+			previousBuffer = renderComponent->_Model._Buffers[UNDERLYING(LevelOfDetail::High)];
 
-			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Model._Buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, renderComponent->_Model._Buffer, renderComponent->_Model._IndexOffset);
+			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Model._Buffers[UNDERLYING(LevelOfDetail::High)], &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->_Model._Buffers[UNDERLYING(LevelOfDetail::High)], renderComponent->_Model._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
 		}
 
-		commandBuffer->DrawIndexed(this, renderComponent->_Model._IndexCount, 1);
+		commandBuffer->DrawIndexed(this, renderComponent->_Model._IndexCounts[UNDERLYING(LevelOfDetail::High)], 1);
 	}
 
 	//End the command buffer.

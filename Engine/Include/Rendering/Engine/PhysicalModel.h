@@ -12,35 +12,22 @@ class PhysicalModel final
 
 public:
 
-	//The model space axis-aligned bounding box of this physical model.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	//The model space axis-aligned bounding boxes of this physical model.
+	StaticArray<AxisAlignedBoundingBox, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
-	//The buffer.
-	ConstantBufferHandle _Buffer;
+	//The buffers.
+	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Buffers;
 
-	//The index offset in the buffer.
-	uint64 _IndexOffset;
+	//The index offsets in the buffer.
+	StaticArray<uint64, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _IndexOffsets;
 
 	//The number of indices that this physical model has.
-	uint32 _IndexCount;
+	StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _IndexCounts;
 
 	/*
 	*	Default constructor.
 	*/
 	PhysicalModel() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Copy constructor.
-	*/
-	PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
-		:
-		_AxisAlignedBoundingBox(otherPhysicalModel._AxisAlignedBoundingBox),
-		_Buffer(otherPhysicalModel._Buffer),
-		_IndexOffset(otherPhysicalModel._IndexOffset),
-		_IndexCount(otherPhysicalModel._IndexCount)
 	{
 
 	}

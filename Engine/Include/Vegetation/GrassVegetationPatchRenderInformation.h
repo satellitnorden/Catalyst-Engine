@@ -15,12 +15,12 @@ class GrassVegetationPatchRenderInformation final
 public:
 
 	//The visibility.
-	StaticArray<VisibilityFlag, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _Visibilities;
+	StaticArray<VisibilityFlag, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Visibilities;
 
 	//The transformations buffers.
-	StaticArray<ConstantBufferHandle, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _TransformationsBuffers;
+	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TransformationsBuffers;
 
 	//The number of transformations.
-	StaticArray<uint32, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _NumberOfTransformations;
+	StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _NumberOfTransformations;
 
 };

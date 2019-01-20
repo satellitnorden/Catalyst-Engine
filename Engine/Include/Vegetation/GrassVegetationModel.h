@@ -12,34 +12,22 @@ class GrassVegetationModel final
 
 public:
 
-	//The model space axis-aligned bounding box of this physical model.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	//The model space axis-aligned bounding boxes of this physical model.
+	StaticArray<AxisAlignedBoundingBox, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 	//The buffer.
-	ConstantBufferHandle _Buffer;
+	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Buffers;
 
 	//The index offset in the buffer.
-	uint64 _IndexOffset;
+	StaticArray<uint64, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _IndexOffsets;
 
 	//The number of indices that this grass model has.
-	uint32 _IndexCount;
+	StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _IndexCounts;
 
 	/*
 	*	Default constructor.
 	*/
 	GrassVegetationModel() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Copy constructor.
-	*/
-	GrassVegetationModel(const GrassVegetationModel &other) NOEXCEPT
-		:
-		_Buffer(other._Buffer),
-		_IndexOffset(other._IndexOffset),
-		_IndexCount(other._IndexCount)
 	{
 
 	}

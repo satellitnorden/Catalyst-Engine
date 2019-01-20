@@ -535,12 +535,15 @@ void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData 
 	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
 	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
-	//Set up the physical model.
-	model._AxisAlignedBoundingBox._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
-	model._AxisAlignedBoundingBox._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
-	model._Buffer = buffer;
-	model._IndexOffset = modelDataSizes[0];
-	model._IndexCount = static_cast<uint32>(data._Indices.Size());
+	//Set up the grass vegetation model.
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
+		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
+		model._Buffers[i] = buffer;
+		model._IndexOffsets[i] = modelDataSizes[0];
+		model._IndexCounts[i] = static_cast<uint32>(data._Indices.Size());
+	}
 }
 
 /*
@@ -567,18 +570,21 @@ void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMa
 */
 void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
-	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ physicalModelData._Vertices.Data(), physicalModelData._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData._Vertices.Size(), sizeof(uint32) * physicalModelData._Indices.Size() };
-	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		//Create the vertex and index buffer.
+		const void *RESTRICT modelData[]{ physicalModelData._Vertices[i].Data(), physicalModelData._Indices[i].Data() };
+		const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData._Vertices[i].Size(), sizeof(uint32) * physicalModelData._Indices[i].Size() };
+		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
-	//Set up the physical model.
-	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3<float>(-physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f);
-	physicalModel._AxisAlignedBoundingBox._Maximum = Vector3<float>(physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f);
-	physicalModel._Buffer = buffer;
-	physicalModel._IndexOffset = modelDataSizes[0];
-	physicalModel._IndexCount = static_cast<uint32>(physicalModelData._Indices.Size());
+		//Set up the physical model.
+		physicalModel._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-physicalModelData._Extents[i] * 0.5f, -physicalModelData._Extents[i] * 0.5f, -physicalModelData._Extents[i] * 0.5f);
+		physicalModel._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(physicalModelData._Extents[i] * 0.5f, physicalModelData._Extents[i] * 0.5f, physicalModelData._Extents[i] * 0.5f);
+		physicalModel._Buffers[i] = buffer;
+		physicalModel._IndexOffsets[i] = modelDataSizes[0];
+		physicalModel._IndexCounts[i] = static_cast<uint32>(physicalModelData._Indices[i].Size());
+	}
 }
 
 /*
@@ -644,9 +650,9 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	//Initialize the outline render component.
 	outlineRenderComponent._PhysicalFlags = data->_PhysicalFlags;
 	outlineRenderComponent._IsInViewFrustum = true;
-	outlineRenderComponent._Buffer = data->_Model._Buffer;
-	outlineRenderComponent._IndexOffset = data->_Model._IndexOffset;
-	outlineRenderComponent._IndexCount = data->_Model._IndexCount;
+	outlineRenderComponent._Buffer = data->_Model._Buffers[UNDERLYING(LevelOfDetail::High)];
+	outlineRenderComponent._IndexOffset = data->_Model._IndexOffsets[UNDERLYING(LevelOfDetail::High)];
+	outlineRenderComponent._IndexCount = data->_Model._IndexCounts[UNDERLYING(LevelOfDetail::High)];
 	outlineRenderComponent._Color = data->_OutlineColor;
 
 	//Initialize the physical render component.
@@ -656,7 +662,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	physicalRenderComponent._Material = data->_Material;
 
 	//Initialize the culling component.
-	cullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;
+	cullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBoxes[UNDERLYING(LevelOfDetail::High)];
 
 	//Initialize the transform component.
 	transformComponent._Position = data->_Position;

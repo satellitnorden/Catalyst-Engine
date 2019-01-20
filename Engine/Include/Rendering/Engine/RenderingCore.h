@@ -214,6 +214,16 @@ enum class CommonRenderDataTableLayout : uint8
 	NumberOfCommonRenderDataTableLayouts
 };
 
+//Enumeration covering all level of details.
+enum class LevelOfDetail : uint8
+{
+	Low,
+	Medium,
+	High,
+
+	NumberOfLevelOfDetails
+};
+
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {

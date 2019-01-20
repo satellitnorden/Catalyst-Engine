@@ -47,7 +47,7 @@ namespace VegetationUtilities
 		//Invalidate the patch.
 		information->_PatchInformations[index]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
 
@@ -68,7 +68,7 @@ namespace VegetationUtilities
 	{
 		if (update->_LevelOfDetailUpdate)
 		{
-			for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+			for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 			{
 				if (update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations[i] > 0)
 				{
@@ -108,9 +108,9 @@ namespace VegetationUtilities
 	template <typename TYPE>
 	void SortTransformations(	const DynamicArray<Matrix4> &transformations,
 								const TYPE &properties,
-								StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
-								StaticArray<ConstantBufferHandle, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> *const RESTRICT buffers,
-								StaticArray<uint32, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
+								StaticArray<DynamicArray<Matrix4>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
+								StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT buffers,
+								StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Cache the viewer position.
 		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
@@ -122,21 +122,21 @@ namespace VegetationUtilities
 
 			if (distanceToViewer > properties._LowDetailDistance)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(LevelOfDetail::Low)).EmplaceSlow(transformation);
 			}
 
 			else if (distanceToViewer > properties._MediumDetailDistance)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::Medium)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(LevelOfDetail::Medium)).EmplaceSlow(transformation);
 			}
 
 			else
 			{
-				levelOfDetailTransformations->At(UNDERLYING(VegetationLevelOfDetail::High)).EmplaceSlow(transformation);
+				levelOfDetailTransformations->At(UNDERLYING(LevelOfDetail::High)).EmplaceSlow(transformation);
 			}
 		}
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			if (!levelOfDetailTransformations->At(i).Empty())
 			{
@@ -275,7 +275,7 @@ namespace VegetationUtilities
 																	&update->_NewPatchInformation._Transformations);
 
 					//Sort the transformations.
-					StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> levelOfDetailTransformations;
+					StaticArray<DynamicArray<Matrix4>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> levelOfDetailTransformations;
 
 					VegetationUtilities::SortTransformations(	update->_NewPatchInformation._Transformations,
 																information._Properties,
@@ -285,15 +285,15 @@ namespace VegetationUtilities
 
 					update->_NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
 
-					for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+					for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 					{
 						update->_NewPatchRenderInformation._Visibilities[i] = VisibilityFlag::None;
 					}
 
-					for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+					for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 					{
 						RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																								information._Model._AxisAlignedBoundingBox,
+																								information._Model._AxisAlignedBoundingBoxes[i],
 																								&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 					}
 
@@ -336,7 +336,7 @@ namespace VegetationUtilities
 		update->_NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
 
 		//Sort the transformations.
-		StaticArray<DynamicArray<Matrix4>, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> levelOfDetailTransformations;
+		StaticArray<DynamicArray<Matrix4>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> levelOfDetailTransformations;
 
 		VegetationUtilities::SortTransformations(	update->_Information->_PatchInformations[index]._Transformations,
 													update->_Information->_Properties,
@@ -344,10 +344,10 @@ namespace VegetationUtilities
 													&update->_NewPatchRenderInformation._TransformationsBuffers,
 													&update->_NewPatchRenderInformation._NumberOfTransformations);
 
-		for (uint8 i{ 0 }; i < UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																					update->_Information->_Model._AxisAlignedBoundingBox,
+																					update->_Information->_Model._AxisAlignedBoundingBoxes[i],
 																					&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 		}
 	}
