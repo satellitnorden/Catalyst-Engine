@@ -11,10 +11,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float cutoffDistanceSquared;
-    layout (offset = 4) float halfCutoffDistanceSquared;
-    layout (offset = 8) float inverseHalfCutoffDistanceSquared;
-    layout (offset = 12) float windModulatorFactor;
+    layout (offset = 0) float windModulatorFactor;
 };
 
 //In parameters.
