@@ -9,9 +9,9 @@
 #include <Rendering/Engine/PhysicalModel.h>
 
 //Vegetation.
-#include <Vegetation/DebrisVegetationPatchInformation.h>
 #include <Vegetation/DebrisVegetationPatchRenderInformation.h>
 #include <Vegetation/DebrisVegetationTypeProperties.h>
+#include <Vegetation/VegetationPatchInformation.h>
 
 class DebrisVegetationTypeInformation final
 {
@@ -28,7 +28,7 @@ public:
 	PhysicalMaterial _Material;
 
 	//The patch informations.
-	StaticArray<DebrisVegetationPatchInformation, 9> _PatchInformations;
+	StaticArray<VegetationPatchInformation, 9> _PatchInformations;
 
 	//The patch render informations.
 	StaticArray<DebrisVegetationPatchRenderInformation, 9> _PatchRenderInformations;

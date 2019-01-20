@@ -352,14 +352,12 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
