@@ -7,7 +7,7 @@
 enum class ResourceType : uint8
 {
 	EnvironmentMaterial,
-	GrassMaterial,
+	GrassVegetationMaterial,
 	GrassVegetationModel,
 	OceanMaterial,
 	ParticleMaterial,

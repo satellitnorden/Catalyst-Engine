@@ -117,9 +117,9 @@ private:
 	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
-	*	Given a file, load a grass material.
+	*	Given a file, load a grass vegetation material.
 	*/
-	static void LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	static void LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a grass vegetation model.

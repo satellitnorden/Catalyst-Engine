@@ -76,9 +76,9 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-			case ResourceType::GrassMaterial:
+			case ResourceType::GrassVegetationMaterial:
 			{
-				LoadGrassMaterial(file);
+				LoadGrassVegetationMaterial(file);
 
 				break;
 			}
@@ -176,9 +176,9 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 }
 
 /*
-*	Given a file, load a grass material.
+*	Given a file, load a grass vegetation material.
 */
-void ResourceLoader::LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoader::LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Store the grass vegetation material data in the grass vegetation material data structure.
 	GrassVegetationMaterialData data;
@@ -478,6 +478,60 @@ void ResourceLoader::LoadTreeVegetationMaterial(BinaryFile<IOMode::In> &file) NO
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
+	//Read the number of mask mipmap levels for the crown mask.
+	file.Read(&data._CrownMaskMipmapLevels, sizeof(uint8));
+
+	//Read the crown mask width.
+	file.Read(&data._CrownMaskWidth, sizeof(uint32));
+
+	//Read the crown mask height.
+	file.Read(&data._CrownMaskHeight, sizeof(uint32));
+
+	//Read the crown mask data.
+	data._CrownMaskData.UpsizeSlow(data._CrownMaskMipmapLevels);
+
+	for (uint8 i = 0; i < data._CrownMaskMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._CrownMaskWidth >> i) * (data._CrownMaskHeight >> i) * 4 };
+
+		data._CrownMaskData[i].Reserve(textureSize);
+
+		file.Read(data._CrownMaskData[i].Data(), textureSize);
+	}
+
+	//Read the number of mipmap levels for the crown.
+	file.Read(&data._CrownMipmapLevels, sizeof(uint8));
+
+	//Read the crown width.
+	file.Read(&data._CrownWidth, sizeof(uint32));
+
+	//Read the crown height.
+	file.Read(&data._CrownHeight, sizeof(uint32));
+
+	//Read the crown albedo data.
+	data._AlbedoData.UpsizeSlow(data._CrownMipmapLevels);
+
+	for (uint8 i = 0; i < data._CrownMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._CrownWidth >> i) * (data._CrownHeight >> i) * 4 };
+
+		data._AlbedoData[i].Reserve(textureSize);
+
+		file.Read(data._AlbedoData[i].Data(), textureSize);
+	}
+
+	//Read the crown normal map data.
+	data._NormalMapData.UpsizeSlow(data._CrownMipmapLevels);
+
+	for (uint8 i = 0; i < data._CrownMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._CrownWidth >> i) * (data._CrownHeight >> i) * 4 };
+
+		data._NormalMapData[i].Reserve(textureSize);
+
+		file.Read(data._NormalMapData[i].Data(), textureSize);
+	}
+
 	//Read the number of mipmap levels for the trunk.
 	file.Read(&data._TrunkMipmapLevels, sizeof(uint8));
 
@@ -539,30 +593,62 @@ void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXC
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
-	//Read the extent of the tree vegetation model.
-	file.Read(&data._Extents[0], sizeof(float));
-
-	//Read the number of vertices.
-	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
-
-	//Read the vertices.
-	data._Vertices[0].UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
-
-	//Read the number of indices.
-	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
-
-	//Read the indices.
-	data._Indices[0].UpsizeFast(numberOfIndices);
-	file.Read(data._Indices[0].Data(), sizeof(uint32) * numberOfIndices);
-
-	for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 	{
-		data._Extents[i] = data._Extents[0];
-		data._Vertices[i] = data._Vertices[0];
-		data._Indices[i] = data._Indices[0];
+		//Read the extent for the crown of the tree vegetation model.
+		file.Read(&data._CrownExtents[0], sizeof(float));
+
+		//Read the number of vertices for the crown.
+		uint64 numberOfVertices;
+		file.Read(&numberOfVertices, sizeof(uint64));
+
+		//Read the vertices for the crown.
+		data._CrownVertices[0].UpsizeFast(numberOfVertices);
+		file.Read(data._CrownVertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
+
+		//Read the number of indices for the crown.
+		uint64 numberOfIndices;
+		file.Read(&numberOfIndices, sizeof(uint64));
+
+		//Read the indices for the crown.
+		data._CrownIndices[0].UpsizeFast(numberOfIndices);
+		file.Read(data._CrownIndices[0].Data(), sizeof(uint32) * numberOfIndices);
+
+		//Copy to the other level of details, for now.
+		for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		{
+			data._CrownExtents[i] = data._CrownExtents[0];
+			data._CrownVertices[i] = data._CrownVertices[0];
+			data._CrownIndices[i] = data._CrownIndices[0];
+		}
+	}
+
+	{
+		//Read the extent for the trunk of the tree vegetation model.
+		file.Read(&data._TrunkExtents[0], sizeof(float));
+
+		//Read the number of vertices for the trunk.
+		uint64 numberOfVertices;
+		file.Read(&numberOfVertices, sizeof(uint64));
+
+		//Read the vertices for the trunk.
+		data._TrunkVertices[0].UpsizeFast(numberOfVertices);
+		file.Read(data._TrunkVertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
+
+		//Read the number of indices for the trunk.
+		uint64 numberOfIndices;
+		file.Read(&numberOfIndices, sizeof(uint64));
+
+		//Read the indices for the trunk.
+		data._TrunkIndices[0].UpsizeFast(numberOfIndices);
+		file.Read(data._TrunkIndices[0].Data(), sizeof(uint32) * numberOfIndices);
+
+		//Copy to the other level of details, for now.
+		for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		{
+			data._TrunkExtents[i] = data._TrunkExtents[0];
+			data._TrunkVertices[i] = data._TrunkVertices[0];
+			data._TrunkIndices[i] = data._TrunkIndices[0];
+		}
 	}
 
 	//Create the tree vegetation model via the rendering system.

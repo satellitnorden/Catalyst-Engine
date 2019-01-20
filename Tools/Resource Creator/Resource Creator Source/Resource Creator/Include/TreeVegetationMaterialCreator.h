@@ -27,6 +27,21 @@ public:
 		//The resource id.
 		const char *RESTRICT _ID;
 
+		//The number of mipmap levels for the crown mask texture.
+		uint8 _CrownMaskMipmapLevels;
+
+		//The mask texture file path for the crown.
+		const char *RESTRICT _CrownMaskFile;
+
+		//The number of mipmap levels for the crown.
+		uint8 _CrownMipmapLevels;
+
+		//The albedo file path for the crown.
+		const char *RESTRICT _CrownAlbedoFile;
+
+		//The normal map file path for the crown.
+		const char *RESTRICT _CrownNormalMapFile;
+
 		//The number of mipmap levels for the trunk.
 		uint8 _TrunkMipmapLevels;
 
@@ -44,7 +59,6 @@ public:
 
 		//The trunk ambient occlusion file path.
 		const char *RESTRICT _TrunkAmbientOcclusionFile;
-
 
 	};
 
@@ -68,7 +82,117 @@ public:
 		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
-		//Write the number of mipmap levels to the file.
+		{
+			//Write the number of mipmap levels that should be generated for the crown mask texture to the file.
+			file.Write(&parameters._CrownMaskMipmapLevels, sizeof(uint8));
+
+			//Load the crown mask texture.
+			int32 width, height, numberOfChannels;
+			byte *RESTRICT data{ stbi_load(parameters._CrownMaskFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+
+			uint32 uWidth{ static_cast<uint32>(width) };
+			uint32 uHeight{ static_cast<uint32>(height) };
+
+			//Write the width and height of the crown mask texture into the file.
+			file.Write(&uWidth, sizeof(uint32));
+			file.Write(&uHeight, sizeof(uint32));
+
+			//Write the crown mask texture to the file.
+			for (uint8 i = 0; i < parameters._CrownMaskMipmapLevels; ++i)
+			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
+				//If this is the base mipmap level, just copy the thing directly into memory.
+				if (i == 0)
+				{
+					file.Write(data, textureSize);
+				}
+
+				//Else, the image data should be resized.
+				else
+				{
+					byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
+
+					file.Write(downsampledData, textureSize);
+
+					MemoryUtilities::FreeMemory(downsampledData);
+				}
+			}
+
+			//Free the mask texture data.
+			stbi_image_free(data);
+
+			//Write the number of crown mipmap levels  to the file.
+			file.Write(&parameters._CrownMipmapLevels, sizeof(uint8));
+
+			//Load the crown albedo texture.
+			data = stbi_load(parameters._CrownAlbedoFile, &width, &height, &numberOfChannels, STBI_rgb_alpha);
+
+			uWidth = static_cast<uint32>(width);
+			uHeight = static_cast<uint32>(height);
+
+			//Write the width and height into the file.
+			file.Write(&uWidth, sizeof(uint32));
+			file.Write(&uHeight, sizeof(uint32));
+
+			//Write the crown albedo texture to the file.
+			for (uint8 i = 0; i < parameters._CrownMipmapLevels; ++i)
+			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
+				//If this is the base mipmap level, just copy the thing directly into memory.
+				if (i == 0)
+				{
+					file.Write(data, textureSize);
+				}
+
+				//Else, the image data should be resized.
+				else
+				{
+					byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
+
+					file.Write(downsampledData, textureSize);
+
+					MemoryUtilities::FreeMemory(downsampledData);
+				}
+			}
+
+			//Free the crown albedo texture data.
+			stbi_image_free(data);
+
+			//Load the crown normal map texture.
+			data = stbi_load(parameters._CrownNormalMapFile, &width, &height, &numberOfChannels, STBI_rgb_alpha);
+
+			//Write the crown normal map texture to the file.
+			for (uint8 i = 0; i < parameters._CrownMipmapLevels; ++i)
+			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
+				//If this is the base mipmap level, just copy the thing directly into memory.
+				if (i == 0)
+				{
+					file.Write(data, textureSize);
+				}
+
+				//Else, the image data should be resized.
+				else
+				{
+					byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
+
+					file.Write(downsampledData, textureSize);
+
+					MemoryUtilities::FreeMemory(downsampledData);
+				}
+			}
+
+			//Free the normal map texture data.
+			stbi_image_free(data);
+		}
+
+		//Write the number of trunk mipmap levels to the file.
 		file.Write(&parameters._TrunkMipmapLevels, sizeof(uint8));
 
 		//Load the trunk albedo.
@@ -78,11 +202,11 @@ public:
 		const uint32 uWidth{ static_cast<uint32>(width) };
 		const uint32 uHeight{ static_cast<uint32>(height) };
 
-		//Write the width and height of the albedo into the file, to be read into uint32's.
+		//Write the width and height of the trunk albedo into the file, to be read into uint32's.
 		file.Write(&uWidth, sizeof(uint32));
 		file.Write(&uHeight, sizeof(uint32));
 
-		//Write the albedo to the file.
+		//Write the trunk albedo to the file.
 		for (uint8 i = 0; i < parameters._TrunkMipmapLevels; ++i)
 		{
 			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
@@ -105,13 +229,13 @@ public:
 			}
 		}
 
-		//Free the layer albedo data.
+		//Free the layer trunk albedo data.
 		stbi_image_free(data);
 
-		//Load the normal map.
+		//Load the trunk normal map.
 		data = stbi_load(parameters._TrunkNormalMapFile, &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
-		//Write the layer albedo to the file, to be read into byte's.
+		//Write the trunk albedo to the file, to be read into byte's.
 		for (uint8 i = 0; i < parameters._TrunkMipmapLevels; ++i)
 		{
 			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
@@ -134,7 +258,7 @@ public:
 			}
 		}
 
-		//Free the layer normal map data.
+		//Free the trunk normal map data.
 		stbi_image_free(data);
 
 		//Load the roughness, metallic, ambient occlusion and variant data.

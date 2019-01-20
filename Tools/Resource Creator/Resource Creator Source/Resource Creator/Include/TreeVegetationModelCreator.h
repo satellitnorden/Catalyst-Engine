@@ -44,6 +44,9 @@ public:
 		//The resource id.
 		const char *RESTRICT _ID;
 
+		//The crown file path.
+		const char *RESTRICT _CrownFile;
+
 		//The trunk file path.
 		const char *RESTRICT _TrunkFile;
 
@@ -72,39 +75,42 @@ public:
 		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
-		//Load the model.
-		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(parameters._TrunkFile, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		//Load the models.
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			Assimp::Importer modelImporter;
+			const aiScene *modelScene = modelImporter.ReadFile(i == 0 ? parameters._CrownFile : parameters._TrunkFile, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
-		//Determine the height range.
-		Vector2<float> heightRange{ FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+			//Determine the height range.
+			Vector2<float> heightRange{ FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
 
-		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
+			ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
 
-		//Process the vertices/indices.
-		DynamicArray<VegetationVertex> vertices;
-		DynamicArray<uint32> indices;
-		float extent{ 0.0f };
+			//Process the vertices/indices.
+			DynamicArray<VegetationVertex> vertices;
+			DynamicArray<uint32> indices;
+			float extent{ 0.0f };
 
-		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices, extent);
+			ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices, extent);
 
-		//Write the extent to the file.
-		file.Write(&extent, sizeof(float));
+			//Write the extent to the file.
+			file.Write(&extent, sizeof(float));
 
-		//Write the size of the vertices to the file.
-		const uint64 sizeOfVertices{ vertices.Size() };
-		file.Write(&sizeOfVertices, sizeof(uint64));
+			//Write the size of the vertices to the file.
+			const uint64 sizeOfVertices{ vertices.Size() };
+			file.Write(&sizeOfVertices, sizeof(uint64));
 
-		//Write the vertices to the file.
-		file.Write(vertices.Data(), sizeof(VegetationVertex) * sizeOfVertices);
+			//Write the vertices to the file.
+			file.Write(vertices.Data(), sizeof(VegetationVertex) * sizeOfVertices);
 
-		//Write the size of the indices to the file.
-		const uint64 sizeOfIndices{ indices.Size() };
-		file.Write(&sizeOfIndices, sizeof(uint64));
+			//Write the size of the indices to the file.
+			const uint64 sizeOfIndices{ indices.Size() };
+			file.Write(&sizeOfIndices, sizeof(uint64));
 
-		//Write the vertices to the file.
-		file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
-
+			//Write the vertices to the file.
+			file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+		}
+		
 		//Close the file.
 		file.Close();
 	}

@@ -11,12 +11,12 @@
 #include <stb_image.h>
 #include <stb_image_resize.h>
 
-class GrassMaterialCreator final
+class GrassVegetationMaterialCreator final
 {
 
 public:
 
-	class GrassMaterialCreationParameters final
+	class GrassVegetationMaterialCreationParameters final
 	{
 
 	public:
@@ -45,9 +45,9 @@ public:
 	};
 
 	/*
-	*	Creates a grass material resource file.
+	*	Creates a grass vegetation material resource file.
 	*/
-	static void CreateGrassMaterial(const GrassMaterialCreationParameters &parameters) noexcept
+	static void CreateVegetationGrassMaterial(const GrassVegetationMaterialCreationParameters &parameters) noexcept
 	{
 		//What should the material be called?
 		DynamicString fileName{ parameters._Output };
@@ -57,7 +57,7 @@ public:
 		BinaryFile<IOMode::Out> file{ fileName.CString() };
 
 		//Write the resource type to the file.
-		constexpr ResourceType resourceType{ ResourceType::GrassMaterial };
+		constexpr ResourceType resourceType{ ResourceType::GrassVegetationMaterial };
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.

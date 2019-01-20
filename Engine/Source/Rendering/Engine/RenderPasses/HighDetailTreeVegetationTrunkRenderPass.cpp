@@ -188,8 +188,8 @@ void HighDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffers[UNDERLYING(LevelOfDetail::High)], &offset);
-		commandBuffer->BindIndexBuffer(this, information._Model._Buffers[UNDERLYING(LevelOfDetail::High)], information._Model._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::High)], information._Model._TrunkIndexOffsets[UNDERLYING(LevelOfDetail::High)]);
 
 		//Push constants.
 		PushConstantData data;
@@ -213,7 +213,7 @@ void HighDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCounts[UNDERLYING(LevelOfDetail::High)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._TrunkIndexCounts[UNDERLYING(LevelOfDetail::High)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)]);
 		}
 	}
 

@@ -646,17 +646,31 @@ void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &d
 	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 	{
 		//Create the vertex and index buffer.
-		const void *RESTRICT modelData[]{ data._Vertices[i].Data(), data._Indices[i].Data() };
-		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices[i].Size(), sizeof(uint32) * data._Indices[i].Size() };
+		const void *RESTRICT modelData[]{ data._CrownVertices[i].Data(), data._CrownIndices[i].Data() };
+		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._CrownVertices[i].Size(), sizeof(uint32) * data._CrownIndices[i].Size() };
 		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
 		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
-		//Set up the physical model.
-		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._Extents[i] * 0.5f, -data._Extents[i] * 0.5f, -data._Extents[i] * 0.5f);
-		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._Extents[i] * 0.5f, data._Extents[i] * 0.5f, data._Extents[i] * 0.5f);
-		model._Buffers[i] = buffer;
-		model._IndexOffsets[i] = modelDataSizes[0];
-		model._IndexCounts[i] = static_cast<uint32>(data._Indices[i].Size());
+		//Set up the model.
+		model._CrownBuffers[i] = buffer;
+		model._CrownIndexOffsets[i] = modelDataSizes[0];
+		model._CrownIndexCounts[i] = static_cast<uint32>(data._CrownIndices[i].Size());
+	}
+
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		//Create the vertex and index buffer.
+		const void *RESTRICT modelData[]{ data._TrunkVertices[i].Data(), data._TrunkIndices[i].Data() };
+		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._TrunkVertices[i].Size(), sizeof(uint32) * data._TrunkIndices[i].Size() };
+		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
+
+		//Set up the model.
+		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._TrunkExtents[i] * 0.5f, -data._TrunkExtents[i] * 0.5f, -data._TrunkExtents[i] * 0.5f);
+		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._TrunkExtents[i] * 0.5f, data._TrunkExtents[i] * 0.5f, data._TrunkExtents[i] * 0.5f);
+		model._TrunkBuffers[i] = buffer;
+		model._TrunkIndexOffsets[i] = modelDataSizes[0];
+		model._TrunkIndexCounts[i] = static_cast<uint32>(data._TrunkIndices[i].Size());
 	}
 }
 

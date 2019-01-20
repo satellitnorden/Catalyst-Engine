@@ -11,13 +11,22 @@ class TreeVegetationModelData final
 
 public:
 
-	//The extent of the grass vegetation model.
-	StaticArray<float, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Extents;
+	//The extent for the crown of the grass vegetation model.
+	StaticArray<float, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownExtents;
 
-	//The vertices of the grass vegetation model.
-	StaticArray<DynamicArray<VegetationVertex>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Vertices;
+	//The vertices for the crown of the grass vegetation model.
+	StaticArray<DynamicArray<VegetationVertex>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownVertices;
 
-	//The indices of the grass vegetation model.
-	StaticArray<DynamicArray<uint32>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Indices;
+	//The indices for the crown of the grass vegetation model.
+	StaticArray<DynamicArray<uint32>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownIndices;
+
+	//The extent for the trunk of the grass vegetation model.
+	StaticArray<float, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkExtents;
+
+	//The vertices for the trunk of the grass vegetation model.
+	StaticArray<DynamicArray<VegetationVertex>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkVertices;
+
+	//The indices for the trunk of the grass vegetation model.
+	StaticArray<DynamicArray<uint32>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkIndices;
 
 };
