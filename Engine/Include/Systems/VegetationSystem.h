@@ -11,11 +11,10 @@
 
 //Vegetation.
 #include <Vegetation/DebrisVegetationTypeInformation.h>
-#include <Vegetation/DebrisVegetationTypeInformationUpdate.h>
 #include <Vegetation/GrassVegetationTypeInformation.h>
-#include <Vegetation/GrassVegetationTypeInformationUpdate.h>
 #include <Vegetation/SolidVegetationTypeInformation.h>
-#include <Vegetation/SolidVegetationTypeInformationUpdate.h>
+#include <Vegetation/TreeVegetationTypeInformation.h>
+#include <Vegetation/VegetationTypeInformationUpdate.h>
 
 class VegetationSystem final
 {
@@ -103,6 +102,27 @@ public:
 		return &_SolidVegetationTypeInformations;
 	}
 
+	/*
+	*	Adds a tree vegetation type.
+	*/
+	void AddTreeVegetationType(const TreeVegetationTypeProperties &properties, const TreeVegetationModel &model, const TreeVegetationMaterial &material) NOEXCEPT;
+
+	/*
+	*	Returns the tree vegetation type informations, const.
+	*/
+	RESTRICTED NO_DISCARD const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT GetTreeVegetationTypeInformations() const NOEXCEPT
+	{
+		return &_TreeVegetationTypeInformations;
+	}
+
+	/*
+	*	Returns the tree vegetation type informations, non-const.
+	*/
+	RESTRICTED NO_DISCARD DynamicArray<TreeVegetationTypeInformation> *const RESTRICT GetTreeVegetationTypeInformations() NOEXCEPT
+	{
+		return &_TreeVegetationTypeInformations;
+	}
+
 private:
 
 	//The update task.
@@ -112,22 +132,28 @@ private:
 	VegetationType _VegetationTypeToUpdate{ VegetationType::NumberOfVegetationTypes };
 
 	//The debris vegetation type information update.
-	DebrisVegetationTypeInformationUpdate _DebrisVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<DebrisVegetationTypeInformation, DebrisVegetationPatchRenderInformation> _DebrisVegetationTypeInformationUpdate;
 
 	//The debris vegetation type informations.
 	DynamicArray<DebrisVegetationTypeInformation> _DebrisVegetationTypeInformations;
 
 	//The grass vegetation type information update.
-	GrassVegetationTypeInformationUpdate _GrassVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<GrassVegetationTypeInformation, GrassVegetationPatchRenderInformation> _GrassVegetationTypeInformationUpdate;
 
 	//The grass vegetation type informations.
 	DynamicArray<GrassVegetationTypeInformation> _GrassVegetationTypeInformations;
 
 	//The solid vegetation type information update.
-	SolidVegetationTypeInformationUpdate _SolidVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<SolidVegetationTypeInformation, SolidVegetationPatchRenderInformation> _SolidVegetationTypeInformationUpdate;
 
 	//The solid vegetation type informations.
 	DynamicArray<SolidVegetationTypeInformation> _SolidVegetationTypeInformations;
+
+	//The tree vegetation type information update.
+	VegetationTypeInformationUpdate<TreeVegetationTypeInformation, TreeVegetationPatchRenderInformation> _TreeVegetationTypeInformationUpdate;
+
+	//The tree vegetation type informations.
+	DynamicArray<TreeVegetationTypeInformation> _TreeVegetationTypeInformations;
 
 	/*
 	*	Processes the vegetation type information update.

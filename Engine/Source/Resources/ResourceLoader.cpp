@@ -14,6 +14,7 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
+#include <Resources/TreeVegetationMaterialData.h>
 #include <Resources/TreeVegetationModelData.h>
 
 //Systems.
@@ -28,6 +29,7 @@ Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
+Map<HashString, TreeVegetationMaterial> ResourceLoader::_TreeVegetationMaterials;
 Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
 
 /*
@@ -112,6 +114,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
+
+				break;
+			}
+
+			case ResourceType::TreeVegetationMaterial:
+			{
+				LoadTreeVegetationMaterial(file);
 
 				break;
 			}
@@ -458,6 +467,67 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 }
 
 /*
+*	Given a file, load a tree vegetation material.
+*/
+void ResourceLoader::LoadTreeVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the tree vegetation material data in the tree vegetation material data structure.
+	TreeVegetationMaterialData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of mipmap levels for the trunk.
+	file.Read(&data._TrunkMipmapLevels, sizeof(uint8));
+
+	//Read the trunk width.
+	file.Read(&data._TrunkWidth, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&data._TrunkHeight, sizeof(uint32));
+
+	//Read the trunk albedo.
+	data._TrunkAlbedoData.UpsizeSlow(data._TrunkMipmapLevels);
+
+	for (uint8 i = 0; i < data._TrunkMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._TrunkWidth >> i) * (data._TrunkHeight >> i) * 4 };
+
+		data._TrunkAlbedoData[i].Reserve(textureSize);
+
+		file.Read(data._TrunkAlbedoData[i].Data(), textureSize);
+	}
+
+	//Read the trunk normal map.
+	data._TrunkNormalMapData.UpsizeSlow(data._TrunkMipmapLevels);
+
+	for (uint8 i = 0; i < data._TrunkMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._TrunkWidth >> i) * (data._TrunkHeight >> i) * 4 };
+
+		data._TrunkNormalMapData[i].Reserve(textureSize);
+
+		file.Read(data._TrunkNormalMapData[i].Data(), textureSize);
+	}
+
+	//Read the trunk material properties.
+	data._TrunkMaterialPropertiesData.UpsizeSlow(data._TrunkMipmapLevels);
+
+	for (uint8 i = 0; i < data._TrunkMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._TrunkWidth >> i) * (data._TrunkHeight >> i) * 4 };
+
+		data._TrunkMaterialPropertiesData[i].Reserve(textureSize);
+
+		file.Read(data._TrunkMaterialPropertiesData[i].Data(), textureSize);
+	}
+
+	//Create the tree vegetation material via the rendering system.
+	RenderingSystem::Instance->CreateTreeVegetationMaterial(data, _TreeVegetationMaterials[resourceID]);
+}
+
+/*
 *	Given a file, load a tree vegetation model.
 */
 void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
@@ -470,23 +540,30 @@ void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXC
 	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the extent of the tree vegetation model.
-	file.Read(&data._Extent, sizeof(float));
+	file.Read(&data._Extents[0], sizeof(float));
 
 	//Read the number of vertices.
 	uint64 numberOfVertices;
 	file.Read(&numberOfVertices, sizeof(uint64));
 
 	//Read the vertices.
-	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(VegetationVertex) * numberOfVertices);
+	data._Vertices[0].UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
 
 	//Read the number of indices.
 	uint64 numberOfIndices;
 	file.Read(&numberOfIndices, sizeof(uint64));
 
 	//Read the indices.
-	data._Indices.UpsizeFast(numberOfIndices);
-	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+	data._Indices[0].UpsizeFast(numberOfIndices);
+	file.Read(data._Indices[0].Data(), sizeof(uint32) * numberOfIndices);
+
+	for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		data._Extents[i] = data._Extents[0];
+		data._Vertices[i] = data._Vertices[0];
+		data._Indices[i] = data._Indices[0];
+	}
 
 	//Create the tree vegetation model via the rendering system.
 	RenderingSystem::Instance->CreateTreeVegetationModel(data, _TreeVegetationModels[resourceID]);

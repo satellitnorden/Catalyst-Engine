@@ -5,15 +5,16 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Vegetation.
-#include <Vegetation/DebrisVegetationTypeInformation.h>
+#include <Vegetation/SolidVegetationTypeInformation.h>
 
-class DebrisVegetationTypeInformationUpdate final
+template <typename TYPE_INFORMATION_TYPE, typename PATCH_RENDER_INFORMATION_TYPE>
+class VegetationTypeInformationUpdate final
 {
 
 public:
 
 	//The vegetation type information to update.
-	DebrisVegetationTypeInformation *RESTRICT _Information;
+	TYPE_INFORMATION_TYPE *RESTRICT _Information;
 
 	//Denotes whether or not this is a level of detail update.
 	bool _LevelOfDetailUpdate;
@@ -28,6 +29,6 @@ public:
 	VegetationPatchInformation _NewPatchInformation;
 
 	//The new patch render information.
-	DebrisVegetationPatchRenderInformation _NewPatchRenderInformation;
+	PATCH_RENDER_INFORMATION_TYPE _NewPatchRenderInformation;
 
 };

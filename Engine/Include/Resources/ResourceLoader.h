@@ -19,6 +19,7 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
+#include <Vegetation/TreeVegetationMaterial.h>
 #include <Vegetation/TreeVegetationModel.h>
 
 class ResourceLoader final
@@ -67,6 +68,11 @@ public:
 	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return _PhysicalModels[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding tree vegetation material.
+	*/
+	static const TreeVegetationMaterial& GetTreeVegetationMaterial(const HashString resourceID) { return _TreeVegetationMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding tree vegetation model.
 	*/
 	static const TreeVegetationModel& GetTreeVegetationModel(const HashString resourceID) { return _TreeVegetationModels[resourceID]; }
@@ -93,6 +99,9 @@ private:
 
 	//Container for all physical models.
 	static Map<HashString, PhysicalModel> _PhysicalModels;
+
+	//Container for all tree vegetation materials.
+	static Map<HashString, TreeVegetationMaterial> _TreeVegetationMaterials;
 
 	//Container for all tree vegetation models.
 	static Map<HashString, TreeVegetationModel> _TreeVegetationModels;
@@ -136,6 +145,11 @@ private:
 	*	Given a file, load a physical model.
 	*/
 	static void LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a tree vegetation material.
+	*/
+	static void LoadTreeVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a tree vegetation model.

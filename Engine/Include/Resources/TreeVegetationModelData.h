@@ -12,12 +12,12 @@ class TreeVegetationModelData final
 public:
 
 	//The extent of the grass vegetation model.
-	float _Extent;
+	StaticArray<float, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Extents;
 
 	//The vertices of the grass vegetation model.
-	DynamicArray<VegetationVertex> _Vertices;
+	StaticArray<DynamicArray<VegetationVertex>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Vertices;
 
 	//The indices of the grass vegetation model.
-	DynamicArray<uint32> _Indices;
+	StaticArray<DynamicArray<uint32>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Indices;
 
 };

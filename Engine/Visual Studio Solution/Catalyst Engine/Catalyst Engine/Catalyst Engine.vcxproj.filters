@@ -789,20 +789,11 @@
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h">
       <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h">
-      <Filter>Vegetation\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
@@ -1119,9 +1110,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformation.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformationUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -1243,6 +1231,36 @@
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailSolidVegetationRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchRenderInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeProperties.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationMaterial.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h">
+      <Filter>Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationVertexShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1734,6 +1752,15 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailSolidVegetationRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationVertexShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>

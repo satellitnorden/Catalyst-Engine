@@ -18,6 +18,7 @@ enum class VegetationType : uint8
 	Debris,
 	Grass,
 	Solid,
+	Tree,
 
 	NumberOfVegetationTypes
 };

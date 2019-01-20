@@ -42,6 +42,8 @@ class PhysicalModelData;
 class RenderPass;
 class Resolution;
 class TextureData;
+class TreeVegetationMaterial;
+class TreeVegetationMaterialData;
 class TreeVegetationModel;
 class TreeVegetationModelData;
 
@@ -391,6 +393,11 @@ public:
 	*	Creates a physical material.
 	*/
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
+
+	/*
+	*	Creates a tree vegetation material.
+	*/
+	void CreateTreeVegetationMaterial(const TreeVegetationMaterialData &data, TreeVegetationMaterial &model) NOEXCEPT;
 
 	/*
 	*	Creates a tree vegetation model.

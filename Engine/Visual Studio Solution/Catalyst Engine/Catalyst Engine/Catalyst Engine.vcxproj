@@ -226,6 +226,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.h" />
@@ -274,6 +275,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\LightingFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\LowDetailDebrisVegetationFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\LowDetailDebrisVegetationVertexShader.h" />
@@ -323,6 +326,7 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
@@ -354,21 +358,23 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformation.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchRenderInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h" />
   </ItemGroup>
@@ -440,6 +446,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.cpp" />
@@ -484,6 +491,8 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailSolidVegetationVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\LightingFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\LowDetailDebrisVegetationFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\LowDetailDebrisVegetationVertexShader.cpp" />

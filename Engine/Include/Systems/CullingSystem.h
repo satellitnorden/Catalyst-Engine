@@ -72,6 +72,14 @@ public:
 		_CullingTasks[UNDERLYING(CullingTask::Terrain)].WaitFor();
 	}
 
+	/*
+	*	Waits for the tree vegetation culling to finish.
+	*/
+	void WaitForTreeVegetationCulling() const NOEXCEPT
+	{
+		_CullingTasks[UNDERLYING(CullingTask::TreeVegetation)].WaitFor();
+	}
+
 private:
 
 	//Enumeration covering all culling tasks.
@@ -82,6 +90,7 @@ private:
 		ParticleSystems,
 		SolidVegetation,
 		Terrain,
+		TreeVegetation,
 
 		NumberOfCullingTasks
 	};
@@ -113,5 +122,10 @@ private:
 	*	Culls terrain.
 	*/
 	void CullTerrain() NOEXCEPT;
+
+	/*
+	*	Culls tre vegetation.
+	*/
+	void CullTreeVegetation() NOEXCEPT;
 
 };

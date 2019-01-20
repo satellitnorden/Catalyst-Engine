@@ -66,6 +66,12 @@ namespace VegetationUtilities
 	template <typename TYPE>
 	void ProcessUpdate(TYPE *const RESTRICT update) NOEXCEPT
 	{
+		//Return early if there's no information to update.
+		if (!update->_Information)
+		{
+			return;
+		}
+
 		if (update->_LevelOfDetailUpdate)
 		{
 			for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
@@ -157,6 +163,15 @@ namespace VegetationUtilities
 	template <typename TYPE_INFORMATION_TYPE, typename UPDATE_TYPE>
 	void UpdateVegetationType(DynamicArray<TYPE_INFORMATION_TYPE> &informations, UPDATE_TYPE *const RESTRICT update) NOEXCEPT
 	{
+		//Return early if there's no vegetation type informations.
+		if (informations.Empty())
+		{
+			//Denote that there's no information to update.
+			update->_Information = nullptr;
+
+			return;
+		}
+
 		//Cache the viewer position.
 		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 

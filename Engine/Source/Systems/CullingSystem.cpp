@@ -53,6 +53,12 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 		CullingSystem::Instance->CullTerrain();
 	};
 	_CullingTasks[UNDERLYING(CullingTask::Terrain)]._Arguments = nullptr;
+
+	_CullingTasks[UNDERLYING(CullingTask::TreeVegetation)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullTreeVegetation();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::TreeVegetation)]._Arguments = nullptr;
 }
 
 /*
@@ -235,6 +241,42 @@ void CullingSystem::CullTerrain() NOEXCEPT
 		else
 		{
 			CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+		}
+	}
+}
+
+/*
+*	Culls tree vegetation.
+*/
+void CullingSystem::CullTreeVegetation() NOEXCEPT
+{
+	//Get the current frustum planes.
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+
+	//Iterate over all tree vegetation type informations, and cull the grid points that is too far away from the viewer.
+	for (TreeVegetationTypeInformation &information : *VegetationSystem::Instance->GetTreeVegetationTypeInformations())
+	{
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch isn't even valid, don't test it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			//Test this patch's axis-aligned bounding boxes against the current frustum planes.
+			for (uint8 j{ 0 }; j < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++j)
+			{
+				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
+				{
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
+
+				else
+				{
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+				}
+			}
 		}
 	}
 }

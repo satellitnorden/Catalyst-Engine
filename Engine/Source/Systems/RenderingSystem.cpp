@@ -36,6 +36,7 @@
 #include <Resources/OceanMaterialData.h>
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
+#include <Resources/TreeVegetationMaterialData.h>
 #include <Resources/TreeVegetationModelData.h>
 
 //Systems.
@@ -48,6 +49,7 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
+#include <Vegetation/TreeVegetationMaterial.h>
 #include <Vegetation/TreeVegetationModel.h>
 
 //Singleton definition.
@@ -617,22 +619,45 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 }
 
 /*
+*	Creates a tree vegetation material.
+*/
+void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialData &data, TreeVegetationMaterial &material) NOEXCEPT
+{
+	//Create the trunk albedo texture.
+	material._TrunkAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkAlbedoData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Create the normal map texture.
+	material._TrunkNormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkNormalMapData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Create the material properties texture.
+	material._TrunkMaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkMaterialPropertiesData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Add the textures to the global render data table.
+	material._TrunkAlbedoTextureIndex = AddTextureToGlobalRenderData(material._TrunkAlbedoTexture);
+	material._TrunkNormalMapTextureIndex = AddTextureToGlobalRenderData(material._TrunkNormalMapTexture);
+	material._TrunkMaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(material._TrunkMaterialPropertiesTexture);
+}
+
+/*
 *	Creates a tree vegetation model.
 */
 void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT
 {
-	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
-	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+	{
+		//Create the vertex and index buffer.
+		const void *RESTRICT modelData[]{ data._Vertices[i].Data(), data._Indices[i].Data() };
+		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices[i].Size(), sizeof(uint32) * data._Indices[i].Size() };
+		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
-	//Set up the treee vegetation model.
-	model._AxisAlignedBoundingBox._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
-	model._AxisAlignedBoundingBox._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
-	model._Buffer = buffer;
-	model._IndexOffset = modelDataSizes[0];
-	model._IndexCount = static_cast<uint32>(data._Indices.Size());
+		//Set up the physical model.
+		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._Extents[i] * 0.5f, -data._Extents[i] * 0.5f, -data._Extents[i] * 0.5f);
+		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._Extents[i] * 0.5f, data._Extents[i] * 0.5f, data._Extents[i] * 0.5f);
+		model._Buffers[i] = buffer;
+		model._IndexOffsets[i] = modelDataSizes[0];
+		model._IndexCounts[i] = static_cast<uint32>(data._Indices[i].Size());
+	}
 }
 
 /*
@@ -853,6 +878,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainDepth)] = TerrainDepthRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetation)] = HighDetailTreeVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();

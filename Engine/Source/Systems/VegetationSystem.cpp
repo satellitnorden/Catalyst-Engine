@@ -138,6 +138,32 @@ void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypePropertie
 }
 
 /*
+*	Adds a tree vegetation type.
+*/
+void VegetationSystem::AddTreeVegetationType(const TreeVegetationTypeProperties &properties, const TreeVegetationModel &model, const TreeVegetationMaterial &material) NOEXCEPT
+{
+	//Create the new tree vegetation information.
+	_TreeVegetationTypeInformations.EmplaceSlow();
+	TreeVegetationTypeInformation *const RESTRICT information{ &_TreeVegetationTypeInformations.Back() };
+
+	//Just copy the properties, the model and the material.
+	information->_Properties = properties;
+	information->_Model = model;
+	information->_Material = material;
+
+	//Fill in the patch and the patch render informations.
+	for (uint8 i = 0; i < 9; ++i)
+	{
+		information->_PatchInformations[i]._Valid = false;
+
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		{
+			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
+		}
+	}
+}
+
+/*
 *	Processes the vegetation type information update.
 */
 void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
@@ -162,6 +188,13 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 		case VegetationType::Solid:
 		{
 			VegetationUtilities::ProcessUpdate(&_SolidVegetationTypeInformationUpdate);
+
+			break;
+		}
+
+		case VegetationType::Tree:
+		{
+			VegetationUtilities::ProcessUpdate(&_TreeVegetationTypeInformationUpdate);
 
 			break;
 		}
@@ -196,6 +229,14 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		{
 			VegetationUtilities::UpdateVegetationType(	_SolidVegetationTypeInformations,
 														&_SolidVegetationTypeInformationUpdate);
+
+			break;
+		}
+
+		case VegetationType::Tree:
+		{
+			VegetationUtilities::UpdateVegetationType(	_TreeVegetationTypeInformations,
+														&_TreeVegetationTypeInformationUpdate);
 
 			break;
 		}
