@@ -14,23 +14,9 @@
 DEFINE_SINGLETON(HighDetailDebrisVegetationRenderPass);
 
 /*
-*	Vertex push constant data definition.
+*	Push constant data definition.
 */
-class VertexPushConstantData final
-{
-
-public:
-
-	float _CutoffDistanceSquared;
-	float _HalfCutoffDistanceSquared;
-	float _InverseHalfCutoffDistanceSquared;
-
-};
-
-/*
-*	Fragment push constant data definition.
-*/
-class FragmentPushConstantData final
+class PushConstantData final
 {
 
 public:
@@ -85,9 +71,8 @@ void HighDetailDebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
@@ -200,21 +185,13 @@ void HighDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
 
 		//Push constants.
-		VertexPushConstantData vertexData;
+		PushConstantData data;
 
-		vertexData._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);
-		vertexData._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
-		vertexData._InverseHalfCutoffDistanceSquared = 1.0f / vertexData._HalfCutoffDistanceSquared;
+		data._AlbedoTextureIndex = information._Material._AlbedoTextureIndex;
+		data._NormalMapTextureIndex = information._Material._NormalMapTextureIndex;
+		data._MaterialPropertiesTextureIndex = information._Material._MaterialPropertiesTextureIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-
-		FragmentPushConstantData fragmentData;
-
-		fragmentData._AlbedoTextureIndex = information._Material._AlbedoTextureIndex;
-		fragmentData._NormalMapTextureIndex = information._Material._NormalMapTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = information._Material._MaterialPropertiesTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		for (const DebrisVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
