@@ -4,10 +4,11 @@
 //Preprocessor defines.
 #define MAXIMUM_WIND_SPEED (30.0f)
 #define INVERSE_MAXIMUM_WIND_SPEED (0.033333f)
-#define WIND_SPEED_TIME_MULTIPLIER 4.25f
+#define TREE_VEGETATION_BASE_WIND_AFFECTION (0.1f)
+#define WIND_SPEED_TIME_MULTIPLIER 4.0f
 
 /*
-*   Given a world position, calculates the wind modulator for grass vegetation.
+*   Given a world position and normal, calculates the wind modulator for grass vegetation.
 */
 vec3 CalculateWindModulator(vec3 position, vec3 normal)
 {
@@ -34,5 +35,30 @@ vec3 CalculateWindModulator(vec3 position, vec3 normal)
     						INVERSE_PI * 4.0f * sin(DOUBLE_PI * (position.x + position.y + position.z + timeFactor))) * normal;
 
     return vec3(largeScaleX + mediumScaleX + smallScale.x, smallScale.y, largeScaleZ + mediumScaleZ + smallScale.z) * windSpeedMultiplier;
+}
+
+/*
+*   Given an instance, calculates the wind modulator for tree vegetation.
+*/
+vec3 CalculateTreeVegetationWindModulator(int instanceIndex)
+{
+    //Calculate the wind speed multiplier.
+    float windSpeedMultiplier = windSpeed * INVERSE_MAXIMUM_WIND_SPEED;
+
+    //Calculate the extended wind speed multiplier.
+    float extendedWindSpeedMultiplier = 1.0f + windSpeedMultiplier;
+
+    //Calculate the time factor.
+    float timeFactor = totalGameTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
+
+    //Large scale motion.
+    float largeScaleX = windDirection.x * EULERS_NUMBER * extendedWindSpeedMultiplier * (sin(SQUARE_ROOT_OF_TWO * timeFactor + instanceIndex) + 1.0f);
+    float largeScaleZ = windDirection.z * PI * extendedWindSpeedMultiplier * (sin(PHI * timeFactor + instanceIndex) + 1.0f);
+
+    //Medium scale motion.
+    float mediumScaleX = windDirection.x * SQUARE_ROOT_OF_TWO * sin(EULERS_NUMBER * timeFactor + instanceIndex);
+    float mediumScaleZ = windDirection.z * PHI * sin(PI * timeFactor + instanceIndex);
+
+    return vec3(largeScaleX + mediumScaleX, 0.0f, largeScaleZ + mediumScaleZ) * windSpeedMultiplier * TREE_VEGETATION_BASE_WIND_AFFECTION;
 }
 #endif

@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystVegetationUtilities.glsl"
 
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
@@ -31,6 +32,10 @@ void main()
     //Pass along the texture coordinate to the fragment shader.
     fragmentTextureCoordinate = vertexTextureCoordinate;
 
+    //Calculate the world position.
+    vec3 worldPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
+    worldPosition += CalculateTreeVegetationWindModulator(gl_InstanceIndex) * vertexModulatorFactor;
+
     //Write the position.
-    gl_Position = viewMatrix * vertexTransformationMatrix * vec4(vertexPosition, 1.0);
+    gl_Position = viewMatrix * vec4(worldPosition, 1.0);
 }
