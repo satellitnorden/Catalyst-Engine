@@ -17,17 +17,13 @@ layout (location = 4) in float vertexModulatorFactor;
 layout (location = 5) in mat4 vertexTransformationMatrix;
 
 //Out parameters.
-layout (location = 0) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 3) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec3 fragmentNormal;
+layout (location = 1) out vec2 fragmentTextureCoordinate;
 
 void main()
 {
-    //Calculate the tangent space matrix.
-    vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(vertexTransformationMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-    vec3 normal = normalize(vec3(vertexTransformationMatrix * vec4(vertexNormal, 0.0f)));
-
-    fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    //Pass along the fragment normal.
+    fragmentNormal = normalize(vec3(vertexTransformationMatrix * vec4(vertexNormal, 0.0f)));
 
     //Pass along the texture coordinate to the fragment shader.
     fragmentTextureCoordinate = vertexTextureCoordinate;

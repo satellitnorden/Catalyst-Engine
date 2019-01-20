@@ -13,14 +13,15 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int albedoTextureIndex;
-    layout (offset = 4) int normalMapTextureIndex;
-    layout (offset = 8) int materialPropertiesIndex;
+    layout (offset = 8) int albedoTextureIndex;
+    layout (offset = 12) int normalMapTextureIndex;
+    layout (offset = 16) int materialPropertiesIndex;
 };
 
 //In parameters.
-layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
-layout (location = 3) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec3 fragmentNormal;
+layout (location = 1) in vec2 fragmentTextureCoordinate;
+layout (location = 2) in float fragmentOpacity;
 
 //Out parameters.
 layout (location = 0) out vec4 albedo;
@@ -29,14 +30,17 @@ layout (location = 2) out vec4 materialProperties;
 
 void main()
 {
+    //Discard this fragment according to the opacity.
+    if (fragmentOpacity < RandomFloat(gl_FragCoord.xyz))
+    {
+        discard;
+    }
+
     //Write the albedo.
     albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    vec3 normal = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
-    normal = fragmentTangentSpaceMatrix * normal;
-    
-    normalDepth = vec4(normal, gl_FragCoord.z);
+    normalDepth = vec4(fragmentNormal, gl_FragCoord.z);
 
     //Sample the material properties.
     vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
