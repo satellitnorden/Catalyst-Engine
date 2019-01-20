@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationTrunkRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -14,7 +14,7 @@
 #include <Vegetation/VegetationVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HighDetailTreeVegetationRenderPass);
+DEFINE_SINGLETON(HighDetailTreeVegetationTrunkRenderPass);
 
 /*
 *	Push constant data definition.
@@ -33,32 +33,32 @@ public:
 /*
 *	Default constructor.
 */
-HighDetailTreeVegetationRenderPass::HighDetailTreeVegetationRenderPass() NOEXCEPT
+HighDetailTreeVegetationTrunkRenderPass::HighDetailTreeVegetationTrunkRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationRenderPass::Instance->InitializeInternal();
+		HighDetailTreeVegetationTrunkRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the high detail tree vegetation render pass.
+*	Initializes the high detail tree vegetation trunk render pass.
 */
-void HighDetailTreeVegetationRenderPass::InitializeInternal() NOEXCEPT
+void HighDetailTreeVegetationTrunkRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailTreeVegetation);
+	SetSubStage(RenderPassSubStage::HighDetailTreeVegetationTrunk);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTreeVegetationVertex);
+	SetVertexShader(Shader::HighDetailTreeVegetationTrunkVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::HighDetailTreeVegetationFragment);
+	SetFragmentShader(Shader::HighDetailTreeVegetationTrunkFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -147,7 +147,7 @@ void HighDetailTreeVegetationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationRenderPass::Instance->RenderInternal();
+		HighDetailTreeVegetationTrunkRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -155,9 +155,9 @@ void HighDetailTreeVegetationRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the high detail tree vegetation.
+*	Renders the high detail tree vegetation trunks.
 */
-void HighDetailTreeVegetationRenderPass::RenderInternal() NOEXCEPT
+void HighDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the tree vegetion type informations.
 	const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetTreeVegetationTypeInformations() };

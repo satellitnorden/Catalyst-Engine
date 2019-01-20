@@ -33,8 +33,8 @@
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailSolidVegetationVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/HighDetailTreeVegetationFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/HighDetailTreeVegetationVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTreeVegetationTrunkFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTreeVegetationTrunkVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailDebrisVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailDebrisVegetationVertexShader.h>
@@ -44,6 +44,8 @@
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationTrunkFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationTrunkVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailDebrisVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailDebrisVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationColorFragmentShader.h>
@@ -52,6 +54,8 @@
 #include <Rendering/ShaderData/Vulkan/MediumDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailSolidVegetationVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/MediumDetailTreeVegetationTrunkFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/MediumDetailTreeVegetationTrunkVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemGeometryShader.h>
