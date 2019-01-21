@@ -623,6 +623,15 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 */
 void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialData &data, TreeVegetationMaterial &material) NOEXCEPT
 {
+	//Create the crown mask texture.
+	material._CrownMaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownMaskData, data._CrownMaskWidth, data._CrownMaskHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Create the crown albedo texture.
+	material._CrownAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownAlbedoData, data._CrownWidth, data._CrownHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Create the crown map texture.
+	material._CrownNormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownNormalMapData, data._CrownWidth, data._CrownHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
 	//Create the trunk albedo texture.
 	material._TrunkAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkAlbedoData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
 
@@ -633,6 +642,9 @@ void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialD
 	material._TrunkMaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkMaterialPropertiesData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
 
 	//Add the textures to the global render data table.
+	material._CrownMaskTextureIndex = AddTextureToGlobalRenderData(material._CrownMaskTexture);
+	material._CrownAlbedoTextureIndex = AddTextureToGlobalRenderData(material._CrownAlbedoTexture);
+	material._CrownNormalMapTextureIndex = AddTextureToGlobalRenderData(material._CrownNormalMapTexture);
 	material._TrunkAlbedoTextureIndex = AddTextureToGlobalRenderData(material._TrunkAlbedoTexture);
 	material._TrunkNormalMapTextureIndex = AddTextureToGlobalRenderData(material._TrunkNormalMapTexture);
 	material._TrunkMaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(material._TrunkMaterialPropertiesTexture);
@@ -895,6 +907,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationTrunk)] = HighDetailTreeVegetationTrunkRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationTrunk)] = MediumDetailTreeVegetationTrunkRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationTrunk)] = LowDetailTreeVegetationTrunkRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownDepth)] = HighDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownColor)] = HighDetailTreeVegetationCrownColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();

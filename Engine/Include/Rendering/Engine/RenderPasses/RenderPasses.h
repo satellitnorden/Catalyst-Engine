@@ -27,6 +27,8 @@
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationCrownColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationCrownDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailDebrisVegetationRenderPass.h>

@@ -509,27 +509,27 @@ void ResourceLoader::LoadTreeVegetationMaterial(BinaryFile<IOMode::In> &file) NO
 	file.Read(&data._CrownHeight, sizeof(uint32));
 
 	//Read the crown albedo data.
-	data._AlbedoData.UpsizeSlow(data._CrownMipmapLevels);
+	data._CrownAlbedoData.UpsizeSlow(data._CrownMipmapLevels);
 
 	for (uint8 i = 0; i < data._CrownMipmapLevels; ++i)
 	{
 		const uint64 textureSize{ (data._CrownWidth >> i) * (data._CrownHeight >> i) * 4 };
 
-		data._AlbedoData[i].Reserve(textureSize);
+		data._CrownAlbedoData[i].Reserve(textureSize);
 
-		file.Read(data._AlbedoData[i].Data(), textureSize);
+		file.Read(data._CrownAlbedoData[i].Data(), textureSize);
 	}
 
 	//Read the crown normal map data.
-	data._NormalMapData.UpsizeSlow(data._CrownMipmapLevels);
+	data._CrownNormalMapData.UpsizeSlow(data._CrownMipmapLevels);
 
 	for (uint8 i = 0; i < data._CrownMipmapLevels; ++i)
 	{
 		const uint64 textureSize{ (data._CrownWidth >> i) * (data._CrownHeight >> i) * 4 };
 
-		data._NormalMapData[i].Reserve(textureSize);
+		data._CrownNormalMapData[i].Reserve(textureSize);
 
-		file.Read(data._NormalMapData[i].Data(), textureSize);
+		file.Read(data._CrownNormalMapData[i].Data(), textureSize);
 	}
 
 	//Read the number of mipmap levels for the trunk.

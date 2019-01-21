@@ -30,10 +30,10 @@ public:
 	uint32 _CrownHeight;
 
 	//The crown albedo data.
-	DynamicArray<DynamicArray<byte>> _AlbedoData;
+	DynamicArray<DynamicArray<byte>> _CrownAlbedoData;
 
 	//The crown normal map data.
-	DynamicArray<DynamicArray<byte>> _NormalMapData;
+	DynamicArray<DynamicArray<byte>> _CrownNormalMapData;
 
 	//The number of mipmap levels for the trunk.
 	uint8 _TrunkMipmapLevels;
