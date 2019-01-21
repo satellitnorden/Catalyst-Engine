@@ -65,6 +65,7 @@ enum class RenderPassSubStage : uint8
 	//Directional shadow mapping main stage.
 	DirectionalTerrainShadow,
 	DirectionalDynamicPhysicalShadow,
+	DirectionalTreeVegetationTrunk,
 	DirectionalSolidVegetationShadow,
 
 	//Scene main stage.
@@ -286,6 +287,7 @@ enum class Shader : uint8
 	DirectionalSolidVegetationShadowFragment,
 	DirectionalSolidVegetationShadowVertex,
 	DirectionalTerrainShadowVertex,
+	DirectionalTreeVegetationTrunkVertex,
 	GaussianBlurFragment,
 	HighDetailDebrisVegetationFragment,
 	HighDetailDebrisVegetationVertex,

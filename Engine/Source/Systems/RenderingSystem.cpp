@@ -900,6 +900,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	//Register all render passes.
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTreeVegetationTrunk)] = DirectionalTreeVegetationTrunkRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalSolidVegetationShadow)] = DirectionalSolidVegetationShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainDepth)] = TerrainDepthRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();

@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTreeVegetationTrunkRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailDebrisVegetationRenderPass.h" />
@@ -274,6 +275,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalTreeVegetationTrunkVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailDebrisVegetationFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailDebrisVegetationVertexShader.h" />
@@ -464,6 +466,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTreeVegetationTrunkRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailDebrisVegetationRenderPass.cpp" />
@@ -514,6 +517,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalTreeVegetationTrunkVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailDebrisVegetationFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailDebrisVegetationVertexShader.cpp" />

@@ -14,6 +14,7 @@ glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalSh
 glslangValidator.exe -V DirectionalSolidVegetationShadowFragmentShader.frag -o		DirectionalSolidVegetationShadowFragmentShader.spv
 glslangValidator.exe -V DirectionalSolidVegetationShadowVertexShader.vert -o		DirectionalSolidVegetationShadowVertexShader.spv
 glslangValidator.exe -V DirectionalTerrainShadowVertexShader.vert -o			DirectionalTerrainShadowVertexShader.spv
+glslangValidator.exe -V DirectionalTreeVegetationTrunkVertexShader.vert -o		DirectionalTreeVegetationTrunkVertexShader.spv
 glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V HighDetailDebrisVegetationFragmentShader.frag -o 		HighDetailDebrisVegetationFragmentShader.spv
 glslangValidator.exe -V HighDetailDebrisVegetationVertexShader.vert -o 			HighDetailDebrisVegetationVertexShader.spv
