@@ -44,11 +44,23 @@ public:
 		//The resource id.
 		const char *RESTRICT _ID;
 
-		//The crown file path.
-		const char *RESTRICT _CrownFile;
+		//The low detail crown file path.
+		const char *RESTRICT _LowCrownFile;
 
-		//The trunk file path.
-		const char *RESTRICT _TrunkFile;
+		//The medium detail crown file path.
+		const char *RESTRICT _MediumCrownFile;
+
+		//The high detail crown file path.
+		const char *RESTRICT _HighCrownFile;
+
+		//The low detail trunk file path.
+		const char *RESTRICT _LowTrunkFile;
+
+		//The medium detail trunk file path.
+		const char *RESTRICT _MediumTrunkFile;
+
+		//The high detail trunk file path.
+		const char *RESTRICT _HighTrunkFile;
 
 		//Denotes the up axis.
 		Axis _UpAxis;
@@ -78,37 +90,78 @@ public:
 		//Load the models.
 		for (uint8 i{ 0 }; i < 2; ++i)
 		{
-			Assimp::Importer modelImporter;
-			const aiScene *modelScene = modelImporter.ReadFile(i == 0 ? parameters._CrownFile : parameters._TrunkFile, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+			for (uint8 j{ 0 }; j < 3; ++j)
+			{
+				const char *RESTRICT filePath;
 
-			//Determine the height range.
-			Vector2<float> heightRange{ FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+				if (i == 0)
+				{
+					if (j == 0)
+					{
+						filePath = parameters._LowCrownFile;
+					}
 
-			ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
+					else if (j == 1)
+					{
+						filePath = parameters._MediumCrownFile;
+					}
 
-			//Process the vertices/indices.
-			DynamicArray<VegetationVertex> vertices;
-			DynamicArray<uint32> indices;
-			float extent{ 0.0f };
+					else
+					{
+						filePath = parameters._HighCrownFile;
+					}
+				}
 
-			ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices, extent);
+				else
+				{
+					if (j == 0)
+					{
+						filePath = parameters._LowTrunkFile;
+					}
 
-			//Write the extent to the file.
-			file.Write(&extent, sizeof(float));
+					else if (j == 1)
+					{
+						filePath = parameters._MediumTrunkFile;
+					}
 
-			//Write the size of the vertices to the file.
-			const uint64 sizeOfVertices{ vertices.Size() };
-			file.Write(&sizeOfVertices, sizeof(uint64));
+					else
+					{
+						filePath = parameters._HighTrunkFile;
+					}
+				}
 
-			//Write the vertices to the file.
-			file.Write(vertices.Data(), sizeof(VegetationVertex) * sizeOfVertices);
+				Assimp::Importer modelImporter;
+				const aiScene *modelScene = modelImporter.ReadFile(filePath, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
-			//Write the size of the indices to the file.
-			const uint64 sizeOfIndices{ indices.Size() };
-			file.Write(&sizeOfIndices, sizeof(uint64));
+				//Determine the height range.
+				Vector2<float> heightRange{ FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
 
-			//Write the vertices to the file.
-			file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+				ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
+
+				//Process the vertices/indices.
+				DynamicArray<VegetationVertex> vertices;
+				DynamicArray<uint32> indices;
+				float extent{ 0.0f };
+
+				ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices, extent);
+
+				//Write the extent to the file.
+				file.Write(&extent, sizeof(float));
+
+				//Write the size of the vertices to the file.
+				const uint64 sizeOfVertices{ vertices.Size() };
+				file.Write(&sizeOfVertices, sizeof(uint64));
+
+				//Write the vertices to the file.
+				file.Write(vertices.Data(), sizeof(VegetationVertex) * sizeOfVertices);
+
+				//Write the size of the indices to the file.
+				const uint64 sizeOfIndices{ indices.Size() };
+				file.Write(&sizeOfIndices, sizeof(uint64));
+
+				//Write the vertices to the file.
+				file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+			}
 		}
 		
 		//Close the file.

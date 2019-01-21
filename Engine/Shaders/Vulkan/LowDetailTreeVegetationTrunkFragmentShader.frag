@@ -37,13 +37,13 @@ void main()
     }
 
     //Write the albedo.
-    albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
+    albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), fragmentTextureCoordinate);
 
     //Write the normal/depth.
     normalDepth = vec4(fragmentNormal, gl_FragCoord.z);
 
     //Sample the material properties.
-    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
+    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), fragmentTextureCoordinate);
 
     //Write the roughness.
     materialProperties.r = materialPropertiesSampler.r;

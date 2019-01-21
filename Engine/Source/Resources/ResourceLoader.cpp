@@ -593,62 +593,48 @@ void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXC
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 	{
 		//Read the extent for the crown of the tree vegetation model.
-		file.Read(&data._CrownExtents[0], sizeof(float));
+		file.Read(&data._CrownExtents[i], sizeof(float));
 
 		//Read the number of vertices for the crown.
 		uint64 numberOfVertices;
 		file.Read(&numberOfVertices, sizeof(uint64));
 
 		//Read the vertices for the crown.
-		data._CrownVertices[0].UpsizeFast(numberOfVertices);
-		file.Read(data._CrownVertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
+		data._CrownVertices[i].UpsizeFast(numberOfVertices);
+		file.Read(data._CrownVertices[i].Data(), sizeof(VegetationVertex) * numberOfVertices);
 
 		//Read the number of indices for the crown.
 		uint64 numberOfIndices;
 		file.Read(&numberOfIndices, sizeof(uint64));
 
 		//Read the indices for the crown.
-		data._CrownIndices[0].UpsizeFast(numberOfIndices);
-		file.Read(data._CrownIndices[0].Data(), sizeof(uint32) * numberOfIndices);
-
-		//Copy to the other level of details, for now.
-		for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-		{
-			data._CrownExtents[i] = data._CrownExtents[0];
-			data._CrownVertices[i] = data._CrownVertices[0];
-			data._CrownIndices[i] = data._CrownIndices[0];
-		}
+		data._CrownIndices[i].UpsizeFast(numberOfIndices);
+		file.Read(data._CrownIndices[i].Data(), sizeof(uint32) * numberOfIndices);
 	}
 
+	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 	{
 		//Read the extent for the trunk of the tree vegetation model.
-		file.Read(&data._TrunkExtents[0], sizeof(float));
+		file.Read(&data._TrunkExtents[i], sizeof(float));
 
 		//Read the number of vertices for the trunk.
 		uint64 numberOfVertices;
 		file.Read(&numberOfVertices, sizeof(uint64));
 
 		//Read the vertices for the trunk.
-		data._TrunkVertices[0].UpsizeFast(numberOfVertices);
-		file.Read(data._TrunkVertices[0].Data(), sizeof(VegetationVertex) * numberOfVertices);
+		data._TrunkVertices[i].UpsizeFast(numberOfVertices);
+		file.Read(data._TrunkVertices[i].Data(), sizeof(VegetationVertex) * numberOfVertices);
 
 		//Read the number of indices for the trunk.
 		uint64 numberOfIndices;
 		file.Read(&numberOfIndices, sizeof(uint64));
 
 		//Read the indices for the trunk.
-		data._TrunkIndices[0].UpsizeFast(numberOfIndices);
-		file.Read(data._TrunkIndices[0].Data(), sizeof(uint32) * numberOfIndices);
-
-		//Copy to the other level of details, for now.
-		for (uint8 i{ 1 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-		{
-			data._TrunkExtents[i] = data._TrunkExtents[0];
-			data._TrunkVertices[i] = data._TrunkVertices[0];
-			data._TrunkIndices[i] = data._TrunkIndices[0];
-		}
+		data._TrunkIndices[i].UpsizeFast(numberOfIndices);
+		file.Read(data._TrunkIndices[i].Data(), sizeof(uint32) * numberOfIndices);
 	}
 
 	//Create the tree vegetation model via the rendering system.

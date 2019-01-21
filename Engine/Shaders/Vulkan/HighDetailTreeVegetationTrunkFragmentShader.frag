@@ -30,16 +30,16 @@ layout (location = 2) out vec4 materialProperties;
 void main()
 {
     //Write the albedo.
-    albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
+    albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    vec3 normal = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    vec3 normal = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
     normal = fragmentTangentSpaceMatrix * normal;
     
     normalDepth = vec4(normal, gl_FragCoord.z);
 
     //Sample the material properties.
-    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
+    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), fragmentTextureCoordinate);
 
     //Write the roughness.
     materialProperties.r = materialPropertiesSampler.r;
