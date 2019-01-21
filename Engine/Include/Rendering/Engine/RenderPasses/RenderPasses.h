@@ -40,6 +40,8 @@
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationCrownColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationCrownDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>

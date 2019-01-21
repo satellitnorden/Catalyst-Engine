@@ -48,6 +48,10 @@ glslangValidator.exe -V MediumDetailGrassVegetationDepthFragmentShader.frag -o 	
 glslangValidator.exe -V MediumDetailGrassVegetationDepthVertexShader.vert -o 		MediumDetailGrassVegetationDepthVertexShader.spv
 glslangValidator.exe -V MediumDetailSolidVegetationFragmentShader.frag -o 		MediumDetailSolidVegetationFragmentShader.spv
 glslangValidator.exe -V MediumDetailSolidVegetationVertexShader.vert -o 		MediumDetailSolidVegetationVertexShader.spv
+glslangValidator.exe -V MediumDetailTreeVegetationCrownColorFragmentShader.frag -o 	MediumDetailTreeVegetationCrownColorFragmentShader.spv
+glslangValidator.exe -V MediumDetailTreeVegetationCrownColorVertexShader.vert -o 	MediumDetailTreeVegetationCrownColorVertexShader.spv
+glslangValidator.exe -V MediumDetailTreeVegetationCrownDepthFragmentShader.frag -o 	MediumDetailTreeVegetationCrownDepthFragmentShader.spv
+glslangValidator.exe -V MediumDetailTreeVegetationCrownDepthVertexShader.vert -o 	MediumDetailTreeVegetationCrownDepthVertexShader.spv
 glslangValidator.exe -V MediumDetailTreeVegetationTrunkFragmentShader.frag -o 		MediumDetailTreeVegetationTrunkFragmentShader.spv
 glslangValidator.exe -V MediumDetailTreeVegetationTrunkVertexShader.vert -o 		MediumDetailTreeVegetationTrunkVertexShader.spv
 glslangValidator.exe -V OutlineFragmentShader.frag -o 					OutlineFragmentShader.spv

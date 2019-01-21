@@ -729,28 +729,28 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the tree vegetation crown color fragment shader module.
+		//Initialize the high detail tree vegetation crown color fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTreeVegetationCrownColorFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the tree vegetation crown color vertex shader module.
+		//Initialize the high detail tree vegetation crown color vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTreeVegetationCrownColorVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
-		//Initialize the tree vegetation crown depth fragment shader module.
+		//Initialize the high detail tree vegetation crown depth fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTreeVegetationCrownDepthFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the tree vegetation crown depth vertex shader module.
+		//Initialize the high detail tree vegetation crown depth vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTreeVegetationCrownDepthVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
@@ -901,6 +901,34 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetMediumDetailSolidVegetationVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailSolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the medium detail tree vegetation crown color fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetMediumDetailTreeVegetationCrownColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the medium detail tree vegetation crown color vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetMediumDetailTreeVegetationCrownColorVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the medium detail tree vegetation crown depth fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetMediumDetailTreeVegetationCrownDepthFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the medium detail tree vegetation crown depth vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetMediumDetailTreeVegetationCrownDepthVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -1131,7 +1159,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene render pass.
 	{
-		constexpr uint64 NUMBER_OF_SUBPASSES{ 20 };
+		constexpr uint64 NUMBER_OF_SUBPASSES{ 22 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1285,6 +1313,24 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr);
 
 		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationCrownColor)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownDepth)] =
+								VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			0,
+																			nullptr,
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownColor)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
@@ -1463,6 +1509,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationCrownColor),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownDepth),
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownColor),
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::MediumDetailTreeVegetationCrownColor),
 														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationCrownDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationCrownDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -14,7 +14,7 @@
 #include <Vegetation/VegetationVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HighDetailTreeVegetationCrownDepthRenderPass);
+DEFINE_SINGLETON(MediumDetailTreeVegetationCrownDepthRenderPass);
 
 class PushConstantData final
 {
@@ -28,32 +28,32 @@ public:
 /*
 *	Default constructor.
 */
-HighDetailTreeVegetationCrownDepthRenderPass::HighDetailTreeVegetationCrownDepthRenderPass() NOEXCEPT
+MediumDetailTreeVegetationCrownDepthRenderPass::MediumDetailTreeVegetationCrownDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationCrownDepthRenderPass::Instance->InitializeInternal();
+		MediumDetailTreeVegetationCrownDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the high detail tree vegetation crown depth render pass.
+*	Initializes the medium detail tree vegetation crown depth render pass.
 */
-void HighDetailTreeVegetationCrownDepthRenderPass::InitializeInternal() NOEXCEPT
+void MediumDetailTreeVegetationCrownDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailTreeVegetationCrownDepth);
+	SetSubStage(RenderPassSubStage::MediumDetailTreeVegetationCrownDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTreeVegetationCrownDepthVertex);
+	SetVertexShader(Shader::MediumDetailTreeVegetationCrownDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::HighDetailTreeVegetationCrownDepthFragment);
+	SetFragmentShader(Shader::MediumDetailTreeVegetationCrownDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -137,7 +137,7 @@ void HighDetailTreeVegetationCrownDepthRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationCrownDepthRenderPass::Instance->RenderInternal();
+		MediumDetailTreeVegetationCrownDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -145,9 +145,9 @@ void HighDetailTreeVegetationCrownDepthRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the crown depth of the high detail tree vegetation.
+*	Renders the crown depth of the medium detail tree vegetation.
 */
-void HighDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
+void MediumDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the tree vegetation type informations.
 	const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetTreeVegetationTypeInformations() };
@@ -178,8 +178,8 @@ void HighDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		constexpr uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffer(this, 0, information._Model._CrownBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
-		commandBuffer->BindIndexBuffer(this, information._Model._CrownBuffers[UNDERLYING(LevelOfDetail::High)], information._Model._CrownIndexOffsets[UNDERLYING(LevelOfDetail::High)]);
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._CrownBuffers[UNDERLYING(LevelOfDetail::Medium)], &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._CrownBuffers[UNDERLYING(LevelOfDetail::Medium)], information._Model._CrownIndexOffsets[UNDERLYING(LevelOfDetail::Medium)]);
 
 		//Push constants.
 		PushConstantData data;
@@ -191,17 +191,17 @@ void HighDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::High)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Medium)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Medium)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::Medium)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._CrownIndexCounts[UNDERLYING(LevelOfDetail::High)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._CrownIndexCounts[UNDERLYING(LevelOfDetail::Medium)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Medium)]);
 		}
 	}
 

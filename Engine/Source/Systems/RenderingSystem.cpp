@@ -909,6 +909,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationTrunk)] = LowDetailTreeVegetationTrunkRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownDepth)] = HighDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownColor)] = HighDetailTreeVegetationCrownColorRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationCrownDepth)] = MediumDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationCrownColor)] = MediumDetailTreeVegetationCrownColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();
