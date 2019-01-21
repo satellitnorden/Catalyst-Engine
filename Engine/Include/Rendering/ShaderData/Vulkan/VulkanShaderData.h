@@ -48,6 +48,10 @@
 #include <Rendering/ShaderData/Vulkan/LowDetailGrassVegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailSolidVegetationVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationCrownColorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationCrownColorVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationCrownDepthFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationCrownDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationTrunkFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailTreeVegetationTrunkVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/MediumDetailDebrisVegetationFragmentShader.h>
