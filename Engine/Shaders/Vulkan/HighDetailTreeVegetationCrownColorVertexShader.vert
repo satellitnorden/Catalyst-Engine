@@ -24,7 +24,7 @@ void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateTreeVegetationWindModulator(gl_InstanceIndex) * vertexModulatorFactor;
+    finalVertexPosition += CalculateTreeVegetationWindModulator(vertexTransformationMatrix[3].xyz) * vertexModulatorFactor;
 
     //Calculate the fragment tangent space matrix.
     vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));

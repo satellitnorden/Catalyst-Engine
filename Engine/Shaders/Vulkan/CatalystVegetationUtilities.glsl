@@ -40,7 +40,7 @@ vec3 CalculateWindModulator(vec3 position, vec3 normal)
 /*
 *   Given an instance, calculates the wind modulator for tree vegetation.
 */
-vec3 CalculateTreeVegetationWindModulator(int instanceIndex)
+vec3 CalculateTreeVegetationWindModulator(vec3 position)
 {
     //Calculate the wind speed multiplier.
     float windSpeedMultiplier = windSpeed * INVERSE_MAXIMUM_WIND_SPEED;
@@ -52,12 +52,12 @@ vec3 CalculateTreeVegetationWindModulator(int instanceIndex)
     float timeFactor = totalGameTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
 
     //Large scale motion.
-    float largeScaleX = windDirection.x * EULERS_NUMBER * extendedWindSpeedMultiplier * (sin(SQUARE_ROOT_OF_TWO * timeFactor + instanceIndex) + 1.0f);
-    float largeScaleZ = windDirection.z * PI * extendedWindSpeedMultiplier * (sin(PHI * timeFactor + instanceIndex) + 1.0f);
+    float largeScaleX = windDirection.x * EULERS_NUMBER * extendedWindSpeedMultiplier * (sin((position.x + position.y + position.z + timeFactor) * SQUARE_ROOT_OF_TWO) + 1.0f);
+    float largeScaleZ = windDirection.z * PI * extendedWindSpeedMultiplier * (sin((position.x + position.y + position.z + timeFactor) * PHI) + 1.0f);
 
     //Medium scale motion.
-    float mediumScaleX = windDirection.x * SQUARE_ROOT_OF_TWO * sin(EULERS_NUMBER * timeFactor + instanceIndex);
-    float mediumScaleZ = windDirection.z * PHI * sin(PI * timeFactor + instanceIndex);
+    float mediumScaleX = windDirection.x * SQUARE_ROOT_OF_TWO * sin((position.x + position.y + position.z + timeFactor) * EULERS_NUMBER);
+    float mediumScaleZ = windDirection.z * PHI * sin((position.x + position.y + position.z + timeFactor) * PI);
 
     return vec3(largeScaleX + mediumScaleX, 0.0f, largeScaleZ + mediumScaleZ) * windSpeedMultiplier * TREE_VEGETATION_BASE_WIND_AFFECTION;
 }

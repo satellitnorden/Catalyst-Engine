@@ -38,7 +38,7 @@ void main()
 
     //Calculate the world position.
     vec3 worldPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    worldPosition += CalculateTreeVegetationWindModulator(gl_InstanceIndex) * vertexModulatorFactor;
+    worldPosition += CalculateTreeVegetationWindModulator(vertexTransformationMatrix[3].xyz) * vertexModulatorFactor;
 
     //Calculate the fragment opacity.
     float distanceToVertexSquared = LengthSquared3(worldPosition - cameraWorldPosition);

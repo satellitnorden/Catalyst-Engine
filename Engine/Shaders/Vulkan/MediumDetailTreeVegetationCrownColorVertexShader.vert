@@ -24,7 +24,7 @@ void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateTreeVegetationWindModulator(gl_InstanceIndex) * vertexModulatorFactor;
+    finalVertexPosition += CalculateTreeVegetationWindModulator(vertexTransformationMatrix[3].xyz) * vertexModulatorFactor;
 
     //Pass along the fragment normal.
     fragmentNormal = normalize(vec3(vertexTransformationMatrix * vec4(vertexNormal, 0.0f)));
