@@ -7,7 +7,7 @@
 //Vegetation.
 #include <Vegetation/SolidVegetationTypeInformation.h>
 
-template <typename TYPE_INFORMATION_TYPE, typename PATCH_RENDER_INFORMATION_TYPE>
+template <typename TYPE_INFORMATION_TYPE, typename PATCH_INFORMATION_TYPE, typename PATCH_RENDER_INFORMATION_TYPE>
 class VegetationTypeInformationUpdate final
 {
 
@@ -26,7 +26,7 @@ public:
 	DynamicArray<uint8> _PatchesToInvalidate;
 
 	//The new patch information.
-	VegetationPatchInformation _NewPatchInformation;
+	PATCH_INFORMATION_TYPE _NewPatchInformation;
 
 	//The new patch render information.
 	PATCH_RENDER_INFORMATION_TYPE _NewPatchRenderInformation;

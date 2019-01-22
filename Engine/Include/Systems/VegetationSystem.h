@@ -132,25 +132,25 @@ private:
 	VegetationType _VegetationTypeToUpdate{ VegetationType::NumberOfVegetationTypes };
 
 	//The debris vegetation type information update.
-	VegetationTypeInformationUpdate<DebrisVegetationTypeInformation, DebrisVegetationPatchRenderInformation> _DebrisVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<DebrisVegetationTypeInformation, VegetationPatchInformation, DebrisVegetationPatchRenderInformation> _DebrisVegetationTypeInformationUpdate;
 
 	//The debris vegetation type informations.
 	DynamicArray<DebrisVegetationTypeInformation> _DebrisVegetationTypeInformations;
 
 	//The grass vegetation type information update.
-	VegetationTypeInformationUpdate<GrassVegetationTypeInformation, GrassVegetationPatchRenderInformation> _GrassVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<GrassVegetationTypeInformation, VegetationPatchInformation, GrassVegetationPatchRenderInformation> _GrassVegetationTypeInformationUpdate;
 
 	//The grass vegetation type informations.
 	DynamicArray<GrassVegetationTypeInformation> _GrassVegetationTypeInformations;
 
 	//The solid vegetation type information update.
-	VegetationTypeInformationUpdate<SolidVegetationTypeInformation, SolidVegetationPatchRenderInformation> _SolidVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<SolidVegetationTypeInformation, VegetationPatchInformation, SolidVegetationPatchRenderInformation> _SolidVegetationTypeInformationUpdate;
 
 	//The solid vegetation type informations.
 	DynamicArray<SolidVegetationTypeInformation> _SolidVegetationTypeInformations;
 
 	//The tree vegetation type information update.
-	VegetationTypeInformationUpdate<TreeVegetationTypeInformation, TreeVegetationPatchRenderInformation> _TreeVegetationTypeInformationUpdate;
+	VegetationTypeInformationUpdate<TreeVegetationTypeInformation, TreeVegetationPatchInformation, TreeVegetationPatchRenderInformation> _TreeVegetationTypeInformationUpdate;
 
 	//The tree vegetation type informations.
 	DynamicArray<TreeVegetationTypeInformation> _TreeVegetationTypeInformations;

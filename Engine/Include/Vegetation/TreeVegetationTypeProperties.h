@@ -20,6 +20,9 @@ public:
 	//The density, expressed as placement per square meter.
 	float _Density;
 
+	//The impostor distance.
+	float _ImpostorDistance;
+
 	//The low detail distance.
 	float _LowDetailDistance;
 

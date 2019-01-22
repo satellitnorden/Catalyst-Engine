@@ -82,5 +82,8 @@
 #include <Rendering/ShaderData/Vulkan/TerrainDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/ToneMappingFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/TreeVegetationImpostorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/TreeVegetationImpostorGeometryShader.h>
+#include <Rendering/ShaderData/Vulkan/TreeVegetationImpostorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>

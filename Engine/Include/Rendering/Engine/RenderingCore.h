@@ -81,6 +81,7 @@ enum class RenderPassSubStage : uint8
 	MediumDetailTreeVegetationCrownColor,
 	LowDetailTreeVegetationCrownDepth,
 	LowDetailTreeVegetationCrownColor,
+	TreeVegetationImpostor,
 	HighDetailSolidVegetation,
 	MediumDetailSolidVegetation,
 	LowDetailSolidVegetation,
@@ -346,6 +347,9 @@ enum class Shader : uint8
 	TerrainDepthFragment,
 	TerrainVertex,
 	ToneMappingFragment,
+	TreeVegetationImpostorFragment,
+	TreeVegetationImpostorGeometry,
+	TreeVegetationImpostorVertex,
 	ViewportVertex,
 	VolumetricFogFragment,
 

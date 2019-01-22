@@ -191,17 +191,17 @@ void MediumDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Medium)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Medium)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Medium)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Medium)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::Medium)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(TreeVegetationLevelOfDetail::Medium)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._CrownIndexCounts[UNDERLYING(LevelOfDetail::Medium)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Medium)]);
+			commandBuffer->DrawIndexed(this, information._Model._CrownIndexCounts[UNDERLYING(LevelOfDetail::Medium)], renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Medium)]);
 		}
 	}
 

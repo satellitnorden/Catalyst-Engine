@@ -72,6 +72,9 @@ glslangValidator.exe -V TerrainColorFragmentShader.frag -o 				TerrainColorFragm
 glslangValidator.exe -V TerrainDepthFragmentShader.frag -o 				TerrainDepthFragmentShader.spv
 glslangValidator.exe -V TerrainVertexShader.vert -o 					TerrainVertexShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
+glslangValidator.exe -V TreeVegetationImpostorFragmentShader.frag -o 			TreeVegetationImpostorFragmentShader.spv
+glslangValidator.exe -V TreeVegetationImpostorGeometryShader.geom -o 			TreeVegetationImpostorGeometryShader.spv
+glslangValidator.exe -V TreeVegetationImpostorVertexShader.vert -o 			TreeVegetationImpostorVertexShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VolumetricFogFragmentShader.frag -o 				VolumetricFogFragmentShader.spv
 

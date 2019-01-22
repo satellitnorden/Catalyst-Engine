@@ -156,7 +156,7 @@ void VegetationSystem::AddTreeVegetationType(const TreeVegetationTypeProperties 
 	{
 		information->_PatchInformations[i]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
 		{
 			information->_PatchRenderInformations[i]._Visibilities[i] = VisibilityFlag::None;
 		}
@@ -194,7 +194,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 
 		case VegetationType::Tree:
 		{
-			VegetationUtilities::ProcessUpdate(&_TreeVegetationTypeInformationUpdate);
+			VegetationUtilities::ProcessTreeVegetationUpdate(&_TreeVegetationTypeInformationUpdate);
 
 			break;
 		}
@@ -235,7 +235,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 		case VegetationType::Tree:
 		{
-			VegetationUtilities::UpdateVegetationType(	_TreeVegetationTypeInformations,
+			VegetationUtilities::UpdateTreeVegetationVegetationType(	_TreeVegetationTypeInformations,
 														&_TreeVegetationTypeInformationUpdate);
 
 			break;

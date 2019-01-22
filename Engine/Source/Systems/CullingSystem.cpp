@@ -265,7 +265,7 @@ void CullingSystem::CullTreeVegetation() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding boxes against the current frustum planes.
-			for (uint8 j{ 0 }; j < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++j)
+			for (uint8 j{ 0 }; j < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++j)
 			{
 				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
 				{
