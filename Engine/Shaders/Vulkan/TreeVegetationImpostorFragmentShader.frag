@@ -33,5 +33,5 @@ void main()
     materialProperties.b = 1.0f;
 
     //Write the thickness.
-    materialProperties.a = 1.0f;
+    materialProperties.a = 0.9f;
 }
