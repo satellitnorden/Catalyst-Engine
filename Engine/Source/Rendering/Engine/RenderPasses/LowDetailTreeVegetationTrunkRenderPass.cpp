@@ -17,22 +17,9 @@
 DEFINE_SINGLETON(LowDetailTreeVegetationTrunkRenderPass);
 
 /*
-*	Vertex push constant data definition.
+*	Push constant data definition.
 */
-class VertexPushConstantData final
-{
-
-public:
-
-	float _FadeStartDistanceSquared;
-	float _InverseFadeDistanceSquared;
-
-};
-
-/*
-*	Fragment push constant data definition.
-*/
-class FragmentPushConstantData final
+class PushConstantData final
 {
 
 public:
@@ -87,9 +74,8 @@ void LowDetailTreeVegetationTrunkRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
@@ -206,20 +192,13 @@ void LowDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindIndexBuffer(this, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::Low)], information._Model._TrunkIndexOffsets[UNDERLYING(LevelOfDetail::Low)]);
 
 		//Push constants.
-		VertexPushConstantData vertexData;
+		PushConstantData data;
 
-		vertexData._FadeStartDistanceSquared = information._Properties._LowDetailDistance * information._Properties._LowDetailDistance;
-		vertexData._InverseFadeDistanceSquared = 1.0f / (information._Properties._CutoffDistance * information._Properties._CutoffDistance);
+		data._AlbedoTextureIndex = information._Material._TrunkAlbedoTextureIndex;
+		data._NormalMapTextureIndex = information._Material._TrunkNormalMapTextureIndex;
+		data._MaterialPropertiesTextureIndex = information._Material._TrunkMaterialPropertiesTextureIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-
-		FragmentPushConstantData fragmentData;
-
-		fragmentData._AlbedoTextureIndex = information._Material._TrunkAlbedoTextureIndex;
-		fragmentData._NormalMapTextureIndex = information._Material._TrunkNormalMapTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = information._Material._TrunkMaterialPropertiesTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

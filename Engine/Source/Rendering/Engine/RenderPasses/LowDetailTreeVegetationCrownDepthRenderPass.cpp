@@ -17,22 +17,9 @@
 DEFINE_SINGLETON(LowDetailTreeVegetationCrownDepthRenderPass);
 
 /*
-*	Vertex push constant data definition.
+*	Push constant data definition.
 */
-class VertexPushConstantData final
-{
-
-public:
-
-	float _FadeStartDistanceSquared;
-	float _InverseFadeDistanceSquared;
-
-};
-
-/*
-*	Fragment push constant data definition.
-*/
-class FragmentPushConstantData final
+class PushConstantData final
 {
 
 public:
@@ -80,9 +67,8 @@ void LowDetailTreeVegetationCrownDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GrassMaterial));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
@@ -199,18 +185,11 @@ void LowDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindIndexBuffer(this, information._Model._CrownBuffers[UNDERLYING(LevelOfDetail::Low)], information._Model._CrownIndexOffsets[UNDERLYING(LevelOfDetail::Low)]);
 
 		//Push constants.
-		VertexPushConstantData vertexData;
+		PushConstantData data;
 
-		vertexData._FadeStartDistanceSquared = information._Properties._LowDetailDistance * information._Properties._LowDetailDistance;
-		vertexData._InverseFadeDistanceSquared = 1.0f / (information._Properties._CutoffDistance * information._Properties._CutoffDistance);
+		data._MaskTextureIndex = information._Material._CrownMaskTextureIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-
-		FragmentPushConstantData fragmentData;
-
-		fragmentData._MaskTextureIndex = information._Material._CrownMaskTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
