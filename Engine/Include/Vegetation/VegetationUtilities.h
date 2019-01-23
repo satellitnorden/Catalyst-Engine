@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Algorithms/SortingAlgorithms.h>
 
 //Rendering.
 #include <Rendering/Engine/Viewer.h>
@@ -69,17 +70,7 @@ namespace VegetationUtilities
 		//Invalidate the patch.
 		information->_PatchInformations[index]._Valid = false;
 
-		for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
-		{
-			information->_PatchRenderInformations[index]._Visibilities[i] = VisibilityFlag::None;
-
-			if (information->_PatchRenderInformations[index]._NumberOfTransformations[i] > 0)
-			{
-				RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
-
-				information->_PatchRenderInformations[index]._TransformationsBuffers[i] = nullptr;
-			}
-		}
+		RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
 	}
 
 	/*
@@ -144,17 +135,11 @@ namespace VegetationUtilities
 
 		if (update->_LevelOfDetailUpdate)
 		{
-			for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
-			{
-				if (update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations[i] > 0)
-				{
-					RenderingSystem::Instance->DestroyConstantBuffer(update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers[i]);
-				}
-			}
+			RenderingSystem::Instance->DestroyConstantBuffer(update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffer);
 
 			update->_Information->_PatchInformations[update->_Index]._TimeStamp = update->_NewPatchInformation._TimeStamp;
 			update->_Information->_PatchInformations[update->_Index]._AxisAlignedBoundingBoxes = update->_NewPatchInformation._AxisAlignedBoundingBoxes;
-			update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers = update->_NewPatchRenderInformation._TransformationsBuffers;
+			update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffer = update->_NewPatchRenderInformation._TransformationsBuffer;
 			update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations = update->_NewPatchRenderInformation._NumberOfTransformations;
 		}
 
@@ -230,55 +215,69 @@ namespace VegetationUtilities
 	/*
 	*	Sorts a set of transformations into different level of details.
 	*/
-	template <typename TYPE>
-	void SortTreeVegetationTransformations(const DynamicArray<Matrix4> &transformations,
-		const TYPE &properties,
-		StaticArray<DynamicArray<Matrix4>, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
-		StaticArray<ConstantBufferHandle, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT buffers,
-		StaticArray<uint32, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
+	void SortTreeVegetationTransformations(	const TreeVegetationTypeProperties &properties,
+											DynamicArray<Matrix4> *const RESTRICT transformations,
+											ConstantBufferHandle *const RESTRICT transformationsBuffer,
+											StaticArray<uint32, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations,
+											StaticArray<uint64, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT transformationsOffsets) NOEXCEPT
 	{
 		//Cache the viewer position.
 		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
-		for (const Matrix4 &transformation : transformations)
+		//Sort the transformations.
+		std::sort(transformations->Begin(), transformations->End(), [viewerPosition](const Matrix4 &first, const Matrix4 &second)
 		{
-			//Calculate the distance to the viewer.
-			const float distanceToViewer{ Vector3<float>::Length(viewerPosition - transformation.GetTranslation()) };
+			return Vector3<float>::LengthSquared(viewerPosition - first.GetTranslation()) < Vector3<float>::LengthSquared(viewerPosition - second.GetTranslation());
+		});
 
-			if (distanceToViewer > properties._ImpostorDistance)
+		//Create the transformations buffer.
+		RenderingUtilities::CreateTransformationsBuffer(*transformations, transformationsBuffer);
+
+		//Calculate the number of transformations and the transformations offset.
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor)) = 0;
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)) = 0;
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) = 0;
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) = 0;
+
+		const float impostorDistanceSquared{ properties._ImpostorDistance * properties._ImpostorDistance };
+		const float lowDetailDistanceSquared{ properties._LowDetailDistance * properties._LowDetailDistance };
+		const float mediumDetailDistanceSquared{ properties._MediumDetailDistance * properties._MediumDetailDistance };
+
+		for (const Matrix4 &transformation : *transformations)
+		{
+			const float lengthSquared{ Vector3<float>::LengthSquared(viewerPosition - transformation.GetTranslation()) };
+
+			if (lengthSquared > impostorDistanceSquared)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor)).EmplaceSlow(transformation);
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor));
 			}
 
-			else if (distanceToViewer > properties._LowDetailDistance)
+			else if (lengthSquared > lowDetailDistanceSquared)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)).EmplaceSlow(transformation);
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low));
 			}
 
-			else if (distanceToViewer > properties._MediumDetailDistance)
+			else if (lengthSquared > mediumDetailDistanceSquared)
 			{
-				levelOfDetailTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)).EmplaceSlow(transformation);
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium));
 			}
 
 			else
 			{
-				levelOfDetailTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)).EmplaceSlow(transformation);
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High));
 			}
 		}
 
-		for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
-		{
-			if (!levelOfDetailTransformations->At(i).Empty())
-			{
-				RenderingUtilities::CreateTransformationsBuffer(levelOfDetailTransformations->At(i), &buffers->At(i));
-				numberOfTransformations->At(i) = static_cast<uint32>(levelOfDetailTransformations->At(i).Size());
-			}
-
-			else
-			{
-				numberOfTransformations->At(i) = 0;
-			}
-		}
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor))
+			= numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) * sizeof(Matrix4);
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::Low))
+			= numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) * sizeof(Matrix4);
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium))
+			= numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) * sizeof(Matrix4);
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) = 0;
 	}
 
 	/*
@@ -619,18 +618,16 @@ namespace VegetationUtilities
 					update->_NewPatchInformation._GridPoint = gridPoint;
 
 					//Generate the transformations.
-					VegetationUtilities::GenerateTransformations(gridPoint,
-						information._Properties,
-						&update->_NewPatchInformation._Transformations);
+					VegetationUtilities::GenerateTransformations(	gridPoint,
+																	information._Properties,
+																	&update->_NewPatchInformation._Transformations);
 
 					//Sort the transformations.
-					StaticArray<DynamicArray<Matrix4>, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> levelOfDetailTransformations;
-
-					VegetationUtilities::SortTreeVegetationTransformations(update->_NewPatchInformation._Transformations,
-						information._Properties,
-						&levelOfDetailTransformations,
-						&update->_NewPatchRenderInformation._TransformationsBuffers,
-						&update->_NewPatchRenderInformation._NumberOfTransformations);
+					VegetationUtilities::SortTreeVegetationTransformations(	information._Properties, 
+																			&update->_NewPatchInformation._Transformations,
+																			&update->_NewPatchRenderInformation._TransformationsBuffer,
+																			&update->_NewPatchRenderInformation._NumberOfTransformations,
+																			&update->_NewPatchRenderInformation._TransformationsOffsets);
 
 					update->_NewPatchInformation._TimeStamp = EngineSystem::Instance->GetTotalFrames();
 
@@ -641,9 +638,9 @@ namespace VegetationUtilities
 
 					for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
 					{
-						RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(levelOfDetailTransformations[i],
-							information._Model._AxisAlignedBoundingBoxes[i],
-							&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
+						RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	update->_NewPatchInformation._Transformations,
+																								information._Model._AxisAlignedBoundingBoxes[i],
+																								&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 					}
 
 					break;
@@ -687,17 +684,17 @@ namespace VegetationUtilities
 		//Sort the transformations.
 		StaticArray<DynamicArray<Matrix4>, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> levelOfDetailTransformations;
 
-		VegetationUtilities::SortTreeVegetationTransformations(update->_Information->_PatchInformations[index]._Transformations,
-			update->_Information->_Properties,
-			&levelOfDetailTransformations,
-			&update->_NewPatchRenderInformation._TransformationsBuffers,
-			&update->_NewPatchRenderInformation._NumberOfTransformations);
+		VegetationUtilities::SortTreeVegetationTransformations(	update->_Information->_Properties,
+																&update->_Information->_PatchInformations[index]._Transformations,
+																&update->_NewPatchRenderInformation._TransformationsBuffer,
+																&update->_NewPatchRenderInformation._NumberOfTransformations,
+																&update->_NewPatchRenderInformation._TransformationsOffsets);
 
 		for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
 		{
-			RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(levelOfDetailTransformations[i],
-				update->_Information->_Model._AxisAlignedBoundingBoxes[i],
-				&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
+			RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	update->_Information->_PatchInformations[index]._Transformations,
+																					update->_Information->_Model._AxisAlignedBoundingBoxes[i],
+																					&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 		}
 	}
 }

@@ -236,7 +236,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		case VegetationType::Tree:
 		{
 			VegetationUtilities::UpdateTreeVegetationVegetationType(	_TreeVegetationTypeInformations,
-														&_TreeVegetationTypeInformationUpdate);
+																		&_TreeVegetationTypeInformationUpdate);
 
 			break;
 		}

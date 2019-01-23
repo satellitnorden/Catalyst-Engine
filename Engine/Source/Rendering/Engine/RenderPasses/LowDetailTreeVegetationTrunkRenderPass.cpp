@@ -210,7 +210,7 @@ void LowDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(TreeVegetationLevelOfDetail::Low)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::Low)]);
 
 			//Draw the instances!
 			commandBuffer->DrawIndexed(this, information._Model._TrunkIndexCounts[UNDERLYING(LevelOfDetail::Low)], renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Low)]);

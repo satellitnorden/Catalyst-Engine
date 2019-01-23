@@ -154,7 +154,7 @@ void TreeVegetationImpostorRenderPass::RenderInternal() NOEXCEPT
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffers[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)], &OFFSET);
+			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)]);
 
 			//Draw the instances!
 			commandBuffer->Draw(this, 1, renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)]);

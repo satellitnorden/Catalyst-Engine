@@ -206,7 +206,7 @@ void MediumDetailTreeVegetationCrownColorRenderPass::RenderInternal() NOEXCEPT
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(TreeVegetationLevelOfDetail::Medium)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::Medium)]);
 
 			//Draw the instances!
 			commandBuffer->DrawIndexed(this, information._Model._CrownIndexCounts[UNDERLYING(LevelOfDetail::Medium)], renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Medium)]);
