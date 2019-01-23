@@ -166,9 +166,9 @@ void DirectionalTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 	for (const TreeVegetationTypeInformation &information : *informations)
 	{
 		//Bind the model vertex and index buffer.
-		const uint64 offset{ 0 };
+		constexpr uint64 OFFSET{ 0 };
 
-		commandBuffer->BindVertexBuffer(this, 0, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::High)], &OFFSET);
 		commandBuffer->BindIndexBuffer(this, information._Model._TrunkBuffers[UNDERLYING(LevelOfDetail::High)], information._Model._TrunkIndexOffsets[UNDERLYING(LevelOfDetail::High)]);
 
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
@@ -181,7 +181,7 @@ void DirectionalTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::High)]);
 
 			//Draw the instances!
 			commandBuffer->DrawIndexed(this, information._Model._TrunkIndexCounts[UNDERLYING(LevelOfDetail::High)], renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::High)]);

@@ -141,6 +141,7 @@ namespace VegetationUtilities
 			update->_Information->_PatchInformations[update->_Index]._AxisAlignedBoundingBoxes = update->_NewPatchInformation._AxisAlignedBoundingBoxes;
 			update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffer = update->_NewPatchRenderInformation._TransformationsBuffer;
 			update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations = update->_NewPatchRenderInformation._NumberOfTransformations;
+			update->_Information->_PatchRenderInformations[update->_Index]._TransformationsOffsets = update->_NewPatchRenderInformation._TransformationsOffsets;
 		}
 
 		else
