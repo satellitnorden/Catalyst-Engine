@@ -13,9 +13,22 @@
 DEFINE_SINGLETON(TreeVegetationImpostorDepthRenderPass);
 
 /*
-*	Push constant data definition.
+*	Geometry push constant data definition.
 */
-class PushConstantData final
+class GeometryPushConstantData final
+{
+
+public:
+
+	float _ImpostorHalfWidth;
+	float _ImpostorHeight;
+
+};
+
+/*
+*	Fragment push constant data definition.
+*/
+class FragmentPushConstantData final
 {
 
 public:
@@ -62,8 +75,9 @@ void TreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(GeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(GeometryPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -155,11 +169,18 @@ void TreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 		constexpr uint64 OFFSET{ 0 };
 
 		//Push constants.
-		PushConstantData data;
+		GeometryPushConstantData geometryData;
 
-		data._MaskTextureIndex = information._Material._ImpostorMaskTextureIndex;
+		geometryData._ImpostorHalfWidth = information._Properties._ImpostorWidth * 0.5f;
+		geometryData._ImpostorHeight = information._Properties._ImpostorHeight;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(GeometryPushConstantData), &geometryData);
+
+		FragmentPushConstantData fragmentData;
+
+		fragmentData._MaskTextureIndex = information._Material._ImpostorMaskTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(GeometryPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

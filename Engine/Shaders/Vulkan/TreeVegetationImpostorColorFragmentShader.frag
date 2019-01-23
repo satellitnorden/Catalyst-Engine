@@ -10,7 +10,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int albedoTextureIndex;
+    layout (offset = 8) int albedoTextureIndex;
 };
 
 //In parameters.
@@ -40,5 +40,5 @@ void main()
     materialProperties.b = 1.0f;
 
     //Write the thickness.
-    materialProperties.a = 0.75f;
+    materialProperties.a = 0.5f;
 }

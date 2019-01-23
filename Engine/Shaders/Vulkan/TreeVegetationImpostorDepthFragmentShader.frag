@@ -10,7 +10,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int maskTextureIndex;
+    layout (offset = 8) int maskTextureIndex;
 };
 
 //In parameters.

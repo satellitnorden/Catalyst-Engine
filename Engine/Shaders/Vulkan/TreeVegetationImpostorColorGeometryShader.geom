@@ -7,15 +7,12 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
-/*
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 particleSystemWorldPosition;
-    layout (offset = 16) float particleSystemRandomSeed;
-    layout (offset = 20) float particleSystemTotalTime;
+	layout (offset = 0) float impostorHalfWidth;
+    layout (offset = 4) float impostorHeight;
 };
-*/
 
 //Layout specification.
 layout (points) in;
@@ -41,25 +38,25 @@ void main()
 	//Construct all the vertices.
 	fragmentNormal = forwardVector;
 	fragmentTextureCoordinate = vec2(0.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(worldPosition - rightVector * 4.0f, 1.0f);
+	gl_Position = viewMatrix * vec4(worldPosition - rightVector * impostorHalfWidth, 1.0f);
 
 	EmitVertex();
 
 	fragmentNormal = forwardVector;
 	fragmentTextureCoordinate = vec2(0.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(worldPosition - rightVector * 4.0f + upVector * 32.0f, 1.0f);
+	gl_Position = viewMatrix * vec4(worldPosition - rightVector * impostorHalfWidth + upVector * impostorHeight, 1.0f);
 
 	EmitVertex();
 
 	fragmentNormal = forwardVector;
 	fragmentTextureCoordinate = vec2(1.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(worldPosition + rightVector * 4.0f, 1.0f);
+	gl_Position = viewMatrix * vec4(worldPosition + rightVector * impostorHalfWidth, 1.0f);
 
 	EmitVertex();
 
 	fragmentNormal = forwardVector;
 	fragmentTextureCoordinate = vec2(1.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(worldPosition + rightVector * 4.0f + upVector * 32.0f, 1.0f);
+	gl_Position = viewMatrix * vec4(worldPosition + rightVector * impostorHalfWidth + upVector * impostorHeight, 1.0f);
 
 	EmitVertex();
 

@@ -29,4 +29,10 @@ public:
 	//The medium detail distance.
 	float _MediumDetailDistance;
 
+	//The impostor width.
+	float _ImpostorWidth;
+
+	//The impostor height.
+	float _ImpostorHeight;
+
 };
