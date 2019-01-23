@@ -11,7 +11,7 @@ class TreeVegetationMaterial final
 
 public:
 
-	//The crown material properties texture.
+	//The crown mask texture.
 	Texture2DHandle _CrownMaskTexture;
 
 	//The crown albedo texture.
@@ -19,6 +19,12 @@ public:
 
 	//The crown normal map texture.
 	Texture2DHandle _CrownNormalMapTexture;
+
+	//The impostor mask texture.
+	Texture2DHandle _ImpostorMaskTexture;
+
+	//The impostor albedo texture.
+	Texture2DHandle _ImpostorAlbedoTexture;
 
 	//The trunk albedo texture.
 	Texture2DHandle _TrunkAlbedoTexture;
@@ -37,6 +43,12 @@ public:
 
 	//The index for the crown normal map texture in the global textures.
 	uint32 _CrownNormalMapTextureIndex;
+
+	//The index for the impostor mask texture in the global textures.
+	uint32 _ImpostorMaskTextureIndex;
+
+	//The index for the impostor albedo texture in the global textures.
+	uint32 _ImpostorAlbedoTextureIndex;
 
 	//The index for the trunk albedo texture in the global textures.
 	uint32 _TrunkAlbedoTextureIndex;

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -10,50 +10,60 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(TreeVegetationImpostorRenderPass);
+DEFINE_SINGLETON(TreeVegetationImpostorDepthRenderPass);
+
+/*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	int32 _MaskTextureIndex;
+
+};
 
 /*
 *	Default constructor.
 */
-TreeVegetationImpostorRenderPass::TreeVegetationImpostorRenderPass() NOEXCEPT
+TreeVegetationImpostorDepthRenderPass::TreeVegetationImpostorDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		TreeVegetationImpostorRenderPass::Instance->InitializeInternal();
+		TreeVegetationImpostorDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the tree vegetation impostor render pass.
+*	Initializes the tree vegetation impostor depth render pass.
 */
-void TreeVegetationImpostorRenderPass::InitializeInternal() NOEXCEPT
+void TreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::TreeVegetationImpostor);
+	SetSubStage(RenderPassSubStage::TreeVegetationImpostorDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::TreeVegetationImpostorVertex);
+	SetVertexShader(Shader::TreeVegetationImpostorDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::TreeVegetationImpostorGeometry);
-	SetFragmentShader(Shader::TreeVegetationImpostorFragment);
+	SetGeometryShader(Shader::TreeVegetationImpostorDepthGeometry);
+	SetFragmentShader(Shader::TreeVegetationImpostorDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
-
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -104,7 +114,7 @@ void TreeVegetationImpostorRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		TreeVegetationImpostorRenderPass::Instance->RenderInternal();
+		TreeVegetationImpostorDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -112,9 +122,9 @@ void TreeVegetationImpostorRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the tree vegetation impostors.
+*	Renders the tree vegetation impostor depths.
 */
-void TreeVegetationImpostorRenderPass::RenderInternal() NOEXCEPT
+void TreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the tree vegetion type informations.
 	const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetTreeVegetationTypeInformations() };
@@ -137,12 +147,19 @@ void TreeVegetationImpostorRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Wait for the solid vegetation culling to finish.
+	//Wait for the tree vegetation culling to finish.
 	CullingSystem::Instance->WaitForTreeVegetationCulling();
 
 	for (const TreeVegetationTypeInformation &information : *informations)
 	{
 		constexpr uint64 OFFSET{ 0 };
+
+		//Push constants.
+		PushConstantData data;
+
+		data._MaskTextureIndex = information._Material._ImpostorMaskTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

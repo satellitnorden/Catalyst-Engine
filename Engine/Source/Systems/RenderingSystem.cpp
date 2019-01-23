@@ -632,6 +632,12 @@ void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialD
 	//Create the crown map texture.
 	material._CrownNormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownNormalMapData, data._CrownWidth, data._CrownHeight, 4), TextureFormat::R8G8B8A8_Byte));
 
+	//Create the impostor mask texture.
+	material._ImpostorMaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._ImpostorMaskData, data._ImpostorMaskWidth, data._ImpostorMaskHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
+	//Create the impostor albedo texture.
+	material._ImpostorAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._ImpostorAlbedoData, data._ImpostorWidth, data._ImpostorHeight, 4), TextureFormat::R8G8B8A8_Byte));
+
 	//Create the trunk albedo texture.
 	material._TrunkAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkAlbedoData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
 
@@ -645,6 +651,8 @@ void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialD
 	material._CrownMaskTextureIndex = AddTextureToGlobalRenderData(material._CrownMaskTexture);
 	material._CrownAlbedoTextureIndex = AddTextureToGlobalRenderData(material._CrownAlbedoTexture);
 	material._CrownNormalMapTextureIndex = AddTextureToGlobalRenderData(material._CrownNormalMapTexture);
+	material._ImpostorMaskTextureIndex = AddTextureToGlobalRenderData(material._ImpostorMaskTexture);
+	material._ImpostorAlbedoTextureIndex = AddTextureToGlobalRenderData(material._ImpostorAlbedoTexture);
 	material._TrunkAlbedoTextureIndex = AddTextureToGlobalRenderData(material._TrunkAlbedoTexture);
 	material._TrunkNormalMapTextureIndex = AddTextureToGlobalRenderData(material._TrunkNormalMapTexture);
 	material._TrunkMaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(material._TrunkMaterialPropertiesTexture);
@@ -914,7 +922,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationCrownColor)] = MediumDetailTreeVegetationCrownColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationCrownDepth)] = LowDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationCrownColor)] = LowDetailTreeVegetationCrownColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::TreeVegetationImpostor)] = TreeVegetationImpostorRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::TreeVegetationImpostorDepth)] = TreeVegetationImpostorDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::TreeVegetationImpostorColor)] = TreeVegetationImpostorColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();

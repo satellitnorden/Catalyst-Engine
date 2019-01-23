@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class TreeVegetationImpostorRenderPass final : public RenderPass
+class TreeVegetationImpostorColorRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(TreeVegetationImpostorRenderPass);
+	DECLARE_SINGLETON(TreeVegetationImpostorColorRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	TreeVegetationImpostorRenderPass() NOEXCEPT;
+	TreeVegetationImpostorColorRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the tree vegetation impostor render pass.
+	*	Initializes the tree vegetation impostor color render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the tree vegetation impostors.
+	*	Renders the tree vegetation impostor colors.
 	*/
 	void RenderInternal() NOEXCEPT;
 

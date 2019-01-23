@@ -25,7 +25,7 @@ layout (triangle_strip, max_vertices = 4) out;
 layout (location = 0) in mat4 geometryTransformationMatrix[];
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentNormal;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
 
 void main()
 {
@@ -38,22 +38,22 @@ void main()
 	vec3 upVector = vec3(0.0f, 1.0f, 0.0f);
 
 	//Construct all the vertices.
-	fragmentNormal = forwardVector;
+	fragmentTextureCoordinate = vec2(0.0f, 1.0f);
 	gl_Position = viewMatrix * vec4(worldPosition - rightVector * 4.0f, 1.0f);
 
 	EmitVertex();
 
-	fragmentNormal = forwardVector;
+	fragmentTextureCoordinate = vec2(0.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(worldPosition - rightVector * 4.0f + upVector * 32.0f, 1.0f);
 
 	EmitVertex();
 
-	fragmentNormal = forwardVector;
+	fragmentTextureCoordinate = vec2(1.0f, 1.0f);
 	gl_Position = viewMatrix * vec4(worldPosition + rightVector * 4.0f, 1.0f);
 
 	EmitVertex();
 
-	fragmentNormal = forwardVector;
+	fragmentTextureCoordinate = vec2(1.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(worldPosition + rightVector * 4.0f + upVector * 32.0f, 1.0f);
 
 	EmitVertex();

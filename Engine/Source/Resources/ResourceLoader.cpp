@@ -532,6 +532,48 @@ void ResourceLoader::LoadTreeVegetationMaterial(BinaryFile<IOMode::In> &file) NO
 		file.Read(data._CrownNormalMapData[i].Data(), textureSize);
 	}
 
+	//Read the number of mask mipmap levels for the impostor mask.
+	file.Read(&data._ImpostorMaskMipmapLevels, sizeof(uint8));
+
+	//Read the impostor mask width.
+	file.Read(&data._ImpostorMaskWidth, sizeof(uint32));
+
+	//Read the impostor mask height.
+	file.Read(&data._ImpostorMaskHeight, sizeof(uint32));
+
+	//Read the impostor mask data.
+	data._ImpostorMaskData.UpsizeSlow(data._ImpostorMaskMipmapLevels);
+
+	for (uint8 i = 0; i < data._ImpostorMaskMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._ImpostorMaskWidth >> i) * (data._ImpostorMaskHeight >> i) * 4 };
+
+		data._ImpostorMaskData[i].Reserve(textureSize);
+
+		file.Read(data._ImpostorMaskData[i].Data(), textureSize);
+	}
+
+	//Read the number of mipmap levels for the impostor.
+	file.Read(&data._ImpostorMipmapLevels, sizeof(uint8));
+
+	//Read the impostor width.
+	file.Read(&data._ImpostorWidth, sizeof(uint32));
+
+	//Read the impostor height.
+	file.Read(&data._ImpostorHeight, sizeof(uint32));
+
+	//Read the impostor albedo data.
+	data._ImpostorAlbedoData.UpsizeSlow(data._ImpostorMipmapLevels);
+
+	for (uint8 i = 0; i < data._ImpostorMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._ImpostorWidth >> i) * (data._ImpostorHeight >> i) * 4 };
+
+		data._ImpostorAlbedoData[i].Reserve(textureSize);
+
+		file.Read(data._ImpostorAlbedoData[i].Data(), textureSize);
+	}
+
 	//Read the number of mipmap levels for the trunk.
 	file.Read(&data._TrunkMipmapLevels, sizeof(uint8));
 

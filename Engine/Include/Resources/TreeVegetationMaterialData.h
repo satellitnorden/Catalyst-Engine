@@ -35,6 +35,30 @@ public:
 	//The crown normal map data.
 	DynamicArray<DynamicArray<byte>> _CrownNormalMapData;
 
+	//The number of mipmap levels for the impostor mask texture.
+	uint8 _ImpostorMaskMipmapLevels;
+
+	//The impostor mask width.
+	uint32 _ImpostorMaskWidth;
+
+	//The impostor mask height.
+	uint32 _ImpostorMaskHeight;
+
+	//The impostor mask data.
+	DynamicArray<DynamicArray<byte>> _ImpostorMaskData;
+
+	//The number of mipmap levels for the impostor.
+	uint8 _ImpostorMipmapLevels;
+
+	//The impostor width.
+	uint32 _ImpostorWidth;
+
+	//The impostor height.
+	uint32 _ImpostorHeight;
+
+	//The impostor albedo data.
+	DynamicArray<DynamicArray<byte>> _ImpostorAlbedoData;
+
 	//The number of mipmap levels for the trunk.
 	uint8 _TrunkMipmapLevels;
 

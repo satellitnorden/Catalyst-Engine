@@ -51,5 +51,6 @@
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
