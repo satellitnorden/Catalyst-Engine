@@ -229,6 +229,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownColorRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownDepthRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationTrunkRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.h" />
@@ -252,8 +254,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainColorRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainDepthRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TreeVegetationImpostorColorRenderPass.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TreeVegetationImpostorDepthRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
@@ -291,6 +291,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownColorVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownDepthFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownDepthVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorGeometryShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthGeometryShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationTrunkFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationTrunkVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\LightingFragmentShader.h" />
@@ -335,12 +341,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainDepthFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ToneMappingFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorGeometryShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorVertexShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthGeometryShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ViewportVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VulkanShaderData.h" />
@@ -484,6 +484,8 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownColorRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownDepthRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationTrunkRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.cpp" />
@@ -506,8 +508,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainColorRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainDepthRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TreeVegetationImpostorColorRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TreeVegetationImpostorDepthRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\Viewer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp" />
@@ -542,6 +542,12 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownColorVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownDepthFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationCrownDepthVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationTrunkFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationTrunkVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\LightingFragmentShader.cpp" />
@@ -586,12 +592,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainDepthFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ToneMappingFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorGeometryShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorVertexShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthGeometryShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ViewportVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\CommandBufferOpenGLImplementation.cpp" />

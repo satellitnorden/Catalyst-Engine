@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationImpostorDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -10,7 +10,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(TreeVegetationImpostorColorRenderPass);
+DEFINE_SINGLETON(HighDetailTreeVegetationImpostorDepthRenderPass);
 
 /*
 *	Geometry push constant data definition.
@@ -33,48 +33,42 @@ class FragmentPushConstantData final
 
 public:
 
-	int32 _AlbedoTextureIndex;
+	int32 _MaskTextureIndex;
 
 };
 
 /*
 *	Default constructor.
 */
-TreeVegetationImpostorColorRenderPass::TreeVegetationImpostorColorRenderPass() NOEXCEPT
+HighDetailTreeVegetationImpostorDepthRenderPass::HighDetailTreeVegetationImpostorDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		TreeVegetationImpostorColorRenderPass::Instance->InitializeInternal();
+		HighDetailTreeVegetationImpostorDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the tree vegetation impostor color render pass.
+*	Initializes the high detail tree vegetation impostor depth render pass.
 */
-void TreeVegetationImpostorColorRenderPass::InitializeInternal() NOEXCEPT
+void HighDetailTreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::TreeVegetationImpostorColor);
+	SetSubStage(RenderPassSubStage::HighDetailTreeVegetationImpostorDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::TreeVegetationImpostorColorVertex);
+	SetVertexShader(Shader::HighDetailTreeVegetationImpostorDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::TreeVegetationImpostorColorGeometry);
-	SetFragmentShader(Shader::TreeVegetationImpostorColorFragment);
+	SetGeometryShader(Shader::HighDetailTreeVegetationImpostorDepthGeometry);
+	SetFragmentShader(Shader::HighDetailTreeVegetationImpostorDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
-
-	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -118,23 +112,23 @@ void TreeVegetationImpostorColorRenderPass::InitializeInternal() NOEXCEPT
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
-	SetDepthCompareOperator(CompareOperator::Equal);
+	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
+	SetDepthWriteEnabled(true);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(BIT(0));
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::PointList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		TreeVegetationImpostorColorRenderPass::Instance->RenderInternal();
+		HighDetailTreeVegetationImpostorDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -142,9 +136,9 @@ void TreeVegetationImpostorColorRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the tree vegetation impostor colors.
+*	Renders the high detail tree vegetation impostor depths.
 */
-void TreeVegetationImpostorColorRenderPass::RenderInternal() NOEXCEPT
+void HighDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the tree vegetion type informations.
 	const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetTreeVegetationTypeInformations() };
@@ -172,6 +166,8 @@ void TreeVegetationImpostorColorRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TreeVegetationTypeInformation &information : *informations)
 	{
+		constexpr uint64 OFFSET{ 0 };
+
 		//Push constants.
 		GeometryPushConstantData geometryData;
 
@@ -182,7 +178,7 @@ void TreeVegetationImpostorColorRenderPass::RenderInternal() NOEXCEPT
 
 		FragmentPushConstantData fragmentData;
 
-		fragmentData._AlbedoTextureIndex = information._Material._ImpostorAlbedoTextureIndex;
+		fragmentData._MaskTextureIndex = information._Material._ImpostorMaskTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(GeometryPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

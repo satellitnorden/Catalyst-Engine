@@ -1344,28 +1344,28 @@
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchInformation.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorFragmentShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorGeometryShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorGeometryShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorVertexShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthFragmentShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthGeometryShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthGeometryShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthVertexShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TreeVegetationImpostorColorRenderPass.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TreeVegetationImpostorDepthRenderPass.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1946,28 +1946,28 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTreeVegetationTrunkRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorFragmentShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorGeometryShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorGeometryShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorColorVertexShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorColorVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthFragmentShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthGeometryShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthGeometryShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TreeVegetationImpostorDepthVertexShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTreeVegetationImpostorDepthVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TreeVegetationImpostorColorRenderPass.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TreeVegetationImpostorDepthRenderPass.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>

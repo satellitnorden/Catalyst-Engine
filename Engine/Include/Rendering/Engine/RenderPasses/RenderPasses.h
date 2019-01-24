@@ -30,6 +30,8 @@
 #include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationCrownColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationCrownDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationImpostorColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationImpostorDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailDebrisVegetationRenderPass.h>
@@ -51,6 +53,4 @@
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorColorRenderPass.h>
-#include <Rendering/Engine/RenderPasses/TreeVegetationImpostorDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>

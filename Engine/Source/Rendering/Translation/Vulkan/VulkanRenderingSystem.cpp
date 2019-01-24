@@ -764,6 +764,48 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the high detail tree vegetation impostor color fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the high detail tree vegetation impostor color geometry shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorGeometryShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
+	}
+
+	{
+		//Initialize the high detail tree vegetation impostor color vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the high detail tree vegetation impostor depth fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the high detail tree vegetation impostor depth geometry shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthGeometryShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
+	}
+
+	{
+		//Initialize the high detail tree vegetation impostor depth vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
 		//Initialize the high detail tree vegetation fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTreeVegetationTrunkFragmentShaderData(data);
@@ -1069,48 +1111,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetToneMappingFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::ToneMappingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor color fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor color geometry shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorColorGeometryShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorColorGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor color vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorColorVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor depth fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorDepthFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor depth geometry shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorDepthGeometryShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorDepthGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
-	}
-
-	{
-		//Initialize the tree vegetation impostor depth vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTreeVegetationImpostorDepthVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TreeVegetationImpostorDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -1442,7 +1442,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorDepth)] =
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorDepth)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			0,
@@ -1451,7 +1451,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorColor)] =
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorColor)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
@@ -1662,22 +1662,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailTreeVegetationCrownColor),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorDepth),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorDepth),
-														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorColor),
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorDepth),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorColor),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TreeVegetationImpostorColor),
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTreeVegetationImpostorColor),
 														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailSolidVegetation),
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,

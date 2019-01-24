@@ -28,6 +28,12 @@ glslangValidator.exe -V HighDetailTreeVegetationCrownColorFragmentShader.frag -o
 glslangValidator.exe -V HighDetailTreeVegetationCrownColorVertexShader.vert -o 		HighDetailTreeVegetationCrownColorVertexShader.spv
 glslangValidator.exe -V HighDetailTreeVegetationCrownDepthFragmentShader.frag -o 	HighDetailTreeVegetationCrownDepthFragmentShader.spv
 glslangValidator.exe -V HighDetailTreeVegetationCrownDepthVertexShader.vert -o 		HighDetailTreeVegetationCrownDepthVertexShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorColorFragmentShader.frag -o 	HighDetailTreeVegetationImpostorColorFragmentShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorColorGeometryShader.geom -o 	HighDetailTreeVegetationImpostorColorGeometryShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorColorVertexShader.vert -o 	HighDetailTreeVegetationImpostorColorVertexShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorDepthFragmentShader.frag -o 	HighDetailTreeVegetationImpostorDepthFragmentShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorDepthGeometryShader.geom -o 	HighDetailTreeVegetationImpostorDepthGeometryShader.spv
+glslangValidator.exe -V HighDetailTreeVegetationImpostorDepthVertexShader.vert -o 	HighDetailTreeVegetationImpostorDepthVertexShader.spv
 glslangValidator.exe -V HighDetailTreeVegetationTrunkFragmentShader.frag -o 		HighDetailTreeVegetationTrunkFragmentShader.spv
 glslangValidator.exe -V HighDetailTreeVegetationTrunkVertexShader.vert -o 		HighDetailTreeVegetationTrunkVertexShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
@@ -72,12 +78,6 @@ glslangValidator.exe -V TerrainColorFragmentShader.frag -o 				TerrainColorFragm
 glslangValidator.exe -V TerrainDepthFragmentShader.frag -o 				TerrainDepthFragmentShader.spv
 glslangValidator.exe -V TerrainVertexShader.vert -o 					TerrainVertexShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
-glslangValidator.exe -V TreeVegetationImpostorColorFragmentShader.frag -o 		TreeVegetationImpostorColorFragmentShader.spv
-glslangValidator.exe -V TreeVegetationImpostorColorGeometryShader.geom -o 		TreeVegetationImpostorColorGeometryShader.spv
-glslangValidator.exe -V TreeVegetationImpostorColorVertexShader.vert -o 		TreeVegetationImpostorColorVertexShader.spv
-glslangValidator.exe -V TreeVegetationImpostorDepthFragmentShader.frag -o 		TreeVegetationImpostorDepthFragmentShader.spv
-glslangValidator.exe -V TreeVegetationImpostorDepthGeometryShader.geom -o 		TreeVegetationImpostorDepthGeometryShader.spv
-glslangValidator.exe -V TreeVegetationImpostorDepthVertexShader.vert -o 		TreeVegetationImpostorDepthVertexShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VolumetricFogFragmentShader.frag -o 				VolumetricFogFragmentShader.spv
 

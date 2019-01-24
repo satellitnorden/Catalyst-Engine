@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetTreeVegetationImpostorColorGeometryShaderData(DynamicArray<byte> &data);
+	void GetHighDetailTreeVegetationImpostorColorGeometryShaderData(DynamicArray<byte> &data);
 }

@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/TreeVegetationImpostorColorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTreeVegetationImpostorColorFragmentShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetTreeVegetationImpostorColorFragmentShaderData(DynamicArray<byte> &data)
+	void GetHighDetailTreeVegetationImpostorColorFragmentShaderData(DynamicArray<byte> &data)
 	{
 		data.UpsizeFast(5876);
 
