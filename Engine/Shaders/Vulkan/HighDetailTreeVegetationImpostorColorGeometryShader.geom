@@ -42,7 +42,7 @@ void main()
 
 	EmitVertex();
 
-	fragmentNormal = forwardVector;
+	fragmentNormal = upVector;
 	fragmentTextureCoordinate = vec2(0.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(worldPosition - rightVector * impostorHalfWidth + upVector * impostorHeight, 1.0f);
 
@@ -54,7 +54,7 @@ void main()
 
 	EmitVertex();
 
-	fragmentNormal = forwardVector;
+	fragmentNormal = upVector;
 	fragmentTextureCoordinate = vec2(1.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(worldPosition + rightVector * impostorHalfWidth + upVector * impostorHeight, 1.0f);
 
