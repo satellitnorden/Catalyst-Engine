@@ -26,7 +26,8 @@ enum class VegetationType : uint8
 //Enumeration covering all tree vegetation level of details.
 enum class TreeVegetationLevelOfDetail : uint8
 {
-	Impostor,
+	LowImpostor,
+	HighImpostor,
 	Low,
 	Medium,
 	High,

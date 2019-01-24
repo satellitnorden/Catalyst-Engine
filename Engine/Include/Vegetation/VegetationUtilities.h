@@ -235,12 +235,14 @@ namespace VegetationUtilities
 		RenderingUtilities::CreateTransformationsBuffer(*transformations, transformationsBuffer);
 
 		//Calculate the number of transformations and the transformations offset.
-		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor)) = 0;
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)) = 0;
+		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)) = 0;
 		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)) = 0;
 		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) = 0;
 		numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) = 0;
 
-		const float impostorDistanceSquared{ properties._ImpostorDistance * properties._ImpostorDistance };
+		const float lowDetailImpostorDistanceSquared{ properties._LowDetailImpostorDistance * properties._LowDetailImpostorDistance };
+		const float highDetailImpostorDistanceSquared{ properties._HighDetailImpostorDistance * properties._HighDetailImpostorDistance };
 		const float lowDetailDistanceSquared{ properties._LowDetailDistance * properties._LowDetailDistance };
 		const float mediumDetailDistanceSquared{ properties._MediumDetailDistance * properties._MediumDetailDistance };
 
@@ -248,9 +250,14 @@ namespace VegetationUtilities
 		{
 			const float lengthSquared{ Vector3<float>::LengthSquared(viewerPosition - transformation.GetTranslation()) };
 
-			if (lengthSquared > impostorDistanceSquared)
+			if (lengthSquared > lowDetailImpostorDistanceSquared)
 			{
-				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor));
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor));
+			}
+
+			else if (lengthSquared > highDetailImpostorDistanceSquared)
+			{
+				++numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor));
 			}
 
 			else if (lengthSquared > lowDetailDistanceSquared)
@@ -269,7 +276,12 @@ namespace VegetationUtilities
 			}
 		}
 
-		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::Impostor))
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor))
+			= numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) * sizeof(Matrix4)
+			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) * sizeof(Matrix4);
+		transformationsOffsets->At(UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor))
 			= numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Low)) * sizeof(Matrix4)
 			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::Medium)) * sizeof(Matrix4)
 			+ numberOfTransformations->At(UNDERLYING(TreeVegetationLevelOfDetail::High)) * sizeof(Matrix4);

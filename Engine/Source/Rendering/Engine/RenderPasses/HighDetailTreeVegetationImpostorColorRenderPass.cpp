@@ -189,17 +189,17 @@ void HighDetailTreeVegetationImpostorColorRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)]);
+			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)]);
 
 			//Draw the instances!
-			commandBuffer->Draw(this, 1, renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Impostor)]);
+			commandBuffer->Draw(this, 1, renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)]);
 		}
 	}
 

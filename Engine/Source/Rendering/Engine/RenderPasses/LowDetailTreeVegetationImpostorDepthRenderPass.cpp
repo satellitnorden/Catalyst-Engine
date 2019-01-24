@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/HighDetailTreeVegetationImpostorDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/LowDetailTreeVegetationImpostorDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -10,7 +10,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HighDetailTreeVegetationImpostorDepthRenderPass);
+DEFINE_SINGLETON(LowDetailTreeVegetationImpostorDepthRenderPass);
 
 /*
 *	Geometry push constant data definition.
@@ -40,32 +40,32 @@ public:
 /*
 *	Default constructor.
 */
-HighDetailTreeVegetationImpostorDepthRenderPass::HighDetailTreeVegetationImpostorDepthRenderPass() NOEXCEPT
+LowDetailTreeVegetationImpostorDepthRenderPass::LowDetailTreeVegetationImpostorDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationImpostorDepthRenderPass::Instance->InitializeInternal();
+		LowDetailTreeVegetationImpostorDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the high detail tree vegetation impostor depth render pass.
+*	Initializes the low detail tree vegetation impostor depth render pass.
 */
-void HighDetailTreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXCEPT
+void LowDetailTreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailTreeVegetationImpostorDepth);
+	SetSubStage(RenderPassSubStage::LowDetailTreeVegetationImpostorDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTreeVegetationImpostorDepthVertex);
+	SetVertexShader(Shader::LowDetailTreeVegetationImpostorDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::HighDetailTreeVegetationImpostorDepthGeometry);
-	SetFragmentShader(Shader::HighDetailTreeVegetationImpostorDepthFragment);
+	SetGeometryShader(Shader::LowDetailTreeVegetationImpostorDepthGeometry);
+	SetFragmentShader(Shader::LowDetailTreeVegetationImpostorDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -128,7 +128,7 @@ void HighDetailTreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXC
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HighDetailTreeVegetationImpostorDepthRenderPass::Instance->RenderInternal();
+		LowDetailTreeVegetationImpostorDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -136,9 +136,9 @@ void HighDetailTreeVegetationImpostorDepthRenderPass::InitializeInternal() NOEXC
 }
 
 /*
-*	Renders the high detail tree vegetation impostor depths.
+*	Renders the low detail tree vegetation impostor depths.
 */
-void HighDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
+void LowDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the tree vegetion type informations.
 	const DynamicArray<TreeVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetTreeVegetationTypeInformations() };
@@ -185,17 +185,17 @@ void HighDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)]);
+			commandBuffer->BindVertexBuffer(this, 0, renderInformation._TransformationsBuffer, &renderInformation._TransformationsOffsets[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)]);
 
 			//Draw the instances!
-			commandBuffer->Draw(this, 1, renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)]);
+			commandBuffer->Draw(this, 1, renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)]);
 		}
 	}
 
