@@ -57,14 +57,17 @@ void main()
         offset.xy = offset.xy * 0.5f + 0.5f;
 
         float currentSampleDepth = texture(normalDepthTexture, offset.xy).w;
+        vec3 currentSampleActualPosition = CalculateFragmentWorldPosition(offset.xy, currentSampleDepth);
 
-        occlusion += (offset.z < currentSampleDepth + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f);    
+        float fade = mix(1.0f, 0.0f, SmoothStep(min(LengthSquared3(currentSamplePosition - currentSampleActualPosition) / SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED, 1.0f)));
+
+        occlusion += (offset.z < currentSampleDepth + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * fade;    
     }
 
     occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);
 
     //Modify the value a bit.
-    occlusion = pow(occlusion, 2.0f);
+    occlusion = pow(occlusion, 4.0f);
 
     //Write the fragment.
     fragment = vec4(occlusion);
