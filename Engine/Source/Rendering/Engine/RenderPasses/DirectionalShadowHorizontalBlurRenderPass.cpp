@@ -57,7 +57,7 @@ void DirectionalShadowHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::SceneIntermediate);
+	AddRenderTarget(RenderTarget::Intermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

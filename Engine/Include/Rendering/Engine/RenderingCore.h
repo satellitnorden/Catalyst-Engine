@@ -39,6 +39,7 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowCalculation,
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
+	ScreenSpaceAmbientOcclusionCalculation,
 	Lighting,
 	Ocean,
 	DepthOfFieldHorizontal,
@@ -106,6 +107,9 @@ enum class RenderPassSubStage : uint8
 
 	//Directional shadow horizontal blur main stage.
 	DirectionalShadowVerticalBlur,
+
+	//Screen space ambient occlusion calculation main stage.
+	ScreenSpaceAmbientOcclusion,
 
 	//Lighting main stage.
 	Lighting,
@@ -245,8 +249,10 @@ enum class RenderTarget : uint8
 	DirectionalShadowMap,
 	DirectionalShadow,
 
+	//Intermediate.
+	Intermediate,
+
 	//Scene.
-	SceneIntermediate,
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
@@ -254,6 +260,9 @@ enum class RenderTarget : uint8
 
 	//Screen.
 	Screen,
+
+	//Screen space ambient occlusion.
+	ScreenSpaceAmbientOcclusion,
 
 	NumberOfRenderTargets
 };

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/BloomHorizontalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -11,24 +11,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomHorizontalRenderPass);
+DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 
 /*
 *	Default constructor.
 */
-BloomHorizontalRenderPass::BloomHorizontalRenderPass() NOEXCEPT
+ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalRenderPass::Instance->InitializeInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom horizontal render pass.
+*	Initializes the screen space ambient occlusion render pass.
 */
-void BloomHorizontalRenderPass::InitializeInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -37,24 +37,24 @@ void BloomHorizontalRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::BloomHorizontal);
+	SetMainStage(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::BloomHorizontal);
+	SetSubStage(RenderPassSubStage::ScreenSpaceAmbientOcclusion);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomHorizontalFragment);
+	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Intermediate);
+	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -87,7 +87,7 @@ void BloomHorizontalRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalRenderPass::Instance->RenderInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -97,7 +97,7 @@ void BloomHorizontalRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void BloomHorizontalRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -110,17 +110,17 @@ void BloomHorizontalRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void BloomHorizontalRenderPass::CreateRenderDataTable() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the horizontal bloom.
+*	Renders the screen space ambient occlusion.
 */
-void BloomHorizontalRenderPass::RenderInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

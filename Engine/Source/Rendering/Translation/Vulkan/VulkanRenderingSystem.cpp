@@ -1335,7 +1335,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_GENERAL),
 
 			//Scene intermediate.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1866,7 +1866,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1954,7 +1954,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Directional shadow.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1994,7 +1994,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -2069,6 +2069,75 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadowVerticalBlur)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadowVerticalBlur)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadowVerticalBlur)]._ShouldClear = false;
+	}
+
+	//Initialize the screen space ambient occlusion render pass.
+	{
+		constexpr uint64 SUBPASSES{ 1 };
+
+		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			nullptr,
+																			0,
+																			nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 1> attachments
+		{
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._ShouldClear = false;
 	}
 
 	//Initialize the lighting render pass.
@@ -2540,7 +2609,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2585,7 +2654,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -2678,7 +2747,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2723,7 +2792,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -2736,7 +2805,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._ShouldClear = false;
 	}
 
-	//Initialize the depth of field vertical  render pass.
+	//Initialize the depth of field vertical render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -2816,7 +2885,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2861,7 +2930,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -3063,7 +3132,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_IMAGE_LAYOUT_GENERAL,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImage(),
 																		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -3071,7 +3140,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 				const VkExtent2D sourceExtent{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetExtent() };
 				const VkExtent3D extent{ sourceExtent.width, sourceExtent.height, 0 };
 
-				currentPrimaryCommandBuffer->CommandCopyImage(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImage(), static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(), extent);
+				currentPrimaryCommandBuffer->CommandCopyImage(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImage(), static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImage(), extent);
 
 				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
@@ -3086,7 +3155,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_SHADER_READ_BIT,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 																		VK_IMAGE_LAYOUT_GENERAL,
-																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImage(),
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);

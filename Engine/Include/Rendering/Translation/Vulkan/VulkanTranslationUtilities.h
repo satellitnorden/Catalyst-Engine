@@ -55,6 +55,11 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadowVerticalBlur);
 			}
 
+			case RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusion);
+			}
+
 			case RenderPassMainStage::Lighting:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);

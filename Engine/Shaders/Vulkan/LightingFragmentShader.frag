@@ -11,12 +11,6 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Post processing data.
-layout (push_constant) uniform LightingData
-{
-    bool screenSpaceAmbientOcclusionEnabled;
-};
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -29,6 +23,7 @@ layout (set = 3, binding = 0) uniform sampler2D albedoTexture;
 layout (set = 3, binding = 1) uniform sampler2D normalDirectionDepthTexture;
 layout (set = 3, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
 layout (set = 3, binding = 3) uniform sampler2D directionalShadow;
+layout (set = 3, binding = 4) uniform sampler2D screenSpaceAmbientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -61,6 +56,7 @@ void main()
     //Set the thickness.
     float thickness = roughnessMetallicAmbientOcclusionSampler.a;
 
+    /*
     //Write the fragment.
     fragment = vec4(CalculateLighting(  mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend),
                                         mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend),
@@ -73,4 +69,7 @@ void main()
                                         ambientOcclusion,
                                         thickness),
                                         1.0f);
+    */
+
+    fragment = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate);
 }

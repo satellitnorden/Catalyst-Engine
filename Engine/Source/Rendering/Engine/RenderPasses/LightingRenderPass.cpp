@@ -64,10 +64,6 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(int32));
-
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
@@ -106,12 +102,13 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 */
 void LightingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -128,6 +125,7 @@ void LightingRenderPass::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
@@ -146,10 +144,6 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, EnvironmentManager::Instance->GetNightEnvironmentMaterial()._RenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 2, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
-
-	//Pust constants.
-	constexpr int32 screenSpaceAmbientOcclusionEnabled{ false };
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(int32), &screenSpaceAmbientOcclusionEnabled);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
