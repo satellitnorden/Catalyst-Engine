@@ -14,6 +14,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec2 texelSize;
+    layout (offset = 8) float delta;
 };
 
 //In parameters.
@@ -28,12 +29,12 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
     //Calculate the offset.
-    vec4 offset = texelSize.xyxy * vec2(-1.0f, 1.0f).xxyy;
+    vec4 offset = texelSize.xyxy * vec2(-delta, delta).xxyy;
 
     //Write the fragment.
     fragment =  (texture(sourceTexture, fragmentTextureCoordinate + offset.xy)
                 + texture(sourceTexture, fragmentTextureCoordinate + offset.zy)
                 + texture(sourceTexture, fragmentTextureCoordinate + offset.xw)
-                + texture(sourceTexture, fragmentTextureCoordinate + offset.zy))
+                + texture(sourceTexture, fragmentTextureCoordinate + offset.zw))
                 * 0.25f;
 }

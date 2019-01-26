@@ -29,7 +29,7 @@ void main()
     albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    normalDepth = vec4(fragmentNormal, gl_FragCoord.z);
+    normalDepth = vec4(fragmentNormal * (gl_FrontFacing ? 1.0f : -1.0f), gl_FragCoord.z);
 
     //Write the material properties.
     materialProperties = vec4(1.0f, 0.0f, 1.0f, 1.0f);

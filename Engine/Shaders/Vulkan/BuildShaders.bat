@@ -15,7 +15,6 @@ glslangValidator.exe -V DirectionalSolidVegetationShadowFragmentShader.frag -o		
 glslangValidator.exe -V DirectionalSolidVegetationShadowVertexShader.vert -o		DirectionalSolidVegetationShadowVertexShader.spv
 glslangValidator.exe -V DirectionalTerrainShadowVertexShader.vert -o			DirectionalTerrainShadowVertexShader.spv
 glslangValidator.exe -V DirectionalTreeVegetationTrunkVertexShader.vert -o		DirectionalTreeVegetationTrunkVertexShader.spv
-glslangValidator.exe -V DownSampleFragmentShader.frag -o				DownSampleFragmentShader.spv
 glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V HighDetailDebrisVegetationFragmentShader.frag -o 		HighDetailDebrisVegetationFragmentShader.spv
 glslangValidator.exe -V HighDetailDebrisVegetationVertexShader.vert -o 			HighDetailDebrisVegetationVertexShader.spv
@@ -78,6 +77,7 @@ glslangValidator.exe -V ParticleSystemGeometryShader.geom -o 				ParticleSystemG
 glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVertexShader.spv
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
 glslangValidator.exe -V PhysicalVertexShader.vert -o 					PhysicalVertexShader.spv
+glslangValidator.exe -V ReSampleFragmentShader.frag -o					ReSampleFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv

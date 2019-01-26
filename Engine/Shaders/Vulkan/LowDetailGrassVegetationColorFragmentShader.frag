@@ -32,7 +32,7 @@ void main()
     albedo = texture(albedoTexture, fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    normalDepth = vec4(fragmentNormal, gl_FragCoord.z);
+    normalDepth = vec4(fragmentNormal * (gl_FrontFacing ? 1.0f : -1.0f), gl_FragCoord.z);
 
     //Write the material properties.
     materialProperties = vec4(1.0f, 0.0f, 1.0f, thickness);

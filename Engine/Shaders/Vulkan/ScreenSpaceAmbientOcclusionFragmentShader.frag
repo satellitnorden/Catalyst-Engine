@@ -8,11 +8,11 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.000000825f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.0000025f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (1.0f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED (SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (4)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (32.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -77,7 +77,9 @@ void main()
 
     for (int i = 1; i <= SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
     {
-    	vec3 randomRotation = vec3((RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.75f), (RandomFloat(vec3(gl_FragCoord + i * DOUBLE_PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.75f), (RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.75f));
+    	vec3 randomRotation = vec3(	(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f),
+    								(RandomFloat(vec3(gl_FragCoord + i * DOUBLE_PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f),
+    								(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f));
         vec3 currentSamplePosition = fragmentWorldPosition + RotateVector(normal, randomRotation) * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * RandomFloat(vec3(gl_FragCoord + i * INVERSE_PI + depth));
 
         vec4 offset = vec4(currentSamplePosition, 1.0f);

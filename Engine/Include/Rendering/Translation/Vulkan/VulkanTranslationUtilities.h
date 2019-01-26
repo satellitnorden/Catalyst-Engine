@@ -60,6 +60,16 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusion);
 			}
 
+			case RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration);
+			}
+
+			case RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration);
+			}
+
 			case RenderPassMainStage::Lighting:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);
