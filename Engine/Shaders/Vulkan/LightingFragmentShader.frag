@@ -56,7 +56,9 @@ void main()
     //Set the thickness.
     float thickness = roughnessMetallicAmbientOcclusionSampler.a;
 
-    /*
+    //Sample the screen space ambient occlusion.
+    float screenSpaceAmbientOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
+
     //Write the fragment.
     fragment = vec4(CalculateLighting(  mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend),
                                         mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend),
@@ -66,10 +68,7 @@ void main()
                                         normalDirection,
                                         roughness,
                                         metallic,
-                                        ambientOcclusion,
+                                        ambientOcclusion * screenSpaceAmbientOcclusion,
                                         thickness),
                                         1.0f);
-    */
-
-    fragment = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate);
 }

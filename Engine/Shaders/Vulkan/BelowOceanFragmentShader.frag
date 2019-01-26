@@ -51,7 +51,6 @@ vec3 CalculateSceneColor(vec3 normal, float distanceToIntersectionPointSquared);
 vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToIntersectionPointSquared);
 vec3 CalculateSceneWorldPosition();
 float LengthSquared(vec3 vector);
-float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum);
 
 /*
 *   Calculates the fragment when the scene world position is above the ocean.
@@ -206,14 +205,6 @@ vec3 CalculateSceneWorldPosition()
 float LengthSquared(vec3 vector)
 {
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
-/*
-*   Scales a value from one range to another.
-*/
-float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum)
-{
-    return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
 }
 
 void main()

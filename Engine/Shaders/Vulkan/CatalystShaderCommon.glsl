@@ -118,6 +118,7 @@ layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
 #define PHI (1.618033f)
 #define PI (3.141592f)
 #define DOUBLE_PI (6.283185f)
+#define HALF_PI (1.570796f)
 #define INVERSE_PI (0.318309f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 #define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
@@ -180,6 +181,14 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 float RandomFloat(vec3 seed)
 {
     return fract(sin(dot(seed.xy * seed.z, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*   Scales a value from one range to another.
+*/
+float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum)
+{
+    return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
 }
 
 /*

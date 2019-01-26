@@ -219,17 +219,17 @@ void LowDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const DebrisVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::High)], VisibilityFlag::Viewer)
-				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)] == 0)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Low)], VisibilityFlag::Viewer)
+				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Low)] == 0)
 			{
 				continue;
 			}
 
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::High)], &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffers[UNDERLYING(LevelOfDetail::Low)], &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCounts[UNDERLYING(LevelOfDetail::Low)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::High)]);
+			commandBuffer->DrawIndexed(this, information._Model._IndexCounts[UNDERLYING(LevelOfDetail::Low)], renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Low)]);
 		}
 	}
 

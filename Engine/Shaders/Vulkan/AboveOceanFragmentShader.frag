@@ -54,7 +54,6 @@ float CalculateOceanColorWeight(float distanceToBottomSquared);
 vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared);
 vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared);
 vec3 CalculateSceneWorldPosition();
-float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum);
 
 /*
 *   Calculates the fragment when the scene world position is above the ocean.
@@ -245,14 +244,6 @@ vec3 CalculateSceneWorldPosition()
 
     //Calculate the scene world position.
     return CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
-}
-
-/*
-*   Scales a value from one range to another.
-*/
-float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum)
-{
-    return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
 }
 
 void main()

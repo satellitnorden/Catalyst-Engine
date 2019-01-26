@@ -25,6 +25,7 @@
 #include <Rendering/ShaderData/Vulkan/DirectionalSolidVegetationShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalTerrainShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalTreeVegetationTrunkVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/DownSampleFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailDebrisVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailDebrisVegetationVertexShader.h>
