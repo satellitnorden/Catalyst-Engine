@@ -1115,6 +1115,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the screen space ambient occlusion blur fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetScreenSpaceAmbientOcclusionBlurFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the screen space ambient occlusion fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetScreenSpaceAmbientOcclusionFragmentShaderData(data);
@@ -2159,7 +2166,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusionHalf))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2195,26 +2202,26 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusionHalf))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._ShouldClear = false;
 	}
 
 	//Initialize the screen space ambient occlusion up sample first iteration render pass.
@@ -2264,12 +2271,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -2280,10 +2287,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._ShouldClear = false;
 	}
 
 	//Initialize the lighting render pass.

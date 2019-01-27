@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -11,7 +11,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass);
+DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionVerticalBlurRenderPass);
 
 /*
 *	Push constant data definition.
@@ -21,27 +21,28 @@ class PushConstantData final
 
 public:
 
-	Vector2<float> _TexelSize;
-	float _Delta;
+	Vector2<float> _Direction;
+	Vector2<float> _InverseResolution;
+	float _MaximumDepthDifference;
 
 };
 
 /*
 *	Default constructor.
 */
-ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass() NOEXCEPT
+ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::ScreenSpaceAmbientOcclusionVerticalBlurRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::Instance->InitializeInternal();
+		ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the screen space ambient occlusion up sample first iteration render pass.
+*	Initializes the screen space ambient occlusion vertical blur render pass.
 */
-void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::InitializeInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -50,17 +51,17 @@ void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::InitializeInte
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration);
+	SetMainStage(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration);
+	SetSubStage(RenderPassSubStage::ScreenSpaceAmbientOcclusionVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ReSampleFragment);
+	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionBlurFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -104,7 +105,7 @@ void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::InitializeInte
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::Instance->RenderInternal();
+		ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -114,11 +115,12 @@ void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::InitializeInte
 /*
 *	Creates the render data table layout.
 */
-void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -127,17 +129,18 @@ void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::CreateRenderDa
 /*
 *	Creates the render data table.
 */
-void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::CreateRenderDataTable() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusionHalf), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the screen space ambient occlusion up sample first iteration.
+*	Renders the screen space ambient occlusion vertical blur.
 */
-void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::RenderInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -152,8 +155,9 @@ void ScreenSpaceAmbientOcclusionUpSampleFirstIterationRenderPass::RenderInternal
 	//Push constants.
 	PushConstantData data;
 
-	data._TexelSize = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width) , 1.0f / static_cast<float>(GetRenderResolution()._Height));
-	data._Delta = 0.6125f;
+	data._Direction = Vector2<float>(0.0f, 1.0f);
+	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width), 1.0f / static_cast<float>(GetRenderResolution()._Height));
+	data._MaximumDepthDifference = 0.001f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

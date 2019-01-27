@@ -8,9 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.0000025f)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (1.0f)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED (SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.000001f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (4)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (32.0f)
 
@@ -77,10 +75,10 @@ void main()
 
     for (int i = 1; i <= SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
     {
-    	vec3 randomRotation = vec3(	(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f),
-    								(RandomFloat(vec3(gl_FragCoord + i * DOUBLE_PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f),
-    								(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.25f));
-        vec3 currentSamplePosition = fragmentWorldPosition + RotateVector(normal, randomRotation) * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * RandomFloat(vec3(gl_FragCoord + i * INVERSE_PI + depth));
+    	vec3 randomRotation = vec3(	(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f),
+    								(RandomFloat(vec3(gl_FragCoord + i * DOUBLE_PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f),
+    								(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f));
+        vec3 currentSamplePosition = fragmentWorldPosition + RotateVector(normal, randomRotation) * RandomFloat(vec3(gl_FragCoord + i * INVERSE_PI + depth));
 
         vec4 offset = vec4(currentSamplePosition, 1.0f);
         offset = viewMatrix * offset;
@@ -90,7 +88,7 @@ void main()
         float currentSampleDepth = texture(normalDepthTexture, offset.xy).w;
         vec3 currentSampleActualPosition = CalculateFragmentWorldPosition(offset.xy, currentSampleDepth);
 
-        float fade = mix(1.0f, 0.0f, SmoothStep(min(LengthSquared3(currentSamplePosition - currentSampleActualPosition) / SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED, 1.0f)));
+        float fade = mix(1.0f, 0.0f, SmoothStep(min(LengthSquared3(currentSamplePosition - currentSampleActualPosition), 1.0f)));
 
         occlusion += (offset.z < currentSampleDepth - SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * fade;    
     }

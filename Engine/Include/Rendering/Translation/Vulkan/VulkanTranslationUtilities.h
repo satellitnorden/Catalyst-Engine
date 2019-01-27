@@ -60,14 +60,14 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusion);
 			}
 
-			case RenderPassMainStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration:
+			case RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionDownSampleFirstIteration);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionHorizontalBlur);
 			}
 
-			case RenderPassMainStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration:
+			case RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionUpSampleFirstIteration);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionVerticalBlur);
 			}
 
 			case RenderPassMainStage::Lighting:

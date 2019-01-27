@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class ScreenSpaceAmbientOcclusionDownSampleFirstIterationRenderPass final : public RenderPass
+class ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ScreenSpaceAmbientOcclusionDownSampleFirstIterationRenderPass);
+	DECLARE_SINGLETON(ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	ScreenSpaceAmbientOcclusionDownSampleFirstIterationRenderPass() NOEXCEPT;
+	ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the screen space ambient occlusion down sample first iteration render pass.
+	*	Initializes the screen space ambient occlusion horizontal blur render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,7 +43,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the screen space ambient occlusion down sample first iteration.
+	*	Renders the screen space ambient occlusion horizontal blur.
 	*/
 	void RenderInternal() NOEXCEPT;
 

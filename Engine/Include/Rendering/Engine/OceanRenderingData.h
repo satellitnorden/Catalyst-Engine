@@ -42,11 +42,11 @@ static OceanRenderingData GetDefaultOceanRenderingData() NOEXCEPT
 {
 	OceanRenderingData data;
 
-	data._Color = Vector3<float>(0.0f, 1.0f, 1.0f);
-	data._DeformationWeightDistanceSquared = 250.0f * 250.0f;
-	data._ColorWeightDistanceSquared = 250.0f * 250.0f;
-	data._FoamWeightDistanceSquared = 5.0f * 5.0f;
-	data._NormalSmoothingFactor = 0.9f;
+	data._Color = Vector3<float>(0.0f, 0.375f, 0.5f);
+	data._DeformationWeightDistanceSquared = 500.0f * 500.0f;
+	data._ColorWeightDistanceSquared = 500.0f * 500.0f;
+	data._FoamWeightDistanceSquared = 2.5f * 2.5f;
+	data._NormalSmoothingFactor = 0.75f;
 	data._TextureScaling = 0.1f;
 	
 	return data;

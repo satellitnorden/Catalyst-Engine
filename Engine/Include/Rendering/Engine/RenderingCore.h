@@ -40,8 +40,8 @@ enum class RenderPassMainStage : uint8
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
 	ScreenSpaceAmbientOcclusionCalculation,
-	ScreenSpaceAmbientOcclusionDownSampleFirstIteration,
-	ScreenSpaceAmbientOcclusionUpSampleFirstIteration,
+	ScreenSpaceAmbientOcclusionHorizontalBlur,
+	ScreenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
 	Ocean,
 	DepthOfFieldHorizontal,
@@ -113,11 +113,11 @@ enum class RenderPassSubStage : uint8
 	//Screen space ambient occlusion calculation main stage.
 	ScreenSpaceAmbientOcclusion,
 
-	//Screen space ambient occlusion down sample first iteration main stage.
-	ScreenSpaceAmbientOcclusionDownSampleFirstIteration,
+	//Screen space ambient occlusion horizontal blur main stage.
+	ScreenSpaceAmbientOcclusionHorizontalBlur,
 
-	//Screen space ambient occlusion up sample first iteration main stage.
-	ScreenSpaceAmbientOcclusionUpSampleFirstIteration,
+	//Screen space ambient occlusion vertical blur main stage.
+	ScreenSpaceAmbientOcclusionVerticalBlur,
 
 	//Lighting main stage.
 	Lighting,
@@ -271,7 +271,6 @@ enum class RenderTarget : uint8
 
 	//Screen space ambient occlusion.
 	ScreenSpaceAmbientOcclusion,
-	ScreenSpaceAmbientOcclusionHalf,
 
 	NumberOfRenderTargets
 };
@@ -374,6 +373,7 @@ enum class Shader : uint8
 	PhysicalFragment,
 	PhysicalVertex,
 	ReSampleFragment,
+	ScreenSpaceAmbientOcclusionBlurFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,
 	SkyFragment,
