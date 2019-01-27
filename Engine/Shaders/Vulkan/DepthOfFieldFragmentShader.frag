@@ -13,7 +13,8 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 pushConstantData;
+	layout (offset = 0) vec2 inverseResolution;
+    layout (offset = 8) float inverseDepthOfFieldDistanceSquared;
 };
 
 //In parameters.
@@ -48,7 +49,7 @@ vec4 SampleDepthOfField(vec2 textureCoordinate)
     float distanceSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);
 
     //Calculate the depth of field weight.
-    float depthOfFieldWeight = min(distanceSquared * pushConstantData.z, 1.0f) * float(normalDepthTextureSampler.w != 0.0f);
+    float depthOfFieldWeight = min(distanceSquared * inverseDepthOfFieldDistanceSquared, 1.0f) * float(normalDepthTextureSampler.w != 0.0f);
 
     //Write the fragment.
     return vec4(sceneTexture.rgb, depthOfFieldWeight);
@@ -59,21 +60,14 @@ vec4 SampleDepthOfField(vec2 textureCoordinate)
 */
 vec4 CalculateBlur()
 {
-    vec4 color = vec4(0.0f);
+    vec2 offset1 = vec2(1.0f) * inverseResolution;
+    vec2 offset2 = vec2(2.0f) * inverseResolution;
 
-    vec2 offset1 = vec2(1.411764705882353f, 1.411764705882353f) * pushConstantData.xy;
-    vec2 offset2 = vec2(3.2941176470588234f, 1.411764705882353f) * pushConstantData.xy;
-    vec2 offset3 = vec2(5.176470588235294f, 1.411764705882353f) * pushConstantData.xy;
-
-    color += SampleDepthOfField(fragmentTextureCoordinate) * 0.1964825501511404f;
-    color += SampleDepthOfField(fragmentTextureCoordinate + offset1) * 0.2969069646728344f;
-    color += SampleDepthOfField(fragmentTextureCoordinate - offset1) * 0.2969069646728344f;
-    color += SampleDepthOfField(fragmentTextureCoordinate + offset2) * 0.09447039785044732f;
-    color += SampleDepthOfField(fragmentTextureCoordinate - offset2) * 0.09447039785044732f;
-    color += SampleDepthOfField(fragmentTextureCoordinate + offset3) * 0.010381362401148057f;
-    color += SampleDepthOfField(fragmentTextureCoordinate - offset3) * 0.010381362401148057f;
-
-    return color;
+    return  SampleDepthOfField(fragmentTextureCoordinate) * 0.2f
+            + SampleDepthOfField(fragmentTextureCoordinate - offset1) * 0.2f
+            + SampleDepthOfField(fragmentTextureCoordinate + offset1) * 0.2f
+            + SampleDepthOfField(fragmentTextureCoordinate - offset2) * 0.2f
+            + SampleDepthOfField(fragmentTextureCoordinate + offset2) * 0.2f;
 }
 
 void main()

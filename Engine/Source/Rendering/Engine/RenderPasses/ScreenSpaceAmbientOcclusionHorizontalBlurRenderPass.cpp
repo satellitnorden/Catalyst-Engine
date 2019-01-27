@@ -92,14 +92,14 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
-	SetStencilCompareOperator(CompareOperator::Always);
-	SetStencilCompareMask(0);
+	SetStencilCompareOperator(CompareOperator::Equal);
+	SetStencilCompareMask(BIT(0));
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
