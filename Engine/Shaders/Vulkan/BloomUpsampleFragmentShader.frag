@@ -14,7 +14,6 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec2 texelSize;
-    layout (offset = 8) float threshold;
 };
 
 //In parameters.
@@ -31,16 +30,13 @@ layout (location = 0) out vec4 fragment;
 */
 vec4 Sample(vec2 coordinate)
 {
-    vec4 bloom = texture(sourceTexture, coordinate);
-    float average = CalculateAverage(bloom.rgb);
-
-    return bloom * clamp(average - threshold, 0.0f, 1.0f);
+    return vec4(texture(sourceTexture, coordinate).rgb, 1.0f);
 }
 
 void main()
 {
     //Calculate the offset.
-    vec4 offset = texelSize.xyxy * vec2(-1.0f, 1.0f).xxyy;
+    vec4 offset = texelSize.xyxy * vec2(-0.5f, 0.5f).xxyy;
 
     //Write the fragment.
     fragment =  (Sample(fragmentTextureCoordinate + offset.xy)

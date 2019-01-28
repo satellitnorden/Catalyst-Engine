@@ -14,6 +14,19 @@
 DEFINE_SINGLETON(BloomHorizontalRenderPass);
 
 /*
+*	Push constant data.
+*/
+class PushConstantData final
+{
+
+public:
+
+	Vector2<float> _TexelSize;
+	float _Threshold;
+
+};
+
+/*
 *	Default constructor.
 */
 BloomHorizontalRenderPass::BloomHorizontalRenderPass() NOEXCEPT
@@ -47,22 +60,26 @@ void BloomHorizontalRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomHorizontalFragment);
+	SetFragmentShader(Shader::BloomDownsampleFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Intermediate);
+	AddRenderTarget(RenderTarget::IntermediateHalf);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -114,7 +131,7 @@ void BloomHorizontalRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
@@ -131,6 +148,15 @@ void BloomHorizontalRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	PushConstantData data;
+
+	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width);
+	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height);
+	data._Threshold = 1.0f;
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

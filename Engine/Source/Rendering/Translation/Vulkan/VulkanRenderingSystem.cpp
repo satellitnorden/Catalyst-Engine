@@ -580,17 +580,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the bloom horizontal fragment shader module.
+		//Initialize bloom upsample fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetBloomHorizontalFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::BloomHorizontalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the bloom vertical fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetBloomVerticalFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::BloomVerticalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetBloomUpsampleFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::BloomUpsampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -2755,14 +2748,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
-		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 0 };
+		constexpr uint32 SCENE_INTERMEDIATE_HALF_INDEX{ 0 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2776,7 +2769,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
-			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+			VkAttachmentReference{ SCENE_INTERMEDIATE_HALF_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
 		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
@@ -2807,12 +2800,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 2, RenderingSystem::Instance->GetScaledResolution()._Height / 2 };
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));

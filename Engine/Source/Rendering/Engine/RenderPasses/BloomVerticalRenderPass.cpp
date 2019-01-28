@@ -14,6 +14,18 @@
 DEFINE_SINGLETON(BloomVerticalRenderPass);
 
 /*
+*	Push constant data.
+*/
+class PushConstantData final
+{
+
+public:
+
+	Vector2<float> _TexelSize;
+
+};
+
+/*
 *	Default constructor.
 */
 BloomVerticalRenderPass::BloomVerticalRenderPass() NOEXCEPT
@@ -47,7 +59,7 @@ void BloomVerticalRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomVerticalFragment);
+	SetFragmentShader(Shader::BloomUpsampleFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -61,8 +73,12 @@ void BloomVerticalRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(true);
@@ -114,7 +130,7 @@ void BloomVerticalRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
@@ -131,6 +147,14 @@ void BloomVerticalRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	PushConstantData data;
+
+	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2);
+	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2);
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

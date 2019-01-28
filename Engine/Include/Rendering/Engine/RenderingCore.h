@@ -259,6 +259,7 @@ enum class RenderTarget : uint8
 
 	//Intermediate.
 	Intermediate,
+	IntermediateHalf,
 
 	//Scene.
 	SceneBufferAlbedo,
@@ -294,8 +295,7 @@ enum class Shader : uint8
 	AboveOceanFragment,
 	BelowOceanFragment,
 	BloomDownsampleFragment,
-	BloomHorizontalFragment,
-	BloomVerticalFragment,
+	BloomUpsampleFragment,
 	BoxBlurFragment,
 #if !defined(CATALYST_FINAL)
 	DebugAxisAlignedBoundingBoxFragment,
