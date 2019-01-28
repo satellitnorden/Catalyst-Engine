@@ -293,6 +293,7 @@ enum class Shader : uint8
 {
 	AboveOceanFragment,
 	BelowOceanFragment,
+	BloomDownsampleFragment,
 	BloomHorizontalFragment,
 	BloomVerticalFragment,
 	BoxBlurFragment,
@@ -372,7 +373,6 @@ enum class Shader : uint8
 	AntiAliasingFragment,
 	PhysicalFragment,
 	PhysicalVertex,
-	ReSampleFragment,
 	ScreenSpaceAmbientOcclusionBlurFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,

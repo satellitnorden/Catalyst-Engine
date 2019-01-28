@@ -573,6 +573,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize bloom downsample fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetBloomDownsampleFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::BloomDownsampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the bloom horizontal fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetBloomHorizontalFragmentShaderData(data);
@@ -1105,13 +1112,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPhysicalVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::PhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-	
-	{
-		//Initialize re sample fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetReSampleFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::ReSampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{

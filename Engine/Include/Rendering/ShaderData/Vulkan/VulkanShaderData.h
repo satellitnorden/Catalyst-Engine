@@ -11,6 +11,7 @@
 #include <Rendering/ShaderData/Vulkan/AboveOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/AntiAliasingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BelowOceanFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/BloomDownsampleFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomHorizontalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomVerticalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>
@@ -87,7 +88,6 @@
 #include <Rendering/ShaderData/Vulkan/ParticleSystemVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/PhysicalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/PhysicalVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/ReSampleFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ShadowMapFragmentShader.h>
