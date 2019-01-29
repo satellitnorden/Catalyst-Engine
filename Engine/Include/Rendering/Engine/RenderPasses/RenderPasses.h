@@ -9,8 +9,10 @@
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleFirstIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleSecondIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomDownsampleThirdIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleFirstIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleSecondIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomUpsampleThirdIterationRenderPass.h>
 #if !defined(CATALYST_FINAL)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>

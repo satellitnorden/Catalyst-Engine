@@ -10,7 +10,7 @@
 //Preprocessor defines.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.000001f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (8)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (32.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;

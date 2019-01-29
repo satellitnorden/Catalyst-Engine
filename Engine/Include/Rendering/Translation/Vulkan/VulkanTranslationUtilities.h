@@ -107,6 +107,11 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleSecondIteration);
 			}
 
+			case RenderPassMainStage::BloomDownsampleThirdIteration:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleThirdIteration);
+			}
+
 			case RenderPassMainStage::BloomUpsampleFirstIteration:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration);
@@ -115,6 +120,11 @@ public:
 			case RenderPassMainStage::BloomUpsampleSecondIteration:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleSecondIteration);
+			}
+
+			case RenderPassMainStage::BloomUpsampleThirdIteration:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration);
 			}
 
 			case RenderPassMainStage::DepthOfFieldHorizontal:

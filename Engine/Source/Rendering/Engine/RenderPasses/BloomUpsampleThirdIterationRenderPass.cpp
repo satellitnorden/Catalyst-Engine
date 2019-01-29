@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/BloomDownsampleSecondIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomUpsampleThirdIterationRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -11,7 +11,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomDownsampleSecondIterationRenderPass);
+DEFINE_SINGLETON(BloomUpsampleThirdIterationRenderPass);
 
 /*
 *	Push constant data.
@@ -22,26 +22,25 @@ class PushConstantData final
 public:
 
 	Vector2<float> _TexelSize;
-	float _Threshold;
 
 };
 
 /*
 *	Default constructor.
 */
-BloomDownsampleSecondIterationRenderPass::BloomDownsampleSecondIterationRenderPass() NOEXCEPT
+BloomUpsampleThirdIterationRenderPass::BloomUpsampleThirdIterationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomDownsampleSecondIterationRenderPass::Instance->InitializeInternal();
+		BloomUpsampleThirdIterationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom downsample second iteration render pass.
+*	Initializes the bloom upsample third iteration render pass.
 */
-void BloomDownsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
+void BloomUpsampleThirdIterationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -50,24 +49,24 @@ void BloomDownsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::BloomDownsampleSecondIteration);
+	SetMainStage(RenderPassMainStage::BloomUpsampleThirdIteration);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::BloomDownsampleSecondIteration);
+	SetSubStage(RenderPassSubStage::BloomUpsampleThirdIteration);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomDownsampleFragment);
+	SetFragmentShader(Shader::BloomUpsampleFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::IntermediateQuarter);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -79,12 +78,12 @@ void BloomDownsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetBlendEnabled(false);
+	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
-	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
+	SetBlendFactorDestinationColor(BlendFactor::One);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
@@ -104,7 +103,7 @@ void BloomDownsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomDownsampleSecondIterationRenderPass::Instance->RenderInternal();
+		BloomUpsampleThirdIterationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -114,7 +113,7 @@ void BloomDownsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void BloomDownsampleSecondIterationRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void BloomUpsampleThirdIterationRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -127,7 +126,7 @@ void BloomDownsampleSecondIterationRenderPass::CreateRenderDataTableLayout() NOE
 /*
 *	Creates the render data table.
 */
-void BloomDownsampleSecondIterationRenderPass::CreateRenderDataTable() NOEXCEPT
+void BloomUpsampleThirdIterationRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -135,9 +134,9 @@ void BloomDownsampleSecondIterationRenderPass::CreateRenderDataTable() NOEXCEPT
 }
 
 /*
-*	Renders the bloom downsample second iteration.
+*	Renders the bloom upsample third iteration.
 */
-void BloomDownsampleSecondIterationRenderPass::RenderInternal() NOEXCEPT
+void BloomUpsampleThirdIterationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -154,7 +153,6 @@ void BloomDownsampleSecondIterationRenderPass::RenderInternal() NOEXCEPT
 
 	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2);
 	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2);
-	data._Threshold = 1.0f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
