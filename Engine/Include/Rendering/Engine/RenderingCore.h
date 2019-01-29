@@ -52,7 +52,9 @@ enum class RenderPassMainStage : uint8
 	Debug,
 #endif
 	BloomDownsampleFirstIteration,
+	BloomDownsampleSecondIteration,
 	BloomUpsampleFirstIteration,
+	BloomUpsampleSecondIteration,
 	ToneMapping,
 	AntiAliasing,
 
@@ -149,8 +151,14 @@ enum class RenderPassSubStage : uint8
 	//Bloom downsample first iteration main stage.
 	BloomDownsampleFirstIteration,
 
+	//Bloom downsample second iteration main stage.
+	BloomDownsampleSecondIteration,
+
 	//Bloom upsample first iteration main stage.
 	BloomUpsampleFirstIteration,
+
+	//Bloom upsample second iteration main stage.
+	BloomUpsampleSecondIteration,
 
 	//Tone mapping main stage.
 	ToneMapping,
@@ -260,6 +268,7 @@ enum class RenderTarget : uint8
 	//Intermediate.
 	Intermediate,
 	IntermediateHalf,
+	IntermediateQuarter,
 
 	//Scene.
 	SceneBufferAlbedo,
