@@ -43,6 +43,11 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
+	*	Initializes the push constant data.
+	*/
+	void InitializePushConstantData() NOEXCEPT;
+
+	/*
 	*	Renders the screen space ambient occlusion.
 	*/
 	void RenderInternal() NOEXCEPT;

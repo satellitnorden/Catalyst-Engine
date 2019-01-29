@@ -13,6 +13,25 @@
 //Singleton definition.
 DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 
+namespace ScreenSpaceAmbientOcclusionRenderPassInternal
+{
+	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES{ 8 };
+
+	/*
+	*	Push constant data.
+	*/
+	class PushConstantData final
+	{
+
+	public:
+
+		StaticArray<Vector4<float>, SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES> _Offsets;
+
+	};
+
+	PushConstantData _PushConstantData;
+}
+
 /*
 *	Default constructor.
 */
@@ -35,6 +54,9 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 
 	//Create the render data table.
 	CreateRenderDataTable();
+
+	//Initialize the push constant data.
+	InitializePushConstantData();
 
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation);
@@ -60,6 +82,10 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ScreenSpaceAmbientOcclusionRenderPassInternal::PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -118,6 +144,24 @@ void ScreenSpaceAmbientOcclusionRenderPass::CreateRenderDataTable() NOEXCEPT
 }
 
 /*
+*	Initializes the push constant data.
+*/
+void ScreenSpaceAmbientOcclusionRenderPass::InitializePushConstantData() NOEXCEPT
+{
+	for (uint8 i{ 0 }; i < ScreenSpaceAmbientOcclusionRenderPassInternal::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
+	{
+		Vector3<float> normal{ CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f) * 0.2f,
+								CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f)* 0.2f,
+								CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+		normal.Normalize();
+
+		const float length{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+		ScreenSpaceAmbientOcclusionRenderPassInternal::_PushConstantData._Offsets[i] = Vector4<float>(normal, length);
+	}
+}
+
+/*
 *	Renders the screen space ambient occlusion.
 */
 void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
@@ -131,6 +175,9 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ScreenSpaceAmbientOcclusionRenderPassInternal::PushConstantData), &ScreenSpaceAmbientOcclusionRenderPassInternal::_PushConstantData);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

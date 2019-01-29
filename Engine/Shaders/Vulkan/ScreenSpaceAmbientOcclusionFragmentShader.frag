@@ -9,11 +9,17 @@
 
 //Preprocessor defines.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.000001f)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (4)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (8)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (32.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) vec4 offsets[SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES];
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -23,38 +29,6 @@ layout (set = 1, binding = 0) uniform sampler2D normalDepthTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-
-/*
-*	Rotates a vector.
-*/
-vec3 RotateVector(vec3 original, vec3 rotationVector)
-{
-	float xCosine = cos(rotationVector.x);
-	float xSine = sin(rotationVector.x);
-
-	float yCosine = cos(rotationVector.y);
-	float ySine = sin(rotationVector.y);
-
-	float zCosine = cos(rotationVector.z);
-	float zSine = sin(rotationVector.z);
-
-	//Rotate the roll.
-	float tempY = original.y * xCosine - original.z * xSine;
-	original.z = original.y * xSine + original.z * xCosine;
-	original.y = tempY;
-
-	//Rotate the pitch
-	float tempX1 = original.x * yCosine + original.z * ySine;
-	original.z = -original.x * ySine + original.z * yCosine;
-	original.x = tempX1;
-
-	//Rotate the yaw.
-	float tempX2 = original.x * zCosine - original.y * zSine;
-	original.y = original.x * zSine + original.y * zCosine;
-	original.x = tempX2;
-
-	return original;
-}
 
 void main()
 {
@@ -70,15 +44,22 @@ void main()
     //Retrieve the fragment world position.
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
 
+    //Calculate the random offset vector.
+    vec3 randomOffsetVector = vec3( RandomFloat(vec3(gl_FragCoord.xy, depth * PI)) * 2.0f - 1.0f,
+                                    RandomFloat(vec3(gl_FragCoord.xy, depth * PHI)) * 2.0f - 1.0f,
+                                    0.0f);
+
+    //Calculate the tangent space matrix.
+    vec3 tangent = normalize(randomOffsetVector - normal * dot(randomOffsetVector, normal));
+    vec3 bitangent = cross(normal, tangent);
+    mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
+
     //Calculate the occlusion.
     float occlusion = 0.0f;
 
-    for (int i = 1; i <= SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
+    for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
     {
-    	vec3 randomRotation = vec3(	(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f),
-    								(RandomFloat(vec3(gl_FragCoord + i * DOUBLE_PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f),
-    								(RandomFloat(vec3(gl_FragCoord + i * PI + depth)) * 2.0f - 1.0f) * (HALF_PI * 0.5f));
-        vec3 currentSamplePosition = fragmentWorldPosition + RotateVector(normal, randomRotation) * RandomFloat(vec3(gl_FragCoord + i * INVERSE_PI + depth));
+        vec3 currentSamplePosition = fragmentWorldPosition + (tangentSpaceMatrix * offsets[i].xyz) * offsets[i].w;
 
         vec4 offset = vec4(currentSamplePosition, 1.0f);
         offset = viewMatrix * offset;
