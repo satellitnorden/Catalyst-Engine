@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class BloomVerticalRenderPass final : public RenderPass
+class BloomDownsampleFirstIterationRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(BloomVerticalRenderPass);
+	DECLARE_SINGLETON(BloomDownsampleFirstIterationRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	BloomVerticalRenderPass() NOEXCEPT;
+	BloomDownsampleFirstIterationRenderPass() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the bloom vertical render pass.
+	*	Initializes the bloom downsample first iteration render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,7 +43,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the vertical bloom.
+	*	Renders the bloom downsample first iteration.
 	*/
 	void RenderInternal() NOEXCEPT;
 

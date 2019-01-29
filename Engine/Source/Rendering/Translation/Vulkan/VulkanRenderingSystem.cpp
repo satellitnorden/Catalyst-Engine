@@ -2744,7 +2744,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::VolumetricFog)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom horizontal render pass.
+	//Initialize the bloom downsample first iteration render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -2791,12 +2791,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -2807,13 +2807,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 2, RenderingSystem::Instance->GetScaledResolution()._Height / 2 };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomHorizontal)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFirstIteration)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom vertical render pass.
+	//Initialize the bloom upsample first iteration render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -2860,12 +2860,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -2876,10 +2876,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomVertical)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._ShouldClear = false;
 	}
 
 	//Initialize the depth of field horizontal render pass.

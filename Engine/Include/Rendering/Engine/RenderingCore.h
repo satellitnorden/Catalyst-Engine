@@ -51,8 +51,8 @@ enum class RenderPassMainStage : uint8
 #if !defined(CATALYST_FINAL)
 	Debug,
 #endif
-	BloomHorizontal,
-	BloomVertical,
+	BloomDownsampleFirstIteration,
+	BloomUpsampleFirstIteration,
 	ToneMapping,
 	AntiAliasing,
 
@@ -146,11 +146,11 @@ enum class RenderPassSubStage : uint8
 	DebugScreenBox,
 #endif
 
-	//Bloom horizontal main stage.
-	BloomHorizontal,
+	//Bloom downsample first iteration main stage.
+	BloomDownsampleFirstIteration,
 
-	//Bloom vertical main stage.
-	BloomVertical,
+	//Bloom upsample first iteration main stage.
+	BloomUpsampleFirstIteration,
 
 	//Tone mapping main stage.
 	ToneMapping,

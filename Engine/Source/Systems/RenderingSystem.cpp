@@ -959,8 +959,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomHorizontal)] = BloomHorizontalRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomVertical)] = BloomVerticalRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleFirstIteration)] = BloomDownsampleFirstIterationRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration)] = BloomUpsampleFirstIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 }

@@ -97,14 +97,14 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
 
-			case RenderPassMainStage::BloomHorizontal:
+			case RenderPassMainStage::BloomDownsampleFirstIteration:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomHorizontal);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleFirstIteration);
 			}
 
-			case RenderPassMainStage::BloomVertical:
+			case RenderPassMainStage::BloomUpsampleFirstIteration:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomVertical);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration);
 			}
 
 			case RenderPassMainStage::DepthOfFieldHorizontal:
