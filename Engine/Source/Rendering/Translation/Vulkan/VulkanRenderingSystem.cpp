@@ -2963,7 +2963,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		{
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateQuarter))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -3032,7 +3032,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		{
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -3101,7 +3101,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		{
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
