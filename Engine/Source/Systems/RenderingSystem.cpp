@@ -885,6 +885,7 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution() / 4, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::IntermediateQuarter)]);
 	CreateRenderTarget(GetScaledResolution() / 8, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::IntermediateEighth)]);
 	CreateRenderTarget(GetScaledResolution() / 16, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::IntermediateSixteenth)]);
+	CreateRenderTarget(GetScaledResolution() / 32, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::IntermediateThirtySecond)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferAlbedo)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferMaterialProperties)]);
@@ -966,10 +967,12 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleSecondIteration)] = BloomDownsampleSecondIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleThirdIteration)] = BloomDownsampleThirdIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleFourthIteration)] = BloomDownsampleFourthIterationRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleFifthIteration)] = BloomDownsampleFifthIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration)] = BloomUpsampleFirstIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleSecondIteration)] = BloomUpsampleSecondIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration)] = BloomUpsampleThirdIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleFourthIteration)] = BloomUpsampleFourthIterationRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleFifthIteration)] = BloomUpsampleFifthIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 }

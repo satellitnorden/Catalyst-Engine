@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/BloomUpsampleFourthIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomDownsampleFifthIterationRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -11,7 +11,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomUpsampleFourthIterationRenderPass);
+DEFINE_SINGLETON(BloomDownsampleFifthIterationRenderPass);
 
 /*
 *	Push constant data.
@@ -22,25 +22,26 @@ class PushConstantData final
 public:
 
 	Vector2<float> _TexelSize;
+	float _Threshold;
 
 };
 
 /*
 *	Default constructor.
 */
-BloomUpsampleFourthIterationRenderPass::BloomUpsampleFourthIterationRenderPass() NOEXCEPT
+BloomDownsampleFifthIterationRenderPass::BloomDownsampleFifthIterationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomUpsampleFourthIterationRenderPass::Instance->InitializeInternal();
+		BloomDownsampleFifthIterationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom upsample fourth iteration render pass.
+*	Initializes the bloom downsample fifth iteration render pass.
 */
-void BloomUpsampleFourthIterationRenderPass::InitializeInternal() NOEXCEPT
+void BloomDownsampleFifthIterationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -49,24 +50,24 @@ void BloomUpsampleFourthIterationRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::BloomUpsampleFourthIteration);
+	SetMainStage(RenderPassMainStage::BloomDownsampleFifthIteration);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::BloomUpsampleFourthIteration);
+	SetSubStage(RenderPassSubStage::BloomDownsampleFifthIteration);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomUpsampleFragment);
+	SetFragmentShader(Shader::BloomDownsampleFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::IntermediateHalf);
+	AddRenderTarget(RenderTarget::IntermediateThirtySecond);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -78,12 +79,12 @@ void BloomUpsampleFourthIterationRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 32);
 
 	//Set the properties of the render pass.
-	SetBlendEnabled(true);
+	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
-	SetBlendFactorDestinationColor(BlendFactor::One);
+	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
@@ -103,7 +104,7 @@ void BloomUpsampleFourthIterationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomUpsampleFourthIterationRenderPass::Instance->RenderInternal();
+		BloomDownsampleFifthIterationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -113,7 +114,7 @@ void BloomUpsampleFourthIterationRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void BloomUpsampleFourthIterationRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void BloomDownsampleFifthIterationRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -126,17 +127,17 @@ void BloomUpsampleFourthIterationRenderPass::CreateRenderDataTableLayout() NOEXC
 /*
 *	Creates the render data table.
 */
-void BloomUpsampleFourthIterationRenderPass::CreateRenderDataTable() NOEXCEPT
+void BloomDownsampleFifthIterationRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateQuarter), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateSixteenth), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the bloom upsample fourth iteration.
+*	Renders the bloom downsample fourth iteration.
 */
-void BloomUpsampleFourthIterationRenderPass::RenderInternal() NOEXCEPT
+void BloomDownsampleFifthIterationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -151,8 +152,9 @@ void BloomUpsampleFourthIterationRenderPass::RenderInternal() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4);
-	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4);
+	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 16);
+	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 16);
+	data._Threshold = 1.0f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

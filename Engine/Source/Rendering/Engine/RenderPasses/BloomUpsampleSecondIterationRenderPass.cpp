@@ -66,7 +66,7 @@ void BloomUpsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::IntermediateQuarter);
+	AddRenderTarget(RenderTarget::IntermediateEighth);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -78,7 +78,7 @@ void BloomUpsampleSecondIterationRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 8);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(true);
@@ -130,7 +130,7 @@ void BloomUpsampleSecondIterationRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateEighth), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateSixteenth), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
@@ -151,8 +151,8 @@ void BloomUpsampleSecondIterationRenderPass::RenderInternal() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 8);
-	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 8);
+	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 16);
+	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 16);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

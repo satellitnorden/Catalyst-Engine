@@ -7,10 +7,12 @@
 #include <Rendering/Engine/RenderPasses/AntiAliasingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomDownsampleFifthIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleFirstIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleFourthIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleSecondIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomDownsampleThirdIterationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomUpsampleFifthIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleFirstIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleFourthIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleSecondIterationRenderPass.h>
