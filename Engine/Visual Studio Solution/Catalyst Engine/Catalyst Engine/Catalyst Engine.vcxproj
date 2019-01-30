@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
