@@ -59,7 +59,7 @@ VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const NOEXCEPT
 		}
 	}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	//If a desirable format could not be retrieved, panic!
 	BREAKPOINT();
 #endif

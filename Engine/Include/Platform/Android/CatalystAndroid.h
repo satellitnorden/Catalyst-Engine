@@ -82,7 +82,7 @@ public:
 	*/
 	static void GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT;
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*
 	*	Prints a string to output.
 	*/

@@ -593,7 +593,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[UNDERLYING(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	{
 		//Initialize the debug axis-aligned bounding box fragment shader module.
 		DynamicArray<byte> data;
@@ -2479,7 +2479,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._ShouldClear = false;
 	}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Initialize the debug render pass.
 	{
 		constexpr uint64 NUMBER_OF_DEBUG_SUBPASSES{ 2 };
@@ -3752,7 +3752,7 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 
 					break;
 				}
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				default:
 				{
 					ASSERT(false, "Unhandled case!");

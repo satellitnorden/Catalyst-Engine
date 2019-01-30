@@ -48,7 +48,7 @@ enum class RenderPassMainStage : uint8
 	DepthOfFieldVertical,
 	ParticleSystem,
 	VolumetricFog,
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	Debug,
 #endif
 	BloomDownsampleFirstIteration,
@@ -148,7 +148,7 @@ enum class RenderPassSubStage : uint8
 	//Volumetric fog main stage.
 	VolumetricFog,
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Debug.
 	DebugAxisAlignedBoundingBox,
 	DebugScreenBox,
@@ -333,7 +333,7 @@ enum class Shader : uint8
 	BloomDownsampleFragment,
 	BloomUpsampleFragment,
 	BoxBlurFragment,
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,

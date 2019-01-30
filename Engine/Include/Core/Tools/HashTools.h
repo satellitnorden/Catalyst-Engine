@@ -1,4 +1,4 @@
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 
 #pragma once
 

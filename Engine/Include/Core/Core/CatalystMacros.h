@@ -6,7 +6,7 @@
 /*
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	#define ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
 #else
 	#define ASSERT(condition, message) 
@@ -20,7 +20,7 @@
 /*
 *	Sets a breakpoint in the code in non-final builds.
 */
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	#if defined(CATALYST_MSVC)
 		#define BREAKPOINT() { __debugbreak(); }
 	#elif defined(CATALYST_CLANG)
@@ -35,7 +35,7 @@
 *	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
 *	Allows for a personalized message.
 */
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function)																							\
 	{																																							\
 		static uint64 iterations{ 0 };																															\
@@ -110,7 +110,7 @@ return static_cast<ENUMERATION>(~UNDERLYING(first));												\
 /*
 *	Prints a message to the output in non-final builds.
 */
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
 #endif
 

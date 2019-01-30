@@ -241,7 +241,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 			break;
 		}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 		default:
 		{
 			ASSERT(false, "Unhandled case. ):");

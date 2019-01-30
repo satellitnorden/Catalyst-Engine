@@ -1,7 +1,7 @@
 #pragma once
 
 //Preprocessor defines.
-#if defined(CATALYST_FINAL)
+#if !defined(CATALYST_CONFIGURATION_DEBUG)
 	#define NDEBUG
 #endif
 

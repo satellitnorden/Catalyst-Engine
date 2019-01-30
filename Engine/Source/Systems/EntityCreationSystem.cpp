@@ -88,7 +88,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 			break;
 		}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 		default:
 		{
 			ASSERT(false, "Invalid entity type!");
@@ -128,7 +128,7 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 			break;
 		}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 		default:
 		{
 			ASSERT(false, "Invalid entity type!");

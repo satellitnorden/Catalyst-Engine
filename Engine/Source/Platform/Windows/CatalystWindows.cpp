@@ -158,7 +158,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	windowInfo.lpszClassName = _T("Catalyst Engine");
 	windowInfo.hIconSm = LoadIcon(windowInfo.hInstance, IDI_APPLICATION);
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	if (!RegisterClassEx(&windowInfo))
 	{
 		BREAKPOINT();
@@ -180,7 +180,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 							_Instance,
 							nullptr);
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	if (!_Window)
 	{
 		const DWORD result{ GetLastError() };
@@ -503,7 +503,7 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
 	//Not implemented on Windows.
 }
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 /*
 *	Prints a string to output.
 */

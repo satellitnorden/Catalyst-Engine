@@ -17,7 +17,7 @@
 #include <Rendering/Engine/RenderPasses/BloomUpsampleFourthIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleSecondIterationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomUpsampleThirdIterationRenderPass.h>
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
 #endif

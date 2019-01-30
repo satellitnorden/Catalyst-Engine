@@ -62,7 +62,7 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 
 		switch (resourceType)
 		{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 			default:
 			{
 				ASSERT(false, "Undefined resource type.");

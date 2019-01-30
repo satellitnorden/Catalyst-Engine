@@ -207,7 +207,7 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
 	state->_DeltaY = state->_CurrentY - state->_PreviousY;
 }
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 /*
 *	Prints a string to output.
 */

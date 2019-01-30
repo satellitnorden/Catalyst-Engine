@@ -6,7 +6,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 #include <Systems/DebugRenderingSystem.h>
 #endif
 #include <Systems/EntityCreationSystem.h>
@@ -84,7 +84,7 @@ void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
 #endif
 	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
@@ -92,7 +92,7 @@ void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	/*
 	*	Post-update phase.
 	*/
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 #endif
 	EntityCreationSystem::Instance->PostUpdateSystemSynchronous(&context);

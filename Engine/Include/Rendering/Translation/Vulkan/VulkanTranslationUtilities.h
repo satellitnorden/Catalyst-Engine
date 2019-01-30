@@ -22,7 +22,7 @@ public:
 	{
 		switch (main)
 		{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 			case RenderPassMainStage::None:
 			{
 				ASSERT(false, "None main stage, how could this be?");
@@ -80,7 +80,7 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
 			}
 
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 			case RenderPassMainStage::Debug:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox);
@@ -169,7 +169,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unhandled case.");
 #endif
 				return 0;
@@ -192,7 +192,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown address mode.");
 #endif
 				return VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -220,9 +220,9 @@ public:
 
 			default:
 			{
-	#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown blend factor.");
-	#endif
+#endif
 				return VK_BLEND_FACTOR_ZERO;
 			}
 		}
@@ -276,7 +276,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown texture format.");
 #endif
 				return VK_DESCRIPTOR_TYPE_SAMPLER;
@@ -306,7 +306,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown texture format.");
 #endif
 				return VK_FORMAT_R8G8B8A8_UNORM;
@@ -342,7 +342,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown mipmap mode.");
 #endif
 				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
@@ -431,7 +431,7 @@ public:
 
 			default:
 			{
-#if !defined(CATALYST_FINAL)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown texture filter.");
 #endif
 				return VK_FILTER_NEAREST;
