@@ -3676,6 +3676,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			currentStage = renderPass->GetMainStage();
 
+			vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
+
 			//Specialization - Copy scene to scene intermediate for the ocean render pass.
 			if (currentStage == RenderPassMainStage::Ocean)
 			{
