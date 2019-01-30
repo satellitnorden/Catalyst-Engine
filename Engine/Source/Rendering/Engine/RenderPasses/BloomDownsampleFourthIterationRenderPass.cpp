@@ -154,7 +154,7 @@ void BloomDownsampleFourthIterationRenderPass::RenderInternal() NOEXCEPT
 
 	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 8);
 	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 8);
-	data._Threshold = 1.0f;
+	data._Threshold = 0.0f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
