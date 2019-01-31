@@ -139,6 +139,13 @@ void BloomDownsampleFifthIterationRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void BloomDownsampleFifthIterationRenderPass::RenderInternal() NOEXCEPT
 {
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
