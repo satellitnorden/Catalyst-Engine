@@ -146,9 +146,33 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 */
 void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT
 {
+	static VkPhysicalDeviceDescriptorIndexingFeaturesEXT extension;
+
+	extension.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+	extension.pNext = nullptr;
+	extension.shaderInputAttachmentArrayDynamicIndexing = VK_FALSE;
+	extension.shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE;
+	extension.shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE;
+	extension.shaderUniformBufferArrayNonUniformIndexing = VK_FALSE;
+	extension.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+	extension.shaderStorageBufferArrayNonUniformIndexing = VK_FALSE;
+	extension.shaderStorageImageArrayNonUniformIndexing = VK_FALSE;
+	extension.shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE;
+	extension.shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE;
+	extension.shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE;
+	extension.descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingSampledImageUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingStorageImageUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE;
+	extension.descriptorBindingPartiallyBound = VK_FALSE;
+	extension.descriptorBindingVariableDescriptorCount = VK_FALSE;
+	extension.runtimeDescriptorArray = VK_FALSE;
+
 	//Define the required extensions.
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.pNext = nullptr;
+	deviceCreateInfo.pNext = &extension;
 	deviceCreateInfo.flags = 0;
 	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(deviceQueueCreateInfos.Size());
 	deviceCreateInfo.pQueueCreateInfos = deviceQueueCreateInfos.Data();
