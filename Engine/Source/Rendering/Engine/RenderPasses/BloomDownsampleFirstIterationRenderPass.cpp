@@ -22,7 +22,6 @@ class PushConstantData final
 public:
 
 	Vector2<float> _TexelSize;
-	float _Threshold;
 
 };
 
@@ -154,7 +153,6 @@ void BloomDownsampleFirstIterationRenderPass::RenderInternal() NOEXCEPT
 
 	data._TexelSize._X = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width);
 	data._TexelSize._Y = 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height);
-	data._Threshold = 0.0f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

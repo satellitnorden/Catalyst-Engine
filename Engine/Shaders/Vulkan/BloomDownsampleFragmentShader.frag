@@ -14,7 +14,6 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec2 texelSize;
-    layout (offset = 8) float threshold;
 };
 
 //In parameters.
@@ -34,7 +33,7 @@ vec4 Sample(vec2 coordinate)
     vec4 bloom = texture(sourceTexture, coordinate);
     float average = CalculateAverage(bloom.rgb);
 
-    return bloom * clamp(average - threshold, 0.0f, 1.0f);
+    return bloom * min(average, 1.0f);
 }
 
 void main()
