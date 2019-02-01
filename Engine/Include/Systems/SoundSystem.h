@@ -50,8 +50,15 @@ public:
 	void GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
-	*	Plays a two dimensional sound.
+	*	Returns the playback state of a sound instance.
 	*/
-	void PlayTwoDimensionalSound(const SoundDescriptionHandle description) NOEXCEPT;
+	PlaybackState GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
+	*	Plays a two dimensional sound.
+	*	Can supply an optional handle to the sound instance to keep track of the sound properties.
+	*	If not supplied, a temporary instance will be created that will be destroyed as soon as the sound has finished playing.
+	*/
+	void PlayTwoDimensionalSound(const SoundDescriptionHandle description, SoundInstanceHandle *const RESTRICT instance) NOEXCEPT;
 
 };

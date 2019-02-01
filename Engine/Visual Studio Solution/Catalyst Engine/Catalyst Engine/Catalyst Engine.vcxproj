@@ -379,6 +379,7 @@
     <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h" />
+    <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
