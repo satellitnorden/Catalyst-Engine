@@ -9,7 +9,7 @@
 #include <Rendering/Engine/Viewer.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 

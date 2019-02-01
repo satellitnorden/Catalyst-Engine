@@ -14,7 +14,7 @@
 #include <Math/CatalystBaseMath.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 
 //Windows.
 #include <tchar.h>
@@ -37,7 +37,7 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 	{
 		case WM_DESTROY:
 		{
-			EngineSystem::Instance->Terminate();
+			CatalystEngineSystem::Instance->Terminate();
 
 			return DefWindowProc(window, message, wParam, lParam);
 		}
@@ -169,12 +169,12 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Create the window.
 	_Window = CreateWindow(	windowInfo.lpszClassName,
-							_T(EngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString()),
+							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString()),
 							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
 							CW_USEDEFAULT,
-							EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Width,
-							EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Height,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Width,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Height,
 							nullptr,
 							nullptr,
 							_Instance,

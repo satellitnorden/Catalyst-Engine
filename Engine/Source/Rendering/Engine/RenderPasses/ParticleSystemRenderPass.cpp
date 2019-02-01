@@ -11,8 +11,8 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/CullingSystem.h>
-#include <Systems/EngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -144,7 +144,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 		particleSystemData._WorldPosition = component->_WorldPosition;
 		particleSystemData._ParticleSystemRandomSeed = component->_ParticleSystemRandomSeed;
-		particleSystemData._ParticleSystemTotalTime = EngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
+		particleSystemData._ParticleSystemTotalTime = CatalystEngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(ParticleSystemData), &particleSystemData);
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);

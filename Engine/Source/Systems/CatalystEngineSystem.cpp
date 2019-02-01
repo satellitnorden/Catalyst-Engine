@@ -1,5 +1,5 @@
 //Header file.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 
 //Core.
 #include <Core/General/UpdateContext.h>
@@ -21,12 +21,12 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(EngineSystem);
+DEFINE_SINGLETON(CatalystEngineSystem);
 
 /*
-*	Initializes the engine system.
+*	Initializes the Catalyst engine system.
 */
-void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
+void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
 	//Set the project configuration.
 	_ProjectConfiguration = initialProjectConfiguration;
@@ -55,9 +55,9 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 }
 
 /*
-*	Updates the engine system synchronously.
+*	Updates the Catalyst engine system.
 */
-void EngineSystem::UpdateSystemSynchronous() NOEXCEPT
+void CatalystEngineSystem::Update() NOEXCEPT
 {
 	//Update the delta time.
 	_DeltaTime = _DeltaTimer.Update();
@@ -109,9 +109,9 @@ void EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 }
 
 /*
-*	Releases the engine system.
+*	Releases the Catalyst engine system.
 */
-void EngineSystem::ReleaseSystem() NOEXCEPT
+void CatalystEngineSystem::Terminate() NOEXCEPT
 {
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
@@ -130,7 +130,7 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Executes the sequential update.
 */
-void EngineSystem::ExecuteSequentialUpdate() NOEXCEPT
+void CatalystEngineSystem::ExecuteSequentialUpdate() NOEXCEPT
 {
 	//Update the current sequential update.
 	_CurrentSequentialUpdate =	static_cast<SequentialUpdate>(UNDERLYING(_CurrentSequentialUpdate) + 1) < SequentialUpdate::NumberOfSequentialUpdates

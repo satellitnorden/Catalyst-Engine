@@ -4,9 +4,6 @@
 //Multithreading.
 #include <Multithreading/Task.h>
 
-//Systems.
-#include <Systems/EngineSystem.h>
-
 //Singleton definition.
 DEFINE_SINGLETON(TaskSystem);
 

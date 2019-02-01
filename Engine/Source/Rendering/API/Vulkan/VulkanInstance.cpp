@@ -6,7 +6,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
@@ -55,7 +55,7 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 {
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	applicationInfo.pNext = nullptr;
-	applicationInfo.pApplicationName = EngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString();
+	applicationInfo.pApplicationName = CatalystEngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "Catalyst Engine";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);

@@ -24,7 +24,7 @@
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -1284,7 +1284,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
+		framebufferParameters._Extent = { CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadowMapping)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadowMapping)]._FrameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));

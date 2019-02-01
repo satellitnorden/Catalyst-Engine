@@ -40,7 +40,7 @@
 #include <Resources/TreeVegetationModelData.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -754,7 +754,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
 	renderComponent._WorldPosition = data->_Position;
 	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
+	renderComponent._ParticleSystemStartingTime = CatalystEngineSystem::Instance->GetTotalTime();
 }
 
 /*
@@ -1242,8 +1242,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 
 	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 
-	data._DeltaTime = EngineSystem::Instance->GetDeltaTime();
-	data._TotalGameTime = EngineSystem::Instance->GetTotalTime();
+	data._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
+	data._TotalGameTime = CatalystEngineSystem::Instance->GetTotalTime();
 
 	uint64 counter = 0;
 

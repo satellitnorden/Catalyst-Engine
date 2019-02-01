@@ -6,36 +6,36 @@
 #include <Core/General/DeltaTimer.h>
 #include <Core/Pointers/UniquePointer.h>
 
-class EngineSystem final
+class CatalystEngineSystem final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(EngineSystem);
+	DECLARE_SINGLETON(CatalystEngineSystem);
 
 	/*
 	*	Default constructor.
 	*/
-	EngineSystem() NOEXCEPT
+	CatalystEngineSystem() NOEXCEPT
 	{
 	
 	}
 
 	/*
-	*	Initializes the engine system.
+	*	Initializes the Catalyst engine system.
 	*/
-	void InitializeSystem(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT;
+	void Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT;
 
 	/*
-	*	Updates the engine system synchronously.
+	*	Updates the Catalyst engine system.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void Update() NOEXCEPT;
 
 	/*
-	*	Releases the engine system.
+	*	Terminates the Catalystengine system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns the project configuration.
@@ -70,19 +70,19 @@ public:
 	}
 
 	/*
-	*	Terminates the game.
+	*	Returns whether or not the game should terminate.
 	*/
-	void Terminate() NOEXCEPT
+	bool GetShouldTerminate() const NOEXCEPT
 	{
-		_ShouldTerminate = true;
+		return _ShouldTerminate;
 	}
 
 	/*
-	*	Returns whether or not the game should terminate.
+	*	Sets whether or not the game should terminate.
 	*/
-	bool ShouldTerminate() const NOEXCEPT
+	void SetShouldTerminate(const bool shouldTerminate) NOEXCEPT
 	{
-		return _ShouldTerminate;
+		_ShouldTerminate = shouldTerminate;
 	}
 
 private:

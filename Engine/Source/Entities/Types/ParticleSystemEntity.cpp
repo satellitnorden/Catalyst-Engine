@@ -5,7 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Systems.
-#include <Systems/EngineSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -34,7 +34,7 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 	else
 	{
 		const float startingTime{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._ParticleSystemStartingTime };
-		const float totalTime{ EngineSystem::Instance->GetTotalTime() };
+		const float totalTime{ CatalystEngineSystem::Instance->GetTotalTime() };
 		const float elapsedTime{ totalTime - startingTime };
 
 		return elapsedTime >= properties._Lifetime - properties._SpawnFrequency + properties._Lifetime;

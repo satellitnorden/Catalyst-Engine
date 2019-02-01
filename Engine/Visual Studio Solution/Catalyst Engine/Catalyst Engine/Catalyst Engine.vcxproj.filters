@@ -387,9 +387,6 @@
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\EngineSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1419,6 +1416,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleFifthIterationRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1437,9 +1437,6 @@
       <Filter>Resources\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\EngineSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp">
@@ -2077,6 +2074,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleFifthIterationRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
