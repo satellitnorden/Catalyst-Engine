@@ -40,6 +40,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	PhysicsSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
+	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->InitializeSystem();
 	TerrainSystem::Instance->InitializeSystem(_ProjectConfiguration._TerrainConfiguration);
 	VegetationSystem::Instance->InitializeSystem();
@@ -91,6 +92,7 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
 #endif
 	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
+	SoundSystem::Instance->Update(&context);
 
 	/*
 	*	Post update phase.
@@ -116,6 +118,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
 
+	//Terminate the game system.
+	_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
+
 	//Release the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->ReleaseSystem();
 
@@ -125,6 +130,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Release all systems.
 	PhysicsSystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
+	SoundSystem::Instance->Terminate();
 }
 
 /*

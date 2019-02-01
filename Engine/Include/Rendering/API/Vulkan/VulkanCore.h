@@ -132,7 +132,7 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 #endif
 
 /*
-*	Checks the result of a Vulkan function call and takes appropriate measures if it is not VK_SUCCESS in final.
+*	Checks the result of a Vulkan function call and takes appropriate measures if it fails.
 */
 #if VULKAN_DEBUGGING
 	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(#function, result); }

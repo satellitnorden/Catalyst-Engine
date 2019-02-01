@@ -268,6 +268,27 @@
     <Filter Include="Physics\Source\Abstraction\Catalyst">
       <UniqueIdentifier>{8b3d4183-0f9d-47a4-bcef-425a9ff3f0d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound\Source">
+      <UniqueIdentifier>{a04f12c5-50e3-4721-806d-ba8d17d1de65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Include\Native">
+      <UniqueIdentifier>{eb95d34b-7731-468e-a36f-8a182ffae620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Include\Abstraction">
+      <UniqueIdentifier>{a41bafc3-011d-44f6-b278-e1a7c8841b79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Source\Native">
+      <UniqueIdentifier>{cf3dc045-77f4-42f6-bfb9-8ce609d59b14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Source\Abstraction">
+      <UniqueIdentifier>{dc805d49-7877-462e-9ebc-7412d8fbfd5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Source\Abstraction\FMOD">
+      <UniqueIdentifier>{4b74896c-b0eb-4c2a-acf9-ac8155d13947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Include\Abstraction\FMOD">
+      <UniqueIdentifier>{5f4eea93-b7b5-45cd-9a03-6240a84ed543}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -380,9 +401,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h">
       <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\SoundCore.h">
-      <Filter>Sound\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
       <Filter>Systems\Include</Filter>
@@ -1413,6 +1431,12 @@
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h">
+      <Filter>Sound\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h">
+      <Filter>Sound\Include\Abstraction\FMOD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2065,6 +2089,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp">
+      <Filter>Sound\Source\Abstraction\FMOD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

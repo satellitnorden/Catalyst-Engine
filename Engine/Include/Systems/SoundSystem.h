@@ -5,11 +5,8 @@
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Math.
-#include <Math/Vector3.h>
-
 //Sound.
-#include <Sound/SoundCore.h>
+#include <Sound/Native/SoundCore.h>
 
 class SoundSystem final
 {
@@ -23,5 +20,20 @@ public:
 	*	Default constructor.
 	*/
 	SoundSystem() NOEXCEPT { }
+
+	/*
+	*	Initializes the sound system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the sound system.
+	*/
+	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Terminates the sound system.
+	*/
+	void Terminate() NOEXCEPT;
 
 };

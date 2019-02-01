@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -378,7 +378,8 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h" />
-    <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
+    <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
@@ -632,6 +633,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp" />
