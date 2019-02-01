@@ -29,17 +29,10 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 
 	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
 	{
-		_TaskExecutorThreads.EmplaceFast(std::move(std::thread([](AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> *const RESTRICT queue)
+		_TaskExecutorThreads.EmplaceFast(std::move(std::thread([](void *const RESTRICT)
 		{
-			while (TaskSystem::Instance->ExecuteTasks())
-			{
-				//Try to pop a task from the task queue, and execute it if it succeeds.
-				if (Task *const RESTRICT *const RESTRICT newTask{ queue->Pop() })
-				{
-					(*newTask)->Execute();
-				}
-			}
-		}, &_TaskQueue)));
+			TaskSystem::Instance->ExecuteTasks();
+		}, nullptr)));
 	}
 }
 
@@ -63,9 +56,31 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 */
 void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
+	ASSERT(_TasksInQueue < MAXIMUM_NUMBER_OF_TASKS, "Pushing too many tasks to the task queue, increase maximum number of tasks!");
+
 	//Reset the semaphore.
 	newTask->_Semaphore.Reset();
 
 	//Put the task into the task queue.
 	_TaskQueue.Push(newTask);
+
+	//Update the number of tasks in the queue.
+	++_TasksInQueue;
+}
+
+/*
+*	Executes tasks.
+*/
+void TaskSystem::ExecuteTasks() NOEXCEPT
+{
+	while (_ExecuteTasks)
+	{
+		//Try to pop a task from the task queue, and execute it if it succeeds.
+		if (Task *const RESTRICT *const RESTRICT newTask{ _TaskQueue.Pop() })
+		{
+			(*newTask)->Execute();
+
+			--_TasksInQueue;
+		}
+	}
 }

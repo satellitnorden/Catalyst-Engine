@@ -35,11 +35,6 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns whether or not tasks should be executed.
-	*/
-	bool ExecuteTasks() const NOEXCEPT { return _ExecuteTasks; }
-
-	/*
 	*	Executes a task.
 	*/
 	void ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT;
@@ -60,5 +55,13 @@ private:
 
 	//Container for all atomic queues in which to put tasks in.
 	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> _TaskQueue;
+
+	//Denotes how many tasks are currently queued.
+	std::atomic<uint64> _TasksInQueue{ 0 };
+
+	/*
+	*	Executes tasks.
+	*/
+	void ExecuteTasks() NOEXCEPT;
 
 };
