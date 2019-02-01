@@ -54,13 +54,43 @@ void SoundSystem::Terminate() NOEXCEPT
 /*
 *	Creates a sound bank.
 */
-void SoundSystem::CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT soundBank) NOEXCEPT
+void SoundSystem::CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Load the bank.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->loadBankMemory(	reinterpret_cast<const char *const RESTRICT>(data._Data.Data()),
 																	static_cast<int32>(data._Data.Size()),
 																	FMOD_STUDIO_LOAD_MEMORY_MODE::FMOD_STUDIO_LOAD_MEMORY,
 																	FMOD_STUDIO_LOAD_BANK_NORMAL,
-																	reinterpret_cast<FMOD::Studio::Bank **const RESTRICT>(soundBank)));
+																	reinterpret_cast<FMOD::Studio::Bank **const RESTRICT>(handle)));
+}
+
+/*
+*	Given an ID, returns the sound description.
+*/
+void SoundSystem::GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Parse the FMOD GUID.
+	FMOD_GUID guid;
+	FMOD_ERROR_CHECK(FMOD::Studio::parseID(ID, &guid));
+
+	//Get the event.
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->getEventByID(	&guid,
+																	reinterpret_cast<FMOD::Studio::EventDescription **const RESTRICT>(handle)));
+}
+
+/*
+*	Plays a two dimensional sound.
+*/
+void SoundSystem::PlayTwoDimensionalSound(const SoundDescriptionHandle description) NOEXCEPT
+{
+	//Create the event instance.
+	FMOD::Studio::EventInstance *RESTRICT instance;
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventDescription *const RESTRICT>(description)->createInstance(&instance));
+
+	//Start playing the instance.
+	FMOD_ERROR_CHECK(instance->start());
+
+	//Instantly release the instance to make sure it  is destroyed when it is stopped.
+	FMOD_ERROR_CHECK(instance->release());
 }
 #endif

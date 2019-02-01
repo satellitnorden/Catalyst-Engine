@@ -108,6 +108,11 @@ return static_cast<ENUMERATION>(~UNDERLYING(first));												\
 #endif
 
 /*
+*	Does a section of code exactly once.
+*/
+#define ONCE(code) { static bool once{ false }; if (!once) { code; once = true; } }
+
+/*
 *	Prints a message to the output in non-final builds.
 */
 #if defined(CATALYST_CONFIGURATION_DEBUG)

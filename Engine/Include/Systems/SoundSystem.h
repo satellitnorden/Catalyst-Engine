@@ -42,6 +42,16 @@ public:
 	/*
 	*	Creates a sound bank.
 	*/
-	void CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT soundBank) NOEXCEPT;
+	void CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Given an ID, returns the sound description.
+	*/
+	void GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Plays a two dimensional sound.
+	*/
+	void PlayTwoDimensionalSound(const SoundDescriptionHandle description) NOEXCEPT;
 
 };
