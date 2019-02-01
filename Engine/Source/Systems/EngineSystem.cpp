@@ -57,10 +57,10 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 /*
 *	Updates the engine system synchronously.
 */
-void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+void EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Update the delta time.
-	_DeltaTime = deltaTime;
+	_DeltaTime = _DeltaTimer.Update();
 
 	//Update the total time.
 	_TotalTime += _DeltaTime;

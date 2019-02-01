@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/General/CatalystProjectConfiguration.h>
+#include <Core/General/DeltaTimer.h>
 #include <Core/Pointers/UniquePointer.h>
 
 class EngineSystem final
@@ -29,7 +30,7 @@ public:
 	/*
 	*	Updates the engine system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+	void UpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
@@ -98,6 +99,9 @@ private:
 
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
+
+	//The delta timer.
+	DeltaTimer _DeltaTimer;
 
 	//Denotes the delta time.
 	float _DeltaTime{ 0.0f };
