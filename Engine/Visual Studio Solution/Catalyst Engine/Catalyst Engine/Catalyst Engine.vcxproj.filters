@@ -1410,12 +1410,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleFourthIterationRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomDownsampleFifthIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleFifthIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -2067,12 +2061,6 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleFourthIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomDownsampleFifthIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleFifthIterationRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
