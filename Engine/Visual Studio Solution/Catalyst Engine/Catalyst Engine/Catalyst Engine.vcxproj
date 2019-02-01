@@ -78,9 +78,7 @@
     <ClInclude Include="..\..\..\Include\Core\General\Quadruple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
-    <ClInclude Include="..\..\..\Include\Core\General\Updateable.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
-    <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
@@ -396,7 +394,6 @@
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
-    <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
@@ -652,7 +649,6 @@
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

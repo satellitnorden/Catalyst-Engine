@@ -6,7 +6,6 @@
 
 //Systems.
 #include <Systems/TaskSystem.h>
-#include <Systems/UpdateSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);

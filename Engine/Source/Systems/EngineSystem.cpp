@@ -18,7 +18,6 @@
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
-#include <Systems/UpdateSystem.h>
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
@@ -50,6 +49,9 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 
 	//Post-initialize the platform.
 	CatalystPlatform::PostInitialize();
+
+	//Initialize the game system.
+	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 }
 
 /*
@@ -72,15 +74,16 @@ void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	context._TotalTime = _TotalTime;
 
 	/*
-	*	Pre-update phase.
+	*	Pre update phase.
 	*/
+	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 	CatalystPlatform::PreUpdate(&context);
 	InputSystem::Instance->UpdateSystemSynchronous(&context);
 
 	/*
 	*	Update phase.
 	*/
-	UpdateSystem::Instance->UpdateSystemSynchronous(&context);
+	_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
 	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
@@ -90,8 +93,9 @@ void EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
 
 	/*
-	*	Post-update phase.
+	*	Post update phase.
 	*/
+	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 #endif

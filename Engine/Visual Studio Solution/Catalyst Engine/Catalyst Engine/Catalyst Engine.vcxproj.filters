@@ -675,13 +675,7 @@
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h">
-      <Filter>Core\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\Collection.h">
@@ -692,9 +686,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\General\Updateable.h">
-      <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h">
       <Filter>Components\Include</Filter>
@@ -1585,9 +1576,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp">
-      <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>

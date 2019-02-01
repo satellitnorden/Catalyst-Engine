@@ -15,20 +15,25 @@ public:
 	//The project name.
 	DynamicString _ProjectName;
 
+	//The initialization function.
+	void(*_InitializationFunction)();
+
+	//The pre update function.
+	void(*_PreUpdateFunction)(const UpdateContext *const RESTRICT);
+
+	//The update function.
+	void(*_UpdateFunction)(const UpdateContext *const RESTRICT);
+
+	//The post update function.
+	void(*_PostUpdateFunction)(const UpdateContext *const RESTRICT);
+
+	//The termination function.
+	void(*_TerminationFunction)();
+
 	/*
 	*	Default constructor.
 	*/
 	CatalystProjectGeneralConfiguration() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	CatalystProjectGeneralConfiguration(const char *const RESTRICT initialProjectName) NOEXCEPT
-		:
-		_ProjectName(initialProjectName)
 	{
 
 	}
