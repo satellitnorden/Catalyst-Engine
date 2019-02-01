@@ -5,6 +5,9 @@
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Resources.
+#include <Resources/SoundBankData.h>
+
 //Sound.
 #include <Sound/Native/SoundCore.h>
 
@@ -35,5 +38,10 @@ public:
 	*	Terminates the sound system.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Creates a sound bank.
+	*/
+	void CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT soundBank) NOEXCEPT;
 
 };

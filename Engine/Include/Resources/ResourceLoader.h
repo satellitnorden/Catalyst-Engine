@@ -16,6 +16,9 @@
 //Resources.
 #include <Resources/ResourcesCore.h>
 
+//Sound.
+#include <Sound/Native/SoundCore.h>
+
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
@@ -68,6 +71,11 @@ public:
 	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return _PhysicalModels[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding sound bank.
+	*/
+	static const SoundBankHandle& GetSoundBank(const HashString resourceID) { return _SoundBanks[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding tree vegetation material.
 	*/
 	static const TreeVegetationMaterial& GetTreeVegetationMaterial(const HashString resourceID) { return _TreeVegetationMaterials[resourceID]; }
@@ -99,6 +107,9 @@ private:
 
 	//Container for all physical models.
 	static Map<HashString, PhysicalModel> _PhysicalModels;
+
+	//Container for all sound banks.
+	static Map<HashString, SoundBankHandle> _SoundBanks;
 
 	//Container for all tree vegetation materials.
 	static Map<HashString, TreeVegetationMaterial> _TreeVegetationMaterials;
@@ -145,6 +156,11 @@ private:
 	*	Given a file, load a physical model.
 	*/
 	static void LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a sound bank.
+	*/
+	static void LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a tree vegetation material.

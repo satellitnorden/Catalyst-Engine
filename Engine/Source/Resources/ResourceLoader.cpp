@@ -14,11 +14,13 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
+#include <Resources/SoundBankData.h>
 #include <Resources/TreeVegetationMaterialData.h>
 #include <Resources/TreeVegetationModelData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Static variable definitions.
@@ -30,6 +32,7 @@ Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
 Map<HashString, TreeVegetationMaterial> ResourceLoader::_TreeVegetationMaterials;
+Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
 
 /*
@@ -114,6 +117,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
+
+				break;
+			}
+
+			case ResourceType::SoundBank:
+			{
+				LoadSoundBank(file);
 
 				break;
 			}
@@ -464,6 +474,32 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, _PhysicalModels[resourceID]);
+}
+
+/*
+*	Given a file, load a sound bank.
+*/
+void ResourceLoader::LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the sound bank data in the sound bank data structure.
+	SoundBankData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the size of the sound bank.
+	uint64 soundBankSize{ 0 };
+	file.Read(&soundBankSize, sizeof(uint64));
+
+	//Reserve the required amount of memory.
+	data._Data.UpsizeFast(soundBankSize);
+
+	//Read the sound bank memory.
+	file.Read(data._Data.Data(), soundBankSize);
+
+	//Create the sound bank via the sound system.
+	SoundSystem::Instance->CreateSoundBank(data, &_SoundBanks[resourceID]);
 }
 
 /*

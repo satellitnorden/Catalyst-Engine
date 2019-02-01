@@ -6,5 +6,6 @@
 /*
 *	Type aliases.
 */
+using SoundBankHandle = void *RESTRICT;
 using SoundDescriptionHandle = void *RESTRICT;
 using SoundInstanceHandle = void *RESTRICT;

@@ -50,4 +50,17 @@ void SoundSystem::Terminate() NOEXCEPT
 	//Release the studio system.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->release());
 }
+
+/*
+*	Creates a sound bank.
+*/
+void SoundSystem::CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT soundBank) NOEXCEPT
+{
+	//Load the bank.
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->loadBankMemory(	reinterpret_cast<const char *const RESTRICT>(data._Data.Data()),
+																	static_cast<int32>(data._Data.Size()),
+																	FMOD_STUDIO_LOAD_MEMORY_MODE::FMOD_STUDIO_LOAD_MEMORY,
+																	FMOD_STUDIO_LOAD_BANK_NORMAL,
+																	reinterpret_cast<FMOD::Studio::Bank **const RESTRICT>(soundBank)));
+}
 #endif

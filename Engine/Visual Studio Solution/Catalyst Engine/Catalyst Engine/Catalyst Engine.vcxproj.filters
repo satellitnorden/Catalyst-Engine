@@ -1437,6 +1437,9 @@
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h">
       <Filter>Sound\Include\Abstraction\FMOD</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h">
+      <Filter>Resources\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

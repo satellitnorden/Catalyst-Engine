@@ -376,6 +376,7 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
