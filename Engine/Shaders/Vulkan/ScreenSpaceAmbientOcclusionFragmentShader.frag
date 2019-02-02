@@ -54,12 +54,15 @@ void main()
     vec3 bitangent = cross(normal, tangent);
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
+    //Calculate the starting offset index.
+    int offsetIndex = int(gl_FragCoord.x * gl_FragCoord.y + depth) & (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES - 1);
+
     //Calculate the occlusion.
     float occlusion = 0.0f;
 
     for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
     {
-        vec3 currentSamplePosition = fragmentWorldPosition + (tangentSpaceMatrix * offsets[i].xyz) * offsets[i].w;
+        vec3 currentSamplePosition = fragmentWorldPosition + (tangentSpaceMatrix * offsets[offsetIndex].xyz) * offsets[offsetIndex].w;
 
         vec4 offset = vec4(currentSamplePosition, 1.0f);
         offset = viewMatrix * offset;
@@ -71,7 +74,9 @@ void main()
 
         float fade = mix(1.0f, 0.0f, SmoothStep(min(LengthSquared3(currentSamplePosition - currentSampleActualPosition), 1.0f)));
 
-        occlusion += (offset.z < currentSampleDepth - SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * fade;    
+        occlusion += (offset.z < currentSampleDepth - SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * fade;
+
+        offsetIndex = offsetIndex == (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES - 1) ? 0 : offsetIndex + 1;
     }
 
     occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);

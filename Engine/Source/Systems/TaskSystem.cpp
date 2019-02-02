@@ -58,6 +58,11 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
 	ASSERT(_TasksInQueue < MAXIMUM_NUMBER_OF_TASKS, "Pushing too many tasks to the task queue, increase maximum number of tasks!");
 
+	if (_TasksInQueue >= MAXIMUM_NUMBER_OF_TASKS)
+	{
+		CRASH();
+	}
+
 	//Reset the semaphore.
 	newTask->_Semaphore.Reset();
 

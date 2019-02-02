@@ -67,6 +67,11 @@
 #define CONCATENATE(first, second) first##second
 
 /*
+*	Intentionally crashes the game.
+*/
+#define CRASH() { int32 *const RESTRICT x{ nullptr }; *x = 42; }
+
+/*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
 #define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;

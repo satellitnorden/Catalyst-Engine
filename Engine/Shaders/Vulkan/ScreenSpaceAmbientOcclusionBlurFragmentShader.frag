@@ -50,20 +50,14 @@ float Blur()
     vec2 offset1 = vec2(1.0f) * direction * inverseResolution;
     vec2 offset2 = vec2(2.0f) * direction * inverseResolution;
     vec2 offset3 = vec2(3.0f) * direction * inverseResolution;
-    vec2 offset4 = vec2(4.0f) * direction * inverseResolution;
-    vec2 offset5 = vec2(5.0f) * direction * inverseResolution;
 
-    return  currentOcclusion * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * 0.0909090909090909f;
+    return  currentOcclusion * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * 0.1428571428571429f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * 0.1428571428571429f;
 }
 
 void main()
