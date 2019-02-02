@@ -22,7 +22,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	SoundSystem() NOEXCEPT { }
+	SoundSystem() NOEXCEPT
+	{
+	
+	}
 
 	/*
 	*	Initializes the sound system.
@@ -39,20 +42,42 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
+	//////////////////////////
+	// Soundbank interface. //
+	//////////////////////////
+
 	/*
 	*	Creates a sound bank.
 	*/
 	void CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT handle) NOEXCEPT;
+
+	//////////////////////////////////
+	// Sound description interface. //
+	//////////////////////////////////
 
 	/*
 	*	Given an ID, returns the sound description.
 	*/
 	void GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT;
 
+	///////////////////////////////
+	// Sound instance interface. //
+	///////////////////////////////
+
 	/*
 	*	Returns the playback state of a sound instance.
 	*/
 	PlaybackState GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
+	*	Sets the parameter on the given sound instance at the given index.
+	*	The index of a parameter might not always be the same as it appears in the sound editor.
+	*/
+	void SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT;
+
+	///////////////////////////////
+	// Sound playback interface. //
+	///////////////////////////////
 
 	/*
 	*	Plays a two dimensional sound.

@@ -96,6 +96,16 @@ PlaybackState SoundSystem::GetPlaybackState(const SoundInstanceHandle instance) 
 }
 
 /*
+*	Sets the parameter on the given sound instance at the given index.
+*	The index of a parameter might not always be the same as it appears in the sound editor.
+*/
+void SoundSystem::SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT
+{
+	//Set the parameter at the given index.
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->setParameterValueByIndex(static_cast<int32>(index), value));
+}
+
+/*
 *	Plays a two dimensional sound.
 *	Can supply an optional handle to the sound instance to keep track of the sound properties.
 *	If not supplied, a temporary instance will be created that will be destroyed as soon as the sound has finished playing.
