@@ -83,6 +83,23 @@ void SoundSystem::GetSoundDescription(const char *const RESTRICT ID, SoundDescri
 }
 
 /*
+*	Returns the parameter index of a parameter of the given sound instance.
+*/
+uint32 SoundSystem::GetParameterIndex(const char *const RESTRICT parameter, const SoundInstanceHandle instance) NOEXCEPT
+{
+	//Retrieve the parameter instance.
+	FMOD::Studio::ParameterInstance *RESTRICT parameterInstance;
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->getParameter(parameter, &parameterInstance));
+
+	//Retrieve the parameter description.
+	FMOD_STUDIO_PARAMETER_DESCRIPTION parameterDescription;
+	FMOD_ERROR_CHECK(parameterInstance->getDescription(&parameterDescription));
+
+	//Return the parameter index.
+	return static_cast<uint32>(parameterDescription.index);
+}
+
+/*
 *	Returns the playback state of a sound instance.
 */
 PlaybackState SoundSystem::GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT

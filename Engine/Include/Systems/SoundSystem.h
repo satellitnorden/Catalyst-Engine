@@ -65,6 +65,11 @@ public:
 	///////////////////////////////
 
 	/*
+	*	Returns the parameter index of a parameter of the given sound instance.
+	*/
+	uint32 GetParameterIndex(const char *const RESTRICT parameter, const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
 	*	Returns the playback state of a sound instance.
 	*/
 	PlaybackState GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT;
