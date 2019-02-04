@@ -239,14 +239,14 @@ private:
 	/*
 	*	Applies address mode.
 	*/
-	static void ApplyAddressMode(const AddressMode mode, Vector2<float> *const RESTRICT coordinate) NOEXCEPT
+	void ApplyAddressMode(const AddressMode mode, Vector2<float> *const RESTRICT coordinate) const NOEXCEPT
 	{
 		switch (mode)
 		{
 			case AddressMode::ClampToEdge:
 			{
-				coordinate->_X = CatalystBaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f);
-				coordinate->_Y = CatalystBaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f);
+				coordinate->_X = CatalystBaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float>(_Width));
+				coordinate->_Y = CatalystBaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float>(_Height));
 
 				break;
 			}
