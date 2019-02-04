@@ -101,6 +101,14 @@ void TerrainSystem::RegisterTerrainMaterial(const uint8 index, const PhysicalMat
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT
 {
+	//If there's no height function, just set the height to zero, and return that the retrieval failed.
+	if (!_Properties._HeightFunction)
+	{
+		*height = 0.0f;
+
+		return false;
+	}
+
 	//Generate the height.
 	_Properties._HeightFunction(_Properties, position, height);
 
@@ -113,6 +121,15 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, f
 */
 bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height) const NOEXCEPT
 {
+	//If there's no height function, just set the normal to up and the height to zero, and return that the retrieval failed.
+	if (!_Properties._HeightFunction)
+	{
+		*normal = Vector3<float>::UP;
+		*height = 0.0f;
+
+		return false;
+	}
+
 	//Generate a normal at the position.
 	TerrainGeneralUtilities::GenerateNormal(_Properties, position, normal, height);
 
@@ -126,6 +143,16 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, V
 */
 bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position, uint8 *const RESTRICT material, float *const RESTRICT height, Vector3<float> *const RESTRICT normal) const NOEXCEPT
 {
+	//If there's no height function, just set the material to zero, the normal to up and the height to zero, and return that the retrieval failed.
+	if (!_Properties._MaterialFunction)
+	{
+		*material = 0;
+		*normal = Vector3<float>::UP;
+		*height = 0.0f;
+
+		return false;
+	}
+
 	//Retrieve the height and the normal.
 	float terrainHeight;
 	Vector3<float> terrainNormal;
