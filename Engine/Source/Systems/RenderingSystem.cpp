@@ -1017,6 +1017,11 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 		CommonEnvironmentMaterialData::GetNightEnvironmentMaterialData(&data);
 		CreateEnvironmentMaterial(data, _CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Night)]);
 	}
+
+	//Set the night/day environment materials to default ones.
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
+	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
 }
 
 /*
@@ -1030,6 +1035,9 @@ void RenderingSystem::InitializeCommonOceanMaterials() NOEXCEPT
 		CommonOceanMaterialData::GetOceanOceanMaterialData(&data);
 		CreateOceanMaterial(data, _CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
 	}
+
+	//Set the ocean material to default one.
+	EnvironmentManager::Instance->SetOceanMaterial(_CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
 }
 
 /*

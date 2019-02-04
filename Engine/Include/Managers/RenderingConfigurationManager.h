@@ -56,6 +56,6 @@ private:
 	float _SaturationStrength{ 1.0f };
 
 	//The volumetric fog density.
-	float _VolumetricFogDensity{ 0.1f };
+	float _VolumetricFogDensity{ 0.0f };
 
 };

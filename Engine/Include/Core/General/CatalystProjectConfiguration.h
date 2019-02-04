@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/General/DynamicString.h>
 
 //Rendering.
