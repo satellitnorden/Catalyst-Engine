@@ -21,6 +21,7 @@ public:
 		DynamicPhysical,
 		ParticleSystem,
 		PointLight,
+		Sound,
 
 		NumberOfEntityTypes
 	};
@@ -45,6 +46,7 @@ public:
 	*/
 	virtual ~Entity() NOEXCEPT
 	{
+
 	}
 
 	/*

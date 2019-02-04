@@ -54,6 +54,7 @@
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PhysicsComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -438,6 +440,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />

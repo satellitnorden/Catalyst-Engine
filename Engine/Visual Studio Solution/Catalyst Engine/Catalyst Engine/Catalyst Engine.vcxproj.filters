@@ -1443,6 +1443,12 @@
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h">
       <Filter>Sound\Include\Abstraction\FMOD</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\SoundComponent.h">
+      <Filter>Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2098,6 +2104,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp">
       <Filter>Sound\Source\Abstraction\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
