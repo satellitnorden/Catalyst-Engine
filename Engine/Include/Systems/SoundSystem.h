@@ -65,6 +65,26 @@ public:
 	///////////////////////////////
 
 	/*
+	*	Creates a sound instance based on the given sound description.
+	*/
+	void CreateSoundInstance(const SoundDescriptionHandle description, SoundInstanceHandle *const RESTRICT instance) NOEXCEPT;
+
+	/*
+	*	Destroys a sound instance as soon as the sound instance has stopped playing.
+	*/
+	void DestroySoundInstance(const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
+	*	Plays a sound instance.
+	*/
+	void Play(const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
+	*	Stops a sound instance.
+	*/
+	void Stop(const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
 	*	Returns the parameter index of a parameter of the given sound instance.
 	*/
 	uint32 GetParameterIndex(const char *const RESTRICT parameter, const SoundInstanceHandle instance) NOEXCEPT;
@@ -79,16 +99,5 @@ public:
 	*	The index of a parameter might not always be the same as it appears in the sound editor.
 	*/
 	void SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT;
-
-	///////////////////////////////
-	// Sound playback interface. //
-	///////////////////////////////
-
-	/*
-	*	Plays a two dimensional sound.
-	*	Can supply an optional handle to the sound instance to keep track of the sound properties.
-	*	If not supplied, a temporary instance will be created that will be destroyed as soon as the sound has finished playing.
-	*/
-	void PlayTwoDimensionalSound(const SoundDescriptionHandle description, SoundInstanceHandle *const RESTRICT instance) NOEXCEPT;
 
 };

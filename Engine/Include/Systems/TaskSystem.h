@@ -42,7 +42,7 @@ public:
 private:
 
 	//The maximum number of tasks.
-	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 64 };
+	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 128 };
 
 	//Denotes whether or not tasks should be executed.
 	bool _ExecuteTasks{ true };
