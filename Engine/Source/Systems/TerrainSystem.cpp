@@ -23,12 +23,8 @@ DEFINE_SINGLETON(TerrainSystem);
 /*
 *	Initializes the terrain system.
 */
-void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
+void TerrainSystem::InitializeSystem() NOEXCEPT
 {
-	//Copy over the relevant properties.
-	_Properties._HeightFunction = configuration._HeightFunction;
-	_Properties._MaterialFunction = configuration._MaterialFunction;
-
 	//Set the function for the update task.
 	_UpdateTask._Function = [](void *const RESTRICT)
 	{
@@ -72,6 +68,12 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 */
 void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 {
+	//If the properties aren't valid, just return early.
+	if (!_Properties._HeightFunction || !_Properties._MaterialFunction)
+	{
+		return;
+	}
+
 	//Check if the asynchronous update has finished.
 	if (_UpdateTask.IsExecuted())
 	{

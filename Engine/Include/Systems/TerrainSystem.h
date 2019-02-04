@@ -45,12 +45,28 @@ public:
 	/*
 	*	Initializes the terrain system.
 	*/
-	void InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
+	void InitializeSystem() NOEXCEPT;
 
 	/*
 	*	Updates the terrain system sequentially.
 	*/
 	void SequentialUpdateSystemSynchronous() NOEXCEPT;
+
+	/*
+	*	Registers the height function.
+	*/
+	void RegisterHeightFunction(const HeightFunction function) NOEXCEPT
+	{
+		_Properties._HeightFunction = function;
+	}
+
+	/*
+	*	Registers the material function.
+	*/
+	void RegisterMaterialFunction(const MaterialFunction function) NOEXCEPT
+	{
+		_Properties._MaterialFunction = function;
+	}
 
 	/*
 	*	Returns the terrain properties, const.

@@ -64,30 +64,6 @@ public:
 
 };
 
-//Terrain.
-#include <Terrain/TerrainCore.h>
-
-class CatalystProjectTerrainConfiguration final
-{
-
-public:
-
-	//The height function.
-	HeightFunction _HeightFunction;
-
-	//The material function.
-	MaterialFunction _MaterialFunction;
-
-	/*
-	*	Default constructor.
-	*/
-	CatalystProjectTerrainConfiguration() NOEXCEPT
-	{
-
-	}
-
-};
-
 class CatalystProjectConfiguration final
 {
 
@@ -98,8 +74,5 @@ public:
 
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
-
-	//The project terrain configuration.
-	CatalystProjectTerrainConfiguration _TerrainConfiguration;
 
 };
