@@ -30,6 +30,7 @@
 #include <Rendering/Engine/RenderPasses/DirectionalTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/ExponentialHeightFogRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailDebrisVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationDepthRenderPass.h>

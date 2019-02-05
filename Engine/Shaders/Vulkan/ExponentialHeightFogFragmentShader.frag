@@ -8,6 +8,13 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystFogUtilities.glsl"
 
+//Preprocessor defines.
+#define EXPONENTIAL_HEIGHT_FOG_DISTANCE (65536.0f)
+#define EXPONENTIAL_HEIGHT_FOG_DISTANCE_SQUARED (EXPONENTIAL_HEIGHT_FOG_DISTANCE * EXPONENTIAL_HEIGHT_FOG_DISTANCE)
+#define EXPONENTIAL_HEIGHT_FOG_INVERSE_DISTANCE_SQUARED (1.0f / EXPONENTIAL_HEIGHT_FOG_DISTANCE_SQUARED)
+#define EXPONENTIAL_HEIGHT_FOG_HEIGHT (100000.0f)
+#define EXPONENTIAL_HEIGHT_FOG_INVERSE_HEIGHT (1.0f / EXPONENTIAL_HEIGHT_FOG_HEIGHT)
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -28,6 +35,14 @@ void main()
     //Calculate the distance.
     float distance = LengthSquared3(worldPosition - cameraWorldPosition);
 
+    //Calculate the distance weight.
+    float distanceWeight = min(distance * EXPONENTIAL_HEIGHT_FOG_INVERSE_DISTANCE_SQUARED, 1.0f);
+    distanceWeight *= distanceWeight;
+
+    //Calculate the height weight.
+    float heightWeight = 1.0f - min(worldPosition.y * EXPONENTIAL_HEIGHT_FOG_INVERSE_HEIGHT, 1.0f);
+    heightWeight *= heightWeight;
+
     //Write the fragment
-    fragment = vec4(CalculateFogColor(vec3(0.0f, 1.0f, 0.0f)), 1.0f);
+    fragment = vec4(CalculateFogColor(direction), distanceWeight * heightWeight);
 }

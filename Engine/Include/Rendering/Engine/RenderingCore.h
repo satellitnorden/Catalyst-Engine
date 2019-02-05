@@ -44,6 +44,7 @@ enum class RenderPassMainStage : uint8
 	ScreenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
 	Ocean,
+	ExponentialHeightFog,
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
 	ParticleSystem,
@@ -133,6 +134,9 @@ enum class RenderPassSubStage : uint8
 	//Ocean main stage.
 	AboveOcean,
 	BelowOcean,
+
+	//Exponential height fog main stage.
+	ExponentialHeightFog,
 
 	//Depth of field horizontal main stage.
 	DepthOfFieldHorizontal,
@@ -337,6 +341,7 @@ enum class Shader : uint8
 	DirectionalSolidVegetationShadowVertex,
 	DirectionalTerrainShadowVertex,
 	DirectionalTreeVegetationTrunkVertex,
+	ExponentialHeightFogFragment,
 	GaussianBlurFragment,
 	HighDetailDebrisVegetationFragment,
 	HighDetailDebrisVegetationVertex,

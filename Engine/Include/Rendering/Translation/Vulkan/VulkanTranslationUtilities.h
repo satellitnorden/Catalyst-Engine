@@ -137,6 +137,11 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFourthIteration);
 			}
 
+			case RenderPassMainStage::ExponentialHeightFog:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ExponentialHeightFog);
+			}
+
 			case RenderPassMainStage::DepthOfFieldHorizontal:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal);
