@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystFogUtilities.glsl"
 
 //Preprocessor defines.
 #define VOLUMETRIC_FOG_DISTANCE (10.0f)
@@ -64,9 +65,6 @@ void main()
 	    currentPosition += rayStep;
     }
 
-    //Calculate the fog color.
-    vec3 fogColor = directionalLightColor * directionalLightIntensity;
-
     //Write the fragment
-    fragment = vec4(fogColor, pow(accumulatedFog, 2.0f) * density);
+    fragment = vec4(CalculateFogColor(rayDirection), accumulatedFog * density);
 }

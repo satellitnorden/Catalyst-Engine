@@ -62,12 +62,15 @@ vec4 CalculateBlur()
 {
     vec2 offset1 = vec2(1.0f) * inverseResolution;
     vec2 offset2 = vec2(2.0f) * inverseResolution;
+    vec2 offset3 = vec2(3.0f) * inverseResolution;
 
-    return  SampleDepthOfField(fragmentTextureCoordinate) * 0.2f
-            + SampleDepthOfField(fragmentTextureCoordinate - offset1) * 0.2f
-            + SampleDepthOfField(fragmentTextureCoordinate + offset1) * 0.2f
-            + SampleDepthOfField(fragmentTextureCoordinate - offset2) * 0.2f
-            + SampleDepthOfField(fragmentTextureCoordinate + offset2) * 0.2f;
+    return  SampleDepthOfField(fragmentTextureCoordinate) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate - offset1) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate + offset1) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate - offset2) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate + offset2) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate - offset3) * 0.1428571428571429f
+            + SampleDepthOfField(fragmentTextureCoordinate + offset3) * 0.1428571428571429f;
 }
 
 void main()
