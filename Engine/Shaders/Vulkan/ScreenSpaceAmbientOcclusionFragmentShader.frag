@@ -8,9 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.0000025f) //0.00000025f step.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.000002f) //0.00000025f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (8)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (8.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;

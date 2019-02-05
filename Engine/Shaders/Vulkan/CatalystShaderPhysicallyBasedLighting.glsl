@@ -207,7 +207,7 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
                                                 roughness,
                                                 viewAngle,
                                                 surfaceColor,
-                                                metallic) * directionalShadowMultiplier * ambientOcclusion;
+                                                metallic) * directionalShadowMultiplier * Scale(ambientOcclusion, 0.0f, 1.0f, 0.25f, 1.0f);
 
     //Calculate all point lights.
     for (int i = 0; i < numberOfPointLights; ++i)
