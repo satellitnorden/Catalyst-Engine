@@ -33,7 +33,7 @@ void main()
     vec3 cubeMapTextureSampler = mix(texture(nightTexture, cubeTextureCoordinate).rgb, texture(dayTexture, cubeTextureCoordinate).rgb, environmentBlend);
 
     //Calculate the sun weight.
-    float sunWeight = pow(max(dot(normalize(cubeTextureCoordinate), -directionalLightDirection), 0.0f), 2048.0f) * directionalLightIntensity;
+    float sunWeight = pow(max(dot(normalize(cubeTextureCoordinate), -directionalLightDirection), 0.0f), 4096.0f) * directionalLightIntensity;
 
     //Calculate the sun color.
     vec3 sunColor = directionalLightColor * directionalLightIntensity;
