@@ -12,7 +12,7 @@
 vec3 CalculateFogColor(vec3 viewDirection)
 {
 	float directionalLightInfluence = directionalLightIntensity * FOG_DIRECTIONAL_LIGHT_SCALE;
-	vec3 baseColor = mix(FOG_BASE_COLOR, directionalLightColor, pow(clamp(dot(viewDirection, -directionalLightDirection) + directionalLightInfluence, 0.0f, 1.0f), 4.0f));
+	vec3 baseColor = mix(FOG_BASE_COLOR, directionalLightColor, pow(clamp(dot(viewDirection, -directionalLightDirection) + directionalLightInfluence, 0.0f, 1.0f), 2.0f));
 
 	return (baseColor * FOG_AMBIENT_STRENGTH) + (baseColor * directionalLightInfluence);
 }
