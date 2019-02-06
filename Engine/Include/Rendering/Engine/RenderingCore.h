@@ -47,7 +47,6 @@ enum class RenderPassMainStage : uint8
 	ExponentialHeightFog,
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
-	ParticleSystem,
 	VolumetricFog,
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	Debug,
@@ -58,6 +57,7 @@ enum class RenderPassMainStage : uint8
 	BloomUpsampleFirstIteration,
 	BloomUpsampleSecondIteration,
 	BloomUpsampleThirdIteration,
+	ParticleSystem,
 	ToneMapping,
 	AntiAliasing,
 
@@ -142,9 +142,6 @@ enum class RenderPassSubStage : uint8
 	//Depth of field vertical main stage.
 	DepthOfFieldVertical,
 
-	//Particle system main stage.
-	ParticleSystem,
-
 	//Volumetric fog main stage.
 	VolumetricFog,
 
@@ -171,6 +168,9 @@ enum class RenderPassSubStage : uint8
 
 	//Bloom upsample third iteration main stage.
 	BloomUpsampleThirdIteration,
+
+	//Particle system main stage.
+	ParticleSystem,
 
 	//Tone mapping main stage.
 	ToneMapping,

@@ -75,11 +75,6 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);
 			}
 
-			case RenderPassMainStage::ParticleSystem:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
-			}
-
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 			case RenderPassMainStage::Debug:
 			{
@@ -140,6 +135,11 @@ public:
 			case RenderPassMainStage::DepthOfFieldVertical:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldVertical);
+			}
+
+			case RenderPassMainStage::ParticleSystem:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
 			}
 
 			case RenderPassMainStage::ToneMapping:

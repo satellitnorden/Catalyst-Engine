@@ -2405,86 +2405,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Lighting)]._ShouldClear = false;
 	}
 
-	//Initialize the particle system render pass.
-	{
-		constexpr uint64 NUMBER_OF_SUBPASSES{ 1 };
-
-		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
-		constexpr uint32 SCENE_INDEX{ 1 };
-
-		VulkanRenderPassCreationParameters renderPassParameters;
-
-		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
-		{
-			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_LOAD,
-															VK_ATTACHMENT_STORE_OP_STORE,
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
-
-			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_LOAD,
-															VK_ATTACHMENT_STORE_OP_STORE,
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_GENERAL,
-															VK_IMAGE_LAYOUT_GENERAL)
-		};
-
-		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
-
-		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-		
-		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
-		{
-			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
-		};
-
-		VkSubpassDescription subpassDescription
-		{
-			VulkanUtilities::CreateSubpassDescription(	0,
-														nullptr,
-														static_cast<uint32>(colorAttachmentReferences.Size()),
-														colorAttachmentReferences.Data(),
-														&depthAttachmentReference,
-														0,
-														nullptr)
-		};
-
-		renderPassParameters._SubpassDescriptionCount = 1;
-		renderPassParameters._SubpassDescriptions = &subpassDescription;
-
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
-
-		//Create the framebuffer.
-		VulkanFramebufferCreationParameters framebufferParameters;
-
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._RenderPass->Get();
-
-		StaticArray<VkImageView, 2> attachments
-		{
-			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
-		};
-
-		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._ShouldClear = false;
-	}
-
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Initialize the debug render pass.
 	{
@@ -3369,6 +3289,86 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._ShouldClear = false;
+	}
+
+	//Initialize the particle system render pass.
+	{
+		constexpr uint64 NUMBER_OF_SUBPASSES{ 1 };
+
+		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SCENE_INDEX{ 1 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
+		{
+			//Depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
+															//Scene.
+															VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+																											VK_ATTACHMENT_LOAD_OP_LOAD,
+																											VK_ATTACHMENT_STORE_OP_STORE,
+																											VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																											VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																											VK_IMAGE_LAYOUT_GENERAL,
+																											VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+		};
+
+		VkSubpassDescription subpassDescription
+		{
+			VulkanUtilities::CreateSubpassDescription(0,
+														nullptr,
+														static_cast<uint32>(colorAttachmentReferences.Size()),
+														colorAttachmentReferences.Data(),
+														&depthAttachmentReference,
+														0,
+														nullptr)
+		};
+
+		renderPassParameters._SubpassDescriptionCount = 1;
+		renderPassParameters._SubpassDescriptions = &subpassDescription;
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 2> attachments
+		{
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ParticleSystem)]._ShouldClear = false;
 	}
 
 	//Initialize the tone mapping render pass.
