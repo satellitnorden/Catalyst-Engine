@@ -2957,145 +2957,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleThirdIteration)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom downsample fourth iteration render pass.
-	{
-		constexpr uint64 SUBPASSES{ 1 };
-
-		constexpr uint32 SCENE_INTERMEDIATE_SIXTEENTH_INDEX{ 0 };
-
-		VulkanRenderPassCreationParameters renderPassParameters;
-
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
-		{
-			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateSixteenth))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_STORE,
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_GENERAL,
-															VK_IMAGE_LAYOUT_GENERAL)
-		};
-
-		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
-
-		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
-		{
-			VkAttachmentReference{ SCENE_INTERMEDIATE_SIXTEENTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
-		};
-
-		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
-
-		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
-		{
-			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			1,
-																			colorAttachmentReferences.Data(),
-																			nullptr,
-																			0,
-																			nullptr);
-		}
-
-		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
-
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
-
-		//Create the framebuffer.
-		VulkanFramebufferCreationParameters framebufferParameters;
-
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._RenderPass->Get();
-
-		StaticArray<VkImageView, 1> attachments
-		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateSixteenth))->GetImageView()
-		};
-
-		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 16, RenderingSystem::Instance->GetScaledResolution()._Height / 16 };
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomDownsampleFourthIteration)]._ShouldClear = false;
-	}
-
 	//Initialize the bloom upsample first iteration render pass.
-	{
-		constexpr uint64 SUBPASSES{ 1 };
-
-		constexpr uint32 INTERMEDIATE_EIGHTH_INDEX{ 0 };
-
-		VulkanRenderPassCreationParameters renderPassParameters;
-
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
-		{
-			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateEighth))->GetFormat(),
-															VK_ATTACHMENT_LOAD_OP_LOAD,
-															VK_ATTACHMENT_STORE_OP_STORE,
-															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_GENERAL,
-															VK_IMAGE_LAYOUT_GENERAL)
-		};
-
-		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
-
-		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
-		{
-			VkAttachmentReference{ INTERMEDIATE_EIGHTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
-		};
-
-		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
-
-		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
-		{
-			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			1,
-																			colorAttachmentReferences.Data(),
-																			nullptr,
-																			0,
-																			nullptr);
-		}
-
-		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
-
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
-
-		//Create the framebuffer.
-		VulkanFramebufferCreationParameters framebufferParameters;
-
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass->Get();
-
-		StaticArray<VkImageView, 1> attachments
-		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateEighth))->GetImageView()
-		};
-
-		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters._Attachments = attachments.Data();
-		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 8, RenderingSystem::Instance->GetScaledResolution()._Height / 8 };
-
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._ShouldClear = false;
-	}
-
-	//Initialize the bloom upsample second iteration render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -3142,12 +3004,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -3158,13 +3020,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 4, RenderingSystem::Instance->GetScaledResolution()._Height / 4 };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFirstIteration)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom upsample third iteration render pass.
+	//Initialize the bloom upsample second iteration render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -3211,12 +3073,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -3227,13 +3089,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width / 2, RenderingSystem::Instance->GetScaledResolution()._Height / 2 };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleSecondIteration)]._ShouldClear = false;
 	}
 
-	//Initialize the bloom upsample fourth iteration render pass.
+	//Initialize the bloom upsample third iteration render pass.
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
@@ -3280,12 +3142,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -3296,10 +3158,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleFourthIteration)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::BloomUpsampleThirdIteration)]._ShouldClear = false;
 	}
 
 	//Initialize the exponential height fog render pass.

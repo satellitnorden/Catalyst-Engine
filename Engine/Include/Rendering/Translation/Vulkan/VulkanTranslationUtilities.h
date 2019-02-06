@@ -112,11 +112,6 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleThirdIteration);
 			}
 
-			case RenderPassMainStage::BloomDownsampleFourthIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleFourthIteration);
-			}
-
 			case RenderPassMainStage::BloomUpsampleFirstIteration:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration);
@@ -130,11 +125,6 @@ public:
 			case RenderPassMainStage::BloomUpsampleThirdIteration:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration);
-			}
-
-			case RenderPassMainStage::BloomUpsampleFourthIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFourthIteration);
 			}
 
 			case RenderPassMainStage::ExponentialHeightFog:
