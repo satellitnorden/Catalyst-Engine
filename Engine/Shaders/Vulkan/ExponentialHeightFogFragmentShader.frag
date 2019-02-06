@@ -12,7 +12,7 @@
 #define EXPONENTIAL_HEIGHT_FOG_DISTANCE (65536.0f)
 #define EXPONENTIAL_HEIGHT_FOG_DISTANCE_SQUARED (EXPONENTIAL_HEIGHT_FOG_DISTANCE * EXPONENTIAL_HEIGHT_FOG_DISTANCE)
 #define EXPONENTIAL_HEIGHT_FOG_INVERSE_DISTANCE_SQUARED (1.0f / EXPONENTIAL_HEIGHT_FOG_DISTANCE_SQUARED)
-#define EXPONENTIAL_HEIGHT_FOG_HEIGHT (25000.0f)
+#define EXPONENTIAL_HEIGHT_FOG_HEIGHT (27500.0f) /*2500.0f step.*/
 #define EXPONENTIAL_HEIGHT_FOG_INVERSE_HEIGHT (1.0f / EXPONENTIAL_HEIGHT_FOG_HEIGHT)
 
 //In parameters.
@@ -40,7 +40,7 @@ void main()
     distanceWeight *= distanceWeight;
 
     //Calculate the height weight.
-    float heightWeight = 1.0f - min(worldPosition.y * EXPONENTIAL_HEIGHT_FOG_INVERSE_HEIGHT, 1.0f);
+    float heightWeight = 1.0f - clamp(worldPosition.y * EXPONENTIAL_HEIGHT_FOG_INVERSE_HEIGHT, 0.0f, 1.0f);
     heightWeight *= heightWeight;
 
     //Write the fragment
