@@ -6,7 +6,7 @@
 #include <Core/Algorithms/SortingAlgorithms.h>
 
 //Multithreading.
-#include <Multithreading/ScopedLock.h>
+#include <Multithreading/ScopedWriteLock.h>
 
 //Rendering.
 #include <Rendering/Engine/Viewer.h>
@@ -50,7 +50,7 @@ void DebugRenderingSystem::PostUpdateSystemSynchronous(const UpdateContext *cons
 void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox(const AxisAlignedBoundingBoxDebugRenderData &data) NOEXCEPT
 {
 	//Lock the axis-aligned bounding box debug render data.
-	ScopedLock<Spinlock> scopedLock{ _AxisAlignedBoundingBoxDebugRenderDataLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _AxisAlignedBoundingBoxDebugRenderDataLock };
 
 	//Add the data to the axis-aligned bounding box debug render data.
 	_AxisAlignedBoundingBoxDebugRenderData.EmplaceSlow(data);
@@ -62,7 +62,7 @@ void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox(const AxisAlignedBo
 void DebugRenderingSystem::DebugRenderScreenBox(const ScreenBoxDebugRenderData &data) NOEXCEPT
 {
 	//Lock the screen box debug render data.
-	ScopedLock<Spinlock> scopedLock{ _ScreenBoxDebugRenderDataLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _ScreenBoxDebugRenderDataLock };
 
 	//Add the data to the screen box debug render data.
 	_ScreenBoxDebugRenderData.EmplaceSlow(data);

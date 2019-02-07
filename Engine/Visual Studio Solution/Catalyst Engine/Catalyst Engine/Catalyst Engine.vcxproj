@@ -128,11 +128,11 @@
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h" />
-    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedReadLock.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedWriteLock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
-    <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h" />

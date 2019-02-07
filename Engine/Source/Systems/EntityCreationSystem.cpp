@@ -10,7 +10,7 @@
 #include <Entities/Creation/PointLightInitializationData.h>
 
 //Multithreading.
-#include <Multithreading/ScopedLock.h>
+#include <Multithreading/ScopedWriteLock.h>
 
 //Rendering.
 #include <Rendering/Engine/Viewer.h>
@@ -51,7 +51,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
 	if (IS_BIT_SET(data->_Properties, EntityInitializationData::EntityProperty::AutomaticDestruction))
 	{
-		ScopedLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
+		ScopedWriteLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
 
 		_AutomaticDestructionQueue.EmplaceSlow(entity);
 	}
@@ -59,7 +59,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
 	if (IS_BIT_SET(data->_Properties, EntityInitializationData::EntityProperty::AutomaticTermination))
 	{
-		ScopedLock<Spinlock> scopedLock{ _AutomaticTerminationQueueLock };
+		ScopedWriteLock<Spinlock> scopedLock{ _AutomaticTerminationQueueLock };
 
 		_AutomaticTerminationQueue.EmplaceSlow(entity);
 	}
@@ -146,14 +146,14 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
-	_AllocatorLock.Lock();
+	_AllocatorLock.WriteLock();
 	_Allocator.DeAllocate(entity);
-	_AllocatorLock.Unlock();
+	_AllocatorLock.WriteUnlock();
 
 	//Remove the entity from the list of entities.
-	_EntitiesLock.Lock();
+	_EntitiesLock.WriteLock();
 	_Entities.Erase(entity);
-	_EntitiesLock.Unlock();
+	_EntitiesLock.WriteUnlock();
 }
 
 /*
@@ -166,7 +166,7 @@ void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data, const bool force) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _InitializationQueueLock };
 
 	//Add the data.
 	_InitializationQueue.EmplaceSlow(entity, data, force);
@@ -179,7 +179,7 @@ void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, 
 void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
 	//Add the data.
 	_TerminationQueue.EmplaceSlow(entity);
@@ -192,7 +192,7 @@ void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOE
 void EntityCreationSystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _DestructionQueueLock };
 
 	//Add the data.
 	_DestructionQueue.EmplaceSlow(entity);
@@ -204,7 +204,7 @@ void EntityCreationSystem::RequestDestruction(Entity *const RESTRICT entity) NOE
 void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 {
 	//Lock the initialization queue.
-	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _InitializationQueueLock };
 
 	//If there's none to initialize, initialize none.
 	if (_InitializationQueue.Empty())
@@ -299,7 +299,7 @@ void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT ent
 void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 {
 	//Lock the termination queue.
-	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
 	//Terminate all entities.
 	for (Entity *const RESTRICT entity : _TerminationQueue)
@@ -347,7 +347,7 @@ void EntityCreationSystem::TerminatePointLightEntity(Entity* const RESTRICT enti
 void EntityCreationSystem::ProcessDestructionQueue() NOEXCEPT
 {
 	//Lock the destruction queue.
-	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+	ScopedWriteLock<Spinlock> scopedLock{ _DestructionQueueLock };
 
 	//Destroy all entities.
 	for (Entity *const RESTRICT entity : _DestructionQueue)

@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-template <typename Type>
-class ScopedLock final
+template <typename TYPE>
+class ScopedReadLock final
 {
 
 public:
@@ -12,31 +12,31 @@ public:
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	ScopedLock() NOEXCEPT = delete;
+	ScopedReadLock() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking the lock as it's argument.
 	*/
-	ScopedLock(Type &newLock) NOEXCEPT
+	ScopedReadLock(TYPE &newLock) NOEXCEPT
 		:
 		_Lock(newLock)
 	{
 		//Lock the lock.
-		_Lock.Lock();
+		_Lock.ReadLock();
 	}
 
 	/*
 	*	Default destructor.
 	*/
-	~ScopedLock() NOEXCEPT
+	~ScopedReadLock() NOEXCEPT
 	{
 		//Unlock the lock.
-		_Lock.Unlock();
+		_Lock.ReadUnlock();
 	}
 
 private:
 
 	//The underlying lock for this scoped lock.
-	Type &_Lock;
+	TYPE &_Lock;
 
 };

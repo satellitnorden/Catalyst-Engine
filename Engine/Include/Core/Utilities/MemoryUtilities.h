@@ -4,7 +4,7 @@
 #include <Memory/PoolAllocator.h>
 
 //Multithreading.
-#include <Multithreading/ScopedLock.h>
+#include <Multithreading/ScopedWriteLock.h>
 #include <Multithreading/Spinlock.h>
 
 class MemoryUtilities
@@ -70,7 +70,7 @@ public:
 	template <uint64 SIZE>
 	RESTRICTED static void *const RESTRICT GlobalPoolAllocate() NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+		ScopedWriteLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
 
 		return GlobalPoolAllocator<SIZE>()->Allocate();
 	}
@@ -81,7 +81,7 @@ public:
 	template <uint64 SIZE>
 	static void GlobalPoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+		ScopedWriteLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
 
 		GlobalPoolAllocator<SIZE>()->DeAllocate(memory);
 	}

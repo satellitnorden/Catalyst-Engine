@@ -360,9 +360,6 @@
     <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
@@ -370,9 +367,6 @@
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
@@ -1442,6 +1436,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ExponentialHeightFogRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedReadLock.h">
+      <Filter>Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedWriteLock.h">
+      <Filter>Multithreading\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

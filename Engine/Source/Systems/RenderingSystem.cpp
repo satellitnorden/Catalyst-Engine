@@ -365,7 +365,7 @@ RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 uint8 RenderingSystem::AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
 {
 	//Lock the terrain height texture slots.
-	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteLock();
 
 	//Find the first available index and store it.
 	uint8 index{ UINT8_MAXIMUM };
@@ -391,7 +391,7 @@ uint8 RenderingSystem::AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle
 	}
 
 	//Unlock the terrain height texture slots.
-	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteUnlock();
 
 	//Return the index.
 	return index;
@@ -403,7 +403,7 @@ uint8 RenderingSystem::AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle
 void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 index) NOEXCEPT
 {
 	//Lock the terrain height texture slots.
-	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteLock();
 
 	//Add the terrain height texture updates.
 	for (DynamicArray<uint8> &terrainHeightTextureUpdate : _GlobalRenderData._RemoveTerrainHeightTextureUpdates)
@@ -415,7 +415,7 @@ void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 i
 	_GlobalRenderData._TerrainHeightTextureSlots[index] = false;
 
 	//Unlock the terrain height texture slots.
-	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteUnlock();
 }
 
 /*
@@ -424,7 +424,7 @@ void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 i
 uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
 {
 	//Lock global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.Lock();
+	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
 	//Find the first available index and store it.
 	uint32 index{ UINT32_MAXIMUM };
@@ -450,7 +450,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 	}
 
 	//Unlock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.Unlock();
+	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
 
 	//Return the index.
 	return index;
@@ -462,7 +462,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT
 {
 	//Lock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.Lock();
+	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
 	//Add the global texture updates.
 	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
@@ -474,7 +474,7 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 	_GlobalRenderData._GlobalTextureSlots[index] = false;
 
 	//Unlock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.Unlock();
+	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
 }
 
 /*
@@ -1316,7 +1316,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Lock the global textures.
-	_GlobalRenderData._GlobalTexturesLock.Lock();
+	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
 	//Process all updates.
 	for (uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
@@ -1334,7 +1334,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 
 	//Unlock the global textures.
-	_GlobalRenderData._GlobalTexturesLock.Unlock();
+	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
 }
 
 /*
@@ -1343,7 +1343,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Lock the terrain height textures.
-	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteLock();
 
 	//Process all updates.
 	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
@@ -1361,7 +1361,7 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
 
 	//Unlock the terrain height textures.
-	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+	_GlobalRenderData._TerrainHeightTexturesLock.WriteUnlock();
 }
 
 /*

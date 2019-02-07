@@ -6,15 +6,15 @@
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass* const RESTRICT EntityCreationSystem::CreateEntity(Arguments&&... arguments) NOEXCEPT
 {
-	_AllocatorLock.Lock();
+	_AllocatorLock.WriteLock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
-	_AllocatorLock.Unlock();
+	_AllocatorLock.WriteUnlock();
 
 	EntityClass *const RESTRICT newEntity{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
-	_EntitiesLock.Lock();
+	_EntitiesLock.WriteLock();
 	_Entities.EmplaceSlow(newEntity);
-	_EntitiesLock.Unlock();
+	_EntitiesLock.WriteUnlock();
 
 	return newEntity;
 }
@@ -25,18 +25,18 @@ RESTRICTED EntityClass* const RESTRICT EntityCreationSystem::CreateEntity(Argume
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass *const RESTRICT EntityCreationSystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
 {
-	_AllocatorLock.Lock();
+	_AllocatorLock.WriteLock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
-	_AllocatorLock.Unlock();
+	_AllocatorLock.WriteUnlock();
 
 	EntityClass *const RESTRICT newChild{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
 	parentEntity->_Children.EmplaceSlow(newChild);
 	newChild->_Parent = parentEntity;
 
-	_EntitiesLock.Lock();
+	_EntitiesLock.WriteLock();
 	_Entities.EmplaceSlow(newChild);
-	_EntitiesLock.Unlock();
+	_EntitiesLock.WriteUnlock();
 
 	return newChild;
 }

@@ -3,7 +3,7 @@
 #include <Rendering/API/Vulkan/VulkanDescriptorPool.h>
 
 //Multithreading.
-#include <Multithreading/ScopedLock.h>
+#include <Multithreading/ScopedWriteLock.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
@@ -53,7 +53,7 @@ void VulkanDescriptorPool::Release() NOEXCEPT
 void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT
 {
 	//Lock the descriptor pool.
-	ScopedLock<Spinlock> scopedLock{ _Lock };
+	ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 	//Initialize the Vulkan descriptor set.
 	vulkaDescriptorSet.Initialize(*this, vulkanDescriptorSetLayout);
@@ -65,7 +65,7 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
 {
 	//Lock the descriptor pool.
-	ScopedLock<Spinlock> scopedLock{ _Lock };
+	ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 	//Free the Vulkan descriptor set.
 	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorPool, 1, &descriptorSet);

@@ -10,7 +10,8 @@
 #include <Math/Matrix4.h>
 
 //Multithreading.
-#include <Multithreading/ScopedLock.h>
+#include <Multithreading/ScopedReadLock.h>
+#include <Multithreading/ScopedWriteLock.h>
 #include <Multithreading/Spinlock.h>
 
 class DirectionalLight final
@@ -23,7 +24,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		if (_ProjectionMatrixDirty)
 		{
@@ -38,7 +39,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetLightMatrix() NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		if (_LightMatrixDirty)
 		{
@@ -53,7 +54,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		if (_ProjectionMatrixDirty)
 		{
@@ -78,7 +79,7 @@ public:
 	*/
 	RESTRICTED const StaticArray<Vector4<float>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		if (_ProjectionMatrixDirty)
 		{
@@ -108,7 +109,7 @@ public:
 	*/
 	Vector3<float> GetDirection() const NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
 		return Vector3<float>::FORWARD.Rotated(_Rotation);
 	}
@@ -118,7 +119,7 @@ public:
 	*/
 	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		_Rotation = newRotation;
 
@@ -131,7 +132,7 @@ public:
 	*/
 	const Vector3<float>& GetColor() const NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
 		return _Color;
 	}
@@ -141,7 +142,7 @@ public:
 	*/
 	void SetColor(const Vector3<float> &newColor) NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		_Color = newColor;
 	}
@@ -151,7 +152,7 @@ public:
 	*/
 	float GetIntensity() const NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
 		return _Intensity;
 	}
@@ -161,7 +162,7 @@ public:
 	*/
 	void SetIntensity(const float newIntensity) NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ _Lock };
+		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		_Intensity = newIntensity;
 	}
