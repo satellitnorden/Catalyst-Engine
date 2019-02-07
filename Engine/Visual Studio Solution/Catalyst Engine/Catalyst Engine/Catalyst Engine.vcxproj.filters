@@ -22,9 +22,6 @@
     <Filter Include="Core\Include\Containers">
       <UniqueIdentifier>{142b5632-682c-4805-8cfb-356de571cff1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Include\Tools">
-      <UniqueIdentifier>{bb7c3053-14aa-447a-9bf9-a013d9d127a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Include\Utilities">
       <UniqueIdentifier>{6258202b-fa37-40c2-8782-405857c3cd18}</UniqueIdentifier>
     </Filter>
@@ -286,6 +283,9 @@
     <Filter Include="Core\Include\Essential">
       <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Source\General">
+      <UniqueIdentifier>{617ce450-365f-45fd-bac0-b6a56d03f2a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -323,9 +323,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h">
       <Filter>Core\Include\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h">
-      <Filter>Core\Include\Tools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
@@ -785,9 +782,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h">
-      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
@@ -1442,6 +1436,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h">
       <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Perceiver.h">
+      <Filter>Core\Include\General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2098,6 +2095,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ExponentialHeightFogRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
+      <Filter>Core\Source\General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

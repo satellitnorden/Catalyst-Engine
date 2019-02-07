@@ -176,12 +176,12 @@ private:
 	/*
 	*	Checks combination of a node. Returns whether or not the node was combined.
 	*/
-	bool CheckCombination(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckCombination(const uint8 depth, const Vector3<float> &perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 	*/
-	bool CheckSubdivision(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckSubdivision(const uint8 depth, const Vector3<float> &perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Combines a node.

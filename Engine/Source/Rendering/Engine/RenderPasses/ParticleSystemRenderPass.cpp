@@ -129,7 +129,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
-		if (!TEST_BIT(component->_Visibility, VisibilityFlag::Viewer))
+		if (!TEST_BIT(component->_Visibility, VisibilityFlag::Perceiver))
 		{
 			continue;
 		}

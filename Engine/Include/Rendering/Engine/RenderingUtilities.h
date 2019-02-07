@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/Viewer.h>
 
 //Resources.
 #include <Resources/PhysicalModelData.h>

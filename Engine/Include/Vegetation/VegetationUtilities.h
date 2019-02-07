@@ -3,9 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Algorithms/SortingAlgorithms.h>
-
-//Rendering.
-#include <Rendering/Engine/Viewer.h>
+#include <Core/General/Perceiver.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -174,20 +172,20 @@ namespace VegetationUtilities
 								StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT buffers,
 								StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
-		//Cache the viewer position.
-		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+		//Cache the perceiver position.
+		const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 		for (const Matrix4 &transformation : transformations)
 		{
-			//Calculate the distance to the viewer.
-			const float distanceToViewer{ Vector3<float>::Length(viewerPosition - transformation.GetTranslation()) };
+			//Calculate the distance to the perceiver.
+			const float distanceToperceiver{ Vector3<float>::Length(perceiverPosition - transformation.GetTranslation()) };
 
-			if (distanceToViewer > properties._LowDetailDistance)
+			if (distanceToperceiver > properties._LowDetailDistance)
 			{
 				levelOfDetailTransformations->At(UNDERLYING(LevelOfDetail::Low)).EmplaceSlow(transformation);
 			}
 
-			else if (distanceToViewer > properties._MediumDetailDistance)
+			else if (distanceToperceiver > properties._MediumDetailDistance)
 			{
 				levelOfDetailTransformations->At(UNDERLYING(LevelOfDetail::Medium)).EmplaceSlow(transformation);
 			}
@@ -222,13 +220,13 @@ namespace VegetationUtilities
 											StaticArray<uint32, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations,
 											StaticArray<uint64, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT transformationsOffsets) NOEXCEPT
 	{
-		//Cache the viewer position.
-		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+		//Cache the perceiver position.
+		const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 		//Sort the transformations.
-		std::sort(transformations->Begin(), transformations->End(), [viewerPosition](const Matrix4 &first, const Matrix4 &second)
+		std::sort(transformations->Begin(), transformations->End(), [perceiverPosition](const Matrix4 &first, const Matrix4 &second)
 		{
-			return Vector3<float>::LengthSquared(viewerPosition - first.GetTranslation()) < Vector3<float>::LengthSquared(viewerPosition - second.GetTranslation());
+			return Vector3<float>::LengthSquared(perceiverPosition - first.GetTranslation()) < Vector3<float>::LengthSquared(perceiverPosition - second.GetTranslation());
 		});
 
 		//Create the transformations buffer.
@@ -248,7 +246,7 @@ namespace VegetationUtilities
 
 		for (const Matrix4 &transformation : *transformations)
 		{
-			const float lengthSquared{ Vector3<float>::LengthSquared(viewerPosition - transformation.GetTranslation()) };
+			const float lengthSquared{ Vector3<float>::LengthSquared(perceiverPosition - transformation.GetTranslation()) };
 
 			if (lengthSquared > lowDetailImpostorDistanceSquared)
 			{
@@ -308,8 +306,8 @@ namespace VegetationUtilities
 			return;
 		}
 
-		//Cache the viewer position.
-		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+		//Cache the perceiver position.
+		const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 		//Reset the vegetation type information update.
 		update->_Information = nullptr;
@@ -320,8 +318,8 @@ namespace VegetationUtilities
 		//Update all vegetation type informations.
 		for (TYPE_INFORMATION_TYPE &information : informations)
 		{
-			//Calculate the current grid point based on the current viewer position.
-			const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance) };
+			//Calculate the current grid point based on the current perceiver position.
+			const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(perceiverPosition, information._Properties._CutoffDistance) };
 
 			//Create an array with the valid grid positions.
 			StaticArray<GridPoint2, 9> validGridPoints
@@ -345,8 +343,8 @@ namespace VegetationUtilities
 
 			public:
 
-				//The current viewer position.
-				Vector3<float> _ViewerPosition;
+				//The current perceiver position.
+				Vector3<float> _PerceiverPosition;
 
 				//The cutoff distance.
 				float _CutoffDistance;
@@ -354,7 +352,7 @@ namespace VegetationUtilities
 
 			SortingData sortingData;
 
-			sortingData._ViewerPosition = viewerPosition;
+			sortingData._PerceiverPosition = perceiverPosition;
 			sortingData._CutoffDistance = information._Properties._CutoffDistance;
 
 			//Sort the array so that the closest grid point is first.
@@ -365,7 +363,7 @@ namespace VegetationUtilities
 				const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance) };
 				const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance) };
 
-				return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
+				return Vector3<float>::LengthSquaredXZ(sortingData->_PerceiverPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_PerceiverPosition - secondGridPosition);
 			});
 
 			//Construct the update.
@@ -518,8 +516,8 @@ namespace VegetationUtilities
 			return;
 		}
 
-		//Cache the viewer position.
-		const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+		//Cache the perceiver position.
+		const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 		//Reset the vegetation type information update.
 		update->_Information = nullptr;
@@ -530,8 +528,8 @@ namespace VegetationUtilities
 		//Update all vegetation type informations.
 		for (TYPE_INFORMATION_TYPE &information : informations)
 		{
-			//Calculate the current grid point based on the current viewer position.
-			const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance) };
+			//Calculate the current grid point based on the current perceiver position.
+			const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(perceiverPosition, information._Properties._CutoffDistance) };
 
 			//Create an array with the valid grid positions.
 			StaticArray<GridPoint2, 9> validGridPoints
@@ -555,8 +553,8 @@ namespace VegetationUtilities
 
 			public:
 
-				//The current viewer position.
-				Vector3<float> _ViewerPosition;
+				//The current perceiver position.
+				Vector3<float> _PerceiverPosition;
 
 				//The cutoff distance.
 				float _CutoffDistance;
@@ -564,7 +562,7 @@ namespace VegetationUtilities
 
 			SortingData sortingData;
 
-			sortingData._ViewerPosition = viewerPosition;
+			sortingData._PerceiverPosition = perceiverPosition;
 			sortingData._CutoffDistance = information._Properties._CutoffDistance;
 
 			//Sort the array so that the closest grid point is first.
@@ -575,7 +573,7 @@ namespace VegetationUtilities
 				const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance) };
 				const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance) };
 
-				return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
+				return Vector3<float>::LengthSquaredXZ(sortingData->_PerceiverPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_PerceiverPosition - secondGridPosition);
 			});
 
 			//Construct the update.

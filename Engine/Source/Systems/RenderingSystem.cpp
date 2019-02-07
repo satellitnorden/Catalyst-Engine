@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/RenderingSystem.h>
 
+//Core.
+#include <Core/General/Perceiver.h>
+
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
 #include <Entities/Creation/ParticleSystemInitializationData.h>
@@ -27,7 +30,6 @@
 #include <Rendering/Engine/Resolution.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TextureData.h>
-#include <Rendering/Engine/Viewer.h>
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
@@ -1212,33 +1214,33 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 {
 	DynamicUniformData data;
 
-	//Calculate the viewer data.
-	Vector3<float> viewerPosition = Viewer::Instance->GetPosition();
-	Vector3<float> forwardVector = Viewer::Instance->GetForwardVector();
-	Vector3<float> upVector = Viewer::Instance->GetUpVector();
+	//Calculate the perceiver data.
+	Vector3<float> perceiverPosition = Perceiver::Instance->GetPosition();
+	Vector3<float> forwardVector = Perceiver::Instance->GetForwardVector();
+	Vector3<float> upVector = Perceiver::Instance->GetUpVector();
 
-	const Matrix4 *const RESTRICT projectionMatrix{ Viewer::Instance->GetProjectionMatrix() };
-	const Matrix4 *const RESTRICT viewerMatrix{ Viewer::Instance->GetViewerMatrix() };
-	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
-	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Viewer::Instance->GetInverseProjectionMatrix() };
-	const Matrix4 *const RESTRICT inverseViewerMatrix{ Viewer::Instance->GetInverseViewerMatrix() };
+	const Matrix4 *const RESTRICT projectionMatrix{ Perceiver::Instance->GetProjectionMatrix() };
+	const Matrix4 *const RESTRICT perceiverMatrix{ Perceiver::Instance->GetPerceiverMatrix() };
+	const Matrix4 *const RESTRICT viewMatrix{ Perceiver::Instance->GetViewMatrix() };
+	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Perceiver::Instance->GetInverseProjectionMatrix() };
+	const Matrix4 *const RESTRICT inversePerceiverMatrix{ Perceiver::Instance->GetInversePerceiverMatrix() };
 
-	Matrix4 viewerOriginMatrix{ *viewerMatrix };
-	viewerOriginMatrix.SetTranslation(Vector3<float>(0.0f, 0.0f, 0.0f));
+	Matrix4 perceiverOriginMatrix{ *perceiverMatrix };
+	perceiverOriginMatrix.SetTranslation(Vector3<float>(0.0f, 0.0f, 0.0f));
 
-	data._ViewerFieldOfViewCosine = CatalystBaseMath::CosineRadians(Viewer::Instance->GetFieldOfViewRadians()) - 0.2f;
-	data._InverseViewerMatrix = *inverseViewerMatrix;
+	data._PerceiverFieldOfViewCosine = CatalystBaseMath::CosineRadians(Perceiver::Instance->GetFieldOfViewRadians()) - 0.2f;
+	data._InversePerceiverMatrix = *inversePerceiverMatrix;
 	data._InverseProjectionMatrix = *inverseProjectionMatrix;
-	data._OriginViewMatrix = *projectionMatrix * viewerOriginMatrix;
+	data._OriginViewMatrix = *projectionMatrix * perceiverOriginMatrix;
 	data._ViewMatrix = *viewMatrix;
-	data._ViewerForwardVector = forwardVector;
-	data._ViewerWorldPosition = viewerPosition;
+	data._PerceiverForwardVector = forwardVector;
+	data._PerceiverWorldPosition = perceiverPosition;
 
 	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
 	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
 	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
 	data._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4<float>(-data._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -data._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
+	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4<float>(-data._DirectionalLightDirection._X * 100.0f + perceiverPosition._X, -data._DirectionalLightDirection._Y * 100.0f + perceiverPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + perceiverPosition._Z, 1.0f);
 	data._DirectionalLightScreenSpacePosition._X /= data._DirectionalLightScreenSpacePosition._W;
 	data._DirectionalLightScreenSpacePosition._Y /= data._DirectionalLightScreenSpacePosition._W;
 	data._DirectionalLightScreenSpacePosition._Z /= data._DirectionalLightScreenSpacePosition._W;
@@ -1377,7 +1379,7 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 
 	for (uint64 i{ 0 }, size{ informations->Size() }; i < size; ++i)
 	{
-		if (!TEST_BIT(informations->At(i)._Visibility, VisibilityFlag::Viewer))
+		if (!TEST_BIT(informations->At(i)._Visibility, VisibilityFlag::Perceiver))
 		{
 			continue;
 		}

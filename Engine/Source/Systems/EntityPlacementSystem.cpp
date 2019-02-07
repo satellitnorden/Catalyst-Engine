@@ -1,8 +1,8 @@
 //Header file.
 #include <Systems/EntityPlacementSystem.h>
 
-//Rendering.
-#include <Rendering/Engine/Viewer.h>
+//Core.
+#include <Core/General/Perceiver.h>
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>
@@ -94,14 +94,14 @@ void EntityPlacementSystem::UpdatePlacement() NOEXCEPT
 */
 void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 {
-	//Cache the current viewer position.
-	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+	//Cache the current perceiver position.
+	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 	//Update all two dimensional placement data.
 	for (EntityTwoDimensionalPlacementData &data : _TwoDimensionalPlacementData)
 	{
-		//Calculate the current grid point based on the current viewer position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, data._GridSize) };
+		//Calculate the current grid point based on the current perceiver position.
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(perceiverPosition, data._GridSize) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 9> validGridPoints
@@ -208,14 +208,14 @@ void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 */
 void EntityPlacementSystem::UpdateThreeDimensionalPlacement() NOEXCEPT
 {
-	//Cache the current viewer position.
-	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+	//Cache the current perceiver position.
+	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
 	//Update all three dimensional placement data.
 	for (EntityThreeDimensionalPlacementData &data : _ThreeDimensionalPlacementData)
 	{
-		//Calculate the current grid point based on the current viewer position.
-		const GridPoint3 currentGridPoint{ GridPoint3::WorldPositionToGridPoint(viewerPosition, data._GridSize) };
+		//Calculate the current grid point based on the current perceiver position.
+		const GridPoint3 currentGridPoint{ GridPoint3::WorldPositionToGridPoint(perceiverPosition, data._GridSize) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint3, 27> validGridPoints

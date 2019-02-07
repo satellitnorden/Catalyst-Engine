@@ -1,12 +1,14 @@
 //Header file.
 #include <Systems/CullingSystem.h>
 
+//Core.
+#include <Core/General/Perceiver.h>
+
 //Components.
 #include <Components/ComponentManager.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>
-#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -79,9 +81,9 @@ void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT 
 void CullingSystem::CullDebrisVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
-	//Iterate over all debris vegetation type informations, and cull the grid points that is too far away from the viewer.
+	//Iterate over all debris vegetation type informations, and cull the grid points that is too far away from the perceiver.
 	for (DebrisVegetationTypeInformation &information : *VegetationSystem::Instance->GetDebrisVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -97,12 +99,12 @@ void CullingSystem::CullDebrisVegetation() NOEXCEPT
 			{
 				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
 				{
-					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 
 				else
 				{
-					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 			}
 		}
@@ -115,9 +117,9 @@ void CullingSystem::CullDebrisVegetation() NOEXCEPT
 void CullingSystem::CullGrassVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
-	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
+	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the perceiver.
 	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -133,12 +135,12 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			{
 				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
 				{
-					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 
 				else
 				{
-					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 			}
 		}
@@ -151,7 +153,7 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 void CullingSystem::CullParticleSystems() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
 	//Retrieve component data.
 	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
@@ -163,12 +165,12 @@ void CullingSystem::CullParticleSystems() NOEXCEPT
 		//Test this particle system's axis-aligned bounding box against the current frustum planes.
 		if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, component->_AxisAlignedBoundingBox))
 		{
-			SET_BIT(renderComponent->_Visibility, VisibilityFlag::Viewer);
+			SET_BIT(renderComponent->_Visibility, VisibilityFlag::Perceiver);
 		}
 
 		else
 		{
-			CLEAR_BIT(renderComponent->_Visibility, VisibilityFlag::Viewer);
+			CLEAR_BIT(renderComponent->_Visibility, VisibilityFlag::Perceiver);
 		}
 	}
 }
@@ -179,9 +181,9 @@ void CullingSystem::CullParticleSystems() NOEXCEPT
 void CullingSystem::CullSolidVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
-	//Iterate over all solid vegetation type informations, and cull the grid points that is too far away from the viewer.
+	//Iterate over all solid vegetation type informations, and cull the grid points that is too far away from the perceiver.
 	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -197,12 +199,12 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			{
 				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
 				{
-					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 
 				else
 				{
-					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 			}
 		}
@@ -215,7 +217,7 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 void CullingSystem::CullTerrain() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
 	//Iterate over all terrain patches and cull them.
 	DynamicArray<TerrainPatchInformation> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
@@ -235,12 +237,12 @@ void CullingSystem::CullTerrain() NOEXCEPT
 		//Test this patch's axis-aligned bounding box against the current frustum planes.
 		if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
 		{
-			SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Perceiver);
 		}
 
 		else
 		{
-			CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Perceiver);
 		}
 	}
 }
@@ -251,9 +253,9 @@ void CullingSystem::CullTerrain() NOEXCEPT
 void CullingSystem::CullTreeVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Perceiver::Instance->GetFrustumPlanes() };
 
-	//Iterate over all tree vegetation type informations, and cull the grid points that is too far away from the viewer.
+	//Iterate over all tree vegetation type informations, and cull the grid points that is too far away from the perceiver.
 	for (TreeVegetationTypeInformation &information : *VegetationSystem::Instance->GetTreeVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -269,12 +271,12 @@ void CullingSystem::CullTreeVegetation() NOEXCEPT
 			{
 				if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBoxes[j]))
 				{
-					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					SET_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 
 				else
 				{
-					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Viewer);
+					CLEAR_BIT(information._PatchRenderInformations[i]._Visibilities[j], VisibilityFlag::Perceiver);
 				}
 			}
 		}

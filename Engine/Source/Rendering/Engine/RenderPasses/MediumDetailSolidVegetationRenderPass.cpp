@@ -196,7 +196,7 @@ void MediumDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const SolidVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Medium)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Medium)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Medium)] == 0)
 			{
 				continue;

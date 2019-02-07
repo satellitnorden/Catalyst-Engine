@@ -185,7 +185,7 @@ void HighDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::HighImpostor)] == 0)
 			{
 				continue;

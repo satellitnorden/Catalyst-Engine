@@ -185,7 +185,7 @@ void LowDetailTreeVegetationImpostorDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::LowImpostor)] == 0)
 			{
 				continue;

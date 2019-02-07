@@ -1,10 +1,12 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 
+//Core.
+#include <Core/General/Perceiver.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 #include <Rendering/Engine/OceanRenderingData.h>
-#include <Rendering/Engine/Viewer.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -135,8 +137,8 @@ void AboveOceanRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void AboveOceanRenderPass::RenderInternal() NOEXCEPT
 {
-	//Check if the viewer is over water, if not - don't render.
-	if (Viewer::Instance->GetPosition()._Y < 0.0f)
+	//Check if the perceiver is over water, if not - don't render.
+	if (Perceiver::Instance->GetPosition()._Y < 0.0f)
 	{
 		SetIncludeInRender(false);
 

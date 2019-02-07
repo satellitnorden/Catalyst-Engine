@@ -19,14 +19,14 @@ public:
 	//The maximum number of spot lights.
 	static constexpr uint8 MAXIMUM_NUMBER_OF_SPOT_LIGHTS{ 8 };
 
-	//Viewer data.
-	Vector4<float> _ViewerFieldOfViewCosine;
-	Matrix4 _InverseViewerMatrix;
+	//Perceiver data.
+	Vector4<float> _PerceiverFieldOfViewCosine;
+	Matrix4 _InversePerceiverMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _OriginViewMatrix;
 	Matrix4 _ViewMatrix;
-	Vector4<float> _ViewerForwardVector;
-	Vector4<float> _ViewerWorldPosition;
+	Vector4<float> _PerceiverForwardVector;
+	Vector4<float> _PerceiverWorldPosition;
 
 	//Directional light data.
 	Vector4<float> _DirectionalLightIntensity;
@@ -69,13 +69,13 @@ public:
 
 static_assert(sizeof(DynamicUniformData) == 1904, "X");
 
-static_assert(offsetof(DynamicUniformData, _ViewerFieldOfViewCosine) == 0, "X");
-static_assert(offsetof(DynamicUniformData, _InverseViewerMatrix) == 16, "X");
+static_assert(offsetof(DynamicUniformData, _PerceiverFieldOfViewCosine) == 0, "X");
+static_assert(offsetof(DynamicUniformData, _InversePerceiverMatrix) == 16, "X");
 static_assert(offsetof(DynamicUniformData, _InverseProjectionMatrix) == 80, "X");
 static_assert(offsetof(DynamicUniformData, _OriginViewMatrix) == 144, "X");
 static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 208, "X");
-static_assert(offsetof(DynamicUniformData, _ViewerForwardVector) == 272, "X");
-static_assert(offsetof(DynamicUniformData, _ViewerWorldPosition) == 288, "X");
+static_assert(offsetof(DynamicUniformData, _PerceiverForwardVector) == 272, "X");
+static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 288, "X");
 
 static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 304, "X");
 static_assert(offsetof(DynamicUniformData, _DirectionalLightViewMatrix) == 320, "X");

@@ -194,7 +194,7 @@ void LowDetailTreeVegetationCrownDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Low)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Low)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Low)] == 0)
 			{
 				continue;

@@ -18,7 +18,6 @@
 #include <Rendering/Engine/CommandBuffer.h>
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TextureData.h>
-#include <Rendering/Engine/Viewer.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>

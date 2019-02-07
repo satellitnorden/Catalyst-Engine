@@ -203,7 +203,7 @@ void MediumDetailTreeVegetationTrunkRenderPass::RenderInternal() NOEXCEPT
 		for (const TreeVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Medium)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(TreeVegetationLevelOfDetail::Medium)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(TreeVegetationLevelOfDetail::Medium)] == 0)
 			{
 				continue;

@@ -5,9 +5,7 @@
 #include <Core/Algorithms/SortingAlgorithms.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
-
-//Rendering.
-#include <Rendering/Engine/Viewer.h>
+#include <Core/General/Perceiver.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -290,11 +288,11 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Reset the update.
 	_Update._Type = TerrainUpdate::Type::Invalid;
 
-	//Get the current viewer position.
-	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+	//Get the current perceiver position.
+	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
-	//Calculate the viewer grid point.
-	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, TerrainConstants::TERRAIN_PATCH_SIZE) };
+	//Calculate the perceiver grid point.
+	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(perceiverPosition, TerrainConstants::TERRAIN_PATCH_SIZE) };
 
 	//Calculate the valid grid points.
 	const StaticArray<GridPoint2, 9> validGridPoints
@@ -388,7 +386,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 				continue;
 			}
 
-			if (CheckCombination(depth, viewerPosition, &_QuadTree._RootNodes[i]))
+			if (CheckCombination(depth, perceiverPosition, &_QuadTree._RootNodes[i]))
 			{
 				//Calculate new borders.
 				CalculateNewborders();
@@ -408,7 +406,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 				continue;
 			}
 
-			if (CheckSubdivision(depth, viewerPosition, &_QuadTree._RootNodes[i]))
+			if (CheckSubdivision(depth, perceiverPosition, &_QuadTree._RootNodes[i]))
 			{
 				//Calculate new borders.
 				CalculateNewborders();
@@ -444,12 +442,12 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEP
 /*
 *	Checks combination of a node. Returns whether or not the node was combined.
 */
-bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float> &perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
 	{
-		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(*node, viewerPosition))
+		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(*node, perceiverPosition))
 		{
 			CombineNode(node);
 
@@ -460,7 +458,7 @@ bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float> &vi
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				if (CheckCombination(depth, viewerPosition, &node->_ChildNodes[i]))
+				if (CheckCombination(depth, perceiverPosition, &node->_ChildNodes[i]))
 				{
 					return true;
 				}
@@ -474,7 +472,7 @@ bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float> &vi
 /*
 *	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 */
-bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Don't go further down than the depth.
 	if (node->_Depth > depth)
@@ -487,7 +485,7 @@ bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &vi
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			if (CheckSubdivision(depth, viewerPosition, &node->_ChildNodes[i]))
+			if (CheckSubdivision(depth, perceiverPosition, &node->_ChildNodes[i]))
 			{
 				return true;
 			}
@@ -497,7 +495,7 @@ bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &vi
 	//Else, check if this node should be subdivided.
 	else
 	{
-		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(*node, viewerPosition))
+		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(*node, perceiverPosition))
 		{
 			SubdivideNode(node);
 

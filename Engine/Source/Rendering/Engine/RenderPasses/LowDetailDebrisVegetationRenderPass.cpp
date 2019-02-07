@@ -219,7 +219,7 @@ void LowDetailDebrisVegetationRenderPass::RenderInternal() NOEXCEPT
 		for (const DebrisVegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Low)], VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibilities[UNDERLYING(LevelOfDetail::Low)], VisibilityFlag::Perceiver)
 				|| renderInformation._NumberOfTransformations[UNDERLYING(LevelOfDetail::Low)] == 0)
 			{
 				continue;

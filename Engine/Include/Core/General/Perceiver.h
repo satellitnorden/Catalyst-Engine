@@ -15,24 +15,24 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-class Viewer final
+class Perceiver final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(Viewer);
+	DECLARE_SINGLETON(Perceiver);
 
 	/*
 	*	Default constructor.
 	*/
-	Viewer() NOEXCEPT
+	Perceiver() NOEXCEPT
 	{
 
 	}
 
 	/*
-	*	Returns the position of the viewer.
+	*	Returns the position of the perceiver.
 	*/
 	const Vector3<float>& GetPosition() const NOEXCEPT
 	{
@@ -42,7 +42,7 @@ public:
 	}
 
 	/*
-	*	Moves the viewer.
+	*	Moves the perceiver.
 	*/
 	void Move(const Vector3<float> &amount) NOEXCEPT
 	{
@@ -50,12 +50,12 @@ public:
 
 		_Position += amount;
 
-		_ViewerMatrixDirty = true;
+		_PerceiverMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
 	/*
-	*	Sets the position of the viewer.
+	*	Sets the position of the perceiver.
 	*/
 	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT
 	{
@@ -63,12 +63,12 @@ public:
 
 		_Position = newPosition;
 
-		_ViewerMatrixDirty = true;
+		_PerceiverMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
 	/*
-	*	Returns the rotation of the viewer.
+	*	Returns the rotation of the perceiver.
 	*/
 	const Vector3<float>& GetRotation() const NOEXCEPT
 	{
@@ -78,7 +78,7 @@ public:
 	}
 
 	/*
-	*	Rotates the viewer.
+	*	Rotates the perceiver.
 	*/
 	void Rotate(const Vector3<float> &amount) NOEXCEPT
 	{
@@ -86,12 +86,12 @@ public:
 
 		_Rotation += amount;
 
-		_ViewerMatrixDirty = true;
+		_PerceiverMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
 	/*
-	*	Sets the rotation of the viewer.
+	*	Sets the rotation of the perceiver.
 	*/
 	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
@@ -99,12 +99,12 @@ public:
 
 		_Rotation = newRotation;
 
-		_ViewerMatrixDirty = true;
+		_PerceiverMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
 	/*
-	*	Returns the forward vector of the viewer.
+	*	Returns the forward vector of the perceiver.
 	*/
 	Vector3<float> GetForwardVector() const NOEXCEPT
 	{
@@ -114,7 +114,7 @@ public:
 	}
 
 	/*
-	*	Returns the right vector of the viewer.
+	*	Returns the right vector of the perceiver.
 	*/
 	Vector3<float> GetRightVector() const NOEXCEPT
 	{
@@ -124,7 +124,7 @@ public:
 	}
 
 	/*
-	*	Returns the up vector of the viewer.
+	*	Returns the up vector of the perceiver.
 	*/
 	Vector3<float> GetUpVector() const NOEXCEPT
 	{
@@ -198,27 +198,27 @@ public:
 	}
 
 	/*
-	*	Returns the viewer matrix.
+	*	Returns the perceiver matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() NOEXCEPT
+	RESTRICTED const Matrix4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
 	{
 		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		CheckUpdates();
 
-		return &_ViewerMatrix;
+		return &_PerceiverMatrix;
 	}
 
 	/*
-	*	Returns the inverse viewer matrix.
+	*	Returns the inverse perceiver matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() NOEXCEPT
+	RESTRICTED const Matrix4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
 	{
 		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
 
 		CheckUpdates();
 
-		return &_InverseViewerMatrix;
+		return &_InversePerceiverMatrix;
 	}
 
 	/*
@@ -247,7 +247,7 @@ public:
 
 private:
 
-	//The lock for the viewer.
+	//The lock for the perceiver.
 	mutable Spinlock _Lock;
 
 	//The position.
@@ -271,8 +271,8 @@ private:
 	//Denotes whether or not the projection matrix is dirty.
 	bool _ProjectionMatrixDirty{ true };
 
-	//Denotes whether or not the viewer matrix is dirty.
-	bool _ViewerMatrixDirty{ true };
+	//Denotes whether or not the perceiver matrix is dirty.
+	bool _PerceiverMatrixDirty{ true };
 
 	//Denotes whether or not the frustum planes is dirty.
 	bool _FrustumPlanesDirty{ true };
@@ -283,11 +283,11 @@ private:
 	//The inverse projection matrix.
 	Matrix4 _InverseProjectionMatrix;
 
-	//The viewer matrix.
-	Matrix4 _ViewerMatrix;
+	//The perceiver matrix.
+	Matrix4 _PerceiverMatrix;
 
-	//The inverse viewer matrix.
-	Matrix4 _InverseViewerMatrix;
+	//The inverse perceiver matrix.
+	Matrix4 _InversePerceiverMatrix;
 
 	//The view matrix.
 	Matrix4 _ViewMatrix;
@@ -305,9 +305,9 @@ private:
 	void UpdateProjectionMatrix() NOEXCEPT;
 
 	/*
-	*	Updates the viewer matrix.
+	*	Updates the perceiver matrix.
 	*/
-	void UpdateViewerMatrix() NOEXCEPT;
+	void UpdatePerceiverMatrix() NOEXCEPT;
 
 	/*
 	*	Updates the frustum planes.

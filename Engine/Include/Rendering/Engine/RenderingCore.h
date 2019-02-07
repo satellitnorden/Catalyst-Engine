@@ -458,7 +458,7 @@ enum class Topology : uint8
 enum class VisibilityFlag : uint8
 {
 	None = BIT(0),
-	Viewer = BIT(1),
+	Perceiver = BIT(1),
 	DirectionalLight = BIT(2)
 };
 

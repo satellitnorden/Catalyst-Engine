@@ -4,12 +4,11 @@
 
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
+#include <Core/General/Perceiver.h>
 
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>
 
-//Rendering.
-#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -27,9 +26,9 @@ void DebugRenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RE
 	{
 		SortingAlgorithms::InsertionSort<AxisAlignedBoundingBoxDebugRenderData>(_AxisAlignedBoundingBoxDebugRenderData.Begin(), _AxisAlignedBoundingBoxDebugRenderData.End(), nullptr, [](const void *const RESTRICT userData, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT first, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT second)
 		{
-			const Vector3<float> &viewerPosition{ Viewer::Instance->GetPosition() };
+			const Vector3<float> &perceiverPosition{ Perceiver::Instance->GetPosition() };
 
-			return Vector3<float>::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3<float>::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
+			return Vector3<float>::LengthSquared(perceiverPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3<float>::LengthSquared(perceiverPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
 		});
 	}
 }

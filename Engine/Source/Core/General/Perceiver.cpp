@@ -1,25 +1,25 @@
 //Header file.
-#include <Rendering/Engine/Viewer.h>
+#include <Core/General/Perceiver.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(Viewer);
+DEFINE_SINGLETON(Perceiver);
 
 /*
 *	Checks for updates.
 */
-void Viewer::CheckUpdates() NOEXCEPT
+void Perceiver::CheckUpdates() NOEXCEPT
 {
 	if (_ProjectionMatrixDirty)
 	{
 		UpdateProjectionMatrix();
 	}
 
-	if (_ViewerMatrixDirty)
+	if (_PerceiverMatrixDirty)
 	{
-		UpdateViewerMatrix();
+		UpdatePerceiverMatrix();
 	}
 
 	if (_FrustumPlanesDirty)
@@ -31,7 +31,7 @@ void Viewer::CheckUpdates() NOEXCEPT
 /*
 *	Updates the projection matrix.
 */
-void Viewer::UpdateProjectionMatrix() NOEXCEPT
+void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
 	_ProjectionMatrix = Matrix4::ReversePerspective(_FieldOfViewRadians, static_cast<float>(RenderingSystem::Instance->GetResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetResolution()._Height), _NearPlane, _FarPlane);
@@ -41,35 +41,35 @@ void Viewer::UpdateProjectionMatrix() NOEXCEPT
 	_InverseProjectionMatrix.Inverse();
 
 	//Update the view matrix.
-	_ViewMatrix = _ProjectionMatrix * _ViewerMatrix;
+	_ViewMatrix = _ProjectionMatrix * _PerceiverMatrix;
 
 	//Reset the dirtyness of the projection matrix.
 	_ProjectionMatrixDirty = false;
 }
 
 /*
-*	Updates the viewer matrix.
+*	Updates the perceiver matrix.
 */
-void Viewer::UpdateViewerMatrix() NOEXCEPT
+void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 {
-	//Update the viewer matrix.
-	_ViewerMatrix = Matrix4::LookAt(_Position, _Position + Vector3<float>::Normalize(Vector3<float>(Vector3<float>::FORWARD).Rotated(_Rotation)), Vector3<float>::Normalize(Vector3<float>(Vector3<float>::UP).Rotated(_Rotation)));
+	//Update the perceiver matrix.
+	_PerceiverMatrix = Matrix4::LookAt(_Position, _Position + Vector3<float>::Normalize(Vector3<float>(Vector3<float>::FORWARD).Rotated(_Rotation)), Vector3<float>::Normalize(Vector3<float>(Vector3<float>::UP).Rotated(_Rotation)));
 
-	//Update the inverse viewer matrix.
-	_InverseViewerMatrix = _ViewerMatrix;
-	_InverseViewerMatrix.Inverse();
+	//Update the inverse perceiver matrix.
+	_InversePerceiverMatrix = _PerceiverMatrix;
+	_InversePerceiverMatrix.Inverse();
 
 	//Update the view matrix.
-	_ViewMatrix = _ProjectionMatrix * _ViewerMatrix;
+	_ViewMatrix = _ProjectionMatrix * _PerceiverMatrix;
 
-	//Reset the dirtyness of the viewer matrix.
-	_ViewerMatrixDirty = false;
+	//Reset the dirtyness of the perceiver matrix.
+	_PerceiverMatrixDirty = false;
 }
 
 /*
 *	Updates the frustum planes.
 */
-void Viewer::UpdateFrustumPlanes() NOEXCEPT
+void Perceiver::UpdateFrustumPlanes() NOEXCEPT
 {
 	//Construct the frustum planes.
 	for (uint8 i = 4; i--;) _FrustumPlanes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.

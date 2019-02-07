@@ -143,7 +143,7 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
-		if (TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
+		if (TEST_BIT(information._Visibility, VisibilityFlag::Perceiver))
 		{
 			++numberofInstances;
 		}

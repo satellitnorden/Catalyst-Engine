@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>
-#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>

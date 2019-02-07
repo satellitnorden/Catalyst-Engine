@@ -76,13 +76,13 @@
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\Perceiver.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Quadruple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
-    <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
@@ -268,7 +268,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.h" />
@@ -434,6 +433,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />

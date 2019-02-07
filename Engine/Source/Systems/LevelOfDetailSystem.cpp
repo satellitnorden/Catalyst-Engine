@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/LevelOfDetailSystem.h>
 
-//Rendering.
-#include <Rendering/Engine/Viewer.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
