@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/SoundSystem.h>
 
+//Core.
+#include <Core/General/Perceiver.h>
+
 //Sound.
 #include <Sound/Abstraction/FMOD/FMODAbstractionUtilities.h>
 
@@ -20,6 +23,42 @@ namespace FMODSoundSystemData
 {
 	//The studio system.
 	FMOD::Studio::System *RESTRICT _System{ nullptr };
+}
+
+namespace FMODSoundSystemLogic
+{
+
+	/*
+	*	Updates the listener position.
+	*/
+	void UpdateListenerPosition() NOEXCEPT
+	{
+		//Get the perceiver position, forward vector and up vector.
+		const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
+		const Vector3<float> perceiverForwardVector{ Perceiver::Instance->GetForwardVector() };
+		const Vector3<float> perceiverUpVector{ Perceiver::Instance->GetUpVector() };
+
+		FMOD_3D_ATTRIBUTES listenerAttributes;
+
+		listenerAttributes.position.x = perceiverPosition._X;
+		listenerAttributes.position.y = perceiverPosition._Y;
+		listenerAttributes.position.z = perceiverPosition._Z;
+
+		listenerAttributes.velocity.x = 0.0f;
+		listenerAttributes.velocity.y = 0.0f;
+		listenerAttributes.velocity.z = 0.0f;
+
+		listenerAttributes.forward.x = perceiverForwardVector._X;
+		listenerAttributes.forward.y = perceiverForwardVector._Y;
+		listenerAttributes.forward.z = perceiverForwardVector._Z;
+
+		listenerAttributes.up.x = perceiverUpVector._X;
+		listenerAttributes.up.y = perceiverUpVector._Y;
+		listenerAttributes.up.z = perceiverUpVector._Z;
+
+		FMOD_ERROR_CHECK(FMODSoundSystemData::_System->setListenerAttributes(0, &listenerAttributes));
+	}
+
 }
 
 /*
@@ -42,7 +81,10 @@ void SoundSystem::Initialize() NOEXCEPT
 */
 void SoundSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Update the studip system.
+	//Update the listener position.
+	FMODSoundSystemLogic::UpdateListenerPosition();
+
+	//Update the studio system.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
 }
 
