@@ -2,7 +2,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>

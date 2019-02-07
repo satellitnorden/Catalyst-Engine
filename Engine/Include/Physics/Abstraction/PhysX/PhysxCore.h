@@ -6,7 +6,7 @@
 #endif
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //PhysX.
 #include <ThirdParty/PhysX/PxPhysicsAPI.h>

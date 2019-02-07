@@ -15,9 +15,9 @@
 #include <type_traits>
 
 //Catalyst core.
-#include <Core/Core/CatalystDefines.h>
-#include <Core/Core/CatalystMacros.h>
-#include <Core/Core/CatalystTypes.h>
+#include <Core/Essential/CatalystDefines.h>
+#include <Core/Essential/CatalystMacros.h>
+#include <Core/Essential/CatalystTypes.h>
 
 //Platform.
 #include <Platform/General/Platform.h>

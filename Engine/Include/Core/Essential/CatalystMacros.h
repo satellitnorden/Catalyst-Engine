@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystPreDefines.h>
+#include <Core/Essential/CatalystPreDefines.h>
 
 /*
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.

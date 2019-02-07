@@ -5,7 +5,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
 namespace VulkanShaderData

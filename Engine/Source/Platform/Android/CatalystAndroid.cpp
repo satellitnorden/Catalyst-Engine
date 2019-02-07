@@ -3,7 +3,7 @@
 #include <Platform/Android/CatalystAndroid.h>
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Input.
 #include <Input/TouchState.h>

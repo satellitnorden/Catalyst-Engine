@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/Map.h>
 #include <Core/General/BinaryFile.h>
 #include <Core/General/HashString.h>

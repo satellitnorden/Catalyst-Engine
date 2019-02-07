@@ -2,7 +2,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Thirdy party.
 #include <ThirdParty/fmod_studio.hpp>

@@ -3,7 +3,7 @@
 #include <Platform/Windows/CatalystWindows.h>
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Input.
 #include <Input/GamepadState.h>

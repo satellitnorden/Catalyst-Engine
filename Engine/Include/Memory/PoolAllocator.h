@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 template <uint64 SIZE>
 class PoolAllocator final

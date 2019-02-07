@@ -184,9 +184,6 @@
     <Filter Include="Core\Include\General">
       <UniqueIdentifier>{2de41bd6-d32e-49fc-8a95-48c301aefab9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Include\Core">
-      <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Memory">
       <UniqueIdentifier>{4831142b-2330-47b4-aa83-a4bcf1582cb6}</UniqueIdentifier>
     </Filter>
@@ -285,6 +282,9 @@
     </Filter>
     <Filter Include="Sound\Include\Abstraction\FMOD">
       <UniqueIdentifier>{5f4eea93-b7b5-45cd-9a03-6240a84ed543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Include\Essential">
+      <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -635,21 +635,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystCore.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystDefines.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystMacros.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystTypes.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystPreDefines.h">
-      <Filter>Core\Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h">
       <Filter>Components\Include</Filter>
@@ -1442,6 +1427,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\ScopedWriteLock.h">
       <Filter>Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystDefines.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEssential.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystMacros.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystPreDefines.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h">
+      <Filter>Core\Include\Essential</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

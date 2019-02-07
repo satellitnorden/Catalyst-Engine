@@ -64,11 +64,11 @@
     <ClInclude Include="..\..\..\Include\Core\Containers\DynamicArray.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\Map.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h" />
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystCore.h" />
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystDefines.h" />
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystMacros.h" />
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystPreDefines.h" />
-    <ClInclude Include="..\..\..\Include\Core\Core\CatalystTypes.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystDefines.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEssential.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystMacros.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystPreDefines.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h" />
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h" />

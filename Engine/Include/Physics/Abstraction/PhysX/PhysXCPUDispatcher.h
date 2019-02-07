@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Physics.
 #include <Physics/Abstraction/PhysX/PhysxCore.h>

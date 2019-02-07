@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>

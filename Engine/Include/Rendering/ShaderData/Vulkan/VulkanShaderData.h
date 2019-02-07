@@ -5,7 +5,7 @@
 #pragma once
 
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
 #include <Rendering/ShaderData/Vulkan/AboveOceanFragmentShader.h>

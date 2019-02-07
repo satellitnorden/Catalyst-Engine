@@ -1,5 +1,5 @@
 //Core.
-#include <Core/Core/CatalystCore.h>
+#include <Core/Essential/CatalystEssential.h>
 #include <Core/General/BinaryFile.h>
 
 //STL.
@@ -21,7 +21,7 @@ int main()
 	masterOutput << "#pragma once" << std::endl;
 	masterOutput << std::endl;
 	masterOutput << "//Core." << std::endl;
-	masterOutput << "#include <Core/Core/CatalystCore.h>" << std::endl;
+	masterOutput << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 	masterOutput << std::endl;
 	masterOutput << "//Rendering." << std::endl;
 	 
@@ -49,7 +49,7 @@ int main()
 			headerOutput << "#pragma once" << std::endl;
 			headerOutput << std::endl;
 			headerOutput << "//Core." << std::endl;
-			headerOutput << "#include <Core/Core/CatalystCore.h>" << std::endl;
+			headerOutput << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 			headerOutput << "#include <Core/Containers/DynamicArray.h>" << std::endl;
 			headerOutput << std::endl;
 			headerOutput << "namespace VulkanShaderData" << std::endl;
