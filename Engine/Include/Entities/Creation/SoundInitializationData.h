@@ -3,13 +3,16 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Entities.
+#include <Entities/Creation/EntityInitializationData.h>
+
 //Math.
 #include <Math/Vector3.h>
 
 //Sound.
 #include <Sound/Native/SoundCore.h>
 
-class SoundComponent final
+class SoundInitializationData final : public EntityInitializationData
 {
 
 public:
@@ -17,7 +20,7 @@ public:
 	//The position.
 	Vector3<float> _Position;
 
-	//The sound instance handle.
-	SoundInstanceHandle _Instance;
+	//The description.
+	SoundDescriptionHandle _Description;
 
 };

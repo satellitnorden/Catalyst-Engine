@@ -8,12 +8,14 @@
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
 #include <Entities/Creation/ParticleSystemInitializationData.h>
 #include <Entities/Creation/PointLightInitializationData.h>
+#include <Entities/Creation/SoundInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Singleton definition.
@@ -85,6 +87,13 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 			break;
 		}
 
+		case Entity::EntityType::Sound:
+		{
+			InitializeSoundEntity(entity, data);
+
+			break;
+		}
+
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 		default:
 		{
@@ -121,6 +130,13 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 		case Entity::EntityType::PointLight:
 		{
 			TerminatePointLightEntity(entity);
+
+			break;
+		}
+
+		case Entity::EntityType::Sound:
+		{
+			TerminateSoundEntity(entity);
 
 			break;
 		}
@@ -291,6 +307,27 @@ void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT ent
 }
 
 /*
+*	Initializes a sound entity.
+*/
+void EntityCreationSystem::InitializeSoundEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Retrieve a new components index for this sound entity.
+	entity->_ComponentsIndex = ComponentManager::GetNewSoundComponentsIndex(entity);
+
+	//Copy the data over to the component.
+	SoundComponent &component{ ComponentManager::GetSoundSoundComponents()[entity->_ComponentsIndex] };
+	const SoundInitializationData *const RESTRICT initializationData{ static_cast<const SoundInitializationData *const RESTRICT>(data) };
+
+	component._Position = initializationData->_Position;
+
+	//Create the sound instance.
+	SoundSystem::Instance->CreateSoundInstance(initializationData->_Description, &component._Instance);
+
+	//Destroy the initialization data.
+	DestroyInitializationData<SoundInitializationData>(data);
+}
+
+/*
 *	Processes the termination queue.
 */
 void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
@@ -336,6 +373,18 @@ void EntityCreationSystem::TerminatePointLightEntity(Entity* const RESTRICT enti
 {
 	//Return this entitiy's components index.
 	ComponentManager::ReturnPointLightComponentsIndex(entity->_ComponentsIndex);
+}
+
+/*
+*	Terminates a sound entity.
+*/
+void EntityCreationSystem::TerminateSoundEntity(Entity* const RESTRICT entity) NOEXCEPT
+{
+	//Destroy the sound instance.
+	SoundSystem::Instance->DestroySoundInstance(ComponentManager::GetSoundSoundComponents()[entity->_ComponentsIndex]._Instance);
+
+	//Return this entitiy's components index.
+	ComponentManager::ReturnSoundComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

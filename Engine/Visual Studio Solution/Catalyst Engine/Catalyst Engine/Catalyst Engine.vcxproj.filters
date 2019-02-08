@@ -1440,6 +1440,9 @@
     <ClInclude Include="..\..\..\Include\Core\General\Perceiver.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

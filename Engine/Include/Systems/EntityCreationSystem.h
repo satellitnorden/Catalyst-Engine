@@ -190,6 +190,11 @@ private:
 	void InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Initializes a sound entity.
+	*/
+	void InitializeSoundEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Processes the termination queue.
 	*/
 	void ProcessTerminationQueue() NOEXCEPT;
@@ -208,6 +213,11 @@ private:
 	*	Terminates a point light entity.
 	*/
 	void TerminatePointLightEntity(Entity* const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Terminates a sound entity.
+	*/
+	void TerminateSoundEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Processes the destruction queue.

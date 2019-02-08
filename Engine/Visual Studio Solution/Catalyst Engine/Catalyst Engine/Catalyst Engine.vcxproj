@@ -90,6 +90,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalGridPoint.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalPlacementData.h" />
