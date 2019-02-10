@@ -5,6 +5,9 @@
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //Resources.
 #include <Resources/SoundBankData.h>
 
@@ -99,5 +102,10 @@ public:
 	*	The index of a parameter might not always be the same as it appears in the sound editor.
 	*/
 	void SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT;
+
+	/*
+	*	Sets the position of a sound instance.
+	*/
+	void SetPosition(const SoundInstanceHandle instance, const Vector3<float> &position) NOEXCEPT;
 
 };

@@ -10,12 +10,12 @@
 
 namespace FMODSoundSystemConstants
 {
-	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{	FMOD_INIT_NORMAL
+	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{	FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_VOL0_BECOMES_VIRTUAL
 #if FMOD_DEBUGGING
 													| FMOD_INIT_PROFILE_ENABLE
 #endif
 	};
-	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_NORMAL };
+	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_NORMAL | FMOD_STUDIO_INIT_LOAD_FROM_UPDATE };
 	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 512 };
 }
 
@@ -199,4 +199,31 @@ void SoundSystem::SetParameterAtIndex(const SoundInstanceHandle instance, const 
 	//Set the parameter at the given index.
 	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->setParameterValueByIndex(static_cast<int32>(index), value));
 }
+
+/*
+*	Sets the position of a sound instance.
+*/
+void SoundSystem::SetPosition(const SoundInstanceHandle instance, const Vector3<float> &position) NOEXCEPT
+{
+	FMOD_3D_ATTRIBUTES attributes;
+
+	attributes.position.x = position._X;
+	attributes.position.y = position._Y;
+	attributes.position.z = position._Z;
+
+	attributes.velocity.x = 0.0f;
+	attributes.velocity.y = 0.0f;
+	attributes.velocity.z = 0.0f;
+
+	attributes.forward.x = 0.0f;
+	attributes.forward.y = 0.0f;
+	attributes.forward.z = -1.0f;
+
+	attributes.up.x = 0.0f;
+	attributes.up.y = 1.0f;
+	attributes.up.z = 0.0f;
+
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->set3DAttributes(&attributes));
+}
+
 #endif

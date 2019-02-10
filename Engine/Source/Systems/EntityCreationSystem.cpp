@@ -323,6 +323,12 @@ void EntityCreationSystem::InitializeSoundEntity(Entity* const RESTRICT entity, 
 	//Create the sound instance.
 	SoundSystem::Instance->CreateSoundInstance(initializationData->_Description, &component._Instance);
 
+	//Set the position of the sound instance.
+	SoundSystem::Instance->SetPosition(component._Instance, component._Position);
+
+	//Play the instance.
+	SoundSystem::Instance->Play(component._Instance);
+
 	//Destroy the initialization data.
 	DestroyInitializationData<SoundInitializationData>(data);
 }
