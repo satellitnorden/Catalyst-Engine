@@ -80,7 +80,7 @@ void main()
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
 
     //Calculate the random offset vector.
-    vec3 randomRotation = vec3(RANDOM_ROTATIONS[int(gl_FragCoord.x + gl_FragCoord.y) & (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES - 1)], 0.0f);
+    vec3 randomRotation = vec3(RANDOM_ROTATIONS[int(RandomFloat(vec3(gl_FragCoord.xy, depth)) * SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES)], 0.0f);
 
     //Calculate the tangent space matrix.
     vec3 tangent = normalize(randomRotation - normal * dot(randomRotation, normal));
