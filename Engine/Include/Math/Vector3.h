@@ -20,6 +20,7 @@ public:
 	const static Vector3 DOWN;
 	const static Vector3 RIGHT;
 	const static Vector3 LEFT;
+	const static Vector3 ZERO;
 
 	union
 	{
@@ -141,6 +142,30 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 Normalize(const Vector3 &vector) NOEXCEPT
 	{
 		return vector.Normalized();
+	}
+
+	/*
+	*	Given a vector, return it's unit vector counterpart on the XY axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 NormalizeXY(const Vector3 &vector) NOEXCEPT
+	{
+		return Vector3<float>(vector._X, vector._Y, 0.0f).Normalized();
+	}
+
+	/*
+	*	Given a vector, return it's unit vector counterpart on the XY axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 NormalizeXZ(const Vector3 &vector) NOEXCEPT
+	{
+		return Vector3<float>(vector._X, 0.0f, vector._Z).Normalized();
+	}
+
+	/*
+	*	Given a vector, return it's unit vector counterpart on the XY axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 NormalizeYZ(const Vector3 &vector) NOEXCEPT
+	{
+		return Vector3<float>(0.0f, vector._Y, vector._Z).Normalized();
 	}
 
 	/*
