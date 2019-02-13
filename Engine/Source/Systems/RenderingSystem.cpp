@@ -15,6 +15,7 @@
 //Math.
 #include <Math/AxisAlignedBoundingBox.h>
 #include <Math/CatalystBaseMath.h>
+#include <Math/CatalystRandomMath.h>
 
 //Rendering.
 #include <Rendering/Engine/CommonEnvironmentMaterialData.h>
@@ -755,7 +756,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	BindCombinedImageSamplerToRenderDataTable(1, 0, renderComponent._RenderDataTable, data->_Material._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
 	renderComponent._WorldPosition = data->_Position;
-	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
+	renderComponent._ParticleSystemRandomSeed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	renderComponent._ParticleSystemStartingTime = CatalystEngineSystem::Instance->GetTotalTime();
 }
 

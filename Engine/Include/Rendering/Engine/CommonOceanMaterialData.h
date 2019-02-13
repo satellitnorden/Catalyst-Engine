@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/CatalystRandomMath.h>
+
 //Resources.
 #include <Resources/OceanMaterialData.h>
 
@@ -24,8 +27,8 @@ namespace CommonOceanMaterialData
 
 		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
-			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
+			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystRandomMath::RandomIntegerInRange<uint16>(126, 128)));
+			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystRandomMath::RandomIntegerInRange<uint16>(126, 128)));
 			data->_NormalData[0].EmplaceFast(255);
 			data->_NormalData[0].EmplaceFast(255);
 		}

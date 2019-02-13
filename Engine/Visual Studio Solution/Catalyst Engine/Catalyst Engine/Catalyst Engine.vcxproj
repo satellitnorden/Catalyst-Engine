@@ -114,6 +114,7 @@
     <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\CatalystRandomMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\GridPoint3.h" />

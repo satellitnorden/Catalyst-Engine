@@ -1443,6 +1443,9 @@
     <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\CatalystRandomMath.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
