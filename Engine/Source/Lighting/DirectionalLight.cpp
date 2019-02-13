@@ -31,8 +31,8 @@ void DirectionalLight::UpdateLightMatrix() NOEXCEPT
 {
 	//Update the light matrix.
 	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
-	const Vector3<float> directionalLightForwardVector{ Vector3<float>::FORWARD.Rotated(_Rotation) };
-	const Vector3<float> directionalLightUpVector{ Vector3<float>::UP.Rotated(_Rotation) };
+	const Vector3<float> directionalLightForwardVector{ CatalystVectorMath::ForwardVector(_Rotation) };
+	const Vector3<float> directionalLightUpVector{ CatalystVectorMath::UpVector(_Rotation) };
 	const Vector3<float> directionalLightPosition{ perceiverPosition + (directionalLightForwardVector * -1.0f) * (LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 1.0f) };
 
 	_LightMatrix = Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector);

@@ -53,7 +53,7 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 {
 	//Update the perceiver matrix.
-	_PerceiverMatrix = Matrix4::LookAt(_Position, _Position + Vector3<float>::Normalize(Vector3<float>(Vector3<float>::FORWARD).Rotated(_Rotation)), Vector3<float>::Normalize(Vector3<float>(Vector3<float>::UP).Rotated(_Rotation)));
+	_PerceiverMatrix = Matrix4::LookAt(_Position, _Position + CatalystVectorMath::ForwardVector(_Rotation), CatalystVectorMath::UpVector(_Rotation));
 
 	//Update the inverse perceiver matrix.
 	_InversePerceiverMatrix = _PerceiverMatrix;

@@ -6,6 +6,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/CatalystVectorMath.h>
 #include <Math/Vector3.h>
 
 //Multithreading.
@@ -110,7 +111,7 @@ public:
 	{
 		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::FORWARD).Rotated(_Rotation));
+		return CatalystVectorMath::ForwardVector(_Rotation);
 	}
 
 	/*

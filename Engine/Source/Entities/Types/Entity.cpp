@@ -1,6 +1,9 @@
 //Header file.
 #include <Entities/Types/Entity.h>
 
+//Math.
+#include <Math/CatalystVectorMath.h>
+
 //Systems.
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -204,10 +207,7 @@ NO_DISCARD Vector3<float> Entity::GetForwardVector() const NOEXCEPT
 	//Return the forward vector of this entity.
 	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3<float> forward{ Vector3<float>::FORWARD };
-		forward.Rotate(*rotation);
-
-		return forward;
+		return CatalystVectorMath::ForwardVector(*rotation);
 	}
 
 	else
@@ -224,10 +224,7 @@ NO_DISCARD Vector3<float> Entity::GetUpVector() const NOEXCEPT
 	//Return the up vector of this entity.
 	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3<float> up{ Vector3<float>::UP };
-		up.Rotate(*rotation);
-
-		return up;
+		return CatalystVectorMath::UpVector(*rotation);
 	}
 
 	else
@@ -244,10 +241,7 @@ NO_DISCARD Vector3<float> Entity::GetRightVector() const NOEXCEPT
 	//Return the right vector of this entity.
 	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3<float> right{ Vector3<float>::RIGHT };
-		right.Rotate(*rotation);
-
-		return right;
+		return CatalystVectorMath::RightVector(*rotation);
 	}
 
 	else
