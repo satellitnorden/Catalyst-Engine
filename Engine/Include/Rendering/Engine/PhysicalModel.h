@@ -2,9 +2,12 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
+
+//Math.
+#include <Math/AxisAlignedBoundingBox.h>
 
 //Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/RenderingCore.h>
 
 class PhysicalModel final

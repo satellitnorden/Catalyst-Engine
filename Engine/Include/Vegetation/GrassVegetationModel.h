@@ -3,8 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/AxisAlignedBoundingBox.h>
+
 //Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/RenderingCore.h>
 
 class GrassVegetationModel final

@@ -7,13 +7,11 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
+#include <Math/AxisAlignedBoundingBox.h>
 #include <Math/Vector4.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>
-
-//Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
 class DebugRenderingSystem final
 {

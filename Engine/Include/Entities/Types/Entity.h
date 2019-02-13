@@ -5,10 +5,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
+#include <Math/AxisAlignedBoundingBox.h>
 #include <Math/Vector3.h>
-
-//Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
 class Entity
 {

@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
+//Math.
+#include <Math/AxisAlignedBoundingBox.h>
 
 class FrustumCullingComponent final
 {

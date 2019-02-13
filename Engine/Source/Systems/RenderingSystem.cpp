@@ -13,10 +13,10 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
+#include <Math/AxisAlignedBoundingBox.h>
 #include <Math/CatalystBaseMath.h>
 
 //Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CommonEnvironmentMaterialData.h>
 #include <Rendering/Engine/CommonOceanMaterialData.h>
 #include <Rendering/Engine/CommonParticleMaterialData.h>

@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
+#include <Math/AxisAlignedBoundingBox.h>
 #include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
@@ -11,9 +12,6 @@
 
 //Physics.
 #include <Physics/Master/Ray.h>
-
-//Rendering.
-#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
 class CatalystVectorMath final
 {

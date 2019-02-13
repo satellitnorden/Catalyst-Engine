@@ -111,6 +111,7 @@
     <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
+    <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
@@ -185,7 +186,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSwapChain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonEnvironmentMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonOceanMaterialData.h" />

@@ -528,9 +528,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\SkyRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\AxisAlignedBoundingBox.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
@@ -1442,6 +1439,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h">
+      <Filter>Math\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
