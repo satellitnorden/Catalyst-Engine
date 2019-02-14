@@ -87,8 +87,10 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicPhysicalInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\EntityCreationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h" />
@@ -99,6 +101,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
@@ -440,6 +443,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />

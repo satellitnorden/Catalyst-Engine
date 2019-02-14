@@ -66,28 +66,28 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	//Initialize this entity in different ways depending on the entity type.
 	switch (entity->_Type)
 	{
-		case Entity::EntityType::DynamicPhysical:
+		case Entity::Type::DynamicPhysical:
 		{
 			InitializeDynamicPhysicalEntity(entity, data);
 
 			break;
 		}
 
-		case Entity::EntityType::ParticleSystem:
+		case Entity::Type::ParticleSystem:
 		{
 			InitializeParticleSystemEntity(entity, data);
 
 			break;
 		}
 
-		case Entity::EntityType::PointLight:
+		case Entity::Type::PointLight:
 		{
 			InitializePointLightEntity(entity, data);
 
 			break;
 		}
 
-		case Entity::EntityType::Sound:
+		case Entity::Type::Sound:
 		{
 			InitializeSoundEntity(entity, data);
 
@@ -113,28 +113,28 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 {
 	switch (entity->_Type)
 	{
-		case Entity::EntityType::DynamicPhysical:
+		case Entity::Type::DynamicPhysical:
 		{
 			TerminateDynamicPhysicalEntity(entity);
 
 			break;
 		}
 
-		case Entity::EntityType::ParticleSystem:
+		case Entity::Type::ParticleSystem:
 		{
 			TerminateParticleSystemEntity(entity);
 
 			break;
 		}
 
-		case Entity::EntityType::PointLight:
+		case Entity::Type::PointLight:
 		{
 			TerminatePointLightEntity(entity);
 
 			break;
 		}
 
-		case Entity::EntityType::Sound:
+		case Entity::Type::Sound:
 		{
 			TerminateSoundEntity(entity);
 

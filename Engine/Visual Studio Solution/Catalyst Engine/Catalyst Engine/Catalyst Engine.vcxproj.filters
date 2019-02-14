@@ -1446,6 +1446,15 @@
     <ClInclude Include="..\..\..\Include\Math\CatalystRandomMath.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\EntityCreationUtilities.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2104,6 +2113,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
       <Filter>Core\Source\General</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

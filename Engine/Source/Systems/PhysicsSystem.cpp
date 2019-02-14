@@ -85,6 +85,7 @@ void PhysicsSystem::CastRay(const PhysicsChannel channels, const Ray &ray, RayCa
 */
 void PhysicsSystem::AddImpulse(const Vector3<float> &position, const float radius, const float power) NOEXCEPT
 {
+	/*
 	//Iterate over all dynamic physical components and add the impulse.
 	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
 	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents() };
@@ -92,12 +93,6 @@ void PhysicsSystem::AddImpulse(const Vector3<float> &position, const float radiu
 
 	for (uint64 i{ 0 }; i < numberOfDynamicPhysicalComponents; ++i, ++physicsComponent, ++transformComponent)
 	{
-		//Don't add the impulse on dynamic physical entities that doesn't simulate physics.
-		if (!physicsComponent->_SimulatePhysics)
-		{
-			continue;
-		}
-
 		//Calculate the impulse weight.
 		const float impulseWeight{ 1.0f - CatalystBaseMath::Minimum<float>(Vector3<float>::Length(transformComponent->_Position - position) / radius, 1.0f) };
 
@@ -107,6 +102,7 @@ void PhysicsSystem::AddImpulse(const Vector3<float> &position, const float radiu
 		//Apply the impulse to the velocity.
 		physicsComponent->_Velocity += CatalystPhysicsMath::CalculateAcceleration(impulseDirection * power * impulseWeight, physicsComponent->_Mass);
 	}
+	*/
 }
 
 /*

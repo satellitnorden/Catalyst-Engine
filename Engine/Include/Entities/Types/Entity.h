@@ -14,10 +14,11 @@ class Entity
 public:
 
 	//Enumeration covering all entity types.
-	enum class EntityType : uint8
+	enum class Type : uint8
 	{
 		DynamicPhysical,
 		ParticleSystem,
+		Physics,
 		PointLight,
 		Sound,
 
@@ -25,7 +26,7 @@ public:
 	};
 
 	//The type.
-	EntityType _Type{ EntityType::NumberOfEntityTypes };
+	Type _Type{ Type::NumberOfEntityTypes };
 
 	//Denotes whether or not this entity is initialized.
 	bool _Initialized{ false };

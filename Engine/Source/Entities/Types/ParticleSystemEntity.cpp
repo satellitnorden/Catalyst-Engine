@@ -14,7 +14,7 @@
 ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_Type = EntityType::ParticleSystem;
+	_Type = Type::ParticleSystem;
 }
 
 /*

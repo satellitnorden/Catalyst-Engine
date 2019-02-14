@@ -18,8 +18,8 @@ class DynamicPhysicalInitializationData final : public EntityInitializationData
 
 public:
 
-	//The physical flags.
-	PhysicalFlag _PhysicalFlags;
+	//The flags.
+	PhysicalFlag _Flags;
 
 	//The model.
 	PhysicalModel _Model;
@@ -38,14 +38,5 @@ public:
 
 	//The outline color.
 	Vector3<float> _OutlineColor;
-
-	//Denotes whether or not to simulate physics.
-	bool _SimulatePhysics;
-
-	//The mass.
-	float _Mass;
-
-	//Denotes the initial velocity.
-	Vector3<float> _InitialVelocity;
 
 };

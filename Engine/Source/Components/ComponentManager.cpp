@@ -240,7 +240,7 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 	_ ## ENTITY_CLASS ## FIFTH_COMPONENT ## s.EraseAt(componentsIndex);																					\
 }
 
-DEFINE_ENTITY_CLASS_WITH_FIVE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent, PhysicsComponent);
+DEFINE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
