@@ -1,6 +1,6 @@
 #if defined(CATALYST_PHYSICS_CATALYST)
 //Header file.
-#include <Physics/Abstraction/Catalyst/CatalystPhysicsSystem.h>
+#include <Systems/PhysicsSystem.h>
 
 //Components.
 #include <Components/ComponentManager.h>
@@ -11,22 +11,20 @@
 //Systems.
 #include <Systems/TerrainSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(CatalystPhysicsSystem);
-
 /*
-*	Initializes the Catalyst physics system.
+*	Initializes the physics system.
 */
-void CatalystPhysicsSystem::InitializeSystem() NOEXCEPT
+void PhysicsSystem::Initialize() NOEXCEPT
 {
-	
+
 }
 
 /*
-*	Updates the Catalyst physics system synchronously.
+*	Updates the physics system.
 */
-void CatalystPhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void PhysicsSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	/*
 	//Iterate over all dynamic physical components and simulate physics on them.
 	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
 	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents() };
@@ -66,13 +64,14 @@ void CatalystPhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const R
 			physicsComponent->_Velocity = CatalystPhysicsMath::CalculateReflectedDirection(Vector3<float>::Normalize(physicsComponent->_Velocity), terrainNormal) * Vector3<float>::Length(physicsComponent->_Velocity) / physicsComponent->_Mass;
 		}
 	}
+	*/
 }
 
 /*
-*	Releases the Catalyst physics system.
+*	Terminates the physics system.
 */
-void CatalystPhysicsSystem::ReleaseSystem() NOEXCEPT
+void PhysicsSystem::Terminate() NOEXCEPT
 {
-	
+
 }
 #endif

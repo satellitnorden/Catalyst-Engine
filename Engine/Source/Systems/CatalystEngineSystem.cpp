@@ -38,7 +38,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CullingSystem::Instance->InitializeSystem();
 	EntityPlacementSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
-	PhysicsSystem::Instance->InitializeSystem();
+	PhysicsSystem::Instance->Initialize();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->InitializeSystem();
@@ -85,7 +85,7 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	*	Update phase.
 	*/
 	_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
-	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
+	PhysicsSystem::Instance->Update(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 #if defined(CATALYST_CONFIGURATION_DEBUG)
@@ -128,7 +128,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystPlatform::Release();
 
 	//Release all systems.
-	PhysicsSystem::Instance->ReleaseSystem();
+	PhysicsSystem::Instance->Terminate();
 	RenderingSystem::Instance->ReleaseSystem();
 	SoundSystem::Instance->Terminate();
 }

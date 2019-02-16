@@ -6,9 +6,9 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Physics.
-#include <Physics/Master/PhysicsCore.h>
-#include <Physics/Master/Ray.h>
-#include <Physics/Master/RayCastResult.h>
+#include <Physics/Native/PhysicsCore.h>
+#include <Physics/Native/Ray.h>
+#include <Physics/Native/RayCastResult.h>
 
 class PhysicsSystem final
 {
@@ -26,17 +26,17 @@ public:
 	/*
 	*	Initializes the physics system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the physics system synchronously.
+	*	Updates the physics system.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Releases the physics system.
+	*	Terminates the physics system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Casts a ray.

@@ -11,7 +11,7 @@
 #include <Math/Vector4.h>
 
 //Physics.
-#include <Physics/Master/Ray.h>
+#include <Physics/Native/Ray.h>
 
 class CatalystVectorMath final
 {

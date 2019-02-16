@@ -14,4 +14,10 @@ enum class PhysicsChannel : uint8
 	Terrain = BIT(2)
 };
 
+//Enumeration covering all physics shapes.
+enum class PhysicsShape : uint8
+{
+	Sphere
+};
+
 ENUMERATION_BIT_OPERATIONS(PhysicsChannel);

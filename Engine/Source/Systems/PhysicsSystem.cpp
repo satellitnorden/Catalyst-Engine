@@ -20,40 +20,10 @@
 DEFINE_SINGLETON(PhysicsSystem);
 
 //Define the physics system.
-#if defined(CATALYST_PHYSICS_CATALYST)
-	#include <Physics/Abstraction/Catalyst/CatalystPhysicsSystem.h>
-	#define PHYSICS_SYSTEM CatalystPhysicsSystem
-#elif defined(CATALYST_PHYSICS_PHYSX)
+#if defined(CATALYST_PHYSICS_PHYSX)
 	#include <Physics/Abstraction/PhysX/PhysXPhysicsSystem.h>
 	#define PHYSICS_SYSTEM PhysXPhysicsSystem
 #endif
-
-/*
-*	Initializes the physics system.
-*/
-void PhysicsSystem::InitializeSystem() NOEXCEPT
-{
-	//Initialize the physics system.
-	PHYSICS_SYSTEM::Instance->InitializeSystem();
-}
-
-/*
-*	Updates the physics system synchronously.
-*/
-void PhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Update the physics system synchronously.
-	PHYSICS_SYSTEM::Instance->UpdateSystemSynchronous(context);
-}
-
-/*
-*	Releases the physics system.
-*/
-void PhysicsSystem::ReleaseSystem() NOEXCEPT
-{
-	//Release the physics system.
-	PHYSICS_SYSTEM::Instance->ReleaseSystem();
-}
 
 /*
 *	Casts a ray.

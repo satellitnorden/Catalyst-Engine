@@ -235,9 +235,6 @@
     <Filter Include="Physics\Include">
       <UniqueIdentifier>{a4e0f938-dc3a-443c-84a5-80dbe4da459d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Physics\Include\Master">
-      <UniqueIdentifier>{c08ad5a0-5e3a-46eb-a3cf-be7f7d9cfa6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics\Include\Abstraction">
       <UniqueIdentifier>{54854aa8-e9d4-4bb3-bb3d-e795b4ef870d}</UniqueIdentifier>
     </Filter>
@@ -252,9 +249,6 @@
     </Filter>
     <Filter Include="Physics\Source\Abstraction\PhysX">
       <UniqueIdentifier>{f1053b36-8c18-4466-bdb8-7c014bfe0224}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Include\Abstraction\Catalyst">
-      <UniqueIdentifier>{6b401e5a-c0ad-4431-a9e7-1c161ffa46ef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Physics\Source\Abstraction\Catalyst">
       <UniqueIdentifier>{8b3d4183-0f9d-47a4-bcef-425a9ff3f0d4}</UniqueIdentifier>
@@ -285,6 +279,9 @@
     </Filter>
     <Filter Include="Core\Source\General">
       <UniqueIdentifier>{617ce450-365f-45fd-bac0-b6a56d03f2a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Include\Native">
+      <UniqueIdentifier>{c08ad5a0-5e3a-46eb-a3cf-be7f7d9cfa6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -921,15 +918,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\OpenGL\OpenGLRenderingSystem.h">
       <Filter>Rendering\Include\Translation\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Master\PhysicsCore.h">
-      <Filter>Physics\Include\Master</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Master\Ray.h">
-      <Filter>Physics\Include\Master</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Master\RayCastResult.h">
-      <Filter>Physics\Include\Master</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
     </ClInclude>
@@ -941,9 +929,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.h">
-      <Filter>Physics\Include\Abstraction\Catalyst</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
@@ -1454,6 +1439,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityCreationUtilities.h">
       <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\Ray.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
+      <Filter>Physics\Include\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
