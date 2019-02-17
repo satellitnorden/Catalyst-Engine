@@ -24,19 +24,23 @@ void PhysicsSystem::Initialize() NOEXCEPT
 */
 void PhysicsSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	/*
-	//Iterate over all dynamic physical components and simulate physics on them.
-	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
-	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents() };
-	TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
+	//Iterate over all physics components and simulate physics on them.
+	const uint64 numberOfPhysicsComponents{ ComponentManager::GetNumberOfPhysicsComponents() };
 
-	for (uint64 i{ 0 }; i < numberOfDynamicPhysicalComponents; ++i, ++physicsComponent, ++transformComponent)
+	//Return early if there's none to update.
+	if (numberOfPhysicsComponents == 0)
 	{
-		//Don't simulate physics on dynamic physical entities that doesn't want it.
-		if (!physicsComponent->_SimulatePhysics)
-		{
-			continue;
-		}
+		return;
+	}
+
+	Entity **RESTRICT physicsEntity{ ComponentManager::GetPhysicsEntities()->Begin() };
+	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetPhysicsPhysicsComponents() };
+	TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicsTransformComponents() };
+
+	for (uint64 i{ 0 }; i < numberOfPhysicsComponents; ++i, ++physicsEntity, ++physicsComponent, ++transformComponent)
+	{
+		//Store the previous position.
+		const Vector3<float> previousPosition{ transformComponent->_Position };
 
 		//Calculate the net force acting upon this object, starting with the gravitational force.
 		Vector3<float> force{ CatalystPhysicsMath::CalculateGravitationalForce(physicsComponent->_Mass) };
@@ -50,7 +54,7 @@ void PhysicsSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 		//Apply the velocity to the position.
 		transformComponent->_Position += physicsComponent->_Velocity * context->_DeltaTime;
 
-		//For now, don't let dynamic physical entities fall beneath the terrain.
+		//For now, don't let physics entities fall beneath the terrain.
 		float terrainHeight;
 		TerrainSystem::Instance->GetTerrainHeightAtPosition(transformComponent->_Position, &terrainHeight);
 
@@ -63,8 +67,10 @@ void PhysicsSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 
 			physicsComponent->_Velocity = CatalystPhysicsMath::CalculateReflectedDirection(Vector3<float>::Normalize(physicsComponent->_Velocity), terrainNormal) * Vector3<float>::Length(physicsComponent->_Velocity) / physicsComponent->_Mass;
 		}
+
+		//Since transforms between children of entities isn't exactly implemented yet, do this... thing.
+		(*physicsEntity)->Move(transformComponent->_Position - previousPosition);
 	}
-	*/
 }
 
 /*

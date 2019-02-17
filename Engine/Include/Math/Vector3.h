@@ -20,7 +20,8 @@ public:
 	const static Vector3 DOWN;
 	const static Vector3 RIGHT;
 	const static Vector3 LEFT;
-	const static Vector3 ZERO;
+	const static Vector3<Type> ZERO;
+	const static Vector3 ONE;
 
 	union
 	{

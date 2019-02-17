@@ -12,10 +12,10 @@ class TransformComponent final
 public:
 
 	//The position.
-	Vector3<float> _Position{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Position{ Vector3<float>::ZERO };
 
 	//The rotation.
-	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Rotation{ Vector3<float>::ZERO };
 
 	//The scale.
 	Vector3<float> _Scale{ 1.0f, 1.0f, 1.0f };

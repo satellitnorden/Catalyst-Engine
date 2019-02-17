@@ -7,6 +7,7 @@
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
 #include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Creation/PhysicsInitializationData.h>
 #include <Entities/Creation/PointLightInitializationData.h>
 #include <Entities/Creation/SoundInitializationData.h>
 
@@ -80,6 +81,13 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 			break;
 		}
 
+		case Entity::Type::Physics:
+		{
+			InitializePhysicsEntity(entity, data);
+
+			break;
+		}
+
 		case Entity::Type::PointLight:
 		{
 			InitializePointLightEntity(entity, data);
@@ -123,6 +131,13 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 		case Entity::Type::ParticleSystem:
 		{
 			TerminateParticleSystemEntity(entity);
+
+			break;
+		}
+
+		case Entity::Type::Physics:
+		{
+			TerminatePhysicsEntity(entity);
 
 			break;
 		}
@@ -285,6 +300,26 @@ void EntityCreationSystem::InitializeParticleSystemEntity(Entity* const RESTRICT
 }
 
 /*
+*	Initializes a physics entity.
+*/
+void EntityCreationSystem::InitializePhysicsEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Retrieve a new components index for this entity.
+	entity->_ComponentsIndex = ComponentManager::GetNewPhysicsComponentsIndex(entity);
+
+	//Copy the data over to the component.
+	PhysicsComponent &physicsComponent{ ComponentManager::GetPhysicsPhysicsComponents()[entity->_ComponentsIndex] };
+	TransformComponent &transformComponent{ ComponentManager::GetPhysicsTransformComponents()[entity->_ComponentsIndex] };
+	const PhysicsInitializationData *const RESTRICT physicsInitializationData{ static_cast<const PhysicsInitializationData *const RESTRICT>(data) };
+
+	physicsComponent = physicsInitializationData->_PhysicsComponent;
+	transformComponent = physicsInitializationData->_TransformComponent;
+
+	//Destroy the initialization data.
+	DestroyInitializationData<PhysicsInitializationData>(data);
+}
+
+/*
 *	Initializes a point light entity.
 */
 void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
@@ -370,6 +405,15 @@ void EntityCreationSystem::TerminateParticleSystemEntity(Entity* const RESTRICT 
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
+}
+
+/*
+*	Terminates a physics entity.
+*/
+void EntityCreationSystem::TerminatePhysicsEntity(Entity* const RESTRICT entity) NOEXCEPT
+{
+	//Return this entitiy's components index.
+	ComponentManager::ReturnPhysicsComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

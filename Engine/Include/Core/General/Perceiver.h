@@ -252,10 +252,10 @@ private:
 	mutable Spinlock _Lock;
 
 	//The position.
-	Vector3<float> _Position{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Position{ Vector3<float>::ZERO };
 
 	//The rotation.
-	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Rotation{ Vector3<float>::ZERO };
 
 	//The field of view in degrees.
 	float _FieldOfViewDegrees{ 60.0f };

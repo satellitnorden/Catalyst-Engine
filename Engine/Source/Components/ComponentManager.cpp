@@ -242,6 +242,7 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 
 DEFINE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
+DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(Physics, PhysicsComponent, TransformComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);

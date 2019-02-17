@@ -1221,7 +1221,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	const Matrix4 *const RESTRICT inversePerceiverMatrix{ Perceiver::Instance->GetInversePerceiverMatrix() };
 
 	Matrix4 perceiverOriginMatrix{ *perceiverMatrix };
-	perceiverOriginMatrix.SetTranslation(Vector3<float>(0.0f, 0.0f, 0.0f));
+	perceiverOriginMatrix.SetTranslation(Vector3<float>::ZERO);
 
 	data._PerceiverFieldOfViewCosine = CatalystBaseMath::CosineRadians(Perceiver::Instance->GetFieldOfViewRadians()) - 0.2f;
 	data._InversePerceiverMatrix = *inversePerceiverMatrix;

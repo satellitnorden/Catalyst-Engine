@@ -185,6 +185,11 @@ private:
 	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Initializes a physics entity.
+	*/
+	void InitializePhysicsEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Initializes a point light entity.
 	*/
 	void InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
@@ -208,6 +213,11 @@ private:
 	*	Terminates a particle system entity.
 	*/
 	void TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Terminates a physics entity.
+	*/
+	void TerminatePhysicsEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Terminates a point light entity.

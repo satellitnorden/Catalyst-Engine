@@ -100,7 +100,7 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 
 	//If there was not hit, update the result.
 	result->_HasHit = false;
-	result->_HitPosition = Vector3<float>(0.0f, 0.0f, 0.0f);
+	result->_HitPosition = Vector3<float>::ZERO;
 	result->_HitEntity = nullptr;
 }
 
