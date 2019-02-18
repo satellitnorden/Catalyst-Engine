@@ -10,6 +10,7 @@ namespace CatalystBaseMathConstants
 	constexpr float PI{ 3.141'592f };
 	constexpr float DOUBLE_PI{ PI * 2.0f };
 	constexpr float HALF_PI{ PI * 0.5f };
+	constexpr float QUARTER_PI{ PI * 0.25f };
 	constexpr float INVERSE_PI{ 1.0f / PI };
 	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
 }
@@ -28,65 +29,33 @@ public:
 	}
 
 	/*
-	*	Given a number, denoted in degrees, returns the arc cosine of the number.
+	*	Given a number, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArcCosineDegrees(const float number) NOEXCEPT
-	{
-		return ArcCosineRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a number, denoted in radians, returns the arcsine of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float ArcCosineRadians(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float ArcCosine(const float number) NOEXCEPT
 	{
 		return acosf(number);
 	}
 
 	/*
-	*	Given a number, denoted in degrees, returns the arcsine of the number.
+	*	Given a number, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArcsineDegrees(const float number) NOEXCEPT
-	{
-		return ArcsineRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a number, denoted in radians, returns the arcsine of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float ArcsineRadians(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float Arcsine(const float number) NOEXCEPT
 	{
 		return asinf(number);
 	}
 
 	/*
-	*	Given a number, denoted in degrees, returns the arctangent of the number.
+	*	Given a number, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArctangentDegrees(const float number) NOEXCEPT
-	{
-		return ArctangentRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a number, denoted in radians, returns the arctangent of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float ArctangentRadians(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float Arctangent(const float number) NOEXCEPT
 	{
 		return atanf(number);
 	}
 
 	/*
-	*	Given two numbers, denoted in degrees, returns the arctangent of the number.
+	*	Given two numbers, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArctangentDegrees(const float number1, const float number2) NOEXCEPT
-	{
-		return ArctangentRadians(DegreesToRadians(number1), DegreesToRadians(number2));
-	}
-
-	/*
-	*	Given two numbers, denoted in radians, returns the arctangent of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float ArctangentRadians(const float number1, const float number2) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float Arctangent(const float number1, const float number2) NOEXCEPT
 	{
 		return atan2f(number1, number2);
 	}
@@ -110,17 +79,9 @@ public:
 	}
 
 	/*
-	*	Given a degrees value, returns the cosine of the angle.
+	*	Given a number, returns the cosine of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float CosineDegrees(const float number) NOEXCEPT
-	{
-		return CosineRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a radians value, returns the cosine of the angle.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD float CosineRadians(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Cosine(const float number) NOEXCEPT
 	{
 		float temporary{ WrapAround(number, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
 
@@ -295,19 +256,11 @@ public:
 	}
 
 	/*
-	*	Given a degrees value, returns the sine of the angle.
+	*	Given a number, returns the sine of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float SineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Sine(const float number) NOEXCEPT
 	{
-		return SineRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a radians value, returns the sine of the angle.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD float SineRadians(const float number) NOEXCEPT
-	{
-		return CosineRadians(number - CatalystBaseMathConstants::HALF_PI);
+		return Cosine(number - CatalystBaseMathConstants::HALF_PI);
 	}
 
 	/*
@@ -359,17 +312,9 @@ public:
 	}
 
 	/*
-	*	Given a number in degrees, return the tangent.
+	*	Given a number, return the tangent.
 	*/
-	FORCE_INLINE static NO_DISCARD float TangentDegrees(const float number) NOEXCEPT
-	{
-		return TangentRadians(DegreesToRadians(number));
-	}
-
-	/*
-	*	Given a number in radians, return the tangent.
-	*/
-	FORCE_INLINE static NO_DISCARD float TangentRadians(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float Tangent(const float number) NOEXCEPT
 	{
 		return tan(number);
 	}

@@ -252,7 +252,7 @@ private:
 				Vector3<float> position{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
 				position.Normalize();
 
-				Vector2<float> textureCoordinate{ CatalystBaseMath::ArctangentRadians(position._Z, position._X), CatalystBaseMath::ArcsineRadians(position._Y) };
+				Vector2<float> textureCoordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
 				textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 				textureCoordinate += 0.5f;
 
@@ -285,12 +285,12 @@ private:
 				{
 					for (float theta = 0.0f; theta < (0.5f * CatalystBaseMathConstants::PI); theta += sampleDelta)
 					{
-						Vector3<float> tangentSample{ Vector3<float>(CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::CosineRadians(phi), CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::SineRadians(phi), CatalystBaseMath::CosineRadians(theta)) };
+						Vector3<float> tangentSample{ Vector3<float>(CatalystBaseMath::Sine(theta) * CatalystBaseMath::Cosine(phi), CatalystBaseMath::Sine(theta) * CatalystBaseMath::Sine(phi), CatalystBaseMath::Cosine(theta)) };
 						Vector3<float> sampleVector{ tangentSample._X * rightVector + tangentSample._Y * upVector + tangentSample._Z * direction };
 
 						Vector4<float> sampledValue{ parameters.diffuseTexture.At(sampleVector) };
 
-						finalIrradiance += Vector3<float>(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::CosineRadians(theta) * CatalystBaseMath::SineRadians(theta);
+						finalIrradiance += Vector3<float>(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::Cosine(theta) * CatalystBaseMath::Sine(theta);
 
 						numberOfSamples += 1.0f;
 					}

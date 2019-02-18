@@ -121,7 +121,7 @@ public:
 	{
 		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::RIGHT).Rotated(_Rotation));
+		return CatalystVectorMath::RightVector(_Rotation);
 	}
 
 	/*
@@ -131,27 +131,17 @@ public:
 	{
 		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::UP).Rotated(_Rotation));
-	}
-
-	/*
-	*	Returns the field of view in degrees
-	*/
-	float GetFieldOfViewDegrees() const NOEXCEPT
-	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
-
-		return _FieldOfViewDegrees;
+		return CatalystVectorMath::UpVector(_Rotation);
 	}
 
 	/*
 	*	Returns the field of view in radians.
 	*/
-	float GetFieldOfViewRadians() const NOEXCEPT
+	float GetFieldOfView() const NOEXCEPT
 	{
 		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
-		return _FieldOfViewRadians;
+		return _FieldOfView;
 	}
 
 	/*
@@ -257,11 +247,8 @@ private:
 	//The rotation.
 	Vector3<float> _Rotation{ Vector3<float>::ZERO };
 
-	//The field of view in degrees.
-	float _FieldOfViewDegrees{ 60.0f };
-
-	//The field of view in radians.
-	float _FieldOfViewRadians{ CatalystBaseMath::DegreesToRadians(60.0f) };
+	//The field of view.
+	float _FieldOfView{ CatalystBaseMath::DegreesToRadians(60.0f) };
 
 	//The near plane.
 	float _NearPlane{ 0.1f };

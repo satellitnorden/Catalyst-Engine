@@ -34,7 +34,7 @@ void Perceiver::CheckUpdates() NOEXCEPT
 void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
-	_ProjectionMatrix = Matrix4::ReversePerspective(_FieldOfViewRadians, static_cast<float>(RenderingSystem::Instance->GetResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetResolution()._Height), _NearPlane, _FarPlane);
+	_ProjectionMatrix = Matrix4::ReversePerspective(_FieldOfView, static_cast<float>(RenderingSystem::Instance->GetResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetResolution()._Height), _NearPlane, _FarPlane);
 
 	//Update the inverse projection matrix.
 	_InverseProjectionMatrix = _ProjectionMatrix;

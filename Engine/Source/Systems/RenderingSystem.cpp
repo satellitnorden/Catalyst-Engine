@@ -1223,7 +1223,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	Matrix4 perceiverOriginMatrix{ *perceiverMatrix };
 	perceiverOriginMatrix.SetTranslation(Vector3<float>::ZERO);
 
-	data._PerceiverFieldOfViewCosine = CatalystBaseMath::CosineRadians(Perceiver::Instance->GetFieldOfViewRadians()) - 0.2f;
+	data._PerceiverFieldOfViewCosine = CatalystBaseMath::Cosine(Perceiver::Instance->GetFieldOfView()) - 0.2f;
 	data._InversePerceiverMatrix = *inversePerceiverMatrix;
 	data._InverseProjectionMatrix = *inverseProjectionMatrix;
 	data._OriginViewMatrix = *projectionMatrix * perceiverOriginMatrix;
@@ -1290,10 +1290,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 
 		data._SpotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
 		data._SpotLightIntensities[counter] = spotLightComponent->_Intensity;
-		data._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
-		data._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
+		data._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::Cosine(CatalystBaseMath::DegreesToRadians(spotLightComponent->_InnerCutoffAngle));
+		data._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::Cosine(CatalystBaseMath::DegreesToRadians(spotLightComponent->_OuterCutoffAngle));
 		data._SpotLightColors[counter] = spotLightComponent->_Color;
-		data._SpotLightDirections[counter] = Vector3<float>(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
+		data._SpotLightDirections[counter] = CatalystVectorMath::ForwardVector(spotLightComponent->_Rotation);
 		data._SpotLightDirections[counter]._Y *= -1.0f;
 		data._SpotLightWorldPositions[counter] = spotLightComponent->_Position;
 

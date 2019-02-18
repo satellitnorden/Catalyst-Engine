@@ -498,18 +498,14 @@ public:
 	*/
 	constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
 	{
-		const float xRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._X) };
-		const float yRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._Y) };
-		const float zRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._Z) };
+		const float xCosine{ CatalystBaseMath::Cosine(rotationVector._X) };
+		const float xSine{ CatalystBaseMath::Sine(rotationVector._X) };
 
-		const float xCosine{ CatalystBaseMath::CosineRadians(xRadians) };
-		const float xSine{ CatalystBaseMath::SineRadians(xRadians) };
+		const float yCosine{ CatalystBaseMath::Cosine(rotationVector._Y) };
+		const float ySine{ CatalystBaseMath::Sine(rotationVector._Y) };
 
-		const float yCosine{ CatalystBaseMath::CosineRadians(yRadians) };
-		const float ySine{ CatalystBaseMath::SineRadians(yRadians) };
-
-		const float zCosine{ CatalystBaseMath::CosineRadians(zRadians) };
-		const float zSine{ CatalystBaseMath::SineRadians(zRadians) };
+		const float zCosine{ CatalystBaseMath::Cosine(rotationVector._Z) };
+		const float zSine{ CatalystBaseMath::Sine(rotationVector._Z) };
 
 		//Rotate the roll.
 		if (rotationVector._X != 0.0f)

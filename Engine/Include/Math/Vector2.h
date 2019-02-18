@@ -266,14 +266,12 @@ public:
 	}
 
 	/*
-	*	Given an amount of degrees, rotate the vector.
+	*	Given an amount, rotate the vector.
 	*/
-	FORCE_INLINE constexpr void Rotate(const float degrees) NOEXCEPT
+	FORCE_INLINE constexpr void Rotate(const float amount) NOEXCEPT
 	{
-		const float theta{ CatalystBaseMath::DegreesToRadians(degrees) };
-
-		const float cosine{ CatalystBaseMath::CosineRadians(theta) };
-		const float sine{ CatalystBaseMath::SineDegrees(theta) };
+		const float cosine{ CatalystBaseMath::CosineRadians(amount) };
+		const float sine{ CatalystBaseMath::SineDegrees(amount) };
 
 		const float newX{ _X * cosine - _Y * sine };
 		const float newY{ _X * cosine + _Y * sine };

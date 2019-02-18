@@ -42,11 +42,11 @@ Matrix4 Matrix4::LookAt(const Vector3<float> &position, const Vector3<float> &di
 NO_DISCARD Matrix4 Matrix4::Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
 {
 	const Vector3<float> rotationAxis{ Vector3<float>::CrossProduct(up, normal) };
-	const float rotationAngle{ CatalystBaseMath::ArcCosineRadians(Vector3<float>::DotProduct(normal, up)) };
+	const float rotationAngle{ CatalystBaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
 
 	const float a = rotationAngle;
-	const float c = CatalystBaseMath::CosineRadians(a);
-	const float s = CatalystBaseMath::SineRadians(a);
+	const float c = CatalystBaseMath::Cosine(a);
+	const float s = CatalystBaseMath::Sine(a);
 
 	Vector3<float> axis{ Vector3<float>::Normalize(rotationAxis) };
 	Vector3<float> temp{ (1.0f - c) * axis };
@@ -390,9 +390,8 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 	//Create a rotation matrix for the X axis.
 	if (rotation._X != 0.0f)
 	{
-		const float xRadians = CatalystBaseMath::DegreesToRadians(rotation._X);
-		const float xSine = CatalystBaseMath::SineRadians(xRadians);
-		const float xCosine = CatalystBaseMath::CosineRadians(xRadians);
+		const float xSine = CatalystBaseMath::Sine(rotation._X);
+		const float xCosine = CatalystBaseMath::Cosine(rotation._X);
 
 		const Matrix4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -402,9 +401,8 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 	//Create a rotation matrix for the Y axis.
 	if (rotation._Y != 0.0f)
 	{
-		const float yRadians = CatalystBaseMath::DegreesToRadians(rotation._Y);
-		const float ySine = CatalystBaseMath::SineRadians(yRadians);
-		const float yCosine = CatalystBaseMath::CosineRadians(yRadians);
+		const float ySine = CatalystBaseMath::Sine(rotation._Y);
+		const float yCosine = CatalystBaseMath::Cosine(rotation._Y);
 
 		const Matrix4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -414,9 +412,8 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 	//Create a rotation matrix for the Z axis.
 	if (rotation._Z != 0.0f)
 	{
-		const float zRadians = CatalystBaseMath::DegreesToRadians(rotation._Z);
-		const float zSine = CatalystBaseMath::SineRadians(zRadians);
-		const float zCosine = CatalystBaseMath::CosineRadians(zRadians);
+		const float zSine = CatalystBaseMath::Sine(rotation._Z);
+		const float zCosine = CatalystBaseMath::Cosine(rotation._Z);
 
 		const Matrix4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
