@@ -1449,6 +1449,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
+      <Filter>Entities\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

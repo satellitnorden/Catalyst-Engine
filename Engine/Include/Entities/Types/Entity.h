@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Entities.
+#include <Entities/Core/EntityCore.h>
+
 //Math.
 #include <Math/AxisAlignedBoundingBox.h>
 #include <Math/Vector3.h>
@@ -13,20 +16,8 @@ class Entity
 
 public:
 
-	//Enumeration covering all entity types.
-	enum class Type : uint8
-	{
-		DynamicPhysical,
-		ParticleSystem,
-		Physics,
-		PointLight,
-		Sound,
-
-		NumberOfEntityTypes
-	};
-
 	//The type.
-	Type _Type{ Type::NumberOfEntityTypes };
+	EntityType _Type{ EntityType::NumberOfEntityTypes };
 
 	//Denotes whether or not this entity is initialized.
 	bool _Initialized{ false };

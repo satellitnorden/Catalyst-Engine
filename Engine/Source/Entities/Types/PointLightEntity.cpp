@@ -10,7 +10,7 @@
 PointLightEntity::PointLightEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_Type = Type::PointLight;
+	_Type = EntityType::PointLight;
 }
 
 /*

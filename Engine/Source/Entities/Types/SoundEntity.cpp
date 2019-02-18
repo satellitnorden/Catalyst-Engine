@@ -7,5 +7,5 @@
 SoundEntity::SoundEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_Type = Type::Sound;
+	_Type = EntityType::Sound;
 }
