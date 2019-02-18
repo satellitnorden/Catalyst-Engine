@@ -47,11 +47,15 @@ public:
 
 	/*
 	*	Creates initialization data for an entity.
-	*	Returns a pointer to the newly created data.
-	*	The memory is freed after the entity system has finished initialization.
 	*/
 	template <typename Type>
 	RESTRICTED Type* const RESTRICT CreateInitializationData() NOEXCEPT;
+
+	/*
+	*	Destroys initialization data for an entity.
+	*/
+	template <typename Type>
+	void DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes one entity.
@@ -185,11 +189,6 @@ private:
 	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Initializes a physics entity.
-	*/
-	void InitializePhysicsEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
 	*	Initializes a point light entity.
 	*/
 	void InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
@@ -215,11 +214,6 @@ private:
 	void TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
-	*	Terminates a physics entity.
-	*/
-	void TerminatePhysicsEntity(Entity* const RESTRICT entity) NOEXCEPT;
-
-	/*
 	*	Terminates a point light entity.
 	*/
 	void TerminatePointLightEntity(Entity* const RESTRICT entity) NOEXCEPT;
@@ -243,12 +237,6 @@ private:
 	*	Processes the automatic destruction queue.
 	*/
 	void ProcessAutomaticDestructionQueue() NOEXCEPT;
-
-	/*
-	*	Destroys initialization data for an entity.
-	*/
-	template <typename Type>
-	void DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 };
 

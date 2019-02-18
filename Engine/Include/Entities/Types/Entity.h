@@ -6,6 +6,7 @@
 
 //Entities.
 #include <Entities/Core/EntityCore.h>
+#include <Entities/Creation/EntityInitializationData.h>
 
 //Math.
 #include <Math/AxisAlignedBoundingBox.h>
@@ -32,12 +33,14 @@ public:
 	DynamicArray<Entity *RESTRICT> _Children;
 
 	/*
-	*	Default destructor.
+	*	Initializes this entity.
 	*/
-	~Entity() NOEXCEPT
-	{
+	void Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
-	}
+	/*
+	*	Terminates this entity.
+	*/
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Moves this entity.

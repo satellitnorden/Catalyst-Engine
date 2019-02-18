@@ -283,6 +283,9 @@
     <Filter Include="Physics\Include\Native">
       <UniqueIdentifier>{c08ad5a0-5e3a-46eb-a3cf-be7f7d9cfa6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities\Include\Core">
+      <UniqueIdentifier>{85c37808-4dbc-4823-96e8-65561e01613d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1450,7 +1453,7 @@
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
-      <Filter>Entities\Include</Filter>
+      <Filter>Entities\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

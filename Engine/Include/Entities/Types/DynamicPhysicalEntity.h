@@ -19,6 +19,22 @@ public:
 	DynamicPhysicalEntity() NOEXCEPT;
 
 	/*
+	*	Initializes this entity.
+	*/
+	void Initialize(const EntityInitializationData *const RESTRICT data) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Terminates this entity.
+	*/
+	void Terminate() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 	*/
 	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;

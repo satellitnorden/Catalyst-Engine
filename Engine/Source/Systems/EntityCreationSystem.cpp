@@ -67,6 +67,13 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	//Initialize this entity in different ways depending on the entity type.
 	switch (entity->_Type)
 	{
+		case EntityType::Physics:
+		{
+			entity->Initialize(data);
+
+			break;
+		}
+
 		case EntityType::DynamicPhysical:
 		{
 			InitializeDynamicPhysicalEntity(entity, data);
@@ -77,13 +84,6 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 		case EntityType::ParticleSystem:
 		{
 			InitializeParticleSystemEntity(entity, data);
-
-			break;
-		}
-
-		case EntityType::Physics:
-		{
-			InitializePhysicsEntity(entity, data);
 
 			break;
 		}
@@ -121,6 +121,13 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 {
 	switch (entity->_Type)
 	{
+		case EntityType::Physics:
+		{
+			entity->Terminate();
+
+			break;
+		}
+
 		case EntityType::DynamicPhysical:
 		{
 			TerminateDynamicPhysicalEntity(entity);
@@ -131,13 +138,6 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 		case EntityType::ParticleSystem:
 		{
 			TerminateParticleSystemEntity(entity);
-
-			break;
-		}
-
-		case EntityType::Physics:
-		{
-			TerminatePhysicsEntity(entity);
 
 			break;
 		}
@@ -300,26 +300,6 @@ void EntityCreationSystem::InitializeParticleSystemEntity(Entity* const RESTRICT
 }
 
 /*
-*	Initializes a physics entity.
-*/
-void EntityCreationSystem::InitializePhysicsEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for this entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewPhysicsComponentsIndex(entity);
-
-	//Copy the data over to the component.
-	PhysicsComponent &physicsComponent{ ComponentManager::GetPhysicsPhysicsComponents()[entity->_ComponentsIndex] };
-	TransformComponent &transformComponent{ ComponentManager::GetPhysicsTransformComponents()[entity->_ComponentsIndex] };
-	const PhysicsInitializationData *const RESTRICT physicsInitializationData{ static_cast<const PhysicsInitializationData *const RESTRICT>(data) };
-
-	physicsComponent = physicsInitializationData->_PhysicsComponent;
-	transformComponent = physicsInitializationData->_TransformComponent;
-
-	//Destroy the initialization data.
-	DestroyInitializationData<PhysicsInitializationData>(data);
-}
-
-/*
 *	Initializes a point light entity.
 */
 void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
@@ -405,15 +385,6 @@ void EntityCreationSystem::TerminateParticleSystemEntity(Entity* const RESTRICT 
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
-}
-
-/*
-*	Terminates a physics entity.
-*/
-void EntityCreationSystem::TerminatePhysicsEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Return this entitiy's components index.
-	ComponentManager::ReturnPhysicsComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

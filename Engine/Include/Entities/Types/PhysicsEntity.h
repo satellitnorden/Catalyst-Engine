@@ -16,4 +16,14 @@ public:
 	*/
 	PhysicsEntity() NOEXCEPT;
 
+	/*
+	*	Initializes this entity.
+	*/
+	void Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Terminates this entity.
+	*/
+	void Terminate() NOEXCEPT;
+
 };
