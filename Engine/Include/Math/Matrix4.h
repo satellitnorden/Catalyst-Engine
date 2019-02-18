@@ -127,8 +127,7 @@ public:
 	/*
 	*	Rotates this matrix.
 	*/
-	void Rotate(const Vector3<float>
-		&rotation) NOEXCEPT;
+	void Rotate(const Vector3<float> &rotation) NOEXCEPT;
 
 	/*
 	*	Transposes this matrix.
