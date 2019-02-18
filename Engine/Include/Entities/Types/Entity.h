@@ -34,70 +34,15 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	virtual ~Entity() NOEXCEPT
+	~Entity() NOEXCEPT
 	{
 
 	}
 
 	/*
-	*	Returns the position of this entity.
-	*/
-	const Vector3<float>& GetPosition() const NOEXCEPT;
-
-	/*
-	*	Returns the rotation of this entity.
-	*/
-	const Vector3<float>& GetRotation() const NOEXCEPT;
-
-	/*
-	*	Returns the scale of this entity.
-	*/
-	const Vector3<float>& GetScale() const NOEXCEPT;
-
-	/*
-	*	Sets the position of this entity.
-	*/
-	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT;
-
-	/*
-	*	Sets the rotation of this entity.
-	*/
-	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT;
-
-	/*
-	*	Sets the scale of this entity.
-	*/
-	void SetScale(const Vector3<float> &newScale) NOEXCEPT;
-
-	/*
 	*	Moves this entity.
 	*/
 	void Move(const Vector3<float> &amount) NOEXCEPT;
-
-	/*
-	*	Rotates this entity.
-	*/
-	void Rotate(const Vector3<float> &amount) NOEXCEPT;
-
-	/*
-	*	Scales this entity.
-	*/
-	void Scale(const Vector3<float> &amount) NOEXCEPT;
-
-	/*
-	*	Returns the forward vector of this entity.
-	*/
-	NO_DISCARD Vector3<float> GetForwardVector() const NOEXCEPT;
-
-	/*
-*	Returns the up vector of this entity.
-*/
-	NO_DISCARD Vector3<float> GetUpVector() const NOEXCEPT;
-
-	/*
-	*	Returns the right vector of this entity.
-	*/
-	NO_DISCARD Vector3<float> GetRightVector() const NOEXCEPT;
 
 protected:
 
@@ -137,22 +82,6 @@ protected:
 	*	Callback for when this entity is moved.
 	*/
 	virtual void OnMove() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Callback for when this entity is rotated.
-	*/
-	virtual void OnRotate() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Callback for when this entity is scaled.
-	*/
-	virtual void OnScale() NOEXCEPT
 	{
 
 	}

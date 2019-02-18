@@ -54,24 +54,6 @@ protected:
 		UpdateWorldSpaceAxisAlignedBoundingBox();
 	}
 
-	/*
-	*	Callback for when this entity is rotated.
-	*/
-	void OnRotate() NOEXCEPT final override
-	{
-		//Update the world space axis - aligned bounding box.
-		UpdateWorldSpaceAxisAlignedBoundingBox();
-	}
-
-	/*
-	*	Callback for when this entity is scaled.
-	*/
-	void OnScale() NOEXCEPT final override
-	{
-		//Update the world space axis - aligned bounding box.
-		UpdateWorldSpaceAxisAlignedBoundingBox();
-	}
-
 private:
 
 	/*
