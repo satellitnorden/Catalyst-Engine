@@ -137,11 +137,6 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldVertical);
 			}
 
-			case RenderPassMainStage::ParticleSystem:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
-			}
-
 			case RenderPassMainStage::ToneMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);

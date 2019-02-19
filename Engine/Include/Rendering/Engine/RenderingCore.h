@@ -57,7 +57,6 @@ enum class RenderPassMainStage : uint8
 	BloomUpsampleFirstIteration,
 	BloomUpsampleSecondIteration,
 	BloomUpsampleThirdIteration,
-	ParticleSystem,
 	ToneMapping,
 	AntiAliasing,
 
@@ -105,6 +104,7 @@ enum class RenderPassSubStage : uint8
 	MediumDetailGrassVegetationColor,
 	LowDetailGrassVegetationDepth,
 	LowDetailGrassVegetationColor,
+	ParticleSystem,
 
 	//Directional shadow calculation main stage.
 	DirectionalShadow,
@@ -168,9 +168,6 @@ enum class RenderPassSubStage : uint8
 
 	//Bloom upsample third iteration main stage.
 	BloomUpsampleThirdIteration,
-
-	//Particle system main stage.
-	ParticleSystem,
 
 	//Tone mapping main stage.
 	ToneMapping,

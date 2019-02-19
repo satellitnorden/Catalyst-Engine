@@ -8,100 +8,50 @@
 #include "CatalystShaderCommon.glsl"
 
 //In parameters.
-layout (location = 0) in float fragmentFadeFactor;
+layout (location = 0) in vec3 fragmentNormal;
 layout (location = 1) in vec2 fragmentTextureCoordinate;
-layout (location = 2) in vec2 fragmentSceneTextureCoordinate;
-layout (location = 3) in vec3 fragmentWorldPosition;
+layout (location = 2) in float fragmentFadeFactor;
 
 //Texture samplers.
 layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragment;
-
-/*
-*   Calculates the directional light.
-*/
-vec3 CalculateDirectionalLight()
-{
-    //Return the directional light color.
-    return directionalLightColor * directionalLightIntensity;
-}
-
-/*
-*   Calculates a single point light.
-*/
-vec3 CalculatePointLight(int index)
-{
-    //Start off with just the color of the point light.
-    vec3 pointLightColor = pointLightColors[index];
-
-    //Calculate the attenuation.
-    float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPositions[index]);
-    float attenuation = clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f);
-    attenuation *= attenuation;
-
-    pointLightColor *= attenuation;
-
-    //Return the spotlight color.
-    return pointLightColor * pointLightIntensities[index];
-}
-
-/*
-*   Calculates a single spot light.
-*/
-vec3 CalculateSpotLight(int index)
-{
-    //Start off with just the color of the spot light.
-    vec3 spotLightColor = spotLightColors[index];
-
-    //Get the angle between the normal and the light direction.
-    vec3 lightDirection = normalize(fragmentWorldPosition - spotLightWorldPositions[index]);
-    float lightAngle = dot(lightDirection, spotLightDirections[index]);
-
-    //Calculate the attenuation.
-    float distanceToLightSource = length(fragmentWorldPosition - spotLightWorldPositions[index]);
-    float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistances[index], 0.0f, 1.0f);
-    attenuation *= attenuation;
-
-    spotLightColor *= attenuation;
-
-    //Calculate the inner/outer cone fade out.
-    float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
-    float intensity = lightAngle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((lightAngle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
-
-    spotLightColor *= intensity;
-
-    //Return the spotlight color.
-    return spotLightColor * spotLightIntensities[index];
-}
+layout (location = 0) out vec4 albedo;
+layout (location = 1) out vec4 normalDepth;
+layout (location = 2) out vec4 materialProperties;
 
 void main()
 {
-    //Sample the albedo texture.
-    vec4 albedoTextureSampler = pow(texture(albedoTexture, fragmentTextureCoordinate), vec4(2.2f));
-
-    //Start off the final fragment with just some ambient lighting.
-    vec3 finalFragment = albedoTextureSampler.rgb * 0.025f;
-
-    //Calculate the directional light.
-    finalFragment += CalculateDirectionalLight();
-
-    //Calculate all point lights.
-    for (int i = 0; i < numberOfPointLights; ++i)
-    {
-        finalFragment += CalculatePointLight(i);
-    }
-
-    //Calculate all spot lights.
-    for (int i = 0; i < numberOfSpotLights; ++i)
-    {
-        finalFragment += CalculateSpotLight(i);
-    }
+    //Sample the albedo.
+    vec4 albedoTextureSampler = texture(albedoTexture, fragmentTextureCoordinate);
 
     //Calculate the blend factor.
     float blendFactor = albedoTextureSampler.a * fragmentFadeFactor;
 
-    //Write the fragment.
-    fragment = vec4(finalFragment, blendFactor);
+    //Discard this fragment according to blend factor.
+    if (blendFactor <= RandomFloat(gl_FragCoord.xyz))
+    {
+        discard;
+    }
+
+    else
+    {
+    	//Write the albedo.
+    	albedo = albedoTextureSampler;
+
+    	//Write the normal.
+	    normalDepth = vec4(fragmentNormal, gl_FragCoord.z);
+
+	    //Write the roughness.
+	    materialProperties.r = 1.0f;
+
+	    //Write the metallic.
+	    materialProperties.g = 0.0f;
+
+	    //Write the ambient occlusion.
+	    materialProperties.b = 1.0f;
+
+	    //Write the thickness.
+	    materialProperties.a = 0.0f;
+    }
 }

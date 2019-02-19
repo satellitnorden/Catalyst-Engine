@@ -36,7 +36,7 @@ ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
 void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::ParticleSystem);
+	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::ParticleSystem);
@@ -52,8 +52,10 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Scene);
+	SetNumberOfRenderTargets(3);
+	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
+	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -68,23 +70,23 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetBlendEnabled(true);
+	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
-	SetBlendFactorSourceAlpha(BlendFactor::Zero);
-	SetBlendFactorDestinationAlpha(BlendFactor::OneMinusSourceAlpha);
+	SetBlendFactorSourceAlpha(BlendFactor::One);
+	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Front);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
+	SetDepthWriteEnabled(true);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(BIT(0));
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::PointList);
 
 	//Set the render function.
