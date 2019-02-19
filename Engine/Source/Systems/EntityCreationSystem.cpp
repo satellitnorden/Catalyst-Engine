@@ -1,21 +1,8 @@
 //Header file.
 #include <Systems/EntityCreationSystem.h>
 
-//Components.
-#include <Components/ComponentManager.h>
-
-//Entities.
-#include <Entities/Creation/PhysicsInitializationData.h>
-#include <Entities/Creation/PointLightInitializationData.h>
-#include <Entities/Creation/SoundInitializationData.h>
-
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>
-
-//Systems.
-#include <Systems/RenderingSystem.h>
-#include <Systems/SoundSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntityCreationSystem);
@@ -62,39 +49,8 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 		_AutomaticTerminationQueue.EmplaceSlow(entity);
 	}
 
-	//Initialize this entity in different ways depending on the entity type.
-	switch (entity->_Type)
-	{
-		case EntityType::DynamicPhysical:
-		case EntityType::ParticleSystem:
-		case EntityType::Physics:
-		{
-			entity->Initialize(data);
-
-			break;
-		}
-
-		case EntityType::PointLight:
-		{
-			InitializePointLightEntity(entity, data);
-
-			break;
-		}
-
-		case EntityType::Sound:
-		{
-			InitializeSoundEntity(entity, data);
-
-			break;
-		}
-
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-		default:
-		{
-			ASSERT(false, "Invalid entity type!");
-		}
-#endif
-	}
+	//Initialize this entity.
+	entity->Initialize(data);
 
 	//Set this entity to initialized.
 	entity->_Initialized = true;
@@ -105,38 +61,8 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 */
 void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 {
-	switch (entity->_Type)
-	{
-		case EntityType::DynamicPhysical:
-		case EntityType::ParticleSystem:
-		case EntityType::Physics:
-		{
-			entity->Terminate();
-
-			break;
-		}
-
-		case EntityType::PointLight:
-		{
-			TerminatePointLightEntity(entity);
-
-			break;
-		}
-
-		case EntityType::Sound:
-		{
-			TerminateSoundEntity(entity);
-
-			break;
-		}
-
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-		default:
-		{
-			ASSERT(false, "Invalid entity type!");
-		}
-#endif
-	}
+	//Terminate this entity.
+	entity->Terminate();
 
 	//Set this entity to un-initialized.
 	entity->_Initialized = false;
@@ -244,55 +170,6 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 }
 
 /*
-*	Initializes a point light entity.
-*/
-void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for this point light entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewPointLightComponentsIndex(entity);
-
-	//Copy the data over to the component.
-	PointLightComponent &component{ ComponentManager::GetPointLightPointLightComponents()[entity->_ComponentsIndex] };
-	const PointLightInitializationData *const RESTRICT pointLightInitializationData{ static_cast<const PointLightInitializationData *const RESTRICT>(data) };
-
-	component._Enabled = pointLightInitializationData->_Enabled;
-	component._Color = pointLightInitializationData->_Color;
-	component._Position = pointLightInitializationData->_Position;
-	component._Intensity = pointLightInitializationData->_Intensity;
-	component._AttenuationDistance = pointLightInitializationData->_AttenuationDistance;
-
-	//Destroy the initialization data.
-	DestroyInitializationData<PointLightInitializationData>(data);
-}
-
-/*
-*	Initializes a sound entity.
-*/
-void EntityCreationSystem::InitializeSoundEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for this sound entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewSoundComponentsIndex(entity);
-
-	//Copy the data over to the component.
-	SoundComponent &component{ ComponentManager::GetSoundSoundComponents()[entity->_ComponentsIndex] };
-	const SoundInitializationData *const RESTRICT initializationData{ static_cast<const SoundInitializationData *const RESTRICT>(data) };
-
-	component._Position = initializationData->_Position;
-
-	//Create the sound instance.
-	SoundSystem::Instance->CreateSoundInstance(initializationData->_Description, &component._Instance);
-
-	//Set the position of the sound instance.
-	SoundSystem::Instance->SetPosition(component._Instance, component._Position);
-
-	//Play the instance.
-	SoundSystem::Instance->Play(component._Instance);
-
-	//Destroy the initialization data.
-	DestroyInitializationData<SoundInitializationData>(data);
-}
-
-/*
 *	Processes the termination queue.
 */
 void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
@@ -308,27 +185,6 @@ void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 
 	//Clear the termination queue.
 	_TerminationQueue.ClearFast();
-}
-
-/*
-*	Terminates a point light entity.
-*/
-void EntityCreationSystem::TerminatePointLightEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Return this entitiy's components index.
-	ComponentManager::ReturnPointLightComponentsIndex(entity->_ComponentsIndex);
-}
-
-/*
-*	Terminates a sound entity.
-*/
-void EntityCreationSystem::TerminateSoundEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Destroy the sound instance.
-	SoundSystem::Instance->DestroySoundInstance(ComponentManager::GetSoundSoundComponents()[entity->_ComponentsIndex]._Instance);
-
-	//Return this entitiy's components index.
-	ComponentManager::ReturnSoundComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

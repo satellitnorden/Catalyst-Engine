@@ -19,17 +19,11 @@ public:
 	/*
 	*	Initializes this entity.
 	*/
-	void Initialize(const EntityInitializationData *const RESTRICT data) NOEXCEPT
-	{
-
-	}
+	void Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Terminates this entity.
 	*/
-	void Terminate() NOEXCEPT
-	{
-
-	}
+	void Terminate() NOEXCEPT;
 
 };
