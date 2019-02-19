@@ -31,11 +31,7 @@ void PointLightEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	PointLightComponent &component{ ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex] };
 	const PointLightInitializationData *const RESTRICT pointLightInitializationData{ static_cast<const PointLightInitializationData *const RESTRICT>(data) };
 
-	component._Enabled = pointLightInitializationData->_Enabled;
-	component._Color = pointLightInitializationData->_Color;
-	component._Position = pointLightInitializationData->_Position;
-	component._Intensity = pointLightInitializationData->_Intensity;
-	component._AttenuationDistance = pointLightInitializationData->_AttenuationDistance;
+	component = pointLightInitializationData->_Component;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<PointLightInitializationData>(data);
@@ -56,5 +52,5 @@ void PointLightEntity::Terminate() NOEXCEPT
 RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;
+	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._WorldPosition;
 }

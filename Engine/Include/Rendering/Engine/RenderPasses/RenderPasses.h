@@ -56,6 +56,7 @@
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationCrownDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
+#include <Rendering/Engine/RenderPasses/PointLightRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>

@@ -876,6 +876,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionHorizontalBlur)] = ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionVerticalBlur)] = ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::PointLight)] = PointLightRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AboveOcean)] = AboveOceanRenderPass::Instance.Get();
@@ -1182,17 +1183,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 
 	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
 	{
-		if (!pointLightComponent->_Enabled)
-		{
-			--data._NumberOfPointLights;
-
-			continue;
-		}
-
 		data._PointLightAttenuationDistances[counter] = pointLightComponent->_AttenuationDistance;
 		data._PointLightIntensities[counter] = pointLightComponent->_Intensity;
 		data._PointLightColors[counter] = pointLightComponent->_Color;
-		data._PointLightWorldPositions[counter] = pointLightComponent->_Position;
+		data._PointLightWorldPositions[counter] = pointLightComponent->_WorldPosition;
 
 		if (++counter == LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS)
 		{

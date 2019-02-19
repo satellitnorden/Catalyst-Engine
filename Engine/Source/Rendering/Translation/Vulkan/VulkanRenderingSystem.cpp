@@ -1113,6 +1113,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the point light fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPointLightFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::PointLightFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the screen space ambient occlusion blur fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetScreenSpaceAmbientOcclusionBlurFragmentShaderData(data);
@@ -2310,7 +2317,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the lighting render pass.
 	{
-		constexpr uint64 NUMBER_OF_SUBPASSES{ 3 };
+		constexpr uint64 NUMBER_OF_SUBPASSES{ 4 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 SCENE_INDEX{ 1 };
@@ -2351,7 +2358,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 				nullptr,
 				1,
 				&sceneColorAttachmentReference,
-				&depthAttachmentReference,
+				nullptr,
+				0,
+				nullptr);
+
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Lighting, RenderPassSubStage::PointLight)] =
+			VulkanUtilities::CreateSubpassDescription(0,
+				nullptr,
+				1,
+				&sceneColorAttachmentReference,
+				nullptr,
 				0,
 				nullptr);
 
@@ -2379,6 +2395,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkSubpassDependency, NUMBER_OF_SUBPASSES - 1> subpassDependencies
 		{
 			VulkanUtilities::CreateSubpassDependency(VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Lighting, RenderPassSubStage::Lighting),
+														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Lighting, RenderPassSubStage::PointLight),
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Lighting, RenderPassSubStage::PointLight),
 														VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Lighting, RenderPassSubStage::Sky),
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,

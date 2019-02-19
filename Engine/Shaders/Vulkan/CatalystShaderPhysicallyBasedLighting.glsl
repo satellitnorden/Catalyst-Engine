@@ -2,40 +2,6 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystShaderPhysicallyBasedLightingInternals.glsl"
 
-//Forward declarations.
-vec3 CalculateAmbient(  vec3 surfaceColor,
-                        float roughness,
-                        float viewAngle,
-                        float metallic,
-                        samplerCube firstDiffseIrradianceTexture,
-                        samplerCube secondDiffuseIrradianceTexture,
-                        vec3 normalDirection,
-                        vec3 albedoColor,
-                        vec3 viewDirection,
-                        samplerCube firstDiffseTexture,
-                        samplerCube secondDiffuseTexture,
-                        float ambientOcclusion);
-
-vec3 CalculateDirectionalLight( vec3 albedoColor,
-                                float thickness,
-                                vec3 viewDirection,
-                                vec3 normalDirection,
-                                float roughness,
-                                float viewAngle,
-                                vec3 surfaceColor,
-                                float metallic);
-
-vec3 CalculateSpotLight(    int index,
-                            vec3 fragmentWorldPosition,
-                            float viewAngle,
-                            vec3 viewDirection,
-                            vec3 albedo,
-                            vec3 normal,
-                            float roughness,
-                            float metallic,
-                            float ambientOcclusion,
-                            float thickness);
-
 /*
 *   Calculates the ambient lighting.
 */

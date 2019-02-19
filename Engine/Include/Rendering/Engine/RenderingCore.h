@@ -126,6 +126,7 @@ enum class RenderPassSubStage : uint8
 
 	//Lighting main stage.
 	Lighting,
+	PointLight,
 	Sky,
 	DynamicOutline,
 
@@ -393,6 +394,7 @@ enum class Shader : uint8
 	AntiAliasingFragment,
 	PhysicalFragment,
 	PhysicalVertex,
+	PointLightFragment,
 	ScreenSpaceAmbientOcclusionBlurFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,

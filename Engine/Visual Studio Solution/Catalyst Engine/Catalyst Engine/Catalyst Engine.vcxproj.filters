@@ -1455,6 +1455,12 @@
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
       <Filter>Entities\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\PointLightFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PointLightRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1651,9 +1657,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\Viewer.cpp">
-      <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
       <Filter>Core\Source\Utilities</Filter>
@@ -2116,6 +2119,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\PointLightFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PointLightRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
