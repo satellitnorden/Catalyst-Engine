@@ -10,29 +10,24 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 particleSystemWorldPosition;
-    layout (offset = 16) float particleSystemRandomSeed;
-    layout (offset = 20) float particleSystemTotalTime;
+	layout (offset = 0) vec3 particleSystemInitialMinimumPosition;
+	layout (offset = 16) vec3 particleSystemInitialMaximumPosition;
+	layout (offset = 32) vec3 particleSystemInitialMinimumVelocity;
+	layout (offset = 48) vec3 particleSystemInitialMaximumVelocity;
+	layout (offset = 64) vec3 particleSystemWorldPosition;
+	layout (offset = 80) vec2 particleSystemInitialMinimumScale;
+	layout (offset = 88) vec2 particleSystemInitialMaximumScale;
+	layout (offset = 96) float fadeTime;
+	layout (offset = 100) float lifetime;
+	layout (offset = 104) float spawnFrequency;
+	layout (offset = 108) int properties;
+	layout (offset = 112) float particleSystemRandomSeed;
+    layout (offset = 116) float particleSystemTotalTime;
 };
 
 //Layout specification.
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
-
-//The particle system uniform data.
-layout (std140, set = 1, binding = 0) uniform ParticleSystemUniformData
-{ 
-	layout (offset = 0) int properties;
-	layout (offset = 4) float fadeTime;
-	layout (offset = 8) float lifetime;
-	layout (offset = 12) float spawnFrequency;
-	layout (offset = 16) vec2 particleSystemInitialMinimumScale;
-	layout (offset = 24) vec2 particleSystemInitialMaximumScale;
-	layout (offset = 32) vec3 particleSystemInitialMinimumPosition;
-	layout (offset = 48) vec3 particleSystemInitialMaximumPosition;
-	layout (offset = 64) vec3 particleSystemInitialMinimumVelocity;
-	layout (offset = 80) vec3 particleSystemInitialMaximumVelocity;
-};
 
 //In parameters.
 layout (location = 0) in int instanceIndex[];

@@ -11,6 +11,9 @@ class ParticleSystemRenderComponent final
 
 public:
 
+	//The particle system properties.
+	ParticleSystemProperties _Properties;
+
 	//The visibility.
 	VisibilityFlag _Visibility;
 
@@ -19,9 +22,6 @@ public:
 
 	//The instance count.
 	uint32 _InstanceCount;
-
-	//The world position.
-	Vector3<float> _WorldPosition;
 
 	//The random seed of the particle system.
 	float _ParticleSystemRandomSeed;

@@ -19,6 +19,49 @@
 DEFINE_SINGLETON(ParticleSystemRenderPass);
 
 /*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	Vector3<float> _MinimumPosition;
+	Padding<4> _Padding1;
+	Vector3<float> _MaximumPosition;
+	Padding<4> _Padding2;
+	Vector3<float> _MinimumVelocity;
+	Padding<4> _Padding3;
+	Vector3<float> _MaximumVelocity;
+	Padding<4> _Padding4;
+	Vector3<float> _WorldPosition;
+	Padding<4> _Padding5;
+	Vector2<float> _MinimumScale;
+	Vector2<float> _MaximumScale;
+	float _FadeTime;
+	float _Lifetime;
+	float _SpawnFrequency;
+	int32 _Properties;
+	float _RandomSeed;
+	float _TotalTime;
+
+};
+
+static_assert(offsetof(PushConstantData, _MinimumPosition) == 0, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _MaximumPosition) == 16, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _MinimumVelocity) == 32, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _MaximumVelocity) == 48, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _WorldPosition) == 64, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _MinimumScale) == 80, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _MaximumScale) == 88, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _FadeTime) == 96, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _Lifetime) == 100, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _SpawnFrequency) == 104, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _Properties) == 108, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _RandomSeed) == 112, "Offset is wrong. ):");
+static_assert(offsetof(PushConstantData, _TotalTime) == 116, "Offset is wrong. ):");
+
+/*
 *	Default constructor.
 */
 ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
@@ -64,7 +107,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Geometry, 0, 24);
+	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -136,19 +179,25 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 			continue;
 		}
 
-		struct ParticleSystemData
-		{
-			Vector3<float> _WorldPosition;
-			Padding<4> _Padding;
-			float _ParticleSystemRandomSeed;
-			float _ParticleSystemTotalTime;
-		} particleSystemData;
+		//Push constants.
+		PushConstantData data;
 
-		particleSystemData._WorldPosition = component->_WorldPosition;
-		particleSystemData._ParticleSystemRandomSeed = component->_ParticleSystemRandomSeed;
-		particleSystemData._ParticleSystemTotalTime = CatalystEngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
+		data._MinimumPosition = component->_Properties._MinimumPosition;
+		data._MaximumPosition = component->_Properties._MaximumPosition;
+		data._MinimumVelocity = component->_Properties._MinimumVelocity;
+		data._MaximumVelocity = component->_Properties._MinimumVelocity;
+		data._WorldPosition = component->_Properties._WorldPosition;
+		data._MinimumScale = component->_Properties._MinimumScale;
+		data._MaximumScale = component->_Properties._MaximumScale;
+		data._FadeTime = component->_Properties._FadeTime;
+		data._Lifetime = component->_Properties._Lifetime;
+		data._SpawnFrequency = component->_Properties._SpawnFrequency;
+		data._Properties = static_cast<int32>(component->_Properties._Properties);
+		data._RandomSeed = component->_ParticleSystemRandomSeed;
+		data._TotalTime = CatalystEngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
 
-		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(ParticleSystemData), &particleSystemData);
+		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(PushConstantData), &data);
+
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
 		commandBuffer->Draw(this, 1, component->_InstanceCount);
 	}

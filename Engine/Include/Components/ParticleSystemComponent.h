@@ -15,10 +15,4 @@ public:
 	//The axis-aligned bounding box.
 	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
-	//The particle system properties.
-	ParticleSystemProperties _Properties;
-
-	//Handle to the uniform buffer that stores the properties.
-	UniformBufferHandle _PropertiesUniformBuffer;
-
 };

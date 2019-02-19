@@ -41,15 +41,11 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	const ParticleSystemInitializationData *const RESTRICT particleSystemInitializationData{ static_cast<const ParticleSystemInitializationData *const RESTRICT>(data) };
 
 	//Fill in the components.
-	RenderingUtilities::CalculateAxisAlignedBoundingBoxForParticleSystem(particleSystemInitializationData->_Position, particleSystemInitializationData->_ParticleSystemProperties, &component._AxisAlignedBoundingBox);
-	component._Properties = particleSystemInitializationData->_ParticleSystemProperties;
-	component._PropertiesUniformBuffer = RenderingSystem::Instance->CreateUniformBuffer(sizeof(ParticleSystemProperties), BufferUsage::UniformBuffer);
-	RenderingSystem::Instance->UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
+	RenderingUtilities::CalculateAxisAlignedBoundingBoxForParticleSystem(particleSystemInitializationData->_ParticleSystemProperties._WorldPosition, particleSystemInitializationData->_ParticleSystemProperties, &component._AxisAlignedBoundingBox);
+	renderComponent._Properties = particleSystemInitializationData->_ParticleSystemProperties;
 	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
-	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, renderComponent._RenderDataTable, component._PropertiesUniformBuffer);
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, renderComponent._RenderDataTable, particleSystemInitializationData->_Material._AlbedoTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, renderComponent._RenderDataTable, particleSystemInitializationData->_Material._AlbedoTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(particleSystemInitializationData->_ParticleSystemProperties._Lifetime / particleSystemInitializationData->_ParticleSystemProperties._SpawnFrequency);
-	renderComponent._WorldPosition = particleSystemInitializationData->_Position;
 	renderComponent._ParticleSystemRandomSeed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	renderComponent._ParticleSystemStartingTime = CatalystEngineSystem::Instance->GetTotalTime();
 
@@ -62,9 +58,6 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 */
 void ParticleSystemEntity::Terminate() NOEXCEPT
 {
-	//Destroy the uniform buffer.
-	RenderingSystem::Instance->DestroyUniformBuffer(ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._PropertiesUniformBuffer);
-
 	//Destroy the render data table.
 	RenderingSystem::Instance->DestroyRenderDataTable(ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._RenderDataTable);
 
@@ -78,7 +71,7 @@ void ParticleSystemEntity::Terminate() NOEXCEPT
 bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 {
 	//Return whether or not this entity should automatically terminate.
-	const ParticleSystemProperties &properties{ ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Properties };
+	const ParticleSystemProperties &properties{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._Properties };
 	const bool isLooping{ TEST_BIT(properties._Properties, ParticleSystemProperty::Looping) };
 
 	if (isLooping)
@@ -102,5 +95,5 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._WorldPosition;
+	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._Properties._WorldPosition;
 }

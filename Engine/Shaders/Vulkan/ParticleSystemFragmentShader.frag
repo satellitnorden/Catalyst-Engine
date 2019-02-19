@@ -13,7 +13,7 @@ layout (location = 1) in vec2 fragmentTextureCoordinate;
 layout (location = 2) in float fragmentFadeFactor;
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 0) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedo;

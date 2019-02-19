@@ -1075,10 +1075,9 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 	{
 		//Initialize the particle system render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Geometry),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
