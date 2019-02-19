@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Vector3.h>
+#include <Math/Matrix4.h>
 
 class TransformComponent final
 {
@@ -19,5 +19,11 @@ public:
 
 	//The scale.
 	Vector3<float> _Scale{ 1.0f, 1.0f, 1.0f };
+
+	//The local transform.
+	Matrix4 _LocalTransform;
+
+	//The world transform.
+	Matrix4 _WorldTransform;
 	
 };

@@ -102,12 +102,42 @@ public:
 	/*
 	*	Returns the translation.
 	*/
-	Vector3<float> GetTranslation() const NOEXCEPT;
+	FORCE_INLINE NO_DISCARD Vector3<float> GetTranslation() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
+	}
 
 	/*
 	*	Returns the scale.
 	*/
-	Vector3<float> GetScale() const NOEXCEPT;
+	FORCE_INLINE NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
+	}
+
+	/*
+	*	Returns the right.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float> GetRight() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[0]._X, _Matrix[0]._Y, _Matrix[0]._Z);
+	}
+
+	/*
+	*	Returns the up.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float> GetUp() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
+	}
+
+	/*
+	*	Returns the forward.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
+	}
 
 	/*
 	*	Sets the translation.

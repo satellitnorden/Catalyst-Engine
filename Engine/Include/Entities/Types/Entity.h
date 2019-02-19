@@ -10,7 +10,7 @@
 
 //Math.
 #include <Math/AxisAlignedBoundingBox.h>
-#include <Math/Vector3.h>
+#include <Math/Matrix4.h>
 
 class Entity
 {
@@ -41,6 +41,16 @@ public:
 	*	Terminates this entity.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Returns the local transform of this entity.
+	*/
+	Matrix4 *const RESTRICT GetLocalTransform() NOEXCEPT;
+
+	/*
+	*	Returns the world transform of this entity.
+	*/
+	Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
 
 	/*
 	*	Moves this entity.

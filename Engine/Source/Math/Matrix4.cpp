@@ -282,22 +282,6 @@ NO_DISCARD bool Matrix4::IsValid() const NOEXCEPT
 }
 
 /*
-*	Returns the translation.
-*/
-Vector3<float> Matrix4::GetTranslation() const NOEXCEPT
-{
-	return Vector3<float>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
-}
-
-/*
-*	Returns the scale.
-*/
-Vector3<float> Matrix4::GetScale() const NOEXCEPT
-{
-	return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
-}
-
-/*
 *	Sets the translation.
 */
 void Matrix4::SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT

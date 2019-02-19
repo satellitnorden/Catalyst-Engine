@@ -1,6 +1,9 @@
 //Header file.
 #include <Entities/Types/Entity.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
 //Entities.
 #include <Entities/Types/DynamicPhysicalEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
@@ -54,6 +57,46 @@ void Entity::Terminate() NOEXCEPT
 		ENTITY_TYPES
 #undef ENTITY_TYPE
 	}
+}
+
+/*
+*	Returns the local transform of this entity, non-const.
+*/
+Matrix4 *const RESTRICT Entity::GetLocalTransform() NOEXCEPT
+{
+	switch (_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
+		{																										\
+			return &ComponentManager::Get ## VALUE ## TransformComponents()[_ComponentsIndex]._LocalTransform;	\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+
+	ASSERT(false, "What happened here?");
+
+	return nullptr;
+}
+
+/*
+*	Returns the world transform of this entity, non-const.
+*/
+Matrix4 *const RESTRICT Entity::GetWorldTransform() NOEXCEPT
+{
+	switch (_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
+		{																										\
+			return &ComponentManager::Get ## VALUE ## TransformComponents()[_ComponentsIndex]._WorldTransform;	\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+
+	ASSERT(false, "What happened here?");
+
+	return nullptr;
 }
 
 /*
