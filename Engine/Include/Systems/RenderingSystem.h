@@ -32,9 +32,6 @@ class GrassVegetationModel;
 class GrassVegetationModelData;
 class OceanMaterialData;
 class ParticleMaterialData;
-class ParticleSystemEntity;
-class ParticleSystemInitializationData;
-class ParticleSystemProperties;
 class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModelData;
@@ -402,16 +399,6 @@ public:
 	*	Creates a tree vegetation model.
 	*/
 	void CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT;
-
-	/*
-	*	Initializes a particle system entity.
-	*/
-	void InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Terminates a particle system entity.
-	*/
-	void TerminateParticleSystemEntity(const Entity *const RESTRICT entity) const NOEXCEPT;
 
 	/*
 	*	Finalizes the initialization of a render pass.

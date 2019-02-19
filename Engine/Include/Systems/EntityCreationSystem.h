@@ -179,11 +179,6 @@ private:
 	void ProcessInitializationQueue() NOEXCEPT;
 
 	/*
-	*	Initializes a particle system entity.
-	*/
-	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
 	*	Initializes a point light entity.
 	*/
 	void InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
@@ -197,11 +192,6 @@ private:
 	*	Processes the termination queue.
 	*/
 	void ProcessTerminationQueue() NOEXCEPT;
-
-	/*
-	*	Terminates a particle system entity.
-	*/
-	void TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Terminates a point light entity.

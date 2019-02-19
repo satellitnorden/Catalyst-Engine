@@ -5,8 +5,6 @@
 #include <Core/General/Perceiver.h>
 
 //Entities.
-#include <Entities/Creation/DynamicPhysicalInitializationData.h>
-#include <Entities/Creation/ParticleSystemInitializationData.h>
 #include <Entities/Types/Entity.h>
 
 //Managers.
@@ -695,41 +693,6 @@ void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &d
 		model._TrunkIndexOffsets[i] = modelDataSizes[0];
 		model._TrunkIndexCounts[i] = static_cast<uint32>(data._TrunkIndices[i].Size());
 	}
-}
-
-/*
-*	Initializes a particle system entity.
-*/
-void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT
-{
-	//Cache the components.
-	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex] };
-	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex] };
-
-	//Fill in the components.
-	RenderingUtilities::CalculateAxisAlignedBoundingBoxForParticleSystem(data->_Position, data->_ParticleSystemProperties, &component._AxisAlignedBoundingBox);
-	component._Properties = data->_ParticleSystemProperties;
-	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties), BufferUsage::UniformBuffer);
-	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
-	BindUniformBufferToRenderDataTable(0, 0, renderComponent._RenderDataTable, component._PropertiesUniformBuffer);
-	BindCombinedImageSamplerToRenderDataTable(1, 0, renderComponent._RenderDataTable, data->_Material._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
-	renderComponent._WorldPosition = data->_Position;
-	renderComponent._ParticleSystemRandomSeed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent._ParticleSystemStartingTime = CatalystEngineSystem::Instance->GetTotalTime();
-}
-
-/*
-*	Terminates a particle system entity.
-*/
-void RenderingSystem::TerminateParticleSystemEntity(const Entity *const RESTRICT entity) const NOEXCEPT
-{
-	//Destroy the uniform buffer.
-	DestroyUniformBuffer(ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex]._PropertiesUniformBuffer);
-
-	//Destroy the render data table.
-	DestroyRenderDataTable(ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex]._RenderDataTable);
 }
 
 /*

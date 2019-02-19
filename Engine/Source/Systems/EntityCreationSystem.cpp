@@ -5,8 +5,6 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/Creation/DynamicPhysicalInitializationData.h>
-#include <Entities/Creation/ParticleSystemInitializationData.h>
 #include <Entities/Creation/PhysicsInitializationData.h>
 #include <Entities/Creation/PointLightInitializationData.h>
 #include <Entities/Creation/SoundInitializationData.h>
@@ -68,16 +66,10 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	switch (entity->_Type)
 	{
 		case EntityType::DynamicPhysical:
+		case EntityType::ParticleSystem:
 		case EntityType::Physics:
 		{
 			entity->Initialize(data);
-
-			break;
-		}
-
-		case EntityType::ParticleSystem:
-		{
-			InitializeParticleSystemEntity(entity, data);
 
 			break;
 		}
@@ -116,16 +108,10 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 	switch (entity->_Type)
 	{
 		case EntityType::DynamicPhysical:
+		case EntityType::ParticleSystem:
 		case EntityType::Physics:
 		{
 			entity->Terminate();
-
-			break;
-		}
-
-		case EntityType::ParticleSystem:
-		{
-			TerminateParticleSystemEntity(entity);
 
 			break;
 		}
@@ -258,21 +244,6 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 }
 
 /*
-*	Initializes a particle system physical entity.
-*/
-void EntityCreationSystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for this particle system entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(entity);
-
-	//Initialize the particle system entity via the rendering system.
-	RenderingSystem::Instance->InitializeParticleSystemEntity(entity, static_cast<const ParticleSystemInitializationData *const RESTRICT>(data));
-
-	//Destroy the initialization data.
-	DestroyInitializationData<ParticleSystemInitializationData>(data);
-}
-
-/*
 *	Initializes a point light entity.
 */
 void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
@@ -337,18 +308,6 @@ void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 
 	//Clear the termination queue.
 	_TerminationQueue.ClearFast();
-}
-
-/*
-*	Terminates a particle system entity.
-*/
-void EntityCreationSystem::TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Terminate the particle system entity via the rendering system.
-	RenderingSystem::Instance->TerminateParticleSystemEntity(entity);
-
-	//Return this entitiy's components index.
-	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*
