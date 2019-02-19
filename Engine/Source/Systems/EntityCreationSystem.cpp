@@ -67,16 +67,10 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	//Initialize this entity in different ways depending on the entity type.
 	switch (entity->_Type)
 	{
+		case EntityType::DynamicPhysical:
 		case EntityType::Physics:
 		{
 			entity->Initialize(data);
-
-			break;
-		}
-
-		case EntityType::DynamicPhysical:
-		{
-			InitializeDynamicPhysicalEntity(entity, data);
 
 			break;
 		}
@@ -121,16 +115,10 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 {
 	switch (entity->_Type)
 	{
+		case EntityType::DynamicPhysical:
 		case EntityType::Physics:
 		{
 			entity->Terminate();
-
-			break;
-		}
-
-		case EntityType::DynamicPhysical:
-		{
-			TerminateDynamicPhysicalEntity(entity);
 
 			break;
 		}
@@ -270,21 +258,6 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 }
 
 /*
-*	Initializes a dynamic physical entity.
-*/
-void EntityCreationSystem::InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for this dynamic physical entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(entity);
-
-	//Initialize the dynamic physical entity via the rendering system.
-	RenderingSystem::Instance->InitializeDynamicPhysicalEntity(entity, static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data));
-
-	//Destroy the initialization data.
-	DestroyInitializationData<DynamicPhysicalInitializationData>(data);
-}
-
-/*
 *	Initializes a particle system physical entity.
 */
 void EntityCreationSystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
@@ -364,15 +337,6 @@ void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 
 	//Clear the termination queue.
 	_TerminationQueue.ClearFast();
-}
-
-/*
-*	Terminates a dynamic physical entity.
-*/
-void EntityCreationSystem::TerminateDynamicPhysicalEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Return this entitiy's components index.
-	ComponentManager::ReturnDynamicPhysicalComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

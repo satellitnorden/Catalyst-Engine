@@ -179,11 +179,6 @@ private:
 	void ProcessInitializationQueue() NOEXCEPT;
 
 	/*
-	*	Initializes a dynamic physical entity.
-	*/
-	void InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
 	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
@@ -202,11 +197,6 @@ private:
 	*	Processes the termination queue.
 	*/
 	void ProcessTerminationQueue() NOEXCEPT;
-
-	/*
-	*	Terminates a dynamic physical entity.
-	*/
-	void TerminateDynamicPhysicalEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Terminates a particle system entity.

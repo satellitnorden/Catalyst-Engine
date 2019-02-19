@@ -698,40 +698,6 @@ void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &d
 }
 
 /*
-*	Initializes a dynamic physical entity.
-*/
-void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
-{
-	//Cache the components.
-	DynamicOutlineRenderComponent &outlineRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicOutlineRenderComponents()[entity->_ComponentsIndex] };
-	DynamicPhysicalRenderComponent &physicalRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->_ComponentsIndex] };
-	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->_ComponentsIndex] };
-	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->_ComponentsIndex] };
-
-	//Initialize the outline render component.
-	outlineRenderComponent._PhysicalFlags = data->_Flags;
-	outlineRenderComponent._IsInViewFrustum = true;
-	outlineRenderComponent._Buffer = data->_Model._Buffers[UNDERLYING(LevelOfDetail::High)];
-	outlineRenderComponent._IndexOffset = data->_Model._IndexOffsets[UNDERLYING(LevelOfDetail::High)];
-	outlineRenderComponent._IndexCount = data->_Model._IndexCounts[UNDERLYING(LevelOfDetail::High)];
-	outlineRenderComponent._Color = data->_OutlineColor;
-
-	//Initialize the physical render component.
-	physicalRenderComponent._PhysicalFlags = data->_Flags;
-	physicalRenderComponent._IsInViewFrustum = true;
-	physicalRenderComponent._Model = data->_Model;
-	physicalRenderComponent._Material = data->_Material;
-
-	//Initialize the culling component.
-	cullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBoxes[UNDERLYING(LevelOfDetail::High)];
-
-	//Initialize the transform component.
-	transformComponent._Position = data->_Position;
-	transformComponent._Rotation = data->_Rotation;
-	transformComponent._Scale = data->_Scale;
-}
-
-/*
 *	Initializes a particle system entity.
 */
 void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT

@@ -24,7 +24,6 @@
 //Forward declarations.
 class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
-class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;
 class GrassVegetationMaterial;
@@ -403,11 +402,6 @@ public:
 	*	Creates a tree vegetation model.
 	*/
 	void CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT;
-
-	/*
-	*	Initializes a dynamic physical entity.
-	*/
-	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Initializes a particle system entity.
