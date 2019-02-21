@@ -21,6 +21,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sourceTexture;
+layout (set = 1, binding = 1) uniform sampler2D propertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -30,7 +31,10 @@ layout (location = 0) out vec4 fragment;
 */
 vec4 Sample(vec2 coordinate)
 {
-    return texture(sourceTexture, coordinate);
+    vec4 bloom = texture(sourceTexture, coordinate);
+    float average = CalculateAverage(bloom.rgb);
+
+    return bloom * min(average * texture(propertiesTexture, coordinate).x, 1.0f);
 }
 
 void main()

@@ -140,14 +140,14 @@ void LowDetailGrassVegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(true);
+	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Equal);
-	SetStencilCompareMask(BIT(3));
+	SetStencilCompareMask(0);
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(BIT(3));
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

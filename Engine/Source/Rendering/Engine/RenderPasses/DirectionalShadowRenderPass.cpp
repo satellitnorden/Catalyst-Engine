@@ -47,7 +47,7 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetFragmentShader(Shader::DirectionalShadowFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
+	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -76,9 +76,9 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Equal);
-	SetStencilCompareMask(BIT(0));
+	SetStencilCompareMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(BIT(0));
+	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.

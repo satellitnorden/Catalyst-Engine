@@ -95,10 +95,11 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
+	SetNumberOfRenderTargets(4);
 	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	AddRenderTarget(RenderTarget::SceneProperties);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -128,8 +129,8 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0));
-	SetStencilReferenceMask(BIT(0));
+	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT | RenderingConstants::SCENE_BUFFER_PARTICLE_SYSTEMS_STENCIL_BIT);
+	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT | RenderingConstants::SCENE_BUFFER_PARTICLE_SYSTEMS_STENCIL_BIT);
 	SetTopology(Topology::PointList);
 
 	//Set the render function.

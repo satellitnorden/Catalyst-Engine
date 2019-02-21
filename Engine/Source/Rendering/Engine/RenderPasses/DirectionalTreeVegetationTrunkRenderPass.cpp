@@ -120,8 +120,8 @@ void DirectionalTreeVegetationTrunkRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0));
-	SetStencilReferenceMask(BIT(0));
+	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT | RenderingConstants::SCENE_BUFFER_GENERAL_STENCIL_BIT);
+	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT | RenderingConstants::SCENE_BUFFER_GENERAL_STENCIL_BIT);
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

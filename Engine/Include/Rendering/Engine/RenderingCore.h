@@ -1,3 +1,15 @@
+/*
+*	Explanation of stencil operations.
+*
+*	The stencil fail operator is the action performed on samples that fail the stencil test.
+*	The stencil pass operator is the action performed on samples that pass both the depth and stencil tests.
+*	The stencil depth fail operator is the action performed on samples that pass the stencil test and fail the depth test.
+*	The compare operator is the comparison operator used in the stencil test.
+*	The compare mask selects the bits of the unsigned integer stencil values participating in the stencil test.
+*	The write mask selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment.
+*	The reference mask is an integer reference value that is used in the unsigned stencil comparison.
+*/
+
 #pragma once
 
 //Core.
@@ -11,6 +23,10 @@ namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
+
+	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
+	constexpr uint32 SCENE_BUFFER_GENERAL_STENCIL_BIT{ BIT(1) };
+	constexpr uint32 SCENE_BUFFER_PARTICLE_SYSTEMS_STENCIL_BIT{ BIT(2) };
 }
 
 /*
@@ -286,6 +302,7 @@ enum class RenderTarget : uint8
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
 	Scene,
+	SceneProperties,
 
 	//Screen.
 	Screen,
@@ -314,6 +331,7 @@ enum class Shader : uint8
 {
 	AboveOceanFragment,
 	BelowOceanFragment,
+	BloomDownsampleFirstIterationFragment,
 	BloomDownsampleFragment,
 	BloomUpsampleFragment,
 	BoxBlurFragment,
@@ -424,7 +442,18 @@ enum class ShaderStage : uint8
 
 ENUMERATION_BIT_OPERATIONS(ShaderStage);
 
-//Enumeration covering all stencil operators.
+/*
+*	Enumeration covering all stencil operators.
+*
+*	Keep keeps the current value.
+*	Zero the the value to 0.
+*	Replace sets the value to the reference mask.
+*	IncrementAndClamp increments the current value and clamps to the maximum representable unsigned value.
+*	DecrementAndClamp decrements the current value and clamps to 0.
+*	Invert bitwise-inverts the current value.
+*	IncrementAndWrap increments the current value and wraps to 0 when the maximum value would have been exceeded.
+*	DecrementAndWrap decrements the current value and wraps to the maximum possible value when the value would go below 0.
+*/
 enum class StencilOperator : uint8
 {
 	Keep,

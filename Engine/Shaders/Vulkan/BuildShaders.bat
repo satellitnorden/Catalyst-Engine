@@ -1,6 +1,7 @@
 glslangValidator.exe -V AboveOceanFragmentShader.frag -o 				AboveOceanFragmentShader.spv
 glslangValidator.exe -V AntiAliasingFragmentShader.frag -o 				AntiAliasingFragmentShader.spv
 glslangValidator.exe -V BelowOceanFragmentShader.frag -o 				BelowOceanFragmentShader.spv
+glslangValidator.exe -V BloomDownsampleFirstIterationFragmentShader.frag -o 		BloomDownsampleFirstIterationFragmentShader.spv
 glslangValidator.exe -V BloomDownsampleFragmentShader.frag -o 				BloomDownsampleFragmentShader.spv
 glslangValidator.exe -V BloomUpsampleFragmentShader.frag -o 				BloomUpsampleFragmentShader.spv
 glslangValidator.exe -V BoxBlurFragmentShader.frag -o 					BoxBlurFragmentShader.spv

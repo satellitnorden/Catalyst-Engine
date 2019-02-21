@@ -11,6 +11,7 @@
 #include <Rendering/ShaderData/Vulkan/AboveOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/AntiAliasingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BelowOceanFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/BloomDownsampleFirstIterationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomDownsampleFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomUpsampleFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>

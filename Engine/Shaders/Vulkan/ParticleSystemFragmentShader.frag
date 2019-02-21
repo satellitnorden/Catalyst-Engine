@@ -19,6 +19,7 @@ layout (set = 1, binding = 0) uniform sampler2D albedoTexture;
 layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
+layout (location = 3) out vec4 sceneProperties;
 
 void main()
 {
@@ -53,5 +54,8 @@ void main()
 
 	    //Write the thickness.
 	    materialProperties.a = 0.0f;
+
+        //Write the scene properties.
+        sceneProperties = vec4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 }

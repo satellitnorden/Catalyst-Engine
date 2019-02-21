@@ -572,6 +572,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize bloom downsample first iteration fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetBloomDownsampleFirstIterationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::BloomDownsampleFirstIterationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize bloom downsample fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetBloomDownsampleFragmentShaderData(data);
@@ -1312,11 +1319,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		constexpr uint32 ALBEDO_INDEX{ 1 };
 		constexpr uint32 NORMAL_DEPTH_INDEX{ 2 };
 		constexpr uint32 MATERIAL_PROPERTIES_INDEX{ 3 };
-		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 4 };
+		constexpr uint32 SCENE_PROPERTIES_INDEX{ 4 };
+		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 5 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 5> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 6> attachmenDescriptions
 		{
 			//Depth buffer.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
@@ -1354,6 +1362,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_GENERAL,
 															VK_IMAGE_LAYOUT_GENERAL),
 
+			//Scene properties.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneProperties))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_CLEAR,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL),
+
 			//Scene intermediate.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -1372,6 +1389,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_GENERAL },
 			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL },
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		constexpr StaticArray<const VkAttachmentReference, 4> particleSystemColorAttachmentReferences
+		{
+			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ SCENE_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
 		constexpr VkAttachmentReference terrainDepthAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL };
@@ -1651,8 +1676,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(	RenderPassMainStage::Scene, RenderPassSubStage::ParticleSystem)] =
 								VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
+																			static_cast<uint32>(particleSystemColorAttachmentReferences.Size()),
+																			particleSystemColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
@@ -1897,12 +1922,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 5> attachments
+		StaticArray<VkImageView, 6> attachments
 		{
 			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneProperties))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
@@ -2112,12 +2138,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
-		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 0 };
+		constexpr uint32 SCENE_DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 1 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
+			//Scene depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2131,6 +2167,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
 		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
+		constexpr VkAttachmentReference depthBufferAttachmentReference{ SCENE_DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
 			VkAttachmentReference{ SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX, VK_IMAGE_LAYOUT_GENERAL }
@@ -2144,7 +2181,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr,
 																			1,
 																			colorAttachmentReferences.Data(),
-																			nullptr,
+																			&depthBufferAttachmentReference,
 																			0,
 																			nullptr);
 		}
@@ -2162,8 +2199,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 1> attachments
+		StaticArray<VkImageView, 2> attachments
 		{
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetImageView()
 		};
 
@@ -2173,7 +2211,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation)]._ShouldClear = false;
 	}
 
@@ -2181,12 +2219,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
-		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_HALF_INDEX{ 0 };
+		constexpr uint32 SCENE_DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 1 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
+			//Scene depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2200,9 +2248,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
 		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
+		constexpr VkAttachmentReference depthBufferAttachmentReference{ SCENE_DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
-			VkAttachmentReference{ SCREEN_SPACE_AMBIENT_OCCLUSION_HALF_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+			VkAttachmentReference{ SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
 		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
@@ -2213,7 +2262,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr,
 																			1,
 																			colorAttachmentReferences.Data(),
-																			nullptr,
+																			&depthBufferAttachmentReference,
 																			0,
 																			nullptr);
 		}
@@ -2231,8 +2280,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 1> attachments
+		StaticArray<VkImageView, 2> attachments
 		{
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
@@ -2242,7 +2292,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur)]._ShouldClear = false;
 	}
 
@@ -2250,12 +2300,22 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	{
 		constexpr uint64 SUBPASSES{ 1 };
 
-		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 0 };
+		constexpr uint32 SCENE_DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX{ 1 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
+			//Scene depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
 			//Screen.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -2269,6 +2329,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
 		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
+		constexpr VkAttachmentReference depthBufferAttachmentReference{ SCENE_DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
 			VkAttachmentReference{ SCREEN_SPACE_AMBIENT_OCCLUSION_INDEX, VK_IMAGE_LAYOUT_GENERAL }
@@ -2282,7 +2343,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr,
 																			1,
 																			colorAttachmentReferences.Data(),
-																			nullptr,
+																			&depthBufferAttachmentReference,
 																			0,
 																			nullptr);
 		}
@@ -2300,8 +2361,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 1> attachments
+		StaticArray<VkImageView, 2> attachments
 		{
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion))->GetImageView()
 		};
 
@@ -2311,7 +2373,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur)]._ShouldClear = false;
 	}
 
@@ -2358,7 +2420,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 				nullptr,
 				1,
 				&sceneColorAttachmentReference,
-				nullptr,
+				&depthAttachmentReference,
 				0,
 				nullptr);
 
@@ -2367,7 +2429,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 				nullptr,
 				1,
 				&sceneColorAttachmentReference,
-				nullptr,
+				&depthAttachmentReference,
 				0,
 				nullptr);
 
@@ -3622,7 +3684,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			if (_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._ShouldClear)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	currentStage == RenderPassMainStage::DirectionalShadowMapping ? 1.0f : 0.0f,
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	currentStage == RenderPassMainStage::Scene ? Vector4<float>(1.0f, 1.0f, 1.0f, 1.0f) : Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f),
+																				currentStage == RenderPassMainStage::DirectionalShadowMapping ? 1.0f : 0.0f,
 																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
 																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
 																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },

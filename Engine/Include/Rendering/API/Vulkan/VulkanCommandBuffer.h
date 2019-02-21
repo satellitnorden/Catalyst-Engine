@@ -4,6 +4,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/Vector4.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
@@ -48,7 +51,7 @@ public:
 	/*
 	*	Records a begin render pass command and clears.
 	*/
-	void CommandBeginRenderPassAndClear(const float depth, const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT;
+	void CommandBeginRenderPassAndClear(const Vector4<float> &color, const float depth, const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.
