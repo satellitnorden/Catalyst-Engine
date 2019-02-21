@@ -4,6 +4,9 @@
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
 
+//Math.
+#include <Math/CatalystRandomMath.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -13,7 +16,7 @@
 //Singleton definition.
 DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 
-#if defined(CATALYST_CONFIGURATION_DEBUGGING)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 {
 	/*
@@ -30,12 +33,12 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 
 		for (uint8 i{ 0 }; i < SAMPLES; ++i)
 		{
-			Vector3<float> normal{	CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f) * 0.2f,
-									CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f)* 0.2f,
-									CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+			Vector3<float> normal{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.225f,
+									CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f)* 0.225f,
+									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
 			normal.Normalize();
 
-			const float length{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+			const float length{ CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
 
 			PRINT_TO_OUTPUT("\tvec4(" << normal._X << "f, " << normal._Y << "f, " << normal._Z << "f, " << length << "f),");
 		}
@@ -49,8 +52,8 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 
 		for (uint8 i{ 0 }; i < SAMPLES; ++i)
 		{
-			Vector2<float> rotation{	CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f),
-										CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f) };
+			Vector2<float> rotation{	CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f),
+										CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
 			rotation.Normalize();
 
 			PRINT_TO_OUTPUT("\tvec2(" << rotation._X << "f, " << rotation._Y << "f),");
@@ -78,9 +81,9 @@ ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() N
 */
 void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
-#if defined(CATALYST_CONFIGURATION_DEBUGGING)
+#if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Print data.
-	ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
+	//ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
 #endif
 
 	//Create the render data table layout.

@@ -48,13 +48,10 @@ float Blur()
     float currentDepth = texture(normalDepthTexture, fragmentTextureCoordinate).w;
 
     vec2 offset1 = vec2(1.0f) * direction * inverseResolution;
-    vec2 offset2 = vec2(2.0f) * direction * inverseResolution;
 
-    return  currentOcclusion * 0.2f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.2f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.2f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * 0.2f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * 0.2f;
+    return  currentOcclusion * 0.3333333333333333f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.3333333333333333f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.3333333333333333f;
 }
 
 void main()
