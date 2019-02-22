@@ -347,6 +347,8 @@ enum class Shader : uint8
 	DirectionalSolidVegetationShadowFragment,
 	DirectionalSolidVegetationShadowVertex,
 	DirectionalTerrainShadowVertex,
+	DirectionalTreeVegetationCrownShadowFragment,
+	DirectionalTreeVegetationCrownShadowVertex,
 	DirectionalTreeVegetationTrunkVertex,
 	ExponentialHeightFogFragment,
 	GaussianBlurFragment,

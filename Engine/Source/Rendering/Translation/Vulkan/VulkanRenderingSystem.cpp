@@ -672,6 +672,20 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize directional tree vegetation crown shadow fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalTreeVegetationCrownShadowFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::DirectionalTreeVegetationCrownShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize directional tree vegetation crown shadow vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalTreeVegetationCrownShadowVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::DirectionalTreeVegetationCrownShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
 		//Initialize directional tree vegetation trunk vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalTreeVegetationTrunkVertexShaderData(data);
