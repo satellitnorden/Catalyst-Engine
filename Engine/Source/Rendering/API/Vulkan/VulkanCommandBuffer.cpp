@@ -82,8 +82,16 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const Vector4<float> &c
 
 	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
-		clearValues[i].color = { color._X, color._Y, color._Z, color._W };
-		clearValues[i].depthStencil = { depth, 0 };
+		clearValues[i].color.float32[0] = color[0];
+		clearValues[i].color.float32[1] = color[1];
+		clearValues[i].color.float32[2] = color[2];
+		clearValues[i].color.float32[3] = color[3];
+
+		if (i < 3)
+		{
+			clearValues[i].depthStencil.depth = depth;
+			clearValues[i].depthStencil.stencil = 0;
+		}
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;
