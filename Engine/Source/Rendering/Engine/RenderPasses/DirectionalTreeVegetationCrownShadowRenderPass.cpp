@@ -43,10 +43,10 @@ DirectionalTreeVegetationCrownShadowRenderPass::DirectionalTreeVegetationCrownSh
 void DirectionalTreeVegetationCrownShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Scene);
+	SetMainStage(RenderPassMainStage::DirectionalShadowMapping);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailTreeVegetationCrownDepth);
+	SetSubStage(RenderPassSubStage::DirectionalTreeVegetationCrownShadow);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DirectionalTreeVegetationCrownShadowVertex);
@@ -57,6 +57,10 @@ void DirectionalTreeVegetationCrownShadowRenderPass::InitializeInternal() NOEXCE
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::DirectionalLight);
+
+	//Add the render targets.
+	SetNumberOfRenderTargets(1);
+	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

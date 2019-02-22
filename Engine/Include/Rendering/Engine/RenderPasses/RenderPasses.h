@@ -25,6 +25,7 @@
 #include <Rendering/Engine/RenderPasses/DirectionalShadowVerticalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalSolidVegetationShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DirectionalTreeVegetationCrownShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>

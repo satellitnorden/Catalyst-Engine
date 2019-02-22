@@ -37,7 +37,7 @@ void DirectionalTreeVegetationTrunkRenderPass::InitializeInternal() NOEXCEPT
 	SetMainStage(RenderPassMainStage::DirectionalShadowMapping);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DirectionalTreeVegetationTrunk);
+	SetSubStage(RenderPassSubStage::DirectionalTreeVegetationTrunkShadow);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DirectionalTreeVegetationTrunkVertex);

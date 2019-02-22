@@ -1218,7 +1218,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 {
 	//Initialize the directional shadow mapping render pass.
 	{
-		constexpr uint64 NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES{ 4 };
+		constexpr uint64 NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES{ 5 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 SHADOW_MAP_INDEX{ 1 };
@@ -1292,6 +1292,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	2,
 														3,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	3,
+														4,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
