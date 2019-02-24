@@ -186,7 +186,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		data._MinimumPosition = component->_Properties._MinimumPosition;
 		data._MaximumPosition = component->_Properties._MaximumPosition;
 		data._MinimumVelocity = component->_Properties._MinimumVelocity;
-		data._MaximumVelocity = component->_Properties._MinimumVelocity;
+		data._MaximumVelocity = component->_Properties._MaximumVelocity;
 		data._WorldPosition = component->_Properties._WorldPosition;
 		data._MinimumScale = component->_Properties._MinimumScale;
 		data._MaximumScale = component->_Properties._MaximumScale;

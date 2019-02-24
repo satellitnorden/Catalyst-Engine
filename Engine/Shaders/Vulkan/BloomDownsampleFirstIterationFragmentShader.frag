@@ -32,9 +32,13 @@ layout (location = 0) out vec4 fragment;
 vec4 Sample(vec2 coordinate)
 {
     vec4 bloom = texture(sourceTexture, coordinate);
-    float average = CalculateAverage(bloom.rgb);
 
-    return bloom * min(average * texture(propertiesTexture, coordinate).x, 1.0f);
+    bloom.x = max(bloom.x - 1.0f, 0.0f);
+    bloom.y = max(bloom.y - 1.0f, 0.0f);
+    bloom.z = max(bloom.z - 1.0f, 0.0f);
+    bloom.w = max(bloom.w - 1.0f, 0.0f);
+
+    return bloom * texture(propertiesTexture, coordinate).x;
 }
 
 void main()

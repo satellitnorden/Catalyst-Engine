@@ -42,7 +42,7 @@ vec3 CalculateDirectionalLight( vec3 albedoColor,
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
-    vec3 radiance = mix(albedoColor, directionalLightColor, thickness) * directionalLightIntensity;
+    vec3 radiance = directionalLightColor * directionalLightIntensity;
 
     return CalculateLight(  viewDirection,
                             lightDirection,
@@ -76,7 +76,7 @@ vec3 CalculatePointLight(   int index,
     float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPositions[index]);
     float attenuation = pow(clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f), 2.0f);
 
-    vec3 radiance = mix(albedo, pointLightColors[index], thickness) * pointLightIntensities[index] * attenuation;
+    vec3 radiance = pointLightColors[index] * pointLightIntensities[index] * attenuation;
 
     return CalculateLight(  viewDirection,
                             lightDirection,
@@ -116,7 +116,7 @@ vec3 CalculateSpotLight(    int index,
     float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
     float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    vec3 radiance = mix(albedo, spotLightColors[index], thickness) * spotLightIntensities[index] * intensity * attenuation;
+    vec3 radiance = spotLightColors[index] * spotLightIntensities[index] * intensity * attenuation;
 
     return CalculateLight(  viewDirection,
                             lightDirection,

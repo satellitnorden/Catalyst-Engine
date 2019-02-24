@@ -6,7 +6,7 @@
 */
 float CalculateDirectionalShadowBias(vec3 normal)
 {
-    return mix(0.004f, 0.002f, max(dot(normal, -directionalLightDirection), 0.0f));
+    return mix(0.001f, 0.0005f, max(dot(normal, -directionalLightDirection), 0.0f));
 }
 
 #endif
