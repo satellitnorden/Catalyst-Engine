@@ -220,4 +220,17 @@ namespace CommonPhysicalModelData
 		}
 	}
 
+	/*
+	*	Generates sphere physical model data.
+	*/
+	static void GetSpherePhysicalModelData(PhysicalModelData *const RESTRICT data) NOEXCEPT
+	{
+		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
+		{
+			data->_Extents[i] = 1.0f;
+
+			//Aaand some stuff...
+		}
+	}
+
 }
