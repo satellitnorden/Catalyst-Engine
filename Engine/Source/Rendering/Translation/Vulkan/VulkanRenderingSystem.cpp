@@ -1141,6 +1141,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the point light vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPointLightVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::PointLightVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
 		//Initialize the screen space ambient occlusion blur fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetScreenSpaceAmbientOcclusionBlurFragmentShaderData(data);

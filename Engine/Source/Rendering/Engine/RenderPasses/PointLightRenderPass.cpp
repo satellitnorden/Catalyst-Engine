@@ -4,6 +4,9 @@
 //Core.
 #include <Core/General/Padding.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -65,7 +68,7 @@ void PointLightRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::PointLight);
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
+	SetVertexShader(Shader::PointLightVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
@@ -85,7 +88,7 @@ void PointLightRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -152,16 +155,10 @@ void PointLightRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void PointLightRenderPass::RenderInternal() NOEXCEPT
 {
-	//Return early - Render pass not currently set up.
-	if (true)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	const uint64 numberOfPointLightComponents{ ComponentManager::GetNumberOfPointLightComponents() };
+	const PointLightComponent *RESTRICT component{ ComponentManager::GetPointLightPointLightComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -170,8 +167,22 @@ void PointLightRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
-	//Draw!
-	commandBuffer->Draw(this, 3, 1);
+	//Iterate over all point light components and draw them all.
+	for (uint64 i{ 0 }; i < numberOfPointLightComponents; ++i, ++component)
+	{
+		//Push constants.
+		PushConstantData data;
+
+		data._Color = component->_Color;
+		data._WorldPosition = component->_WorldPosition;
+		data._AttenuationDistance = component->_AttenuationDistance;
+		data._Intensity = component->_Intensity;
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+
+		//Draw!
+		commandBuffer->Draw(this, 3, 1);
+	}
 
 	//End the command buffer.
 	commandBuffer->End(this);

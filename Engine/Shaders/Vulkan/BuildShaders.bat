@@ -82,6 +82,7 @@ glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVer
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
 glslangValidator.exe -V PhysicalVertexShader.vert -o 					PhysicalVertexShader.spv
 glslangValidator.exe -V PointLightFragmentShader.frag -o 				PointLightFragmentShader.spv
+glslangValidator.exe -V PointLightVertexShader.vert -o 					PointLightVertexShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionBlurFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionBlurFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv

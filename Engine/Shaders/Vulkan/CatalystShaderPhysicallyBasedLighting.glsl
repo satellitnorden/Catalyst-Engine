@@ -59,7 +59,10 @@ vec3 CalculateDirectionalLight( vec3 albedoColor,
 /*
 *   Calculates a single point light.
 */
-vec3 CalculatePointLight(   int index,
+vec3 CalculatePointLight(   vec3 pointLightWorldPosition,
+                            float pointLightAttenuationDistance,
+                            vec3 pointLightColor,
+                            float pointLightIntensity,
                             vec3 fragmentWorldPosition,
                             float viewAngle,
                             vec3 viewDirection,
@@ -71,12 +74,12 @@ vec3 CalculatePointLight(   int index,
                             float thickness)
 {
     //Calculate the point light.
-    vec3 lightDirection = normalize(pointLightWorldPositions[index] - fragmentWorldPosition);
+    vec3 lightDirection = normalize(pointLightWorldPosition - fragmentWorldPosition);
 
-    float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPositions[index]);
-    float attenuation = pow(clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f), 2.0f);
+    float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPosition);
+    float attenuation = pow(clamp(1.0f - distanceToLightSource / pointLightAttenuationDistance, 0.0f, 1.0f), 2.0f);
 
-    vec3 radiance = pointLightColors[index] * pointLightIntensities[index] * attenuation;
+    vec3 radiance = pointLightColor * pointLightIntensity * attenuation;
 
     return CalculateLight(  viewDirection,
                             lightDirection,
@@ -174,21 +177,6 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
                                                 viewAngle,
                                                 surfaceColor,
                                                 metallic) * directionalShadowMultiplier * Scale(ambientOcclusion, 0.0f, 1.0f, 0.25f, 1.0f);
-
-    //Calculate all point lights.
-    for (int i = 0; i < numberOfPointLights; ++i)
-    {
-        finalFragment += CalculatePointLight(   i,
-                                                fragmentWorldPosition, 
-                                                viewAngle,
-                                                viewDirection,
-                                                albedo,
-                                                normal,
-                                                roughness,
-                                                metallic,
-                                                ambientOcclusion,
-                                                thickness);
-    }
 
     //Calculate all spot lights.
     for (int i = 0; i < numberOfSpotLights; ++i)

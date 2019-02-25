@@ -416,6 +416,7 @@ enum class Shader : uint8
 	PhysicalFragment,
 	PhysicalVertex,
 	PointLightFragment,
+	PointLightVertex,
 	ScreenSpaceAmbientOcclusionBlurFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,

@@ -92,6 +92,7 @@
 #include <Rendering/ShaderData/Vulkan/PhysicalFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/PhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/PointLightFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/PointLightVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ShadowMapFragmentShader.h>
