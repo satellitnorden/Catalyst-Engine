@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystVegetationUtilities.glsl"
 
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
@@ -23,6 +24,10 @@ void main()
 	//Pass along the fragment normal.
     fragmentNormal = normalize(vec3(vertexTransformationMatrix * vec4(vertexNormal, 0.0f)));
 
+    //Calculate the world position.
+    vec3 worldPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
+    worldPosition += CalculateTreeVegetationWindModulator(vertexTransformationMatrix[3].xyz) * vertexModulatorFactor;
+
     //Write the position.
-    gl_Position = directionalLightViewMatrix * vertexTransformationMatrix * vec4(vertexPosition, 1.0);
+    gl_Position = directionalLightViewMatrix * vec4(worldPosition, 1.0f);
 }

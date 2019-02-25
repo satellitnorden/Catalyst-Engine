@@ -37,5 +37,5 @@ void main()
     worldPosition += CalculateTreeVegetationWindModulator(vertexTransformationMatrix[3].xyz) * vertexModulatorFactor;
 
     //Write the position.
-    gl_Position = viewMatrix * vec4(worldPosition, 1.0);
+    gl_Position = viewMatrix * vec4(worldPosition, 1.0f);
 }
