@@ -9,6 +9,7 @@
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
+#include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -90,6 +91,29 @@ void PointLightRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
+	//Add the vertex input attribute descriptions.
+	SetNumberOfVertexInputAttributeDescriptions(4);
+	AddVertexInputAttributeDescription(	0,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, _Position));
+	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, _Normal));
+	AddVertexInputAttributeDescription(	2,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, _Tangent));
+	AddVertexInputAttributeDescription(	3,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(PhysicalVertex, _TextureCoordinate));
+
+	//Add the vertex input binding descriptions.
+	SetNumberOfVertexInputBindingDescriptions(1);
+	AddVertexInputBindingDescription(0, sizeof(PhysicalVertex), VertexInputBindingDescription::InputRate::Vertex);
+
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
@@ -99,7 +123,7 @@ void PointLightRenderPass::InitializeInternal() NOEXCEPT
 	SetBlendFactorDestinationColor(BlendFactor::One);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+	SetCullMode(CullMode::Front);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);
@@ -111,7 +135,7 @@ void PointLightRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilCompareMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetTopology(Topology::TriangleFan);
+	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
@@ -167,6 +191,14 @@ void PointLightRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
+	//Bind the buffers.
+	constexpr uint64 OFFSET{ 0 };
+
+	const PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
+
+	commandBuffer->BindVertexBuffer(this, 0, model._Buffers[UNDERLYING(LevelOfDetail::High)], &OFFSET);
+	commandBuffer->BindIndexBuffer(this, model._Buffers[UNDERLYING(LevelOfDetail::High)], model._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
+
 	//Iterate over all point light components and draw them all.
 	for (uint64 i{ 0 }; i < numberOfPointLightComponents; ++i, ++component)
 	{
@@ -181,7 +213,7 @@ void PointLightRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		//Draw!
-		commandBuffer->Draw(this, 3, 1);
+		commandBuffer->DrawIndexed(this, model._IndexCounts[UNDERLYING(LevelOfDetail::High)], 1);
 	}
 
 	//End the command buffer.

@@ -16,19 +16,14 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 36) float intensity;
 };
 
-//Out parameters.
-layout (location = 0) out vec2 fragmentTextureCoordinate;
+//In parameters.
+layout (location = 0) in vec3 vertexPosition;
+layout (location = 1) in vec3 vertexNormal;
+layout (location = 2) in vec3 vertexTangent;
+layout (location = 3) in vec2 vertexTextureCoordinate;
 
 void main()
 {
-	//Calculate the viewport coordinates.
-	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-
-    //Calculate the texture coordinate.
-    fragmentTextureCoordinate.x = (x + 1.0f) * 0.5f;
-    fragmentTextureCoordinate.y = (y + 1.0f) * 0.5f;
-    
-    //Set the position.
-    gl_Position = vec4(x, y, 0.0f, 1.0f);
+    //Write the position.
+    gl_Position = viewMatrix * vec4(worldPosition + vertexPosition * attenuationDistance * 2.0f, 1.0);
 } 

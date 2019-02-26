@@ -20,9 +20,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 36) float intensity;
 };
 
-//In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
-
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D albedoTexture;
 layout (set = 1, binding = 1) uniform sampler2D normalDepthTexture;
@@ -33,19 +30,22 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
+    //Calculate the coordinates.
+    vec2 coordinates = gl_FragCoord.xy / vec2(1920.0f, 1080.0f);
+
 	//Sample the albedo.
-	vec3 albedo = texture(albedoTexture, fragmentTextureCoordinate).rgb;
+	vec3 albedo = texture(albedoTexture, coordinates).rgb;
 
 	//Sample the normal/depth.
-	vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentTextureCoordinate);
+	vec4 normalDepthTextureSampler = texture(normalDepthTexture, coordinates);
 	vec3 normal = normalDepthTextureSampler.xyz;
 	float depth = normalDepthTextureSampler.w;
 
 	//Sample the material properties.
-	vec4 materialProperties = texture(materialPropertiesTexture, fragmentTextureCoordinate);
+	vec4 materialProperties = texture(materialPropertiesTexture, coordinates);
 
 	//Calculate the fragment world position.
-	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
+	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(coordinates, depth);
 
 	//Calculate the view direction.
     vec3 viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
