@@ -98,6 +98,39 @@ public:
 
 			//Write the vertices to the file.
 			file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+
+#if false
+			PRINT_TO_OUTPUT("data->_Vertices[" << static_cast<uint32>(i) << "].Reserve(" << vertices.Size() << ");");
+
+			PRINT_TO_OUTPUT("");
+
+			for (const PhysicalVertex vertex : vertices)
+			{
+				char buffer[1024];
+
+				sprintf_s(	buffer, "data->_Vertices[%u].EmplaceFast(Vector3<float>(%ff, %ff, %ff), Vector3<float>(%ff, %ff, %ff), Vector3<float>(%ff, %ff, %ff), Vector2<float>(%ff, %ff));",
+							static_cast<uint32>(i),
+							vertex._Position._X, vertex._Position._Y, vertex._Position._Z,
+							vertex._Normal._X, vertex._Normal._Y, vertex._Normal._Z,
+							vertex._Tangent._X, vertex._Tangent._Y, vertex._Tangent._Z,
+							vertex._TextureCoordinate._X, vertex._TextureCoordinate._Y);
+
+				PRINT_TO_OUTPUT(buffer);
+			}
+
+			PRINT_TO_OUTPUT("");
+
+			PRINT_TO_OUTPUT("data->_Indices[" << static_cast<uint32>(i) << "].Reserve(" << indices.Size() << ");");
+
+			PRINT_TO_OUTPUT("");
+
+			for (const uint32 index : indices)
+			{
+				PRINT_TO_OUTPUT("data->_Indices[" << static_cast<uint32>(i) << "].EmplaceFast(" << index << ");");
+			}
+
+			PRINT_TO_OUTPUT("");
+#endif
 		}
 
 		//Close the file.

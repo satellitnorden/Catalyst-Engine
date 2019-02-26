@@ -1032,6 +1032,13 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 		CommonPhysicalModelData::GetPlanePhysicalModelData(&data);
 		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Plane)]);
 	}
+
+	{
+		//Create the sphere common physical model.
+		PhysicalModelData data;
+		CommonPhysicalModelData::GetSpherePhysicalModelData(&data);
+		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Sphere)]);
+	}
 }
 
 /*

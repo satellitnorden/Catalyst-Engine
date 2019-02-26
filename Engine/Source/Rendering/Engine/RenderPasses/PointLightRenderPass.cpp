@@ -194,7 +194,7 @@ void PointLightRenderPass::RenderInternal() NOEXCEPT
 	//Bind the buffers.
 	constexpr uint64 OFFSET{ 0 };
 
-	const PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
+	const PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Sphere) };
 
 	commandBuffer->BindVertexBuffer(this, 0, model._Buffers[UNDERLYING(LevelOfDetail::High)], &OFFSET);
 	commandBuffer->BindIndexBuffer(this, model._Buffers[UNDERLYING(LevelOfDetail::High)], model._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
