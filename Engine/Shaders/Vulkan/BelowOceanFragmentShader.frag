@@ -58,10 +58,10 @@ float LengthSquared(vec3 vector);
 vec3 CalculateAboveOceanFragment(vec3 sceneWorldPosition)
 {
     //Calculate the view direction.
-    vec3 viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
+    vec3 viewDirection = normalize(perceiverWorldPosition - sceneWorldPosition);
 
     //Calculate the intersection point.
-    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
+    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), perceiverWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
 
     //Calculate the ocean fragment.
     return CalculateOceanFragment(intersectionPoint);
@@ -91,7 +91,7 @@ float CalculateDeformationWeight(float distanceToEndPointSquared)
 vec2 CalculateEndPointTextureCoordinate(vec3 endPoint)
 {
     //Calculate the intersection point texture coordinate.
-    return endPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalGameTime * 0.01f;
+    return endPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalTime * 0.01f;
 }
 
 /*
@@ -139,7 +139,7 @@ float CalculateOceanColorWeight(float distanceToBottomSquared)
 vec3 CalculateOceanFragment(vec3 endPoint)
 {
     //Calculate the distance to the end point squared.
-    float distanceToEndPointSquared = LengthSquared(endPoint - cameraWorldPosition);
+    float distanceToEndPointSquared = LengthSquared(endPoint - perceiverWorldPosition);
 
     //Calculate the end point texture coordinate.
     vec2 endPointTextureCoordinate = CalculateEndPointTextureCoordinate(endPoint);

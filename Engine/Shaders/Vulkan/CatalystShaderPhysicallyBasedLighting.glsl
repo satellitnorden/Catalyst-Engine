@@ -96,7 +96,13 @@ vec3 CalculatePointLight(   vec3 pointLightWorldPosition,
 /*
 *   Calculates a single spot light.
 */
-vec3 CalculateSpotLight(    int index,
+vec3 CalculateSpotLight(    vec3 spotLightWorldPosition,
+                            vec3 spotLightDirection,
+                            float spotLightAttenuationDistance,
+                            float spotLightInnerCutoffAngle,
+                            float spotLightOuterCutoffAngle,
+                            vec3 spotLightColor,
+                            float spotLightIntensity,
                             vec3 fragmentWorldPosition,
                             float viewAngle,
                             vec3 viewDirection,
@@ -108,18 +114,18 @@ vec3 CalculateSpotLight(    int index,
                             float thickness)
 {
     //Calculate the spot light.
-    vec3 lightDirection = normalize(spotLightWorldPositions[index] - fragmentWorldPosition);
-    float angle = dot(lightDirection, -spotLightDirections[index]);
+    vec3 lightDirection = normalize(spotLightWorldPosition - fragmentWorldPosition);
+    float angle = dot(lightDirection, -spotLightDirection);
 
-    float distanceToLightSource = length(fragmentWorldPosition - spotLightWorldPositions[index]);
-    float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistances[index], 0.0f, 1.0f);
+    float distanceToLightSource = length(fragmentWorldPosition - spotLightWorldPosition);
+    float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistance, 0.0f, 1.0f);
     attenuation *= attenuation;
 
     //Calculate the inner/outer cone fade out.
-    float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
-    float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
+    float epsilon = spotLightInnerCutoffAngle - spotLightOuterCutoffAngle;
+    float intensity = angle > spotLightInnerCutoffAngle ? 1.0f : clamp((angle - spotLightOuterCutoffAngle) / epsilon, 0.0f, 1.0f); 
 
-    vec3 radiance = spotLightColors[index] * spotLightIntensities[index] * intensity * attenuation;
+    vec3 radiance = spotLightColor * spotLightIntensity * intensity * attenuation;
 
     return CalculateLight(  viewDirection,
                             lightDirection,
@@ -148,7 +154,7 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
                         float thickness)
 {
     //Calculate the view direction.
-    vec3 viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
+    vec3 viewDirection = normalize(perceiverWorldPosition - fragmentWorldPosition);
 
     //Calculate the view angle.
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
@@ -177,21 +183,6 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
                                                 viewAngle,
                                                 surfaceColor,
                                                 metallic) * directionalShadowMultiplier * Scale(ambientOcclusion, 0.0f, 1.0f, 0.25f, 1.0f);
-
-    //Calculate all spot lights.
-    for (int i = 0; i < numberOfSpotLights; ++i)
-    {
-        finalFragment += CalculateSpotLight(    i,
-                                                fragmentWorldPosition, 
-                                                viewAngle,
-                                                viewDirection,
-                                                albedo,
-                                                normal,
-                                                roughness,
-                                                metallic,
-                                                ambientOcclusion,
-                                                thickness);
-    }
 
     //Return the final fragment.
     return finalFragment;

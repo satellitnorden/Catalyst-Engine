@@ -70,10 +70,10 @@ vec3 CalculateAboveOceanFragment()
 vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
 {
     //Calculate the view direction.
-    vec3 viewDirection = normalize(sceneWorldPosition - cameraWorldPosition);
+    vec3 viewDirection = normalize(sceneWorldPosition - perceiverWorldPosition);
 
     //Calculate the intersection point.
-    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
+    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), perceiverWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
 
     //Calculate the distance to the bottom squared.
     float distanceToBottomSquared = LengthSquared3(sceneWorldPosition - intersectionPoint);
@@ -179,7 +179,7 @@ vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal
 vec2 CalculateIntersectionPointTextureCoordinate(vec3 intersectionPoint)
 {
 	//Calculate the intersection point texture coordinate.
-	return intersectionPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalGameTime * 0.01f;
+	return intersectionPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalTime * 0.01f;
 }
 
 /*

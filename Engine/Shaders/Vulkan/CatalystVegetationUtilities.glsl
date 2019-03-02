@@ -19,7 +19,7 @@ vec3 CalculateWindModulator(vec3 position, vec3 normal)
 	float extendedWindSpeedMultiplier = 1.0f + windSpeedMultiplier;
 
 	//Calculate the time factor.
-	float timeFactor = totalGameTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
+	float timeFactor = totalTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
 
     //Large scale motion.
     float largeScaleX = windDirection.x * extendedWindSpeedMultiplier * (sin(position.x + position.y + position.z + timeFactor) + 1.0f);
@@ -49,7 +49,7 @@ vec3 CalculateTreeVegetationWindModulator(vec3 position)
     float extendedWindSpeedMultiplier = 1.0f + windSpeedMultiplier;
 
     //Calculate the time factor.
-    float timeFactor = totalGameTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
+    float timeFactor = totalTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
 
     //Large scale motion.
     float largeScaleX = windDirection.x * EULERS_NUMBER * extendedWindSpeedMultiplier * (sin((position.x + position.y + position.z + timeFactor) * SQUARE_ROOT_OF_TWO) + 1.0f);

@@ -35,16 +35,16 @@ void main()
     vec3 sceneWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w);
 
     //Calculate the ray direction.
-    vec3 rayDirection = normalize(sceneWorldPosition - cameraWorldPosition);
+    vec3 rayDirection = normalize(sceneWorldPosition - perceiverWorldPosition);
 
     //Calculate the ray distance.
-    float rayDistance = min(length(sceneWorldPosition - cameraWorldPosition), VOLUMETRIC_FOG_DISTANCE);
+    float rayDistance = min(length(sceneWorldPosition - perceiverWorldPosition), VOLUMETRIC_FOG_DISTANCE);
 
     //Calculate the ray step.
     vec3 rayStep = rayDirection * (rayDistance / VOLUMETRIC_FOG_RAY_STEPS);
 
     //Start off at the camera position.
-    vec3 currentPosition = cameraWorldPosition;
+    vec3 currentPosition = perceiverWorldPosition;
 
     //Perform the ray.
     float accumulatedFog = 0.0f;

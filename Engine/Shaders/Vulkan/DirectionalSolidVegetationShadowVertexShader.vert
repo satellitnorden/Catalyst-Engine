@@ -35,7 +35,7 @@ void main()
     vec4 transformedPosition = transformationMatrix * vec4(vertexPosition, 1.0);
 
     //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared3(transformedPosition.xyz - cameraWorldPosition);
+    float distanceToVertexSquared = LengthSquared3(transformedPosition.xyz - perceiverWorldPosition);
     fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Write the position.

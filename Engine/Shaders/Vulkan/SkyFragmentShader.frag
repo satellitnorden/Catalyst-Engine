@@ -27,7 +27,7 @@ void main()
 
 	//Calculate the texture coordinate.
 	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
-	vec3 cubeTextureCoordinate = normalize(fragmentWorldPosition - cameraWorldPosition);
+	vec3 cubeTextureCoordinate = normalize(fragmentWorldPosition - perceiverWorldPosition);
 
     //Sample the cube map texture.
     vec3 cubeMapTextureSampler = mix(texture(nightTexture, cubeTextureCoordinate).rgb, texture(dayTexture, cubeTextureCoordinate).rgb, environmentBlend);

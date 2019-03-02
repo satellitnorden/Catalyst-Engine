@@ -30,10 +30,10 @@ void main()
     vec3 worldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w);
 
     //Calculate the direction.
-    vec3 direction = normalize(worldPosition - cameraWorldPosition);
+    vec3 direction = normalize(worldPosition - perceiverWorldPosition);
 
     //Calculate the distance.
-    float distance = LengthSquared3(worldPosition - cameraWorldPosition);
+    float distance = LengthSquared3(worldPosition - perceiverWorldPosition);
 
     //Calculate the distance weight.
     float distanceWeight = min(distance * EXPONENTIAL_HEIGHT_FOG_INVERSE_DISTANCE_SQUARED, 1.0f);

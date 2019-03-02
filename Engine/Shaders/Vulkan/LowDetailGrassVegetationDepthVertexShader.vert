@@ -37,7 +37,7 @@ void main()
     fragmentTextureCoordinate = vertexTextureCoordinate;
 
     //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared3(finalVertexPosition - cameraWorldPosition);
+    float distanceToVertexSquared = LengthSquared3(finalVertexPosition - perceiverWorldPosition);
     fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.

@@ -1147,93 +1147,24 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 {
 	DynamicUniformData data;
 
-	//Calculate the perceiver data.
-	Vector3<float> perceiverPosition = Perceiver::Instance->GetPosition();
-	Vector3<float> forwardVector = Perceiver::Instance->GetForwardVector();
-	Vector3<float> upVector = Perceiver::Instance->GetUpVector();
-
-	const Matrix4 *const RESTRICT projectionMatrix{ Perceiver::Instance->GetProjectionMatrix() };
-	const Matrix4 *const RESTRICT perceiverMatrix{ Perceiver::Instance->GetPerceiverMatrix() };
-	const Matrix4 *const RESTRICT viewMatrix{ Perceiver::Instance->GetViewMatrix() };
-	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Perceiver::Instance->GetInverseProjectionMatrix() };
-	const Matrix4 *const RESTRICT inversePerceiverMatrix{ Perceiver::Instance->GetInversePerceiverMatrix() };
-
-	Matrix4 perceiverOriginMatrix{ *perceiverMatrix };
-	perceiverOriginMatrix.SetTranslation(Vector3<float>::ZERO);
-
-	data._PerceiverFieldOfViewCosine = CatalystBaseMath::Cosine(Perceiver::Instance->GetFieldOfView()) - 0.2f;
-	data._InversePerceiverMatrix = *inversePerceiverMatrix;
-	data._InverseProjectionMatrix = *inverseProjectionMatrix;
-	data._OriginViewMatrix = *projectionMatrix * perceiverOriginMatrix;
-	data._ViewMatrix = *viewMatrix;
-	data._PerceiverForwardVector = forwardVector;
-	data._PerceiverWorldPosition = perceiverPosition;
-
-	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	//Update matrices.
 	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
-	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	data._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
+	data._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
+	data._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
+
+	//Update vectors.
 	data._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4<float>(-data._DirectionalLightDirection._X * 100.0f + perceiverPosition._X, -data._DirectionalLightDirection._Y * 100.0f + perceiverPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + perceiverPosition._Z, 1.0f);
-	data._DirectionalLightScreenSpacePosition._X /= data._DirectionalLightScreenSpacePosition._W;
-	data._DirectionalLightScreenSpacePosition._Y /= data._DirectionalLightScreenSpacePosition._W;
-	data._DirectionalLightScreenSpacePosition._Z /= data._DirectionalLightScreenSpacePosition._W;
-
-	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
-
-	data._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
-	data._TotalGameTime = CatalystEngineSystem::Instance->GetTotalTime();
-
-	uint64 counter = 0;
-
-	const uint64 numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
-	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightPointLightComponents() };
-
-	data._NumberOfPointLights = static_cast<int32>(numberOfPointLightEntityComponents);
-
-	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
-	{
-		data._PointLightAttenuationDistances[counter] = pointLightComponent->_AttenuationDistance;
-		data._PointLightIntensities[counter] = pointLightComponent->_Intensity;
-		data._PointLightColors[counter] = pointLightComponent->_Color;
-		data._PointLightWorldPositions[counter] = pointLightComponent->_WorldPosition;
-
-		if (++counter == LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS)
-		{
-			break;
-		}
-	}
-
-	counter = 0;
-
-	const uint64 numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
-	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightSpotLightComponents() };
-
-	data._NumberOfSpotLights = static_cast<int32>(numberOfSpotLightEntityComponents);
-
-	for (uint64 i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
-	{
-		if (!spotLightComponent->_Enabled)
-		{
-			--data._NumberOfSpotLights;
-
-			continue;
-		}
-
-		data._SpotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
-		data._SpotLightIntensities[counter] = spotLightComponent->_Intensity;
-		data._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::Cosine(CatalystBaseMath::DegreesToRadians(spotLightComponent->_InnerCutoffAngle));
-		data._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::Cosine(CatalystBaseMath::DegreesToRadians(spotLightComponent->_OuterCutoffAngle));
-		data._SpotLightColors[counter] = spotLightComponent->_Color;
-		data._SpotLightDirections[counter] = CatalystVectorMath::ForwardVector(spotLightComponent->_Rotation);
-		data._SpotLightDirections[counter]._Y *= -1.0f;
-		data._SpotLightWorldPositions[counter] = spotLightComponent->_Position;
-
-		++counter;
-	}
-
-	//Update the physics data.
-	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
+	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	data._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 	data._WindDirection = PhysicsSystem::Instance->GetWindDirection();
+
+	//Update floats.
+	data._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
+	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
+	data._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
+	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 
 	UploadDataToUniformBuffer(_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex], &data);
 }

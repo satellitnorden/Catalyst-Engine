@@ -31,7 +31,7 @@ void main()
 	vec3 worldPosition = geometryTransformationMatrix[0][3].xyz;
 
 	//Calculate the forward and right vector.
-	vec3 forwardVector = normalize((cameraWorldPosition - vec3(0.0f, cameraWorldPosition.y, 0.0f)) - (worldPosition - vec3(0.0f, worldPosition.y, 0.0f)));
+	vec3 forwardVector = normalize((perceiverWorldPosition - vec3(0.0f, perceiverWorldPosition.y, 0.0f)) - (worldPosition - vec3(0.0f, worldPosition.y, 0.0f)));
 	vec3 rightVector = normalize(cross(forwardVector, vec3(0.0f, 1.0f, 0.0f)));
 	vec3 upVector = vec3(0.0f, 1.0f, 0.0f);
 

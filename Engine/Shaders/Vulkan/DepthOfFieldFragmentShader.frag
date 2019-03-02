@@ -46,7 +46,7 @@ vec4 SampleDepthOfField(vec2 textureCoordinate)
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
 
     //Calculate the distance to the fragment world position squared.
-    float distanceSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);
+    float distanceSquared = LengthSquared3(perceiverWorldPosition - fragmentWorldPosition);
 
     //Calculate the depth of field weight.
     float depthOfFieldWeight = min(distanceSquared * inverseDepthOfFieldDistanceSquared, 1.0f) * float(normalDepthTextureSampler.w != 0.0f);

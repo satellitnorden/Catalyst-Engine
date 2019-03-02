@@ -131,7 +131,7 @@ void main()
 		vec2 scale = GenerateRandomScale();
 
 		//Calculate the forward, right and up vector.
-		vec3 forwardVector = normalize(cameraWorldPosition - position);
+		vec3 forwardVector = normalize(perceiverWorldPosition - position);
 		vec3 rightVector = normalize(cross(forwardVector, vec3(0.0f, 1.0f, 0.0f)));
 		vec3 upVector = cross(forwardVector, rightVector);
 

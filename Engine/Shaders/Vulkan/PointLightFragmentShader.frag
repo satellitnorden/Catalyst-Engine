@@ -48,7 +48,7 @@ void main()
 	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(coordinates, depth);
 
 	//Calculate the view direction.
-    vec3 viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
+    vec3 viewDirection = normalize(perceiverWorldPosition - fragmentWorldPosition);
 
     //Calculate the view angle.
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
