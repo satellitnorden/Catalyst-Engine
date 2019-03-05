@@ -206,9 +206,9 @@ namespace CommonPhysicalModelData
 
 			data->_Vertices[i].Reserve(4);
 			data->_Vertices[i].EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-			data->_Vertices[i].EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-			data->_Vertices[i].EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-			data->_Vertices[i].EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+			data->_Vertices[i].EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 100.0f));
+			data->_Vertices[i].EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(100.0f, 100.0f));
+			data->_Vertices[i].EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(100.0f, 0.0f));
 
 			data->_Indices[i].Reserve(6);
 			data->_Indices[i].EmplaceFast(0);

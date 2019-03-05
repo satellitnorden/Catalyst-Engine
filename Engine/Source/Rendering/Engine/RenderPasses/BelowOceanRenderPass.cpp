@@ -137,6 +137,15 @@ void BelowOceanRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void BelowOceanRenderPass::RenderInternal() NOEXCEPT
 {
+#if !defined(CATALYST_ENABLE_OCEAN)
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+#endif
+
 	//Check if the perceiver is below water, if not - don't render.
 	if (Perceiver::Instance->GetPosition()._Y >= 0.0f)
 	{

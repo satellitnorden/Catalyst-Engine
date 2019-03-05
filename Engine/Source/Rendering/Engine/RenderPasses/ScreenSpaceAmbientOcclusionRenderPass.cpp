@@ -33,8 +33,8 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 
 		for (uint8 i{ 0 }; i < SAMPLES; ++i)
 		{
-			Vector3<float> normal{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.225f,
-									CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f)* 0.225f,
+			Vector3<float> normal{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.25f,
+									CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.25f,
 									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
 			normal.Normalize();
 

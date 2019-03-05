@@ -119,6 +119,15 @@ void ExponentialHeightFogRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void ExponentialHeightFogRenderPass::RenderInternal() NOEXCEPT
 {
+#if !defined(CATALYST_ENABLE_EXPONENTIAL_HEIGHT_FOG)
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+#endif
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

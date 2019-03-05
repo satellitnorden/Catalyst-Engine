@@ -946,9 +946,9 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 	}
 
 	//Set the night/day environment materials to default ones.
-	EnvironmentManager::Instance->SetNightEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
-	EnvironmentManager::Instance->SetDayEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
-	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Night)]);
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Day)]);
+	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 }
 
 /*
