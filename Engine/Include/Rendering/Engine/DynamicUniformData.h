@@ -16,6 +16,8 @@ public:
 	Matrix4 _DirectionalLightViewMatrix;
 	Matrix4 _InversePerceiverMatrix;
 	Matrix4 _InverseProjectionMatrix;
+	Matrix4 _PerceiverMatrix;
+	Matrix4 _ProjectionMatrix;
 	Matrix4 _ViewMatrix;
 
 	Vector4<float> _DirectionalLightColor;
@@ -30,20 +32,22 @@ public:
 	float _WindSpeed;
 };
 
-static_assert(sizeof(DynamicUniformData) == 340, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 468, "Size of dynamic uniform data is wrong!");
 
 static_assert(offsetof(DynamicUniformData, _DirectionalLightViewMatrix) == 0, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _InversePerceiverMatrix) == 64, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _InverseProjectionMatrix) == 128, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 192, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PerceiverMatrix) == 192, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _ProjectionMatrix) == 256, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 320, "Offset inside dynamic uniform data is wrong!");
 
-static_assert(offsetof(DynamicUniformData, _DirectionalLightColor) == 256, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _DirectionalLightDirection) == 272, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 288, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindDirection) == 304, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightColor) == 384, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightDirection) == 400, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 416, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _WindDirection) == 432, "Offset inside dynamic uniform data is wrong!");
 
-static_assert(offsetof(DynamicUniformData, _DeltaTime) == 320, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 324, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _EnvironmentBlend) == 328, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _TotalTime) == 332, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindSpeed) == 336, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DeltaTime) == 448, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 452, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _EnvironmentBlend) == 456, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _TotalTime) == 460, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _WindSpeed) == 464, "Offset inside dynamic uniform data is wrong!");

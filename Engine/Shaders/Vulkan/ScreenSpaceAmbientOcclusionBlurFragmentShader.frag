@@ -15,7 +15,6 @@ layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec2 direction;
     layout (offset = 8) vec2 inverseResolution;
-    layout (offset = 16) float maximumDepthDifference;
 };
 
 //In parameters.
@@ -34,9 +33,9 @@ layout (location = 0) out vec4 fragment;
 float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
 {
     float sampleOcclusion = texture(screenSpaceAmbientOcclusionTexture, coordinate).x;
-    float sampleDepth = texture(normalDepthTexture, coordinate).w;
+    float sampleDepth = CalculateFragmentViewSpacePosition(coordinate, texture(normalDepthTexture, coordinate).w).z;
 
-    return abs(currentDepth - sampleDepth) > maximumDepthDifference ? currentOcclusion : sampleOcclusion;
+    return mix(sampleOcclusion, currentOcclusion, min(abs(currentOcclusion - sampleOcclusion), 1.0f));
 }
 
 /*
@@ -45,13 +44,25 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
 float Blur()
 {
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
-    float currentDepth = texture(normalDepthTexture, fragmentTextureCoordinate).w;
+    float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
 
     vec2 offset1 = vec2(1.0f) * direction * inverseResolution;
+    vec2 offset2 = vec2(2.0f) * direction * inverseResolution;
+    vec2 offset3 = vec2(3.0f) * direction * inverseResolution;
+    vec2 offset4 = vec2(4.0f) * direction * inverseResolution;
+    vec2 offset5 = vec2(5.0f) * direction * inverseResolution;
 
-    return  currentOcclusion * 0.3333333333333333f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.3333333333333333f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.3333333333333333f;
+    return  currentOcclusion * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * 0.0909090909090909f
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * 0.0909090909090909f;
 }
 
 void main()

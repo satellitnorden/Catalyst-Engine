@@ -1151,6 +1151,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
 	data._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
 	data._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
+	data._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
+	data._ProjectionMatrix = *Perceiver::Instance->GetProjectionMatrix();
 	data._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.

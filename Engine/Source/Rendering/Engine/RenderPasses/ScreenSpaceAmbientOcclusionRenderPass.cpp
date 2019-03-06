@@ -25,22 +25,27 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 	void PrintData() NOEXCEPT
 	{
 		//Define constants.
-		constexpr uint8 SAMPLES{ 16 };
+		constexpr uint8 SAMPLES{ 32 };
 
 		//Print the offsets.
-		PRINT_TO_OUTPUT("const vec4 OFFSETS[SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES] = vec4[]");
+		PRINT_TO_OUTPUT("const vec3 OFFSETS[SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES] = vec3[]");
 		PRINT_TO_OUTPUT("(");
 
 		for (uint8 i{ 0 }; i < SAMPLES; ++i)
 		{
-			Vector3<float> normal{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.25f,
-									CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) * 0.25f,
+			Vector3<float> sample{	CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f),
+									CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f),
 									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
-			normal.Normalize();
+			
+			sample.Normalize();
+			sample *= CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 
-			const float length{ CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
+			float scale{ static_cast<float>(i) / static_cast<float>(SAMPLES) };
 
-			PRINT_TO_OUTPUT("\tvec4(" << normal._X << "f, " << normal._Y << "f, " << normal._Z << "f, " << length << "f),");
+			scale = CatalystBaseMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
+			sample *= scale;
+
+			PRINT_TO_OUTPUT("\tvec3(" << sample._X << "f, " << sample._Y << "f, " << sample._Z << "f),");
 		}
 
 		PRINT_TO_OUTPUT(");");
@@ -54,7 +59,6 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 		{
 			Vector2<float> rotation{	CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f),
 										CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
-			rotation.Normalize();
 
 			PRINT_TO_OUTPUT("\tvec2(" << rotation._X << "f, " << rotation._Y << "f),");
 		}

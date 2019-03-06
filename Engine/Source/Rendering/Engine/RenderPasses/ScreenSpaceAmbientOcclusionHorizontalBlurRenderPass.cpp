@@ -23,7 +23,6 @@ public:
 
 	Vector2<float> _Direction;
 	Vector2<float> _InverseResolution;
-	float _MaximumDepthDifference;
 
 };
 
@@ -157,7 +156,6 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::RenderInternal() NOEXC
 
 	data._Direction = Vector2<float>(1.0f, 0.0f);
 	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width), 1.0f / static_cast<float>(GetRenderResolution()._Height));
-	data._MaximumDepthDifference = 0.001f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

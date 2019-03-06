@@ -40,20 +40,22 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 0) mat4 directionalLightViewMatrix; //Offset; 0 - Size; 64
     layout (offset = 64) mat4 inversePerceiverMatrix; //Offset; 64 - Size; 64
     layout (offset = 128) mat4 inverseProjectionMatrix; //Offset; 128 - Size; 64
-    layout (offset = 192) mat4 viewMatrix; //Offset; 192 - Size; 64
+    layout (offset = 192) mat4 perceiverMatrix; //Offset; 192 - Size; 64
+    layout (offset = 256) mat4 projectionMatrix; //Offset; 256 - Size; 64
+    layout (offset = 320) mat4 viewMatrix; //Offset; 320 - Size; 64
 
-    layout (offset = 256) vec3 directionalLightColor; //Offset; 256 - Size; 16
-    layout (offset = 272) vec3 directionalLightDirection; //Offset; 272 - Size; 16
-    layout (offset = 288) vec3 perceiverWorldPosition; //Offset; 288 - Size; 16
-    layout (offset = 304) vec3 windDirection; //Offset; 304 - Size; 16
+    layout (offset = 384) vec3 directionalLightColor; //Offset; 384 - Size; 16
+    layout (offset = 400) vec3 directionalLightDirection; //Offset; 400 - Size; 16
+    layout (offset = 416) vec3 perceiverWorldPosition; //Offset; 416 - Size; 16
+    layout (offset = 432) vec3 windDirection; //Offset; 432 - Size; 16
 
-    layout (offset = 320) float deltaTime; //Offset; 320 - Size; 4
-    layout (offset = 324) float directionalLightIntensity; //Offset; 324 - Size; 4
-    layout (offset = 328) float environmentBlend; //Offset; 328 - Size; 4
-    layout (offset = 332) float totalTime; //Offset; 332 - Size; 4
-    layout (offset = 336) float windSpeed; //Offset; 336 - Size; 4
+    layout (offset = 448) float deltaTime; //Offset; 448 - Size; 4
+    layout (offset = 452) float directionalLightIntensity; //Offset; 452 - Size; 4
+    layout (offset = 456) float environmentBlend; //Offset; 456 - Size; 4
+    layout (offset = 460) float totalTime; //Offset; 460 - Size; 4
+    layout (offset = 464) float windSpeed; //Offset; 464 - Size; 4
 
-    //Total size; 340
+    //Total size; 468
 };
 
 //The global samplers.
@@ -105,6 +107,19 @@ layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
 float CalculateAverage(vec3 fragment)
 {
     return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
+}
+
+/*
+*   Calculates a fragment's view space position.
+*/
+vec3 CalculateFragmentViewSpacePosition(vec2 textureCoordinate, float depth)
+{
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, depth), 1.0f);
+    float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
+    viewSpacePosition *= inverseViewSpacePositionDenominator;
+
+    return viewSpacePosition.xyz;
 }
 
 /*
