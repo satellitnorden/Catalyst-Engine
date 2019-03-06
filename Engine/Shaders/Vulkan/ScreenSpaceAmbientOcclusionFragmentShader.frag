@@ -8,9 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.0f) //0.00000025f step.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS (0.25f) //0.1f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (32.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -115,7 +115,7 @@ void main()
     vec3 fragmentViewSpacePosition = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, depth);
 
     //Calculate the random offset vector.
-    vec3 randomRotation = vec3(RANDOM_ROTATIONS[int(gl_FragCoord.x + gl_FragCoord.y) & (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES - 1)], 0.0f);
+    vec3 randomRotation = vec3(RANDOM_ROTATIONS[int(RandomFloat(vec3(gl_FragCoord.xy, depth)) * SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES)], 0.0f);
 
     //Calculate the tangent space matrix.
     vec3 tangent = normalize(randomRotation - normal * dot(randomRotation, normal));
@@ -136,7 +136,7 @@ void main()
 
         float currentSampleDepth = CalculateFragmentViewSpacePosition(offset.xy, texture(normalDepthTexture, offset.xy).w).z;
 
-        float fade = mix(0.0f, 1.0f, SmoothStep(abs(fragmentViewSpacePosition.z - currentSampleDepth)));
+        float fade = mix(1.0f, 0.0f, min(abs(currentSampleDepth - currentSamplePosition.z), 1.0f));
 
         occlusion += (currentSampleDepth >= currentSamplePosition.z + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * fade;
     }

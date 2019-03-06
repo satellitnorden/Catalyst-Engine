@@ -35,7 +35,7 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
     float sampleOcclusion = texture(screenSpaceAmbientOcclusionTexture, coordinate).x;
     float sampleDepth = CalculateFragmentViewSpacePosition(coordinate, texture(normalDepthTexture, coordinate).w).z;
 
-    return mix(sampleOcclusion, currentOcclusion, min(abs(currentOcclusion - sampleOcclusion), 1.0f));
+    return mix(sampleOcclusion, currentOcclusion, min(abs(currentDepth - sampleDepth), 1.0f));
 }
 
 /*
@@ -43,6 +43,8 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
 */
 float Blur()
 {
+    #define SAMPLE_CONTRIBUTION (0.0666666666666667f)
+
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
 
@@ -51,18 +53,24 @@ float Blur()
     vec2 offset3 = vec2(3.0f) * direction * inverseResolution;
     vec2 offset4 = vec2(4.0f) * direction * inverseResolution;
     vec2 offset5 = vec2(5.0f) * direction * inverseResolution;
+    vec2 offset6 = vec2(6.0f) * direction * inverseResolution;
+    vec2 offset7 = vec2(7.0f) * direction * inverseResolution;
 
-    return  currentOcclusion * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * 0.0909090909090909f
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * 0.0909090909090909f;
+    return  currentOcclusion * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset6) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset6) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset7) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset7) * SAMPLE_CONTRIBUTION;
 }
 
 void main()
