@@ -2,6 +2,11 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystShaderPhysicallyBasedLightingInternals.glsl"
 
+//Preprocessor defines.
+#define CATALYST_PHYSICALLY_BASED_LIGHTING_DIRECTIONAL_LIGHT_AMBIENT_OCCLUSION_SCALE (0.25f)
+#define CATALYST_PHYSICALLY_BASED_LIGHTING_POINT_LIGHT_AMBIENT_OCCLUSION_SCALE (0.5f)
+#define CATALYST_PHYSICALLY_BASED_LIGHTING_SPOT_LIGHT_AMBIENT_OCCLUSION_SCALE (0.5f)
+
 /*
 *   Calculates the ambient lighting.
 */
@@ -38,7 +43,8 @@ vec3 CalculateDirectionalLight( vec3 albedoColor,
                                 float roughness,
                                 float viewAngle,
                                 vec3 surfaceColor,
-                                float metallic)
+                                float metallic,
+                                float ambientOcclusion)
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
@@ -53,7 +59,7 @@ vec3 CalculateDirectionalLight( vec3 albedoColor,
                             surfaceColor,
                             metallic,
                             albedoColor,
-                            radiance);
+                            radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_DIRECTIONAL_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
 }
 
 /*
@@ -90,7 +96,7 @@ vec3 CalculatePointLight(   vec3 pointLightWorldPosition,
                             CalculateSurfaceColor(albedo, metallic),
                             metallic,
                             albedo,
-                            radiance);
+                            radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_POINT_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
 }
 
 /*
@@ -136,7 +142,7 @@ vec3 CalculateSpotLight(    vec3 spotLightWorldPosition,
                             CalculateSurfaceColor(albedo, metallic),
                             metallic,
                             albedo,
-                            radiance);
+                            radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_SPOT_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
 }
 
 /*
@@ -182,7 +188,8 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
                                                 roughness,
                                                 viewAngle,
                                                 surfaceColor,
-                                                metallic) * directionalShadowMultiplier * Scale(ambientOcclusion, 0.0f, 1.0f, 0.25f, 1.0f);
+                                                metallic,
+                                                ambientOcclusion) * directionalShadowMultiplier;
 
     //Return the final fragment.
     return finalFragment;

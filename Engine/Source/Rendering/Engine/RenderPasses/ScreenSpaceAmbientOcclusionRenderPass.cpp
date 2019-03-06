@@ -50,20 +50,6 @@ namespace ScreenSpaceAmbientOcclusionRenderPassUtilities
 
 		PRINT_TO_OUTPUT(");");
 		PRINT_TO_OUTPUT("");
-
-		//Print the random rotations.
-		PRINT_TO_OUTPUT("const vec2 RANDOM_ROTATIONS[SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES] = vec2[]");
-		PRINT_TO_OUTPUT("(");
-
-		for (uint8 i{ 0 }; i < SAMPLES; ++i)
-		{
-			Vector2<float> rotation{	CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f),
-										CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
-
-			PRINT_TO_OUTPUT("\tvec2(" << rotation._X << "f, " << rotation._Y << "f),");
-		}
-
-		PRINT_TO_OUTPUT(");");
 	}
 }
 #endif
@@ -87,7 +73,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Print data.
-	//ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
+	ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
 #endif
 
 	//Create the render data table layout.

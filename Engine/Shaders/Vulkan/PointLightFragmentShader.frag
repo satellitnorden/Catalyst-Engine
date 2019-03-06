@@ -24,6 +24,7 @@ layout (push_constant) uniform PushConstantData
 layout (set = 1, binding = 0) uniform sampler2D albedoTexture;
 layout (set = 1, binding = 1) uniform sampler2D normalDepthTexture;
 layout (set = 1, binding = 2) uniform sampler2D materialPropertiesTexture;
+layout (set = 1, binding = 3) uniform sampler2D screenSpaceAmbientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -43,6 +44,9 @@ void main()
 
 	//Sample the material properties.
 	vec4 materialProperties = texture(materialPropertiesTexture, coordinates);
+
+    //Sample the screen space ambient occlusion.
+    float screenSpaceAmbientOcclusion = texture(screenSpaceAmbientOcclusionTexture, coordinates).x;
 
 	//Calculate the fragment world position.
 	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(coordinates, depth);
@@ -66,5 +70,5 @@ void main()
     										materialProperties[0],
     										materialProperties[1],
     										materialProperties[2],
-    										materialProperties[3]), 1.0f);
+    										materialProperties[3]) * screenSpaceAmbientOcclusion, 1.0f);
 }

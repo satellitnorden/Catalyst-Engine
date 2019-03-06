@@ -184,7 +184,7 @@ namespace CommonEnvironmentMaterialData
 	*/
 	static void GetNightEnvironmentMaterialData(EnvironmentMaterialData *const RESTRICT data) NOEXCEPT
 	{
-		constexpr Vector3<float> BOTTOM_COLOR{ 0.0001f, 0.0001f, 0.0001f };
+		constexpr Vector3<float> BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
 		constexpr Vector3<float> TOP_COLOR{ 0.25f * 0.01f, 1.0f * 0.01f, 1.0f * 0.01f };
 
 		data->_DiffuseResolution = 2;
