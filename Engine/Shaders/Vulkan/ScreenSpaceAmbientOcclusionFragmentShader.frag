@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
 
 //Layout specification.
@@ -51,7 +51,7 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
     //Calculate the bias.
-    float bias = abs(fragmentViewSpacePosition.z) * 0.0005f; //0.00025f step.
+    float bias = abs(fragmentViewSpacePosition.z) * 0.00075f; //0.00025f step.
 
     //Calculate the occlusion.
     float occlusion = 0.0f;
@@ -60,7 +60,7 @@ void main()
     {
         vec3 randomOffset = normalize(vec3( RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
                                             RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PHI)) * 2.0f - 1.0f,
-                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * pow(RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO)), 2.0f);
+                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * pow(RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO)), 8.0f);
 
         //vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * OFFSETS[i]);
         vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * randomOffset);

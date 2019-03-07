@@ -30,12 +30,12 @@ layout (location = 0) out vec4 fragment;
 /*
 *   The sample function.
 */
-float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
+float Sample(float currentOcclusion, float currentDepth, vec2 coordinate, float depthMultiplier)
 {
     float sampleOcclusion = texture(screenSpaceAmbientOcclusionTexture, coordinate).x;
     float sampleDepth = CalculateFragmentViewSpacePosition(coordinate, texture(normalDepthTexture, coordinate).w).z;
 
-    return mix(sampleOcclusion, currentOcclusion, min(abs(currentDepth - sampleDepth), 1.0f));
+    return mix(sampleOcclusion, currentOcclusion, SmoothStep(min(abs(currentDepth - sampleDepth) * depthMultiplier, 1.0f)));
 }
 
 /*
@@ -43,31 +43,29 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
 */
 float Blur()
 {
-    #define SAMPLE_CONTRIBUTION (0.0769230769230769f)
+    #define SAMPLE_CONTRIBUTION (0.0909090909090909f)
 
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
+    float depthMultiplier = max(4.0025f - (abs(currentDepth) * 0.0275f), 0.0f); //0.0025f step.
 
     vec2 offset1 = vec2(1.0f) * direction * inverseResolution;
     vec2 offset2 = vec2(2.0f) * direction * inverseResolution;
     vec2 offset3 = vec2(3.0f) * direction * inverseResolution;
     vec2 offset4 = vec2(4.0f) * direction * inverseResolution;
     vec2 offset5 = vec2(5.0f) * direction * inverseResolution;
-    vec2 offset6 = vec2(6.0f) * direction * inverseResolution;
 
     return  currentOcclusion * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset6) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset6) * SAMPLE_CONTRIBUTION;
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5, depthMultiplier) * SAMPLE_CONTRIBUTION
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5, depthMultiplier) * SAMPLE_CONTRIBUTION;
 }
 
 void main()

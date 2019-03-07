@@ -35,8 +35,5 @@ private:
 
 	//The directional light.
 	DirectionalLight _DirectionalLight;
-	
-	//The spot lights.
-	StaticArray<SpotLight, LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS> _SpotLights;
 
 };
