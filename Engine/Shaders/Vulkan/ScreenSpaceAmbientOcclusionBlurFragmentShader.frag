@@ -43,7 +43,7 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate)
 */
 float Blur()
 {
-    #define SAMPLE_CONTRIBUTION (0.0666666666666667f)
+    #define SAMPLE_CONTRIBUTION (0.0769230769230769f)
 
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
@@ -54,7 +54,6 @@ float Blur()
     vec2 offset4 = vec2(4.0f) * direction * inverseResolution;
     vec2 offset5 = vec2(5.0f) * direction * inverseResolution;
     vec2 offset6 = vec2(6.0f) * direction * inverseResolution;
-    vec2 offset7 = vec2(7.0f) * direction * inverseResolution;
 
     return  currentOcclusion * SAMPLE_CONTRIBUTION
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1) * SAMPLE_CONTRIBUTION
@@ -68,9 +67,7 @@ float Blur()
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5) * SAMPLE_CONTRIBUTION
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5) * SAMPLE_CONTRIBUTION
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset6) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset6) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset7) * SAMPLE_CONTRIBUTION
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset7) * SAMPLE_CONTRIBUTION;
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset6) * SAMPLE_CONTRIBUTION;
 }
 
 void main()

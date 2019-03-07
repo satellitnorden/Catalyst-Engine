@@ -6,7 +6,7 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-class PointLightEntity : public Entity
+class CollisionEntity : public Entity
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PointLightEntity() NOEXCEPT;
+	CollisionEntity() NOEXCEPT;
 
 	/*
 	*	Initializes this entity.

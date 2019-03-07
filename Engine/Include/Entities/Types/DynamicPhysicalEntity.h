@@ -41,21 +41,6 @@ public:
 protected:
 
 	/*
-	*	Returns the position of this entity.
-	*/
-	RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT GetPositionInternal() NOEXCEPT final override;
-
-	/*
-	*	Returns the rotation of this entity.
-	*/
-	RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT GetRotationInternal() NOEXCEPT final override;
-
-	/*
-	*	Returns the scale of this entity.
-	*/
-	RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT GetScaleInternal() NOEXCEPT final override;
-
-	/*
 	*	Callback for when this entity is moved.
 	*/
 	void OnMove() NOEXCEPT final override

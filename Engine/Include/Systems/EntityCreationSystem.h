@@ -103,6 +103,15 @@ private:
 
 	public:
 
+		//The entity to initialize.
+		Entity* RESTRICT _Entity;
+
+		//The initialization data.
+		EntityInitializationData* RESTRICT _Data;
+
+		//Denotes whether or not to force this initialization.
+		bool _Force;
+
 		/*
 		*	Default constructor, prohibited - must be constructed with the proper arguments.
 		*/
@@ -120,14 +129,13 @@ private:
 
 		}
 
-		//The entity to initialize.
-		Entity* RESTRICT _Entity;
-
-		//The initialization data.
-		EntityInitializationData* RESTRICT _Data;
-
-		//Denotes whether or not to force this initialization.
-		bool _Force;
+		/*
+		*	Equality operator overload.
+		*/
+		constexpr bool operator==(const InitializationData &other) const NOEXCEPT
+		{
+			return _Entity == other._Entity;
+		}
 
 	};
 

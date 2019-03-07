@@ -158,8 +158,7 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 		const uint64 offset{ 0 };
 
-		const Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &transformComponent->_WorldTransform);
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3<float>), &renderComponent->_Color);
 
 		if (previousBuffer != renderComponent->_Buffer)

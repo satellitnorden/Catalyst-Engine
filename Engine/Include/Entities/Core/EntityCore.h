@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Entity types.
-#define ENTITY_TYPES	ENTITY_TYPE(DynamicPhysical)	\
+#define ENTITY_TYPES	ENTITY_TYPE(Collision)			\
+						ENTITY_TYPE(DynamicPhysical)	\
 						ENTITY_TYPE(ParticleSystem)		\
 						ENTITY_TYPE(Physics)			\
 						ENTITY_TYPE(PointLight)			\

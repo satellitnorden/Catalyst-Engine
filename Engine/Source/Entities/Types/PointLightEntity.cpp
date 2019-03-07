@@ -45,12 +45,3 @@ void PointLightEntity::Terminate() NOEXCEPT
 	//Return this entitiy's components index.
 	ComponentManager::ReturnPointLightComponentsIndex(_ComponentsIndex);
 }
-
-/*
-*	Returns the position of this entity.
-*/
-RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
-{
-	//Return the position of this entity.
-	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._WorldPosition;
-}

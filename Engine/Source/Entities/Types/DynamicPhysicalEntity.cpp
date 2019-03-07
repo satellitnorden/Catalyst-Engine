@@ -52,9 +52,8 @@ void DynamicPhysicalEntity::Initialize(EntityInitializationData *const RESTRICT 
 	cullingComponent._ModelSpaceAxisAlignedBoundingBox = dynamicPhysicalInitializationData->_Model._AxisAlignedBoundingBoxes[UNDERLYING(LevelOfDetail::High)];
 
 	//Initialize the transform component.
-	transformComponent._Position = dynamicPhysicalInitializationData->_Position;
-	transformComponent._Rotation = dynamicPhysicalInitializationData->_Rotation;
-	transformComponent._Scale = dynamicPhysicalInitializationData->_Scale;
+	transformComponent._LocalTransform = Matrix4(dynamicPhysicalInitializationData->_Position, dynamicPhysicalInitializationData->_Rotation, dynamicPhysicalInitializationData->_Scale);
+	transformComponent._WorldTransform = transformComponent._LocalTransform;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<DynamicPhysicalInitializationData>(data);
@@ -88,33 +87,6 @@ RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEnti
 }
 
 /*
-*	Returns the position of this entity.
-*/
-RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetPositionInternal() NOEXCEPT
-{
-	//Return the position of this entity.
-	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Position;
-}
-
-/*
-*	Returns the rotation of this entity.
-*/
-RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetRotationInternal() NOEXCEPT
-{
-	//Return the rotation of this entity.
-	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
-}
-
-/*
-*	Returns the scale of this entity.
-*/
-RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetScaleInternal() NOEXCEPT
-{
-	//Return the scale of this entity.
-	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale;
-}
-
-/*
 *	Updates the world space axis-aligned bounding box.
 */
 void DynamicPhysicalEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
@@ -133,9 +105,9 @@ void DynamicPhysicalEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 		return;
 	}
 
-	const Vector3<float> *const RESTRICT position{ GetPositionInternal() };
-	const Vector3<float> *const RESTRICT scale{ GetScaleInternal() };
+	const Vector3<float> position{ GetWorldTransform()->GetTranslation() };
+	const Vector3<float> scale{ GetWorldTransform()->GetScale() };
 
-	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum * *scale + *position;
-	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum * *scale + *position;
+	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum * scale + position;
+	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum * scale + position;
 }

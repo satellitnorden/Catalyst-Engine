@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/Vector3.h>
-
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {
@@ -14,10 +11,10 @@ enum class PhysicsChannel : uint8
 	Terrain = BIT(2)
 };
 
+ENUMERATION_BIT_OPERATIONS(PhysicsChannel);
+
 //Enumeration covering all physics shapes.
 enum class PhysicsShape : uint8
 {
-	Sphere
+	Cube
 };
-
-ENUMERATION_BIT_OPERATIONS(PhysicsChannel);

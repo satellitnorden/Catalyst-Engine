@@ -51,7 +51,7 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
     //Calculate the bias.
-    float bias = abs(fragmentViewSpacePosition.z) * 0.00025f; //0.00025f step.
+    float bias = abs(fragmentViewSpacePosition.z) * 0.0005f; //0.00025f step.
 
     //Calculate the occlusion.
     float occlusion = 0.0f;
@@ -60,7 +60,7 @@ void main()
     {
         vec3 randomOffset = normalize(vec3( RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
                                             RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PHI)) * 2.0f - 1.0f,
-                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO));
+                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * pow(RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO)), 2.0f);
 
         //vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * OFFSETS[i]);
         vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * randomOffset);

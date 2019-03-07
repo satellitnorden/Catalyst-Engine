@@ -190,7 +190,7 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 		//Push constants.
 		VertexPushConstantData vertexData;
 
-		vertexData._ModelMatrix = Matrix4(transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale);
+		vertexData._ModelMatrix = transformComponent->_WorldTransform;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 

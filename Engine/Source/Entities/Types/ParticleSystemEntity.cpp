@@ -88,12 +88,3 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 		return elapsedTime >= properties._Lifetime - properties._SpawnFrequency + properties._Lifetime;
 	}
 }
-
-/*
-*	Returns the position of this entity.
-*/
-RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
-{
-	//Return the position of this entity.
-	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._Properties._WorldPosition;
-}

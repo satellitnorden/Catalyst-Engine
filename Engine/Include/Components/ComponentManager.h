@@ -5,6 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
+#include <Components/CollisionComponent.h>
 #include <Components/DynamicPhysicalRenderComponent.h>
 #include <Components/DynamicOutlineRenderComponent.h>
 #include <Components/FrustumCullingComponent.h>
@@ -58,6 +59,7 @@ class Entity;
 class ComponentManager final
 {
 
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
 	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);

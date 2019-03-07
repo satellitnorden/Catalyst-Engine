@@ -5,6 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
+#include <Entities/Types/CollisionEntity.h>
 #include <Entities/Types/DynamicPhysicalEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/PhysicsEntity.h>
@@ -100,22 +101,15 @@ Matrix4 *const RESTRICT Entity::GetWorldTransform() NOEXCEPT
 }
 
 /*
-*	Moves this entity.
+*	Transforms this entity.
 */
-void Entity::Move(const Vector3<float> &amount) NOEXCEPT
+void Entity::Transform(const Matrix4 &transformation) NOEXCEPT
 {
-	//Move this entity.
-	if (Vector3<float> *const RESTRICT position{ GetPositionInternal() })
+	if (_Initialized)
 	{
-		*position += amount;
-	}
+		Matrix4 *const RESTRICT localTransform{ GetLocalTransform() };
+		Matrix4 *const RESTRICT worldTransform{ GetWorldTransform() };
 
-	//Move all children.
-	for (Entity *const RESTRICT child : _Children)
-	{
-		child->Move(amount);
+		*worldTransform = transformation * *localTransform;
 	}
-
-	//Call the callback.
-	OnMove();
 }

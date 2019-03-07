@@ -73,7 +73,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Print data.
-	ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
+	//ScreenSpaceAmbientOcclusionRenderPassUtilities::PrintData();
 #endif
 
 	//Create the render data table layout.

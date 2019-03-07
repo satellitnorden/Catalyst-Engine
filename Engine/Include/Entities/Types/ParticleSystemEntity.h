@@ -37,9 +37,4 @@ protected:
 	*/
 	bool ShouldAutomaticallyTerminate() const NOEXCEPT final override;
 
-	/*
-	*	Returns the position of this entity.
-	*/
-	RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT GetPositionInternal() NOEXCEPT final override;
-
 };

@@ -152,8 +152,7 @@ void DirectionalDynamicPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		const uint64 offset{ 0 };
 
-		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &transformComponent->_WorldTransform);
 
 		if (previousBuffer != renderComponent->_Model._Buffers[UNDERLYING(LevelOfDetail::High)])
 		{

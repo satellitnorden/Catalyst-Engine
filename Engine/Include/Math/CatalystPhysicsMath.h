@@ -56,4 +56,21 @@ namespace CatalystPhysicsMath
 		return incoming - 2.0f * Vector3<float>::DotProduct(incoming, normal) * normal;
 	}
 
+	/*
+	*	Returns if two physics shapes are colliding.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool IsColliding(const PhysicsShape firstShape, const Matrix4 &firstTransform, const PhysicsShape secondShape, const Matrix4 &secondTransform) NOEXCEPT
+	{
+		return false;
+
+		/*
+		return	box1._Minimum._X <= box2._Maximum._X
+				&& box1._Maximum._X >= box2._Minimum._X
+				&& box1._Minimum._Y <= box2._Maximum._Y
+				&& box1._Maximum._Y >= box2._Minimum._Y
+				&& box1._Minimum._Z <= box2._Maximum._Z
+				&& box1._Maximum._Z >= box2._Minimum._Z;
+		*/
+	}
+
 }

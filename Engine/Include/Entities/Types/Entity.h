@@ -53,9 +53,9 @@ public:
 	Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
 
 	/*
-	*	Moves this entity.
+	*	Transforms this entity.
 	*/
-	void Move(const Vector3<float> &amount) NOEXCEPT;
+	void Transform(const Matrix4 &transformation) NOEXCEPT;
 
 protected:
 
@@ -65,30 +65,6 @@ protected:
 	virtual bool ShouldAutomaticallyTerminate() const NOEXCEPT
 	{
 		return false;
-	}
-
-	/*
-	*	Returns the position of this entity.
-	*/
-	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetPositionInternal() NOEXCEPT
-	{
-		return nullptr;
-	}
-
-	/*
-	*	Returns the rotation of this entity.
-	*/
-	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetRotationInternal() NOEXCEPT
-	{
-		return nullptr;
-	}
-
-	/*
-	*	Returns the scale of this entity.
-	*/
-	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetScaleInternal() NOEXCEPT
-	{
-		return nullptr;
 	}
 
 	/*
