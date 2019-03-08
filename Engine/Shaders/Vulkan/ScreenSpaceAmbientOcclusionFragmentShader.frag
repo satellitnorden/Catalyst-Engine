@@ -9,7 +9,8 @@
 
 //Preprocessor defines.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (16.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (17.75f) //0.25f step.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_NARROW (6.0f) //0.25f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -41,8 +42,8 @@ void main()
     vec3 fragmentViewSpacePosition = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, depth);
 
     //Calculate the random offset vector.
-    vec3 randomRotation = vec3( RandomFloat(vec3(gl_FragCoord.xy, depth * ((SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES + 1) * EULERS_NUMBER))) * 2.0f - 1.0f,
-                                RandomFloat(vec3(gl_FragCoord.xy, depth * ((SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES + 1) * PHI))) * 2.0f - 1.0f,
+    vec3 randomRotation = vec3( RandomFloat(vec3(gl_FragCoord.xy, (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
+                                RandomFloat(vec3(gl_FragCoord.xy, (SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES + 1) * PHI)) * 2.0f - 1.0f,
                                 0.0f);
 
     //Calculate the tangent space matrix.
@@ -51,7 +52,7 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
     //Calculate the bias.
-    float bias = abs(fragmentViewSpacePosition.z) * 0.00075f; //0.00025f step.
+    float bias = abs(fragmentViewSpacePosition.z) * 0.001f; //0.00025f step.
 
     //Calculate the occlusion.
     float occlusion = 0.0f;
@@ -60,7 +61,7 @@ void main()
     {
         vec3 randomOffset = normalize(vec3( RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
                                             RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PHI)) * 2.0f - 1.0f,
-                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * pow(RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO)), 8.0f);
+                                            RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * PI)))) * pow(RandomFloat(vec3(gl_FragCoord.xy, float(i + 1) * SQUARE_ROOT_OF_TWO)), SCREEN_SPACE_AMBIENT_OCCLUSION_NARROW);
 
         //vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * OFFSETS[i]);
         vec3 currentSamplePosition = fragmentViewSpacePosition + (tangentSpaceMatrix * randomOffset);
