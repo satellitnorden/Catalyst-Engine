@@ -35,7 +35,7 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate, float 
     float sampleOcclusion = texture(screenSpaceAmbientOcclusionTexture, coordinate).x;
     float sampleDepth = CalculateFragmentViewSpacePosition(coordinate, texture(normalDepthTexture, coordinate).w).z;
 
-    return mix(sampleOcclusion, currentOcclusion, SmoothStep(min(abs(currentDepth - sampleDepth) * depthMultiplier, 1.0f)));
+    return mix(sampleOcclusion, currentOcclusion, SmoothStep(min(abs(currentDepth - sampleDepth), 1.0f)));
 }
 
 /*
@@ -43,11 +43,12 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate, float 
 */
 float Blur()
 {
-    #define SAMPLE_CONTRIBUTION (1.0f / 31.0f)
+    #define SAMPLE_CONTRIBUTION (1.0f / 21.0f)
 
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
-    float depthMultiplier = max(4.0075f - (abs(currentDepth) * 0.07f), 0.0f); //0.0025f step.
+    float depthMultiplier = max(4.0f - (abs(currentDepth) * 0.075f), 0.0f); //0.0025f step.
+    //float depthMultiplier = 0.0f;
 
     vec2 offset1 = vec2(0.5f) * direction * inverseResolution;
     vec2 offset2 = vec2(2.5f) * direction * inverseResolution;
@@ -59,11 +60,6 @@ float Blur()
     vec2 offset8 = vec2(14.5f) * direction * inverseResolution;
     vec2 offset9 = vec2(16.5f) * direction * inverseResolution;
     vec2 offset10 = vec2(18.5f) * direction * inverseResolution;
-    vec2 offset11 = vec2(20.5f) * direction * inverseResolution;
-    vec2 offset12 = vec2(22.5f) * direction * inverseResolution;
-    vec2 offset13 = vec2(24.5f) * direction * inverseResolution;
-    vec2 offset14 = vec2(26.5f) * direction * inverseResolution;
-    vec2 offset15 = vec2(28.5f) * direction * inverseResolution;
 
     return  (currentOcclusion
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1, depthMultiplier)
@@ -85,17 +81,7 @@ float Blur()
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset9, depthMultiplier)
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset9, depthMultiplier)
             + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset10, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset10, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset11, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset11, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset12, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset12, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset13, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset13, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset14, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset14, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset15, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset15, depthMultiplier)) * SAMPLE_CONTRIBUTION;
+            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset10, depthMultiplier)) * SAMPLE_CONTRIBUTION;
 }
 
 void main()

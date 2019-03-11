@@ -9,7 +9,7 @@
 
 //Preprocessor defines.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (21.75f) //0.25f step.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (24.0f) //0.25f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_NARROW (6.0f) //0.25f step.
 
 //Layout specification.
