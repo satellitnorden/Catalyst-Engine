@@ -8,7 +8,8 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS_DECREASE (0.000875f) //0.000025f step. Decrease to Decrease bias.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32) //Increase to increase accuracy of SSAO.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (24.0f) //0.25f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_NARROW (6.0f) //0.25f step.
 
@@ -52,7 +53,7 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
     //Calculate the bias.
-    float bias = abs(fragmentViewSpacePosition.z) * 0.001f; //0.00025f step.
+    float bias = abs(fragmentViewSpacePosition.z) * SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS_DECREASE;
 
     //Calculate the occlusion.
     float occlusion = 0.0f;
