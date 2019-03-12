@@ -8,8 +8,8 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER (1.000025f) //0.000025f step. Increase to increase bias to samples of the same depth when blurring.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.00008f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER (1.000125f) //0.000025f step. Increase to increase bias to samples of the same depth when blurring.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.00005f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -51,7 +51,7 @@ float Blur()
 
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
-    float depthMultiplier = SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER - (abs(currentDepth) * 0.000025f); //0.000025f step.
+    float depthMultiplier = SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER - (abs(currentDepth) * SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE); //0.000025f step.
 
     vec2 offset1 = vec2(0.5f) * direction * inverseResolution;
     vec2 offset2 = vec2(2.5f) * direction * inverseResolution;
