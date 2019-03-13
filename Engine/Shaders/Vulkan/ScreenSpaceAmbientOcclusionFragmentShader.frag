@@ -8,9 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS_DECREASE (0.000775f) //0.000025f step. Decrease to Decrease bias.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS_DECREASE (0.000725f) //0.000025f step. Decrease to Decrease bias.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32) //Increase to increase accuracy of SSAO.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (25.0f) //0.25f step.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_STRENGTH (25.75f) //0.25f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_NARROW (6.0f) //0.25f step.
 
 //Layout specification.

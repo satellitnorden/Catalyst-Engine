@@ -8,8 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER (1.000125f) //0.000025f step. Increase to increase bias to samples of the same depth when blurring.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.00005f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER (1.000175f) //0.000025f step. Increase to increase bias to samples of the same depth when blurring.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.00008f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_SAMPLES (10)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -47,44 +48,21 @@ float Sample(float currentOcclusion, float currentDepth, vec2 coordinate, float 
 */
 float Blur()
 {
-    #define SAMPLE_CONTRIBUTION (1.0f / 21.0f)
-
     float currentOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).x;
     float currentDepth = CalculateFragmentViewSpacePosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w).z;
-    float depthMultiplier = SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER - (abs(currentDepth) * SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE); //0.000025f step.
+    float depthMultiplier = SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER - (abs(currentDepth) * SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE);
 
-    vec2 offset1 = vec2(0.5f) * direction * inverseResolution;
-    vec2 offset2 = vec2(2.5f) * direction * inverseResolution;
-    vec2 offset3 = vec2(4.5f) * direction * inverseResolution;
-    vec2 offset4 = vec2(6.5f) * direction * inverseResolution;
-    vec2 offset5 = vec2(8.5f) * direction * inverseResolution;
-    vec2 offset6 = vec2(10.5f) * direction * inverseResolution;
-    vec2 offset7 = vec2(12.5f) * direction * inverseResolution;
-    vec2 offset8 = vec2(14.5f) * direction * inverseResolution;
-    vec2 offset9 = vec2(16.5f) * direction * inverseResolution;
-    vec2 offset10 = vec2(18.5f) * direction * inverseResolution;
+    float final = currentOcclusion;
 
-    return  (currentOcclusion
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset1, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset1, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset2, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset2, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset3, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset3, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset4, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset4, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset5, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset5, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset6, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset6, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset7, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset7, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset8, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset8, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset9, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset9, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset10, depthMultiplier)
-            + Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset10, depthMultiplier)) * SAMPLE_CONTRIBUTION;
+    for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_SAMPLES; ++i)
+    {
+        vec2 offset = (vec2(0.5f) + 2.0f * i) * inverseResolution * direction;
+
+        final += Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate - offset, depthMultiplier);
+        final += Sample(currentOcclusion, currentDepth, fragmentTextureCoordinate + offset, depthMultiplier);
+    }
+
+    return final / (1 + (SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_SAMPLES * 2));
 }
 
 void main()
