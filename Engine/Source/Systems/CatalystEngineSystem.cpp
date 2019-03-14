@@ -77,6 +77,8 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Pre update phase.
 	*/
+	*WriteCurrentUpdatePhase() = UpdatePhase::Pre;
+
 	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 	CatalystPlatform::PreUpdate(&context);
 	InputSystem::Instance->UpdateSystemSynchronous(&context);
@@ -84,6 +86,8 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Update phase.
 	*/
+	*WriteCurrentUpdatePhase() = UpdatePhase::Logic;
+
 	_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
 	PhysicsSystem::Instance->Update(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
@@ -97,6 +101,8 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Post update phase.
 	*/
+	*WriteCurrentUpdatePhase() = UpdatePhase::Post;
+
 	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);

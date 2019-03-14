@@ -3,19 +3,21 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/Pointers/UniquePointer.h>
 
 //Components.
-#include <Components/CollisionComponent.h>
-#include <Components/DynamicPhysicalRenderComponent.h>
-#include <Components/DynamicOutlineRenderComponent.h>
-#include <Components/FrustumCullingComponent.h>
-#include <Components/ParticleSystemComponent.h>
-#include <Components/ParticleSystemRenderComponent.h>
-#include <Components/PhysicsComponent.h>
-#include <Components/PointLightComponent.h>
-#include <Components/SoundComponent.h>
-#include <Components/SpotLightComponent.h>
-#include <Components/TransformComponent.h>
+#include <Components/Singleton/InputComponent.h>
+#include <Components/Transient/CollisionComponent.h>
+#include <Components/Transient/DynamicPhysicalRenderComponent.h>
+#include <Components/Transient/DynamicOutlineRenderComponent.h>
+#include <Components/Transient/FrustumCullingComponent.h>
+#include <Components/Transient/ParticleSystemComponent.h>
+#include <Components/Transient/ParticleSystemRenderComponent.h>
+#include <Components/Transient/PhysicsComponent.h>
+#include <Components/Transient/PointLightComponent.h>
+#include <Components/Transient/SoundComponent.h>
+#include <Components/Transient/SpotLightComponent.h>
+#include <Components/Transient/TransformComponent.h>
 
 /*
 *	Declares an entity class with one component.
@@ -59,6 +61,30 @@ class Entity;
 class ComponentManager final
 {
 
+public:
+
+	/*
+	*	Returns the singleton component of the given type for read access.
+	*/
+	template <typename TYPE>
+	RESTRICTED static NO_DISCARD const TYPE *const RESTRICT ReadSingletonComponent() NOEXCEPT
+	{
+		VerifyReadAccess<TYPE>();
+
+		return RetrieveSingletonComponent<TYPE>();
+	}
+
+	/*
+	*	Returns the singleton component of the given type for write access.
+	*/
+	template <typename TYPE>
+	RESTRICTED static NO_DISCARD TYPE *const RESTRICT WriteSingletonComponent() NOEXCEPT
+	{
+		VerifyWriteAccess<TYPE>();
+
+		return RetrieveSingletonComponent<TYPE>();
+	}
+
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
 	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
@@ -66,5 +92,18 @@ class ComponentManager final
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
+
+private:
+
+	/*
+	*	Returns the singleton component of the given type.
+	*/
+	template <typename TYPE>
+	RESTRICTED static NO_DISCARD TYPE *const RESTRICT RetrieveSingletonComponent() NOEXCEPT
+	{
+		static UniquePointer<TYPE> component{ new TYPE };
+
+		return component.Get();
+	}
 
 };

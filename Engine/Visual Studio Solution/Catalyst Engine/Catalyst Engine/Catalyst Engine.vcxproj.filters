@@ -286,29 +286,20 @@
     <Filter Include="Entities\Include\Core">
       <UniqueIdentifier>{85c37808-4dbc-4823-96e8-65561e01613d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Include\Core">
+      <UniqueIdentifier>{40a6a312-f63b-45b5-ae27-93555b2596e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Include\Transient">
+      <UniqueIdentifier>{2166e02f-9b7f-4669-bd8c-6fc9e889814d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Include\Singleton">
+      <UniqueIdentifier>{bb544a4c-1a1d-4fec-be5a-41bec75e0ad8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Source\Essential">
+      <UniqueIdentifier>{d764f9bc-79ba-47a2-8573-c8a1dbad8377}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\TransformComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
       <Filter>Core\Include\Algorithms</Filter>
     </ClInclude>
@@ -630,9 +621,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -671,9 +659,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h">
-      <Filter>Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h">
       <Filter>Systems\Include</Filter>
@@ -905,9 +890,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\PhysicsComponent.h">
-      <Filter>Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h">
       <Filter>Math\Include</Filter>
@@ -1395,9 +1377,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\SoundComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ExponentialHeightFogRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -1482,8 +1461,44 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\CollisionInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\CollisionComponent.h">
-      <Filter>Components\Include</Filter>
+    <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h">
+      <Filter>Components\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicOutlineRenderComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicPhysicalRenderComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\FrustumCullingComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\PointLightComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\SpotLightComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h">
+      <Filter>Components\Include\Singleton</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2167,6 +2182,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\CollisionEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
+      <Filter>Core\Source\Essential</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

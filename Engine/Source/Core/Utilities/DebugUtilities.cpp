@@ -3,7 +3,7 @@
 #include <Core/Utilities/DebugUtilities.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Systems.
 #include <Systems/DebugRenderingSystem.h>

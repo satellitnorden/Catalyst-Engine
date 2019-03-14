@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Components.
-#include <Components/TransformComponent.h>
+#include <Components/Transient/TransformComponent.h>
 
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>

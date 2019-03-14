@@ -3,7 +3,7 @@
 #include <Systems/PhysicsSystem.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Math.
 #include <Math/CatalystPhysicsMath.h>

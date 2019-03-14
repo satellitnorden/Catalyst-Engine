@@ -2,7 +2,7 @@
 #include <Entities/Types/DynamicPhysicalEntity.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>

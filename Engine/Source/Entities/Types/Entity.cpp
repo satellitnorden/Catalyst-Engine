@@ -2,7 +2,7 @@
 #include <Entities/Types/Entity.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Entities.
 #include <Entities/Types/CollisionEntity.h>

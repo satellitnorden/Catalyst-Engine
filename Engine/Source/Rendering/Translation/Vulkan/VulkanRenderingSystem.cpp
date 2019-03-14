@@ -3,7 +3,7 @@
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>

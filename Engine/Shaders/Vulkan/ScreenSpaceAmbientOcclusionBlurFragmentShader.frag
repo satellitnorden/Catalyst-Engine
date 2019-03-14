@@ -9,7 +9,7 @@
 
 //Preprocessor defines.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER (1.000225f) //0.000025f step. Increase to increase bias to samples of the same depth when blurring.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.0012f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BLUR_BASE_MULTIPLIER_DECREASE (0.001225f) //0.000025f step. Increase to descrase bias to samples of the same depth when blurring at a distance.
 
 //Layout specification.
 layout (early_fragment_tests) in;

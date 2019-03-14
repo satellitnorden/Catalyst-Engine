@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Components.
-#include <Components/PointLightComponent.h>
+#include <Components/Transient/PointLightComponent.h>
 
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>

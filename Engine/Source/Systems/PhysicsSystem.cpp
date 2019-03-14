@@ -2,7 +2,7 @@
 #include <Systems/PhysicsSystem.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Entities.
 #include <Entities/Types/Entity.h>

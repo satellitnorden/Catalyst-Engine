@@ -5,7 +5,7 @@
 #include <Core/General/Perceiver.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>

@@ -2,7 +2,7 @@
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>

@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Multithreading.
 #include <Multithreading/Task.h>
 
@@ -18,15 +21,15 @@ void InputSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT co
 	//Retrieve the current gamepad states.
 	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
-		CatalystPlatform::GetCurrentGamepadState(i, &_GamepadStates[i]);
+		CatalystPlatform::GetCurrentGamepadState(i, &ComponentManager::WriteSingletonComponent<InputComponent>()->_GamepadStates[i]);
 	}
 
 	//Retrieve the current keyboard state.
-	CatalystPlatform::GetCurrentKeyboardState(&_KeyboardState);
+	CatalystPlatform::GetCurrentKeyboardState(&ComponentManager::WriteSingletonComponent<InputComponent>()->_KeyboardState);
 
 	//Retrieve the current mouse state.
-	CatalystPlatform::GetCurrentMouseState(&_MouseState);
+	CatalystPlatform::GetCurrentMouseState(&ComponentManager::WriteSingletonComponent<InputComponent>()->_MouseState);
 
 	//Retrieve the current touch state.
-	CatalystPlatform::GetCurrentTouchState(&_TouchState);
+	CatalystPlatform::GetCurrentTouchState(&ComponentManager::WriteSingletonComponent<InputComponent>()->_TouchState);
 }

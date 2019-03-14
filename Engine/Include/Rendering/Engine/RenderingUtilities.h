@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Components.
-#include <Components/ComponentManager.h>
+#include <Components/Core/ComponentManager.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>
