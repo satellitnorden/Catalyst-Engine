@@ -44,6 +44,45 @@ namespace CatalystEngineSystemInternalData
 	SequentialUpdate _CurrentSequentialUpdate{ SequentialUpdate::NumberOfSequentialUpdates };
 }
 
+namespace CatalystEngineSystemInternalLogic
+{
+	/*
+	*	Executes the sequential update.
+	*/
+	void ExecuteSequentialUpdate() NOEXCEPT
+	{
+		//Update the current sequential update.
+		CatalystEngineSystemInternalData::_CurrentSequentialUpdate =	static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1) < CatalystEngineSystemInternalData::SequentialUpdate::NumberOfSequentialUpdates
+																		? static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1)
+																		: static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(0);
+
+		//Execute the sequential update.
+		switch (CatalystEngineSystemInternalData::_CurrentSequentialUpdate)
+		{
+			case CatalystEngineSystemInternalData::SequentialUpdate::EntityPlacementSystem:
+			{
+				EntityPlacementSystem::Instance->SequentialUpdateSystemSynchronous();
+
+				break;
+			}
+
+			case CatalystEngineSystemInternalData::SequentialUpdate::TerrainSystem:
+			{
+				TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
+
+				break;
+			}
+
+			case CatalystEngineSystemInternalData::SequentialUpdate::VegetationSystem:
+			{
+				VegetationSystem::Instance->SequentialUpdateSystemSynchronous();
+
+				break;
+			}
+		}
+	}
+}
+
 /*
 *	Initializes the Catalyst engine system.
 */
@@ -134,7 +173,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Sequential update phase.
 	*/
-	ExecuteSequentialUpdate();
+	CatalystEngineSystemInternalLogic::ExecuteSequentialUpdate();
 
 	//Return if the game should be terminated.
 	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;
@@ -161,40 +200,4 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	PhysicsSystem::Instance->Terminate();
 	RenderingSystem::Instance->ReleaseSystem();
 	SoundSystem::Instance->Terminate();
-}
-
-/*
-*	Executes the sequential update.
-*/
-void CatalystEngineSystem::ExecuteSequentialUpdate() NOEXCEPT
-{
-	//Update the current sequential update.
-	CatalystEngineSystemInternalData::_CurrentSequentialUpdate =	static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1) < CatalystEngineSystemInternalData::SequentialUpdate::NumberOfSequentialUpdates
-																	? static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1)
-																	: static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(0);
-
-	//Execute the sequential update.
-	switch (CatalystEngineSystemInternalData::_CurrentSequentialUpdate)
-	{
-		case CatalystEngineSystemInternalData::SequentialUpdate::EntityPlacementSystem:
-		{
-			EntityPlacementSystem::Instance->SequentialUpdateSystemSynchronous();
-
-			break;
-		}
-
-		case CatalystEngineSystemInternalData::SequentialUpdate::TerrainSystem:
-		{
-			TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
-
-			break;
-		}
-
-		case CatalystEngineSystemInternalData::SequentialUpdate::VegetationSystem:
-		{
-			VegetationSystem::Instance->SequentialUpdateSystemSynchronous();
-
-			break;
-		}
-	}
 }

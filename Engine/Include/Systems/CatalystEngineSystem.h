@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/CatalystProjectConfiguration.h>
-#include <Core/Pointers/UniquePointer.h>
 
 class CatalystEngineSystem final
 {
@@ -24,12 +23,5 @@ public:
 	*	Terminates the Catalyst engine system.
 	*/
 	static void Terminate() NOEXCEPT;
-
-private:
-
-	/*
-	*	Executes the sequential update.
-	*/
-	static void ExecuteSequentialUpdate() NOEXCEPT;
 
 };
