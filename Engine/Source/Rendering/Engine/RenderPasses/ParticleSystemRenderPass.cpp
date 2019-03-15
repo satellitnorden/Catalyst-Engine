@@ -11,7 +11,6 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -195,7 +194,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		data._SpawnFrequency = component->_Properties._SpawnFrequency;
 		data._Properties = static_cast<int32>(component->_Properties._Properties);
 		data._RandomSeed = component->_ParticleSystemRandomSeed;
-		data._TotalTime = CatalystEngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
+		data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime - component->_ParticleSystemStartingTime;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(PushConstantData), &data);
 

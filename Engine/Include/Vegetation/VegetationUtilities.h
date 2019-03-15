@@ -5,6 +5,9 @@
 #include <Core/Algorithms/SortingAlgorithms.h>
 #include <Core/General/Perceiver.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -432,7 +435,7 @@ namespace VegetationUtilities
 																&update->_NewPatchRenderInformation._TransformationsBuffers,
 																&update->_NewPatchRenderInformation._NumberOfTransformations);
 
-					update->_NewPatchInformation._TimeStamp = CatalystEngineSystem::Instance->GetTotalFrames();
+					update->_NewPatchInformation._TimeStamp = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 					for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 					{
@@ -482,7 +485,7 @@ namespace VegetationUtilities
 		update->_Index = index;
 
 		//Construct the update.
-		update->_NewPatchInformation._TimeStamp = CatalystEngineSystem::Instance->GetTotalFrames();
+		update->_NewPatchInformation._TimeStamp = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 		//Sort the transformations.
 		StaticArray<DynamicArray<Matrix4>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> levelOfDetailTransformations;
@@ -640,7 +643,7 @@ namespace VegetationUtilities
 																			&update->_NewPatchRenderInformation._NumberOfTransformations,
 																			&update->_NewPatchRenderInformation._TransformationsOffsets);
 
-					update->_NewPatchInformation._TimeStamp = CatalystEngineSystem::Instance->GetTotalFrames();
+					update->_NewPatchInformation._TimeStamp = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 					for (uint8 i{ 0 }; i < UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails); ++i)
 					{
@@ -690,7 +693,7 @@ namespace VegetationUtilities
 		update->_Index = index;
 
 		//Construct the update.
-		update->_NewPatchInformation._TimeStamp = CatalystEngineSystem::Instance->GetTotalFrames();
+		update->_NewPatchInformation._TimeStamp = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 		//Sort the transformations.
 		StaticArray<DynamicArray<Matrix4>, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> levelOfDetailTransformations;

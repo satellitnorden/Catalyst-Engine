@@ -3,6 +3,10 @@
 
 //Core.
 #include <Core/General/UpdateContext.h>
+#include <Core/General/DeltaTimer.h>
+
+//Components.
+#include <Components/Core/ComponentManager.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>
@@ -20,8 +24,25 @@
 #include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(CatalystEngineSystem);
+namespace CatalystEngineSystemInternalData
+{
+	//Enumeration covering all sequential updates.
+	enum class SequentialUpdate : uint8
+	{
+		EntityPlacementSystem,
+		TerrainSystem,
+		VegetationSystem,
+
+		NumberOfSequentialUpdates
+	};
+
+
+	//The delta timer.
+	DeltaTimer _DeltaTimer;
+
+	//The current sequential update.
+	SequentialUpdate _CurrentSequentialUpdate{ SequentialUpdate::NumberOfSequentialUpdates };
+}
 
 /*
 *	Initializes the Catalyst engine system.
@@ -29,7 +50,7 @@ DEFINE_SINGLETON(CatalystEngineSystem);
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
 	//Set the project configuration.
-	_ProjectConfiguration = initialProjectConfiguration;
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration = initialProjectConfiguration;
 
 	//Initialize the platform.
 	CatalystPlatform::Initialize();
@@ -39,7 +60,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	EntityPlacementSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	PhysicsSystem::Instance->Initialize();
-	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
+	RenderingSystem::Instance->InitializeSystem(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->InitializeSystem();
 	TerrainSystem::Instance->InitializeSystem();
@@ -52,43 +73,43 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::PostInitialize();
 
 	//Initialize the game system.
-	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 }
 
 /*
 *	Updates the Catalyst engine system.
 */
-void CatalystEngineSystem::Update() NOEXCEPT
+bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	//Update the delta time.
-	_DeltaTime = _DeltaTimer.Update();
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemInternalData::_DeltaTimer.Update();
 
 	//Update the total time.
-	_TotalTime += _DeltaTime;
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalTime += ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 
 	//Update the total frames.
-	++_TotalFrames;
+	++ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 	//Construct the update context.
 	UpdateContext context;
-	context._DeltaTime = _DeltaTime;
-	context._TotalTime = _TotalTime;
+	context._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+	context._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 
 	/*
 	*	Pre update phase.
 	*/
-	*WriteCurrentUpdatePhase() = UpdatePhase::Pre;
+	*CurrentUpdatePhase() = UpdatePhase::Pre;
 
-	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 	CatalystPlatform::PreUpdate(&context);
-	InputSystem::Instance->UpdateSystemSynchronous(&context);
+	InputSystem::Update(&context);
 
 	/*
 	*	Update phase.
 	*/
-	*WriteCurrentUpdatePhase() = UpdatePhase::Logic;
+	*CurrentUpdatePhase() = UpdatePhase::Logic;
 
-	_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
 	PhysicsSystem::Instance->Update(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
@@ -101,9 +122,9 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Post update phase.
 	*/
-	*WriteCurrentUpdatePhase() = UpdatePhase::Post;
+	*CurrentUpdatePhase() = UpdatePhase::Post;
 
-	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 #endif
@@ -114,6 +135,9 @@ void CatalystEngineSystem::Update() NOEXCEPT
 	*	Sequential update phase.
 	*/
 	ExecuteSequentialUpdate();
+
+	//Return if the game should be terminated.
+	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;
 }
 
 /*
@@ -122,10 +146,10 @@ void CatalystEngineSystem::Update() NOEXCEPT
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
 	//Signal to other systems that the game should terminate.
-	_ShouldTerminate = true;
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate = true;
 
 	//Terminate the game system.
-	_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
 
 	//Release the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->ReleaseSystem();
@@ -145,28 +169,28 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 void CatalystEngineSystem::ExecuteSequentialUpdate() NOEXCEPT
 {
 	//Update the current sequential update.
-	_CurrentSequentialUpdate =	static_cast<SequentialUpdate>(UNDERLYING(_CurrentSequentialUpdate) + 1) < SequentialUpdate::NumberOfSequentialUpdates
-								? static_cast<SequentialUpdate>(UNDERLYING(_CurrentSequentialUpdate) + 1)
-								: static_cast<SequentialUpdate>(0);
+	CatalystEngineSystemInternalData::_CurrentSequentialUpdate =	static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1) < CatalystEngineSystemInternalData::SequentialUpdate::NumberOfSequentialUpdates
+																	? static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1)
+																	: static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(0);
 
 	//Execute the sequential update.
-	switch (_CurrentSequentialUpdate)
+	switch (CatalystEngineSystemInternalData::_CurrentSequentialUpdate)
 	{
-		case SequentialUpdate::EntityPlacementSystem:
+		case CatalystEngineSystemInternalData::SequentialUpdate::EntityPlacementSystem:
 		{
 			EntityPlacementSystem::Instance->SequentialUpdateSystemSynchronous();
 
 			break;
 		}
 
-		case SequentialUpdate::TerrainSystem:
+		case CatalystEngineSystemInternalData::SequentialUpdate::TerrainSystem:
 		{
 			TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
 
 			break;
 		}
 
-		case SequentialUpdate::VegetationSystem:
+		case CatalystEngineSystemInternalData::SequentialUpdate::VegetationSystem:
 		{
 			VegetationSystem::Instance->SequentialUpdateSystemSynchronous();
 

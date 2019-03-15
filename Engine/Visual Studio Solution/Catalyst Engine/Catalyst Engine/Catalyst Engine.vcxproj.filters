@@ -1500,6 +1500,9 @@
     <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h">
       <Filter>Components\Include\Singleton</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Singleton\CatalystEngineComponent.h">
+      <Filter>Components\Include\Singleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

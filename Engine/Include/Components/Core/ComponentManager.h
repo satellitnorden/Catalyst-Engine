@@ -6,6 +6,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Components.
+#include <Components/Singleton/CatalystEngineComponent.h>
 #include <Components/Singleton/InputComponent.h>
 #include <Components/Transient/CollisionComponent.h>
 #include <Components/Transient/DynamicPhysicalRenderComponent.h>

@@ -2,11 +2,11 @@
 //Header file.
 #include <Rendering/API/Vulkan/VulkanSwapChain.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Math.
 #include <Math/CatalystBaseMath.h>
-
-//Systems.
-#include <Systems/CatalystEngineSystem.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
@@ -98,8 +98,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	_SwapExtent.width = CatalystBaseMath::Clamp<uint32>(CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	_SwapExtent.height = CatalystBaseMath::Clamp<uint32>(CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution._Height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	_SwapExtent.width = CatalystBaseMath::Clamp<uint32>(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._Resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	_SwapExtent.height = CatalystBaseMath::Clamp<uint32>(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._Resolution._Height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*

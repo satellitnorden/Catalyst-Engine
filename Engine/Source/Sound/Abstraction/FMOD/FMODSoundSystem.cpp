@@ -85,7 +85,7 @@ void SoundSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 	FMODSoundSystemLogic::UpdateListenerPosition();
 
 	//Update the studio system.
-	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
+	//FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
 }
 
 /*

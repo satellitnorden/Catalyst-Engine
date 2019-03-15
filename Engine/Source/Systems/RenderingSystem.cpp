@@ -41,7 +41,6 @@
 #include <Resources/TreeVegetationModelData.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -948,7 +947,7 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 	//Set the night/day environment materials to default ones.
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Night)]);
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Day)]);
-	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
+	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 }
 
 /*
@@ -1162,10 +1161,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._WindDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	//Update floats.
-	data._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
+	data._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
 	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
-	data._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
+	data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 
 	UploadDataToUniformBuffer(_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex], &data);

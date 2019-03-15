@@ -14,7 +14,6 @@
 #include <Rendering/Engine/RenderingUtilities.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -47,7 +46,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, renderComponent._RenderDataTable, particleSystemInitializationData->_Material._AlbedoTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(particleSystemInitializationData->_ParticleSystemProperties._Lifetime / particleSystemInitializationData->_ParticleSystemProperties._SpawnFrequency);
 	renderComponent._ParticleSystemRandomSeed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent._ParticleSystemStartingTime = CatalystEngineSystem::Instance->GetTotalTime();
+	renderComponent._ParticleSystemStartingTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<ParticleSystemInitializationData>(data);
@@ -82,7 +81,7 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 	else
 	{
 		const float startingTime{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._ParticleSystemStartingTime };
-		const float totalTime{ CatalystEngineSystem::Instance->GetTotalTime() };
+		const float totalTime{ ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime };
 		const float elapsedTime{ totalTime - startingTime };
 
 		return elapsedTime >= properties._Lifetime - properties._SpawnFrequency + properties._Lifetime;

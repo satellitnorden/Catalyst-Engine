@@ -10,13 +10,10 @@
 //Systems.
 #include <Systems/TaskSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(InputSystem);
-
 /*
-*	Updates the input system synchronously.
+*	Updates the input system.
 */
-void InputSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void InputSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Retrieve the current gamepad states.
 	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)

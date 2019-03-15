@@ -19,17 +19,9 @@ class InputSystem final
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(InputSystem);
-
 	/*
-	*	Default constructor.
+	*	Updates the input system.
 	*/
-	InputSystem() NOEXCEPT { }
-
-	/*
-	*	Updates the input system synchronously.
-	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	static void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 };

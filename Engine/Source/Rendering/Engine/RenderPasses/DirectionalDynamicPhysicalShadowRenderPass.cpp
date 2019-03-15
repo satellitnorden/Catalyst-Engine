@@ -9,7 +9,6 @@
 #include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -85,7 +84,7 @@ void DirectionalDynamicPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(0, sizeof(PhysicalVertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution));
+	SetRenderResolution(Resolution(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._ShadowMapResolution, ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

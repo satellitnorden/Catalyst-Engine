@@ -8,7 +8,6 @@
 #include <Rendering/Engine/RenderingUtilities.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 

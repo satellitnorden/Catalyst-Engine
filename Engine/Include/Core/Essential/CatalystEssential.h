@@ -35,19 +35,9 @@ enum class UpdatePhase : uint8
 ENUMERATION_BIT_OPERATIONS(UpdatePhase);
 
 /*
-*	Reads the current update phase.
+*	Returns the current update phase.
 */
-RESTRICTED static NO_DISCARD const UpdatePhase *const RESTRICT ReadCurrentUpdatePhase() NOEXCEPT
-{
-	extern UpdatePhase CURRENT_UPDATE_PHASE;
-
-	return &CURRENT_UPDATE_PHASE;
-}
-
-/*
-*	Writes the current update phase.
-*/
-RESTRICTED static NO_DISCARD UpdatePhase *const RESTRICT WriteCurrentUpdatePhase() NOEXCEPT
+RESTRICTED static NO_DISCARD UpdatePhase *const RESTRICT CurrentUpdatePhase() NOEXCEPT
 {
 	extern UpdatePhase CURRENT_UPDATE_PHASE;
 
@@ -78,7 +68,7 @@ static NO_DISCARD UpdatePhase AllowedWriteAccess() NOEXCEPT
 template <typename TYPE>
 void VerifyReadAccess() NOEXCEPT
 {
-	ASSERT(TEST_BIT(AllowedReadAccess<TYPE>(), *ReadCurrentUpdatePhase()), "Read access is not allowed for this type during this update phase!");
+	ASSERT(TEST_BIT(AllowedReadAccess<TYPE>(), *CurrentUpdatePhase()), "Read access is not allowed for this type during this update phase!");
 }
 
 /*
@@ -87,5 +77,5 @@ void VerifyReadAccess() NOEXCEPT
 template <typename TYPE>
 void VerifyWriteAccess() NOEXCEPT
 {
-	ASSERT(TEST_BIT(AllowedWriteAccess<TYPE>(), *ReadCurrentUpdatePhase()), "Write access is not allowed for this type during this update phase!");
+	ASSERT(TEST_BIT(AllowedWriteAccess<TYPE>(), *CurrentUpdatePhase()), "Write access is not allowed for this type during this update phase!");
 }
