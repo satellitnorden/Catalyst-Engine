@@ -9,28 +9,76 @@
 
 /*
 *   Calculates the ambient lighting.
+*
+*   albedo - The albedo of the surface at the surface point.
+*   diffuseIrradiance - The diffuse irradiance in the reflection direction of the surface at the surface point.
+*   normal - The normal of the surface at the surface point.
+*   specularIrradiance - The specular irradiance in the reflection direction of the surface at the surface point.
+*   viewDirection - Direction vector going from the surface point to the perceiving point.
+*   ambientOcclusion - The ambient oclusion of the surface at the surface point.
+*   metallic - The metallic of the surface at the surface point.
+*   roughness - The roughness of the surface at the surface point.
 */
-vec3 CalculateAmbient(  vec3 surfaceColor,
-                        float roughness,
-                        float viewAngle,
-                        float metallic,
-                        vec3 irradiance,
-                        vec3 normalDirection,
-                        vec3 albedoColor,
-                        vec3 viewDirection,
+vec3 CalculateAmbient(  vec3 albedo,
+                        vec3 diffuseIrradiance,
+                        vec3 normal,
                         vec3 specularIrradiance,
-                        float ambientOcclusion)
+                        vec3 viewDirection,
+                        float ambientOcclusion,
+                        float metallic,
+                        float roughness)
 {
-    vec3 specularComponent = CalculateFresnelRoughness(surfaceColor, roughness, viewAngle);
+    float viewAngle = max(dot(normal, viewDirection), 0.0f);
+    vec3 specularComponent = CalculateFresnelRoughness(CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 diffuse = irradiance * albedoColor;
+    vec3 diffuse = diffuseIrradiance * albedo;
 
-    vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
-    vec3 specular = mix(specularIrradiance, irradiance, roughness);
+    vec3 specular = mix(specularIrradiance, diffuseIrradiance, roughness);
 
     return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
+}
+
+/*
+*   Calculates a light.
+*
+*   viewDirection - Direction vector going from the surface point to the perceiving point.
+*   lightDirection - Direction vector going from the surface point to the light point.
+*   normal - The normal vector of the surface point.
+*   thickness - The thickness of the surface at the surface point.
+*   roughness - The roughness of the surface at the surface point.
+*   metallic - The metallic of the surface at the surface point.
+*   albedo - The albedo of the surface at the surface point.
+*   radiance - The radiance of the light.
+*/
+vec3 CalculateLight(vec3 viewDirection,
+                    vec3 lightDirection,
+                    vec3 normal,
+                    float thickness,
+                    float roughness,
+                    float metallic,
+                    vec3 albedo,
+                    vec3 radiance)
+{
+    vec3 halfwayDirection = normalize(viewDirection + lightDirection);
+    float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
+    float lightAngle = mix(1.0f, max(dot(normal, lightDirection), 0.0f), thickness);
+    float viewAngle = max(dot(normal, viewDirection), 0.0f);
+
+    float distribution = CalculateDistribution(roughness, normal, halfwayDirection);
+    float geometry = CalculateGeometry(roughness, lightAngle, viewAngle);
+    vec3 fresnel = CalculateFresnel(CalculateSurfaceColor(albedo, metallic), lightViewAngle);
+
+    vec3 diffuseComponent = vec3(1.0f) - fresnel;
+    diffuseComponent *= 1.0f - metallic;
+
+    vec3 nominator = distribution * geometry * fresnel;
+    float denominator = 4.0f * viewAngle * lightAngle;
+    vec3 specularComponent = denominator != 0.0f ? nominator / denominator : vec3(0.0f);
+
+    //Return the combined components.
+    return (diffuseComponent * albedo / PI + specularComponent) * radiance * lightAngle;
 }
 
 /*
@@ -55,8 +103,6 @@ vec3 CalculateDirectionalLight( vec3 albedoColor,
                             normalDirection,
                             thickness,
                             roughness,
-                            viewAngle,
-                            surfaceColor,
                             metallic,
                             albedoColor,
                             radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_DIRECTIONAL_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
@@ -92,8 +138,6 @@ vec3 CalculatePointLight(   vec3 pointLightWorldPosition,
                             normal,
                             thickness,
                             roughness,
-                            viewAngle,
-                            CalculateSurfaceColor(albedo, metallic),
                             metallic,
                             albedo,
                             radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_POINT_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
@@ -138,8 +182,6 @@ vec3 CalculateSpotLight(    vec3 spotLightWorldPosition,
                             normal,
                             thickness,
                             roughness,
-                            viewAngle,
-                            CalculateSurfaceColor(albedo, metallic),
                             metallic,
                             albedo,
                             radiance) * Scale(ambientOcclusion, 0.0f, 1.0f, CATALYST_PHYSICALLY_BASED_LIGHTING_SPOT_LIGHT_AMBIENT_OCCLUSION_SCALE, 1.0f);
@@ -169,16 +211,14 @@ vec3 CalculateLighting( vec3 diffuseIrradiance,
     vec3 surfaceColor = CalculateSurfaceColor(albedo, metallic);
 
     //Start off with just the ambient lighting.
-    vec3 finalFragment = CalculateAmbient(  surfaceColor,
-                                            roughness,
-                                            viewAngle,
-                                            metallic,
+    vec3 finalFragment = CalculateAmbient(  albedo,
                                             diffuseIrradiance,
                                             normal,
-                                            albedo,
-                                            viewDirection,
                                             specularIrradiance,
-                                            ambientOcclusion);
+                                            viewDirection,
+                                            ambientOcclusion,
+                                            metallic,
+                                            roughness);
 
     //Calculate the directional light.
     finalFragment += CalculateDirectionalLight( albedo,

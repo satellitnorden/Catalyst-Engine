@@ -71,4 +71,27 @@ void main()
                                         ambientOcclusion * screenSpaceAmbientOcclusion,
                                         thickness),
                                         1.0f);
+
+    /*
+    //Write the fragment.
+    if (gl_FragCoord.x < 980.0f)
+    {
+    	fragment = vec4(CalculateLighting(  mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend),
+                                        mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend),
+                                        texture(directionalShadow, fragmentTextureCoordinate).r,
+                                        fragmentWorldPosition, 
+                                        albedoColor,
+                                        normalDirection,
+                                        roughness,
+                                        metallic,
+                                        ambientOcclusion * screenSpaceAmbientOcclusion,
+                                        thickness),
+                                        1.0f);
+    }
+
+    else
+    {
+    	fragment = vec4(vec3(screenSpaceAmbientOcclusion), 1.0f);
+    }
+    */
 }

@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
+//Core.
+#include <Core/General/BinaryFile.h>
+
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -19,7 +22,6 @@
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
-#include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
@@ -549,672 +551,960 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
+	//Open the shader collection file.
+	BinaryFile<IOMode::In> shaderCollection{ "..\\..\\..\\Resources\\Final\\CatalystShaderCollection.csc" };
+
 	{
-		//Initialize the above ocean fragment shader module.
+		//Initialize the anti-aliasing fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetAboveOceanFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::AboveOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the anti-aliasing fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetAntiAliasingFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::AntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the below ocean fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetBelowOceanFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::BelowOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize bloom downsample first iteration fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetBloomDownsampleFirstIterationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::BloomDownsampleFirstIterationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize bloom downsample fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetBloomDownsampleFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::BloomDownsampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize bloom upsample fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetBloomUpsampleFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::BloomUpsampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the box blur shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetBoxBlurFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	{
 		//Initialize the debug axis-aligned bounding box fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDebugAxisAlignedBoundingBoxFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the debug axis-aligned bounding box vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDebugAxisAlignedBoundingBoxVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the debug screen box fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDebugScreenBoxFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the debug screen box vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDebugScreenBoxVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
-#endif
 
 	{
 		//Initialize the depth of field fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDepthOfFieldFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DepthOfFieldFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the directional physical shadow vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalPhysicalShadowVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the directional shadow fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalShadowFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize directional solid vegetation shadow fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalSolidVegetationShadowFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalSolidVegetationShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize directional solid vegetation shadow fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalSolidVegetationShadowVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalSolidVegetationShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalTerrainShadowVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalTerrainShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional tree vegetation crown shadow fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalTreeVegetationCrownShadowFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalTreeVegetationCrownShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize directional tree vegetation crown shadow vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalTreeVegetationCrownShadowVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalTreeVegetationCrownShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional tree vegetation trunk vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalTreeVegetationTrunkVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::DirectionalTreeVegetationTrunkVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize exponential height fog fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetExponentialHeightFogFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ExponentialHeightFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize gaussian blur fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetGaussianBlurFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::GaussianBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail debris vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailDebrisVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailDebrisVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail debris vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailDebrisVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailDebrisVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the grass vegetation color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the grass vegetation color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the grass vegetation depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the grass vegetation depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailGrassVegetationDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail solid vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailSolidVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail solid vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailSolidVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailSolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation crown color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationCrownColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation crown color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationCrownColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation crown depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationCrownDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation crown depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationCrownDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationCrownDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor color geometry shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorGeometryShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor depth geometry shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthGeometryShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation impostor depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationImpostorDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationImpostorDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationTrunkFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationTrunkFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the high detail tree vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetHighDetailTreeVegetationTrunkVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTreeVegetationTrunkVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the lighting fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLightingFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail debris vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailDebrisVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailDebrisVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail debris vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailDebrisVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailDebrisVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail grass vegetation color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail grass vegetation color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail grass vegetation depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail grass vegetation depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailGrassVegetationDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail solid vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailSolidVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail solid vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailSolidVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailSolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation crown color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationCrownColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationCrownColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation crown color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationCrownColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationCrownColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation crown depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationCrownDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationCrownDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation crown depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationCrownDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationCrownDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor color geometry shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorColorGeometryShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorColorGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor depth geometry shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorDepthGeometryShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorDepthGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation impostor depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationImpostorDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationImpostorDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationTrunkFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationTrunkFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the low detail tree vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetLowDetailTreeVegetationTrunkVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::LowDetailTreeVegetationTrunkVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail debris vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailDebrisVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailDebrisVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail debris vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailDebrisVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailDebrisVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail grass vegetation color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail grass vegetation color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail grass vegetation depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail grass vegetation depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailGrassVegetationDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail solid vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailSolidVegetationFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail solid vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailSolidVegetationVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailSolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation crown color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationCrownColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation crown color vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationCrownColorVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation crown depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationCrownDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation crown depth vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationCrownDepthVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationCrownDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationTrunkFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationTrunkFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the medium detail tree vegetation vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetMediumDetailTreeVegetationTrunkVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailTreeVegetationTrunkVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the outline fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetOutlineFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::OutlineFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the particle system fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetParticleSystemFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ParticleSystemFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the particle system geometry shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetParticleSystemGeometryShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ParticleSystemGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the particle system vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetParticleSystemVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ParticleSystemVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the particle system fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
+		DynamicArray<byte> data;
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
+		_ShaderModules[UNDERLYING(Shader::PathTracingPrototypeFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetPhysicalFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::PhysicalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetPhysicalVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::PhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the point light fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetPointLightFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::PointLightFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the point light vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetPointLightVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::PointLightVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the screen space ambient occlusion blur fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetScreenSpaceAmbientOcclusionBlurFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the screen space ambient occlusion fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetScreenSpaceAmbientOcclusionFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the shadow map fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetShadowMapFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ShadowMapFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the sky fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetSkyFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the terrain color fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainColorFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::TerrainColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the terrain depth fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainDepthFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::TerrainDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the terrain vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::TerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the tone mapping fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetToneMappingFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ToneMappingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the viewport vertex shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetViewportVertexShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the volumetric fog fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
-		VulkanShaderData::GetVolumetricFogFragmentShaderData(data);
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
 		_ShaderModules[UNDERLYING(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+
+	shaderCollection.Close();
 }
 
 /*
@@ -3419,6 +3709,75 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._ShouldClear = false;
+	}
+
+	//Initialize the tone mapping render pass.
+	{
+		constexpr uint64 NUMBER_OF_TONE_MAPPING_SUBPASSES{ 1 };
+
+		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		StaticArray<VkSubpassDescription, NUMBER_OF_TONE_MAPPING_SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(0,
+				nullptr,
+				1,
+				colorAttachmentReferences.Data(),
+				nullptr,
+				0,
+				nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 1> attachments
+		{
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._ShouldClear = false;
 	}
 
 	//Initialize the tone mapping render pass.

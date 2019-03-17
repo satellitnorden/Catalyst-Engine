@@ -897,6 +897,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleSecondIteration)] = BloomUpsampleSecondIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration)] = BloomUpsampleThirdIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::PathTracingPrototype)] = PathTracingPrototypeRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 }
 

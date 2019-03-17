@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/AntiAliasingRenderPass.h>
-
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
+#include <Rendering/Engine/RenderPasses/PathTracingPrototypeRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,58 +8,51 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AntiAliasingRenderPass);
+DEFINE_SINGLETON(PathTracingPrototypeRenderPass);
 
 /*
 *	Default constructor.
 */
-AntiAliasingRenderPass::AntiAliasingRenderPass() NOEXCEPT
+PathTracingPrototypeRenderPass::PathTracingPrototypeRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		AntiAliasingRenderPass::Instance->InitializeInternal();
+		PathTracingPrototypeRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the anti-aliasing render pass.
+*	Initializes the path tracing prototype render pass.
 */
-void AntiAliasingRenderPass::InitializeInternal() NOEXCEPT
+void PathTracingPrototypeRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Create the render data table layout.
-	CreateRenderDataTableLayout();
-
-	//Create the render data table.
-	CreateRenderDataTable();
-
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::AntiAliasing);
+	SetMainStage(RenderPassMainStage::PathTracingPrototype);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::AntiAliasing);
+	SetSubStage(RenderPassSubStage::PathTracingPrototype);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AntiAliasingFragment);
+	SetFragmentShader(Shader::PathTracingPrototypeFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -87,42 +77,25 @@ void AntiAliasingRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		AntiAliasingRenderPass::Instance->RenderInternal();
+		PathTracingPrototypeRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
 
-
 /*
-*	Creates the render data table layout.
+*	Renders the path tracing prototype.
 */
-void AntiAliasingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void PathTracingPrototypeRenderPass::RenderInternal() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	if (true)
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
+		SetIncludeInRender(false);
 
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
+		return;
+	}
 
-/*
-*	Creates the render data table.
-*/
-void AntiAliasingRenderPass::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, _RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Renders the anti-aliasing.
-*/
-void AntiAliasingRenderPass::RenderInternal() NOEXCEPT
-{
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -131,7 +104,6 @@ void AntiAliasingRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

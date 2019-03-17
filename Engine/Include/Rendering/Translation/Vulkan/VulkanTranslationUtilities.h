@@ -142,6 +142,11 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);
 			}
 
+			case RenderPassMainStage::PathTracingPrototype:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PathTracingPrototype);
+			}
+
 			case RenderPassMainStage::AntiAliasing:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AntiAliasing);

@@ -14,17 +14,6 @@ float CalculateGeometry(    float roughness,
                             float lightAngle,
                             float viewAngle);
 
-vec3 CalculateLight(    vec3 viewDirection,
-                        vec3 lightDirection,
-                        vec3 normalDirection,
-                        float thickness,
-                        float roughness,
-                        float viewAngle,
-                        vec3 surfaceColor,
-                        float metallic,
-                        vec3 albedoColor,
-                        vec3 radiance);
-
 vec3 CalculateSurfaceColor( vec3 albedo,
                             float metallic);
 
@@ -78,39 +67,6 @@ float CalculateGeometry(    float roughness,
     float viewObstruction = viewAngle / (viewAngle * (1.0f - geometryRoughness) + geometryRoughness);
 
     return lightObstruction * viewObstruction;
-}
-
-/*
-*   Calculates a light.
-*/
-vec3 CalculateLight(    vec3 viewDirection,
-                        vec3 lightDirection,
-                        vec3 normalDirection,
-                        float thickness,
-                        float roughness,
-                        float viewAngle,
-                        vec3 surfaceColor,
-                        float metallic,
-                        vec3 albedoColor,
-                        vec3 radiance)
-{
-    vec3 halfwayDirection = normalize(viewDirection + lightDirection);
-    float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
-    float lightAngle = mix(1.0f, max(dot(normalDirection, lightDirection), 0.0f), thickness);
-
-    float distribution = CalculateDistribution(roughness, normalDirection, halfwayDirection);
-    float geometry = CalculateGeometry(roughness, lightAngle, viewAngle);
-    vec3 fresnel = CalculateFresnel(surfaceColor, lightViewAngle);
-
-    vec3 diffuseComponent = vec3(1.0f) - fresnel;
-    diffuseComponent *= 1.0f - metallic;
-
-    vec3 nominator = distribution * geometry * fresnel;
-    float denominator = 4 * viewAngle * lightAngle + 0.001f;
-    vec3 specularComponent = nominator / denominator;
-
-    //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
 }
 
 /*

@@ -41,10 +41,10 @@ void main()
     vec3 sceneTextureColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
     //Apply HDR.
-    sceneTextureColor = ApplyHDR(sceneTextureColor);
+    //sceneTextureColor = ApplyHDR(sceneTextureColor);
 
     //Apply gamma correction.
-    sceneTextureColor = ApplyGammaCorrection(sceneTextureColor);
+    //sceneTextureColor = ApplyGammaCorrection(sceneTextureColor);
 
     //Write the fragment
     fragment = vec4(sceneTextureColor, 1.0f);

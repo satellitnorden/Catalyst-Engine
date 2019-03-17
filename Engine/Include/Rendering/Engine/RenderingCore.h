@@ -73,6 +73,8 @@ enum class RenderPassMainStage : uint8
 	BloomUpsampleFirstIteration,
 	BloomUpsampleSecondIteration,
 	BloomUpsampleThirdIteration,
+
+	PathTracingPrototype,
 	ToneMapping,
 	AntiAliasing,
 
@@ -186,6 +188,9 @@ enum class RenderPassSubStage : uint8
 
 	//Bloom upsample third iteration main stage.
 	BloomUpsampleThirdIteration,
+
+	//Path tracing prototype main stage.
+	PathTracingPrototype,
 
 	//Tone mapping main stage.
 	ToneMapping,
@@ -331,11 +336,11 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AboveOceanFragment,
+	AntiAliasingFragment,
 	BelowOceanFragment,
 	BloomDownsampleFirstIterationFragment,
 	BloomDownsampleFragment,
 	BloomUpsampleFragment,
-	BoxBlurFragment,
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
@@ -412,7 +417,7 @@ enum class Shader : uint8
 	ParticleSystemFragment,
 	ParticleSystemGeometry,
 	ParticleSystemVertex,
-	AntiAliasingFragment,
+	PathTracingPrototypeFragment,
 	PhysicalFragment,
 	PhysicalVertex,
 	PointLightFragment,
