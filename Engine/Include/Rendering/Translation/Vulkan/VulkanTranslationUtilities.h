@@ -137,15 +137,21 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldVertical);
 			}
 
+			case RenderPassMainStage::PathTracingPrototype:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PathTracingPrototype);
+			}
+
+			case RenderPassMainStage::PathTracingPrototypeIntegration:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PathTracingPrototypeIntegration);
+			}
+
 			case RenderPassMainStage::ToneMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);
 			}
 
-			case RenderPassMainStage::PathTracingPrototype:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PathTracingPrototype);
-			}
 
 			case RenderPassMainStage::AntiAliasing:
 			{

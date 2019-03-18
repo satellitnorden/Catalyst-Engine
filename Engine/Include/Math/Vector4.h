@@ -109,6 +109,17 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr bool operator==(const Vector4 &other) NOEXCEPT
+	{
+		return	_X == other._X
+				&& _Y == other._Y
+				&& _Z == other._Z
+				&& _W == other._W;
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	Type operator[](const uint64 index) const NOEXCEPT

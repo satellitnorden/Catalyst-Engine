@@ -75,6 +75,17 @@ public:
 	Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT;
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr bool operator==(const Matrix4 &other) NOEXCEPT
+	{
+		return	_Matrix[0] == other._Matrix[0]
+				&& _Matrix[1] == other._Matrix[1]
+				&& _Matrix[2] == other._Matrix[2]
+				&& _Matrix[3] == other._Matrix[3];
+	}
+
+	/*
 	*	Matrix4 by Matrix4 multiplication overload.
 	*/
 	Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT;

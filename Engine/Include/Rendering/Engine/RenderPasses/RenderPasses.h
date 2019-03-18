@@ -58,6 +58,7 @@
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PathTracingPrototypeRenderPass.h>
+#include <Rendering/Engine/RenderPasses/PathTracingPrototypeIntegrationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PointLightRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>

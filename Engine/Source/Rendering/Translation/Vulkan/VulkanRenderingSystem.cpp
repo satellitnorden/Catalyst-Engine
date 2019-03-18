@@ -1355,7 +1355,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the particle system fragment shader module.
+		//Initialize the path tracing prototype fragment shader module.
 		uint64 size{ 0 };
 		shaderCollection.Read(&size, sizeof(uint64));
 		DynamicArray<byte> data;
@@ -1364,6 +1364,16 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[UNDERLYING(Shader::PathTracingPrototypeFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
+	{
+		//Initialize the path tracing prototype integration fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
+		DynamicArray<byte> data;
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
+		_ShaderModules[UNDERLYING(Shader::PathTracingPrototypeIntegrationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
 	{
 		//Initialize the physical fragment shader module.
 		uint64 size{ 0 };
@@ -3711,7 +3721,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._ShouldClear = false;
 	}
 
-	//Initialize the tone mapping render pass.
+	//Initialize the path tracing prototype render pass.
 	{
 		constexpr uint64 NUMBER_OF_TONE_MAPPING_SUBPASSES{ 1 };
 
@@ -3722,7 +3732,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Screen.
-			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -3767,7 +3777,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -3778,6 +3788,86 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototype)]._ShouldClear = false;
+	}
+
+	//Initialize the path tracing prototype integration render pass.
+	{
+		constexpr uint64 NUMBER_OF_TONE_MAPPING_SUBPASSES{ 1 };
+
+		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL),
+
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::PathTracingPrototypePreviousFrames))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 2> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ 1, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		StaticArray<VkSubpassDescription, NUMBER_OF_TONE_MAPPING_SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(0,
+				nullptr,
+				static_cast<uint32>(colorAttachmentReferences.Size()),
+				colorAttachmentReferences.Data(),
+				nullptr,
+				0,
+				nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 2> attachments
+		{
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::PathTracingPrototypePreviousFrames))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PathTracingPrototypeIntegration)]._ShouldClear = false;
 	}
 
 	//Initialize the tone mapping render pass.
