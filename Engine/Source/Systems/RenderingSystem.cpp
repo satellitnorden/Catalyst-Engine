@@ -1165,6 +1165,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
 	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
+	data._GlobalRandomSeed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 

@@ -10,9 +10,7 @@
 #include "CatalystVectorMath.glsl"
 
 //Preprocessor defines.
-#define AMBIENT_OCCLUSION_SAMPLES (2)
-#define SHADOW_SAMPLES (2)
-#define SPECULAR_IRRADIANCE_SAMPLES (2)
+#define AMBIENT_OCCLUSION_MAXIMUM_RADIUS (10.0f)
 #define GROUND_COLOR (vec3(0.25f, 0.25f, 0.25f))
 #define GROUND_NORMAL (vec3(0.0f, 1.0f, 0.0f))
 #define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f))
@@ -88,8 +86,8 @@ vec3 CalculateLightingAtIntersection(IntersectionData intersectionData, vec3 per
 vec3 CalculateLightingInReflection(IntersectionData intersectionData, vec3 perceivingPosition);
 float CalculateShadowMultiplier(vec3 lightPosition, vec3 origin, float lightRadius);
 vec3 CalculateSpecularIrradiance(vec3 position, vec3 normal, vec3 viewDirection, float roughness);
-vec3 GenerateRandomDirectionInHemisphere(vec3 seed, vec3 normal);
-vec3 GenerateRandomPosition(vec3 seed, float radius);
+vec3 GenerateRandomDirectionInHemisphere(vec3 normal);
+vec3 GenerateRandomPosition(float radius);
 bool IsCloser(vec3 position, vec3 A, vec3 B);
 bool Intersect(vec3 origin, vec3 direction, out IntersectionData intersectionData);
 bool IntersectGround(vec3 origin, vec3 direction, out IntersectionData intersectionData);
@@ -100,21 +98,12 @@ bool IntersectSpheres(vec3 origin, vec3 direction, out IntersectionData intersec
 */
 float CalculateAmbientOcclusion(vec3 position, vec3 normal)
 {
-    //Calculate the occlusion.
-    float occlusion = 0.0f;
+    //Generate a random direction.
+    vec3 direction = GenerateRandomDirectionInHemisphere(normal);
 
-    for (int i = 0; i < AMBIENT_OCCLUSION_SAMPLES; ++i)
-    {
-        //Generate a random direction.
-        vec3 seed = position + normal + gl_FragCoord.xyz * (i + 1);
-        vec3 direction = GenerateRandomDirectionInHemisphere(seed, normal);
-
-        //Intersect in the direction, if it hits this point is occluded.
-        IntersectionData temporary;
-        occlusion += Intersect(position, direction, temporary) ? 1.0f - min(length(position - temporary._Position), 1.0f) : 0.0f;
-    }
-
-    return 1.0f - (occlusion / AMBIENT_OCCLUSION_SAMPLES);
+    //Intersect in the direction, if it hits this point is occluded.
+    IntersectionData temporary;
+    return 1.0f - (Intersect(position, direction, temporary) ? 1.0f - min(length(position - temporary._Position) / AMBIENT_OCCLUSION_MAXIMUM_RADIUS, 1.0f) : 0.0f);
 }
 
 /*
@@ -159,8 +148,8 @@ vec3 CalculateLightingAtIntersection(IntersectionData intersectionData, vec3 per
     }
 
     //Return the lighting.
-    return lighting;
-    //return vec3(CalculateAmbientOcclusion(intersectionData._Position, intersectionData._Normal));
+    //return lighting;
+    return vec3(CalculateAmbientOcclusion(intersectionData._Position, intersectionData._Normal));
 }
 
 /*
@@ -202,29 +191,13 @@ vec3 CalculateLightingInReflection(IntersectionData intersectionData, vec3 perce
 */
 float CalculateShadowMultiplier(vec3 lightPosition, vec3 origin, float lightRadius)
 {
-    float shadowMultiplier = 0.0f;
-
-    for (int i = 0; i < SHADOW_SAMPLES; ++i)
-    {
-        //Calculate the random offset
-        vec3 randomOffset = GenerateRandomPosition(origin * (i + 1) * vec3(gl_FragCoord.xy, 1.0f), lightRadius);
-        vec3 lightDirection = normalize(lightPosition + randomOffset - origin);
-
-        //Calculate the shadow multiplier.
-        IntersectionData temporary;
-        shadowMultiplier += Intersect(origin, lightDirection, temporary) ? 0.0f : 1.0f;
-    }
-
-    return shadowMultiplier / SHADOW_SAMPLES;
-
-    /*
-    //Calculate the light direction.
-    vec3 lightDirection = normalize(lightPosition - origin);
+    //Calculate the random offset
+    vec3 randomOffset = GenerateRandomPosition(lightRadius);
+    vec3 lightDirection = normalize(lightPosition + randomOffset - origin);
 
     //Calculate the shadow multiplier.
     IntersectionData temporary;
     return Intersect(origin, lightDirection, temporary) ? 0.0f : 1.0f;
-    */
 }
 
 /*
@@ -232,41 +205,31 @@ float CalculateShadowMultiplier(vec3 lightPosition, vec3 origin, float lightRadi
 */
 vec3 CalculateSpecularIrradiance(vec3 position, vec3 normal, vec3 viewDirection, float roughness)
 {
-    vec3 specularIrradiance = vec3(0.0f);
+    vec3 randomNormal = GenerateRandomDirectionInHemisphere(normal);
+    vec3 reflectionNormal = mix(normal, randomNormal, roughness * roughness);
+    vec3 reflectionDirection = reflect(-viewDirection, reflectionNormal);
+    IntersectionData reflectionIntersectionData;
 
-    for (int i = 0; i < SPECULAR_IRRADIANCE_SAMPLES; ++i)
+    if (Intersect(position, reflectionDirection, reflectionIntersectionData))
     {
-        vec3 randomNormal = GenerateRandomDirectionInHemisphere(position + normal * vec3(gl_FragCoord.xy, PHI), normal);
-        vec3 reflectionNormal = mix(normal, randomNormal, roughness * roughness);
-        vec3 reflectionDirection = reflect(-viewDirection, reflectionNormal);
-        IntersectionData reflectionIntersectionData;
-
-        if (Intersect(position, reflectionDirection, reflectionIntersectionData))
-        {
-            specularIrradiance += CalculateLightingInReflection(reflectionIntersectionData, position);
-        }
-
-        else
-        {
-            specularIrradiance += SKY_COLOR;
-        }
+        return CalculateLightingInReflection(reflectionIntersectionData, position);
     }
 
-    return specularIrradiance / SPECULAR_IRRADIANCE_SAMPLES;
+    else
+    {
+        return SKY_COLOR;
+    }
 }
 
 /*
 *   Generates a random normalized direction given the seed in the hemisphere defined by the normal.
 */
-vec3 GenerateRandomDirectionInHemisphere(vec3 seed, vec3 normal)
+vec3 GenerateRandomDirectionInHemisphere(vec3 normal)
 {
-    //Vary the seed over time.
-    seed += totalTime;
-
     //Generate the direction.
-    vec3 direction = normalize( vec3(   RandomFloat(seed * EULERS_NUMBER) * 2.0f - 1.0f,
-                                        RandomFloat(seed * PHI) * 2.0f - 1.0f,
-                                        RandomFloat(seed * PI) * 2.0f - 1.0f));
+    vec3 direction = normalize( vec3(   RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * EULERS_NUMBER)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * PHI)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * PI)) * 2.0f - 1.0f));
 
     //Flip the direction so that it fits within the hemisphere defined by the normal.
     direction *= dot(direction, normal) >= 0.0f ? 1.0f : -1.0f;
@@ -278,15 +241,12 @@ vec3 GenerateRandomDirectionInHemisphere(vec3 seed, vec3 normal)
 /*
 *   Generates a random position within the given radius.
 */
-vec3 GenerateRandomPosition(vec3 seed, float radius)
+vec3 GenerateRandomPosition(float radius)
 {
-    //Vary the seed over time.
-    seed += totalTime;
-
     //Generate the position.
-    vec3 position = normalize( vec3(RandomFloat(seed * EULERS_NUMBER) * 2.0f - 1.0f,
-                                    RandomFloat(seed * PHI) * 2.0f - 1.0f,
-                                    RandomFloat(seed * PI) * 2.0f - 1.0f)) * radius;
+    vec3 position = normalize( vec3(    RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * INVERSE_PI)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * SQUARE_ROOT_OF_TWO)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * SQUARE_ROOT_OF_NINETY_NINE)) * 2.0f - 1.0f)) * radius;
 
     //Return the position.
     return position;

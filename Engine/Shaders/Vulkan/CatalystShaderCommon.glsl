@@ -52,10 +52,11 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 448) float deltaTime; //Offset; 448 - Size; 4
     layout (offset = 452) float directionalLightIntensity; //Offset; 452 - Size; 4
     layout (offset = 456) float environmentBlend; //Offset; 456 - Size; 4
-    layout (offset = 460) float totalTime; //Offset; 460 - Size; 4
-    layout (offset = 464) float windSpeed; //Offset; 464 - Size; 4
+    layout (offset = 460) float globalRandomSeed; //Offset; 456 - Size; 4
+    layout (offset = 464) float totalTime; //Offset; 460 - Size; 4
+    layout (offset = 468) float windSpeed; //Offset; 464 - Size; 4
 
-    //Total size; 468
+    //Total size; 472
 };
 
 //The global samplers.
