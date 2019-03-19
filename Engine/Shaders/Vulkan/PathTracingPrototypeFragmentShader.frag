@@ -13,9 +13,10 @@
 #define AMBIENT_OCCLUSION_MAXIMUM_RADIUS (10.0f)
 #define GROUND_COLOR (vec3(0.25f, 0.25f, 0.25f))
 #define GROUND_NORMAL (vec3(0.0f, 1.0f, 0.0f))
-#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 0.5f)
+#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 1.0f)
 #define NUMBER_OF_LIGHTS (4)
 #define NUMBER_OF_SPHERES (5)
+#define LIGHT_INTENSITY (2.5f)
 
 /*
 *   Intersection data struct definition.
@@ -55,20 +56,20 @@ struct Sphere
 //Container for all lights.
 Light LIGHTS[NUMBER_OF_LIGHTS] = Light[NUMBER_OF_LIGHTS]
 (
-    Light(vec3(1.0f, 0.9f, 0.8f), vec3(-5.0f, 5.0f, -5.0f), 1.0f, 2.5f),
-    Light(vec3(1.0f, 0.9f, 0.8f), vec3(5.0f, 5.0f, 5.0f), 1.0f, 2.5f),
-    Light(vec3(0.8f, 0.9f, 1.0f), vec3(-5.0f, 5.0f, 5.0f), 1.0f, 2.5f),
-    Light(vec3(0.8f, 0.9f, 1.0f), vec3(5.0f, 5.0f, -5.0f), 1.0f, 2.5f)
+    Light(vec3(1.0f, 0.9f, 0.8f), vec3(-5.0f, 5.0f, -5.0f), 1.0f, LIGHT_INTENSITY),
+    Light(vec3(1.0f, 0.9f, 0.8f), vec3(5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
+    Light(vec3(0.8f, 0.9f, 1.0f), vec3(-5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
+    Light(vec3(0.8f, 0.9f, 1.0f), vec3(5.0f, 5.0f, -5.0f), 1.0f, LIGHT_INTENSITY)
 );
 
 //Container for all spheres.
 Sphere SPHERES[NUMBER_OF_SPHERES] = Sphere[NUMBER_OF_SPHERES]
 (
     Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 0.5f, 0.0f), 0.1f, 0.5f, 0.9f),
-    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(-4.0f, 1.0f, 0.0f), 0.3f, 1.0f, 0.7f),
-    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(4.0f, 1.5f, 0.0f), 0.5f, 1.5f, 0.5f),
-    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 2.0f, -4.0f), 0.7f, 2.0f, 0.3f),
-    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 2.5f, 4.0f), 0.9f, 2.5f, 0.1f)
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(-4.0f, 1.0f, 0.0f), 0.2f, 1.0f, 0.7f),
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(4.0f, 1.5f, 0.0f), 0.3f, 1.5f, 0.5f),
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 2.0f, -4.0f), 0.4f, 2.0f, 0.3f),
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 2.5f, 4.0f), 0.5f, 2.5f, 0.1f)
 );
 
 //Layout specification.
@@ -119,8 +120,6 @@ vec3 CalculateDiffuseIrradiance(vec3 position, vec3 normal, vec3 viewDirection)
 
     if (Intersect(position, reflectionDirection, reflectionIntersectionData))
     {
-        
-
         return CalculateLightingInReflection(reflectionIntersectionData, position);
     }
 
@@ -139,7 +138,9 @@ vec3 CalculateDirection()
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, 1.0f);
 
     //The direction is from the perceiver to the fragment world position.
-    return normalize(fragmentWorldPosition - perceiverWorldPosition);
+    vec3 direction = normalize(fragmentWorldPosition + GenerateRandomPosition(0.0001f) - perceiverWorldPosition);
+
+    return direction;
 }
 
 /*
@@ -251,9 +252,9 @@ vec3 CalculateSpecularIrradiance(vec3 position, vec3 normal, vec3 viewDirection,
 vec3 GenerateRandomDirectionInHemisphere(vec3 normal)
 {
     //Generate the direction.
-    vec3 direction = normalize( vec3(   RandomFloat(vec3(gl_FragCoord.xy * SQUARE_ROOT_OF_NINETY_NINE, globalRandomSeed * EULERS_NUMBER)) * 2.0f - 1.0f,
-                                        RandomFloat(vec3(gl_FragCoord.xy * SQUARE_ROOT_OF_TWO, globalRandomSeed * PHI)) * 2.0f - 1.0f,
-                                        RandomFloat(vec3(gl_FragCoord.xy * INVERSE_PI, globalRandomSeed * PI)) * 2.0f - 1.0f));
+    vec3 direction = normalize( vec3(   RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * EULERS_NUMBER)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * PHI)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * PI)) * 2.0f - 1.0f));
 
     //Flip the direction so that it fits within the hemisphere defined by the normal.
     direction *= dot(direction, normal) >= 0.0f ? 1.0f : -1.0f;
@@ -268,9 +269,9 @@ vec3 GenerateRandomDirectionInHemisphere(vec3 normal)
 vec3 GenerateRandomPosition(float radius)
 {
     //Generate the position.
-    vec3 position = normalize( vec3(    RandomFloat(vec3(gl_FragCoord.xy * PI, globalRandomSeed * INVERSE_PI)) * 2.0f - 1.0f,
-                                        RandomFloat(vec3(gl_FragCoord.xy * PHI, globalRandomSeed * SQUARE_ROOT_OF_TWO)) * 2.0f - 1.0f,
-                                        RandomFloat(vec3(gl_FragCoord.xy * EULERS_NUMBER, globalRandomSeed * SQUARE_ROOT_OF_NINETY_NINE)) * 2.0f - 1.0f)) * radius;
+    vec3 position = normalize( vec3(    RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * INVERSE_PI)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * SQUARE_ROOT_OF_TWO)) * 2.0f - 1.0f,
+                                        RandomFloat(vec3(gl_FragCoord.xy, globalRandomSeed * SQUARE_ROOT_OF_NINETY_NINE)) * 2.0f - 1.0f)) * radius;
 
     //Return the position.
     return position;
@@ -289,6 +290,9 @@ bool IsCloser(vec3 position, vec3 A, vec3 B)
 */
 bool Intersect(vec3 origin, vec3 direction, out IntersectionData intersectionData)
 {
+    //Move the origin point a tiny bit in the direction to account for false positives.
+    origin += direction * 0.0001f;
+
     //First, intersect the ground.
     IntersectionData groundIntersectionData;
     bool intersectedGround = IntersectGround(origin, direction, groundIntersectionData);
