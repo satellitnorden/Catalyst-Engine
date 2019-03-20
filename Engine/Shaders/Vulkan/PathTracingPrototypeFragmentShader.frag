@@ -13,10 +13,10 @@
 #define AMBIENT_OCCLUSION_MAXIMUM_RADIUS (10.0f)
 #define GROUND_COLOR (vec3(0.25f, 0.25f, 0.25f))
 #define GROUND_NORMAL (vec3(0.0f, 1.0f, 0.0f))
-#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 1.0f)
-#define NUMBER_OF_LIGHTS (4)
-#define NUMBER_OF_SPHERES (5)
-#define LIGHT_INTENSITY (2.5f)
+#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 0.0f)
+#define NUMBER_OF_LIGHTS (1)
+#define NUMBER_OF_SPHERES (25)
+#define LIGHT_INTENSITY (12.5f)
 
 /*
 *   Intersection data struct definition.
@@ -56,20 +56,49 @@ struct Sphere
 //Container for all lights.
 Light LIGHTS[NUMBER_OF_LIGHTS] = Light[NUMBER_OF_LIGHTS]
 (
-    Light(vec3(1.0f, 0.9f, 0.8f), vec3(-5.0f, 5.0f, -5.0f), 1.0f, LIGHT_INTENSITY),
-    Light(vec3(1.0f, 0.9f, 0.8f), vec3(5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
-    Light(vec3(0.8f, 0.9f, 1.0f), vec3(-5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
-    Light(vec3(0.8f, 0.9f, 1.0f), vec3(5.0f, 5.0f, -5.0f), 1.0f, LIGHT_INTENSITY)
+    Light(vec3(1.0f, 0.9f, 0.8f), vec3(0.0f, 5.0f, 0.0f), 1.0f, LIGHT_INTENSITY)
+    //Light(vec3(1.0f, 0.9f, 0.8f), vec3(5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
+    //Light(vec3(0.8f, 0.9f, 1.0f), vec3(-5.0f, 5.0f, 5.0f), 1.0f, LIGHT_INTENSITY),
+    //Light(vec3(0.8f, 0.9f, 1.0f), vec3(5.0f, 5.0f, -5.0f), 1.0f, LIGHT_INTENSITY)
 );
 
 //Container for all spheres.
 Sphere SPHERES[NUMBER_OF_SPHERES] = Sphere[NUMBER_OF_SPHERES]
 (
-    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 0.5f, 0.0f), 0.1f, 0.5f, 0.9f),
-    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(-4.0f, 1.0f, 0.0f), 0.2f, 1.0f, 0.7f),
-    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(4.0f, 1.5f, 0.0f), 0.3f, 1.5f, 0.5f),
-    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 2.0f, -4.0f), 0.4f, 2.0f, 0.3f),
-    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 2.5f, 4.0f), 0.5f, 2.5f, 0.1f)
+    //Yellow spheres.
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(-5.0f, 1.0f, -5.0f), 0.1f, 1.0f, 0.9f),
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(-2.5f, 1.0f, -5.0f), 0.3f, 1.0f, 0.7f),
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, -5.0f), 0.5f, 1.0f, 0.5f),
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(2.5f, 1.0f, -5.0f), 0.7f, 1.0f, 0.3f),
+    Sphere(vec3(1.0f, 1.0f, 0.0f), vec3(5.0f, 1.0f, -5.0f), 0.9f, 1.0f, 0.1f),
+
+    //Red spheres.
+    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(-5.0f, 1.0f, -2.5f), 0.1f, 1.0f, 0.9f),
+    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(-2.5f, 1.0f, -2.5f), 0.3f, 1.0f, 0.7f),
+    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, -2.5f), 0.5f, 1.0f, 0.5f),
+    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(2.5f, 1.0f, -2.5f), 0.7f, 1.0f, 0.3f),
+    Sphere(vec3(1.0f, 0.0f, 0.0f), vec3(5.0f, 1.0f, -2.5f), 0.9f, 1.0f, 0.1f),
+
+    //Green spheres.
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(-5.0f, 1.0f, 0.0f), 0.1f, 1.0f, 0.9f),
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(-2.5f, 1.0f, 0.0f), 0.3f, 1.0f, 0.7f),
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 0.5f),
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(2.5f, 1.0f, 0.0f), 0.7f, 1.0f, 0.3f),
+    Sphere(vec3(0.0f, 1.0f, 0.0f), vec3(5.0f, 1.0f, 0.0f), 0.9f, 1.0f, 0.1f),
+
+    //Blue spheres.
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(-5.0f, 1.0f, 2.5f), 0.1f, 1.0f, 0.9f),
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(-2.5f, 1.0f, 2.5f), 0.3f, 1.0f, 0.7f),
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 2.5f), 0.5f, 1.0f, 0.5f),
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(2.5f, 1.0f, 2.5f), 0.7f, 1.0f, 0.3f),
+    Sphere(vec3(0.0f, 0.0f, 1.0f), vec3(5.0f, 1.0f, 2.5f), 0.9f, 1.0f, 0.1f),
+
+    //Teal spheres.
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(-5.0f, 1.0f, 5.0f), 0.1f, 1.0f, 0.9f),
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(-2.5f, 1.0f, 5.0f), 0.3f, 1.0f, 0.7f),
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 1.0f, 5.0f), 0.5f, 1.0f, 0.5f),
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(2.5f, 1.0f, 5.0f), 0.7f, 1.0f, 0.3f),
+    Sphere(vec3(0.0f, 1.0f, 1.0f), vec3(5.0f, 1.0f, 5.0f), 0.9f, 1.0f, 0.1f)
 );
 
 //Layout specification.
@@ -291,7 +320,7 @@ bool IsCloser(vec3 position, vec3 A, vec3 B)
 bool Intersect(vec3 origin, vec3 direction, out IntersectionData intersectionData)
 {
     //Move the origin point a tiny bit in the direction to account for false positives.
-    origin += direction * 0.0001f;
+    origin += direction * 0.001f;
 
     //First, intersect the ground.
     IntersectionData groundIntersectionData;
