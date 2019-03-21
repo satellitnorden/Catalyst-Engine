@@ -142,9 +142,24 @@ void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRIC
 	UpdateGlobalRenderData();
 
 	//Render all render passes.
-	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	if (RenderOverrideRenderPass::Instance->HasOverride())
 	{
-		_RenderPass->RenderAsynchronous();
+		RenderOverrideRenderPass::Instance->RenderAsynchronous();
+
+		for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+		{
+			renderPass->SetIncludeInRender(false);
+		}
+	}
+
+	else
+#endif
+	{
+		for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+		{
+			renderPass->RenderAsynchronous();
+		}
 	}
 
 	//Post-update the current rendering system synchronously.

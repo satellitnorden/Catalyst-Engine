@@ -240,8 +240,6 @@ public:
 	*/
 	RESTRICTED CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
 
-protected:
-
 	/*
 	*	Sets the main stage.
 	*/

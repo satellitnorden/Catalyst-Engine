@@ -21,6 +21,14 @@ public:
 	RenderOverrideRenderPass() NOEXCEPT;
 
 	/*
+	*	Returns if there is an override.
+	*/
+	bool HasOverride() const NOEXCEPT
+	{
+		return _Texture != EMPTY_HANDLE;
+	}
+
+	/*
 	*	Sets the texture.
 	*/
 	void SetTexture(const Texture2DHandle texture) NOEXCEPT;
