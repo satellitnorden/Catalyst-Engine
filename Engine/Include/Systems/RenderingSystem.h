@@ -20,6 +20,7 @@
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Engine/Resolution.h>
+#include <Rendering/Engine/TextureData.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
@@ -37,7 +38,6 @@ class PhysicalMaterialData;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
-class TextureData;
 class TreeVegetationMaterial;
 class TreeVegetationMaterialData;
 class TreeVegetationModel;

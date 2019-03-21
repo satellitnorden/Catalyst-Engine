@@ -4018,6 +4018,78 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._NumberOfAttachments = 1;
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._ShouldClear = false;
 	}
+
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	//Initialize the render override render pass.
+	{
+		constexpr uint64 NUMBER_OF_SUBPASSES{ 1 };
+
+		constexpr uint32 SCREEN_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_UNDEFINED,
+															VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCREEN_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		StaticArray<VkSubpassDescription, NUMBER_OF_SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			nullptr,
+																			0,
+																			nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffers.
+		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.Reserve(swapchainImages.Size());
+
+		for (VkImageView swapchainImage : swapchainImages)
+		{
+			VulkanFramebufferCreationParameters framebufferParameters;
+
+			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass->Get();
+
+			framebufferParameters._AttachmentCount = 1;
+			framebufferParameters._Attachments = &swapchainImage;
+			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+
+			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		}
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._ShouldClear = false;
+	}
+#endif
 }
 
 /*

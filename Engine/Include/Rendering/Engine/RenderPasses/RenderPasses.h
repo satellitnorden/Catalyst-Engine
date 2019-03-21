@@ -60,6 +60,9 @@
 #include <Rendering/Engine/RenderPasses/PathTracingPrototypeRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PathTracingPrototypeIntegrationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PointLightRenderPass.h>
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+#include <Rendering/Engine/RenderPasses/RenderOverrideRenderPass.h>
+#endif
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>

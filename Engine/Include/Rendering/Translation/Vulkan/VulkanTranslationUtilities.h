@@ -158,6 +158,13 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AntiAliasing);
 			}
 
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+			case RenderPassMainStage::RenderOverride:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::RenderOverride);
+			}
+#endif
+
 			default:
 			{
 #if defined(CATALYST_CONFIGURATION_DEBUG)

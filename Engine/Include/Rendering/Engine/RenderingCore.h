@@ -45,6 +45,11 @@ using TextureCubeHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
 
 /*
+*	Definition of an empty handle.
+*/
+constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
+
+/*
 *	Enumeration covering all render pass main stages.
 */
 enum class RenderPassMainStage : uint8
@@ -78,7 +83,9 @@ enum class RenderPassMainStage : uint8
 	PathTracingPrototypeIntegration,
 	ToneMapping,
 	AntiAliasing,
-
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	RenderOverride,
+#endif
 	NumberOfRenderPassMainStages
 };
 
@@ -201,6 +208,11 @@ enum class RenderPassSubStage : uint8
 
 	//Anti-aliasing main stage.
 	AntiAliasing,
+
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	//Render override main stage.
+	RenderOverride,
+#endif
 
 	NumberOfRenderPassSubStages
 };

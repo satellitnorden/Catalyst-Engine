@@ -95,4 +95,44 @@ public:
 		return Vector3<float>::DotProduct(pointOnPlane - pointOnLine, normal) / Vector3<float>::DotProduct(line, normal) * line + pointOnLine;
 	}
 
+	/*
+	*   Performs a line/sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
+	*/
+	constexpr static NO_DISCARD bool LineSphereIntersection(	const Vector3<float> &lineOrigin,
+																const Vector3<float> &lineDirection,
+																const Vector3<float> &spherePosition,
+																const float sphereRadius,
+																Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+	{
+		const Vector3<float> L{ lineOrigin - spherePosition };
+		float B = Vector3<float>::DotProduct(lineDirection, L) * 2.0f;
+		float C = Vector3<float>::DotProduct(L, L) - sphereRadius * sphereRadius;
+
+		float discriminant = B * B - 4.0f * C;
+
+		if (discriminant <= 0.0f)
+		{
+			return false;
+		}
+
+		else
+		{
+			discriminant = sqrt(discriminant);
+		}
+
+		float T0 = -B + discriminant;
+		float T1 = -B - discriminant;
+
+		if (T0 <= 0.0f && T1 <= 0.0f)
+		{
+			return false;
+		}
+
+		float T = T0 < T1 ? T0 / 2.0f : T1 / 2.0f;
+
+		*intersectionPoint = lineOrigin + T * lineDirection;
+
+		return true;
+	}
+
 };

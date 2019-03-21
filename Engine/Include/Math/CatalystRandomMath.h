@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 class CatalystRandomMath final
 {
 
@@ -41,6 +44,14 @@ public:
 	FORCE_INLINE static NO_DISCARD bool RandomChance(const float chance) NOEXCEPT
 	{
 		return chance > RandomFloatInRange(0.0f, 1.0f);
+	}
+
+	/*
+	*	Given a range, returns a vector with each three elements randomly generated within that range.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float> RandomVector3InRange(const float minimum, const float maximum) NOEXCEPT
+	{
+		return Vector3<float>(RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum));
 	}
 
 };

@@ -901,6 +901,9 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::PathTracingPrototypeIntegration)] = PathTracingPrototypeIntegrationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	_RenderPasses[UNDERLYING(RenderPassSubStage::RenderOverride)] = RenderOverrideRenderPass::Instance.Get();
+#endif
 }
 
 /*

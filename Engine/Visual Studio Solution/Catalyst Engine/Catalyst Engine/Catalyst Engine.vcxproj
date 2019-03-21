@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_ENABLE_RENDER_OVERRIDE;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_OPENGL;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -270,6 +270,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PathTracingPrototypeIntegrationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PathTracingPrototypeRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PointLightRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPasses.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h" />
@@ -460,6 +461,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PathTracingPrototypeIntegrationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PathTracingPrototypeRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PointLightRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp" />

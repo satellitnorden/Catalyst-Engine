@@ -1209,6 +1209,9 @@
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1611,6 +1614,9 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PathTracingPrototypeIntegrationRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>

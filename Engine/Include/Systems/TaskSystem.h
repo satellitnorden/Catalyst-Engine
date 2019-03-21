@@ -35,6 +35,14 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Returns the number of task executors.
+	*/
+	uint32 GetNumberOfTaskExecutors() const NOEXCEPT
+	{
+		return _NumberOfTaskExecutors;
+	}
+
+	/*
 	*	Executes a task.
 	*/
 	void ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT;
