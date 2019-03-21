@@ -1355,6 +1355,16 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the passthrough fragment shader module.
+		uint64 size{ 0 };
+		shaderCollection.Read(&size, sizeof(uint64));
+		DynamicArray<byte> data;
+		data.UpsizeFast(size);
+		shaderCollection.Read(data.Data(), size);
+		_ShaderModules[UNDERLYING(Shader::PassthroughFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the path tracing prototype fragment shader module.
 		uint64 size{ 0 };
 		shaderCollection.Read(&size, sizeof(uint64));

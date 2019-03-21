@@ -424,6 +424,7 @@ enum class Shader : uint8
 	ParticleSystemFragment,
 	ParticleSystemGeometry,
 	ParticleSystemVertex,
+	PassthroughFragment,
 	PathTracingPrototypeFragment,
 	PathTracingPrototypeIntegrationFragment,
 	PhysicalFragment,

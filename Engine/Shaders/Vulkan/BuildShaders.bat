@@ -78,6 +78,7 @@ glslangValidator.exe -V OutlineFragmentShader.frag -o 					OutlineFragmentShader
 glslangValidator.exe -V ParticleSystemFragmentShader.frag -o 				ParticleSystemFragmentShader.spv
 glslangValidator.exe -V ParticleSystemGeometryShader.geom -o 				ParticleSystemGeometryShader.spv
 glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVertexShader.spv
+glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PathTracingPrototypeIntegrationFragmentShader.frag -o 		PathTracingPrototypeIntegrationFragmentShader.spv
 glslangValidator.exe -V PathTracingPrototypeFragmentShader.frag -o 			PathTracingPrototypeFragmentShader.spv
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
@@ -102,6 +103,7 @@ VulkanShaderBuilder.exe
 
 
 Copy CatalystShaderCollection.csc ..\..\..\..\Clairvoyant\Resources\Final\CatalystShaderCollection.csc
+Copy CatalystShaderCollection.csc ..\..\..\..\Path-Tracing-Prototype\Resources\Final\CatalystShaderCollection.csc
 Copy CatalystShaderCollection.csc ..\..\..\..\Playground\Resources\Final\CatalystShaderCollection.csc
 
 pause
