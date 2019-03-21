@@ -25,7 +25,7 @@ public:
 	~PoolAllocator() NOEXCEPT
 	{
 		//Free the memory.
-		_Memory = MemoryUtilities::FreeMemory(_Memory);
+		MemoryUtilities::FreeMemory(_Memory);
 	}
 
 	/*
