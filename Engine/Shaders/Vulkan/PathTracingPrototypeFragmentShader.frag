@@ -13,7 +13,7 @@
 #define AMBIENT_OCCLUSION_MAXIMUM_RADIUS (10.0f)
 #define GROUND_COLOR (vec3(0.25f, 0.25f, 0.25f))
 #define GROUND_NORMAL (vec3(0.0f, 1.0f, 0.0f))
-#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 0.0f)
+#define SKY_COLOR (vec3(0.8f, 0.9f, 1.0f) * 1.0f)
 #define NUMBER_OF_LIGHTS (1)
 #define NUMBER_OF_SPHERES (25)
 #define LIGHT_INTENSITY (12.5f)

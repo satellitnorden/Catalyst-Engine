@@ -136,6 +136,7 @@
     <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector3.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector4.h" />
+    <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />
