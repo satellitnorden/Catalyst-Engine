@@ -117,7 +117,7 @@ public:
 
 		else
 		{
-			discriminant = sqrt(discriminant);
+			discriminant = CatalystBaseMath::SquareRoot(discriminant);
 		}
 
 		float T0 = -B + discriminant;
@@ -128,11 +128,19 @@ public:
 			return false;
 		}
 
-		float T = T0 < T1 ? T0 / 2.0f : T1 / 2.0f;
+		float T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
 
 		*intersectionPoint = lineOrigin + T * lineDirection;
 
 		return true;
+	}
+
+	/*
+	*	Returns whether point A is closer to the given position than B or not.
+	*/
+	constexpr static NO_DISCARD bool IsCloser(const Vector3<float> &position, const Vector3<float> &A, const Vector3<float> &B) NOEXCEPT
+	{
+		return Vector3<float>::LengthSquared(position - A) < Vector3<float>::LengthSquared(position - B);
 	}
 
 };
