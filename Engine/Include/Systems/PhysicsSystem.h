@@ -5,9 +5,11 @@
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Math.
+#include <Math/Geometry/Ray.h>
+
 //Physics.
 #include <Physics/Native/PhysicsCore.h>
-#include <Physics/Native/Ray.h>
 #include <Physics/Native/RayCastResult.h>
 
 class PhysicsSystem final

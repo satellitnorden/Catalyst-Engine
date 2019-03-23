@@ -1104,9 +1104,6 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\Ray.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
@@ -1226,6 +1223,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\General\Vector4.h">
       <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Plane.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Ray.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Sphere.h">
+      <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

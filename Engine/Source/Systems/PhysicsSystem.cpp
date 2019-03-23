@@ -88,7 +88,7 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 	{
 		const AxisAlignedBoundingBox &box{ component->_WorldSpaceAxisAlignedBoundingBox };
 
-		if (CatalystVectorMath::LineBoxIntersection(box, ray))
+		if (CatalystVectorMath::RayBoxIntersection(ray, box))
 		{
 			result->_HasHit = true;
 			result->_HitPosition = AxisAlignedBoundingBox::CalculateCenter(box);
@@ -110,8 +110,9 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 void PhysicsSystem::CastRayOcean(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
 {
 	//Just do a simple line-plane intersection.
-	result->_HasHit = true;
-	result->_HitPosition = CatalystVectorMath::LinePlaneIntersection(Vector3<float>(0.0f, GetOceanHeight(), 0.0f), ray._Origin, Vector3<float>::UP, ray._Direction);
+	 result->_HasHit = CatalystVectorMath::RayPlaneIntersection(ray,
+																Plane(Vector3<float>(0.0f, GetOceanHeight(), 0.0f), Vector3<float>::UP),
+																&result->_HitPosition);
 	result->_HitEntity = nullptr;
 }
 

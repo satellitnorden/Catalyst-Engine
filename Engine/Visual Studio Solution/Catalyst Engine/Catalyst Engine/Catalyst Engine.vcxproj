@@ -133,6 +133,9 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Plane.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Ray.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Sphere.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />
@@ -153,7 +156,6 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h" />
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\Ray.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h" />

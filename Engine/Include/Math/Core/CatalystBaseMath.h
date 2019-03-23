@@ -11,6 +11,7 @@ namespace CatalystBaseMathConstants
 	constexpr float DOUBLE_PI{ PI * 2.0f };
 	constexpr float HALF_PI{ PI * 0.5f };
 	constexpr float QUARTER_PI{ PI * 0.25f };
+	constexpr float EIGHTH_PI{ PI * 0.125f };
 	constexpr float INVERSE_PI{ 1.0f / PI };
 	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
 }

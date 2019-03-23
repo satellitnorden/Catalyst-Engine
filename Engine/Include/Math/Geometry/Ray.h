@@ -17,17 +17,13 @@ public:
 	//The direction.
 	Vector3<float> _Direction;
 
-	//The distance.
-	float _Distance;
-
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection, const float initialDistance) NOEXCEPT
+	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection) NOEXCEPT
 		:
 		_Origin(initalOrigin),
-		_Direction(initialDirection),
-		_Distance(initialDistance)
+		_Direction(initialDirection)
 	{
 
 	}
@@ -37,8 +33,7 @@ public:
 	*/
 	static NO_DISCARD bool IsValid(const Ray &ray) NOEXCEPT
 	{
-		return	ray._Direction.IsNormalized()
-				&& ray._Distance != 0.0f;
+		return ray._Direction.IsNormalized();
 	}
 
 };

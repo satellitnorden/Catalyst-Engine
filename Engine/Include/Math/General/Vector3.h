@@ -258,6 +258,14 @@ public:
 	}
 
 	/*
+	*	Negative operator overload.
+	*/
+	FORCE_INLINE constexpr Vector3 operator-() const NOEXCEPT
+	{
+		return *this * -1.0f;
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	Type operator[](const uint64 index) const NOEXCEPT

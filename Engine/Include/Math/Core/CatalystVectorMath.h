@@ -9,9 +9,9 @@
 #include <Math/General/Vector2.h>
 #include <Math/General/Vector3.h>
 #include <Math/General/Vector4.h>
-
-//Physics.
-#include <Physics/Native/Ray.h>
+#include <Math/Geometry/Plane.h>
+#include <Math/Geometry/Ray.h>
+#include <Math/Geometry/Sphere.h>
 
 class CatalystVectorMath final
 {
@@ -45,7 +45,7 @@ public:
 	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
-	constexpr static NO_DISCARD bool BoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool BoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
 	{
 		return	box1._Minimum._X <= box2._Maximum._X
 				&& box1._Maximum._X >= box2._Minimum._X
@@ -56,9 +56,9 @@ public:
 	}
 
 	/*
-	*	Performs a line-box intersection and returns whether or not there was an intersection.
+	*	Performs a ray-box intersection and returns whether or not there was an intersection.
 	*/
-	constexpr static NO_DISCARD bool LineBoxIntersection(const AxisAlignedBoundingBox &box, const Ray &ray) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(const Ray &ray, const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
 		//Pre-calculate the inverse direction of the ray to avoid costly divisions.
 		const Vector3<float> inverseDirection{ Vector3<float>(1.0f) / ray._Direction };
@@ -88,25 +88,35 @@ public:
 	}
 
 	/*
-	*	Performs a line-plane intersection and returns the intersection point.
+	*	Performs a ray-plane intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
 	*/
-	constexpr static NO_DISCARD Vector3<float> LinePlaneIntersection(const Vector3<float> &pointOnPlane, const Vector3<float> pointOnLine, const Vector3<float> &normal, const Vector3<float> &line) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool RayPlaneIntersection(	const Ray &ray,
+																		const Plane &plane,
+																		Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
 	{
-		return Vector3<float>::DotProduct(pointOnPlane - pointOnLine, normal) / Vector3<float>::DotProduct(line, normal) * line + pointOnLine;
+		if (Vector3<float>::DotProduct(ray._Direction, plane._Normal) >= 0.0f)
+		{
+			return false;
+		}
+
+		else
+		{
+			*intersectionPoint = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal) * ray._Direction + ray._Origin;
+
+			return true;
+		}
 	}
 
 	/*
-	*   Performs a line/sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
+	*   Performs a ray-sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
 	*/
-	constexpr static NO_DISCARD bool LineSphereIntersection(	const Vector3<float> &lineOrigin,
-																const Vector3<float> &lineDirection,
-																const Vector3<float> &spherePosition,
-																const float sphereRadius,
-																Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool RaySphereIntersection(	const Ray &ray,
+																			const Sphere &sphere,
+																			Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
 	{
-		const Vector3<float> L{ lineOrigin - spherePosition };
-		float B = Vector3<float>::DotProduct(lineDirection, L) * 2.0f;
-		float C = Vector3<float>::DotProduct(L, L) - sphereRadius * sphereRadius;
+		const Vector3<float> L{ ray._Origin - sphere._Position };
+		float B = Vector3<float>::DotProduct(ray._Direction, L) * 2.0f;
+		float C = Vector3<float>::DotProduct(L, L) - sphere._Radius * sphere._Radius;
 
 		float discriminant = B * B - 4.0f * C;
 
@@ -130,7 +140,7 @@ public:
 
 		float T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
 
-		*intersectionPoint = lineOrigin + T * lineDirection;
+		*intersectionPoint = ray._Origin + T * ray._Direction;
 
 		return true;
 	}
@@ -138,7 +148,7 @@ public:
 	/*
 	*	Returns whether point A is closer to the given position than B or not.
 	*/
-	constexpr static NO_DISCARD bool IsCloser(const Vector3<float> &position, const Vector3<float> &A, const Vector3<float> &B) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool IsCloser(const Vector3<float> &position, const Vector3<float> &A, const Vector3<float> &B) NOEXCEPT
 	{
 		return Vector3<float>::LengthSquared(position - A) < Vector3<float>::LengthSquared(position - B);
 	}
