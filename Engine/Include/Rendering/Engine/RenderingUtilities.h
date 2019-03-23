@@ -7,9 +7,9 @@
 #include <Components/Core/ComponentManager.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Matrix4.h>
-#include <Math/Vector4.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Matrix4.h>
+#include <Math/General/Vector4.h>
 
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>

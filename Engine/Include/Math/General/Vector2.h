@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 template <typename Type>
 class Vector2 final

@@ -1,8 +1,8 @@
 //Header file.
-#include <Math/Matrix3.h>
+#include <Math/General/Matrix3.h>
 
 //Math.
-#include <Math/Matrix4.h>
+#include <Math/General/Matrix4.h>
 
 /*
 *	Default constructor.

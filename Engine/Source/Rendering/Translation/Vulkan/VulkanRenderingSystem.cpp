@@ -15,7 +15,7 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>

@@ -5,9 +5,9 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/CatalystVectorMath.h>
-#include <Math/Vector3.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/CatalystVectorMath.h>
+#include <Math/General/Vector3.h>
 
 //Multithreading.
 #include <Multithreading/ScopedReadLock.h>

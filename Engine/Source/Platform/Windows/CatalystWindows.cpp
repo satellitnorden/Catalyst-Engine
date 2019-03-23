@@ -14,7 +14,7 @@
 #include <Input/MouseState.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 //Windows.
 #include <tchar.h>

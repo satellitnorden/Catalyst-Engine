@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
-#include <Math/GridPoint2.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/GridPoint2.h>
 
 class VegetationPatchInformation final
 {

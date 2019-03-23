@@ -6,7 +6,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
-#include <Math/GridPoint2.h>
+#include <Math/Geometry/GridPoint2.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>

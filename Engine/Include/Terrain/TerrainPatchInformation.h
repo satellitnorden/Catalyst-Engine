@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>

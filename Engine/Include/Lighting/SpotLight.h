@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Vector3.h>
+#include <Math/General/Vector3.h>
 
 class SpotLight final
 {

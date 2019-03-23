@@ -286,6 +286,21 @@
     <Filter Include="Core\Source\Essential">
       <UniqueIdentifier>{d764f9bc-79ba-47a2-8573-c8a1dbad8377}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Include\Core">
+      <UniqueIdentifier>{85cc6f02-8feb-47c6-bc03-33fe775d928e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Include\Noise">
+      <UniqueIdentifier>{fad6cd64-fa85-4532-b125-fb1e6765b991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Include\Geometry">
+      <UniqueIdentifier>{b1de18ba-3626-4752-8001-e5df0b0456be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Include\General">
+      <UniqueIdentifier>{8772f6a6-e1d4-40d4-bd58-6a805ccc87f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Source\General">
+      <UniqueIdentifier>{fa591c65-ba7b-446c-9b19-85ced32957c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -314,21 +329,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h">
       <Filter>Managers\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Matrix3.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Matrix4.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Vector2.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Vector3.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Vector4.h">
-      <Filter>Math\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h">
       <Filter>Multithreading\Include</Filter>
@@ -630,12 +630,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
@@ -713,12 +707,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
       <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\GridPoint2.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\GridPoint3.h">
-      <Filter>Math\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
@@ -864,12 +852,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanErrorReporting.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\ValueNoise.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -878,9 +860,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h">
-      <Filter>Math\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowHorizontalBlurRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
@@ -908,12 +887,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXCPUDispatcher.h">
       <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\SimplexNoise.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Matrix2.h">
-      <Filter>Math\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h">
       <Filter>Core\Include\General</Filter>
@@ -1119,12 +1092,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\CatalystRandomMath.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
@@ -1212,6 +1179,54 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystVectorMath.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h">
+      <Filter>Math\Include\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h">
+      <Filter>Math\Include\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h">
+      <Filter>Math\Include\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix2.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix3.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Vector2.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Vector3.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Vector4.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1219,12 +1234,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
       <Filter>Managers\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp">
-      <Filter>Math\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp">
-      <Filter>Math\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\ResourceLoader.cpp">
       <Filter>Resources\Source</Filter>
@@ -1619,13 +1628,19 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Math\General\Matrix3.cpp">
+      <Filter>Math\Source\General</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Math\General\Matrix4.cpp">
+      <Filter>Math\Source\General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Include\Math\Vector3.inl">
-      <Filter>Math\Include</Filter>
-    </None>
     <None Include="..\..\..\Include\Systems\EntitySystem.inl">
       <Filter>Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\Include\Math\General\Vector3.inl">
+      <Filter>Math\Include\General</Filter>
     </None>
   </ItemGroup>
 </Project>

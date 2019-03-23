@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Vector2.h>
-#include <Math/Vector3.h>
+#include <Math/General/Vector2.h>
+#include <Math/General/Vector3.h>
 
 	//Enumeration covering all different particle system properties.
 enum class ParticleSystemProperty : uint8

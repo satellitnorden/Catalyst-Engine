@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Vector4.h>
+#include <Math/General/Vector4.h>
 
 //Forward declarations.
 class Matrix3;

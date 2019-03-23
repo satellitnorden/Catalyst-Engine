@@ -4,11 +4,11 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector2.h>
-#include <Math/Vector3.h>
-#include <Math/Vector4.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector2.h>
+#include <Math/General/Vector3.h>
+#include <Math/General/Vector4.h>
 
 //Physics.
 #include <Physics/Native/Ray.h>

@@ -5,10 +5,10 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/CatalystVectorMath.h>
-#include <Math/Matrix4.h>
-#include <Math/Vector3.h>
-#include <Math/Vector4.h>
+#include <Math/Core/CatalystVectorMath.h>
+#include <Math/General/Matrix4.h>
+#include <Math/General/Vector3.h>
+#include <Math/General/Vector4.h>
 
 //Multithreading.
 #include <Multithreading/ScopedReadLock.h>

@@ -8,7 +8,7 @@
 #include <Entities/Types/Entity.h>
 
 //Math.
-#include <Math/GridPoint3.h>
+#include <Math/Geometry/GridPoint3.h>
 
 class EntityThreeDimensionalGridPoint final
 {

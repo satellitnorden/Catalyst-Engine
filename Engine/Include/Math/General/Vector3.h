@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector2.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector2.h>
 
 template <typename Type>
 class Vector3 final
@@ -546,4 +546,4 @@ public:
 };
 
 //Inline functions.
-#include <Math/Vector3.inl>
+#include <Math/General/Vector3.inl>

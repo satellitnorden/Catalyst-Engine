@@ -11,9 +11,9 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
-#include <Math/CatalystBaseMath.h>
-#include <Math/CatalystRandomMath.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
 #include <Rendering/Engine/CommonEnvironmentMaterialData.h>

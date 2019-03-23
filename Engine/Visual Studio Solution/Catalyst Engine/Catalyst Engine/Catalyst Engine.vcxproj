@@ -120,22 +120,22 @@
     <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
-    <ClInclude Include="..\..\..\Include\Math\AxisAlignedBoundingBox.h" />
-    <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\CatalystPhysicsMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\CatalystRandomMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\GridPoint2.h" />
-    <ClInclude Include="..\..\..\Include\Math\GridPoint3.h" />
-    <ClInclude Include="..\..\..\Include\Math\Matrix2.h" />
-    <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
-    <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
-    <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h" />
-    <ClInclude Include="..\..\..\Include\Math\SimplexNoise.h" />
-    <ClInclude Include="..\..\..\Include\Math\ValueNoise.h" />
-    <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
-    <ClInclude Include="..\..\..\Include\Math\Vector3.h" />
-    <ClInclude Include="..\..\..\Include\Math\Vector4.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystVectorMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix2.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix3.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Vector2.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Vector3.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Vector4.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h" />
+    <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h" />
+    <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
+    <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
@@ -370,8 +370,8 @@
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\..\Source\Math\General\Matrix3.cpp" />
+    <ClCompile Include="..\..\..\Source\Math\General\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
@@ -493,7 +493,7 @@
     <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Include\Math\Vector3.inl" />
+    <None Include="..\..\..\Include\Math\General\Vector3.inl" />
     <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

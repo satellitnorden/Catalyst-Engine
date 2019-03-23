@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Math.
-#include <Math/Vector4.h>
+#include <Math/General/Vector4.h>
 
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>

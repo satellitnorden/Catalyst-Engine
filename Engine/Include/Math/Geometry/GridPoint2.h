@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector3.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector3.h>
 
 class GridPoint2 final
 {

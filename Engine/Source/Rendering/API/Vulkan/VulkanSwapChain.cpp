@@ -6,7 +6,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>

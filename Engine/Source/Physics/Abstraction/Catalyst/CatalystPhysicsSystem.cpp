@@ -6,7 +6,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Math.
-#include <Math/CatalystPhysicsMath.h>
+#include <Math/Core/CatalystPhysicsMath.h>
 
 //Systems.
 #include <Systems/TerrainSystem.h>

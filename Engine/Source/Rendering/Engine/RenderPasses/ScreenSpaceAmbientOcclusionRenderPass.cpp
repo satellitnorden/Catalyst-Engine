@@ -5,7 +5,7 @@
 #include <Managers/RenderingConfigurationManager.h>
 
 //Math.
-#include <Math/CatalystRandomMath.h>
+#include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>

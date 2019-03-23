@@ -1,10 +1,10 @@
 //Header file.
-#include <Math/Matrix4.h>
+#include <Math/General/Matrix4.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Matrix3.h>
-#include <Math/Vector3.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Matrix3.h>
+#include <Math/General/Vector3.h>
 
 /*
 *	Calculates a look at matrix.

@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
-#include <Math/Matrix4.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/General/Matrix4.h>
 
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);

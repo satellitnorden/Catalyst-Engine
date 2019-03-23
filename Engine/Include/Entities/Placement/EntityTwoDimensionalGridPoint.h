@@ -8,7 +8,7 @@
 #include <Entities/Types/Entity.h>
 
 //Math.
-#include <Math/GridPoint2.h>
+#include <Math/Geometry/GridPoint2.h>
 
 class EntityTwoDimensionalGridPoint final
 {

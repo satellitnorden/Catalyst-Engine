@@ -7,7 +7,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 namespace HashAlgorithms
 {

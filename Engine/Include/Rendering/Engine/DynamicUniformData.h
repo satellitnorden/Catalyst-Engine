@@ -5,8 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/Matrix4.h>
-#include <Math/Vector4.h>
+#include <Math/General/Matrix4.h>
+#include <Math/General/Vector4.h>
 
 class DynamicUniformData final
 {

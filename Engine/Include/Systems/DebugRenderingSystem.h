@@ -7,8 +7,8 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
-#include <Math/Vector4.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/General/Vector4.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>

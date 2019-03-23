@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Matrix3.h>
+#include <Math/General/Matrix3.h>
 
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>

@@ -5,8 +5,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector2.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector2.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>

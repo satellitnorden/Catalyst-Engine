@@ -8,7 +8,7 @@
 #include <Entities/Creation/ParticleSystemInitializationData.h>
 
 //Math.
-#include <Math/CatalystRandomMath.h>
+#include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>

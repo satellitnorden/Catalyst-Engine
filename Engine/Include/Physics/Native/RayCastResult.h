@@ -7,7 +7,7 @@
 #include <Entities/Types/Entity.h>
 
 //Math.
-#include <Math/Vector3.h>
+#include <Math/General/Vector3.h>
 
 class RayCastResult final
 {

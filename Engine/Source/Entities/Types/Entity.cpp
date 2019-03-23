@@ -13,7 +13,7 @@
 #include <Entities/Types/SoundEntity.h>
 
 //Math.
-#include <Math/CatalystVectorMath.h>
+#include <Math/Core/CatalystVectorMath.h>
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>

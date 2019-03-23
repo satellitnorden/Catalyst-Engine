@@ -8,7 +8,7 @@
 #include <Entities/Types/Entity.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Type aliases.
 using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);

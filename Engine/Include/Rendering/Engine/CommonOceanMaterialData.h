@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystRandomMath.h>
+#include <Math/Core/CatalystRandomMath.h>
 
 //Resources.
 #include <Resources/OceanMaterialData.h>

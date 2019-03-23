@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
