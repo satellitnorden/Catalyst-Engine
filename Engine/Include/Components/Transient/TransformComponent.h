@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/General/Matrix4.h>
+#include <Math/General/Matrix.h>
 
 class TransformComponent final
 {

@@ -5,7 +5,7 @@
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
-#include <Math/General/Matrix4.h>
+#include <Math/General/Matrix.h>
 
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);

@@ -8,8 +8,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/Matrix4.h>
-#include <Math/General/Vector.h>
+#include <Math/General/Matrix.h>
 
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>

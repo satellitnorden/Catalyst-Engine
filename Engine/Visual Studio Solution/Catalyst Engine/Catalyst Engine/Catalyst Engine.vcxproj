@@ -124,9 +124,7 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystVectorMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix2.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix3.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
@@ -370,8 +368,6 @@
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\General\Matrix3.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\General\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />

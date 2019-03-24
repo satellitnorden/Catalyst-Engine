@@ -55,9 +55,6 @@
     <Filter Include="Math\Include">
       <UniqueIdentifier>{dd339576-83ef-4cc6-aa0c-9654a254099b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Math\Source">
-      <UniqueIdentifier>{56b97a1f-50c0-4d1f-9e81-ffa45d2902b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Multithreading">
       <UniqueIdentifier>{f5811fd2-e8c2-41f9-b5cc-88eaf285e64a}</UniqueIdentifier>
     </Filter>
@@ -297,9 +294,6 @@
     </Filter>
     <Filter Include="Math\Include\General">
       <UniqueIdentifier>{8772f6a6-e1d4-40d4-bd58-6a805ccc87f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math\Source\General">
-      <UniqueIdentifier>{fa591c65-ba7b-446c-9b19-85ced32957c2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math\Inline">
       <UniqueIdentifier>{6899b054-0381-433d-8e66-bd1ca5c0d5bd}</UniqueIdentifier>
@@ -1212,15 +1206,6 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix2.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix3.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\Plane.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
@@ -1231,6 +1216,9 @@
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Matrix.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1633,12 +1621,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Math\General\Matrix3.cpp">
-      <Filter>Math\Source\General</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Math\General\Matrix4.cpp">
-      <Filter>Math\Source\General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
-#include <Math/General/Matrix4.h>
+#include <Math/General/Matrix.h>
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>

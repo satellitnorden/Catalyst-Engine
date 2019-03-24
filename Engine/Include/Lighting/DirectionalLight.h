@@ -5,8 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/General/Matrix4.h>
-#include <Math/General/Vector.h>
+#include <Math/General/Matrix.h>
 
 //Multithreading.
 #include <Multithreading/ScopedReadLock.h>
