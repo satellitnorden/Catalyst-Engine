@@ -66,6 +66,14 @@ public:
 	}
 
 	/*
+	*	Returns whether point A is closer to the given position than B or not.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool IsCloser(const Vector3<float> &position, const Vector3<float> &A, const Vector3<float> &B) NOEXCEPT
+	{
+		return Vector3<float>::LengthSquared(position - A) < Vector3<float>::LengthSquared(position - B);
+	}
+
+	/*
 	*	Given a vector, return it's length.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector3 &vector) NOEXCEPT
@@ -170,6 +178,30 @@ public:
 	}
 
 	/*
+	*	Given a rotation vector, returns the forward vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> ForwardVector(const Vector3<float> &rotation) NOEXCEPT
+	{
+		return Vector3<float>::Normalize(Vector3<float>::FORWARD.Rotated(rotation));
+	}
+
+	/*
+	*	Given a rotation vector, returns the right vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> RightVector(const Vector3<float> &rotation) NOEXCEPT
+	{
+		return Vector3<float>::Normalize(Vector3<float>::RIGHT.Rotated(rotation));
+	}
+
+	/*
+	*	Given a rotation vector, returns the up vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> UpVector(const Vector3<float> &rotation) NOEXCEPT
+	{
+		return Vector3<float>::Normalize(Vector3<float>::UP.Rotated(rotation));
+	}
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr Vector3() NOEXCEPT
@@ -242,7 +274,7 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE constexpr bool operator==(const Vector3 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Vector3 &other) NOEXCEPT
 	{
 		return	_X == other._X
 				&& _Y == other._Y
@@ -252,7 +284,7 @@ public:
 	/*
 	*	Inquality operator overload.
 	*/
-	FORCE_INLINE constexpr bool operator!=(const Vector3 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector3 &other) NOEXCEPT
 	{
 		return !(*this == other);
 	}
@@ -260,7 +292,7 @@ public:
 	/*
 	*	Negative operator overload.
 	*/
-	FORCE_INLINE constexpr Vector3 operator-() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator-() const NOEXCEPT
 	{
 		return *this * -1.0f;
 	}
@@ -268,7 +300,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	Type operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Type operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -276,7 +308,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	Type& operator[](const uint64 index)  NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Type& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -496,7 +528,7 @@ public:
 	/*
 	*	Returns whether or not this vector is normalized.
 	*/
-	FORCE_INLINE NO_DISCARD bool IsNormalized() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool IsNormalized() const NOEXCEPT
 	{
 		return LengthSquared() == 1.0f;
 	}
@@ -504,7 +536,7 @@ public:
 	/*
 	*	Given a rotation vector, rotate this vector.
 	*/
-	constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
+	FORCE_INLINE constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
 	{
 		const float xCosine{ CatalystBaseMath::Cosine(rotationVector._X) };
 		const float xSine{ CatalystBaseMath::Sine(rotationVector._X) };

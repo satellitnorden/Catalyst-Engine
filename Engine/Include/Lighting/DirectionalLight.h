@@ -5,7 +5,6 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/Core/CatalystVectorMath.h>
 #include <Math/General/Matrix4.h>
 #include <Math/General/Vector3.h>
 #include <Math/General/Vector4.h>
@@ -112,7 +111,7 @@ public:
 	{
 		ScopedReadLock<Spinlock> scopedLock{ _Lock };
 
-		return CatalystVectorMath::ForwardVector(_Rotation);
+		return Vector3<float>::ForwardVector(_Rotation);
 	}
 
 	/*
