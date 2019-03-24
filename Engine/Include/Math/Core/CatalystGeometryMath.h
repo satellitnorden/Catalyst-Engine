@@ -6,12 +6,11 @@
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/Vector.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
 #include <Math/Geometry/Sphere.h>
 
-class CatalystVectorMath final
+class CatalystGeometryMath final
 {
 
 public:

@@ -121,9 +121,9 @@
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\Core\CatalystVectorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />

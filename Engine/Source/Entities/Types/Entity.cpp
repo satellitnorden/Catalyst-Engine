@@ -12,9 +12,6 @@
 #include <Entities/Types/PointLightEntity.h>
 #include <Entities/Types/SoundEntity.h>
 
-//Math.
-#include <Math/Core/CatalystVectorMath.h>
-
 //Systems.
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/PhysicsSystem.h>

@@ -9,8 +9,8 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystPhysicsMath.h>
-#include <Math/Core/CatalystVectorMath.h>
 #include <Math/General/Vector.h>
 
 //Systems.
@@ -88,7 +88,7 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 	{
 		const AxisAlignedBoundingBox &box{ component->_WorldSpaceAxisAlignedBoundingBox };
 
-		if (CatalystVectorMath::RayBoxIntersection(ray, box))
+		if (CatalystGeometryMath::RayBoxIntersection(ray, box))
 		{
 			result->_HasHit = true;
 			result->_HitPosition = AxisAlignedBoundingBox::CalculateCenter(box);
@@ -110,9 +110,9 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 void PhysicsSystem::CastRayOcean(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
 {
 	//Just do a simple line-plane intersection.
-	 result->_HasHit = CatalystVectorMath::RayPlaneIntersection(ray,
-																Plane(Vector3<float>(0.0f, GetOceanHeight(), 0.0f), VectorConstants::UP),
-																&result->_HitPosition);
+	 result->_HasHit = CatalystGeometryMath::RayPlaneIntersection(	ray,
+																	Plane(Vector3<float>(0.0f, GetOceanHeight(), 0.0f), VectorConstants::UP),
+																	&result->_HitPosition);
 	result->_HitEntity = nullptr;
 }
 

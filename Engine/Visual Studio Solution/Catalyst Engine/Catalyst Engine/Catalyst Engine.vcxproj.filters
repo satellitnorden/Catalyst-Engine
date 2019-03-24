@@ -1185,9 +1185,6 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h">
       <Filter>Math\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Core\CatalystVectorMath.h">
-      <Filter>Math\Include\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h">
       <Filter>Math\Include\Noise</Filter>
     </ClInclude>
@@ -1220,6 +1217,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h">
       <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h">
+      <Filter>Math\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
