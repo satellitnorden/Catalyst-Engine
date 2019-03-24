@@ -195,7 +195,7 @@ private:
 	StaticArray<Vector4<float>, 6> _FrustumPlanes;
 
 	//The rotation.
-	Vector3<float> _Rotation{ Vector3<float>::ZERO };
+	Vector3<float> _Rotation{ VectorConstants::ZERO };
 
 	//The color.
 	Vector3<float> _Color{ 1.0f, 1.0f, 1.0f };

@@ -20,7 +20,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Matrix3() NOEXCEPT
+	FORCE_INLINE constexpr Matrix3() NOEXCEPT
 		:
 		_Matrix{ {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} }
 	{
@@ -30,7 +30,7 @@ public:
 	/*
 	*	Constructor taking the three vectors as arguments.
 	*/
-	Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
+		FORCE_INLINE constexpr Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
 		:
 		_Matrix{ first, second, third }
 	{
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Matrix3 by vector3 multiplcation overload.
 	*/
-	Vector3<float> operator*(const Vector3<float> &vector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> operator*(const Vector3<float> &vector) const NOEXCEPT
 	{
 		Vector3<float> multipliedVector{ vector };
 
@@ -54,7 +54,10 @@ public:
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
+	FORCE_INLINE RESTRICTED constexpr float* Data() NOEXCEPT
+	{
+		return &(_Matrix[0]._X);
+	}
 
 };
 
@@ -69,7 +72,7 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
 	{
 		Vector3<float> F{ Vector3<float>::Normalize(direction - position) };
 		Vector3<float> S{ Vector3<float>::CrossProduct(F, up) };
@@ -140,7 +143,7 @@ public:
 	/*
 	*	Calculates an ortographic projection matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
 	{
 		Matrix4 result;
 
@@ -159,7 +162,7 @@ public:
 	/*
 	*	Calculates a perspective projection matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
 	{
 		Matrix4 result{ 0.0f };
 
@@ -175,7 +178,7 @@ public:
 	/*
 	*	Calculates a reverse perspective projection matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
 	{
 		Matrix4 result{ 0.0f };
 
@@ -191,7 +194,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE Matrix4() NOEXCEPT
+	FORCE_INLINE constexpr Matrix4() NOEXCEPT
 		:
 		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 	{
@@ -201,7 +204,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	FORCE_INLINE Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
 		:
 		_Matrix{ otherMatrix._Matrix[0], otherMatrix._Matrix[1], otherMatrix._Matrix[2], otherMatrix._Matrix[3] }
 	{
@@ -211,7 +214,7 @@ public:
 	/*
 	*	Constructor taking a scalar.
 	*/
-	FORCE_INLINE Matrix4(const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4(const float scalar) NOEXCEPT
 		:
 		_Matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
 	{
@@ -221,7 +224,7 @@ public:
 	/*
 	*	Constructor taking a Matrix3.
 	*/
-	FORCE_INLINE Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
 		:
 		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 	{
@@ -231,7 +234,7 @@ public:
 	/*
 	*	Constructor taking the four vectors as arguments.
 	*/
-	FORCE_INLINE Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
 		:
 		_Matrix{ vector1, vector2, vector3, vector4 }
 	{
@@ -241,7 +244,7 @@ public:
 	/*
 	*	Constructor taking in position, rotation and scale as arguments.
 	*/
-	FORCE_INLINE Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
 		:
 		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale._Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale._Z, 0.0f },{ position._X, position._Y, position._Z, 1.0f } }
 	{
@@ -255,15 +258,15 @@ public:
 	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Matrix4 &other) NOEXCEPT
 	{
 		return	_Matrix[0] == other._Matrix[0]
-			&& _Matrix[1] == other._Matrix[1]
-			&& _Matrix[2] == other._Matrix[2]
-			&& _Matrix[3] == other._Matrix[3];
+				&& _Matrix[1] == other._Matrix[1]
+				&& _Matrix[2] == other._Matrix[2]
+				&& _Matrix[3] == other._Matrix[3];
 	}
 
 	/*
 	*	Matrix4 by Matrix4 multiplication overload.
 	*/
-	FORCE_INLINE NO_DISCARD Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT
 	{
 		Matrix4 multipliedMatrix{ otherMatrix };
 
@@ -293,7 +296,7 @@ public:
 	/*
 	*	Matrix4 by scalar multiplication assignment overload.
 	*/
-	FORCE_INLINE void operator*=(const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
 	{
 		_Matrix[0]._X *= scalar;
 		_Matrix[0]._Y *= scalar;
@@ -319,7 +322,7 @@ public:
 	/*
 	*	Matrix4 by Vector4 multiplication overload.
 	*/
-	FORCE_INLINE NO_DISCARD Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT
 	{
 		Vector4<float> multipliedVector{ };
 
@@ -334,7 +337,7 @@ public:
 	/*
 	*	Returns whether or not this matrix is valid.
 	*/
-	FORCE_INLINE NO_DISCARD bool IsValid() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool IsValid() const NOEXCEPT
 	{
 		//If any of the values in this matrix is NaN, it is considered invalid.
 		for (uint8 i{ 0 }; i < 4; ++i)
@@ -355,12 +358,12 @@ public:
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
+	RESTRICTED constexpr float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
 
 	/*
 	*	Returns the translation.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> GetTranslation() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetTranslation() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
 	}
@@ -368,7 +371,7 @@ public:
 	/*
 	*	Returns the scale.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
 	}
@@ -376,7 +379,7 @@ public:
 	/*
 	*	Returns the right.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> GetRight() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetRight() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[0]._X, _Matrix[0]._Y, _Matrix[0]._Z);
 	}
@@ -384,7 +387,7 @@ public:
 	/*
 	*	Returns the up.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> GetUp() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetUp() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
 	}
@@ -392,7 +395,7 @@ public:
 	/*
 	*	Returns the forward.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
 	}
@@ -400,7 +403,7 @@ public:
 	/*
 	*	Sets the translation.
 	*/
-	FORCE_INLINE void SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT
+	FORCE_INLINE constexpr void SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT
 	{
 		_Matrix[3]._X = newTranslation._X;
 		_Matrix[3]._Y = newTranslation._Y;
@@ -410,7 +413,7 @@ public:
 	/*
 	*	Sets the scale.
 	*/
-	FORCE_INLINE void SetScale(const Vector3<float> &newScale) NOEXCEPT
+	FORCE_INLINE constexpr void SetScale(const Vector3<float> &newScale) NOEXCEPT
 	{
 		_Matrix[0]._X = newScale._X;
 		_Matrix[1]._Y = newScale._Y;
@@ -420,7 +423,7 @@ public:
 	/*
 	*	Inverses this matrix.
 	*/
-	FORCE_INLINE void Inverse() NOEXCEPT
+	FORCE_INLINE constexpr void Inverse() NOEXCEPT
 	{
 		float Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
 		float Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
@@ -485,7 +488,7 @@ public:
 	/*
 	*	Rotates this matrix.
 	*/
-	FORCE_INLINE void Rotate(const Vector3<float> &rotation) NOEXCEPT
+	FORCE_INLINE constexpr void Rotate(const Vector3<float> &rotation) NOEXCEPT
 	{
 		//Create a rotation matrix for the X axis.
 		if (rotation._X != 0.0f)
@@ -524,7 +527,7 @@ public:
 	/*
 	*	Transposes this matrix.
 	*/
-	FORCE_INLINE void Transpose() NOEXCEPT
+	FORCE_INLINE constexpr void Transpose() NOEXCEPT
 	{
 		Vector4<float> transposedMatrix[4];
 

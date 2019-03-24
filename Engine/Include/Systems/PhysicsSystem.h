@@ -73,7 +73,7 @@ public:
 private:
 
 	//The wind direction.
-	Vector3<float> _WindDirection{ Vector3<float>::Normalize(Vector3<float>::RIGHT + Vector3<float>::FORWARD) };
+	Vector3<float> _WindDirection{ Vector3<float>::Normalize(VectorConstants::RIGHT + VectorConstants::FORWARD) };
 
 	//The wind speed.
 	float _WindSpeed{ 4.0f };

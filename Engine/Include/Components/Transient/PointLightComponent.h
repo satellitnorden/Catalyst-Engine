@@ -15,7 +15,7 @@ public:
 	Vector3<float> _Color{ 1.0f, 1.0f, 1.0f };
 
 	//The world position.
-	Vector3<float> _WorldPosition{ Vector3<float>::ZERO };
+	Vector3<float> _WorldPosition{ VectorConstants::ZERO };
 
 	//The attenuation distance.
 	float _AttenuationDistance{ 25.0f };

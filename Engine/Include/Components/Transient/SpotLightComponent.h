@@ -15,10 +15,10 @@ public:
 	Vector3<float> _Color{ 1.0f, 1.0f, 1.0f };
 
 	//The position.
-	Vector3<float> _Position{ Vector3<float>::ZERO };
+	Vector3<float> _Position{ VectorConstants::ZERO };
 
 	//The rotation.
-	Vector3<float> _Rotation{ Vector3<float>::ZERO };
+	Vector3<float> _Rotation{ VectorConstants::ZERO };
 
 	//The attenuation distance.
 	float _AttenuationDistance{ 25.0f };

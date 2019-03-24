@@ -122,7 +122,7 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, V
 	//If there's no height function, just set the normal to up and the height to zero, and return that the retrieval failed.
 	if (!_Properties._HeightFunction)
 	{
-		*normal = Vector3<float>::UP;
+		*normal = VectorConstants::UP;
 		*height = 0.0f;
 
 		return false;
@@ -145,7 +145,7 @@ bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position,
 	if (!_Properties._MaterialFunction)
 	{
 		*material = 0;
-		*normal = Vector3<float>::UP;
+		*normal = VectorConstants::UP;
 		*height = 0.0f;
 
 		return false;

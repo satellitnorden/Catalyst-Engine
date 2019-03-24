@@ -241,10 +241,10 @@ private:
 	mutable Spinlock _Lock;
 
 	//The position.
-	Vector3<float> _Position{ Vector3<float>::ZERO };
+	Vector3<float> _Position{ VectorConstants::ZERO };
 
 	//The rotation.
-	Vector3<float> _Rotation{ Vector3<float>::ZERO };
+	Vector3<float> _Rotation{ VectorConstants::ZERO };
 
 	//The field of view.
 	float _FieldOfView{ CatalystBaseMath::DegreesToRadians(60.0f) };

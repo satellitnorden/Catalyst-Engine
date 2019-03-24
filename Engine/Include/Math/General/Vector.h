@@ -72,7 +72,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	TYPE operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE TYPE operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -80,7 +80,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	TYPE& operator[](const uint64 index)  NOEXCEPT
+	FORCE_INLINE TYPE& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -296,16 +296,6 @@ class Vector3 final
 
 public:
 
-	//Constant vectors.
-	const static Vector3 FORWARD;
-	const static Vector3 BACKWARD;
-	const static Vector3 UP;
-	const static Vector3 DOWN;
-	const static Vector3 RIGHT;
-	const static Vector3 LEFT;
-	const static Vector3 ZERO;
-	const static Vector3 ONE;
-
 	union
 	{
 		struct
@@ -465,7 +455,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> ForwardVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(Vector3<float>::FORWARD.Rotated(rotation));
+		return Vector3<float>::Normalize(VectorConstants::FORWARD.Rotated(rotation));
 	}
 
 	/*
@@ -473,7 +463,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> RightVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(Vector3<float>::RIGHT.Rotated(rotation));
+		return Vector3<float>::Normalize(VectorConstants::RIGHT.Rotated(rotation));
 	}
 
 	/*
@@ -481,7 +471,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> UpVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(Vector3<float>::UP.Rotated(rotation));
+		return Vector3<float>::Normalize(VectorConstants::UP.Rotated(rotation));
 	}
 
 	/*
@@ -911,7 +901,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	constexpr Vector4() NOEXCEPT
+	FORCE_INLINE constexpr Vector4() NOEXCEPT
 		:
 		_X(static_cast<TYPE>(0)),
 		_Y(static_cast<TYPE>(0)),
@@ -924,7 +914,7 @@ public:
 	/*
 	*	Constructor taking a single float as argument.
 	*/
-	constexpr Vector4(const float newValue) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const float newValue) NOEXCEPT
 		:
 		_X(newValue),
 		_Y(newValue),
@@ -937,8 +927,7 @@ public:
 	/*
 	*	Constructor taking the X, Y, Z and W components as arguments.
 	*/
-	constexpr Vector4(const TYPE initialX, const TYPE initialY, const TYPE initialZ, const TYPE initialW) NOEXCEPT
-
+	FORCE_INLINE constexpr Vector4(const TYPE initialX, const TYPE initialY, const TYPE initialZ, const TYPE initialW) NOEXCEPT
 		:
 		_X(initialX),
 		_Y(initialY),
@@ -951,7 +940,7 @@ public:
 	/*
 	*	Constructor taking a Vector3 as argument.
 	*/
-	constexpr Vector4(const Vector3<float> &otherVector) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const Vector3<float> &otherVector) NOEXCEPT
 		:
 		_X(otherVector._X),
 		_Y(otherVector._Y),
@@ -964,7 +953,7 @@ public:
 	/*
 	*	Constructor taking a Vector3 and a scalar as argument.
 	*/
-	constexpr Vector4(const Vector3<float> &otherVector, const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const Vector3<float> &otherVector, const float scalar) NOEXCEPT
 		:
 		_X(otherVector._X),
 		_Y(otherVector._Y),
@@ -988,7 +977,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	TYPE operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE TYPE operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -996,7 +985,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	TYPE& operator[](const uint64 index)  NOEXCEPT
+	FORCE_INLINE TYPE& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -1199,6 +1188,19 @@ public:
 	}
 
 };
+
+//Vector constants.
+namespace VectorConstants
+{
+	constexpr Vector3<float> FORWARD{ 0.0f, 0.0f, -1.0f };
+	constexpr Vector3<float> BACKWARD{ 0.0f, 0.0f, 1.0f };
+	constexpr Vector3<float> UP{ 0.0f, 1.0f, 0.0f };
+	constexpr Vector3<float> DOWN{ 0.0f, -1.0f, 0.0f };
+	constexpr Vector3<float> RIGHT{ 1.0f, 0.0f, 0.0f };
+	constexpr Vector3<float> LEFT{ -1.0f, 0.0f, 0.0f };
+	constexpr Vector3<float> ZERO{ 0.0f, 0.0f, 0.0f };
+	constexpr Vector3<float> ONE{ 1.0f, 1.0f, 1.0f };
+}
 
 //Inline functions.
 #include <Math/General/Vector.inl>
