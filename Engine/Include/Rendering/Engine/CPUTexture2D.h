@@ -6,7 +6,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/Vector2.h>
+#include <Math/General/Vector.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>

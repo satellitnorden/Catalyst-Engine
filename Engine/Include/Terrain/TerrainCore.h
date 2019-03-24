@@ -5,8 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/General/Vector3.h>
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 
 //Terrain constants.
 namespace TerrainConstants

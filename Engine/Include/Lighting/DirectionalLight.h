@@ -6,8 +6,7 @@
 
 //Math.
 #include <Math/General/Matrix4.h>
-#include <Math/General/Vector3.h>
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 
 //Multithreading.
 #include <Multithreading/ScopedReadLock.h>

@@ -7,7 +7,7 @@
 #include <Entities/Creation/EntityInitializationData.h>
 
 //Math.
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 //Rendering.
 #include <Rendering/Engine/PhysicalMaterial.h>

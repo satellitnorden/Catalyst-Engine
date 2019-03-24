@@ -11,7 +11,7 @@
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystPhysicsMath.h>
 #include <Math/Core/CatalystVectorMath.h>
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 //Systems.
 #include <Systems/TerrainSystem.h>

@@ -6,7 +6,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 //Resources.
 #include <Resources/SoundBankData.h>

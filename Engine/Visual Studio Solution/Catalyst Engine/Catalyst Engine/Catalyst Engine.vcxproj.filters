@@ -301,6 +301,12 @@
     <Filter Include="Math\Source\General">
       <UniqueIdentifier>{fa591c65-ba7b-446c-9b19-85ced32957c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Inline">
+      <UniqueIdentifier>{6899b054-0381-433d-8e66-bd1ca5c0d5bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Inline\General">
+      <UniqueIdentifier>{10ee2f3e-64a1-4bab-8718-f1c8915ccbb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1215,15 +1221,6 @@
     <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Vector2.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Vector3.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\Vector4.h">
-      <Filter>Math\Include\General</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\Plane.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
@@ -1232,6 +1229,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\Sphere.h">
       <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Vector.h">
+      <Filter>Math\Include\General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1645,8 +1645,8 @@
     <None Include="..\..\..\Include\Systems\EntitySystem.inl">
       <Filter>Systems\Inline</Filter>
     </None>
-    <None Include="..\..\..\Include\Math\General\Vector3.inl">
-      <Filter>Math\Include\General</Filter>
+    <None Include="..\..\..\Include\Math\General\Vector.inl">
+      <Filter>Math\Inline\General</Filter>
     </None>
   </ItemGroup>
 </Project>

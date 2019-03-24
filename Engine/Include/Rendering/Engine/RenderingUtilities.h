@@ -9,7 +9,7 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Matrix4.h>
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>

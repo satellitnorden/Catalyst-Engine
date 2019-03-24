@@ -6,9 +6,7 @@
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/Vector2.h>
-#include <Math/General/Vector3.h>
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
 #include <Math/Geometry/Sphere.h>

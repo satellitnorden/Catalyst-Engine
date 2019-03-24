@@ -4,7 +4,7 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Matrix3.h>
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 /*
 *	Calculates a look at matrix.

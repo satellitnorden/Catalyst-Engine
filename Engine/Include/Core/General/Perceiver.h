@@ -6,7 +6,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 //Multithreading.
 #include <Multithreading/ScopedReadLock.h>

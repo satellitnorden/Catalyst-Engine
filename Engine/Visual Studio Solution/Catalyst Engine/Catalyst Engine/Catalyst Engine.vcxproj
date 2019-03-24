@@ -127,9 +127,7 @@
     <ClInclude Include="..\..\..\Include\Math\General\Matrix2.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix4.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Vector2.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Vector3.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\Vector4.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h" />
@@ -495,7 +493,7 @@
     <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Include\Math\General\Vector3.inl" />
+    <None Include="..\..\..\Include\Math\General\Vector.inl" />
     <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

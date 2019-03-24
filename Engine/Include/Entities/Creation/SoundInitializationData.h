@@ -7,7 +7,7 @@
 #include <Entities/Creation/EntityInitializationData.h>
 
 //Math.
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 //Sound.
 #include <Sound/Native/SoundCore.h>

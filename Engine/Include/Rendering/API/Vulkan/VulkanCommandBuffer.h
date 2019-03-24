@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>

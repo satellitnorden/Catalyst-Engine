@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Math.
-#include <Math/General/Vector3.h>
+#include <Math/General/Vector.h>
 
 class OceanRenderingData final
 {

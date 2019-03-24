@@ -16,7 +16,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/General/Vector2.h>
+#include <Math/General/Vector.h>
 
 //Rendering constants.
 namespace RenderingConstants

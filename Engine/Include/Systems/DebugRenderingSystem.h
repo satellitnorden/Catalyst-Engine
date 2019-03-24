@@ -8,7 +8,7 @@
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
-#include <Math/General/Vector4.h>
+#include <Math/General/Vector.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>
