@@ -88,10 +88,9 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 	{
 		const AxisAlignedBoundingBox &box{ component->_WorldSpaceAxisAlignedBoundingBox };
 
-		if (CatalystGeometryMath::RayBoxIntersection(ray, box))
+		if (CatalystGeometryMath::RayBoxIntersection(ray, box, &result->_HitPosition))
 		{
 			result->_HasHit = true;
-			result->_HitPosition = AxisAlignedBoundingBox::CalculateCenter(box);
 			result->_HitEntity = ComponentManager::GetDynamicPhysicalEntities()->At(i);
 
 			return;

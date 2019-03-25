@@ -20,7 +20,7 @@ public:
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
 	*/
-	static Vector3<float> CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
 		return box._Minimum + ((box._Maximum - box._Minimum) * 0.5f);
 	}
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	AxisAlignedBoundingBox() NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox() NOEXCEPT
 	{
 
 	}
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Constructor taking the minimum and maximum values.
 	*/
-	AxisAlignedBoundingBox(const Vector3<float> &initialMinimum, const Vector3<float> &initialMaximum) NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox(const Vector3<float> &initialMinimum, const Vector3<float> &initialMaximum) NOEXCEPT
 		:
 		_Minimum(initialMinimum),
 		_Maximum(initialMaximum)

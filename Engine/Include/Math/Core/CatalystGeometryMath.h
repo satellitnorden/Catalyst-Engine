@@ -31,7 +31,9 @@ public:
 	/*
 	*	Performs a ray-box intersection and returns whether or not there was an intersection.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(const Ray &ray, const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(	const Ray &ray,
+																		const AxisAlignedBoundingBox &box,
+																		Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
 	{
 		//Pre-calculate the inverse direction of the ray to avoid costly divisions.
 		const Vector3<float> inverseDirection{ Vector3<float>(1.0f) / ray._Direction };
@@ -48,16 +50,23 @@ public:
 		const float minimumY{ (box._Minimum._Y - ray._Origin._Y) * inverseDirection._Y };
 		const float maximumY{ (box._Maximum._Y - ray._Origin._Y) * inverseDirection._Y };
 
-		minimum = CatalystBaseMath::Maximum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumY, maximumY));
-		maximum = CatalystBaseMath::Minimum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumY, maximumY));
+		minimum = CatalystBaseMath::Minimum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumY, maximumY));
+		maximum = CatalystBaseMath::Maximum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumY, maximumY));
 
 		const float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * inverseDirection._Z };
 		const float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * inverseDirection._Z };
 
-		minimum = CatalystBaseMath::Maximum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumZ, maximumZ));
-		maximum = CatalystBaseMath::Minimum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumZ, maximumZ));
+		minimum = CatalystBaseMath::Minimum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumZ, maximumZ));
+		maximum = CatalystBaseMath::Maximum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumZ, maximumZ));
 
-		return maximum >= minimum;
+		{
+			if (intersectionPoint)
+			{
+				*intersectionPoint = ray._Origin + ray._Direction * minimum;
+			}
+
+			return maximum >= minimum;
+		}
 	}
 
 	/*
@@ -74,7 +83,10 @@ public:
 
 		else
 		{
-			*intersectionPoint = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal) * ray._Direction + ray._Origin;
+			if (intersectionPoint)
+			{
+				*intersectionPoint = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal) * ray._Direction + ray._Origin;
+			}
 
 			return true;
 		}
@@ -113,7 +125,10 @@ public:
 
 		float T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
 
-		*intersectionPoint = ray._Origin + T * ray._Direction;
+		if (intersectionPoint)
+		{
+			*intersectionPoint = ray._Origin + T * ray._Direction;
+		}
 
 		return true;
 	}
