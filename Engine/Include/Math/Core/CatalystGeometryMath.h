@@ -35,38 +35,71 @@ public:
 																		const AxisAlignedBoundingBox &box,
 																		Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
 	{
-		//Pre-calculate the inverse direction of the ray to avoid costly divisions.
-		const Vector3<float> inverseDirection{ Vector3<float>(1.0f) / ray._Direction };
+		//Pre-calculate the reciprocal of the direction of the ray to avoid costly divisions later on.
+		const Vector3<float> directionReciprocal{ Vector3<float>(1.0f) / ray._Direction };
 
+		//Find the minimum/maximum.
 		float minimum{ 0.0f };
-		float maximum{ 0.0f };
+		float maximum{ FLOAT_MAXIMUM };
 
-		const float minimumX{ (box._Minimum._X - ray._Origin._X) * inverseDirection._X };
-		const float maximumX{ (box._Maximum._X - ray._Origin._X) * inverseDirection._X };
+		//Test the X-axis slab.
+		float minimumX{ (box._Minimum._X - ray._Origin._X) * directionReciprocal._X };
+		float maximumX{ (box._Maximum._X - ray._Origin._X) * directionReciprocal._X };
 
-		minimum = CatalystBaseMath::Minimum<float>(minimumX, maximumX);
-		maximum = CatalystBaseMath::Maximum<float>(minimumX, maximumX);
-
-		const float minimumY{ (box._Minimum._Y - ray._Origin._Y) * inverseDirection._Y };
-		const float maximumY{ (box._Maximum._Y - ray._Origin._Y) * inverseDirection._Y };
-
-		minimum = CatalystBaseMath::Minimum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumY, maximumY));
-		maximum = CatalystBaseMath::Maximum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumY, maximumY));
-
-		const float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * inverseDirection._Z };
-		const float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * inverseDirection._Z };
-
-		minimum = CatalystBaseMath::Minimum<float>(minimum, CatalystBaseMath::Minimum<float>(minimumZ, maximumZ));
-		maximum = CatalystBaseMath::Maximum<float>(maximum, CatalystBaseMath::Maximum<float>(minimumZ, maximumZ));
-
+		if (minimumX > maximumX)
 		{
-			if (intersectionPoint)
-			{
-				*intersectionPoint = ray._Origin + ray._Direction * minimum;
-			}
-
-			return maximum >= minimum;
+			Swap(&minimumX, &maximumX);
 		}
+
+		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumX);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumX);
+
+		if (minimum > maximum)
+		{
+			return false;
+		}
+
+		//Test the Y-axis slab.
+		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * directionReciprocal._Y };
+		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * directionReciprocal._Y };
+
+		if (minimumY > maximumY)
+		{
+			Swap(&minimumY, &maximumY);
+		}
+
+		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumY);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumY);
+
+		if (minimum > maximum)
+		{
+			return false;
+		}
+
+		//Test the Z-axis slab.
+		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * directionReciprocal._Z };
+		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * directionReciprocal._Z };
+
+		if (minimumZ > maximumZ)
+		{
+			Swap(&minimumZ, &maximumZ);
+		}
+
+		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumZ);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumZ);
+
+		if (minimum > maximum)
+		{
+			return false;
+		}
+
+		//All slabs succeeded!
+		if (intersectionPoint)
+		{
+			*intersectionPoint = ray._Origin + ray._Direction * minimum;
+		}
+
+		return true;
 	}
 
 	/*

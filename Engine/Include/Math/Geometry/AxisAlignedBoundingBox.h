@@ -44,4 +44,15 @@ public:
 
 	}
 
+#if defined(CATALYST_CONFIGURATION_DEBUG)
+	/*
+	*	Verifies this axis-aligned bound box.
+	*/
+	FORCE_INLINE void Verify() const NOEXCEPT
+	{
+		ASSERT(_Minimum._X <= _Maximum._X, "X-axis is wrong!");
+		ASSERT(_Minimum._Y <= _Maximum._Y, "Y-axis is wrong!");
+		ASSERT(_Minimum._Z <= _Maximum._Z, "Z-axis is wrong!");
+	}
+#endif
 };

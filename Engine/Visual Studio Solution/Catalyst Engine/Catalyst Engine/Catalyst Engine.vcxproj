@@ -69,6 +69,7 @@
     <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEssential.h" />
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystFunctions.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystMacros.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystPreDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h" />

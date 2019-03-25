@@ -360,12 +360,10 @@ enum class Shader : uint8
 	BloomDownsampleFirstIterationFragment,
 	BloomDownsampleFragment,
 	BloomUpsampleFragment,
-#if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
-#endif
 	DepthOfFieldFragment,
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,

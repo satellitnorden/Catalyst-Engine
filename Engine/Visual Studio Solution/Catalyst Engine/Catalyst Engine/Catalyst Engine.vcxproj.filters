@@ -1221,6 +1221,9 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h">
       <Filter>Math\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystFunctions.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

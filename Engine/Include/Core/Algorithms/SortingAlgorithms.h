@@ -97,17 +97,4 @@ public:
 		}
 	}
 
-private:
-
-	/*
-	*	Swaps two elements.
-	*/
-	template <typename Type>
-	static void Swap(Type *const RESTRICT firstElement, Type *const RESTRICT secondElement) NOEXCEPT
-	{
-		Type temporary{ std::move(*firstElement) };
-		*firstElement = std::move(*secondElement);
-		*secondElement = std::move(temporary);
-	}
-
 };
