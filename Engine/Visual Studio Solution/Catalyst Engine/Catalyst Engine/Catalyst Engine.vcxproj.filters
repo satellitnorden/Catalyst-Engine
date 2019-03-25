@@ -316,6 +316,12 @@
     <Filter Include="Resources\Source\Loading">
       <UniqueIdentifier>{8e22983c-29d1-41da-848e-204a0863945e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Include\Parameters">
+      <UniqueIdentifier>{0b1394bb-7d0b-48fc-8ac0-20218fb6d6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Source\Creation">
+      <UniqueIdentifier>{18e87c1a-6660-43ce-a639-e72c614be033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1239,6 +1245,12 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h">
+      <Filter>Resources\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelCreationParameters.h">
+      <Filter>Resources\Include\Parameters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1639,6 +1651,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
       <Filter>Resources\Source\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp">
+      <Filter>Resources\Source\Creation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
