@@ -9,7 +9,7 @@
 #include <Math/General/Vector.h>
 
 //Resources.
-#include <Resources/SoundBankData.h>
+#include <Resources/Data/SoundBankData.h>
 
 //Sound.
 #include <Sound/Native/SoundCore.h>

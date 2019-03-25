@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/PhysicalMaterialData.h>
+#include <Resources/Data/PhysicalMaterialData.h>
 
 class CommonPhysicalMaterialData final
 {

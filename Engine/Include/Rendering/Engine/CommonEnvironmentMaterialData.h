@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/EnvironmentMaterialData.h>
+#include <Resources/Data/EnvironmentMaterialData.h>
 
 namespace CommonEnvironmentMaterialData
 {

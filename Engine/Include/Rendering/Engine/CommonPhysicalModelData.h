@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/PhysicalModeldata.h>
+#include <Resources/Data/PhysicalModeldata.h>
 
 namespace CommonPhysicalModelData
 {

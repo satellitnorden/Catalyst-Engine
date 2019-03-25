@@ -1,22 +1,21 @@
 //Header file.
-#include <Resources/ResourceLoader.h>
+#include <Resources/Loading/ResourceLoader.h>
 
 //Multithreading.
 #include <Multithreading/Task.h>
 
 //Resources.
-#include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassVegetationModelData.h>
-#include <Resources/OceanMaterialData.h>
-#include <Resources/ParticleMaterialData.h>
-#include <Resources/PhysicalMaterialData.h>
-#include <Resources/PhysicalModelData.h>
-#include <Resources/ResourceLoaderUtilities.h>
-#include <Resources/ResourcesCore.h>
-#include <Resources/SoundBankData.h>
-#include <Resources/TreeVegetationMaterialData.h>
-#include <Resources/TreeVegetationModelData.h>
+#include <Resources/Data/EnvironmentMaterialData.h>
+#include <Resources/Data/GrassVegetationMaterialData.h>
+#include <Resources/Data/GrassVegetationModelData.h>
+#include <Resources/Data/OceanMaterialData.h>
+#include <Resources/Data/ParticleMaterialData.h>
+#include <Resources/Data/PhysicalMaterialData.h>
+#include <Resources/Data/PhysicalModelData.h>
+#include <Resources/Data/SoundBankData.h>
+#include <Resources/Data/TreeVegetationMaterialData.h>
+#include <Resources/Data/TreeVegetationModelData.h>
+#include <Resources/Loading/ResourceLoaderUtilities.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

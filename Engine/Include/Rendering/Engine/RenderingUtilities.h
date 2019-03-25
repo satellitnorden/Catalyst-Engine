@@ -15,7 +15,7 @@
 #include <Rendering/Engine/RenderingCore.h>
 
 //Resources.
-#include <Resources/PhysicalModelData.h>
+#include <Resources/Data/PhysicalModelData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

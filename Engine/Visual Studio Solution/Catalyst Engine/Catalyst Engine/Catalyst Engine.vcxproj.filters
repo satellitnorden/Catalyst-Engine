@@ -301,6 +301,21 @@
     <Filter Include="Math\Inline\General">
       <UniqueIdentifier>{10ee2f3e-64a1-4bab-8718-f1c8915ccbb5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Include\Creation">
+      <UniqueIdentifier>{defcc6f6-1a46-4963-bfcb-69aa0640a854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Include\Core">
+      <UniqueIdentifier>{b1fdb704-7acb-41bc-aafb-f43bfd34f13c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Include\Loading">
+      <UniqueIdentifier>{25f6a7c9-db6f-4fce-974b-c3772782c55f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Include\Data">
+      <UniqueIdentifier>{6eb8d705-4064-4bdf-9564-03af836e5584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Source\Loading">
+      <UniqueIdentifier>{8e22983c-29d1-41da-848e-204a0863945e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -347,27 +362,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
       <Filter>Platform\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\ParticleMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\PhysicalMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\PhysicalModelData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h">
-      <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
       <Filter>Systems\Include</Filter>
@@ -576,9 +570,6 @@
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h">
       <Filter>Platform\Include\Android</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
@@ -729,9 +720,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -743,9 +731,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationModelData.h">
-      <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h">
       <Filter>Vegetation\Include</Filter>
@@ -909,9 +894,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationModelData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -968,9 +950,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationMaterial.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\TreeVegetationMaterialData.h">
-      <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationTrunkRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
@@ -1052,9 +1031,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h">
       <Filter>Sound\Include\Abstraction\FMOD</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h">
-      <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h">
       <Filter>Sound\Include\Abstraction\FMOD</Filter>
@@ -1224,6 +1200,45 @@
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystFunctions.h">
       <Filter>Core\Include\Essential</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\EnvironmentMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationModelData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\OceanMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\ParticleMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalModelData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationMaterialData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationModelData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1231,9 +1246,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
       <Filter>Managers\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Resources\ResourceLoader.cpp">
-      <Filter>Resources\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
       <Filter>Systems\Source</Filter>
@@ -1624,6 +1636,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
+      <Filter>Resources\Source\Loading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@
 #include <Math/Core/CatalystRandomMath.h>
 
 //Resources.
-#include <Resources/OceanMaterialData.h>
+#include <Resources/Data/OceanMaterialData.h>
 
 namespace CommonOceanMaterialData
 {

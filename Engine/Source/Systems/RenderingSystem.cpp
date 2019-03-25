@@ -31,14 +31,14 @@
 #include <Rendering/Engine/TextureData.h>
 
 //Resources.
-#include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassVegetationModelData.h>
-#include <Resources/OceanMaterialData.h>
-#include <Resources/ParticleMaterialData.h>
-#include <Resources/PhysicalMaterialData.h>
-#include <Resources/TreeVegetationMaterialData.h>
-#include <Resources/TreeVegetationModelData.h>
+#include <Resources/Data/EnvironmentMaterialData.h>
+#include <Resources/Data/GrassVegetationMaterialData.h>
+#include <Resources/Data/GrassVegetationModelData.h>
+#include <Resources/Data/OceanMaterialData.h>
+#include <Resources/Data/ParticleMaterialData.h>
+#include <Resources/Data/PhysicalMaterialData.h>
+#include <Resources/Data/TreeVegetationMaterialData.h>
+#include <Resources/Data/TreeVegetationModelData.h>
 
 //Systems.
 #include <Systems/InputSystem.h>

@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 
 //Resources.
-#include <Resources/ParticleMaterialData.h>
+#include <Resources/Data/ParticleMaterialData.h>
 
 namespace CommonParticleMaterialData
 {

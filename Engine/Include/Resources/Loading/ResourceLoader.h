@@ -14,7 +14,7 @@
 #include <Rendering/Engine/PhysicalModel.h>
 
 //Resources.
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Sound.
 #include <Sound/Native/SoundCore.h>
