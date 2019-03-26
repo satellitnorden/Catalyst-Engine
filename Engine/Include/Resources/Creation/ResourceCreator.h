@@ -17,6 +17,6 @@ public:
 	/*
 	*	Creates a model.
 	*/
-	static void CreateModel(const ModelData &data, Model *const RESTRICT model) NOEXCEPT;
+	static void CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT;
 
 };

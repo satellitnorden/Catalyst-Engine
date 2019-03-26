@@ -759,5 +759,5 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
 
 	//Create the model.
-	ResourceCreator::CreateModel(data, &_Models[resourceID]);
+	ResourceCreator::CreateModel(&data, &_Models[resourceID]);
 }
