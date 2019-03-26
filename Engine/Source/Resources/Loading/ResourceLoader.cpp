@@ -27,6 +27,7 @@
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
 Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
 Map<HashString, GrassVegetationModel> ResourceLoader::_GrassVegetationModels;
+Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
@@ -758,5 +759,5 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
 
 	//Create the model.
-	ResourceCreator::CreateModel(data, nullptr);
+	ResourceCreator::CreateModel(data, &_Models[resourceID]);
 }

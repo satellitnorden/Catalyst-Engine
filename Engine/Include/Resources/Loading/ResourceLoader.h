@@ -52,6 +52,11 @@ public:
 	static const GrassVegetationModel& GetGrassVegetationModel(const HashString resourceID) { return _GrassVegetationModels[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding model.
+	*/
+	static const Model& GetModel(const HashString resourceID) { return _Models[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding ocean material.
 	*/
 	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return _OceanMaterials[resourceID]; }
@@ -96,6 +101,9 @@ private:
 
 	//Container for all grass vegetation models.
 	static Map<HashString, GrassVegetationModel> _GrassVegetationModels;
+
+	//Container for all models.
+	static Map<HashString, Model> _Models;
 
 	//Container for all ocean materials.
 	static Map<HashString, OceanMaterial> _OceanMaterials;
