@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class ModelCreationParameters final
+class ModelBuildParameters final
 {
 
 public:
@@ -20,7 +20,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr ModelCreationParameters() NOEXCEPT
+	FORCE_INLINE constexpr ModelBuildParameters() NOEXCEPT
 		:
 		_Output(nullptr),
 		_ID(nullptr),
@@ -32,9 +32,9 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr ModelCreationParameters(	const char *const RESTRICT initialOutput,
-													const char *const RESTRICT initialID,
-													const char *const RESTRICT initialFile) NOEXCEPT
+	FORCE_INLINE constexpr ModelBuildParameters(const char *const RESTRICT initialOutput,
+												const char *const RESTRICT initialID,
+												const char *const RESTRICT initialFile) NOEXCEPT
 		:
 		_Output(initialOutput),
 		_ID(initialID),

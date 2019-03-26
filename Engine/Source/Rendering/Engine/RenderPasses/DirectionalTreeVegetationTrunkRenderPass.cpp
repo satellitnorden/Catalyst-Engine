@@ -3,7 +3,6 @@
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
-#include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>

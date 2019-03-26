@@ -1,0 +1,80 @@
+#pragma once
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
+
+//Rendering.
+#include <Rendering/Engine/Vertex.h>
+
+//Third party.
+#include <ThirdParty/assimp/Importer.hpp>
+#include <ThirdParty/assimp/scene.h>
+#include <ThirdParty/assimp/postprocess.h>
+
+class AssimpBuilder final
+{
+
+public:
+
+	/*
+	*	Builds a model.
+	*/
+	FORCE_INLINE static void BuildModel(const char *const RESTRICT file, DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices, float *const RESTRICT extent) NOEXCEPT
+	{
+		//Load the model.
+		Assimp::Importer modelImporter;
+		const aiScene *modelScene = modelImporter.ReadFile(file, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+
+		//Process the node(s).
+		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
+	}
+
+private:
+
+	/*
+	*	Processes a single Assimp mesh.
+	*/
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices, float *const RESTRICT extent) NOEXCEPT
+	{
+		//Process the vertices.
+		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
+		{
+			vertices->EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+
+			*extent = CatalystBaseMath::Maximum<float>(*extent, CatalystBaseMath::Absolute(vertices->Back()._Position._X));
+			*extent = CatalystBaseMath::Maximum<float>(*extent, CatalystBaseMath::Absolute(vertices->Back()._Position._Y));
+			*extent = CatalystBaseMath::Maximum<float>(*extent, CatalystBaseMath::Absolute(vertices->Back()._Position._Z));
+		}
+
+		//Process the indices.
+		for (uint32 i = 0; i < mesh->mNumFaces; ++i)
+		{
+			aiFace face = mesh->mFaces[i];
+
+			for (uint32 j = 0; j < face.mNumIndices; ++j)
+			{
+				indices->EmplaceSlow(face.mIndices[j]);
+			}
+		}
+	}
+
+	/*
+	*	Processes a single Assimp node.
+	*/
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices, float *const RESTRICT extent) NOEXCEPT
+	{
+		//Process all meshes.
+		for (uint32 i = 0; i < node->mNumMeshes; ++i)
+		{
+			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, vertices, indices, extent);
+		}
+
+		//Process all nodes.
+		for (uint32 i = 0; i < node->mNumChildren; ++i)
+		{
+			ProcessNode(node->mChildren[i], scene, vertices, indices, extent);
+		}
+	}
+
+};

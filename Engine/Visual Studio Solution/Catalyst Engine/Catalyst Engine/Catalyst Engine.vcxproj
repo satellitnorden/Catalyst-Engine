@@ -212,7 +212,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\ParticleSystemProperties.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalModel.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalVertex.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AboveOceanRenderPass.h" />
@@ -283,14 +282,16 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\OpenGL\OpenGLRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassMainStageData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassSubStageData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\EnvironmentMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationModelData.h" />
@@ -303,7 +304,8 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelCreationParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Parameters\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
@@ -474,7 +476,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\OpenGL\OpenGLRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />

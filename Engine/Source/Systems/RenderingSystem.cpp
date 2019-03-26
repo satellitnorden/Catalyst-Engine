@@ -591,7 +591,7 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 	{
 		//Create the vertex and index buffer.
 		const void *RESTRICT modelData[]{ physicalModelData._Vertices[i].Data(), physicalModelData._Indices[i].Data() };
-		const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData._Vertices[i].Size(), sizeof(uint32) * physicalModelData._Indices[i].Size() };
+		const uint64 modelDataSizes[]{ sizeof(Vertex) * physicalModelData._Vertices[i].Size(), sizeof(uint32) * physicalModelData._Indices[i].Size() };
 		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
 		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 

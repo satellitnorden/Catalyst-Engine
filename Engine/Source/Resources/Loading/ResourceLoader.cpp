@@ -460,7 +460,7 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 		//Read the vertices.
 		physicalModelData._Vertices[i].UpsizeFast(numberOfVertices);
-		file.Read(physicalModelData._Vertices[i].Data(), sizeof(PhysicalVertex) * numberOfVertices);
+		file.Read(physicalModelData._Vertices[i].Data(), sizeof(Vertex) * numberOfVertices);
 
 		//Read the number of indices.
 		uint64 numberOfIndices;

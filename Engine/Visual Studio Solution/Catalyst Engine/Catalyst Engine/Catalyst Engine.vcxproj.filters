@@ -301,9 +301,6 @@
     <Filter Include="Math\Inline\General">
       <UniqueIdentifier>{10ee2f3e-64a1-4bab-8718-f1c8915ccbb5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Include\Creation">
-      <UniqueIdentifier>{defcc6f6-1a46-4963-bfcb-69aa0640a854}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Include\Core">
       <UniqueIdentifier>{b1fdb704-7acb-41bc-aafb-f43bfd34f13c}</UniqueIdentifier>
     </Filter>
@@ -319,7 +316,10 @@
     <Filter Include="Resources\Include\Parameters">
       <UniqueIdentifier>{0b1394bb-7d0b-48fc-8ac0-20218fb6d6d8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Source\Creation">
+    <Filter Include="Resources\Include\Building">
+      <UniqueIdentifier>{defcc6f6-1a46-4963-bfcb-69aa0640a854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Source\Building">
       <UniqueIdentifier>{18e87c1a-6660-43ce-a639-e72c614be033}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -532,9 +532,6 @@
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalModel.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalVertex.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h">
@@ -1245,10 +1242,19 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h">
-      <Filter>Resources\Include\Creation</Filter>
+    <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h">
+      <Filter>Resources\Include\Building</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelCreationParameters.h">
+    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelBuildParameters.h">
+      <Filter>Resources\Include\Parameters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Parameters\ResourceCollectionBuildParameters.h">
       <Filter>Resources\Include\Parameters</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1652,8 +1658,8 @@
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
       <Filter>Resources\Source\Loading</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp">
-      <Filter>Resources\Source\Creation</Filter>
+    <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp">
+      <Filter>Resources\Source\Building</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

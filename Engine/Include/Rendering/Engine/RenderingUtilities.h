@@ -11,7 +11,6 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
-#include <Rendering/Engine/PhysicalVertex.h>
 #include <Rendering/Engine/RenderingCore.h>
 
 //Resources.

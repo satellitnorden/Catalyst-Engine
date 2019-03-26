@@ -3,7 +3,7 @@
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
-#include <Rendering/Engine/PhysicalVertex.h>
+#include <Rendering/Engine/Vertex.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>
@@ -79,19 +79,19 @@ void MediumDetailDebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Position));
+										offsetof(Vertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Normal));
+										offsetof(Vertex, _Normal));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Tangent));
+										offsetof(Vertex, _Tangent));
 	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(PhysicalVertex, _TextureCoordinate));
+										offsetof(Vertex, _TextureCoordinate));
 	AddVertexInputAttributeDescription(	4,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
@@ -111,7 +111,7 @@ void MediumDetailDebrisVegetationRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);
-	AddVertexInputBindingDescription(0, sizeof(PhysicalVertex), VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
