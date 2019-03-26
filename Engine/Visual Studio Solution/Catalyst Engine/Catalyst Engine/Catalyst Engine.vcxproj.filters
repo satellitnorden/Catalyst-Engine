@@ -1272,6 +1272,9 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\Triangle.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h">
+      <Filter>Lighting\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1678,6 +1681,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp">
       <Filter>Resources\Source\Creation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp">
+      <Filter>Lighting\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -419,6 +419,26 @@ public:
 	}
 
 	/*
+	*	Returns the minimum of two vectors.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Minimum(const Vector3 &first, const Vector3 &second) NOEXCEPT
+	{
+		return Vector3(	CatalystBaseMath::Minimum<TYPE>(first._X, second._X),
+						CatalystBaseMath::Minimum<TYPE>(first._Y, second._Y),
+						CatalystBaseMath::Minimum<TYPE>(first._Z, second._Z));
+	}
+
+	/*
+*	Returns the maximum of two vectors.
+*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Maximum(const Vector3 &first, const Vector3 &second) NOEXCEPT
+	{
+		return Vector3(	CatalystBaseMath::Maximum<TYPE>(first._X, second._X),
+						CatalystBaseMath::Maximum<TYPE>(first._Y, second._Y),
+						CatalystBaseMath::Maximum<TYPE>(first._Z, second._Z));
+	}
+
+	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 Normalize(const Vector3 &vector) NOEXCEPT
