@@ -17,6 +17,30 @@ class CatalystGeometryMath final
 public:
 
 	/*
+	*	Calculates the barycentric coordinates for a point in a triangle.
+	*/
+	FORCE_INLINE constexpr static void CalculateBarycentricCoordinates(	const Triangle &triangle,
+																		const Vector3<float> &point,
+																		Vector3<float> *const RESTRICT barycentricCoordinates) NOEXCEPT
+	{
+		const Vector3<float> v0{ triangle._Vertex2 - triangle._Vertex1 };
+		const Vector3<float> v1{ triangle._Vertex3 - triangle._Vertex1 };
+		const Vector3<float> v2{ point - triangle._Vertex1 };
+
+		const float d00{ Vector3<float>::DotProduct(v0, v0) };
+		const float d01{ Vector3<float>::DotProduct(v0, v1) };
+		const float d11{ Vector3<float>::DotProduct(v1, v1) };
+		const float d20{ Vector3<float>::DotProduct(v2, v0) };
+		const float d21{ Vector3<float>::DotProduct(v2, v1) };
+
+		const float denom{ 1.0f / (d00 * d11 - d01 * d01) };
+
+		barycentricCoordinates->_X = (d11 * d20 - d01 * d21) * denom;
+		barycentricCoordinates->_Y = (d00 * d21 - d01 * d20) * denom;
+		barycentricCoordinates->_Z = 1.0f - barycentricCoordinates->_X - barycentricCoordinates->_Y;
+	}
+
+	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool BoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
