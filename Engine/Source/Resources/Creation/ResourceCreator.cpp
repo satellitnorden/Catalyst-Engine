@@ -6,8 +6,11 @@
 */
 void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
 {
-	//Just... Copy. (:
+	//Create the axis-aligned bounding box.
+	model->_AxisAlignedBoundingBox._Minimum = Vector3<float>(-data->_Extent, -data->_Extent, -data->_Extent);
+	model->_AxisAlignedBoundingBox._Maximum = Vector3<float>(data->_Extent, data->_Extent, data->_Extent);
+
+	//Just... Copy the rest. (:
 	model->_Vertices = std::move(data->_Vertices);
 	model->_Indices = std::move(data->_Indices);
-	model->_Extent = std::move(data->_Extent);
 }
