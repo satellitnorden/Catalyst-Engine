@@ -9,6 +9,7 @@
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
 #include <Math/Geometry/Sphere.h>
+#include <Math/Geometry/Triangle.h>
 
 class CatalystGeometryMath final
 {
@@ -164,6 +165,65 @@ public:
 		}
 
 		return true;
+	}
+
+	/*
+	*	Performs a ray-triangle intersection and return whether or not there was an intersection.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool RayTriangleIntersection(	const Ray &ray,
+																			const Triangle &triangle,
+																			Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+	{
+		constexpr float EPSILON{ 0.0000001f };
+
+		Vector3<float> edge1, edge2, h, s, q;
+		float a{ 0.0f }, f{ 0.0f }, u{ 0.0f }, v{ 0.0f };
+
+		edge1 = triangle._Vertex2 - triangle._Vertex1;
+		edge2 = triangle._Vertex3 - triangle._Vertex1;
+
+		h = Vector3<float>::CrossProduct(ray._Direction, edge2);
+		a = Vector3<float>::DotProduct(edge1, h);
+
+		if (a > -EPSILON && a < EPSILON)
+		{
+			return false;
+		}
+
+		f = 1.0f / a;
+		s = ray._Origin - triangle._Vertex1;
+
+		u = f * Vector3<float>::DotProduct(s, h);
+
+		if (u < 0.0f || u > 1.0f)
+		{
+			return false;
+		}
+
+		q = Vector3<float>::CrossProduct(s, edge1);
+		v = f * Vector3<float>::DotProduct(ray._Direction, q);
+
+		if (v < 0.0 || u + v > 1.0)
+		{
+			return false;
+		}
+			
+		float t = f * Vector3<float>::DotProduct(edge2, q);
+
+		if (t > EPSILON)
+		{
+			if (intersectionPoint)
+			{
+				*intersectionPoint = ray._Origin + ray._Direction * t;
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
 	}
 
 };

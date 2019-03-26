@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\Plane.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Ray.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Sphere.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Triangle.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />

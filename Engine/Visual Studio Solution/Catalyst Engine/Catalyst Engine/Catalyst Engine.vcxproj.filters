@@ -1269,6 +1269,9 @@
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h">
       <Filter>Resources\Include\Creation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Triangle.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

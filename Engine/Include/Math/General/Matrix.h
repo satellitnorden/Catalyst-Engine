@@ -324,14 +324,10 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT
 	{
-		Vector4<float> multipliedVector{ };
-
-		multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z) + (_Matrix[3]._X * vector._W);
-		multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z) + (_Matrix[3]._Y * vector._W);
-		multipliedVector._Z = (_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z) + (_Matrix[3]._Z * vector._W);
-		multipliedVector._W = (_Matrix[0]._W * vector._X) + (_Matrix[1]._W * vector._Y) + (_Matrix[2]._W * vector._Z) + (_Matrix[3]._W * vector._W);
-
-		return multipliedVector;
+		return Vector4<float>(	(_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z) + (_Matrix[3]._X * vector._W),
+								(_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z) + (_Matrix[3]._Y * vector._W),
+								(_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z) + (_Matrix[3]._Z * vector._W),
+								(_Matrix[0]._W * vector._X) + (_Matrix[1]._W * vector._Y) + (_Matrix[2]._W * vector._Z) + (_Matrix[3]._W * vector._W));
 	}
 
 	/*
