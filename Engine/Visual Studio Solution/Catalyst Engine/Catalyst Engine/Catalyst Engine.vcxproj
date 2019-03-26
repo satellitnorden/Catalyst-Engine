@@ -206,6 +206,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanRenderingData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\ParticleMaterial.h" />
@@ -290,11 +291,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassSubStageData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\EnvironmentMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationModelData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\OceanMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\ParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalMaterialData.h" />
@@ -304,8 +309,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Parameters\ModelBuildParameters.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Parameters\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
@@ -477,6 +480,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />

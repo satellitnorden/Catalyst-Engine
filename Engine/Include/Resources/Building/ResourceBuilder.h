@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/Parameters/ModelBuildParameters.h>
-#include <Resources/Parameters/ResourceCollectionBuildParameters.h>
+#include <Resources/Building/ModelBuildParameters.h>
+#include <Resources/Building/ResourceCollectionBuildParameters.h>
 
 class ResourceBuilder final
 {

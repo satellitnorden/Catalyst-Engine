@@ -5,6 +5,7 @@
 #include <Multithreading/Task.h>
 
 //Resources.
+#include <Resources/Creation/ResourceCreator.h>
 #include <Resources/Data/EnvironmentMaterialData.h>
 #include <Resources/Data/GrassVegetationMaterialData.h>
 #include <Resources/Data/GrassVegetationModelData.h>
@@ -137,6 +138,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::TreeVegetationModel:
 			{
 				LoadTreeVegetationModel(file);
+
+				break;
+			}
+
+			case ResourceType::Model:
+			{
+				LoadModel(file);
 
 				break;
 			}
@@ -716,4 +724,39 @@ void ResourceLoader::LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXC
 
 	//Create the tree vegetation model via the rendering system.
 	RenderingSystem::Instance->CreateTreeVegetationModel(data, _TreeVegetationModels[resourceID]);
+}
+
+/*
+*	Given a file, load a model.
+*/
+void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Load the model data.
+	ModelData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the extent of this model.
+	file.Read(&data._Extent, sizeof(float));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	data._Vertices.UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(Vertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	data._Indices.UpsizeFast(numberOfIndices);
+	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Create the model.
+	ResourceCreator::CreateModel(data, nullptr);
 }

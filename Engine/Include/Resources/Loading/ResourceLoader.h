@@ -8,6 +8,7 @@
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/Model.h>
 #include <Rendering/Engine/OceanMaterial.h>
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
@@ -171,5 +172,10 @@ private:
 	*	Given a file, load a tree vegetation model.
 	*/
 	static void LoadTreeVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a model.
+	*/
+	static void LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };
