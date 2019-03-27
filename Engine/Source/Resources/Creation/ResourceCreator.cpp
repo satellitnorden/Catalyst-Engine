@@ -18,7 +18,7 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 /*
 *	Creates a texture 2D.
 */
-void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, CPUTexture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
+void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
 {
 	//Do something. Please. ):
 	texture->Initialize(data->_Width, data->_Height, reinterpret_cast<const Vector4<byte> *const RESTRICT>(data->_Data[0].Data()));

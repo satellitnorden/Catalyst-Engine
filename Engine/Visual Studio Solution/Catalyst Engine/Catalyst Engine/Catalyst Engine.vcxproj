@@ -203,7 +203,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTextureCube.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h" />
@@ -283,6 +282,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Texture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h" />

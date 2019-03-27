@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 #include <Rendering/Engine/TextureData.h>
 
 //Systems.
@@ -95,8 +95,8 @@ namespace TerrainGeneralUtilities
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		//Store the intermediate data in a CPU texture.
-		CPUTexture2D<Vector4<byte>> normalTexture{ resolution };
-		CPUTexture2D<byte> materialTexture{ resolution };
+		Texture2D<Vector4<byte>> normalTexture{ resolution };
+		Texture2D<byte> materialTexture{ resolution };
 
 		for (uint32 i = 0; i < resolution; ++i)
 		{

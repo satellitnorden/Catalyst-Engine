@@ -8,7 +8,7 @@
 #include <Math/General/Vector.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 
 class TerrainMaterial final
 {

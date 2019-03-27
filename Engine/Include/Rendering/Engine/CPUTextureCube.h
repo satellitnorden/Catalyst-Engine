@@ -11,7 +11,7 @@
 #include <Math/Vector4.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 
 /*
 *	A cube texture that can be manipulated on the CPU.
@@ -32,7 +32,7 @@ public:
 	/*
 	*	Constructor taking a static array of all the data.
 	*/
-	CPUTextureCube(const StaticArray<CPUTexture2D<Vector4<float>>, 6> &initialData) NOEXCEPT
+	CPUTextureCube(const StaticArray<Texture2D<Vector4<float>>, 6> &initialData) NOEXCEPT
 		:
 		_Data(initialData)
 	{
@@ -57,7 +57,7 @@ public:
 private:
 
 	//The underlying data.
-	StaticArray<CPUTexture2D<Vector4<float>>, 6> _Data;
+	StaticArray<Texture2D<Vector4<float>>, 6> _Data;
 
 	/*
 	*	Function to determine the face index as well as the texture coordinate from a direction vector.

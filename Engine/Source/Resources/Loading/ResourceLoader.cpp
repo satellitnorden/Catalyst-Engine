@@ -36,7 +36,7 @@ Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
 
 Map<HashString, Model> ResourceLoader::_Models;
-Map<HashString, CPUTexture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
+Map<HashString, Texture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
 
 /*
 *	Given a file path, load a resource collection.

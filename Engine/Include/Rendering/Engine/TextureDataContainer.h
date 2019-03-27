@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 
 class TextureDataContainer final
 {
@@ -78,10 +78,10 @@ public:
 	}
 
 	/*
-	*	Constructor taking a CPUTexture2D with 1 channel.
+	*	Constructor taking a Texture2D with 1 channel.
 	*/
 	template <typename Type>
-	TextureDataContainer(const CPUTexture2D<Type> &texture) NOEXCEPT
+	TextureDataContainer(const Texture2D<Type> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
@@ -92,10 +92,10 @@ public:
 	}
 
 	/*
-	*	Constructor taking a CPUTexture2D with 4 channels.
+	*	Constructor taking a Texture2D with 4 channels.
 	*/
 	template <typename Type>
-	TextureDataContainer(const CPUTexture2D<Vector4<Type>> &texture) NOEXCEPT
+	TextureDataContainer(const Texture2D<Vector4<Type>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));

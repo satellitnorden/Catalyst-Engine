@@ -11,11 +11,8 @@
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
 
-/*
-*	Class representing a 2D texture with 4 channels that can be constructed on the CPU.
-*/
-template <typename Type>
-class CPUTexture2D final
+template <typename TYPE>
+class Texture2D final
 {
 
 public:
@@ -23,7 +20,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CPUTexture2D() NOEXCEPT
+	Texture2D() NOEXCEPT
 		:
 		_Width(0),
 		_Height(0)
@@ -34,7 +31,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	CPUTexture2D(const CPUTexture2D &other) NOEXCEPT
+	Texture2D(const Texture2D &other) NOEXCEPT
 		:
 		_Width(other._Width),
 		_Height(other._Width),
@@ -46,7 +43,7 @@ public:
 	/*
 	*	Move constructor.
 	*/
-	CPUTexture2D(CPUTexture2D &&other) NOEXCEPT
+	Texture2D(Texture2D &&other) NOEXCEPT
 		:
 		_Width(other._Width),
 		_Height(other._Width),
@@ -58,7 +55,7 @@ public:
 	/*
 	*	Constructor taking in the resolution of the texture. Assumes that width and height does not differ.
 	*/
-	CPUTexture2D(const uint32 initialResolution) NOEXCEPT
+	Texture2D(const uint32 initialResolution) NOEXCEPT
 		:
 		_Width(initialResolution),
 		_Height(initialResolution)
@@ -70,7 +67,7 @@ public:
 	/*
 	*	Constructor taking in the resolution of the texture. Takes both the width and the height
 	*/
-	CPUTexture2D(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
+	Texture2D(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
 		:
 		_Width(initialWidth),
 		_Height(initialHeight)
@@ -82,7 +79,7 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const CPUTexture2D &otherTexture) NOEXCEPT
+	void operator=(const Texture2D &otherTexture) NOEXCEPT
 	{
 		_Width = otherTexture._Width;
 		_Height = otherTexture._Height;
@@ -92,22 +89,22 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const Type *const RESTRICT begin() const NOEXCEPT { return _Data.begin(); }
+	RESTRICTED const TYPE *const RESTRICT begin() const NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED Type *const RESTRICT begin() NOEXCEPT { return _Data.begin(); }
+	RESTRICTED TYPE *const RESTRICT begin() NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const Type *const RESTRICT end() const NOEXCEPT { return _Data.end(); }
+	RESTRICTED const TYPE *const RESTRICT end() const NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED Type *const RESTRICT end() NOEXCEPT { return _Data.end(); }
+	RESTRICTED TYPE *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	Initializes this CPU texture 2D.
@@ -125,7 +122,7 @@ public:
 	/*
 	*	Initializes this CPU texture 2D.
 	*/
-	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const Type *const RESTRICT data) NOEXCEPT
+	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const void *const RESTRICT data) NOEXCEPT
 	{
 		//Set the width and height.
 		_Width = initialWidth;
@@ -135,23 +132,23 @@ public:
 		_Data.UpsizeFast(_Width * _Height);
 
 		//Copy the data.
-		MemoryUtilities::CopyMemory(_Data.Data(), data, sizeof(Type) * _Width * _Height);
+		MemoryUtilities::CopyMemory(_Data.Data(), data, sizeof(TYPE) * _Width * _Height);
 	}
 
 	/*
 	*	Returns the texture data, const.
 	*/
-	RESTRICTED const Type* Data() const NOEXCEPT { return _Data.Data(); }
+	RESTRICTED const TYPE* Data() const NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture data, non-const.
 	*/
-	RESTRICTED Type* Data() NOEXCEPT { return _Data.Data(); }
+	RESTRICTED TYPE* Data() NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
-	const Type& At(const uint32 X, const uint32 Y) const NOEXCEPT
+	const TYPE& At(const uint32 X, const uint32 Y) const NOEXCEPT
 	{
 		return _Data[(Y * _Width) + X];
 	}
@@ -159,7 +156,7 @@ public:
 	/*
 	*	Returns the texture value at the specified indices, non-const.
 	*/
-	Type& At(const uint32 X, const uint32 Y) NOEXCEPT
+	TYPE& At(const uint32 X, const uint32 Y) NOEXCEPT
 	{
 		return _Data[(Y * _Width) + X];
 	}
@@ -167,7 +164,7 @@ public:
 	/*
 	*	Returns the texture value at the specified coordinates using linear sampling and the given address mode.
 	*/
-	const Type Sample(const Vector2<float> &coordinate, const AddressMode addressMode) const NOEXCEPT
+	const TYPE Sample(const Vector2<float> &coordinate, const AddressMode addressMode) const NOEXCEPT
 	{
 		//Calculate the texel step.
 		const Vector2<float> textelStep{ 1.0f / static_cast<float>(_Width), 1.0f / static_cast<float>(_Height) };
@@ -191,26 +188,26 @@ public:
 		const Vector2<uint32> lowerRightIntegerCoordinate{ static_cast<uint32>(lowerRightCoordinate._X * static_cast<float>(_Width)), static_cast<uint32>(lowerRightCoordinate._Y * static_cast<float>(_Height)) };
 
 		//Sample the values.
-		const Type& lowerLeftValue{ _Data[(lowerLeftIntegerCoordinate._Y * _Width) + lowerLeftIntegerCoordinate._X] };
-		const Type& upperLeftValue{ _Data[(upperLeftIntegerCoordinate._Y * _Width) + upperLeftIntegerCoordinate._X] };
-		const Type& upperRightValue{ _Data[(upperRightIntegerCoordinate._Y * _Width) + upperRightIntegerCoordinate._X] };
-		const Type& lowerRightValue{ _Data[(lowerRightIntegerCoordinate._Y * _Width) + lowerRightIntegerCoordinate._X] };
+		const TYPE& lowerLeftValue{ _Data[(lowerLeftIntegerCoordinate._Y * _Width) + lowerLeftIntegerCoordinate._X] };
+		const TYPE& upperLeftValue{ _Data[(upperLeftIntegerCoordinate._Y * _Width) + upperLeftIntegerCoordinate._X] };
+		const TYPE& upperRightValue{ _Data[(upperRightIntegerCoordinate._Y * _Width) + upperRightIntegerCoordinate._X] };
+		const TYPE& lowerRightValue{ _Data[(lowerRightIntegerCoordinate._Y * _Width) + lowerRightIntegerCoordinate._X] };
 
 		//Calculate the blend values.
 		const float horizontalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._X * static_cast<float>(_Width)) };
 		const float verticalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._Y * static_cast<float>(_Height)) };
 
 		//Perform the blends.
-		const Type blend1{ Type::LinearlyInterpolate(lowerLeftValue, lowerRightValue, horizontalBlend) };
-		const Type blend2{ Type::LinearlyInterpolate(upperLeftValue, upperRightValue, horizontalBlend) };
+		const TYPE blend1{ TYPE::LinearlyInterpolate(lowerLeftValue, lowerRightValue, horizontalBlend) };
+		const TYPE blend2{ TYPE::LinearlyInterpolate(upperLeftValue, upperRightValue, horizontalBlend) };
 
-		return Type::LinearlyInterpolate(blend1, blend2, verticalBlend);
+		return TYPE::LinearlyInterpolate(blend1, blend2, verticalBlend);
 	}
 
 	/*
 	*	Returns the texture value at the specified coordinates using linear sampling and the given address mode.
 	*/
-	const Type Sample(const float X, const float Y, const AddressMode addressMode) const NOEXCEPT
+	const TYPE Sample(const float X, const float Y, const AddressMode addressMode) const NOEXCEPT
 	{
 		return Sample(Vector2<float>(X, Y), addressMode);
 	}
@@ -228,7 +225,7 @@ public:
 private:
 
 	//The underlying texture data.
-	DynamicArray<Type> _Data;
+	DynamicArray<TYPE> _Data;
 
 	//The width of the texture.
 	uint32 _Width;

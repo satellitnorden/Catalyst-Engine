@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 #include <Rendering/Engine/Model.h>
 
 //Resources.
@@ -24,6 +24,6 @@ public:
 	/*
 	*	Creates a texture 2D.
 	*/
-	static void CreateTexture2D(Texture2DData *const RESTRICT data, CPUTexture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT;
+	static void CreateTexture2D(Texture2DData *const RESTRICT data, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT;
 
 };

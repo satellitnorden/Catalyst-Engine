@@ -7,7 +7,7 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/Texture2D.h>
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/Model.h>
 #include <Rendering/Engine/OceanMaterial.h>
@@ -95,7 +95,7 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding texture 2D
 	*/
-	static const CPUTexture2D<Vector4<byte>>& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
+	static const Texture2D<Vector4<byte>>& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
 
 private:
 
@@ -133,7 +133,7 @@ private:
 	static Map<HashString, Model> _Models;
 
 	//Container for all texture 2Ds.
-	static Map<HashString, CPUTexture2D<Vector4<byte>>> _Texture2Ds;
+	static Map<HashString, Texture2D<Vector4<byte>>> _Texture2Ds;
 
 	/*
 	*	Loads a resource collection, internal implementation.
