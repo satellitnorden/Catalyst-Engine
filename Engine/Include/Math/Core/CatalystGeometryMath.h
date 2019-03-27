@@ -35,9 +35,9 @@ public:
 
 		const float denom{ 1.0f / (d00 * d11 - d01 * d01) };
 
-		barycentricCoordinates->_X = (d11 * d20 - d01 * d21) * denom;
-		barycentricCoordinates->_Y = (d00 * d21 - d01 * d20) * denom;
-		barycentricCoordinates->_Z = 1.0f - barycentricCoordinates->_X - barycentricCoordinates->_Y;
+		barycentricCoordinates->_Y = (d11 * d20 - d01 * d21) * denom;
+		barycentricCoordinates->_Z = (d00 * d21 - d01 * d20) * denom;
+		barycentricCoordinates->_X = 1.0f - barycentricCoordinates->_Y - barycentricCoordinates->_Z;
 	}
 
 	/*
