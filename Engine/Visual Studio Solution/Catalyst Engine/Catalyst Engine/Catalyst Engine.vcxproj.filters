@@ -1275,6 +1275,12 @@
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

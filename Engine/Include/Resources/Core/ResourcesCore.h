@@ -20,6 +20,7 @@ enum class ResourceType : uint8
 
 	//New resource types. Yay!
 	Model,
+	Texture2D,
 
 	NumberOfResourceTypes
 };

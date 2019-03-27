@@ -125,7 +125,7 @@ public:
 	/*
 	*	Initializes this CPU texture 2D.
 	*/
-	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const void *const RESTRICT data) NOEXCEPT
+	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const Type *const RESTRICT data) NOEXCEPT
 	{
 		//Set the width and height.
 		_Width = initialWidth;

@@ -14,3 +14,12 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 	model->_Vertices = std::move(data->_Vertices);
 	model->_Indices = std::move(data->_Indices);
 }
+
+/*
+*	Creates a texture 2D.
+*/
+void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, CPUTexture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
+{
+	//Do something. Please. ):
+	texture->Initialize(data->_Width, data->_Height, reinterpret_cast<const Vector4<byte> *const RESTRICT>(data->_Data[0].Data()));
+}

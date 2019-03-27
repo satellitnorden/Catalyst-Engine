@@ -7,6 +7,7 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
+#include <Rendering/Engine/CPUTexture2D.h>
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/Model.h>
 #include <Rendering/Engine/OceanMaterial.h>
@@ -52,11 +53,6 @@ public:
 	static const GrassVegetationModel& GetGrassVegetationModel(const HashString resourceID) { return _GrassVegetationModels[resourceID]; }
 
 	/*
-	*	Given a resource ID, return the corresponding model.
-	*/
-	static const Model& GetModel(const HashString resourceID) { return _Models[resourceID]; }
-
-	/*
 	*	Given a resource ID, return the corresponding ocean material.
 	*/
 	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return _OceanMaterials[resourceID]; }
@@ -91,6 +87,16 @@ public:
 	*/
 	static const TreeVegetationModel& GetTreeVegetationModel(const HashString resourceID) { return _TreeVegetationModels[resourceID]; }
 
+	/*
+	*	Given a resource ID, return the corresponding model.
+	*/
+	static const Model& GetModel(const HashString resourceID) { return _Models[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding texture 2D
+	*/
+	static const CPUTexture2D<Vector4<byte>>& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
+
 private:
 
 	//Container for all environment materials.
@@ -101,9 +107,6 @@ private:
 
 	//Container for all grass vegetation models.
 	static Map<HashString, GrassVegetationModel> _GrassVegetationModels;
-
-	//Container for all models.
-	static Map<HashString, Model> _Models;
 
 	//Container for all ocean materials.
 	static Map<HashString, OceanMaterial> _OceanMaterials;
@@ -125,6 +128,12 @@ private:
 
 	//Container for all tree vegetation models.
 	static Map<HashString, TreeVegetationModel> _TreeVegetationModels;
+
+	//Container for all models.
+	static Map<HashString, Model> _Models;
+
+	//Container for all texture 2Ds.
+	static Map<HashString, CPUTexture2D<Vector4<byte>>> _Texture2Ds;
 
 	/*
 	*	Loads a resource collection, internal implementation.
@@ -185,5 +194,10 @@ private:
 	*	Given a file, load a model.
 	*/
 	static void LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a texture 2D
+	*/
+	static void LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

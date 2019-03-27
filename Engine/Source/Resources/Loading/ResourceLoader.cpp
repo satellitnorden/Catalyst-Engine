@@ -27,7 +27,6 @@
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
 Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
 Map<HashString, GrassVegetationModel> ResourceLoader::_GrassVegetationModels;
-Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
@@ -35,6 +34,9 @@ Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
 Map<HashString, TreeVegetationMaterial> ResourceLoader::_TreeVegetationMaterials;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
+
+Map<HashString, Model> ResourceLoader::_Models;
+Map<HashString, CPUTexture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
 
 /*
 *	Given a file path, load a resource collection.
@@ -760,4 +762,41 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the model.
 	ResourceCreator::CreateModel(&data, &_Models[resourceID]);
+}
+
+/*
+*	Given a file, load a texture 2D
+*/
+void ResourceLoader::LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Load the texture 2D data.
+	Texture2DData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of mipmap levels.
+	file.Read(&data._MipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&data._Width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&data._Height, sizeof(uint32));
+
+	//Read the data.
+	data._Data.UpsizeSlow(data._MipmapLevels);
+
+	for (uint8 i{ 0 }; i < data._MipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
+
+		data._Data[i].Reserve(textureSize);
+
+		file.Read(data._Data[i].Data(), textureSize);
+	}
+
+	//Create the texture 2D.
+	ResourceCreator::CreateTexture2D(&data, &_Texture2Ds[resourceID]);
 }
