@@ -255,12 +255,20 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Matrix4 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Matrix4 &other) const NOEXCEPT
 	{
 		return	_Matrix[0] == other._Matrix[0]
 				&& _Matrix[1] == other._Matrix[1]
 				&& _Matrix[2] == other._Matrix[2]
 				&& _Matrix[3] == other._Matrix[3];
+	}
+
+	/*
+	*	Inequality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Matrix4 &other) const NOEXCEPT
+	{
+		return !(operator==(other));
 	}
 
 	/*
@@ -554,3 +562,9 @@ public:
 	}
 
 };
+
+//Matrix constants.
+namespace MatrixConstants
+{
+	constexpr Matrix4 IDENTITY{  };
+}

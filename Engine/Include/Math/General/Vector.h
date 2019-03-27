@@ -567,7 +567,7 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Vector3 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Vector3 &other) const NOEXCEPT
 	{
 		return	_X == other._X
 			&& _Y == other._Y
@@ -986,7 +986,7 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE constexpr bool operator==(const Vector4 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Vector4 &other) const NOEXCEPT
 	{
 		return	_X == other._X
 				&& _Y == other._Y

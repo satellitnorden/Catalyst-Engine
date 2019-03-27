@@ -748,8 +748,8 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
-	//Read the extent of this model.
-	file.Read(&data._Extent, sizeof(float));
+	//Read the axis-aligned bounding box
+	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
 
 	//Read the number of vertices.
 	uint64 numberOfVertices;

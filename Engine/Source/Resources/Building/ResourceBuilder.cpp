@@ -7,6 +7,9 @@
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
+//Math.
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+
 //Resources
 #include <Resources/Building/AssimpBuilder.h>
 #include <Resources/Core/ResourcesCore.h>
@@ -84,12 +87,28 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 	//Build the model.
 	DynamicArray<Vertex> vertices;
 	DynamicArray<uint32> indices;
-	float extent{ 0.0f };
 
-	AssimpBuilder::BuildModel(parameters._File, &vertices, &indices, &extent);
+	AssimpBuilder::BuildModel(parameters._File, &vertices, &indices);
 
-	//Write the extent to the file.
-	file.Write(&extent, sizeof(float));
+	//Transform all vertices and simultaneously calculate the bounding box.
+	AxisAlignedBoundingBox axisAlignedBoundingBox;
+
+	axisAlignedBoundingBox._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
+	axisAlignedBoundingBox._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
+
+	for (Vertex &vertex : vertices)
+	{
+		if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
+		{
+			vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
+		}
+
+		axisAlignedBoundingBox._Minimum = Vector3<float>::Minimum(axisAlignedBoundingBox._Minimum, vertex._Position);
+		axisAlignedBoundingBox._Maximum = Vector3<float>::Maximum(axisAlignedBoundingBox._Maximum, vertex._Position);
+	}
+
+	//Write the axis-aligned bounding box to the file.
+	file.Write(&axisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
 
 	//Write the size of the vertices to the file.
 	const uint64 sizeOfVertices{ vertices.Size() };

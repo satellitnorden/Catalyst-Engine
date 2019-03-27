@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/General/Vector.h>
+#include <Math/General/Matrix.h>
 
 class Vertex final
 {
@@ -65,6 +66,36 @@ public:
 		_TextureCoordinate(newTextureCoordinateX, newTextureCoordinateY)
 	{
 
+	}
+
+	/*
+	*	Transforms this vertex.
+	*/
+	FORCE_INLINE constexpr void Transform(const Matrix4 &transformation, const float textureCoordinateRotation) NOEXCEPT
+	{
+		//Transform the position.
+		const Vector4<float> transformedPosition{ transformation * Vector4<float>(_Position, 1.0f) };
+
+		_Position._X = transformedPosition._X;
+		_Position._Y = transformedPosition._Y;
+		_Position._Z = transformedPosition._Z;
+
+		//Transform the normal.
+		const Vector4<float> transformedNormal{ transformation * Vector4<float>(_Normal, 0.0f) };
+
+		_Normal._X = transformedNormal._X;
+		_Normal._Y = transformedNormal._Y;
+		_Normal._Z = transformedNormal._Z;
+
+		//Transform the tangent.
+		const Vector4<float> transformedTangent{ transformation * Vector4<float>(_Tangent, 0.0f) };
+
+		_Tangent._X = transformedTangent._X;
+		_Tangent._Y = transformedTangent._Y;
+		_Tangent._Z = transformedTangent._Z;
+
+		//Rotate the texture coordinate.
+		_TextureCoordinate.Rotate(textureCoordinateRotation);
 	}
 
 };

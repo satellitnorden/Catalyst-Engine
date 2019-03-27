@@ -250,8 +250,8 @@ private:
 
 			case AddressMode::Repeat:
 			{
-				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : 1.0f + CatalystBaseMath::Fractional(coordinate->_X);
-				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : 1.0f + CatalystBaseMath::Fractional(coordinate->_Y);
+				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_X));
+				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Y));
 
 				break;
 			}

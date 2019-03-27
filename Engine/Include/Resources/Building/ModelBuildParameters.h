@@ -3,44 +3,27 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/General/Matrix.h>
+
 class ModelBuildParameters final
 {
 
 public:
 
 	//The output file path.
-	const char *RESTRICT _Output;
+	const char *RESTRICT _Output{ nullptr };
 
 	//The resource id.
-	const char *RESTRICT _ID;
+	const char *RESTRICT _ID{ nullptr };
 
 	//The file.
-	const char *RESTRICT _File;
+	const char *RESTRICT _File{ nullptr };
 
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE constexpr ModelBuildParameters() NOEXCEPT
-		:
-		_Output(nullptr),
-		_ID(nullptr),
-		_File(nullptr)
-	{
+	//The transformation.
+	Matrix4 _Transformation{ };
 
-	}
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	FORCE_INLINE constexpr ModelBuildParameters(const char *const RESTRICT initialOutput,
-												const char *const RESTRICT initialID,
-												const char *const RESTRICT initialFile) NOEXCEPT
-		:
-		_Output(initialOutput),
-		_ID(initialID),
-		_File(initialFile)
-	{
-
-	}
+	//The texture coordinate rotation.
+	float _TexturCoordinateRotation{ 0.0f };
 
 };
