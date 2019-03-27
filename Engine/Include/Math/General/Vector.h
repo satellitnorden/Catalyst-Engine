@@ -274,11 +274,11 @@ public:
 	*/
 	FORCE_INLINE constexpr void Rotate(const float amount) NOEXCEPT
 	{
-		const float cosine{ CatalystBaseMath::CosineRadians(amount) };
-		const float sine{ CatalystBaseMath::SineDegrees(amount) };
+		const float cosine{ CatalystBaseMath::Cosine(amount) };
+		const float sine{ CatalystBaseMath::Sine(amount) };
 
 		const float newX{ _X * cosine - _Y * sine };
-		const float newY{ _X * cosine + _Y * sine };
+		const float newY{ _X * sine + _Y * cosine };
 
 		_X = newX;
 		_Y = newY;
