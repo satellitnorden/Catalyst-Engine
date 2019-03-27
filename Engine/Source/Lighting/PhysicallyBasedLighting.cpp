@@ -27,7 +27,7 @@ namespace PhysicallyBasedLightingInternal
 	Vector3<float> CalculateFresnel(Vector3<float> surfaceColor,
 		float lightViewAngle)
 	{
-		return surfaceColor + (surfaceColor - 1.0f) * CatalystBaseMath::PowerOf(CatalystBaseMath::Clamp<float>(1.0f - lightViewAngle, 0.0f, 1.0f), 5);
+		return surfaceColor + (surfaceColor - 1.0f) * CatalystBaseMath::PowerOf(1.0f - lightViewAngle, 5);
 	}
 
 	/*
@@ -37,7 +37,7 @@ namespace PhysicallyBasedLightingInternal
 		float roughness,
 		float lightViewAngle)
 	{
-		return surfaceColor + (Vector3<float>::Maximum(Vector3<float>(1.0f - roughness), surfaceColor) - surfaceColor) * CatalystBaseMath::PowerOf(CatalystBaseMath::Clamp<float>(1.0f - lightViewAngle, 0.0f, 1.0f), 5);
+		return surfaceColor + (Vector3<float>::Maximum(Vector3<float>(1.0f - roughness), surfaceColor) - surfaceColor) * CatalystBaseMath::PowerOf(CatalystBaseMath::Maximum<float>(1.0f - lightViewAngle, 0.0f), 5);
 	}
 
 	/*
@@ -96,7 +96,7 @@ namespace PhysicallyBasedLighting
 
 		float distribution = PhysicallyBasedLightingInternal::CalculateDistribution(roughness, normal, halfwayDirection);
 		float geometry = PhysicallyBasedLightingInternal::CalculateGeometry(roughness, lightAngle, viewAngle);
-		Vector3<float> fresnel = PhysicallyBasedLightingInternal::CalculateFresnel(PhysicallyBasedLightingInternal::CalculateSurfaceColor(albedo, metallic), lightViewAngle);
+		Vector3<float> fresnel = Vector3<float>::Maximum(PhysicallyBasedLightingInternal::CalculateFresnel(PhysicallyBasedLightingInternal::CalculateSurfaceColor(albedo, metallic), lightViewAngle), Vector3<float>(0.0f, 0.0f, 0.0f));
 
 		Vector3<float> diffuseComponent = Vector3<float>(1.0f) - fresnel;
 		diffuseComponent *= 1.0f - metallic;
