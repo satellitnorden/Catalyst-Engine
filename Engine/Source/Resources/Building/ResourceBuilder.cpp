@@ -105,6 +105,8 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 
 		axisAlignedBoundingBox._Minimum = Vector3<float>::Minimum(axisAlignedBoundingBox._Minimum, vertex._Position);
 		axisAlignedBoundingBox._Maximum = Vector3<float>::Maximum(axisAlignedBoundingBox._Maximum, vertex._Position);
+
+		vertex._TextureCoordinate *= parameters._TextureCoordinateMultiplier;
 	}
 
 	//Write the axis-aligned bounding box to the file.
@@ -207,6 +209,10 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 
 			const uint32 uWidth{ static_cast<uint32>(width) };
 			const uint32 uHeight{ static_cast<uint32>(height) };
+
+			//Write the width and height of the texture to the file.
+			file.Write(&uWidth, sizeof(uint32));
+			file.Write(&uHeight, sizeof(uint32));
 
 			//Write the R, G, B and A channel data to the file.
 			constexpr byte DEFAULT_R{ 255 };

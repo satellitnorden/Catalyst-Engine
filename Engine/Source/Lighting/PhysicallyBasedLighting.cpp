@@ -13,7 +13,7 @@ namespace PhysicallyBasedLightingInternal
 	{
 		float roughnessSquared = roughness * roughness;
 		float roughnessSquaredSquared = roughnessSquared * roughnessSquared;
-		float normalHalfwayAngle = CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(normalDirection, halfwayDirection), 0.0f);
+		float normalHalfwayAngle = CatalystBaseMath::Clamp<float>(Vector3<float>::DotProduct(normalDirection, halfwayDirection), 0.0f, 1.0f);
 		float normalHalfwayAngleSquared = normalHalfwayAngle * normalHalfwayAngle;
 
 		float denominator = normalHalfwayAngleSquared * (roughnessSquaredSquared - 1.0f) + 1.0f;
@@ -27,7 +27,7 @@ namespace PhysicallyBasedLightingInternal
 	Vector3<float> CalculateFresnel(Vector3<float> surfaceColor,
 		float lightViewAngle)
 	{
-		return surfaceColor + (surfaceColor - 1.0f) * CatalystBaseMath::PowerOf(CatalystBaseMath::Maximum<float>(1.0f - lightViewAngle, 0.0f), 5);
+		return surfaceColor + (surfaceColor - 1.0f) * CatalystBaseMath::PowerOf(CatalystBaseMath::Clamp<float>(1.0f - lightViewAngle, 0.0f, 1.0f), 5);
 	}
 
 	/*
@@ -37,7 +37,7 @@ namespace PhysicallyBasedLightingInternal
 		float roughness,
 		float lightViewAngle)
 	{
-		return surfaceColor + (Vector3<float>::Maximum(Vector3<float>(1.0f - roughness), surfaceColor) - surfaceColor) * CatalystBaseMath::PowerOf(CatalystBaseMath::Maximum<float>(1.0f - lightViewAngle, 0.0f), 5);
+		return surfaceColor + (Vector3<float>::Maximum(Vector3<float>(1.0f - roughness), surfaceColor) - surfaceColor) * CatalystBaseMath::PowerOf(CatalystBaseMath::Clamp<float>(1.0f - lightViewAngle, 0.0f, 1.0f), 5);
 	}
 
 	/*
@@ -91,8 +91,8 @@ namespace PhysicallyBasedLighting
 	{
 		Vector3<float> halfwayDirection = Vector3<float>::Normalize(viewDirection + lightDirection);
 		float lightViewAngle = CatalystBaseMath::Clamp<float>(Vector3<float>::DotProduct(halfwayDirection, viewDirection), 0.0f, 1.0f);
-		float lightAngle = CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(normal, lightDirection), 0.0f);
-		float viewAngle = CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(normal, viewDirection), 0.0f);
+		float lightAngle = CatalystBaseMath::Clamp<float>(Vector3<float>::DotProduct(normal, lightDirection), 0.0f, 1.0f);
+		float viewAngle = CatalystBaseMath::Clamp<float>(Vector3<float>::DotProduct(normal, viewDirection), 0.0f, 1.0f);
 
 		float distribution = PhysicallyBasedLightingInternal::CalculateDistribution(roughness, normal, halfwayDirection);
 		float geometry = PhysicallyBasedLightingInternal::CalculateGeometry(roughness, lightAngle, viewAngle);
