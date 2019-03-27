@@ -151,6 +151,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 
 				break;
 			}
+
+			case ResourceType::Texture2D:
+			{
+				LoadTexture2D(file);
+
+				break;
+			}
 		}
 	}
 }
