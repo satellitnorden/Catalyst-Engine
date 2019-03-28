@@ -71,6 +71,39 @@ namespace PhysicallyBasedLighting
 {
 
 	/*
+	*   Calculates the ambient lighting.
+	*
+	*   albedo - The albedo of the surface at the surface point.
+	*   diffuseIrradiance - The diffuse irradiance in the reflection direction of the surface at the surface point.
+	*   normal - The normal of the surface at the surface point.
+	*   specularIrradiance - The specular irradiance in the reflection direction of the surface at the surface point.
+	*   viewDirection - Direction vector going from the surface point to the perceiving point.
+	*   ambientOcclusion - The ambient oclusion of the surface at the surface point.
+	*   metallic - The metallic of the surface at the surface point.
+	*   roughness - The roughness of the surface at the surface point.
+	*/
+	NO_DISCARD Vector3<float> CalculateAmbient(	const Vector3<float> &albedo,
+												const Vector3<float> &diffuseIrradiance,
+												const Vector3<float> &normal,
+												const Vector3<float> &specularIrradiance,
+												const Vector3<float> &viewDirection,
+												const float ambientOcclusion,
+												const float metallic,
+												const float roughness) NOEXCEPT
+	{
+		const float viewAngle = CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(normal, viewDirection), 0.0f);
+		Vector3<float> specularComponent = PhysicallyBasedLightingInternal::CalculateFresnelRoughness(PhysicallyBasedLightingInternal::CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
+		Vector3<float> diffuseComponent = Vector3<float>(1.0f) - specularComponent;
+		diffuseComponent *= 1.0f - metallic;
+
+		Vector3<float> diffuse = diffuseIrradiance * albedo;
+
+		Vector3<float> specular = Vector3<float>::LinearlyInterpolate(specularIrradiance, diffuseIrradiance, roughness);
+
+		return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
+	}
+
+	/*
 	*   Calculates a light.
 	*
 	*   viewDirection - Direction vector going from the surface point to the perceiving point.

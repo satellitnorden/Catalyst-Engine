@@ -339,6 +339,14 @@ public:
 	}
 
 	/*
+	*	Makes a direction point in the same hemisphere as the given normal.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Hemisphere(const Vector3 &direction, const Vector3 &normal) NOEXCEPT
+	{
+		return DotProduct(direction, normal) >= 0.0f ? direction : -direction;
+	}
+
+	/*
 	*	Returns whether point A is closer to the given position than B or not.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool IsCloser(const Vector3<float> &position, const Vector3<float> &A, const Vector3<float> &B) NOEXCEPT
@@ -471,6 +479,14 @@ public:
 	}
 
 	/*
+	*	Reflects the incoming direction onto the given normal.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Reflect(const Vector3 &incoming, const Vector3 &normal) NOEXCEPT
+	{
+		return incoming - 2.0f * Vector3<float>::DotProduct(incoming, normal) * normal;
+	}
+
+	/*
 	*	Given a rotation vector, returns the forward vector.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> ForwardVector(const Vector3<float> &rotation) NOEXCEPT
@@ -587,7 +603,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3 operator-() const NOEXCEPT
 	{
-		return *this * -1.0f;
+		return Vector3<float>(-_X, -_Y, -_Z);
 	}
 
 	/*
