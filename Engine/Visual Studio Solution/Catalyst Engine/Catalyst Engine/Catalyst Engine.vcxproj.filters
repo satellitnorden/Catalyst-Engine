@@ -513,9 +513,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTextureCube.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
@@ -1286,6 +1283,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
       <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureCube.h">
+      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

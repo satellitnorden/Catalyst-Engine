@@ -160,7 +160,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 	float *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 	//Wrap the data into a texture 2D for easier manipulation.
-	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
+	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint32>(width), static_cast<uint32>(height) };
 
 	//Copy the data into the cpu texture.
 	MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
@@ -184,16 +184,21 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 			{
 				Vector3<float> position;
 
+				const float xWeight{ static_cast<float>(j) / static_cast<float>(parameters._Resolution) };
+				const float yWeight{ static_cast<float>(k) / static_cast<float>(parameters._Resolution) };
+
 				switch (i)
 				{
-					default: ASSERT(false, "Huh?"); break;
-					case 0: position = Vector3<float>::Normalize(Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))))); break;
-					case 1: position = Vector3<float>::Normalize(Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))))); break;
-					case 2: position = Vector3<float>::Normalize(Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))))); break;
-					case 3: position = Vector3<float>::Normalize(Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))))); break;
-					case 4: position = Vector3<float>::Normalize(Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))), -1.0f)); break;
-					case 5: position = Vector3<float>::Normalize(Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(j) / static_cast<float>(parameters._Resolution))), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, (static_cast<float>(k) / static_cast<float>(parameters._Resolution))), 1.0f)); break;
+					default: CRASH(); break;
+					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight)); break; //Front.
+					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight)); break; //Back.
+					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, yWeight)); break; //Up.
+					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight)); break; //Down.
+					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f); break; //Right.
+					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f); break; //Left.
 				}
+
+				position.Normalize();
 
 				Vector2<float> textureCoordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
 				textureCoordinate *= INVERSE_ATAN;

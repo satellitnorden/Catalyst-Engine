@@ -36,6 +36,7 @@ Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TreeVegetationModel> ResourceLoader::_TreeVegetationModels;
 
 Map<HashString, Model> ResourceLoader::_Models;
+Map<HashString, TextureCube> ResourceLoader::_TextureCubes;
 Map<HashString, Texture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
 
 /*
@@ -794,7 +795,7 @@ void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&data._Resolution, sizeof(uint32));
 
 	//Calculate the data size.
-	const uint64 dataSize{ data._Resolution * data._Resolution * 4 * sizeof(float) * 6 };
+	const uint64 dataSize{ data._Resolution * data._Resolution * 4 * 6 * sizeof(float) };
 
 	//Upsize the data accordingly.
 	data._Data.UpsizeFast(data._Resolution * data._Resolution * 4 * 6);
@@ -803,7 +804,7 @@ void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(data._Data.Data(), dataSize);
 
 	//Create the texture cube.
-	ResourceCreator::CreateTextureCube(&data, nullptr);
+	ResourceCreator::CreateTextureCube(&data, &_TextureCubes[resourceID]);
 }
 
 /*

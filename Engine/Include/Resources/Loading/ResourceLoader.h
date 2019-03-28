@@ -7,13 +7,14 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/Model.h>
 #include <Rendering/Engine/OceanMaterial.h>
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
+#include <Rendering/Engine/TextureCube.h>
+#include <Rendering/Engine/Texture2D.h>
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
@@ -93,7 +94,12 @@ public:
 	static const Model& GetModel(const HashString resourceID) { return _Models[resourceID]; }
 
 	/*
-	*	Given a resource ID, return the corresponding texture 2D
+	*	Given a resource ID, return the corresponding texture cube.
+	*/
+	static const TextureCube& GetTextureCube(const HashString resourceID) { return _TextureCubes[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding texture 2D.
 	*/
 	static const Texture2D<Vector4<byte>>& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
 
@@ -131,6 +137,9 @@ private:
 
 	//Container for all models.
 	static Map<HashString, Model> _Models;
+
+	//Container for all texture cubes.
+	static Map<HashString, TextureCube> _TextureCubes;
 
 	//Container for all texture 2Ds.
 	static Map<HashString, Texture2D<Vector4<byte>>> _Texture2Ds;

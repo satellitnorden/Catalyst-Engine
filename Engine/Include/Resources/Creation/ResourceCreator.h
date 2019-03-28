@@ -4,17 +4,14 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
 #include <Rendering/Engine/Model.h>
+#include <Rendering/Engine/TextureCube.h>
+#include <Rendering/Engine/Texture2D.h>
 
 //Resources.
 #include <Resources/Data/ModelData.h>
 #include <Resources/Data/TextureCubeData.h>
 #include <Resources/Data/Texture2DData.h>
-
-//TEMP
-template <typename TYPE>
-class TextureCube;
 
 class ResourceCreator final
 {
@@ -29,7 +26,7 @@ public:
 	/*
 	*	Creates a texture cube.
 	*/
-	static void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube<Vector4<byte>> *const RESTRICT texture) NOEXCEPT;
+	static void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Creates a texture 2D.
