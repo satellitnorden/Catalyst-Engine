@@ -152,6 +152,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
+			case ResourceType::TextureCube:
+			{
+				LoadTextureCube(file);
+
+				break;
+			}
+
 			case ResourceType::Texture2D:
 			{
 				LoadTexture2D(file);
@@ -769,6 +776,34 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the model.
 	ResourceCreator::CreateModel(&data, &_Models[resourceID]);
+}
+
+/*
+*	Given a file, load a texture cube.
+*/
+void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Load the texture cube data
+	TextureCubeData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the resolution.
+	file.Read(&data._Resolution, sizeof(uint32));
+
+	//Calculate the data size.
+	const uint64 dataSize{ data._Resolution * data._Resolution * 4 * sizeof(float) * 6 };
+
+	//Upsize the data accordingly.
+	data._Data.UpsizeFast(data._Resolution * data._Resolution * 4 * 6);
+
+	//Read the data.
+	file.Read(data._Data.Data(), dataSize);
+
+	//Create the texture cube.
+	ResourceCreator::CreateTextureCube(&data, nullptr);
 }
 
 /*

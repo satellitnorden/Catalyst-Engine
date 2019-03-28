@@ -32,68 +32,27 @@ public:
 	};
 
 	//The output file path.
-	const char *RESTRICT _Output;
+	const char *RESTRICT _Output{ nullptr };
 
-	//The resource id.
-	const char *RESTRICT _ID;
+	//The resource ID.
+	const char *RESTRICT _ID{ nullptr };
 
 	//The number of mipmap levels.
-	uint8 _MipmapLevels;
+	uint8 _MipmapLevels{ 0 };
 
 	//The mode.
-	Mode _Mode;
+	Mode _Mode{ Mode::RToRGBA };
 
 	//The file path for the R channel.
-	const char *RESTRICT _FileR;
+	const char *RESTRICT _FileR{ nullptr };
 
 	//The file path for the G channel.
-	const char *RESTRICT _FileG;
+	const char *RESTRICT _FileG{ nullptr };
 
 	//The file path for the B channel.
-	const char *RESTRICT _FileB;
+	const char *RESTRICT _FileB{ nullptr };
 
 	//The file path for the A channel.
-	const char *RESTRICT _FileA;
-
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE constexpr Texture2DBuildParameters() NOEXCEPT
-		:
-		_Output(nullptr),
-		_ID(nullptr),
-		_MipmapLevels(0),
-		_Mode(Mode::RToRGBA),
-		_FileR(nullptr),
-		_FileG(nullptr),
-		_FileB(nullptr),
-		_FileA(nullptr)
-	{
-
-	}
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	FORCE_INLINE constexpr Texture2DBuildParameters(const char *const RESTRICT initialOutput,
-													const char *const RESTRICT initialID,
-													const uint8 initialMipmapLevels,
-													const Mode initialMode,
-													const char *const RESTRICT initialFileR,
-													const char *const RESTRICT initialFileG,
-													const char *const RESTRICT initialFileB,
-													const char *const RESTRICT initialFileA) NOEXCEPT
-		:
-		_Output(initialOutput),
-		_ID(initialID),
-		_MipmapLevels(initialMipmapLevels),
-		_Mode(initialMode),
-		_FileR(initialFileR),
-		_FileG(initialFileR),
-		_FileB(initialFileR),
-		_FileA(initialFileR)
-	{
-
-	}
+	const char *RESTRICT _FileA{ nullptr };
 
 };

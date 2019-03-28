@@ -14,7 +14,7 @@ public:
 	//The output file path.
 	const char *RESTRICT _Output{ nullptr };
 
-	//The resource id.
+	//The resource ID.
 	const char *RESTRICT _ID{ nullptr };
 
 	//The file.

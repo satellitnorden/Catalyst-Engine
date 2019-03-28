@@ -13,6 +13,14 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 }
 
 /*
+*	Creates a texture cube.
+*/
+void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
+{
+	//Uhm.
+}
+
+/*
 *	Creates a texture 2D.
 */
 void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT

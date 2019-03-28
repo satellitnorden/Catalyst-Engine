@@ -9,7 +9,12 @@
 
 //Resources.
 #include <Resources/Data/ModelData.h>
+#include <Resources/Data/TextureCubeData.h>
 #include <Resources/Data/Texture2DData.h>
+
+//TEMP
+template <typename TYPE>
+class TextureCube;
 
 class ResourceCreator final
 {
@@ -20,6 +25,11 @@ public:
 	*	Creates a model.
 	*/
 	static void CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT;
+
+	/*
+	*	Creates a texture cube.
+	*/
+	static void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube<Vector4<byte>> *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Creates a texture 2D.

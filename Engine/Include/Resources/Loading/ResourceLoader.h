@@ -196,7 +196,12 @@ private:
 	static void LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
-	*	Given a file, load a texture 2D
+	*	Given a file, load a texture cube.
+	*/
+	static void LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a texture 2D.
 	*/
 	static void LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT;
 

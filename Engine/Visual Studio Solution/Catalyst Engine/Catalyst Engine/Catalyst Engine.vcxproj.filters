@@ -1281,6 +1281,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Texture2D.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

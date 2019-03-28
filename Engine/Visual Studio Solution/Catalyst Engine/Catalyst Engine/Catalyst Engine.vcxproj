@@ -297,6 +297,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\EnvironmentMaterialData.h" />
@@ -309,6 +310,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
