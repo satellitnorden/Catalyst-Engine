@@ -5,7 +5,7 @@
 #include <Core/General/HashString.h>
 
 //Resources
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Third party libraries.
 #include <stb_image.h>

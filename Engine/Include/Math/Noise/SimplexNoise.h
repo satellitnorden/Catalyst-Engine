@@ -4,9 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector2.h>
-#include <Math/Vector3.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector.h>
 
 //Simplex noise constants.
 namespace SimplexNoiseConstants

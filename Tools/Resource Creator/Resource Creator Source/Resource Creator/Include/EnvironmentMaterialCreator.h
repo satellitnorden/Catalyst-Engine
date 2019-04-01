@@ -7,20 +7,19 @@
 #include <Core/General/HashString.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
-#include <Math/Vector2.h>
-#include <Math/Vector3.h>
+#include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector.h>
 
 //Multithreading.
 #include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
-#include <Rendering/Engine/CPUTextureCube.h>
+#include <Rendering/Engine/Texture2D.h>
+#include <Rendering/Engine/TextureCube.h>
 
 //Resources
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Systems.
 #include <Systems/TaskSystem.h>
@@ -87,20 +86,20 @@ public:
 		float *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Wrap the data into a cpu texture for easier manipulation.
-		CPUTexture2D<Vector4<float>> hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
+		Texture2D<Vector4<float>> hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
 
 		//Copy the data into the cpu texture.
 		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 		//Create the diffuse output textures.
-		StaticArray<CPUTexture2D<Vector4<float>>, 6> diffuseOutputTextures
+		StaticArray<Texture2D<Vector4<float>>, 6> diffuseOutputTextures
 		{
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution)
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseResolution)
 		};
 
 		StaticArray<DiffuseLayerCreationParameters, 6> diffuseLayerCreationParameters
@@ -120,17 +119,18 @@ public:
 		}
 
 		//Create the diffuse texture.
-		CPUTextureCube diffuseTexture{ diffuseOutputTextures };
+		//TextureCube diffuseTexture{ diffuseOutputTextures }; //TODO: Make this work. (:
+		TextureCube diffuseTexture;
 
 		//Create the diffuse irradiance output textures.
-		StaticArray<CPUTexture2D<Vector4<float>>, 6> diffuseIrradianceOutputTextures
+		StaticArray<Texture2D<Vector4<float>>, 6> diffuseIrradianceOutputTextures
 		{
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution)
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			Texture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution)
 		};
 
 		StaticArray<IrradianceLayerCreationParameters, 6> diffuseIrradianceLayerCreationParameters
@@ -181,7 +181,7 @@ private:
 
 	public:
 
-		DiffuseLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D<Vector4<float>> &initialOutputTexture, const CPUTexture2D<Vector4<float>> &initialHdrTexture) NOEXCEPT
+		DiffuseLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, Texture2D<Vector4<float>> &initialOutputTexture, const Texture2D<Vector4<float>> &initialHdrTexture) NOEXCEPT
 			:
 			index(initialIndex),
 			outputResolution(initialOutputResolution),
@@ -193,8 +193,8 @@ private:
 
 		const uint8 index;
 		const uint32 outputResolution;
-		CPUTexture2D<Vector4<float>> &outputTexture;
-		const CPUTexture2D<Vector4<float>> &hdrTexture;
+		Texture2D<Vector4<float>> &outputTexture;
+		const Texture2D<Vector4<float>> &hdrTexture;
 
 	};
 
@@ -206,7 +206,7 @@ private:
 
 	public:
 
-		IrradianceLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D<Vector4<float>> &initialOutputTexture, const CPUTextureCube &initialDiffuseTexture) NOEXCEPT
+		IrradianceLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, Texture2D<Vector4<float>> &initialOutputTexture, const TextureCube &initialDiffuseTexture) NOEXCEPT
 			:
 			index(initialIndex),
 			outputResolution(initialOutputResolution),
@@ -218,8 +218,8 @@ private:
 
 		const uint8 index;
 		const uint32 outputResolution;
-		CPUTexture2D<Vector4<float>> &outputTexture;
-		const CPUTextureCube &diffuseTexture;
+		Texture2D<Vector4<float>> &outputTexture;
+		const TextureCube &diffuseTexture;
 
 	};
 
@@ -288,7 +288,7 @@ private:
 						Vector3<float> tangentSample{ Vector3<float>(CatalystBaseMath::Sine(theta) * CatalystBaseMath::Cosine(phi), CatalystBaseMath::Sine(theta) * CatalystBaseMath::Sine(phi), CatalystBaseMath::Cosine(theta)) };
 						Vector3<float> sampleVector{ tangentSample._X * rightVector + tangentSample._Y * upVector + tangentSample._Z * direction };
 
-						Vector4<float> sampledValue{ parameters.diffuseTexture.At(sampleVector) };
+						Vector4<float> sampledValue{ parameters.diffuseTexture.Sample(sampleVector) };
 
 						finalIrradiance += Vector3<float>(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::Cosine(theta) * CatalystBaseMath::Sine(theta);
 

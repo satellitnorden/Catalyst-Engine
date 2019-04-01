@@ -5,14 +5,14 @@
 #include <Core/General/HashString.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 //Rendering.
-#include <Rendering/Engine/PhysicalVertex.h>
+#include <Rendering/Engine/Vertex.h>
 #include <Rendering/Engine/RenderingCore.h>
 
 //Resources
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Third party libraries.
 #pragma optimize("", off)
@@ -73,7 +73,7 @@ public:
 		{
 			const char *const RESTRICT modelFile{ i == 0 ? parameters._LowDetailFile : i == 1 ? parameters._MediumDetailFile : parameters._HighDetailFile };
 
-			DynamicArray<PhysicalVertex> vertices;
+			DynamicArray<Vertex> vertices;
 			DynamicArray<uint32> indices;
 			float extent{ 0.0f };
 
@@ -90,7 +90,7 @@ public:
 			file.Write(&sizeOfVertices, sizeof(uint64));
 
 			//Write the vertices to the file.
-			file.Write(vertices.Data(), sizeof(PhysicalVertex) * sizeOfVertices);
+			file.Write(vertices.Data(), sizeof(Vertex) * sizeOfVertices);
 
 			//Write the size of the indices to the file.
 			const uint64 sizeOfIndices{ indices.Size() };
@@ -142,7 +142,7 @@ private:
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<PhysicalVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
@@ -169,7 +169,7 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<PhysicalVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)

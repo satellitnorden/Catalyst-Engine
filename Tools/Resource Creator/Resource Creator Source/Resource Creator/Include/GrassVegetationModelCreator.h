@@ -5,10 +5,10 @@
 #include <Core/General/HashString.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 //Resources
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Vegetation.
 #include <Vegetation/VegetationVertex.h>

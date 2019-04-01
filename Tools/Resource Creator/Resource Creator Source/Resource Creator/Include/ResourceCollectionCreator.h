@@ -7,7 +7,7 @@
 #include <Core/General/DynamicString.h>
 
 //Resources
-#include <Resources/ResourcesCore.h>
+#include <Resources/Core/ResourcesCore.h>
 
 namespace ResourceCollectionCreator
 {
