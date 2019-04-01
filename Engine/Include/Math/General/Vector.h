@@ -27,6 +27,15 @@ public:
 			TYPE _Y;
 		};
 
+		struct
+		{
+			//The R component.
+			TYPE _R;
+
+			//The G component.
+			TYPE _G;
+		};
+
 		//The data.
 		TYPE _Data[2];
 	};
@@ -308,6 +317,18 @@ public:
 
 			//The Z component.
 			TYPE _Z;
+		};
+
+		struct
+		{
+			//The R component.
+			TYPE _R;
+
+			//The G component.
+			TYPE _G;
+
+			//The B component.
+			TYPE _B;
 		};
 
 		//The data.
@@ -919,6 +940,21 @@ public:
 
 			//The W component.
 			TYPE _W;
+		};
+
+		struct
+		{
+			//The R component.
+			TYPE _R;
+
+			//The G component.
+			TYPE _G;
+
+			//The B component.
+			TYPE _B;
+
+			//The A component.
+			TYPE _A;
 		};
 
 		//The data.
