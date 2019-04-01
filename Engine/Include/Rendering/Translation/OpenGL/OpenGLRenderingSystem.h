@@ -9,7 +9,6 @@
 #include <Rendering/Engine/RenderingCore.h>
 
 //Forward declarations.
-class PhysicalModel;
 class RenderPass;
 class Resolution;
 class TextureData;

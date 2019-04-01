@@ -32,42 +32,6 @@ public:
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
 
-	//Enumeration covering all common environment materials.
-	enum class CommonEnvironmentMaterial : uint8
-	{
-		Black,
-		Day,
-		Night,
-
-		NumberOfCommonEnvironmentMaterials
-	};
-
-	//Enumeration covering all common ocean materials.
-	enum class CommonOceanMaterial : uint8
-	{
-		Ocean,
-
-		NumberOfCommonOceanMaterials
-	};
-
-	//Enumeration covering all common particle materials.
-	enum class CommonParticleMaterial : uint8
-	{
-		WhiteCircle,
-
-		NumberOfCommonParticleMaterials
-	};
-
-	//Enumeration covering all common physical materials.
-	enum class CommonPhysicalMaterial : uint8
-	{
-		Black,
-		Red,
-		Teal,
-
-		NumberOfCommonPhysicalMaterials
-	};
-
 	//Enumeration covering all common physical models.
 	enum class CommonPhysicalModel : uint8
 	{

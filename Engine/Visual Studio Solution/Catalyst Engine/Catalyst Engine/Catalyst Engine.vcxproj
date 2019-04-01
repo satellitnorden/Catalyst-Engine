@@ -88,7 +88,6 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\CollisionInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Creation\EntityCreationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h" />

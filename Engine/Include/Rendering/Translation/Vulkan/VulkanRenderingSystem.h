@@ -14,7 +14,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 //Forward declarations.
-class PhysicalModel;
 class RenderPass;
 class Resolution;
 class TextureData;

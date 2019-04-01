@@ -822,9 +822,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\EntityCreationUtilities.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
