@@ -489,63 +489,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanUtilities.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LightingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ParticleSystemRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPasses.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\SkyRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\ParticleMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\ParticleSystemProperties.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalModel.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
@@ -557,9 +500,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h">
       <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h">
-      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
       <Filter>Managers\Include</Filter>
@@ -600,9 +540,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h">
       <Filter>Core\Include\Containers</Filter>
     </ClInclude>
@@ -618,29 +555,14 @@
     <ClInclude Include="..\..\..\Include\Input\MouseState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\Collection.h">
       <Filter>Core\Include\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h">
       <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
@@ -657,18 +579,6 @@
     <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h">
       <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalMaterialData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonParticleMaterialData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonEnvironmentMaterialData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonOceanMaterialData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -680,15 +590,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h">
       <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AboveOceanRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BelowOceanRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanRenderingData.h">
-      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h">
       <Filter>Systems\Include</Filter>
@@ -720,15 +621,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
@@ -749,18 +641,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
       <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DepthOfFieldHorizontalRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DepthOfFieldVerticalRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h">
       <Filter>Systems\Include</Filter>
@@ -795,22 +675,10 @@
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalPlacementData.h">
       <Filter>Entities\Include\Placement</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicPhysicalEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicPhysicalInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h">
@@ -824,12 +692,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanImage.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h">
-      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h">
       <Filter>Terrain\Include</Filter>
@@ -845,12 +707,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowHorizontalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\OpenGL\OpenGLRenderingSystem.h">
       <Filter>Rendering\Include\Translation\OpenGL</Filter>
@@ -894,44 +750,8 @@
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailGrassVegetationDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h">
       <Filter>Core\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailDebrisVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailDebrisVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailSolidVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailSolidVegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
@@ -951,77 +771,8 @@
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationMaterial.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationTrunkRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationTrunkRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTreeVegetationTrunkRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationCrownColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationCrownDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTreeVegetationCrownColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTreeVegetationCrownDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTreeVegetationTrunkRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchInformation.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTreeVegetationImpostorColorRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTreeVegetationImpostorDepthRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomDownsampleFirstIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleFirstIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomDownsampleSecondIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleSecondIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomDownsampleThirdIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomUpsampleThirdIterationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
       <Filter>Systems\Include</Filter>
@@ -1037,9 +788,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h">
       <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ExponentialHeightFogRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\ScopedReadLock.h">
       <Filter>Multithreading\Include</Filter>
@@ -1086,12 +834,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
       <Filter>Entities\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PointLightRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTreeVegetationCrownShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\CollisionEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
@@ -1101,39 +843,6 @@
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h">
       <Filter>Components\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicOutlineRenderComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicPhysicalRenderComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\FrustumCullingComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\PointLightComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\SpotLightComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h">
       <Filter>Components\Include\Singleton</Filter>
     </ClInclude>
@@ -1142,9 +851,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h">
       <Filter>Memory\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h">
       <Filter>Math\Include\Core</Filter>
@@ -1197,40 +903,10 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\EnvironmentMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\GrassVegetationModelData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\OceanMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\ParticleMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\PhysicalModelData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h">
       <Filter>Resources\Include\Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationMaterialData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\TreeVegetationModelData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h">
-      <Filter>Resources\Include\Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoaderUtilities.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h">
@@ -1238,12 +914,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h">
       <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Model.h">
-      <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h">
       <Filter>Resources\Include\Data</Filter>
@@ -1269,17 +939,92 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h">
       <Filter>Resources\Include\Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Texture2D.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
       <Filter>Resources\Include\Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPasses.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Model.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Texture2D.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureCube.h">
       <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonModelData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\FrustumCullingComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\PointLightComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\SpotLightComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h">
+      <Filter>Components\Include\Transient</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1403,44 +1148,8 @@
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LightingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ParticleSystemRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp">
       <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
@@ -1451,23 +1160,8 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AboveOceanRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BelowOceanRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp">
       <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalSolidVegetationShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
       <Filter>Core\Source\Utilities</Filter>
@@ -1477,18 +1171,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp">
       <Filter>Lighting\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DepthOfFieldHorizontalRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DepthOfFieldVerticalRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
       <Filter>Systems\Source</Filter>
@@ -1514,12 +1196,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp">
       <Filter>Rendering\Source\API\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowHorizontalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowVerticalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
     </ClCompile>
@@ -1535,111 +1211,6 @@
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
       <Filter>Physics\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailGrassVegetationDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailDebrisVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailDebrisVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailDebrisVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailSolidVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailSolidVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailSolidVegetationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationTrunkRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationTrunkRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailTreeVegetationTrunkRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationCrownDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationCrownColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\MediumDetailTreeVegetationCrownDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailTreeVegetationCrownColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailTreeVegetationCrownDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTreeVegetationTrunkRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\HighDetailTreeVegetationImpostorDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailTreeVegetationImpostorColorRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\LowDetailTreeVegetationImpostorDepthRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomDownsampleFirstIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleFirstIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomDownsampleSecondIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleSecondIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomDownsampleThirdIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomUpsampleThirdIterationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -1649,29 +1220,17 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ExponentialHeightFogRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
       <Filter>Core\Source\General</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PointLightRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTreeVegetationCrownShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\CollisionEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
       <Filter>Core\Source\Essential</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
       <Filter>Resources\Source\Loading</Filter>
@@ -1684,6 +1243,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp">
       <Filter>Lighting\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

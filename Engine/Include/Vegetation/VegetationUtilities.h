@@ -445,7 +445,7 @@ namespace VegetationUtilities
 					for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 					{
 						RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																								information._Model._AxisAlignedBoundingBoxes[i],
+																								AxisAlignedBoundingBox(),
 																								&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 					}
 
@@ -499,7 +499,7 @@ namespace VegetationUtilities
 		for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
 		{
 			RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	levelOfDetailTransformations[i],
-																					update->_Information->_Model._AxisAlignedBoundingBoxes[i],
+																					AxisAlignedBoundingBox(),
 																					&update->_NewPatchInformation._AxisAlignedBoundingBoxes[i]);
 		}
 	}

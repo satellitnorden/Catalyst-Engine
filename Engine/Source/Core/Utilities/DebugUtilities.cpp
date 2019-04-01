@@ -63,25 +63,6 @@ namespace DebugUtilities
 	}
 
 	/*
-	*	Debug renders all axis aligned bounding boxes for particle systems.
-	*/
-	void DebugRenderParticleSystemsAxisAlignedBoundingBoxes() NOEXCEPT
-	{
-		const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
-		const uint64 numberOfComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
-
-		for (uint64 i{ 0 }; i < numberOfComponents; ++i, ++component)
-		{
-			DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData data;
-
-			data._Box = component[i]._AxisAlignedBoundingBox;
-			data._Color = GetRandomColor(i);
-
-			DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(data);
-		}
-	}
-
-	/*
 	*	Debug renders all axis aligned bounding boxes for solid vegetation.
 	*/
 	void DebugRenderSolidVegetationAxisAlignedBoundingBoxes() NOEXCEPT

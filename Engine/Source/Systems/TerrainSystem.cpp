@@ -84,17 +84,6 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 }
 
 /*
-*	Registers a terrain material at the given index.
-*/
-void TerrainSystem::RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material, const float textureScalingFactor) NOEXCEPT
-{
-	_TerrainMaterials[index]._AlbedoTextureIndex = material._AlbedoTextureIndex;
-	_TerrainMaterials[index]._NormalMapTextureIndex = material._NormalMapTextureIndex;
-	_TerrainMaterials[index]._MaterialPropertiesTextureIndex = material._MaterialPropertiesTextureIndex;
-	_TerrainMaterials[index]._TextureScalingFactor = textureScalingFactor;
-}
-
-/*
 *	Returns the terrain height at the given position.
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT

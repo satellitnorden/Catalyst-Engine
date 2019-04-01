@@ -142,10 +142,10 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Bind the cube model.
-	const PhysicalModel cubeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
+	//const PhysicalModel cubeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
 	constexpr uint64 offset{ 0 };
-	commandBuffer->BindVertexBuffer(this, 0, cubeModel._Buffers[UNDERLYING(LevelOfDetail::High)], &offset);
-	commandBuffer->BindIndexBuffer(this, cubeModel._Buffers[UNDERLYING(LevelOfDetail::High)], cubeModel._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
+	//commandBuffer->BindVertexBuffer(this, 0, cubeModel._Buffers[UNDERLYING(LevelOfDetail::High)], &offset);
+	//commandBuffer->BindIndexBuffer(this, cubeModel._Buffers[UNDERLYING(LevelOfDetail::High)], cubeModel._IndexOffsets[UNDERLYING(LevelOfDetail::High)]);
 
 	for (const DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData &renderData : *data)
 	{
@@ -158,7 +158,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4<float>), &renderData._Color);
 
-		commandBuffer->DrawIndexed(this, cubeModel._IndexCounts[UNDERLYING(LevelOfDetail::High)], 1);
+		//commandBuffer->DrawIndexed(this, cubeModel._IndexCounts[UNDERLYING(LevelOfDetail::High)], 1);
 	}
 
 	//End the command buffer.

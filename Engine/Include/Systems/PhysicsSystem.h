@@ -79,11 +79,6 @@ private:
 	float _WindSpeed{ 4.0f };
 
 	/*
-	*	Casts a ray against dynamic physical entities.
-	*/
-	void CastRayDynamicPhysical(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
-
-	/*
 	*	Casts a ray against the ocean.
 	*/
 	void CastRayOcean(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;

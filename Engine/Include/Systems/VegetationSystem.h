@@ -42,7 +42,7 @@ public:
 	/*
 	*	Adds a debris vegetation type.
 	*/
-	void AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT;
+	void AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties) NOEXCEPT;
 
 	/*
 	*	Returns the debris vegetation type informations, const.
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Adds a solid vegetation type.
 	*/
-	void AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT;
+	void AddSolidVegetationType(const SolidVegetationTypeProperties &properties) NOEXCEPT;
 
 	/*
 	*	Returns the solid vegetation type informations, const.

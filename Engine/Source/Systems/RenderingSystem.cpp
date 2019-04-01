@@ -16,29 +16,11 @@
 #include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
-#include <Rendering/Engine/CommonEnvironmentMaterialData.h>
-#include <Rendering/Engine/CommonOceanMaterialData.h>
-#include <Rendering/Engine/CommonParticleMaterialData.h>
-#include <Rendering/Engine/CommonPhysicalMaterialData.h>
-#include <Rendering/Engine/CommonPhysicalModelData.h>
 #include <Rendering/Engine/DynamicUniformData.h>
-#include <Rendering/Engine/OceanMaterial.h>
-#include <Rendering/Engine/PhysicalMaterial.h>
-#include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/Resolution.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TextureData.h>
-
-//Resources.
-#include <Resources/Data/EnvironmentMaterialData.h>
-#include <Resources/Data/GrassVegetationMaterialData.h>
-#include <Resources/Data/GrassVegetationModelData.h>
-#include <Resources/Data/OceanMaterialData.h>
-#include <Resources/Data/ParticleMaterialData.h>
-#include <Resources/Data/PhysicalMaterialData.h>
-#include <Resources/Data/TreeVegetationMaterialData.h>
-#include <Resources/Data/TreeVegetationModelData.h>
 
 //Systems.
 #include <Systems/InputSystem.h>
@@ -95,24 +77,6 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
-
-	//Initialize the common environment materials.
-	InitializeCommonEnvironmentMaterials();
-
-	//Initialize the common ocean materials.
-	InitializeCommonOceanMaterials();
-
-	//Initialize the common particle materials.
-	InitializeCommonParticleMaterials();
-
-	//Initializes the common physical materials.
-	InitializeCommonPhysicalMaterials();
-
-	//Initialize the common physical models.
-	InitializeCommonPhysicalModels();
-
-	//Post-initialize the global render data.
-	PostInitializeGlobalRenderData();
 
 	//Post-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
@@ -502,214 +466,6 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 }
 
 /*
-*	Creates an environment material.
-*/
-void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT
-{
-	//Create the diffuse texture.
-	material._DiffuseTexture = CreateTextureCube(data._DiffuseData.Data(), Resolution(data._DiffuseResolution, data._DiffuseResolution));
-
-	//Create the diffuse irradiance texture.
-	material._DiffuseIrradianceTexture = CreateTextureCube(data._DiffuseIrradianceData.Data(), Resolution(data._DiffuseIrradianceResolution, data._DiffuseIrradianceResolution));
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial), &material._RenderDataTable);
-
-	//Update the render data table.
-	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._DiffuseTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._DiffuseIrradianceTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
-}
-
-/*
-*	Creates a grass vegetation material.
-*/
-void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT
-{
-	//Create the mask texture.
-	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the albedo texture.
-	material._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._AlbedoData, data._Width, data._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the normal map texture.
-	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GrassMaterial), &material._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._MaskTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, material._RenderDataTable, material._NormalMapTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-}
-
-/*
-*	Creates a grass vegetation model.
-*/
-void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData &data, GrassVegetationModel &model) NOEXCEPT
-{
-	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
-	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
-
-	//Set up the grass vegetation model.
-	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-	{
-		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
-		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
-		model._Buffers[i] = buffer;
-		model._IndexOffsets[i] = modelDataSizes[0];
-		model._IndexCounts[i] = static_cast<uint32>(data._Indices.Size());
-	}
-}
-
-/*
-*	Creates an ocean material.
-*/
-void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMaterial &material) const NOEXCEPT
-{
-	//Create the normal texture.
-	material._NormalTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalData, data._Width, data._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the foam texture.
-	material._FoamTexture = CreateTexture2D(TextureData(TextureDataContainer(data._FoamData, data._Width, data._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OceanMaterial), &material._RenderDataTable);
-
-	//Update the render data table.
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._NormalTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._FoamTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-}
-
-/*
-*	Creates a physical model.
-*/
-void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
-{
-	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-	{
-		//Create the vertex and index buffer.
-		const void *RESTRICT modelData[]{ physicalModelData._Vertices[i].Data(), physicalModelData._Indices[i].Data() };
-		const uint64 modelDataSizes[]{ sizeof(Vertex) * physicalModelData._Vertices[i].Size(), sizeof(uint32) * physicalModelData._Indices[i].Size() };
-		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
-
-		//Set up the physical model.
-		physicalModel._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-physicalModelData._Extents[i] * 0.5f, -physicalModelData._Extents[i] * 0.5f, -physicalModelData._Extents[i] * 0.5f);
-		physicalModel._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(physicalModelData._Extents[i] * 0.5f, physicalModelData._Extents[i] * 0.5f, physicalModelData._Extents[i] * 0.5f);
-		physicalModel._Buffers[i] = buffer;
-		physicalModel._IndexOffsets[i] = modelDataSizes[0];
-		physicalModel._IndexCounts[i] = static_cast<uint32>(physicalModelData._Indices[i].Size());
-	}
-}
-
-/*
-*	Creates a particle material.
-*/
-void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
-{
-	//Create the albedo texture
-	particleMaterial._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData._AlbedoData, particleMaterialData._Width, particleMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
-}
-
-/*
-*	Creates a physical material.
-*/
-void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT
-{
-	//Create the albedo texture.
-	physicalMaterial._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._AlbedoData, physicalMaterialData._Width, physicalMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the normal map texture.
-	physicalMaterial._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._NormalMapData, physicalMaterialData._Width, physicalMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the material properties texture.
-	physicalMaterial._MaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._MaterialPropertiesData, physicalMaterialData._Width, physicalMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Add the textures to the global render data table.
-	physicalMaterial._AlbedoTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._AlbedoTexture);
-	physicalMaterial._NormalMapTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._NormalMapTexture);
-	physicalMaterial._MaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._MaterialPropertiesTexture);
-}
-
-/*
-*	Creates a tree vegetation material.
-*/
-void RenderingSystem::CreateTreeVegetationMaterial(const TreeVegetationMaterialData &data, TreeVegetationMaterial &material) NOEXCEPT
-{
-	//Create the crown mask texture.
-	material._CrownMaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownMaskData, data._CrownMaskWidth, data._CrownMaskHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the crown albedo texture.
-	material._CrownAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownAlbedoData, data._CrownWidth, data._CrownHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the crown map texture.
-	material._CrownNormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._CrownNormalMapData, data._CrownWidth, data._CrownHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the impostor mask texture.
-	material._ImpostorMaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._ImpostorMaskData, data._ImpostorMaskWidth, data._ImpostorMaskHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the impostor albedo texture.
-	material._ImpostorAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._ImpostorAlbedoData, data._ImpostorWidth, data._ImpostorHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the trunk albedo texture.
-	material._TrunkAlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkAlbedoData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the normal map texture.
-	material._TrunkNormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkNormalMapData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the material properties texture.
-	material._TrunkMaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(data._TrunkMaterialPropertiesData, data._TrunkWidth, data._TrunkHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Add the textures to the global render data table.
-	material._CrownMaskTextureIndex = AddTextureToGlobalRenderData(material._CrownMaskTexture);
-	material._CrownAlbedoTextureIndex = AddTextureToGlobalRenderData(material._CrownAlbedoTexture);
-	material._CrownNormalMapTextureIndex = AddTextureToGlobalRenderData(material._CrownNormalMapTexture);
-	material._ImpostorMaskTextureIndex = AddTextureToGlobalRenderData(material._ImpostorMaskTexture);
-	material._ImpostorAlbedoTextureIndex = AddTextureToGlobalRenderData(material._ImpostorAlbedoTexture);
-	material._TrunkAlbedoTextureIndex = AddTextureToGlobalRenderData(material._TrunkAlbedoTexture);
-	material._TrunkNormalMapTextureIndex = AddTextureToGlobalRenderData(material._TrunkNormalMapTexture);
-	material._TrunkMaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(material._TrunkMaterialPropertiesTexture);
-}
-
-/*
-*	Creates a tree vegetation model.
-*/
-void RenderingSystem::CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT
-{
-	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-	{
-		//Create the vertex and index buffer.
-		const void *RESTRICT modelData[]{ data._CrownVertices[i].Data(), data._CrownIndices[i].Data() };
-		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._CrownVertices[i].Size(), sizeof(uint32) * data._CrownIndices[i].Size() };
-		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
-
-		//Set up the model.
-		model._CrownBuffers[i] = buffer;
-		model._CrownIndexOffsets[i] = modelDataSizes[0];
-		model._CrownIndexCounts[i] = static_cast<uint32>(data._CrownIndices[i].Size());
-	}
-
-	for (uint8 i{ 0 }; i < UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails); ++i)
-	{
-		//Create the vertex and index buffer.
-		const void *RESTRICT modelData[]{ data._TrunkVertices[i].Data(), data._TrunkIndices[i].Data() };
-		const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._TrunkVertices[i].Size(), sizeof(uint32) * data._TrunkIndices[i].Size() };
-		ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
-		UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
-
-		//Set up the model.
-		model._AxisAlignedBoundingBoxes[i]._Minimum = Vector3<float>(-data._TrunkExtents[i] * 0.5f, -data._TrunkExtents[i] * 0.5f, -data._TrunkExtents[i] * 0.5f);
-		model._AxisAlignedBoundingBoxes[i]._Maximum = Vector3<float>(data._TrunkExtents[i] * 0.5f, data._TrunkExtents[i] * 0.5f, data._TrunkExtents[i] * 0.5f);
-		model._TrunkBuffers[i] = buffer;
-		model._TrunkIndexOffsets[i] = modelDataSizes[0];
-		model._TrunkIndexCounts[i] = static_cast<uint32>(data._TrunkIndices[i].Size());
-	}
-}
-
-/*
 *	Finalizes the initialization of a render pass.
 */
 void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT
@@ -780,30 +536,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 }
 
 /*
-*	Post-initializes the global render data.
-*/
-void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
-{
-	//Get the number of frame buffers.
-	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
-
-	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
-	{
-		//Bind a placeholder texture to all global texture slots.
-		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
-		{
-			BindSampledImageToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
-		}
-
-		//Bind a placeholder texture to all terrain height texture slots.
-		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
-		{
-			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-		}
-	}
-}
-
-/*
 *	Initializes all depth buffers.
 */
 void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
@@ -851,66 +583,10 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTreeVegetationTrunkShadow)] = DirectionalTreeVegetationTrunkRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTreeVegetationCrownShadow)] = DirectionalTreeVegetationCrownShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalSolidVegetationShadow)] = DirectionalSolidVegetationShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainDepth)] = TerrainDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationTrunk)] = HighDetailTreeVegetationTrunkRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationTrunk)] = MediumDetailTreeVegetationTrunkRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationTrunk)] = LowDetailTreeVegetationTrunkRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownDepth)] = HighDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationCrownColor)] = HighDetailTreeVegetationCrownColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationCrownDepth)] = MediumDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailTreeVegetationCrownColor)] = MediumDetailTreeVegetationCrownColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationCrownDepth)] = LowDetailTreeVegetationCrownDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationCrownColor)] = LowDetailTreeVegetationCrownColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationImpostorDepth)] = HighDetailTreeVegetationImpostorDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTreeVegetationImpostorColor)] = HighDetailTreeVegetationImpostorColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationImpostorDepth)] = LowDetailTreeVegetationImpostorDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTreeVegetationImpostorColor)] = LowDetailTreeVegetationImpostorColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailSolidVegetation)] = LowDetailSolidVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailDebrisVegetation)] = HighDetailDebrisVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailDebrisVegetation)] = MediumDetailDebrisVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailDebrisVegetation)] = LowDetailDebrisVegetationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailGrassVegetationDepth)] = HighDetailGrassVegetationDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailGrassVegetationColor)] = HighDetailGrassVegetationColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailGrassVegetationDepth)] = MediumDetailGrassVegetationDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailGrassVegetationColor)] = MediumDetailGrassVegetationColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailGrassVegetationDepth)] = LowDetailGrassVegetationDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailGrassVegetationColor)] = LowDetailGrassVegetationColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadowHorizontalBlur)] = DirectionalShadowHorizontalBlurRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadowVerticalBlur)] = DirectionalShadowVerticalBlurRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusion)] = ScreenSpaceAmbientOcclusionRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionHorizontalBlur)] = ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionVerticalBlur)] = ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::PointLight)] = PointLightRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::AboveOcean)] = AboveOceanRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BelowOcean)] = BelowOceanRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ExponentialHeightFog)] = ExponentialHeightFogRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal)] = DepthOfFieldHorizontalRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DepthOfFieldVertical)] = DepthOfFieldVerticalRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleFirstIteration)] = BloomDownsampleFirstIterationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleSecondIteration)] = BloomDownsampleSecondIterationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomDownsampleThirdIteration)] = BloomDownsampleThirdIterationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration)] = BloomUpsampleFirstIterationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleSecondIteration)] = BloomUpsampleSecondIterationRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration)] = BloomUpsampleThirdIterationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
@@ -933,128 +609,6 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
 		_RenderPass->WaitForInitialization();
-	}
-}
-
-/*
-*	Initializes the common environment materials.
-*/
-void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
-{
-	{
-		//Create the black common environment material.
-		EnvironmentMaterialData data;
-		CommonEnvironmentMaterialData::GetBlackEnvironmentMaterialData(&data);
-		CreateEnvironmentMaterial(data, _CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
-	}
-
-	{
-		//Create the day common environment material.
-		EnvironmentMaterialData data;
-		CommonEnvironmentMaterialData::GetDayEnvironmentMaterialData(&data);
-		CreateEnvironmentMaterial(data, _CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Day)]);
-	}
-
-	{
-		//Create the night common environment material.
-		EnvironmentMaterialData data;
-		CommonEnvironmentMaterialData::GetNightEnvironmentMaterialData(&data);
-		CreateEnvironmentMaterial(data, _CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Night)]);
-	}
-
-	//Set the night/day environment materials to default ones.
-	EnvironmentManager::Instance->SetNightEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Night)]);
-	EnvironmentManager::Instance->SetDayEnvironmentMaterial(_CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Day)]);
-	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
-}
-
-/*
-*	Initializes the common ocean materials.
-*/
-void RenderingSystem::InitializeCommonOceanMaterials() NOEXCEPT
-{
-	{
-		//Create the ocean common ocean material.
-		OceanMaterialData data;
-		CommonOceanMaterialData::GetOceanOceanMaterialData(&data);
-		CreateOceanMaterial(data, _CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
-	}
-
-	//Set the ocean material to default one.
-	EnvironmentManager::Instance->SetOceanMaterial(_CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
-}
-
-/*
-*	Initializes the common particle materials.
-*/
-void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
-{
-	{
-		//Create the white circle common particle material.
-		ParticleMaterialData data;
-		CommonParticleMaterialData::GetWhiteCircleParticleMaterialData(&data);
-		CreateParticleMaterial(data, _CommonParticleMaterials[UNDERLYING(CommonParticleMaterial::WhiteCircle)]);
-	}
-}
-
-/*
-*	Initializes the common physical materials.
-*/
-void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
-{
-	{
-		//Create the black common physical material.
-		PhysicalMaterialData data;
-		CommonPhysicalMaterialData::GetBlackPhysicalMaterialData(&data);
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Black)]);
-	}
-
-	{
-		//Create the red common physical material.
-		PhysicalMaterialData data;
-		CommonPhysicalMaterialData::GetRedPhysicalMaterialData(&data);
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Red)]);
-	}
-
-	{
-		//Create the teal common physical material.
-		PhysicalMaterialData data;
-		CommonPhysicalMaterialData::GetTealPhysicalMaterialData(&data);
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Teal)]);
-	}
-}
-
-/*
-*	Initializes the common physical models.
-*/
-void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
-{
-	{
-		//Create the cube common physical model.
-		PhysicalModelData data;
-		CommonPhysicalModelData::GetCubePhysicalModelData(&data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Cube)]);
-	}
-
-	{
-		//Create the octahedron common physical model.
-		PhysicalModelData data;
-		CommonPhysicalModelData::GetOctahedronPhysicalModelData(&data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Octahedron)]);
-	}
-
-	{
-		//Create the plane common physical model.
-		PhysicalModelData data;
-		CommonPhysicalModelData::GetPlanePhysicalModelData(&data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Plane)]);
-	}
-
-	{
-		//Create the sphere common physical model.
-		PhysicalModelData data;
-		CommonPhysicalModelData::GetSpherePhysicalModelData(&data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Sphere)]);
 	}
 }
 
@@ -1197,12 +751,6 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 	//Lock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
-	//Process all updates.
-	for (uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
-	{
-		BindSampledImageToRenderDataTable(2, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
-	}
-
 	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
@@ -1223,12 +771,6 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 {
 	//Lock the terrain height textures.
 	_GlobalRenderData._TerrainHeightTexturesLock.WriteLock();
-
-	//Process all updates.
-	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
-	{
-		BindCombinedImageSamplerToRenderDataTable(3, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	}
 
 	_GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
 

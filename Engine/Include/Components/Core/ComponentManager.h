@@ -9,11 +9,7 @@
 #include <Components/Singleton/CatalystEngineComponent.h>
 #include <Components/Singleton/InputComponent.h>
 #include <Components/Transient/CollisionComponent.h>
-#include <Components/Transient/DynamicPhysicalRenderComponent.h>
-#include <Components/Transient/DynamicOutlineRenderComponent.h>
 #include <Components/Transient/FrustumCullingComponent.h>
-#include <Components/Transient/ParticleSystemComponent.h>
-#include <Components/Transient/ParticleSystemRenderComponent.h>
 #include <Components/Transient/PhysicsComponent.h>
 #include <Components/Transient/PointLightComponent.h>
 #include <Components/Transient/SoundComponent.h>
@@ -87,8 +83,6 @@ public:
 	}
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
-	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent);
-	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);

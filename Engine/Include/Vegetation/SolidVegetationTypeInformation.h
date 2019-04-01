@@ -4,10 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
-//Rendering.
-#include <Rendering/Engine/PhysicalMaterial.h>
-#include <Rendering/Engine/PhysicalModel.h>
-
 //Vegetation.
 #include <Vegetation/SolidVegetationPatchRenderInformation.h>
 #include <Vegetation/SolidVegetationTypeProperties.h>
@@ -20,12 +16,6 @@ public:
 
 	//The properties.
 	SolidVegetationTypeProperties _Properties;
-
-	//The model.
-	PhysicalModel _Model;
-
-	//The material.
-	PhysicalMaterial _Material;
 
 	//The patch informations.
 	StaticArray<VegetationPatchInformation, 9> _PatchInformations;

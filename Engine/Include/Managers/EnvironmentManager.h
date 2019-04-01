@@ -5,8 +5,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Rendering.
-#include <Rendering/Engine/EnvironmentMaterial.h>
-#include <Rendering/Engine/OceanMaterial.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 class EnvironmentManager final
 {
@@ -34,32 +33,22 @@ public:
 	/*
 	*	Returns the night environment material.
 	*/
-	const EnvironmentMaterial& GetNightEnvironmentMaterial() const NOEXCEPT { return _NightEnvironmentMaterial; }
+	const TextureCubeHandle& GetNightEnvironmentMaterial() const NOEXCEPT { return _NightEnvironmentMaterial; }
 
 	/*
 	*	Sets the night environment material.
 	*/
-	void SetNightEnvironmentMaterial(const EnvironmentMaterial& newNightEnvironmentMaterial) NOEXCEPT { _NightEnvironmentMaterial = newNightEnvironmentMaterial; }
+	void SetNightEnvironmentMaterial(const TextureCubeHandle& newNightEnvironmentMaterial) NOEXCEPT { _NightEnvironmentMaterial = newNightEnvironmentMaterial; }
 
 	/*
 	*	Returns the day environment material.
 	*/
-	const EnvironmentMaterial& GetDayEnvironmentMaterial() NOEXCEPT { return _DayEnvironmentMaterial; }
+	const TextureCubeHandle& GetDayEnvironmentMaterial() NOEXCEPT { return _DayEnvironmentMaterial; }
 
 	/*
 	*	Sets the day environment material.
 	*/
-	void SetDayEnvironmentMaterial(const EnvironmentMaterial& newDayEnvironmentMaterial) NOEXCEPT { _DayEnvironmentMaterial = newDayEnvironmentMaterial; }
-
-	/*
-	*	Returns the ocean material.
-	*/
-	const OceanMaterial& GetOceanMaterial() NOEXCEPT { return _OceanMaterial; }
-
-	/*
-	*	Sets the ocean material.
-	*/
-	void SetOceanMaterial(const OceanMaterial &newOceanMaterial) NOEXCEPT { _OceanMaterial = newOceanMaterial; }
+	void SetDayEnvironmentMaterial(const TextureCubeHandle& newDayEnvironmentMaterial) NOEXCEPT { _DayEnvironmentMaterial = newDayEnvironmentMaterial; }
 
 private:
 
@@ -67,12 +56,9 @@ private:
 	float _EnvironmentBlend;
 
 	//The night environment material.
-	EnvironmentMaterial _NightEnvironmentMaterial;
+	TextureCubeHandle _NightEnvironmentMaterial;
 
 	//The day environment material.
-	EnvironmentMaterial _DayEnvironmentMaterial;
-
-	//The ocean material.
-	OceanMaterial _OceanMaterial;
+	TextureCubeHandle _DayEnvironmentMaterial;
 
 };

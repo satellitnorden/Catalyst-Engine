@@ -12,9 +12,6 @@
 #include <Multithreading/Spinlock.h>
 #include <Multithreading/Task.h>
 
-//Rendering.
-#include <Rendering/Engine/PhysicalMaterial.h>
-
 //Terrain.
 #include <Terrain/TerrainMaterial.h>
 #include <Terrain/TerrainPatchInformation.h>
@@ -107,11 +104,6 @@ public:
 	{
 		return &_TerrainMaterials;
 	}
-
-	/*
-	*	Registers a terrain material at the given index.
-	*/
-	void RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material, const float textureScalingFactor) NOEXCEPT;
 
 	/*
 	*	Returns the terrain height at the given position.

@@ -4,10 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
-//Rendering.
-#include <Rendering/Engine/PhysicalMaterial.h>
-#include <Rendering/Engine/PhysicalModel.h>
-
 //Vegetation.
 #include <Vegetation/TreeVegetationMaterial.h>
 #include <Vegetation/TreeVegetationModel.h>

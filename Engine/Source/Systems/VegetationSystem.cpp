@@ -60,7 +60,7 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Adds a debris vegetation type.
 */
-void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT
+void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypeProperties &properties) NOEXCEPT
 {
 	//Create the new debris vegetation information.
 	_DebrisVegetationTypeInformations.EmplaceSlow();
@@ -68,8 +68,6 @@ void VegetationSystem::AddDebrisVegetationType(const DebrisVegetationTypePropert
 
 	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
-	information->_Model = model;
-	information->_Material = material;
 
 	//Fill in the patch and the patch render informations.
 	for (uint8 i = 0; i < 9; ++i)
@@ -112,7 +110,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 /*
 *	Adds a solid vegetation type.
 */
-void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT
+void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypeProperties &properties) NOEXCEPT
 {
 	//Create the new solid vegetation information.
 	_SolidVegetationTypeInformations.EmplaceSlow();
@@ -120,8 +118,6 @@ void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypePropertie
 
 	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
-	information->_Model = model;
-	information->_Material = material;
 
 	//Fill in the patch and the patch render informations.
 	for (uint8 i = 0; i < 9; ++i)

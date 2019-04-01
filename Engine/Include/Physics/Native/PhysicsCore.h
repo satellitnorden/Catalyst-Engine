@@ -6,9 +6,8 @@
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {
-	DynamicPhysical = BIT(0),
-	Ocean = BIT(1),
-	Terrain = BIT(2)
+	Ocean = BIT(0),
+	Terrain = BIT(1)
 };
 
 ENUMERATION_BIT_OPERATIONS(PhysicsChannel);

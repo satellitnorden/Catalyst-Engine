@@ -49,14 +49,6 @@ public:
 	}
 
 	/*
-	*	Waits for the particle systems culling to finish.
-	*/
-	void WaitForParticleSystemsCulling() const NOEXCEPT
-	{
-		_CullingTasks[UNDERLYING(CullingTask::ParticleSystems)].WaitFor();
-	}
-
-	/*
 	*	Waits for the solid vegetation culling to finish.
 	*/
 	void WaitForSolidVegetationCulling() const NOEXCEPT
@@ -87,7 +79,6 @@ private:
 	{
 		DebrisVegetation,
 		GrassVegetation,
-		ParticleSystems,
 		SolidVegetation,
 		Terrain,
 		TreeVegetation,
@@ -107,11 +98,6 @@ private:
 	*	Culls grass vegetation.
 	*/
 	void CullGrassVegetation() NOEXCEPT;
-
-	/*
-	*	Culls particle systems.
-	*/
-	void CullParticleSystems() NOEXCEPT;
 
 	/*
 	*	Culls solid vegetation.

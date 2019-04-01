@@ -104,7 +104,6 @@ void RenderOverrideRenderPass::InitializeInternal() NOEXCEPT
 	FinalizeInitialization();
 }
 
-
 /*
 *	Creates the render data table layout.
 */

@@ -55,30 +55,9 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 enum class RenderPassMainStage : uint8
 {
 	None,
-	DirectionalShadowMapping,
-	Scene,
-	DirectionalShadowCalculation,
-	DirectionalShadowHorizontalBlur,
-	DirectionalShadowVerticalBlur,
-	ScreenSpaceAmbientOcclusionCalculation,
-	ScreenSpaceAmbientOcclusionHorizontalBlur,
-	ScreenSpaceAmbientOcclusionVerticalBlur,
-	Lighting,
-	Ocean,
-	ExponentialHeightFog,
-	DepthOfFieldHorizontal,
-	DepthOfFieldVertical,
-	VolumetricFog,
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	Debug,
 #endif
-	BloomDownsampleFirstIteration,
-	BloomDownsampleSecondIteration,
-	BloomDownsampleThirdIteration,
-	BloomUpsampleFirstIteration,
-	BloomUpsampleSecondIteration,
-	BloomUpsampleThirdIteration,
-
 	ToneMapping,
 	AntiAliasing,
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
@@ -93,107 +72,11 @@ enum class RenderPassMainStage : uint8
 */
 enum class RenderPassSubStage : uint8
 {
-	//Directional shadow mapping main stage.
-	DirectionalTerrainShadow,
-	DirectionalDynamicPhysicalShadow,
-	DirectionalTreeVegetationTrunkShadow,
-	DirectionalTreeVegetationCrownShadow,
-	DirectionalSolidVegetationShadow,
-
-	//Scene main stage.
-	TerrainDepth,
-	TerrainColor,
-	DynamicPhysical,
-	HighDetailTreeVegetationTrunk,
-	MediumDetailTreeVegetationTrunk,
-	LowDetailTreeVegetationTrunk,
-	HighDetailTreeVegetationCrownDepth,
-	HighDetailTreeVegetationCrownColor,
-	MediumDetailTreeVegetationCrownDepth,
-	MediumDetailTreeVegetationCrownColor,
-	LowDetailTreeVegetationCrownDepth,
-	LowDetailTreeVegetationCrownColor,
-	HighDetailTreeVegetationImpostorDepth,
-	HighDetailTreeVegetationImpostorColor,
-	LowDetailTreeVegetationImpostorDepth,
-	LowDetailTreeVegetationImpostorColor,
-	HighDetailSolidVegetation,
-	MediumDetailSolidVegetation,
-	LowDetailSolidVegetation,
-	HighDetailDebrisVegetation,
-	MediumDetailDebrisVegetation,
-	LowDetailDebrisVegetation,
-	HighDetailGrassVegetationDepth,
-	HighDetailGrassVegetationColor,
-	MediumDetailGrassVegetationDepth,
-	MediumDetailGrassVegetationColor,
-	LowDetailGrassVegetationDepth,
-	LowDetailGrassVegetationColor,
-	ParticleSystem,
-
-	//Directional shadow calculation main stage.
-	DirectionalShadow,
-
-	//Directional shadow horizontal blur main stage.
-	DirectionalShadowHorizontalBlur,
-
-	//Directional shadow horizontal blur main stage.
-	DirectionalShadowVerticalBlur,
-
-	//Screen space ambient occlusion calculation main stage.
-	ScreenSpaceAmbientOcclusion,
-
-	//Screen space ambient occlusion horizontal blur main stage.
-	ScreenSpaceAmbientOcclusionHorizontalBlur,
-
-	//Screen space ambient occlusion vertical blur main stage.
-	ScreenSpaceAmbientOcclusionVerticalBlur,
-
-	//Lighting main stage.
-	Lighting,
-	PointLight,
-	Sky,
-	DynamicOutline,
-
-	//Ocean main stage.
-	AboveOcean,
-	BelowOcean,
-
-	//Exponential height fog main stage.
-	ExponentialHeightFog,
-
-	//Depth of field horizontal main stage.
-	DepthOfFieldHorizontal,
-
-	//Depth of field vertical main stage.
-	DepthOfFieldVertical,
-
-	//Volumetric fog main stage.
-	VolumetricFog,
-
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Debug.
 	DebugAxisAlignedBoundingBox,
 	DebugScreenBox,
 #endif
-
-	//Bloom downsample first iteration main stage.
-	BloomDownsampleFirstIteration,
-
-	//Bloom downsample second iteration main stage.
-	BloomDownsampleSecondIteration,
-
-	//Bloom downsample third iteration main stage.
-	BloomDownsampleThirdIteration,
-
-	//Bloom upsample first iteration main stage.
-	BloomUpsampleFirstIteration,
-
-	//Bloom upsample second iteration main stage.
-	BloomUpsampleSecondIteration,
-
-	//Bloom upsample third iteration main stage.
-	BloomUpsampleThirdIteration,
 
 	//Tone mapping main stage.
 	ToneMapping,

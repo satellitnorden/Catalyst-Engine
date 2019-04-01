@@ -34,11 +34,6 @@ void PhysicsSystem::CastRay(const PhysicsChannel channels, const Ray &ray, RayCa
 	ASSERT(Ray::IsValid(ray), "Invalid ray!");
 
 	//Cast rays against the different channels.
-	if ((channels & PhysicsChannel::DynamicPhysical) == PhysicsChannel::DynamicPhysical)
-	{
-		CastRayDynamicPhysical(ray, result);
-	}
-
 	if ((channels & PhysicsChannel::Ocean) == PhysicsChannel::Ocean)
 	{
 		CastRayOcean(ray, result);
@@ -55,52 +50,7 @@ void PhysicsSystem::CastRay(const PhysicsChannel channels, const Ray &ray, RayCa
 */
 void PhysicsSystem::AddImpulse(const Vector3<float> &position, const float radius, const float power) NOEXCEPT
 {
-	/*
-	//Iterate over all dynamic physical components and add the impulse.
-	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
-	PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetDynamicPhysicalPhysicsComponents() };
-	TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
-
-	for (uint64 i{ 0 }; i < numberOfDynamicPhysicalComponents; ++i, ++physicsComponent, ++transformComponent)
-	{
-		//Calculate the impulse weight.
-		const float impulseWeight{ 1.0f - CatalystBaseMath::Minimum<float>(Vector3<float>::Length(transformComponent->_Position - position) / radius, 1.0f) };
-
-		//Calculate the impulse direction.
-		const Vector3<float> impulseDirection{ Vector3<float>::Normalize(transformComponent->_Position - position) };
-
-		//Apply the impulse to the velocity.
-		physicsComponent->_Velocity += CatalystPhysicsMath::CalculateAcceleration(impulseDirection * power * impulseWeight, physicsComponent->_Mass);
-	}
-	*/
-}
-
-/*
-*	Casts a ray against dynamic physical entities.
-*/
-void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
-{
-	//Do a simple ray-box intersection test to determine which dynamic physical entity was hit.
-	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
-	const FrustumCullingComponent *RESTRICT component{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents() };
-
-	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++component)
-	{
-		const AxisAlignedBoundingBox &box{ component->_WorldSpaceAxisAlignedBoundingBox };
-
-		if (CatalystGeometryMath::RayBoxIntersection(ray, box, &result->_HitPosition))
-		{
-			result->_HasHit = true;
-			result->_HitEntity = ComponentManager::GetDynamicPhysicalEntities()->At(i);
-
-			return;
-		}
-	}
-
-	//If there was not hit, update the result.
-	result->_HasHit = false;
-	result->_HitPosition = VectorConstants::ZERO;
-	result->_HitEntity = nullptr;
+	
 }
 
 /*

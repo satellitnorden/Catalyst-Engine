@@ -30,113 +30,13 @@ public:
 				return 0;
 			}
 #endif
-			case RenderPassMainStage::DirectionalShadowMapping:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow);
-			}
-
-			case RenderPassMainStage::Scene:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::TerrainDepth);
-			}
-
-			case RenderPassMainStage::DirectionalShadowCalculation:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadow);
-			}
-
-			case RenderPassMainStage::DirectionalShadowHorizontalBlur:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadowHorizontalBlur);
-			}
-
-			case RenderPassMainStage::DirectionalShadowVerticalBlur:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalShadowVerticalBlur);
-			}
-
-			case RenderPassMainStage::ScreenSpaceAmbientOcclusionCalculation:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusion);
-			}
-
-			case RenderPassMainStage::ScreenSpaceAmbientOcclusionHorizontalBlur:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionHorizontalBlur);
-			}
-
-			case RenderPassMainStage::ScreenSpaceAmbientOcclusionVerticalBlur:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ScreenSpaceAmbientOcclusionVerticalBlur);
-			}
-
-			case RenderPassMainStage::Lighting:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Lighting);
-			}
-
+	
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 			case RenderPassMainStage::Debug:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox);
 			}
 #endif
-
-			case RenderPassMainStage::Ocean:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
-			}
-
-			case RenderPassMainStage::VolumetricFog:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
-			}
-
-			case RenderPassMainStage::BloomDownsampleFirstIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleFirstIteration);
-			}
-
-			case RenderPassMainStage::BloomDownsampleSecondIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleSecondIteration);
-			}
-
-			case RenderPassMainStage::BloomDownsampleThirdIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomDownsampleThirdIteration);
-			}
-
-			case RenderPassMainStage::BloomUpsampleFirstIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleFirstIteration);
-			}
-
-			case RenderPassMainStage::BloomUpsampleSecondIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleSecondIteration);
-			}
-
-			case RenderPassMainStage::BloomUpsampleThirdIteration:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomUpsampleThirdIteration);
-			}
-
-			case RenderPassMainStage::ExponentialHeightFog:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ExponentialHeightFog);
-			}
-
-			case RenderPassMainStage::DepthOfFieldHorizontal:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal);
-			}
-
-			case RenderPassMainStage::DepthOfFieldVertical:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldVertical);
-			}
-
 			case RenderPassMainStage::ToneMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);

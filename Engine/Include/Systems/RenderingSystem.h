@@ -12,12 +12,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
-#include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/GlobalRenderData.h>
-#include <Rendering/Engine/OceanMaterial.h>
-#include <Rendering/Engine/ParticleMaterial.h>
-#include <Rendering/Engine/PhysicalMaterial.h>
-#include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Engine/Resolution.h>
 #include <Rendering/Engine/TextureData.h>
@@ -26,22 +21,8 @@
 class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
 class Entity;
-class EnvironmentMaterialData;
-class GrassVegetationMaterial;
-class GrassVegetationMaterialData;
-class GrassVegetationModel;
-class GrassVegetationModelData;
-class OceanMaterialData;
-class ParticleMaterialData;
-class PhysicalMaterial;
-class PhysicalMaterialData;
-class PhysicalModelData;
 class RenderPass;
 class Resolution;
-class TreeVegetationMaterial;
-class TreeVegetationMaterialData;
-class TreeVegetationModel;
-class TreeVegetationModelData;
 
 class RenderingSystem final
 {
@@ -190,46 +171,6 @@ public:
 	}
 
 	/*
-	*	Returns the given common environment material.
-	*/
-	const EnvironmentMaterial& GetCommonEnvironmentMaterial(const CommonEnvironmentMaterial commonEnvironmentMaterial) const NOEXCEPT
-	{
-		return _CommonEnvironmentMaterials[UNDERLYING(commonEnvironmentMaterial)];
-	}
-
-	/*
-	*	Returns the given common ocean material.
-	*/
-	const OceanMaterial& GetCommonOceanMaterial(const CommonOceanMaterial commonOceanMaterial) const NOEXCEPT
-	{
-		return _CommonOceanMaterials[UNDERLYING(commonOceanMaterial)];
-	}
-
-	/*
-	*	Returns the given common particle material.
-	*/
-	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticleMaterial) const NOEXCEPT
-	{
-		return _CommonParticleMaterials[UNDERLYING(commonParticleMaterial)];
-	}
-
-	/*
-	*	Returns the given common physical material.
-	*/
-	const PhysicalMaterial& GetCommonPhysicalMaterial(const CommonPhysicalMaterial commonPhysicalMaterial) const NOEXCEPT
-	{
-		return _CommonPhysicalMaterials[UNDERLYING(commonPhysicalMaterial)];
-	}
-
-	/*
-	*	Returns the given common physical model.
-	*/
-	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT
-	{
-		return _CommonPhysicalModels[UNDERLYING(commonPhysicalModel)];
-	}
-
-	/*
 	*	Creates a buffer.
 	*/
 	ConstantBufferHandle CreateBuffer(const uint64 size) const NOEXCEPT;
@@ -357,51 +298,6 @@ public:
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
 
 	/*
-	*	Creates an environment material.
-	*/
-	void CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT;
-
-	/*
-	*	Creates a grass vegetation material.
-	*/
-	void CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT;
-
-	/*
-	*	Creates a grass vegetation model.
-	*/
-	void CreateGrassVegetationModel(const GrassVegetationModelData &data, GrassVegetationModel &model) NOEXCEPT;
-
-	/*
-	*	Creates an ocean material.
-	*/
-	void CreateOceanMaterial(const OceanMaterialData &data, OceanMaterial &material) const NOEXCEPT;
-
-	/*
-	*	Creates a physical model.
-	*/
-	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
-
-	/*
-	*	Creates a particle material.
-	*/
-	void CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT;
-
-	/*
-	*	Creates a physical material.
-	*/
-	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
-
-	/*
-	*	Creates a tree vegetation material.
-	*/
-	void CreateTreeVegetationMaterial(const TreeVegetationMaterialData &data, TreeVegetationMaterial &model) NOEXCEPT;
-
-	/*
-	*	Creates a tree vegetation model.
-	*/
-	void CreateTreeVegetationModel(const TreeVegetationModelData &data, TreeVegetationModel &model) NOEXCEPT;
-
-	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
@@ -435,36 +331,10 @@ private:
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
 
-	//Container for all common environment materials.
-	StaticArray<EnvironmentMaterial, UNDERLYING(CommonEnvironmentMaterial::NumberOfCommonEnvironmentMaterials)> _CommonEnvironmentMaterials;
-
-	//Container for all common ocean materials.
-	StaticArray<OceanMaterial, UNDERLYING(CommonOceanMaterial::NumberOfCommonOceanMaterials)> _CommonOceanMaterials;
-
-	//Container for all common particle materials.
-	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
-
-	//Container for all common physical materials.
-	StaticArray<PhysicalMaterial, UNDERLYING(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> _CommonPhysicalMaterials;
-
-	//Container for all common physical models.
-	StaticArray<PhysicalModel, UNDERLYING(CommonPhysicalModel::NumberOfCommonPhysicalModels)> _CommonPhysicalModels;
-
-	//The default night environment material.
-	EnvironmentMaterial _DefaultNightEnvironmentMaterial;
-
-	//The default day environment material.
-	EnvironmentMaterial _DefaultDayEnvironmentMaterial;
-
 	/*
 	*	Pre-initializes the global render data.
 	*/
 	void PreInitializeGlobalRenderData() NOEXCEPT;
-
-	/*
-	*	Post-initializes the global render data.
-	*/
-	void PostInitializeGlobalRenderData() NOEXCEPT;
 
 	/*
 	*	Initializes all depth buffers.
@@ -490,31 +360,6 @@ private:
 	*	Initializes all render passes.
 	*/
 	void InitializeRenderPasses() NOEXCEPT;
-
-	/*
-	*	Initializes the common environment materials.
-	*/
-	void InitializeCommonEnvironmentMaterials() NOEXCEPT;
-
-	/*
-	*	Initializes the common ocean materials.
-	*/
-	void InitializeCommonOceanMaterials() NOEXCEPT;
-
-	/*
-	*	Initializes the common particle materials.
-	*/
-	void InitializeCommonParticleMaterials() NOEXCEPT;
-
-	/*
-	*	Initializes the common physical materials.
-	*/
-	void InitializeCommonPhysicalMaterials() NOEXCEPT;
-
-	/*
-	*	Initializes the common physical models.
-	*/
-	void InitializeCommonPhysicalModels() NOEXCEPT;
 
 	/*
 	*	Initializes all common render data table layouts.
