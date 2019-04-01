@@ -79,8 +79,6 @@ enum class RenderPassMainStage : uint8
 	BloomUpsampleSecondIteration,
 	BloomUpsampleThirdIteration,
 
-	PathTracingPrototype,
-	PathTracingPrototypeIntegration,
 	ToneMapping,
 	AntiAliasing,
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
@@ -196,12 +194,6 @@ enum class RenderPassSubStage : uint8
 
 	//Bloom upsample third iteration main stage.
 	BloomUpsampleThirdIteration,
-
-	//Path tracing prototype main stage.
-	PathTracingPrototype,
-
-	//Path tracing prototype integration main stage.
-	PathTracingPrototypeIntegration,
 
 	//Tone mapping main stage.
 	ToneMapping,
@@ -332,9 +324,6 @@ enum class RenderTarget : uint8
 	//Screen space ambient occlusion.
 	ScreenSpaceAmbientOcclusion,
 
-	//Miscellaneous.
-	PathTracingPrototypePreviousFrames,
-
 	NumberOfRenderTargets
 };
 
@@ -435,8 +424,6 @@ enum class Shader : uint8
 	ParticleSystemGeometry,
 	ParticleSystemVertex,
 	PassthroughFragment,
-	PathTracingPrototypeFragment,
-	PathTracingPrototypeIntegrationFragment,
 	PhysicalFragment,
 	PhysicalVertex,
 	PointLightFragment,

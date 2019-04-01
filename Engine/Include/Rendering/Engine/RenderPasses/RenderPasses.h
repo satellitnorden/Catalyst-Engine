@@ -57,8 +57,6 @@
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationCrownDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailTreeVegetationTrunkRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
-#include <Rendering/Engine/RenderPasses/PathTracingPrototypeRenderPass.h>
-#include <Rendering/Engine/RenderPasses/PathTracingPrototypeIntegrationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PointLightRenderPass.h>
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 #include <Rendering/Engine/RenderPasses/RenderOverrideRenderPass.h>

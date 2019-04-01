@@ -1140,12 +1140,6 @@
     <ClInclude Include="..\..\..\Include\Components\Singleton\CatalystEngineComponent.h">
       <Filter>Components\Include\Singleton</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PathTracingPrototypeRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PathTracingPrototypeIntegrationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
@@ -1675,12 +1669,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
       <Filter>Core\Source\Essential</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PathTracingPrototypeRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PathTracingPrototypeIntegrationRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>

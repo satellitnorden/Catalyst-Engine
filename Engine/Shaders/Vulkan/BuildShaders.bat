@@ -79,8 +79,6 @@ glslangValidator.exe -V ParticleSystemFragmentShader.frag -o 				ParticleSystemF
 glslangValidator.exe -V ParticleSystemGeometryShader.geom -o 				ParticleSystemGeometryShader.spv
 glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVertexShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
-glslangValidator.exe -V PathTracingPrototypeIntegrationFragmentShader.frag -o 		PathTracingPrototypeIntegrationFragmentShader.spv
-glslangValidator.exe -V PathTracingPrototypeFragmentShader.frag -o 			PathTracingPrototypeFragmentShader.spv
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
 glslangValidator.exe -V PhysicalVertexShader.vert -o 					PhysicalVertexShader.spv
 glslangValidator.exe -V PointLightFragmentShader.frag -o 				PointLightFragmentShader.spv
