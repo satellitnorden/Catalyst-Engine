@@ -17,6 +17,12 @@ public:
 	*/
 	void Initialize(const uint32 frameDataCount) NOEXCEPT
 	{
+		//Create the image available semaphore.
+		_ImageAvailableSemaphore = VulkanInterface::Instance->CreateSemaphore();
+
+		//Create the render finished semaphore.
+		_RenderFinishedSemaphore = VulkanInterface::Instance->CreateSemaphore();
+
 		//Create the primary command pool.
 		_PrimaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -35,6 +41,22 @@ public:
 		{
 			fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
 		}
+	}
+
+	/*
+	*	Returns the image available semaphore.
+	*/
+	RESTRICTED NO_DISCARD VulkanSemaphore *const RESTRICT GetImageAvailableSemaphore() NOEXCEPT
+	{
+		return _ImageAvailableSemaphore;
+	}
+
+	/*
+	*	Returns the render finished semaphore.
+	*/
+	RESTRICTED NO_DISCARD VulkanSemaphore *const RESTRICT GetRenderFinishedSemaphore() NOEXCEPT
+	{
+		return _RenderFinishedSemaphore;
 	}
 
 	/*
@@ -68,6 +90,12 @@ public:
 	}
 
 private:
+
+	//The image available semaphore.
+	VulkanSemaphore *RESTRICT _ImageAvailableSemaphore;
+
+	//The render finished semaphore.
+	VulkanSemaphore *RESTRICT _RenderFinishedSemaphore;
 
 	//Keeps track of the current frame.
 	uint32 _CurrentFrame;

@@ -60,8 +60,8 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Set the directional shadow map resolution.
 	_DirectionalShadowMapResolution = Resolution(configuration._ShadowMapResolution, configuration._ShadowMapResolution);
 
-	//Pre-initialize the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->PreInitializeSystem();
+	//Pre-initialize the rendering system.
+	PreInitialize();
 
 	//Initialize all depth buffers.
 	InitializeDepthBuffers();
@@ -78,8 +78,8 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
 
-	//Post-initialize the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
+	//Post-initialize the rendering system.
+	PostInitialize();
 }
 
 /*
@@ -99,8 +99,8 @@ void RenderingSystem::PostInitializeSystem()
 */
 void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Render-update the current rendering system synchronously.
-	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
+	//Begin the frame.
+	BeginFrame();
 
 	//Update the global render data.
 	UpdateGlobalRenderData();
@@ -126,8 +126,8 @@ void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRIC
 		}
 	}
 
-	//Post-update the current rendering system synchronously.
-	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
+	//End the frame.
+	EndFrame();
 }
 
 /*

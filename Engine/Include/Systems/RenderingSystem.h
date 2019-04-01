@@ -296,6 +296,26 @@ private:
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
 
 	/*
+	*	Pre-initializes the rendering system.
+	*/
+	void PreInitialize() NOEXCEPT;
+
+	/*
+	*	Post-initializes the rendering system.
+	*/
+	void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Begins a frame.
+	*/
+	void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Ends a frame.
+	*/
+	void EndFrame() NOEXCEPT;
+
+	/*
 	*	Pre-initializes the global render data.
 	*/
 	void PreInitializeGlobalRenderData() NOEXCEPT;

@@ -6,6 +6,7 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanPipeline.h>
 
 class VulkanRenderPassSubStageData final
 {

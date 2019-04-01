@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 
@@ -30,26 +29,6 @@ public:
 	*	Default constructor.
 	*/
 	VulkanRenderingSystem() NOEXCEPT { }
-
-	/*
-	*	Pre-initializes the Vulkan rendering system.
-	*/
-	void PreInitializeSystem() NOEXCEPT;
-
-	/*
-	*	Post-initializes the Vulkan rendering system.
-	*/
-	void PostInitializeSystem() NOEXCEPT;
-
-	/*
-	*	Pre-updates the Vulkan rendering system synchronously.
-	*/
-	void PreUpdateSystemSynchronous() NOEXCEPT;
-
-	/*
-	*	Post-updates the Vulkan rendering system synchronously.
-	*/
-	void PostUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the Vulkan rendering system.
@@ -118,9 +97,9 @@ public:
 	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
 
 	/*
-*	Binds a sampled image to a render data table.
-*	Accepts render target, texture 2D and texture cube handles.
-*/
+	*	Binds a sampled image to a render data table.
+	*	Accepts render target, texture 2D and texture cube handles.
+	*/
 	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT;
 
 	/*
@@ -170,75 +149,8 @@ public:
 
 private:
 
-	//Enumeration covering all semaphores.
-	enum class GraphicsSemaphore : uint8
-	{
-		ImageAvailable,
-		RenderFinished,
-		NumberOfSemaphores
-	};
-
-	/*
-	*	Vulkan destruction data definition.
-	*/
-	class VulkanDestructionData final
-	{
-
-	public:
-
-		//Enumeration covering all types.
-		enum class Type : uint8
-		{
-			ConstantBuffer,
-			RenderDataTable,
-			Texture2D,
-			UniformBuffer
-		};
-
-		//The number of frames since destruction was requested.
-		uint8 _Frames{ 0 };
-
-		//The type.
-		Type _Type;
-
-		//The handle.
-		OpaqueHandle _Handle;
-
-		/*
-		*	Constructor taking all values as arguments.
-		*/
-		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
-			:
-			_Type(type),
-			_Handle(handle)
-		{
-
-		}
-
-	};
-
-	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
-
-	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
-
-	//Container for all Vulkan render pass main stage data.
-	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
-
-	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassSubStageData, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassSubStageData;
-
-	//The Vulkan frame data.
-	VulkanFrameData _FrameData;
-
-	//The destruction queue.
-	DynamicArray<VulkanDestructionData> _DestructionQueue;
-
-	/*
-	*	Initializes all semaphores.
-	*/
-	void InitializeSemaphores() NOEXCEPT;
+	//Friend declaration.
+	friend class RenderingSystem;
 
 	/*
 	*	Initializes all shader modules.
@@ -256,19 +168,9 @@ private:
 	void ProcessDestructionQueue() NOEXCEPT;
 
 	/*
-	*	Begins the frame.
-	*/
-	void BeginFrame() NOEXCEPT;
-
-	/*
 	*	Concatenates all secondary command buffers into the previous one.
 	*/
 	void ConcatenateCommandBuffers() NOEXCEPT;
-
-	/*
-	*	Ends the frame.
-	*/
-	void EndFrame() NOEXCEPT;
 
 };
 #endif

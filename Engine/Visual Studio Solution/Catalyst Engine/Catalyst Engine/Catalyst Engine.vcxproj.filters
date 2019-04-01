@@ -121,12 +121,6 @@
     <Filter Include="Rendering\Include\Translation\Vulkan">
       <UniqueIdentifier>{c1a73eef-6cff-49f0-a0c6-d876558f683e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Source\API">
-      <UniqueIdentifier>{c8fff7f5-adad-47b6-acde-dab9da06296a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Source\API\Vulkan">
-      <UniqueIdentifier>{52be1e88-5690-475e-902c-bd761efabf5b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Source\Engine">
       <UniqueIdentifier>{d8460810-1a7b-4639-afda-53577323a649}</UniqueIdentifier>
     </Filter>
@@ -324,6 +318,12 @@
     </Filter>
     <Filter Include="Rendering\Include\Abstraction\Vulkan">
       <UniqueIdentifier>{21d43905-3bd1-4cee-9b7f-fda290b07a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Abstraction">
+      <UniqueIdentifier>{c8fff7f5-adad-47b6-acde-dab9da06296a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Abstraction\Vulkan">
+      <UniqueIdentifier>{52be1e88-5690-475e-902c-bd761efabf5b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1173,91 +1173,91 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanUniformBuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorPool.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorSet.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorSetLayout.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanErrorReporting.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanEvent.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanFence.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanFramebuffer.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanInstance.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanInterface.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanLogicalDevice.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanPipeline.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueue.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanRenderPass.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanRenderTarget.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSampler.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSemaphore.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp">
-      <Filter>Rendering\Source\API\Vulkan</Filter>
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

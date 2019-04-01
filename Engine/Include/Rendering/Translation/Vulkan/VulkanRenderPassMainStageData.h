@@ -4,8 +4,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Vulkan.
+//Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 
 class VulkanRenderPassMainStageData final
 {

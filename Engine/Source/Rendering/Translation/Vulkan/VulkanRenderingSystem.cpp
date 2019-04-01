@@ -22,6 +22,7 @@
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
+#include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
@@ -35,61 +36,131 @@
 //Singleton definition.
 DEFINE_SINGLETON(VulkanRenderingSystem);
 
+//Vulkan rendering system data.
+namespace VulkanRenderingSystemData
+{
+	/*
+	*	Vulkan destruction data definition.
+	*/
+	class VulkanDestructionData final
+	{
+
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			ConstantBuffer,
+			RenderDataTable,
+			Texture2D,
+			UniformBuffer
+		};
+
+		//The number of frames since destruction was requested.
+		uint8 _Frames{ 0 };
+
+		//The type.
+		Type _Type;
+
+		//The handle.
+		OpaqueHandle _Handle;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
+			:
+			_Type(type),
+			_Handle(handle)
+		{
+
+		}
+
+	};
+
+	//Container for all shader modules.
+	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
+
+	//Container for all Vulkan render pass main stage data.
+	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
+
+	//Container for all Vulkan render pass data.
+	StaticArray<VulkanRenderPassSubStageData, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassSubStageData;
+
+	//The Vulkan frame data.
+	VulkanFrameData _FrameData;
+
+	//The destruction queue.
+	DynamicArray<VulkanDestructionData> _DestructionQueue;
+}
+
 /*
-*	Pre-initializes the Vulkan rendering system.
+*	Pre-initializes the rendering system.
 */
-void VulkanRenderingSystem::PreInitializeSystem() NOEXCEPT
+void RenderingSystem::PreInitialize() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize();
-}
-
-/*
-*	Post-initializes the Vulkan rendering system.
-*/
-void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
-{
-	//Initialize all semaphores.
-	InitializeSemaphores();
 
 	//Initialize all shader modules.
-	InitializeShaderModules();
-
-	//Initialize all Vulkan render passes.
-	InitializeVulkanRenderPasses();
+	VulkanRenderingSystem::Instance->InitializeShaderModules();
 
 	//Initialize the Vulkan frame data.
-	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
+	VulkanRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
 }
 
 /*
-*	Pre-updates the Vulkan rendering system synchronously.
+*	Post-initializes the rendering system.
 */
-void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
+void RenderingSystem::PostInitialize() NOEXCEPT
+{
+	//Initialize all Vulkan render passes.
+	VulkanRenderingSystem::Instance->InitializeVulkanRenderPasses();
+}
+
+/*
+*	Begins a frame.
+*/
+void RenderingSystem::BeginFrame() NOEXCEPT
 {
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate(_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)]);
+	VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
 
 	//Process the destruction queue.
-	ProcessDestructionQueue();
+	VulkanRenderingSystem::Instance->ProcessDestructionQueue();
 
-	//Begin the frame.
-	BeginFrame();
+	//Set the current frame.
+	VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+
+	//Wait for the current fence to finish.
+	VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
+
+	//Reset the current fence.
+	VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
 }
 
 /*
-*	Post-updates the Vulkan rendering system synchronously.
+*	Ends a frame.
 */
-void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
+void RenderingSystem::EndFrame() NOEXCEPT
 {
 	//Concatenate all secondary command buffers into the previous one.
-	ConcatenateCommandBuffers();
+	VulkanRenderingSystem::Instance->ConcatenateCommandBuffers();
 
-	//End the frame.
-	EndFrame();
+	//End the current command buffer.
+	VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer()->End();
+
+	//Submit current command buffer.
+	VulkanInterface::Instance->GetGraphicsQueue()->Submit(	*VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer(),
+															1,
+															VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
+															VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+															1,
+															VulkanRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),
+															VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Get());
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate(_Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)]);
+	VulkanInterface::Instance->PostUpdate(VulkanRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());
 }
 
 /*
@@ -140,7 +211,7 @@ void VulkanRenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const
 void VulkanRenderingSystem::DestroyConstantBuffer(ConstantBufferHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::ConstantBuffer, handle);
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::ConstantBuffer, handle);
 }
 
 /*
@@ -157,7 +228,7 @@ DepthBufferHandle VulkanRenderingSystem::CreateDepthBuffer(const Resolution reso
 void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::RenderDataTable, handle);
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable, handle);
 }
 
 /*
@@ -188,7 +259,7 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::Texture2D, handle);
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D, handle);
 }
 
 /*
@@ -243,7 +314,7 @@ void VulkanRenderingSystem::UploadDataToUniformBuffer(UniformBufferHandle handle
 void VulkanRenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::UniformBuffer, handle);
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::UniformBuffer, handle);
 }
 
 /*
@@ -298,11 +369,11 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	}
 	
 	parameters._ShaderModules.Reserve(5);
-	if (renderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetVertexShader())]);
-	if (renderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetTessellationControlShader())]);
-	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetTessellationEvaluationShader())]);
-	if (renderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetGeometryShader())]);
-	if (renderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetFragmentShader())]);
+	if (renderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetVertexShader())]);
+	if (renderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetTessellationControlShader())]);
+	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetTessellationEvaluationShader())]);
+	if (renderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetGeometryShader())]);
+	if (renderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetFragmentShader())]);
 	parameters._StencilTestEnable = renderPass->IsStencilTestEnabled();
 	parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilFailOperator());
 	parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilPassOperator());
@@ -338,22 +409,22 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
 	parameters._ViewportExtent = renderPass->GetRenderTargets().Empty() ? VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height } : renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height };
 
-	parameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass;
+	parameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass;
 
 	//Create the pipeline!
-	_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreatePipeline(parameters);
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers.Size());
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers.Size());
 
-	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : _VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers)
+	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers)
 	{
-		_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+		VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 	}
 
-	_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass->Get();
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass->Get();
 
-	renderPass->SetData(&_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]);
+	renderPass->SetData(&VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]);
 
 	//Add the command buffers.
 	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
@@ -537,16 +608,6 @@ void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 bind
 }
 
 /*
-*	Initializes all semaphores.
-*/
-void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
-{
-	//Initialize all semaphores.
-	_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
-	_Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
-}
-
-/*
 *	Initializes all shader modules.
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
@@ -561,7 +622,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::AntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -571,7 +632,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -581,7 +642,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -591,7 +652,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -601,7 +662,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -611,7 +672,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::PassthroughFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PassthroughFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -621,7 +682,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::ToneMappingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ToneMappingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -631,7 +692,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		data.UpsizeFast(size);
 		shaderCollection.Read(data.Data(), size);
-		_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	shaderCollection.Close();
@@ -718,12 +779,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
 		renderPassParameters._SubpassDependencies = subpassDependencies.Data();;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass->Get();
+		framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 2> attachments
 		{
@@ -735,10 +796,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._ShouldClear = false;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.Reserve(1);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._ShouldClear = false;
 	}
 #endif
 
@@ -789,12 +850,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._RenderPass->Get();
+		framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
@@ -805,10 +866,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._ShouldClear = false;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._FrameBuffers.Reserve(1);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._ShouldClear = false;
 	}
 
 	//Initialize the anti-aliasing final render pass.
@@ -858,27 +919,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffers.
 		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.Reserve(swapchainImages.Size());
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.Reserve(swapchainImages.Size());
 
 		for (VkImageView swapchainImage : swapchainImages)
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass->Get();
+			framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass->Get();
 
 			framebufferParameters._AttachmentCount = 1;
 			framebufferParameters._Attachments = &swapchainImage;
 			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+			VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._ShouldClear = false;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._ShouldClear = false;
 	}
 
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
@@ -929,27 +990,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffers.
 		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.Reserve(swapchainImages.Size());
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.Reserve(swapchainImages.Size());
 
 		for (VkImageView swapchainImage : swapchainImages)
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass->Get();
+			framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._RenderPass->Get();
 
 			framebufferParameters._AttachmentCount = 1;
 			framebufferParameters._Attachments = &swapchainImage;
 			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+			VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._ShouldClear = false;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::RenderOverride)]._ShouldClear = false;
 	}
 #endif
 }
@@ -959,38 +1020,38 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 */
 void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 {
-	for (uint64 i = 0; i < _DestructionQueue.Size();)
+	for (uint64 i = 0; i < VulkanRenderingSystemData::_DestructionQueue.Size();)
 	{
-		++_DestructionQueue[i]._Frames;
+		++VulkanRenderingSystemData::_DestructionQueue[i]._Frames;
 
-		if (_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
+		if (VulkanRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
 		{
-			switch (_DestructionQueue[i]._Type)
+			switch (VulkanRenderingSystemData::_DestructionQueue[i]._Type)
 			{
-				case VulkanDestructionData::Type::ConstantBuffer:
+				case VulkanRenderingSystemData::VulkanDestructionData::Type::ConstantBuffer:
 				{
-					VulkanInterface::Instance->DestroyConstantBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(_DestructionQueue[i]._Handle));
+					VulkanInterface::Instance->DestroyConstantBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 					break;
 				}
 
-				case VulkanDestructionData::Type::RenderDataTable:
+				case VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable:
 				{
-					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(_DestructionQueue[i]._Handle));
+					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 					break;
 				}
 
-				case VulkanDestructionData::Type::Texture2D:
+				case VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D:
 				{
-					VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(_DestructionQueue[i]._Handle));
+					VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 					break;
 				}
 
-				case VulkanDestructionData::Type::UniformBuffer:
+				case VulkanRenderingSystemData::VulkanDestructionData::Type::UniformBuffer:
 				{
-					VulkanInterface::Instance->DestroyUniformBuffer(static_cast<VulkanUniformBuffer *const RESTRICT>(_DestructionQueue[i]._Handle));
+					VulkanInterface::Instance->DestroyUniformBuffer(static_cast<VulkanUniformBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 					break;
 				}
@@ -1004,7 +1065,7 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 #endif
 			}
 
-			_DestructionQueue.EraseAt(i);
+			VulkanRenderingSystemData::_DestructionQueue.EraseAt(i);
 		}
 
 		else
@@ -1015,27 +1076,12 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 }
 
 /*
-*	Begins the frame.
-*/
-void VulkanRenderingSystem::BeginFrame() NOEXCEPT
-{
-	//Set the current frame.
-	_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
-
-	//Wait for the current fence to finish.
-	_FrameData.GetCurrentFence()->WaitFor();
-
-	//Reset the current fence.
-	_FrameData.GetCurrentFence()->Reset();
-}
-
-/*
 *	Concatenates all secondary command buffers into the previous one.
 */
 void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 {
 	//Begin the current primary command buffer.
-	VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ _FrameData.GetCurrentPrimaryCommandBuffer() };
+	VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer() };
 	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
@@ -1058,22 +1104,23 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
-			if (_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._ShouldClear)
+			if (VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._ShouldClear)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f),
-																				0.0f,
-																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
-																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
-																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, _VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._NumberOfAttachments);
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f),
+																			0.0f,
+																			VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
+																			VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
+																			renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
+																			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS,
+																			VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._NumberOfAttachments);
 			}
 
 			else
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(	_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-																		_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
-																		renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
-																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+				currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
+																	VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
+																	renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
+																	VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
 		}
 
@@ -1091,17 +1138,5 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//End the last remaining render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Ends the frame.
-*/
-void VulkanRenderingSystem::EndFrame() NOEXCEPT
-{
-	//End the current command buffer.
-	_FrameData.GetCurrentPrimaryCommandBuffer()->End();
-
-	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
 }
 #endif
