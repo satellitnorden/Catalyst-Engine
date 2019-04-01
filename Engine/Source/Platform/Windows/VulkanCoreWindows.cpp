@@ -7,7 +7,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Vulkan.
-#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
 namespace PlatformVulkan
 {

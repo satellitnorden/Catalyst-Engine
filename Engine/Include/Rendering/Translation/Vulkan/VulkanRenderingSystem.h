@@ -11,7 +11,7 @@
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 
 //Vulkan.
-#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
 //Forward declarations.
 class RenderPass;

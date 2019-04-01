@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Vulkan.
-#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
 class VulkanFrameData final
 {

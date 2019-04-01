@@ -30,7 +30,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Vulkan.
-#include <Rendering/API/Vulkan/VulkanUtilities.h>
+#include <Rendering/Abstraction/Vulkan/VulkanUtilities.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(VulkanRenderingSystem);
