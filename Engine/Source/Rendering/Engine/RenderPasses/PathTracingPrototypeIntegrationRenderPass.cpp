@@ -141,6 +141,14 @@ void PathTracingPrototypeIntegrationRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void PathTracingPrototypeIntegrationRenderPass::RenderInternal() NOEXCEPT
 {
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
+
 	//Calculate the number of accumulations.
 	const Matrix4 currentPerceiverMatrix{ *Perceiver::Instance->GetPerceiverMatrix() };
 
