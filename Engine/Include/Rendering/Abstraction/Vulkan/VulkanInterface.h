@@ -47,7 +47,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanInterface() NOEXCEPT { }
+	VulkanInterface() NOEXCEPT
+	{
+	
+	}
 
 	/*
 	*	Initializes this Vulkan interface.
@@ -310,11 +313,6 @@ private:
 
 	//Container for all Vulkan uniform buffers.
 	DynamicArray<VulkanUniformBuffer *RESTRICT> _VulkanUniformBuffers;
-
-	/*
-	*	Returns a new command pool.
-	*/
-	VulkanCommandPool GetNewCommandPool(const uint32 queueFamilyIndex) NOEXCEPT;
 
 };
 #endif
