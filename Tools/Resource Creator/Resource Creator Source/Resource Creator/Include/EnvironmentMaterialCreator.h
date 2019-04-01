@@ -119,8 +119,7 @@ public:
 		}
 
 		//Create the diffuse texture.
-		//TextureCube diffuseTexture{ diffuseOutputTextures }; //TODO: Make this work. (:
-		TextureCube diffuseTexture;
+		TextureCube diffuseTexture{ diffuseOutputTextures }; //TODO: Make this work. (:
 
 		//Create the diffuse irradiance output textures.
 		StaticArray<Texture2D<Vector4<float>>, 6> diffuseIrradianceOutputTextures

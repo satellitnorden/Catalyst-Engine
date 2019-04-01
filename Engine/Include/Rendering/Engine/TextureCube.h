@@ -17,6 +17,24 @@ class TextureCube final
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE TextureCube() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Constructor taking a static array of all the faces.
+	*/
+	FORCE_INLINE TextureCube(const StaticArray<Texture2D<Vector4<float>>, 6> &initialFaces) NOEXCEPT
+		:
+		_Faces(initialFaces)
+	{
+
+	}
+
+	/*
 	*	Initializes this texture cube.
 	*/
 	FORCE_INLINE void Initialize(const uint32 resolution, const Vector4<float> *const RESTRICT data) NOEXCEPT
