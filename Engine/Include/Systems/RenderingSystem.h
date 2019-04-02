@@ -46,12 +46,15 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	RenderingSystem() NOEXCEPT { }
+	RenderingSystem() NOEXCEPT
+	{
+	
+	}
 
 	/*
 	*	Initializes the rendering system.
 	*/
-	void InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
+	void Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Post-initializes the rendering system.
@@ -59,14 +62,14 @@ public:
 	void PostInitializeSystem();
 
 	/*
-	*	Updates the rendering system synchronously.
+	*	Updates the rendering system.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystem(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the rendering system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns the resolution.
@@ -93,14 +96,14 @@ public:
 	}
 	
 	/*
-	*	Returns the number of frame buffers
+	*	Returns the number of framebuffers.
 	*/
-	uint8 GetNumberOfFrameBuffers() const NOEXCEPT;
+	uint8 GetNumberOfFramebuffers() const NOEXCEPT;
 
 	/*
-	*	Returns the current frame buffer index.
+	*	Returns the current framebuffer index.
 	*/
-	uint8 GetCurrentFrameBufferIndex() const NOEXCEPT;
+	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
 
 	/*
 	*	Returns the render passes.
@@ -137,22 +140,22 @@ public:
 	/*
 	*	Creates a buffer.
 	*/
-	ConstantBufferHandle CreateBuffer(const uint64 size) const NOEXCEPT;
+	void CreateBuffer(const uint64 size, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Uploads data to a buffer.
 	*/
-	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle handle) const NOEXCEPT;
+	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Destroys a constant buffer.
+	*	Destroys a buffer.
 	*/
-	void DestroyConstantBuffer(ConstantBufferHandle handle) const NOEXCEPT;
+	void DestroyBuffer(ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.
 	*/
-	DepthBufferHandle CreateDepthBuffer(const Resolution resolution) const NOEXCEPT;
+	void CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a render data table layout.
@@ -166,30 +169,30 @@ public:
 
 	/*
 	*	Binds a combined image sampler to a render data table.
-	*	Accepts render target, texture 2D and texture cube handles. 
+	*	Accepts render target, texture 2D and texture cube handles.
 	*/
-	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
+	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
 
 	/*
 	*	Binds a sampled image to a render data table.
 	*	Accepts render target, texture 2D and texture cube handles.
 	*/
-	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT;
+	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT;
 
 	/*
 	*	Binds a sampler to a render data table.
 	*/
-	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, SamplerHandle sampler) const NOEXCEPT;
+	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, SamplerHandle sampler) const NOEXCEPT;
 
 	/*
 	*	Binds a uniform buffer to a render data table.
 	*/
-	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT;
+	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, UniformBufferHandle uniformBuffer) const NOEXCEPT;
 
 	/*
 	*	Destroys a render data table.
 	*/
-	void DestroyRenderDataTable(RenderDataTableHandle handle) const NOEXCEPT;
+	void DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a render target.
@@ -199,37 +202,37 @@ public:
 	/*
 	*	Creates and returns a sampler.
 	*/
-	SamplerHandle CreateSampler(const SamplerProperties &properties) const NOEXCEPT;
+	void CreateSampler(const SamplerProperties &properties, SamplerHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a texture 2D given the texture data.
+	*	Creates a texture 2D.
 	*/
-	Texture2DHandle CreateTexture2D(const TextureData &textureData) const NOEXCEPT;
+	void CreateTexture2D(const TextureData &textureData, Texture2DHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Destroys a texture 2D
+	*	Destroys a texture 2D.
 	*/
-	void DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT;
+	void DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a texture cube.
 	*/
-	TextureCubeHandle CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT;
+	void CreateTextureCube(const float *const RESTRICT data, const Resolution resolution, TextureCubeHandle *const RESTRICT) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage) const NOEXCEPT;
+	void CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Uploads data to a uniform buffer.
 	*/
-	void UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT;
+	void UploadDataToUniformBuffer(const void *const RESTRICT data, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Destroys a uniform buffer.
 	*/
-	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
+	void DestroyUniformBuffer(UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Returns the global render data table.
@@ -264,7 +267,7 @@ public:
 	/*
 	*	Finalizes the initialization of a render pass.
 	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) const NOEXCEPT;
 
 private:
 
@@ -314,6 +317,16 @@ private:
 	*	Ends a frame.
 	*/
 	void EndFrame() NOEXCEPT;
+
+	/*
+	*	Pre-releases the rendering system.
+	*/
+	void PreRelease() NOEXCEPT;
+
+	/*
+	*	Post-releases the rendering system.
+	*/
+	void PostRelease() NOEXCEPT;
 
 	/*
 	*	Pre-initializes the global render data.

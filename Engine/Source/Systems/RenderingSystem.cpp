@@ -37,19 +37,10 @@
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
 
-//Define the current rendering system.
-#if defined(CATALYST_RENDERING_OPENGL)
-	#include <Rendering/Translation/OpenGL/OpenGLRenderingSystem.h>
-	#define CURRENT_RENDERING_SYSTEM OpenGLRenderingSystem
-#elif defined(CATALYST_RENDERING_VULKAN)
-	#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
-	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
-#endif
-
 /*
 *	Initializes the rendering system.
 */
-void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
+void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
 	//Set the resolution.
 	_Resolution = configuration._Resolution;
@@ -95,9 +86,9 @@ void RenderingSystem::PostInitializeSystem()
 }
 
 /*
-*	Updates the rendering system synchronously.
+*	Updates the rendering system.
 */
-void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Begin the frame.
 	BeginFrame();
@@ -133,201 +124,13 @@ void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRIC
 /*
 *	Releases the rendering system.
 */
-void RenderingSystem::ReleaseSystem() NOEXCEPT
+void RenderingSystem::Release() NOEXCEPT
 {
-	//Release the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->ReleaseSystem();
-}
+	//Pre-release the rendering system.
+	PreRelease();
 
-/*
-*	Returns the number of frame buffers
-*/
-uint8 RenderingSystem::GetNumberOfFrameBuffers() const NOEXCEPT
-{
-	//Return the number of frame buffers via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetNumberOfFrameBuffers();
-}
-
-/*
-*	Returns the current frame buffer index.
-*/
-uint8 RenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
-{
-	//Return the current frame buffer index via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameBufferIndex();
-}
-
-/*
-*	Creates a buffer.
-*/
-ConstantBufferHandle RenderingSystem::CreateBuffer(const uint64 size) const NOEXCEPT
-{
-	//Create the buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateBuffer(size);
-}
-
-/*
-*	Uploads data to a buffer.
-*/
-void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle handle) const NOEXCEPT
-{
-	//Upload the data to the buffer via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->UploadDataToBuffer(data, dataSizes, dataChunks, handle);
-}
-
-/*
-*	Destroys a constant buffer.
-*/
-void RenderingSystem::DestroyConstantBuffer(ConstantBufferHandle handle) const NOEXCEPT
-{
-	//Create the constant buffer via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyConstantBuffer(handle);
-}
-
-/*
-*	Creates a depth buffer.
-*/
-DepthBufferHandle RenderingSystem::CreateDepthBuffer(const Resolution resolution) const NOEXCEPT
-{
-	//Create the depth buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateDepthBuffer(resolution);
-}
-
-/*
-*	Creates a render data table layout.
-*/
-void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
-{
-	//Create the render data table layout via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTableLayout(bindings, numberOfBindings, handle);
-}
-
-/*
-*	Creates a render data table.
-*/
-void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
-{
-	//Create the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTable(renderDataTableLayout, handle);
-}
-
-/*
-*	Binds a combined image sampler to a render data table.
-*	Accepts render target, texture 2D and texture cube handles.
-*/
-void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
-{
-	//Bind the combined image sampler to the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->BindCombinedImageSamplerToRenderDataTable(binding, arrayElement, renderDataTable, image, sampler);
-}
-
-/*
-*	Binds a sampled image to a render data table.
-*	Accepts render target, texture 2D and texture cube handles.
-*/
-void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT
-{
-	//Bind the sampled image to the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->BindSampledImageToRenderDataTable(binding, arrayElement, renderDataTable, image);
-}
-
-/*
-*	Binds a sampler to a render data table.
-*/
-void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, SamplerHandle sampler) const NOEXCEPT
-{
-	//Bind the sampler to the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->BindSamplerToRenderDataTable(binding, arrayElement, renderDataTable, sampler);
-}
-
-/*
-*	Binds a uniform buffer to a render data table.
-*/
-void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
-{
-	//Bind the uniform buffer to the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->BindUniformBufferToRenderDataTable(binding, arrayElement, renderDataTable, uniformBuffer);
-}
-
-/*
-*	Destroys a render data table.
-*/
-void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) const NOEXCEPT
-{
-	//Destroy the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(handle);
-}
-
-/*
-*	Creates a render target.
-*/
-void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
-{
-	//Create the render target via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderTarget(resolution, format, handle);
-}
-
-/*
-*	Creates and returns a sampler.
-*/
-SamplerHandle RenderingSystem::CreateSampler(const SamplerProperties &properties) const NOEXCEPT
-{
-	//Create the sampler via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateSampler(properties);
-}
-
-/*
-*	Creates and returns a texture 2D given the texture data.
-*/
-Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData) const NOEXCEPT
-{
-	//Create the texture 2D via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
-}
-
-/*
-*	Destroys a texture 2D
-*/
-void RenderingSystem::DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT
-{
-	//Destroy the texture 2D via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(handle);
-}
-
-/*
-*	Creates a texture cube.
-*/
-TextureCubeHandle RenderingSystem::CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT
-{
-	//Create the texture cube via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateTextureCube(data, resolution);
-}
-
-/*
-*	Creates and returns a uniform buffer.
-*/
-UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage) const NOEXCEPT
-{
-	//Create the uniform buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize, usage);
-}
-
-/*
-*	Uploads data to a uniform buffer.
-*/
-void RenderingSystem::UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT
-{
-	//Upload the data to the uniform buffer via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->UploadDataToUniformBuffer(handle, data);
-}
-
-/*
-*	Destroys a uniform buffer.
-*/
-void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT
-{
-	//Destroy the uniform buffer via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyUniformBuffer(handle);
+	//Post-release the rendering system.
+	PostRelease();
 }
 
 /*
@@ -335,7 +138,7 @@ void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOE
 */
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 {
-	return _GlobalRenderData._RenderDataTables[GetCurrentFrameBufferIndex()];
+	return _GlobalRenderData._RenderDataTables[GetCurrentFramebufferIndex()];
 }
 
 /*
@@ -466,21 +269,12 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 }
 
 /*
-*	Finalizes the initialization of a render pass.
-*/
-void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT
-{
-	//Finalize the initialization of this render pass via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(_RenderPass);
-}
-
-/*
 *	Pre-initializes the global render data.
 */
 void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 {
 	//Get the number of frame buffers.
-	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
+	const uint8 numberOfFrameBuffers{ GetNumberOfFramebuffers() };
 
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
@@ -498,28 +292,28 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
 
 		//Create the dynamic uniform data buffer.
-		_GlobalRenderData._DynamicUniformDataBuffers[i] = CreateUniformBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer);
+		CreateUniformBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
 
 		//Bind the dynamic uniform data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(0, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
+		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
 
 		//Bind all samplers.
 		for (uint8 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
 		{
-			BindSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], _Samplers[j]);
+			BindSamplerToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 
 		//Create the terrain patch data buffer.
-		_GlobalRenderData._TerrainPatchDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+		CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, &_GlobalRenderData._TerrainPatchDataBuffers[i]);
 	
 		//Bind the terrain patch data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(4, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
+		BindUniformBufferToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
 
 		//Create the terrain material data buffer.
-		_GlobalRenderData._TerrainMaterialDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+		CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, &_GlobalRenderData._TerrainMaterialDataBuffers[i]);
 
 		//Bind the terrain material data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(5, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
+		BindUniformBufferToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
 	}
 
 	//Mark all global texture slots as free.
@@ -540,8 +334,8 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 */
 void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
 {
-	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)] = CreateDepthBuffer(GetDirectionalShadowMapResolution());
-	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)] = CreateDepthBuffer(GetScaledResolution());
+	CreateDepthBuffer(GetDirectionalShadowMapResolution(), &_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]);
+	CreateDepthBuffer(GetScaledResolution(), &_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]);
 }
 
 /*
@@ -569,12 +363,12 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 */
 void RenderingSystem::InitializeSamplers() NOEXCEPT
 {
-	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge));
-	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat));
-	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge));
-	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat));
-	_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder));
-	_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge));
+	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)]);
+	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
+	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)]);
+	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
+	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)]);
+	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
 }
 
 /*
@@ -693,7 +487,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 {
 	//Retrieve the current frame buffer index.
-	const uint8 currentFrameBufferIndex{ GetCurrentFrameBufferIndex() };
+	const uint8 currentFrameBufferIndex{ GetCurrentFramebufferIndex() };
 
 	//Update the dynamic uniform data.
 	UpdateDynamicUniformData(currentFrameBufferIndex);
@@ -740,7 +534,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 
-	UploadDataToUniformBuffer(_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex], &data);
+	UploadDataToUniformBuffer(&data, &_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex]);
 }
 
 /*
@@ -755,7 +549,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
 	{
-		BindSampledImageToRenderDataTable(2, update._First, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
+		BindSampledImageToRenderDataTable(2, update._First, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
@@ -776,7 +570,7 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 
 	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex])
 	{
-		BindCombinedImageSamplerToRenderDataTable(3, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		BindCombinedImageSamplerToRenderDataTable(3, static_cast<uint32>(update._First), &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
@@ -806,7 +600,7 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 		terrainUniformData[counter++] = informations->At(i)._InstanceInformation;
 	}
 
-	UploadDataToUniformBuffer(_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
+	UploadDataToUniformBuffer(terrainUniformData.Data(), &_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex]);
 }
 
 /*
@@ -814,8 +608,5 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 */
 void RenderingSystem::UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
-	UploadDataToUniformBuffer(_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex], TerrainSystem::Instance->GetTerrainMaterials()->Data());
+	UploadDataToUniformBuffer(TerrainSystem::Instance->GetTerrainMaterials()->Data(), &_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex]);
 }
-
-//Undefine defines to keep them from leaking into other scopes.
-#undef CURRENT_RENDERING_SYSTEM

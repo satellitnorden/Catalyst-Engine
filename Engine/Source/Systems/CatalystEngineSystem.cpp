@@ -99,7 +99,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	EntityPlacementSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	PhysicsSystem::Instance->Initialize();
-	RenderingSystem::Instance->InitializeSystem(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
+	RenderingSystem::Instance->Initialize(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->InitializeSystem();
 	TerrainSystem::Instance->InitializeSystem();
@@ -155,7 +155,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
 #endif
-	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->UpdateSystem(&context);
 	SoundSystem::Instance->Update(&context);
 
 	/*
@@ -198,6 +198,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Release all systems.
 	PhysicsSystem::Instance->Terminate();
-	RenderingSystem::Instance->ReleaseSystem();
+	RenderingSystem::Instance->Release();
 	SoundSystem::Instance->Terminate();
 }

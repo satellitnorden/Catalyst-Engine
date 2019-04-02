@@ -3,10 +3,14 @@
 #include <Rendering/Native/CommandBuffer.h>
 
 //Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanConstantBuffer.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
-#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
+
+//Systems.
+#include <Systems/RenderingSystem.h>
 
 /*
 *	Begins the command buffer.
@@ -17,7 +21,7 @@ void CommandBuffer::Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
 
 	//Begin the command buffer.
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassSubStageData->_RenderPass, VulkanTranslationUtilities::GetSubStageIndex(renderPass->GetMainStage(), renderPass->GetSubStage()), renderPass->GetRenderTargets().Empty() ? renderPassSubStageData->_Framebuffers[0] : renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassSubStageData->_Framebuffers[VulkanRenderingSystem::Instance->GetCurrentFrameBufferIndex()] : renderPassSubStageData->_Framebuffers[0]);
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassSubStageData->_RenderPass, VulkanTranslationUtilities::GetSubStageIndex(renderPass->GetMainStage(), renderPass->GetSubStage()), renderPass->GetRenderTargets().Empty() ? renderPassSubStageData->_Framebuffers[0] : renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassSubStageData->_Framebuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] : renderPassSubStageData->_Framebuffers[0]);
 	
 	//Bind the pipeline.
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(renderPassSubStageData->_Pipeline->Get());

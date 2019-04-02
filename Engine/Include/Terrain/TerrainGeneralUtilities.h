@@ -79,11 +79,11 @@ namespace TerrainGeneralUtilities
 			}
 		}
 
-		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
-																				TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
-																				TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
-																				1),
-																				TextureFormat::R32_Float));
+		RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(data.Data(),
+																TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
+																TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
+																1),
+																TextureFormat::R32_Float), texture);
 	}
 
 	/*
@@ -131,10 +131,8 @@ namespace TerrainGeneralUtilities
 		}
 
 		//Create the textures.
-		*normalTextureHandle = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(normalTexture),
-																							TextureFormat::R8G8B8A8_Byte));
-		*materialTextureHandle = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(materialTexture),
-																								TextureFormat::R8_Byte));
+		RenderingSystem::Instance->CreateTexture2D(	TextureData(TextureDataContainer(normalTexture), TextureFormat::R8G8B8A8_Byte), normalTextureHandle);
+		RenderingSystem::Instance->CreateTexture2D(	TextureData(TextureDataContainer(materialTexture), TextureFormat::R8_Byte), materialTextureHandle);
 	}
 
 	/*

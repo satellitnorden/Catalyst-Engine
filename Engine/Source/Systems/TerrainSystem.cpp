@@ -47,8 +47,8 @@ void TerrainSystem::InitializeSystem() NOEXCEPT
 	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
 
-	_Properties._Buffer = RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1]);
-	RenderingSystem::Instance->UploadDataToBuffer(bufferData.Data(), bufferDataSizes.Data(), 2, _Properties._Buffer);
+	RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1], &_Properties._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(bufferData.Data(), bufferDataSizes.Data(), 2, &_Properties._Buffer);
 
 	_Properties._IndexOffset = bufferDataSizes[0];
 	_Properties._IndexCount = static_cast<uint32>(indices.Size());
@@ -640,9 +640,9 @@ void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._HeightTextureIndex);
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex));
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._MaterialTextureIndex));
-	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._HeightTexture);
-	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._NormalTexture);
-	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._MaterialTexture);
+	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._HeightTexture);
+	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._NormalTexture);
+	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._MaterialTexture);
 
 	_PatchInformations.EraseAt(index);
 	_PatchRenderInformations.EraseAt(index);

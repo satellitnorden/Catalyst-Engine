@@ -55,7 +55,7 @@ namespace VegetationUtilities
 
 			if (information->_PatchRenderInformations[index]._NumberOfTransformations[i] > 0)
 			{
-				RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
+				RenderingSystem::Instance->DestroyBuffer(&information->_PatchRenderInformations[index]._TransformationsBuffers[i]);
 
 				information->_PatchRenderInformations[index]._TransformationsBuffers[i] = nullptr;
 			}
@@ -71,7 +71,7 @@ namespace VegetationUtilities
 		//Invalidate the patch.
 		information->_PatchInformations[index]._Valid = false;
 
-		RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
+		RenderingSystem::Instance->DestroyBuffer(&information->_PatchRenderInformations[index]._TransformationsBuffer);
 	}
 
 	/*
@@ -92,7 +92,7 @@ namespace VegetationUtilities
 			{
 				if (update->_Information->_PatchRenderInformations[update->_Index]._NumberOfTransformations[i] > 0)
 				{
-					RenderingSystem::Instance->DestroyConstantBuffer(update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers[i]);
+					RenderingSystem::Instance->DestroyBuffer(&update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffers[i]);
 				}
 			}
 
@@ -136,7 +136,7 @@ namespace VegetationUtilities
 
 		if (update->_LevelOfDetailUpdate)
 		{
-			RenderingSystem::Instance->DestroyConstantBuffer(update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffer);
+			RenderingSystem::Instance->DestroyBuffer(&update->_Information->_PatchRenderInformations[update->_Index]._TransformationsBuffer);
 
 			update->_Information->_PatchInformations[update->_Index]._TimeStamp = update->_NewPatchInformation._TimeStamp;
 			update->_Information->_PatchInformations[update->_Index]._AxisAlignedBoundingBoxes = update->_NewPatchInformation._AxisAlignedBoundingBoxes;
