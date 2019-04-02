@@ -8,7 +8,7 @@
 #include <Multithreading/Spinlock.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 class GlobalRenderData final
 {

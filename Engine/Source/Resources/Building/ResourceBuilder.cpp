@@ -16,8 +16,8 @@
 #include <Resources/Core/ResourcesCore.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
-#include <Rendering/Engine/Vertex.h>
+#include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/Vertex.h>
 
 //Third party.
 #include <ThirdParty/stb_image.h>

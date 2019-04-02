@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
+#include <Rendering/Native/Texture2D.h>
 
 class TextureDataContainer final
 {

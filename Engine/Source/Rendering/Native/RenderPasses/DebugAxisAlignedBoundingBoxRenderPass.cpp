@@ -1,10 +1,10 @@
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 //Header file.
-#include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
+#include <Rendering/Native/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 
 //Rendering.
-#include <Rendering/Engine/CommandBuffer.h>
-#include <Rendering/Engine/Vertex.h>
+#include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/Vertex.h>
 
 //Systems.
 #include <Systems/DebugRenderingSystem.h>

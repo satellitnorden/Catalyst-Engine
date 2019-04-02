@@ -6,7 +6,7 @@
 #include <Core/General/DynamicString.h>
 
 //Rendering.
-#include <Rendering/Engine/Resolution.h>
+#include <Rendering/Native/Resolution.h>
 
 class CatalystProjectGeneralConfiguration final
 {

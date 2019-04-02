@@ -8,7 +8,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

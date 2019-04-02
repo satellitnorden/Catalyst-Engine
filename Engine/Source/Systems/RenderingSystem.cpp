@@ -16,11 +16,11 @@
 #include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
-#include <Rendering/Engine/DynamicUniformData.h>
-#include <Rendering/Engine/RenderingUtilities.h>
-#include <Rendering/Engine/Resolution.h>
-#include <Rendering/Engine/RenderPasses/RenderPasses.h>
-#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Native/DynamicUniformData.h>
+#include <Rendering/Native/RenderingUtilities.h>
+#include <Rendering/Native/Resolution.h>
+#include <Rendering/Native/RenderPasses/RenderPasses.h>
+#include <Rendering/Native/TextureData.h>
 
 //Systems.
 #include <Systems/InputSystem.h>

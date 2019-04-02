@@ -109,23 +109,11 @@
     <Filter Include="Systems\Source">
       <UniqueIdentifier>{cb82a27b-e457-408a-a466-f567e2daa9ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Include\Engine">
-      <UniqueIdentifier>{613b25e4-aa89-4ada-9832-26ab5fd409b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Include\Engine\RenderPasses">
-      <UniqueIdentifier>{820f2310-d318-448b-be58-8b9d8aa12389}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Include\Translation">
       <UniqueIdentifier>{d681e95f-0884-497b-9a83-35be78f33360}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Include\Translation\Vulkan">
       <UniqueIdentifier>{c1a73eef-6cff-49f0-a0c6-d876558f683e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Source\Engine">
-      <UniqueIdentifier>{d8460810-1a7b-4639-afda-53577323a649}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Source\Engine\RenderPasses">
-      <UniqueIdentifier>{6a516d4d-8f8b-4be3-b841-aa4b6a353f12}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Source\Translation">
       <UniqueIdentifier>{97a1783f-ccb5-4ce7-b6d7-caa16dc31f9f}</UniqueIdentifier>
@@ -324,6 +312,18 @@
     </Filter>
     <Filter Include="Rendering\Source\Abstraction\Vulkan">
       <UniqueIdentifier>{52be1e88-5690-475e-902c-bd761efabf5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Include\Native">
+      <UniqueIdentifier>{613b25e4-aa89-4ada-9832-26ab5fd409b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Include\Native\RenderPasses">
+      <UniqueIdentifier>{820f2310-d318-448b-be58-8b9d8aa12389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Native">
+      <UniqueIdentifier>{d8460810-1a7b-4639-afda-53577323a649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Native\RenderPasses">
+      <UniqueIdentifier>{6a516d4d-8f8b-4be3-b841-aa4b6a353f12}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -834,66 +834,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
       <Filter>Resources\Include\Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPasses.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ToneMappingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Model.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Texture2D.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureCube.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Vertex.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonModelData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
@@ -1022,6 +962,66 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Texture2D.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\TextureCube.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\TextureData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\TextureDataContainer.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AntiAliasingRenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DebugScreenBoxRenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderOverrideRenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPasses.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h">
+      <Filter>Rendering\Include\Native\RenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1154,24 +1154,6 @@
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp">
       <Filter>Lighting\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderOverrideRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
@@ -1258,6 +1240,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AntiAliasingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DebugScreenBoxRenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderOverrideRenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

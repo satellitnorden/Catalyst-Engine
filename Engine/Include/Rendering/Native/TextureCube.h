@@ -9,7 +9,7 @@
 #include <Math/General/Vector.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
+#include <Rendering/Native/Texture2D.h>
 
 class TextureCube final
 {

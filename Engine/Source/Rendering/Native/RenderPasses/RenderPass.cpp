@@ -1,8 +1,8 @@
 //Header file.
-#include <Rendering\Engine\RenderPasses\RenderPass.h>
+#include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Rendering.
-#include <Rendering/Engine/CommandBuffer.h>
+#include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

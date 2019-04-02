@@ -9,8 +9,8 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/Resolution.h>
+#include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Resolution.h>
 
 //Forward declarations.
 class CommandBuffer;

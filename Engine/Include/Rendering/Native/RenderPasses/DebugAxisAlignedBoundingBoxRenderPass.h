@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderPasses/RenderPass.h>
+#include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DebugAxisAlignedBoundingBoxRenderPass final : public RenderPass
 {

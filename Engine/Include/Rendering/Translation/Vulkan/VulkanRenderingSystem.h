@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 

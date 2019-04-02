@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 class TerrainPatchInstanceRenderInformation final
 {

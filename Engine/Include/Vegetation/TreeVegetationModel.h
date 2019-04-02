@@ -7,7 +7,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 class TreeVegetationModel final
 {

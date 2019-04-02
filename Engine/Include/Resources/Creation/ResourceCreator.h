@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/Model.h>
-#include <Rendering/Engine/TextureCube.h>
-#include <Rendering/Engine/Texture2D.h>
+#include <Rendering/Native/Model.h>
+#include <Rendering/Native/TextureCube.h>
+#include <Rendering/Native/Texture2D.h>
 
 //Resources.
 #include <Resources/Data/ModelData.h>

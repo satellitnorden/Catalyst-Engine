@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 //Terrain.
 #include <Terrain/TerrainCore.h>

@@ -18,10 +18,10 @@
 #include <Math/Core/CatalystBaseMath.h>
 
 //Rendering.
-#include <Rendering/Engine/CommandBuffer.h>
-#include <Rendering/Engine/RenderingUtilities.h>
-#include <Rendering/Engine/TextureData.h>
-#include <Rendering/Engine/RenderPasses/RenderPasses.h>
+#include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderingUtilities.h>
+#include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/RenderPasses/RenderPasses.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 

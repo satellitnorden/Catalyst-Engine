@@ -1,9 +1,9 @@
 #if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
-#include <Rendering/Engine/CommandBuffer.h>
+#include <Rendering/Native/CommandBuffer.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderPasses/RenderPass.h>
+#include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>

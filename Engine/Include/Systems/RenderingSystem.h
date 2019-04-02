@@ -12,10 +12,10 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
-#include <Rendering/Engine/GlobalRenderData.h>
-#include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/Resolution.h>
-#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Native/GlobalRenderData.h>
+#include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Resolution.h>
+#include <Rendering/Native/TextureData.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;

@@ -11,7 +11,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

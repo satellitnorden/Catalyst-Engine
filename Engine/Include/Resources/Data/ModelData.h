@@ -8,7 +8,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
-#include <Rendering/Engine/Vertex.h>
+#include <Rendering/Native/Vertex.h>
 
 class ModelData final
 {

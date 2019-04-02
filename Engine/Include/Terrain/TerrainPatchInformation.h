@@ -7,8 +7,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 class TerrainPatchInformation final
 {

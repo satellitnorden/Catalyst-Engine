@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Rendering.
-#include <Rendering/Engine/Vertex.h>
+#include <Rendering/Native/Vertex.h>
 
 //Third party.
 #include <ThirdParty/assimp/Importer.hpp>

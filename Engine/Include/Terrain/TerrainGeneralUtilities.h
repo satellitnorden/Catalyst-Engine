@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Engine/Texture2D.h>
-#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/TextureData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

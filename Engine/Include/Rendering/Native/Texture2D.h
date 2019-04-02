@@ -9,7 +9,7 @@
 #include <Math/General/Vector.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Native/RenderingCore.h>
 
 template <typename TYPE>
 class Texture2D final
