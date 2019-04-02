@@ -5,9 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/RenderPasses/RenderPass.h>
+#include <Rendering/Native/Pipelines/Pipeline.h>
 
-class DebugAxisAlignedBoundingBoxRenderPass final : public RenderPass
+class DebugAxisAlignedBoundingBoxRenderPass final : public Pipeline
 {
 
 public:

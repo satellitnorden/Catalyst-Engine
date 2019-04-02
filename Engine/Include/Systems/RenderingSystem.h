@@ -16,12 +16,12 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/Pipelines/Pipeline.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
 class Entity;
-class RenderPass;
 class Resolution;
 
 class RenderingSystem final
@@ -106,11 +106,11 @@ public:
 	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
 
 	/*
-	*	Returns the render passes.
+	*	Returns the pipelines.
 	*/
-	const StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const
+	const StaticArray<Pipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetPipelines() const
 	{
-		return _RenderPasses;
+		return _Pipelines;
 	}
 
 	/*
@@ -265,9 +265,9 @@ public:
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
 
 	/*
-	*	Finalizes the initialization of a render pass.
+	*	Finalizes the initialization of a pipeline.
 	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) const NOEXCEPT;
+	void FinalizePipelineInitialization(Pipeline *const RESTRICT pipeline) const NOEXCEPT;
 
 private:
 
@@ -283,8 +283,8 @@ private:
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;
 
-	//Container for all render passes.
-	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
+	//Container for all pipelines.
+	StaticArray<Pipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
 	//Container for all depth buffers.
 	StaticArray<DepthBufferHandle, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;

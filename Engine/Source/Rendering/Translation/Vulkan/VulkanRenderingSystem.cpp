@@ -21,7 +21,7 @@
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/TextureData.h>
-#include <Rendering/Native/RenderPasses/RenderPasses.h>
+#include <Rendering/Native/Pipelines/RenderPasses.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
@@ -109,20 +109,20 @@ namespace VulkanRenderingSystemLogic
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 		RenderPassMainStage currentStage{ RenderPassMainStage::None };
 
-		for (const RenderPass *const RESTRICT renderPass : RenderingSystem::Instance->GetRenderPasses())
+		for (const Pipeline *const RESTRICT pipeline : RenderingSystem::Instance->GetPipelines())
 		{
 			//Wait for the render pass to finish it's render.
-			renderPass->WaitForRender();
+			pipeline->WaitForRender();
 
 			//Begin a new render pass, if necessary.
-			if (currentStage != renderPass->GetMainStage())
+			if (currentStage != pipeline->GetMainStage())
 			{
 				if (currentStage != RenderPassMainStage::None)
 				{
 					currentPrimaryCommandBuffer->CommandEndRenderPass();
 				}
 
-				currentStage = renderPass->GetMainStage();
+				currentStage = pipeline->GetMainStage();
 
 				vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
@@ -131,8 +131,8 @@ namespace VulkanRenderingSystemLogic
 					currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f),
 						0.0f,
 						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-						renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
+						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+						pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height },
 						VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS,
 						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._NumberOfAttachments);
 				}
@@ -140,8 +140,8 @@ namespace VulkanRenderingSystemLogic
 				else
 				{
 					currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-						renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
+						VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+						pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height },
 						VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 				}
 			}
@@ -152,9 +152,9 @@ namespace VulkanRenderingSystemLogic
 			}
 
 			//Record the execute commands.
-			if (renderPass->IncludeInRender())
+			if (pipeline->IncludeInRender())
 			{
-				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
+				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
 			}
 		}
 
@@ -1036,28 +1036,28 @@ uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 }
 
 /*
-*	Finalizes the initialization of a render pass.
+*	Finalizes the initialization of a pipeline.
 */
-void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) const NOEXCEPT
+void RenderingSystem::FinalizePipelineInitialization(Pipeline *const RESTRICT pipeline) const NOEXCEPT
 {
 	//Create the pipeline.
 	VulkanPipelineCreationParameters parameters;
 
-	parameters._BlendEnable = renderPass->IsBlendEnabled();
-	parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorSourceColor());
-	parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorDestinationColor());
-	parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorSourceAlpha());
-	parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorDestinationAlpha());
-	parameters._ColorAttachmentCount = static_cast<uint32>(renderPass->GetRenderTargets().Size());
-	parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
-	parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
-	parameters._DepthTestEnable = renderPass->IsDepthTestEnabled();
-	parameters._DepthWriteEnable = renderPass->IsDepthWriteEnabled();
+	parameters._BlendEnable = pipeline->IsBlendEnabled();
+	parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceColor());
+	parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationColor());
+	parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceAlpha());
+	parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
+	parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetRenderTargets().Size());
+	parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
+	parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetDepthCompareOperator());
+	parameters._DepthTestEnable = pipeline->IsDepthTestEnabled();
+	parameters._DepthWriteEnable = pipeline->IsDepthWriteEnabled();
 
 	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
-	pipelineDescriptorSetLayouts.Reserve(renderPass->GetRenderDataTableLayouts().Size());
+	pipelineDescriptorSetLayouts.Reserve(pipeline->GetRenderDataTableLayouts().Size());
 
-	for (RenderDataTableLayoutHandle renderDataTableLayout : renderPass->GetRenderDataTableLayouts())
+	for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
 	{
 		pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 	}
@@ -1067,7 +1067,7 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 
 	DynamicArray<VkPushConstantRange> pushConstantRanges;
 
-	if (renderPass->GetPushConstantRanges().Empty())
+	if (pipeline->GetPushConstantRanges().Empty())
 	{
 		parameters._PushConstantRangeCount = 0;
 		parameters._PushConstantRanges = nullptr;
@@ -1075,9 +1075,9 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 
 	else
 	{
-		pushConstantRanges.Reserve(renderPass->GetPushConstantRanges().Size());
+		pushConstantRanges.Reserve(pipeline->GetPushConstantRanges().Size());
 
-		for (const PushConstantRange &pushConstantRange : renderPass->GetPushConstantRanges())
+		for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
 		{
 			pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
 		}
@@ -1087,27 +1087,27 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 	}
 	
 	parameters._ShaderModules.Reserve(5);
-	if (renderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetVertexShader())]);
-	if (renderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetTessellationControlShader())]);
-	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetTessellationEvaluationShader())]);
-	if (renderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetGeometryShader())]);
-	if (renderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(renderPass->GetFragmentShader())]);
-	parameters._StencilTestEnable = renderPass->IsStencilTestEnabled();
-	parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilFailOperator());
-	parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilPassOperator());
-	parameters._StencilDepthFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilDepthFailOperator());
-	parameters._StencilCompareOperator = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetStencilCompareOperator());
-	parameters._StencilCompareMask = renderPass->GetStencilCompareMask();
-	parameters._StencilWriteMask = renderPass->GetStencilWriteMask();
-	parameters._StencilReferenceMask = renderPass->GetStencilReferenceMask();
-	parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(renderPass->GetMainStage(), renderPass->GetSubStage());
+	if (pipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
+	if (pipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
+	if (pipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
+	if (pipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
+	if (pipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
+	parameters._StencilTestEnable = pipeline->IsStencilTestEnabled();
+	parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilFailOperator());
+	parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilPassOperator());
+	parameters._StencilDepthFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilDepthFailOperator());
+	parameters._StencilCompareOperator = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetStencilCompareOperator());
+	parameters._StencilCompareMask = pipeline->GetStencilCompareMask();
+	parameters._StencilWriteMask = pipeline->GetStencilWriteMask();
+	parameters._StencilReferenceMask = pipeline->GetStencilReferenceMask();
+	parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(pipeline->GetMainStage(), pipeline->GetSubStage());
 
-	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(renderPass->GetTopology());
+	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(pipeline->GetTopology());
 
 	DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
-	vertexInputAttributeDescriptions.Reserve(renderPass->GetVertexInputAttributeDescriptions().Size());
+	vertexInputAttributeDescriptions.Reserve(pipeline->GetVertexInputAttributeDescriptions().Size());
 
-	for (const VertexInputAttributeDescription &vertexInputAttributeDescription : renderPass->GetVertexInputAttributeDescriptions())
+	for (const VertexInputAttributeDescription &vertexInputAttributeDescription : pipeline->GetVertexInputAttributeDescriptions())
 	{
 		vertexInputAttributeDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
 	}
@@ -1116,37 +1116,37 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 	parameters._VertexInputAttributeDescriptions = vertexInputAttributeDescriptions.Data();
 
 	DynamicArray<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
-	vertexInputBindingDescriptions.Reserve(renderPass->GetVertexInputBindingDescriptions().Size());
+	vertexInputBindingDescriptions.Reserve(pipeline->GetVertexInputBindingDescriptions().Size());
 
-	for (const VertexInputBindingDescription &vertexInputBindingDescription : renderPass->GetVertexInputBindingDescriptions())
+	for (const VertexInputBindingDescription &vertexInputBindingDescription : pipeline->GetVertexInputBindingDescriptions())
 	{
 		vertexInputBindingDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
 	}
 
 	parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-	parameters._ViewportExtent = renderPass->GetRenderTargets().Empty() ? VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height } : renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height };
+	parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
-	parameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass;
+	parameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
 
 	//Create the pipeline!
-	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreatePipeline(parameters);
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(pipeline->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers.Size());
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
 
-	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._FrameBuffers)
+	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers)
 	{
-		VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+		VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 	}
 
-	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass->Get();
+	VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(pipeline->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
 
-	renderPass->SetData(&VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(renderPass->GetSubStage())]);
+	pipeline->SetData(&VulkanRenderingSystemData::_VulkanRenderPassSubStageData[UNDERLYING(pipeline->GetSubStage())]);
 
 	//Add the command buffers.
 	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
-	renderPass->SetNumberOfCommandBuffers(numberOfCommandBuffers);
+	pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
 
 	//Create the directional shadow command pool.
 	VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
@@ -1155,7 +1155,7 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 	{
 		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
 		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-		renderPass->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
+		pipeline->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
 	}
 }
 #endif

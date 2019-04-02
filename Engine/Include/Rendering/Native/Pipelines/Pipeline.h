@@ -15,7 +15,7 @@
 //Forward declarations.
 class CommandBuffer;
 
-class RenderPass
+class Pipeline
 {
 
 public:
@@ -23,35 +23,35 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	RenderPass() NOEXCEPT;
+	Pipeline() NOEXCEPT;
 
 	/*
-	*	Initializes this render pass asynchronously.
+	*	Initializes this pipeline asynchronously.
 	*/
 	void InitializeAsynchronous() NOEXCEPT;
 
 	/*
-	*	Waits for the initialization this render pass to finish.
+	*	Waits for the initialization this pipeline to finish.
 	*/
 	void WaitForInitialization() const NOEXCEPT;
 
 	/*
-	*	Renders this render pass asynchronously.
+	*	Renders this pipeline asynchronously.
 	*/
 	void RenderAsynchronous() NOEXCEPT;
 
 	/*
-	*	Waits for the render this render pass to finish.
+	*	Waits for the render this pipeline to finish.
 	*/
 	void WaitForRender() const NOEXCEPT;
 
 	/*
-	*	Returns the data for this render pass.
+	*	Returns the data for this pipeline.
 	*/
 	const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
 
 	/*
-	*	Sets the data for this render pass.
+	*	Sets the data for this pipeline.
 	*/
 	void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
 
@@ -226,7 +226,7 @@ public:
 	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { _CommandBuffers.EmplaceFast(newCommandBuffer); }
 
 	/*
-	*	Returns whether or not this render pass should be included in the final render.
+	*	Returns whether or not this pipeline should be included in the final render.
 	*/
 	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
 
@@ -447,7 +447,7 @@ public:
 
 private:
 
-	//The data for this render pass.
+	//The data for this pipeline.
 	const void *RESTRICT _Data;
 
 	//The main stage.
@@ -546,7 +546,7 @@ private:
 	//The topology.
 	Topology _Topology;
 
-	//Denotes whether or not this render pass should be included in the final render.
+	//Denotes whether or not this pipeline should be included in the final render.
 	bool _IncludeInRender;
 
 	//The command buffers.

@@ -5,9 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/RenderPasses/RenderPass.h>
+#include <Rendering/Native/Pipelines/Pipeline.h>
 
-class RenderOverrideRenderPass final : public RenderPass
+class RenderOverrideRenderPass final : public Pipeline
 {
 
 public:

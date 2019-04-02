@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/RenderPass.h>
+#include <Rendering/Native/Pipelines/Pipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,7 +11,7 @@
 /*
 *	Default constructor.
 */
-RenderPass::RenderPass() NOEXCEPT
+Pipeline::Pipeline() NOEXCEPT
 {
 	//Set up the tasks.
 	_InitializationTask._Arguments = nullptr;
@@ -19,36 +19,36 @@ RenderPass::RenderPass() NOEXCEPT
 }
 
 /*
-*	Initializes this render pass asynchronously.
+*	Initializes this pipeline asynchronously.
 */
-void RenderPass::InitializeAsynchronous() NOEXCEPT
+void Pipeline::InitializeAsynchronous() NOEXCEPT
 {
 	//Fire off the initialization task.
 	TaskSystem::Instance->ExecuteTask(&_InitializationTask);
 }
 
 /*
-*	Waits for the initialization this render pass to finish.
+*	Waits for the initialization this pipeline to finish.
 */
-void RenderPass::WaitForInitialization() const NOEXCEPT
+void Pipeline::WaitForInitialization() const NOEXCEPT
 {
 	//Wait for the initialization this render pass to finish.
 	_InitializationTask.WaitFor();
 }
 
 /*
-*	Renders this render pass asynchronously.
+*	Renders this pipeline asynchronously.
 */
-void RenderPass::RenderAsynchronous() NOEXCEPT
+void Pipeline::RenderAsynchronous() NOEXCEPT
 {
 	//Fire off the render task.
 	TaskSystem::Instance->ExecuteTask(&_RenderTask);
 }
 
 /*
-*	Waits for the render this render pass to finish.
+*	Waits for the render this pipeline to finish.
 */
-void RenderPass::WaitForRender() const NOEXCEPT
+void Pipeline::WaitForRender() const NOEXCEPT
 {
 	//Wait for the render this render pass to finish.
 	_RenderTask.WaitFor();
@@ -57,16 +57,16 @@ void RenderPass::WaitForRender() const NOEXCEPT
 /*
 *	Finalizes the initialization of a render pass.
 */
-void RenderPass::FinalizeInitialization() NOEXCEPT
+void Pipeline::FinalizeInitialization() NOEXCEPT
 {
-	//Finalize the initialization of this render pass via the rendering system.
-	RenderingSystem::Instance->FinalizeRenderPassInitialization(this);
+	//Finalize the initialization of this pipeline via the rendering system.
+	RenderingSystem::Instance->FinalizePipelineInitialization(this);
 }
 
 /*
 *	Returns the current command buffer, const.
 */
-RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() const NOEXCEPT
+RESTRICTED const CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer() const NOEXCEPT
 {
 	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }
@@ -74,7 +74,7 @@ RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuff
 /*
 *	Returns the current command buffer, non-const.
 */
-CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
+CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer() NOEXCEPT
 {
 	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }

@@ -7,7 +7,7 @@
 #include <Rendering/Native/RenderingCore.h>
 
 //Forward declarations.
-class RenderPass;
+class Pipeline;
 
 class CommandBuffer final
 {
@@ -37,42 +37,42 @@ public:
 	/*
 	*	Begins the command buffer.
 	*/
-	void Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT;
+	void Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
 
 	/*
 	*	Binds an index buffer.
 	*/
-	void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT;
+	void BindIndexBuffer(const Pipeline *const RESTRICT pipeline, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT;
 
 	/*
 	*	Binds a render data table.
 	*/
-	void BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT;
+	void BindRenderDataTable(const Pipeline *const RESTRICT pipeline, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT;
 
 	/*
 	*	Binds a number of vertex buffers.
 	*/
-	void BindVertexBuffer(const RenderPass *const RESTRICT renderPass, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
+	void BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
 
 	/*
 	*	Draws.
 	*/
-	void Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
+	void Draw(const Pipeline *const RESTRICT pipeline, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
 
 	/*
 	*	Draws indexed.
 	*/
-	void DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT;
+	void DrawIndexed(const Pipeline *const RESTRICT pipeline, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT;
 
 	/*
 	*	Pushes constants.
 	*/
-	void PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT;
+	void PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Ends the command buffer.
 	*/
-	void End(const RenderPass *const RESTRICT) NOEXCEPT;
+	void End(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
 
 private:
 

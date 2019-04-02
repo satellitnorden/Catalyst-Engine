@@ -1,6 +1,6 @@
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 //Header file.
-#include <Rendering/Native/RenderPasses/DebugScreenBoxRenderPass.h>
+#include <Rendering/Native/Pipelines/DebugScreenBoxRenderPass.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>

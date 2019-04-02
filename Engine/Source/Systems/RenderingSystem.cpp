@@ -19,7 +19,7 @@
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
-#include <Rendering/Native/RenderPasses/RenderPasses.h>
+#include <Rendering/Native/Pipelines/RenderPasses.h>
 #include <Rendering/Native/TextureData.h>
 
 //Systems.
@@ -102,18 +102,18 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	{
 		RenderOverrideRenderPass::Instance->RenderAsynchronous();
 
-		for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+		for (Pipeline *const RESTRICT pipeline : _Pipelines)
 		{
-			renderPass->SetIncludeInRender(false);
+			pipeline->SetIncludeInRender(false);
 		}
 	}
 
 	else
 #endif
 	{
-		for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+		for (Pipeline *const RESTRICT pipeline : _Pipelines)
 		{
-			renderPass->RenderAsynchronous();
+			pipeline->RenderAsynchronous();
 		}
 	}
 
@@ -378,13 +378,13 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
-	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	_RenderPasses[UNDERLYING(RenderPassSubStage::RenderOverride)] = RenderOverrideRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(RenderPassSubStage::RenderOverride)] = RenderOverrideRenderPass::Instance.Get();
 #endif
 }
 
@@ -394,15 +394,15 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 {
 	//Initialize all render passes.
-	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
+	for (Pipeline *const RESTRICT pipeline : _Pipelines)
 	{
-		_RenderPass->InitializeAsynchronous();
+		pipeline->InitializeAsynchronous();
 	}
 
 	//Wait for all render passes to finish initialization.
-	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
+	for (Pipeline *const RESTRICT pipeline : _Pipelines)
 	{
-		_RenderPass->WaitForInitialization();
+		pipeline->WaitForInitialization();
 	}
 }
 
