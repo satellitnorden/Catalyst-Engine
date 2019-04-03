@@ -1,11 +1,18 @@
 #pragma once
 
 //Memory.
+#include <Memory/LinearAllocator.h>
 #include <Memory/PoolAllocator.h>
 
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>
 #include <Multithreading/Spinlock.h>
+
+//Memory utilities constants.
+namespace MemoryUtilitiesConstants
+{
+	constexpr uint64 GLOBAL_LINEAR_ALLOCATOR_SIZE{ 16'384 };
+}
 
 class MemoryUtilities
 {
@@ -62,6 +69,16 @@ public:
 	static void SetMemory(Type *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT
 	{
 		memset((void *const RESTRICT) destination, value, size);
+	}
+
+	/*
+	*	Returns the global linear allocator.
+	*/
+	RESTRICTED static NO_DISCARD LinearAllocator<MemoryUtilitiesConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
+	{
+		static LinearAllocator<MemoryUtilitiesConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> allocator;
+
+		return &allocator;
 	}
 
 	/*

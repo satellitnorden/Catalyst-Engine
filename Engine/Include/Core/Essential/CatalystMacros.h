@@ -79,7 +79,7 @@
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
-#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new SingletonClass };
+#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(SingletonClass))) SingletonClass() };
 
 /*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.

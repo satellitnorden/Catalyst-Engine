@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Utilities/MemoryUtilities.h>
 
 template <uint64 SIZE>
 class LinearAllocator final
@@ -22,7 +21,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~PoolAllocator() NOEXCEPT
+	~LinearAllocator() NOEXCEPT
 	{
 		//Free the memory.
 		MemoryUtilities::FreeMemory(_Memory);
@@ -33,17 +32,10 @@ public:
 	*/
 	RESTRICTED NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
-		//Just return the memory at the current index and increase the index.
-		return static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory)[_Index.fetch_add(size)]);
-	}
+		ASSERT(_Index.load() + size <= SIZE, "Linear allocator overflow!");
 
-	/*
-	*	Resets this allocator.
-	*/
-	void Reset() NOEXCEPT
-	{
-		//Reset the index.
-		_Index.store(0);
+		//Just return the memory at the current index and increase the index.
+		return static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory) + _Index.fetch_add(size));
 	}
 
 private:

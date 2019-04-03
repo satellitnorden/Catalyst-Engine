@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Utilities/MemoryUtilities.h>
 
 class DynamicString final
 {

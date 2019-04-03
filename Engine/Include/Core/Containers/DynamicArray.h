@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Utilities/MemoryUtilities.h>
 
 template <typename Type>
 class DynamicArray final
