@@ -206,6 +206,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Texture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureCube.h" />

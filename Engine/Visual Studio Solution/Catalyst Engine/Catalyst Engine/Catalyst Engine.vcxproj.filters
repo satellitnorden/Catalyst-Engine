@@ -334,6 +334,12 @@
     <Filter Include="Rendering\Source\Native\Pipelines\Ray Tracing Pipelines">
       <UniqueIdentifier>{da51d3eb-b7a2-44be-b128-b90365114e76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Native\Render Passes">
+      <UniqueIdentifier>{942dde8a-9418-4a35-a91d-a6f643572f4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Native\Render Passes">
+      <UniqueIdentifier>{c825100c-a9db-4d85-a36e-2924e0d33181}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1037,6 +1043,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
