@@ -1,6 +1,6 @@
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 //Header file.
-#include <Rendering/Native/Pipelines/DebugAxisAlignedBoundingBoxRenderPass.h>
+#include <Rendering/Native/Pipelines/DebugAxisAlignedBoundingBoxPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,30 +11,30 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DebugAxisAlignedBoundingBoxRenderPass);
+DEFINE_SINGLETON(DebugAxisAlignedBoundingBoxPipeline);
 
 /*
 *	Default constructor.
 */
-DebugAxisAlignedBoundingBoxRenderPass::DebugAxisAlignedBoundingBoxRenderPass() NOEXCEPT
+DebugAxisAlignedBoundingBoxPipeline::DebugAxisAlignedBoundingBoxPipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		DebugAxisAlignedBoundingBoxRenderPass::Instance->InitializeInternal();
+		DebugAxisAlignedBoundingBoxPipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the debug axis-aligned bounding box render pass.
+*	Initializes the debug axis-aligned bounding box pipeline.
 */
-void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
+void DebugAxisAlignedBoundingBoxPipeline::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Debug);
+	SetMainStage(PipelineMainStage::Debug);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DebugAxisAlignedBoundingBox);
+	SetSubStage(PipelineSubStage::DebugAxisAlignedBoundingBox);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DebugAxisAlignedBoundingBoxVertex);
@@ -108,7 +108,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		DebugAxisAlignedBoundingBoxRenderPass::Instance->RenderInternal();
+		DebugAxisAlignedBoundingBoxPipeline::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -118,7 +118,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Renders the debug axis-aligned bounding boxes.
 */
-void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
+void DebugAxisAlignedBoundingBoxPipeline::RenderInternal() NOEXCEPT
 {
 	//Iterate over all axis-aligned bounding box debug render data and render it all.
 	const DynamicArray<DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData> *const RESTRICT data{ DebugRenderingSystem::Instance->GetAxisAlignedBoundingBoxDebugRenderData() };

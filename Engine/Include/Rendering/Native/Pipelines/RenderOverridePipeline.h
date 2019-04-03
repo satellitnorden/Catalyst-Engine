@@ -1,3 +1,4 @@
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 #pragma once
 
 //Core.
@@ -6,18 +7,31 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Pipeline.h>
 
-class AntiAliasingRenderPass final : public Pipeline
+class RenderOverridePipeline final : public Pipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(AntiAliasingRenderPass);
+	DECLARE_SINGLETON(RenderOverridePipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	AntiAliasingRenderPass() NOEXCEPT;
+	RenderOverridePipeline() NOEXCEPT;
+
+	/*
+	*	Returns if there is an override.
+	*/
+	bool HasOverride() const NOEXCEPT
+	{
+		return _Texture != EMPTY_HANDLE;
+	}
+
+	/*
+	*	Sets the texture.
+	*/
+	void SetTexture(const Texture2DHandle texture) NOEXCEPT;
 
 private:
 
@@ -27,8 +41,11 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
+	//The texture.
+	Texture2DHandle _Texture{ EMPTY_HANDLE };
+
 	/*
-	*	Initializes the anti-aliasing render pass.
+	*	Initializes the render override pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,8 +60,9 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the anti-aliasing.
+	*	Renders the render override.
 	*/
 	void RenderInternal() NOEXCEPT;
 
 };
+#endif

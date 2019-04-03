@@ -50,9 +50,9 @@ using UniformBufferHandle = void *RESTRICT;
 constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
-*	Enumeration covering all render pass main stages.
+*	Enumeration covering all pipeline main stages.
 */
-enum class RenderPassMainStage : uint8
+enum class PipelineMainStage : uint8
 {
 	None,
 #if defined(CATALYST_CONFIGURATION_DEBUG)
@@ -63,14 +63,14 @@ enum class RenderPassMainStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	NumberOfRenderPassMainStages
+	NumberOfPipelineMainStages
 };
 
 /*
-*	Enumeration covering all render pass sub stages.
-*	The order of the render pass sub stage defines the order that the render passes will be rendered in.
+*	Enumeration covering all pipeline sub stages.
+*	The order of the pipeline sub stage defines the order that the render passes will be rendered in.
 */
-enum class RenderPassSubStage : uint8
+enum class PipelineSubStage : uint8
 {
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	//Debug.
@@ -89,7 +89,7 @@ enum class RenderPassSubStage : uint8
 	RenderOverride,
 #endif
 
-	NumberOfRenderPassSubStages
+	NumberOfPipelineSubStages
 };
 
 //Enumeration covering all physical flags.

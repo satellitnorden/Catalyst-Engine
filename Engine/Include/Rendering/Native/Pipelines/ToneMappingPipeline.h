@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 #pragma once
 
 //Core.
@@ -7,31 +6,18 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Pipeline.h>
 
-class RenderOverrideRenderPass final : public Pipeline
+class ToneMappingPipeline final : public Pipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(RenderOverrideRenderPass);
+	DECLARE_SINGLETON(ToneMappingPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	RenderOverrideRenderPass() NOEXCEPT;
-
-	/*
-	*	Returns if there is an override.
-	*/
-	bool HasOverride() const NOEXCEPT
-	{
-		return _Texture != EMPTY_HANDLE;
-	}
-
-	/*
-	*	Sets the texture.
-	*/
-	void SetTexture(const Texture2DHandle texture) NOEXCEPT;
+	ToneMappingPipeline() NOEXCEPT;
 
 private:
 
@@ -41,11 +27,8 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	//The texture.
-	Texture2DHandle _Texture{ EMPTY_HANDLE };
-
 	/*
-	*	Initializes the render override render pass.
+	*	Initializes the tone mapping pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -60,9 +43,8 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the render override.
+	*	Renders the tone mapping.
 	*/
 	void RenderInternal() NOEXCEPT;
 
 };
-#endif

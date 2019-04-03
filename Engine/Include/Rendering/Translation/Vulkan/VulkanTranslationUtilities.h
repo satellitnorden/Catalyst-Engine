@@ -18,12 +18,12 @@ public:
 	/*
 	*	Given a main stage and a sub stage, return the corresponding sub stage index.
 	*/
-	static uint8 GetSubStageIndex(const RenderPassMainStage main, const RenderPassSubStage sub) NOEXCEPT
+	static uint8 GetSubStageIndex(const PipelineMainStage main, const PipelineSubStage sub) NOEXCEPT
 	{
 		switch (main)
 		{
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-			case RenderPassMainStage::None:
+			case PipelineMainStage::None:
 			{
 				ASSERT(false, "None main stage, how could this be?");
 
@@ -32,25 +32,25 @@ public:
 #endif
 	
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-			case RenderPassMainStage::Debug:
+			case PipelineMainStage::Debug:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox);
+				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox);
 			}
 #endif
-			case RenderPassMainStage::ToneMapping:
+			case PipelineMainStage::ToneMapping:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);
+				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::ToneMapping);
 			}
 
-			case RenderPassMainStage::AntiAliasing:
+			case PipelineMainStage::AntiAliasing:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AntiAliasing);
+				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::AntiAliasing);
 			}
 
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-			case RenderPassMainStage::RenderOverride:
+			case PipelineMainStage::RenderOverride:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::RenderOverride);
+				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::RenderOverride);
 			}
 #endif
 

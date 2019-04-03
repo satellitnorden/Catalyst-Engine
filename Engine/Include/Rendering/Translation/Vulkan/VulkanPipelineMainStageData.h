@@ -8,7 +8,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 
-class VulkanRenderPassMainStageData final
+class VulkanPipelineMainStageData final
 {
 
 public:

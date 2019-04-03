@@ -1,6 +1,6 @@
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 //Header file.
-#include <Rendering/Native/Pipelines/DebugScreenBoxRenderPass.h>
+#include <Rendering/Native/Pipelines/DebugScreenBoxPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -10,30 +10,30 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DebugScreenBoxRenderPass);
+DEFINE_SINGLETON(DebugScreenBoxPipeline);
 
 /*
 *	Default constructor.
 */
-DebugScreenBoxRenderPass::DebugScreenBoxRenderPass() NOEXCEPT
+DebugScreenBoxPipeline::DebugScreenBoxPipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		DebugScreenBoxRenderPass::Instance->InitializeInternal();
+		DebugScreenBoxPipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the debug axis-aligned bounding box render pass.
+*	Initializes the debug axis-aligned bounding box pipeline.
 */
-void DebugScreenBoxRenderPass::InitializeInternal() NOEXCEPT
+void DebugScreenBoxPipeline::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Debug);
+	SetMainStage(PipelineMainStage::Debug);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DebugScreenBox);
+	SetSubStage(PipelineSubStage::DebugScreenBox);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DebugScreenBoxVertex);
@@ -84,7 +84,7 @@ void DebugScreenBoxRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		DebugScreenBoxRenderPass::Instance->RenderInternal();
+		DebugScreenBoxPipeline::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -94,7 +94,7 @@ void DebugScreenBoxRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Renders the debug screen boxes.
 */
-void DebugScreenBoxRenderPass::RenderInternal() NOEXCEPT
+void DebugScreenBoxPipeline::RenderInternal() NOEXCEPT
 {
 	//Iterate over all screen box debug render data and render it all.
 	const DynamicArray<DebugRenderingSystem::ScreenBoxDebugRenderData> *const RESTRICT data{ DebugRenderingSystem::Instance->GetScreenBoxDebugRenderData() };

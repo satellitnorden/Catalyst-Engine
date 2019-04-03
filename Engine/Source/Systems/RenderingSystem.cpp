@@ -19,7 +19,7 @@
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
-#include <Rendering/Native/Pipelines/RenderPasses.h>
+#include <Rendering/Native/Pipelines/Pipelines.h>
 #include <Rendering/Native/TextureData.h>
 
 //Systems.
@@ -98,9 +98,9 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 
 	//Render all render passes.
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	if (RenderOverrideRenderPass::Instance->HasOverride())
+	if (RenderOverridePipeline::Instance->HasOverride())
 	{
-		RenderOverrideRenderPass::Instance->RenderAsynchronous();
+		RenderOverridePipeline::Instance->RenderAsynchronous();
 
 		for (Pipeline *const RESTRICT pipeline : _Pipelines)
 		{
@@ -378,13 +378,13 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	_Pipelines[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
-	_Pipelines[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxPipeline::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::DebugScreenBox)] = DebugScreenBoxPipeline::Instance.Get();
 #endif
-	_Pipelines[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
-	_Pipelines[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingPipeline::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingPipeline::Instance.Get();
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	_Pipelines[UNDERLYING(RenderPassSubStage::RenderOverride)] = RenderOverrideRenderPass::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverridePipeline::Instance.Get();
 #endif
 }
 

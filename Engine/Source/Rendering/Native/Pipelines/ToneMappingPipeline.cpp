@@ -1,6 +1,5 @@
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 //Header file.
-#include <Rendering/Native/Pipelines/RenderOverrideRenderPass.h>
+#include <Rendering/Native/Pipelines/ToneMappingPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -9,36 +8,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(RenderOverrideRenderPass);
+DEFINE_SINGLETON(ToneMappingPipeline);
 
 /*
 *	Default constructor.
 */
-RenderOverrideRenderPass::RenderOverrideRenderPass() NOEXCEPT
+ToneMappingPipeline::ToneMappingPipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		RenderOverrideRenderPass::Instance->InitializeInternal();
+		ToneMappingPipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Sets the texture.
+*	Initializes the tone mapping pipeline.
 */
-void RenderOverrideRenderPass::SetTexture(const Texture2DHandle texture) NOEXCEPT
-{
-	//Set the texture.
-	_Texture = texture;
-
-	//Bind the texture to the render data table.
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _Texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Initializes the render override render pass.
-*/
-void RenderOverrideRenderPass::InitializeInternal() NOEXCEPT
+void ToneMappingPipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -47,29 +34,33 @@ void RenderOverrideRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::RenderOverride);
+	SetMainStage(PipelineMainStage::ToneMapping);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::RenderOverride);
+	SetSubStage(PipelineSubStage::ToneMapping);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::PassthroughFragment);
+	SetFragmentShader(Shader::ToneMappingFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::Intermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -97,17 +88,18 @@ void RenderOverrideRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		RenderOverrideRenderPass::Instance->RenderInternal();
+		ToneMappingPipeline::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
 
+
 /*
 *	Creates the render data table layout.
 */
-void RenderOverrideRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void ToneMappingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -120,24 +112,18 @@ void RenderOverrideRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void RenderOverrideRenderPass::CreateRenderDataTable() NOEXCEPT
+void ToneMappingPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the render override.
+*	Renders the tone mapping.
 */
-void RenderOverrideRenderPass::RenderInternal() NOEXCEPT
+void ToneMappingPipeline::RenderInternal() NOEXCEPT
 {
-	//If there's no texture, then don't render.
-	if (!_Texture)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -157,4 +143,3 @@ void RenderOverrideRenderPass::RenderInternal() NOEXCEPT
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
 }
-#endif

@@ -7,23 +7,23 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Pipeline.h>
 
-class DebugAxisAlignedBoundingBoxRenderPass final : public Pipeline
+class DebugAxisAlignedBoundingBoxPipeline final : public Pipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DebugAxisAlignedBoundingBoxRenderPass);
+	DECLARE_SINGLETON(DebugAxisAlignedBoundingBoxPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	DebugAxisAlignedBoundingBoxRenderPass() NOEXCEPT;
+	DebugAxisAlignedBoundingBoxPipeline() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the debug axis-aligned bounding boxes render pass.
+	*	Initializes the debug axis-aligned bounding boxes pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 

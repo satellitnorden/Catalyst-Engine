@@ -1,8 +1,6 @@
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 //Header file.
-#include <Rendering/Native/Pipelines/AntiAliasingRenderPass.h>
-
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
+#include <Rendering/Native/Pipelines/RenderOverridePipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,24 +9,36 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AntiAliasingRenderPass);
+DEFINE_SINGLETON(RenderOverridePipeline);
 
 /*
 *	Default constructor.
 */
-AntiAliasingRenderPass::AntiAliasingRenderPass() NOEXCEPT
+RenderOverridePipeline::RenderOverridePipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		AntiAliasingRenderPass::Instance->InitializeInternal();
+		RenderOverridePipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the anti-aliasing render pass.
+*	Sets the texture.
 */
-void AntiAliasingRenderPass::InitializeInternal() NOEXCEPT
+void RenderOverridePipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
+{
+	//Set the texture.
+	_Texture = texture;
+
+	//Bind the texture to the render data table.
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _Texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+}
+
+/*
+*	Initializes the render override pipeline.
+*/
+void RenderOverridePipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -37,17 +47,17 @@ void AntiAliasingRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::AntiAliasing);
+	SetMainStage(PipelineMainStage::RenderOverride);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::AntiAliasing);
+	SetSubStage(PipelineSubStage::RenderOverride);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AntiAliasingFragment);
+	SetFragmentShader(Shader::PassthroughFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -87,18 +97,17 @@ void AntiAliasingRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		AntiAliasingRenderPass::Instance->RenderInternal();
+		RenderOverridePipeline::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
 
-
 /*
 *	Creates the render data table layout.
 */
-void AntiAliasingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void RenderOverridePipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -111,18 +120,24 @@ void AntiAliasingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AntiAliasingRenderPass::CreateRenderDataTable() NOEXCEPT
+void RenderOverridePipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the anti-aliasing.
+*	Renders the render override.
 */
-void AntiAliasingRenderPass::RenderInternal() NOEXCEPT
+void RenderOverridePipeline::RenderInternal() NOEXCEPT
 {
+	//If there's no texture, then don't render.
+	if (!_Texture)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -142,3 +157,4 @@ void AntiAliasingRenderPass::RenderInternal() NOEXCEPT
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
 }
+#endif

@@ -108,7 +108,7 @@ public:
 	/*
 	*	Returns the pipelines.
 	*/
-	const StaticArray<Pipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetPipelines() const
+	const StaticArray<Pipeline *RESTRICT, UNDERLYING(PipelineSubStage::NumberOfPipelineSubStages)>& GetPipelines() const
 	{
 		return _Pipelines;
 	}
@@ -284,7 +284,7 @@ private:
 	GlobalRenderData _GlobalRenderData;
 
 	//Container for all pipelines.
-	StaticArray<Pipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
+	StaticArray<Pipeline *RESTRICT, UNDERLYING(PipelineSubStage::NumberOfPipelineSubStages)> _Pipelines;
 
 	//Container for all depth buffers.
 	StaticArray<DepthBufferHandle, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;

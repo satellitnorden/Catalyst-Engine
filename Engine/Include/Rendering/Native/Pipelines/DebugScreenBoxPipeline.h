@@ -7,23 +7,23 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Pipeline.h>
 
-class DebugScreenBoxRenderPass final : public Pipeline
+class DebugScreenBoxPipeline final : public Pipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DebugScreenBoxRenderPass);
+	DECLARE_SINGLETON(DebugScreenBoxPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	DebugScreenBoxRenderPass() NOEXCEPT;
+	DebugScreenBoxPipeline() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the debug screen boxes render pass.
+	*	Initializes the debug screen boxes pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 

@@ -459,12 +459,6 @@
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassSubStageData.h">
-      <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassMainStageData.h">
-      <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h">
       <Filter>Platform\Include\Android</Filter>
     </ClInclude>
@@ -990,26 +984,32 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\AntiAliasingRenderPass.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\AntiAliasingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxRenderPass.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugScreenBoxRenderPass.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RenderOverrideRenderPass.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RenderPasses.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ToneMappingRenderPass.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugScreenBoxPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Pipeline.h">
       <Filter>Rendering\Include\Native\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Pipelines.h">
+      <Filter>Rendering\Include\Native\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RenderOverridePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ToneMappingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineMainStageData.h">
+      <Filter>Rendering\Include\Translation\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineSubStageData.h">
+      <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1223,22 +1223,22 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\AntiAliasingRenderPass.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\AntiAliasingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxRenderPass.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugScreenBoxRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RenderOverrideRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ToneMappingRenderPass.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugScreenBoxPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Pipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RenderOverridePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ToneMappingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
