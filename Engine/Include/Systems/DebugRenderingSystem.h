@@ -4,7 +4,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>

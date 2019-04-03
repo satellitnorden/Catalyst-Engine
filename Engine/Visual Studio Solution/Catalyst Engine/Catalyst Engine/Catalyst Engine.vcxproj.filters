@@ -328,6 +328,12 @@
     <Filter Include="Rendering\Source\Native\Pipelines\Graphics Pipelines">
       <UniqueIdentifier>{02439d9e-2a13-43af-bd93-baf00d09b372}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Native\Pipelines\Ray Tracing Pipelines">
+      <UniqueIdentifier>{1fec2cfa-4eaa-4155-8d44-a7f68f32e1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Native\Pipelines\Ray Tracing Pipelines">
+      <UniqueIdentifier>{da51d3eb-b7a2-44be-b128-b90365114e76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1023,6 +1029,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGraphicsPipelineCreationParameters.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanRayTracingPipeline.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanRayTracingPipelineCreationParameters.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1252,6 +1267,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanRayTracingPipeline.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

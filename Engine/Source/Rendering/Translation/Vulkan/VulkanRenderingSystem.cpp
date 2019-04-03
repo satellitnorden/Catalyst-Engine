@@ -22,6 +22,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanPipelineMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanPipelineSubStageData.h>
@@ -162,6 +163,138 @@ namespace VulkanRenderingSystemLogic
 
 		//End the last remaining render pass.
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
+	}
+
+	/*
+	*	Initializes a graphics pipeline.
+	*/
+	void InitializeGraphicsPipeline(GraphicsPipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+		//Create the pipeline.
+		VulkanGraphicsPipelineCreationParameters parameters;
+
+		parameters._BlendEnable = pipeline->IsBlendEnabled();
+		parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceColor());
+		parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationColor());
+		parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceAlpha());
+		parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
+		parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetRenderTargets().Size());
+		parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
+		parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetDepthCompareOperator());
+		parameters._DepthTestEnable = pipeline->IsDepthTestEnabled();
+		parameters._DepthWriteEnable = pipeline->IsDepthWriteEnabled();
+
+		DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
+		pipelineDescriptorSetLayouts.Reserve(pipeline->GetRenderDataTableLayouts().Size());
+
+		for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
+		{
+			pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+		}
+
+		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
+		parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
+
+		DynamicArray<VkPushConstantRange> pushConstantRanges;
+
+		if (pipeline->GetPushConstantRanges().Empty())
+		{
+			parameters._PushConstantRangeCount = 0;
+			parameters._PushConstantRanges = nullptr;
+		}
+
+		else
+		{
+			pushConstantRanges.Reserve(pipeline->GetPushConstantRanges().Size());
+
+			for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
+			{
+				pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+			}
+
+			parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
+			parameters._PushConstantRanges = pushConstantRanges.Data();
+		}
+
+		parameters._ShaderModules.Reserve(5);
+		if (pipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
+		if (pipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
+		if (pipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
+		if (pipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
+		if (pipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
+		parameters._StencilTestEnable = pipeline->IsStencilTestEnabled();
+		parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilFailOperator());
+		parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilPassOperator());
+		parameters._StencilDepthFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilDepthFailOperator());
+		parameters._StencilCompareOperator = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetStencilCompareOperator());
+		parameters._StencilCompareMask = pipeline->GetStencilCompareMask();
+		parameters._StencilWriteMask = pipeline->GetStencilWriteMask();
+		parameters._StencilReferenceMask = pipeline->GetStencilReferenceMask();
+		parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(pipeline->GetMainStage(), pipeline->GetSubStage());
+
+		parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(pipeline->GetTopology());
+
+		DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+		vertexInputAttributeDescriptions.Reserve(pipeline->GetVertexInputAttributeDescriptions().Size());
+
+		for (const VertexInputAttributeDescription &vertexInputAttributeDescription : pipeline->GetVertexInputAttributeDescriptions())
+		{
+			vertexInputAttributeDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
+		}
+
+		parameters._VertexInputAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
+		parameters._VertexInputAttributeDescriptions = vertexInputAttributeDescriptions.Data();
+
+		DynamicArray<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
+		vertexInputBindingDescriptions.Reserve(pipeline->GetVertexInputBindingDescriptions().Size());
+
+		for (const VertexInputBindingDescription &vertexInputBindingDescription : pipeline->GetVertexInputBindingDescriptions())
+		{
+			vertexInputBindingDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
+		}
+
+		parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
+		parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
+		parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+
+		parameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
+
+		//Create the pipeline!
+		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreateGraphicsPipeline(parameters);
+
+		//Update the Vulkan render pass data.
+		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
+
+		for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers)
+		{
+			VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+		}
+
+		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
+
+		pipeline->SetData(&VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]);
+
+		//Add the command buffers.
+		const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
+		pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
+
+		//Create the directional shadow command pool.
+		VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
+
+		for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
+		{
+			VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
+			pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
+			pipeline->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
+		}
+	}
+
+	/*
+	*	Initializes a ray tracing pipeline.
+	*/
+	void InitializeRayTracingPipeline(RayTracingPipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+
 	}
 
 	/*
@@ -940,124 +1073,21 @@ void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle *const RESTRICT h
 */
 void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
 {
-	GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<GraphicsPipeline *const RESTRICT>(pipeline) };
-
-	//Create the pipeline.
-	VulkanGraphicsPipelineCreationParameters parameters;
-
-	parameters._BlendEnable = graphicsPipeline->IsBlendEnabled();
-	parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(graphicsPipeline->GetBlendFactorSourceColor());
-	parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(graphicsPipeline->GetBlendFactorDestinationColor());
-	parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(graphicsPipeline->GetBlendFactorSourceAlpha());
-	parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(graphicsPipeline->GetBlendFactorDestinationAlpha());
-	parameters._ColorAttachmentCount = static_cast<uint32>(graphicsPipeline->GetRenderTargets().Size());
-	parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(graphicsPipeline->GetCullMode());
-	parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(graphicsPipeline->GetDepthCompareOperator());
-	parameters._DepthTestEnable = graphicsPipeline->IsDepthTestEnabled();
-	parameters._DepthWriteEnable = graphicsPipeline->IsDepthWriteEnabled();
-
-	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
-	pipelineDescriptorSetLayouts.Reserve(graphicsPipeline->GetRenderDataTableLayouts().Size());
-
-	for (RenderDataTableLayoutHandle renderDataTableLayout : graphicsPipeline->GetRenderDataTableLayouts())
+	switch (pipeline->GetType())
 	{
-		pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
-	}
-
-	parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
-	parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
-
-	DynamicArray<VkPushConstantRange> pushConstantRanges;
-
-	if (graphicsPipeline->GetPushConstantRanges().Empty())
-	{
-		parameters._PushConstantRangeCount = 0;
-		parameters._PushConstantRanges = nullptr;
-	}
-
-	else
-	{
-		pushConstantRanges.Reserve(graphicsPipeline->GetPushConstantRanges().Size());
-
-		for (const PushConstantRange &pushConstantRange : graphicsPipeline->GetPushConstantRanges())
+		case Pipeline::Type::Graphics:
 		{
-			pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+			VulkanRenderingSystemLogic::InitializeGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
+
+			break;
 		}
 
-		parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
-		parameters._PushConstantRanges = pushConstantRanges.Data();
-	}
+		case Pipeline::Type::RayTracing:
+		{
+			VulkanRenderingSystemLogic::InitializeRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
 
-	parameters._ShaderModules.Reserve(5);
-	if (graphicsPipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(graphicsPipeline->GetVertexShader())]);
-	if (graphicsPipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(graphicsPipeline->GetTessellationControlShader())]);
-	if (graphicsPipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(graphicsPipeline->GetTessellationEvaluationShader())]);
-	if (graphicsPipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(graphicsPipeline->GetGeometryShader())]);
-	if (graphicsPipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(graphicsPipeline->GetFragmentShader())]);
-	parameters._StencilTestEnable = graphicsPipeline->IsStencilTestEnabled();
-	parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(graphicsPipeline->GetStencilFailOperator());
-	parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(graphicsPipeline->GetStencilPassOperator());
-	parameters._StencilDepthFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(graphicsPipeline->GetStencilDepthFailOperator());
-	parameters._StencilCompareOperator = VulkanTranslationUtilities::GetVulkanCompareOperator(graphicsPipeline->GetStencilCompareOperator());
-	parameters._StencilCompareMask = graphicsPipeline->GetStencilCompareMask();
-	parameters._StencilWriteMask = graphicsPipeline->GetStencilWriteMask();
-	parameters._StencilReferenceMask = graphicsPipeline->GetStencilReferenceMask();
-	parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(graphicsPipeline->GetMainStage(), graphicsPipeline->GetSubStage());
-
-	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(graphicsPipeline->GetTopology());
-
-	DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
-	vertexInputAttributeDescriptions.Reserve(graphicsPipeline->GetVertexInputAttributeDescriptions().Size());
-
-	for (const VertexInputAttributeDescription &vertexInputAttributeDescription : graphicsPipeline->GetVertexInputAttributeDescriptions())
-	{
-		vertexInputAttributeDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
-	}
-
-	parameters._VertexInputAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
-	parameters._VertexInputAttributeDescriptions = vertexInputAttributeDescriptions.Data();
-
-	DynamicArray<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
-	vertexInputBindingDescriptions.Reserve(graphicsPipeline->GetVertexInputBindingDescriptions().Size());
-
-	for (const VertexInputBindingDescription &vertexInputBindingDescription : graphicsPipeline->GetVertexInputBindingDescriptions())
-	{
-		vertexInputBindingDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
-	}
-
-	parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
-	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-	parameters._ViewportExtent = graphicsPipeline->GetRenderTargets().Empty() ? VkExtent2D{ graphicsPipeline->GetRenderResolution()._Width, graphicsPipeline->GetRenderResolution()._Height } : graphicsPipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ graphicsPipeline->GetRenderResolution()._Width, graphicsPipeline->GetRenderResolution()._Height };
-
-	parameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(graphicsPipeline->GetMainStage())]._RenderPass;
-
-	//Create the pipeline!
-	VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(graphicsPipeline->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreateGraphicsPipeline(parameters);
-
-	//Update the Vulkan render pass data.
-	VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(graphicsPipeline->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(graphicsPipeline->GetMainStage())]._FrameBuffers.Size());
-
-	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(graphicsPipeline->GetMainStage())]._FrameBuffers)
-	{
-		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(graphicsPipeline->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
-	}
-
-	VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(graphicsPipeline->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(graphicsPipeline->GetMainStage())]._RenderPass->Get();
-
-	graphicsPipeline->SetData(&VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(graphicsPipeline->GetSubStage())]);
-
-	//Add the command buffers.
-	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
-	graphicsPipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
-
-	//Create the directional shadow command pool.
-	VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
-
-	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
-	{
-		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
-		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-		graphicsPipeline->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
+			break;
+		}
 	}
 }
 

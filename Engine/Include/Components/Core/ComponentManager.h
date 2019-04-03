@@ -96,9 +96,9 @@ private:
 	template <typename TYPE>
 	RESTRICTED static NO_DISCARD TYPE *const RESTRICT RetrieveSingletonComponent() NOEXCEPT
 	{
-		static UniquePointer<TYPE> component{ new TYPE };
+		static TYPE *const RESTRICT component{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(TYPE))) TYPE() };
 
-		return component.Get();
+		return component;
 	}
 
 };

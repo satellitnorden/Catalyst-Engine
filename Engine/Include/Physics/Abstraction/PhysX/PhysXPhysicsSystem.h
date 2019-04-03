@@ -3,7 +3,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Physics.
 #include <Physics/Abstraction/PhysX/PhysxAllocatorCallback.h>

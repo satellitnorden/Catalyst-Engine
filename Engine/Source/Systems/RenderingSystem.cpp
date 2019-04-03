@@ -378,13 +378,13 @@ void RenderingSystem::RegisterPipelines() NOEXCEPT
 {
 	//Register all render passes.
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	_Pipelines[UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxPipeline::Instance.Get();
-	_Pipelines[UNDERLYING(PipelineSubStage::DebugScreenBox)] = DebugScreenBoxPipeline::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxPipeline::Instance;
+	_Pipelines[UNDERLYING(PipelineSubStage::DebugScreenBox)] = DebugScreenBoxPipeline::Instance;
 #endif
-	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingPipeline::Instance.Get();
-	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingPipeline::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingPipeline::Instance;
+	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingPipeline::Instance;
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverridePipeline::Instance.Get();
+	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverridePipeline::Instance;
 #endif
 }
 

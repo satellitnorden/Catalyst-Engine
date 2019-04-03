@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Entities.
 #include <Entities/Placement/EntityPlacementCore.h>

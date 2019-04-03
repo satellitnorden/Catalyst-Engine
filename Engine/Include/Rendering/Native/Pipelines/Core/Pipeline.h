@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
+
 class Pipeline
 {
 
@@ -11,7 +14,8 @@ public:
 	//Enumeration covering all pipeline types.
 	enum class Type : uint8
 	{
-		Graphics
+		Graphics,
+		RayTracing
 	};
 
 	/*

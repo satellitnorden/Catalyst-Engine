@@ -76,7 +76,7 @@ void VulkanGraphicsPipeline::Initialize(const VulkanGraphicsPipelineCreationPara
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
 	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, _VulkanPipelineLayout, parameters._Subpass, parameters);
 
-	//Create the Vulkan pipeline!
+	//Create the Vulkan graphics pipeline!
 	VULKAN_ERROR_CHECK(vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &_VulkanPipeline));
 }
 
@@ -85,11 +85,11 @@ void VulkanGraphicsPipeline::Initialize(const VulkanGraphicsPipelineCreationPara
 */
 void VulkanGraphicsPipeline::Release() NOEXCEPT
 {
-	//Destroy the Vulkan pipeline.
-	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
-
 	//Destroy the Vulkan pipeline layout.
 	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipelineLayout, nullptr);
+
+	//Destroy the Vulkan pipeline.
+	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
 }
 
 /*

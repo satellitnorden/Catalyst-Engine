@@ -74,12 +74,12 @@
 /*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
-#define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;
+#define DECLARE_SINGLETON(CLASS) public: static CLASS *RESTRICT Instance; CLASS(const CLASS &other) = delete; CLASS(CLASS &&other) = delete;
 
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
-#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(SingletonClass))) SingletonClass() };
+#define DEFINE_SINGLETON(CLASS) CLASS *RESTRICT CLASS::Instance{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() };
 
 /*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.

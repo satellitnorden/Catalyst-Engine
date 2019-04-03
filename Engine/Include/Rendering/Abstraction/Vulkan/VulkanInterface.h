@@ -3,7 +3,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/Vulkan2DTexture.h>

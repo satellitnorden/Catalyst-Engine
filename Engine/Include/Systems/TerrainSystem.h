@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Math.
 #include <Math/Geometry/GridPoint2.h>

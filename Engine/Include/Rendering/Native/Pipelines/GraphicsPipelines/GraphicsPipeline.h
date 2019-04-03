@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
 #include <Multithreading/Task.h>

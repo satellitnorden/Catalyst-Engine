@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Lighting.
 #include <Lighting/DirectionalLight.h>

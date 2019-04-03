@@ -6,7 +6,6 @@
 #include <Core/Containers/Map.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/UpdateContext.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Math.
 #include <Math/General/Matrix.h>
