@@ -1,6 +1,6 @@
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 //Header file.
-#include <Rendering/Native/Pipelines/RenderOverridePipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverridePipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>

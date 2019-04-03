@@ -19,7 +19,7 @@
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
-#include <Rendering/Native/Pipelines/Pipelines.h>
+#include <Rendering/Native/Pipelines/Core/Pipelines.h>
 #include <Rendering/Native/TextureData.h>
 
 //Systems.
@@ -78,11 +78,11 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 */
 void RenderingSystem::PostInitializeSystem()
 {
-	//Register all render passes.
-	RegisterRenderPasses();
+	//Register all pipelines.
+	RegisterPipelines();
 
-	//Initialize all render passes.
-	InitializeRenderPasses();
+	//Initialize all pipelines.
+	InitializePipelines();
 }
 
 /*
@@ -372,9 +372,9 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 }
 
 /*
-*	Registers all render passes.
+*	Registers all pipelines.
 */
-void RenderingSystem::RegisterRenderPasses() NOEXCEPT
+void RenderingSystem::RegisterPipelines() NOEXCEPT
 {
 	//Register all render passes.
 #if defined(CATALYST_CONFIGURATION_DEBUG)
@@ -389,9 +389,9 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 }
 
 /*
-*	Initializes all render passes.
+*	Initializes all pipelines.
 */
-void RenderingSystem::InitializeRenderPasses() NOEXCEPT
+void RenderingSystem::InitializePipelines() NOEXCEPT
 {
 	//Initialize all render passes.
 	for (Pipeline *const RESTRICT pipeline : _Pipelines)

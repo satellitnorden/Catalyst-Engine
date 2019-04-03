@@ -16,7 +16,7 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
-#include <Rendering/Native/Pipelines/Pipeline.h>
+#include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
@@ -349,14 +349,14 @@ private:
 	void InitializeSamplers() NOEXCEPT;
 
 	/*
-	*	Registers all render passes.
+	*	Registers all pipelines.
 	*/
-	void RegisterRenderPasses() NOEXCEPT;
+	void RegisterPipelines() NOEXCEPT;
 
 	/*
-	*	Initializes all render passes.
+	*	Initializes all pipelines.
 	*/
-	void InitializeRenderPasses() NOEXCEPT;
+	void InitializePipelines() NOEXCEPT;
 
 	/*
 	*	Initializes all common render data table layouts.

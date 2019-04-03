@@ -1,6 +1,6 @@
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 //Header file.
-#include <Rendering/Native/Pipelines/DebugAxisAlignedBoundingBoxPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugAxisAlignedBoundingBoxPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>

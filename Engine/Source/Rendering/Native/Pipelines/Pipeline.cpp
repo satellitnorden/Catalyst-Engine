@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/Pipeline.h>
+#include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>

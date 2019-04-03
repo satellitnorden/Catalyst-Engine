@@ -4,20 +4,20 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/Pipeline.h>
+#include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-class ToneMappingPipeline final : public Pipeline
+class AntiAliasingPipeline final : public Pipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ToneMappingPipeline);
+	DECLARE_SINGLETON(AntiAliasingPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	ToneMappingPipeline() NOEXCEPT;
+	AntiAliasingPipeline() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the tone mapping pipeline.
+	*	Initializes the anti-aliasing pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,7 +43,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the tone mapping.
+	*	Renders the anti-aliasing.
 	*/
 	void RenderInternal() NOEXCEPT;
 

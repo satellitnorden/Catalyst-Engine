@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/ToneMappingPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>

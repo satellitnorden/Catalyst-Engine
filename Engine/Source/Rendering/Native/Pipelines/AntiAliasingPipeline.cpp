@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/AntiAliasingPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingPipeline.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>

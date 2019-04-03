@@ -5,7 +5,7 @@
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanConstantBuffer.h>
-#include <Rendering/Native/Pipelines/Pipeline.h>
+#include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Translation/Vulkan/VulkanPipelineSubStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 

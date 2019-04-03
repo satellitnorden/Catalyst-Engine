@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/Pipeline.h>
+#include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
 class DebugAxisAlignedBoundingBoxPipeline final : public Pipeline
 {

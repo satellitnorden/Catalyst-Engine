@@ -319,6 +319,12 @@
     <Filter Include="Rendering\Source\Native\Pipelines">
       <UniqueIdentifier>{6a516d4d-8f8b-4be3-b841-aa4b6a353f12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Native\Pipelines\Graphics Pipelines">
+      <UniqueIdentifier>{a7883468-11bf-4f6e-a30f-c677e5837b4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Include\Native\Pipelines\Core">
+      <UniqueIdentifier>{e7273126-c4a0-4603-b995-aa241c359664}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -984,32 +990,35 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\AntiAliasingPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\DebugScreenBoxPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Pipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Pipelines.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RenderOverridePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ToneMappingPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineMainStageData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineSubStageData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipelines.h">
+      <Filter>Rendering\Include\Native\Pipelines\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugAxisAlignedBoundingBoxPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugScreenBoxPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverridePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
