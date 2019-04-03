@@ -325,6 +325,9 @@
     <Filter Include="Rendering\Include\Native\Pipelines\Core">
       <UniqueIdentifier>{e7273126-c4a0-4603-b995-aa241c359664}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Source\Native\Pipelines\Graphics Pipelines">
+      <UniqueIdentifier>{02439d9e-2a13-43af-bd93-baf00d09b372}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -909,12 +912,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanPipeline.h">
-      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanPipelineCreationParameters.h">
-      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanQueue.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
@@ -1019,6 +1016,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGraphicsPipeline.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGraphicsPipelineCreationParameters.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1211,9 +1214,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanPipeline.cpp">
-      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueue.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
@@ -1232,23 +1232,26 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\AntiAliasingPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugAxisAlignedBoundingBoxPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugAxisAlignedBoundingBoxPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\DebugScreenBoxPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugScreenBoxPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Pipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverridePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RenderOverridePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ToneMappingPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines</Filter>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

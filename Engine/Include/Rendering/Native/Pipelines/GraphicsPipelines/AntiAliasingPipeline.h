@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class AntiAliasingPipeline final : public Pipeline
+class AntiAliasingPipeline final : public GraphicsPipeline
 {
 
 public:

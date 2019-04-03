@@ -150,10 +150,10 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan pipelines.
-	for (VulkanPipeline *const RESTRICT vulkanPipeline : _VulkanPipelines)
+	for (VulkanGraphicsPipeline *const RESTRICT vulkanPipeline : _VulkanPipelines)
 	{
 		vulkanPipeline->Release();
-		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanPipeline)>(vulkanPipeline);
+		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanGraphicsPipeline)>(vulkanPipeline);
 	}
 
 	//Release all Vulkan render passes.
@@ -424,12 +424,12 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 }
 
 /*
-*	Creates and returns a pipeline.
+*	Creates and returns a graphics pipeline.
 */
-RESTRICTED VulkanPipeline *const RESTRICT VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
+RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT
 {
-	VulkanPipeline *const RESTRICT newPipeline = static_cast<VulkanPipeline *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanPipeline)>());
-	newPipeline->Initialize(vulkanPipelineCreationParameters);
+	VulkanGraphicsPipeline *const RESTRICT newPipeline = static_cast<VulkanGraphicsPipeline *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanGraphicsPipeline)>());
+	newPipeline->Initialize(parameters);
 
 	static Spinlock lock;
 	ScopedWriteLock<Spinlock> scopedLock{ lock };

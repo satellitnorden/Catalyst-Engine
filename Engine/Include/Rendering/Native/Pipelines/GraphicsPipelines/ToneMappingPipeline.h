@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class ToneMappingPipeline final : public Pipeline
+class ToneMappingPipeline final : public GraphicsPipeline
 {
 
 public:

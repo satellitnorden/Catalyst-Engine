@@ -5,9 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class DebugScreenBoxPipeline final : public Pipeline
+class DebugScreenBoxPipeline final : public GraphicsPipeline
 {
 
 public:

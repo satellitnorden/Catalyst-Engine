@@ -8,7 +8,6 @@
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/Abstraction/Vulkan/VulkanPipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSemaphore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
 #include <Rendering/Abstraction/Vulkan/VulkanUniformBuffer.h>

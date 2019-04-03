@@ -87,8 +87,8 @@ void DebugScreenBoxPipeline::InitializeInternal() NOEXCEPT
 		DebugScreenBoxPipeline::Instance->RenderInternal();
 	});
 
-	//Finalize the initialization.
-	FinalizeInitialization();
+	//Initialize the pipeline.
+	RenderingSystem::Instance->InitializePipeline(this);
 }
 
 /*

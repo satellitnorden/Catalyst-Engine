@@ -19,11 +19,11 @@
 #include <Rendering/Abstraction/Vulkan/VulkanEvent.h>
 #include <Rendering/Abstraction/Vulkan/VulkanFence.h>
 #include <Rendering/Abstraction/Vulkan/VulkanFramebuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInstance.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/Abstraction/Vulkan/VulkanPipeline.h>
-#include <Rendering/Abstraction/Vulkan/VulkanPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanQueue.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPassCreationParameters.h>
@@ -193,9 +193,9 @@ public:
 	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT;
 
 	/*
-	*	Creates and returns a pipeline.
+	*	Creates and returns a graphics pipeline.
 	*/
-	RESTRICTED VulkanPipeline *const RESTRICT CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
+	RESTRICTED VulkanGraphicsPipeline *const RESTRICT CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Creates and returns a render pass.
@@ -291,7 +291,7 @@ private:
 	DynamicArray<VulkanFramebuffer *RESTRICT> _VulkanFramebuffers;
 
 	//Container for all Vulkan pipelines.
-	DynamicArray<VulkanPipeline *RESTRICT> _VulkanPipelines;
+	DynamicArray<VulkanGraphicsPipeline *RESTRICT> _VulkanPipelines;
 
 	//Container for all Vulkan render passes.
 	DynamicArray<VulkanRenderPass *RESTRICT> _VulkanRenderPasses;

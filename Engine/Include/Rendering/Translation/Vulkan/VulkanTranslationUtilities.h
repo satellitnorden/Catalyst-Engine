@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Resolution.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>

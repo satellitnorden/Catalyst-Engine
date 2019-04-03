@@ -235,6 +235,11 @@ public:
 	void DestroyUniformBuffer(UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
+	*	Initializes a pipeline
+	*/
+	void InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT;
+
+	/*
 	*	Returns the global render data table.
 	*/
 	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
@@ -263,11 +268,6 @@ public:
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
-
-	/*
-	*	Finalizes the initialization of a pipeline.
-	*/
-	void FinalizePipelineInitialization(Pipeline *const RESTRICT pipeline) const NOEXCEPT;
 
 private:
 

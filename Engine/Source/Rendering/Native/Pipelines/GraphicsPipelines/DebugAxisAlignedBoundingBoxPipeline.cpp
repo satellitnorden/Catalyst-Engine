@@ -111,8 +111,8 @@ void DebugAxisAlignedBoundingBoxPipeline::InitializeInternal() NOEXCEPT
 		DebugAxisAlignedBoundingBoxPipeline::Instance->RenderInternal();
 	});
 
-	//Finalize the initialization.
-	FinalizeInitialization();
+	//Initialize the pipeline.
+	RenderingSystem::Instance->InitializePipeline(this);
 }
 
 /*

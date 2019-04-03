@@ -104,7 +104,7 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 
 		for (Pipeline *const RESTRICT pipeline : _Pipelines)
 		{
-			pipeline->SetIncludeInRender(false);
+			static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->SetIncludeInRender(false);
 		}
 	}
 
@@ -113,7 +113,7 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	{
 		for (Pipeline *const RESTRICT pipeline : _Pipelines)
 		{
-			pipeline->RenderAsynchronous();
+			static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->RenderAsynchronous();
 		}
 	}
 
@@ -396,13 +396,13 @@ void RenderingSystem::InitializePipelines() NOEXCEPT
 	//Initialize all render passes.
 	for (Pipeline *const RESTRICT pipeline : _Pipelines)
 	{
-		pipeline->InitializeAsynchronous();
+		static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->InitializeAsynchronous();
 	}
 
 	//Wait for all render passes to finish initialization.
 	for (Pipeline *const RESTRICT pipeline : _Pipelines)
 	{
-		pipeline->WaitForInitialization();
+		static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->WaitForInitialization();
 	}
 }
 
@@ -424,17 +424,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
-	}
-
-	{
-		//Initialize the environment material render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::EnvironmentMaterial)]);
 	}
 
 	{
@@ -466,18 +455,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)]);
-	}
-
-	{
-		//Initialize the grass material render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GrassMaterial)]);
 	}
 }
 

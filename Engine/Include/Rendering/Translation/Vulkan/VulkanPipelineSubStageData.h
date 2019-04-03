@@ -6,7 +6,7 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
-#include <Rendering/Abstraction/Vulkan/VulkanPipeline.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
 
 class VulkanPipelineSubStageData final
 {
@@ -17,7 +17,7 @@ public:
 	DynamicArray<VkFramebuffer> _Framebuffers;
 
 	//The pipeline associated with the render pass.
-	VulkanPipeline *RESTRICT _Pipeline;
+	VulkanGraphicsPipeline *RESTRICT _Pipeline;
 
 	//The render pass associated with the render pass.
 	VkRenderPass _RenderPass;

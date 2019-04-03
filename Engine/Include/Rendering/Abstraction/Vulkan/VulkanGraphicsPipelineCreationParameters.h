@@ -5,9 +5,10 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Vulkan.
+#include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 #include <Rendering/Abstraction/Vulkan/VulkanShaderModule.h>
 
-class VulkanPipelineCreationParameters final
+class VulkanGraphicsPipelineCreationParameters final
 {
 
 public:

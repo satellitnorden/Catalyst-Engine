@@ -162,8 +162,6 @@ enum class DepthBuffer : uint8
 enum class CommonRenderDataTableLayout : uint8
 {
 	Global,
-	EnvironmentMaterial,
-	GrassMaterial,
 	OceanMaterial,
 	ParticleSystem,
 	GaussianBlur,

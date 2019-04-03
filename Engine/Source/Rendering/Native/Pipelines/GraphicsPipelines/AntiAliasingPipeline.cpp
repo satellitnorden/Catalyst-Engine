@@ -90,8 +90,8 @@ void AntiAliasingPipeline::InitializeInternal() NOEXCEPT
 		AntiAliasingPipeline::Instance->RenderInternal();
 	});
 
-	//Finalize the initialization.
-	FinalizeInitialization();
+	//Initialize the pipeline.
+	RenderingSystem::Instance->InitializePipeline(this);
 }
 
 

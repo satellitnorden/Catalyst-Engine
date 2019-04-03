@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,8 +11,11 @@
 /*
 *	Default constructor.
 */
-Pipeline::Pipeline() NOEXCEPT
+GraphicsPipeline::GraphicsPipeline() NOEXCEPT
 {
+	//Set the type.
+	_Type = Type::Graphics;
+
 	//Set up the tasks.
 	_InitializationTask._Arguments = nullptr;
 	_RenderTask._Arguments = nullptr;
@@ -21,7 +24,7 @@ Pipeline::Pipeline() NOEXCEPT
 /*
 *	Initializes this pipeline asynchronously.
 */
-void Pipeline::InitializeAsynchronous() NOEXCEPT
+void GraphicsPipeline::InitializeAsynchronous() NOEXCEPT
 {
 	//Fire off the initialization task.
 	TaskSystem::Instance->ExecuteTask(&_InitializationTask);
@@ -30,7 +33,7 @@ void Pipeline::InitializeAsynchronous() NOEXCEPT
 /*
 *	Waits for the initialization this pipeline to finish.
 */
-void Pipeline::WaitForInitialization() const NOEXCEPT
+void GraphicsPipeline::WaitForInitialization() const NOEXCEPT
 {
 	//Wait for the initialization this render pass to finish.
 	_InitializationTask.WaitFor();
@@ -39,7 +42,7 @@ void Pipeline::WaitForInitialization() const NOEXCEPT
 /*
 *	Renders this pipeline asynchronously.
 */
-void Pipeline::RenderAsynchronous() NOEXCEPT
+void GraphicsPipeline::RenderAsynchronous() NOEXCEPT
 {
 	//Fire off the render task.
 	TaskSystem::Instance->ExecuteTask(&_RenderTask);
@@ -48,25 +51,16 @@ void Pipeline::RenderAsynchronous() NOEXCEPT
 /*
 *	Waits for the render this pipeline to finish.
 */
-void Pipeline::WaitForRender() const NOEXCEPT
+void GraphicsPipeline::WaitForRender() const NOEXCEPT
 {
 	//Wait for the render this render pass to finish.
 	_RenderTask.WaitFor();
 }
 
 /*
-*	Finalizes the initialization of a render pass.
-*/
-void Pipeline::FinalizeInitialization() NOEXCEPT
-{
-	//Finalize the initialization of this pipeline via the rendering system.
-	RenderingSystem::Instance->FinalizePipelineInitialization(this);
-}
-
-/*
 *	Returns the current command buffer, const.
 */
-RESTRICTED const CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer() const NOEXCEPT
+RESTRICTED const CommandBuffer *const RESTRICT GraphicsPipeline::GetCurrentCommandBuffer() const NOEXCEPT
 {
 	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }
@@ -74,7 +68,7 @@ RESTRICTED const CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer
 /*
 *	Returns the current command buffer, non-const.
 */
-CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer() NOEXCEPT
+CommandBuffer *const RESTRICT GraphicsPipeline::GetCurrentCommandBuffer() NOEXCEPT
 {
 	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }
