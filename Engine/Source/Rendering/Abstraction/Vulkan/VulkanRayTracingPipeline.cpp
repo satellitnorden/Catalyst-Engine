@@ -29,7 +29,7 @@ void VulkanRayTracingPipeline::Initialize(const VulkanRayTracingPipelineCreation
 	CreateRayTracingPipelineCreateInfo(ArrayProxy<VkPipelineShaderStageCreateInfo>(stages), ArrayProxy<VkRayTracingShaderGroupCreateInfoNV>(groups), _VulkanPipelineLayout, &rayTracingPipelineCreateInfo);
 
 	//Create the Vulkan ray tracing pipeline!
-	VULKAN_ERROR_CHECK(vkCreateRayTracingPipelinesNV(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &_VulkanPipeline));
+	//VULKAN_ERROR_CHECK(vkCreateRayTracingPipelinesNV(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &_VulkanPipeline));
 }
 
 /*
@@ -103,9 +103,9 @@ void VulkanRayTracingPipeline::CreateRayTracingPipelineCreateInfo(	const ArrayPr
 	rayTracingPipelineCreateInfo->sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV;
 	rayTracingPipelineCreateInfo->pNext = nullptr;
 	rayTracingPipelineCreateInfo->flags = 0;
-	rayTracingPipelineCreateInfo->stageCount = stages._Size;
+	rayTracingPipelineCreateInfo->stageCount = static_cast<uint32>(stages._Size);
 	rayTracingPipelineCreateInfo->pStages = stages._Array;
-	rayTracingPipelineCreateInfo->groupCount = groups._Size;
+	rayTracingPipelineCreateInfo->groupCount = static_cast<uint32>(groups._Size);
 	rayTracingPipelineCreateInfo->pGroups = groups._Array;
 	rayTracingPipelineCreateInfo->maxRecursionDepth = 0;
 	rayTracingPipelineCreateInfo->layout = layout;

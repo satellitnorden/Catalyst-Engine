@@ -7,18 +7,18 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class RenderOverridePipeline final : public GraphicsPipeline
+class RenderOverrideGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(RenderOverridePipeline);
+	DECLARE_SINGLETON(RenderOverrideGraphicsPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	RenderOverridePipeline() NOEXCEPT;
+	RenderOverrideGraphicsPipeline() NOEXCEPT;
 
 	/*
 	*	Returns if there is an override.
@@ -45,7 +45,7 @@ private:
 	Texture2DHandle _Texture{ EMPTY_HANDLE };
 
 	/*
-	*	Initializes the render override pipeline.
+	*	Initializes the render override graphics pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 

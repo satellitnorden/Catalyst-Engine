@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ToneMappingRenderPass final : public RenderPass
+class AntiAliasingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ToneMappingRenderPass);
+	DECLARE_SINGLETON(AntiAliasingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	ToneMappingRenderPass() NOEXCEPT;
+	AntiAliasingRenderPass() NOEXCEPT;
 
 private:
 

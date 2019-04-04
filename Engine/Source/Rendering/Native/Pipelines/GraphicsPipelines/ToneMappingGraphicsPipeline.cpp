@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingPipeline.h>
-
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,24 +8,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AntiAliasingPipeline);
+DEFINE_SINGLETON(ToneMappingGraphicsPipeline);
 
 /*
 *	Default constructor.
 */
-AntiAliasingPipeline::AntiAliasingPipeline() NOEXCEPT
+ToneMappingGraphicsPipeline::ToneMappingGraphicsPipeline() NOEXCEPT
 {
 	//Set the initialization function.
-	SetInitializationFunction([](void *const RESTRICT)
+	SetInitializationFunction([]()
 	{
-		AntiAliasingPipeline::Instance->InitializeInternal();
+		ToneMappingGraphicsPipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the anti-aliasing pipeline.
+*	Initializes the tone mapping graphics pipeline.
 */
-void AntiAliasingPipeline::InitializeInternal() NOEXCEPT
+void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -37,29 +34,33 @@ void AntiAliasingPipeline::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(PipelineMainStage::AntiAliasing);
+	SetMainStage(RenderPassStage::ToneMapping);
 
 	//Set the sub stage.
-	SetSubStage(PipelineSubStage::AntiAliasing);
+	SetSubStage(PipelineSubStage::ToneMapping);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AntiAliasingFragment);
+	SetFragmentShader(Shader::ToneMappingFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::Intermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -85,20 +86,19 @@ void AntiAliasingPipeline::InitializeInternal() NOEXCEPT
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
-	SetRenderFunction([](void *const RESTRICT)
+	SetExecutionFunction([]()
 	{
-		AntiAliasingPipeline::Instance->RenderInternal();
+		ToneMappingGraphicsPipeline::Instance->RenderInternal();
 	});
 
 	//Initialize the pipeline.
 	RenderingSystem::Instance->InitializePipeline(this);
 }
 
-
 /*
 *	Creates the render data table layout.
 */
-void AntiAliasingPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void ToneMappingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -111,17 +111,17 @@ void AntiAliasingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AntiAliasingPipeline::CreateRenderDataTable() NOEXCEPT
+void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the anti-aliasing.
+*	Renders the tone mapping.
 */
-void AntiAliasingPipeline::RenderInternal() NOEXCEPT
+void ToneMappingGraphicsPipeline::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

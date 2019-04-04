@@ -24,9 +24,9 @@ public:
 	uint32 _IndexCount;
 
 	//The height function.
-	HeightFunction _HeightFunction;
+	HeightFunction _HeightFunction{ nullptr };
 
 	//The material function.
-	MaterialFunction _MaterialFunction;
+	MaterialFunction _MaterialFunction{ nullptr };
 
 };

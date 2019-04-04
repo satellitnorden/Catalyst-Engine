@@ -1,3 +1,4 @@
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 #pragma once
 
 //Core.
@@ -6,18 +7,18 @@
 //Rendering.
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ToneMappingRenderPass final : public RenderPass
+class RenderOverrideRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ToneMappingRenderPass);
+	DECLARE_SINGLETON(RenderOverrideRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	ToneMappingRenderPass() NOEXCEPT;
+	RenderOverrideRenderPass() NOEXCEPT;
 
 private:
 
@@ -32,3 +33,4 @@ private:
 	void Execute() NOEXCEPT;
 
 };
+#endif

@@ -19,37 +19,22 @@ public:
 	/*
 	*	Given a main stage and a sub stage, return the corresponding sub stage index.
 	*/
-	static uint8 GetSubStageIndex(const PipelineMainStage main, const PipelineSubStage sub) NOEXCEPT
+	static uint8 GetSubStageIndex(const RenderPassStage main, const PipelineSubStage sub) NOEXCEPT
 	{
 		switch (main)
 		{
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-			case PipelineMainStage::None:
-			{
-				ASSERT(false, "None main stage, how could this be?");
-
-				return 0;
-			}
-#endif
-	
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-			case PipelineMainStage::Debug:
-			{
-				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox);
-			}
-#endif
-			case PipelineMainStage::ToneMapping:
+			case RenderPassStage::ToneMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::ToneMapping);
 			}
 
-			case PipelineMainStage::AntiAliasing:
+			case RenderPassStage::AntiAliasing:
 			{
 				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::AntiAliasing);
 			}
 
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-			case PipelineMainStage::RenderOverride:
+			case RenderPassStage::RenderOverride:
 			{
 				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::RenderOverride);
 			}

@@ -81,7 +81,7 @@ void main()
     vec3 sceneColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
     //Apply FXAA.
-    sceneColor = ApplyFXAA(sceneColor);
+    //sceneColor = ApplyFXAA(sceneColor);
 
     //Write the fragment.
     fragment = vec4(sceneColor, 1.0f);

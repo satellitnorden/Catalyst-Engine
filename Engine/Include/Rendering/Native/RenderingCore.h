@@ -50,20 +50,17 @@ using UniformBufferHandle = void *RESTRICT;
 constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
-*	Enumeration covering all pipeline main stages.
+*	Enumeration covering all render pass stages.
 */
-enum class PipelineMainStage : uint8
+enum class RenderPassStage : uint8
 {
-	None,
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	Debug,
-#endif
-	ToneMapping,
-	AntiAliasing,
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	NumberOfPipelineMainStages
+	ToneMapping,
+	AntiAliasing,
+
+	NumberOfRenderPassStages
 };
 
 /*
@@ -72,10 +69,9 @@ enum class PipelineMainStage : uint8
 */
 enum class PipelineSubStage : uint8
 {
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	//Debug.
-	DebugAxisAlignedBoundingBox,
-	DebugScreenBox,
+#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
+	//Render override main stage.
+	RenderOverride,
 #endif
 
 	//Tone mapping main stage.
@@ -83,11 +79,6 @@ enum class PipelineSubStage : uint8
 
 	//Anti-aliasing main stage.
 	AntiAliasing,
-
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	//Render override main stage.
-	RenderOverride,
-#endif
 
 	NumberOfPipelineSubStages
 };

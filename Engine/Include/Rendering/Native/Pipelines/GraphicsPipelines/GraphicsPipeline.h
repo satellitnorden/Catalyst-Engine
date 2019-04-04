@@ -4,9 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
-
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
@@ -26,26 +23,6 @@ public:
 	GraphicsPipeline() NOEXCEPT;
 
 	/*
-	*	Initializes this pipeline asynchronously.
-	*/
-	void InitializeAsynchronous() NOEXCEPT;
-
-	/*
-	*	Waits for the initialization this pipeline to finish.
-	*/
-	void WaitForInitialization() const NOEXCEPT;
-
-	/*
-	*	Renders this pipeline asynchronously.
-	*/
-	void RenderAsynchronous() NOEXCEPT;
-
-	/*
-	*	Waits for the render this pipeline to finish.
-	*/
-	void WaitForRender() const NOEXCEPT;
-
-	/*
 	*	Returns the data for this pipeline.
 	*/
 	const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
@@ -58,7 +35,7 @@ public:
 	/*
 	*	Returns the main stage.
 	*/
-	PipelineMainStage GetMainStage() const NOEXCEPT { return _MainStage; }
+	RenderPassStage GetMainStage() const NOEXCEPT { return _MainStage; }
 
 	/*
 	*	Returns the sub stage.
@@ -243,7 +220,7 @@ public:
 	/*
 	*	Sets the main stage.
 	*/
-	void SetMainStage(const PipelineMainStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
+	void SetMainStage(const RenderPassStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
 
 	/*
 	*	Sets the sub stage.
@@ -430,23 +407,13 @@ public:
 	*/
 	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
 
-	/*
-	*	Sets the initialization function.
-	*/
-	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { _InitializationTask._Function = newInitializationFunction; }
-
-	/*
-	*	Sets the render function.
-	*/
-	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { _RenderTask._Function = newRenderFunction; }
-
 private:
 
 	//The data for this pipeline.
 	const void *RESTRICT _Data;
 
 	//The main stage.
-	PipelineMainStage _MainStage;
+	RenderPassStage _MainStage;
 
 	//The sub stage.
 	PipelineSubStage _SubStage;
@@ -546,11 +513,5 @@ private:
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
-
-	//The initialization task.
-	Task _InitializationTask;
-
-	//The render task.
-	Task _RenderTask;
 
 };

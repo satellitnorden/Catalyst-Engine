@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class AntiAliasingPipeline final : public GraphicsPipeline
+class AntiAliasingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(AntiAliasingPipeline);
+	DECLARE_SINGLETON(AntiAliasingGraphicsPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	AntiAliasingPipeline() NOEXCEPT;
+	AntiAliasingGraphicsPipeline() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the anti-aliasing pipeline.
+	*	Initializes the anti-aliasing graphics pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 

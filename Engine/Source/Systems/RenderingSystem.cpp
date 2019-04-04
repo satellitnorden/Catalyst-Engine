@@ -21,6 +21,7 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/Pipelines/Core/Pipelines.h>
 #include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/RenderPasses/RenderPassManager.h>
 
 //Systems.
 #include <Systems/InputSystem.h>
@@ -36,6 +37,24 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
+
+//Rendering system logic.
+namespace RenderingSystemLogic
+{
+
+	/*
+	*	Initializes all render passes.
+	*/
+	FORCE_INLINE void InitializeRenderPasses() NOEXCEPT
+	{
+		//Initialize all render passes.
+		for (RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
+		{
+			renderPass->Initialize();
+		}
+	}
+
+}
 
 /*
 *	Initializes the rendering system.
@@ -78,11 +97,11 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 */
 void RenderingSystem::PostInitializeSystem()
 {
+	//Initialize all render passes.
+	RenderingSystemLogic::InitializeRenderPasses();
+
 	//Register all pipelines.
 	RegisterPipelines();
-
-	//Initialize all pipelines.
-	InitializePipelines();
 }
 
 /*
@@ -97,24 +116,9 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	UpdateGlobalRenderData();
 
 	//Render all render passes.
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	if (RenderOverridePipeline::Instance->HasOverride())
+	for (Pipeline *const RESTRICT pipeline : _Pipelines)
 	{
-		RenderOverridePipeline::Instance->RenderAsynchronous();
-
-		for (Pipeline *const RESTRICT pipeline : _Pipelines)
-		{
-			static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->SetIncludeInRender(false);
-		}
-	}
-
-	else
-#endif
-	{
-		for (Pipeline *const RESTRICT pipeline : _Pipelines)
-		{
-			static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->RenderAsynchronous();
-		}
+		pipeline->Execute();
 	}
 
 	//End the frame.
@@ -377,33 +381,11 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 void RenderingSystem::RegisterPipelines() NOEXCEPT
 {
 	//Register all render passes.
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	_Pipelines[UNDERLYING(PipelineSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxPipeline::Instance;
-	_Pipelines[UNDERLYING(PipelineSubStage::DebugScreenBox)] = DebugScreenBoxPipeline::Instance;
-#endif
-	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingPipeline::Instance;
-	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingPipeline::Instance;
+	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingGraphicsPipeline::Instance;
+	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingGraphicsPipeline::Instance;
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverridePipeline::Instance;
+	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverrideGraphicsPipeline::Instance;
 #endif
-}
-
-/*
-*	Initializes all pipelines.
-*/
-void RenderingSystem::InitializePipelines() NOEXCEPT
-{
-	//Initialize all render passes.
-	for (Pipeline *const RESTRICT pipeline : _Pipelines)
-	{
-		static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->InitializeAsynchronous();
-	}
-
-	//Wait for all render passes to finish initialization.
-	for (Pipeline *const RESTRICT pipeline : _Pipelines)
-	{
-		static_cast<GraphicsPipeline *const RESTRICT>(pipeline)->WaitForInitialization();
-	}
 }
 
 /*

@@ -4,12 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingPipeline.h>
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugAxisAlignedBoundingBoxPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugScreenBoxPipeline.h>
-#endif
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingGraphicsPipeline.h>
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverridePipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverrideGraphicsPipeline.h>
 #endif
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>

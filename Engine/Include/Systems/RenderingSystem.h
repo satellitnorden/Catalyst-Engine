@@ -353,11 +353,6 @@ private:
 	void RegisterPipelines() NOEXCEPT;
 
 	/*
-	*	Initializes all pipelines.
-	*/
-	void InitializePipelines() NOEXCEPT;
-
-	/*
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;

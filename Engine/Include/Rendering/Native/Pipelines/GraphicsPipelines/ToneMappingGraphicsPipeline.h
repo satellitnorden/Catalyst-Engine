@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class ToneMappingPipeline final : public GraphicsPipeline
+class ToneMappingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ToneMappingPipeline);
+	DECLARE_SINGLETON(ToneMappingGraphicsPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	ToneMappingPipeline() NOEXCEPT;
+	ToneMappingGraphicsPipeline() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the tone mapping pipeline.
+	*	Initializes the tone mapping graphics pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 

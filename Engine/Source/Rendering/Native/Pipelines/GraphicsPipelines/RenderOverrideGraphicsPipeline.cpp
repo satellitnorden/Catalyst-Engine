@@ -1,6 +1,6 @@
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverridePipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverrideGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -9,24 +9,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(RenderOverridePipeline);
+DEFINE_SINGLETON(RenderOverrideGraphicsPipeline);
 
 /*
 *	Default constructor.
 */
-RenderOverridePipeline::RenderOverridePipeline() NOEXCEPT
+RenderOverrideGraphicsPipeline::RenderOverrideGraphicsPipeline() NOEXCEPT
 {
 	//Set the initialization function.
-	SetInitializationFunction([](void *const RESTRICT)
+	SetInitializationFunction([]()
 	{
-		RenderOverridePipeline::Instance->InitializeInternal();
+		RenderOverrideGraphicsPipeline::Instance->InitializeInternal();
 	});
 }
 
 /*
 *	Sets the texture.
 */
-void RenderOverridePipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
+void RenderOverrideGraphicsPipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
 {
 	//Set the texture.
 	_Texture = texture;
@@ -36,9 +36,9 @@ void RenderOverridePipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
 }
 
 /*
-*	Initializes the render override pipeline.
+*	Initializes the render override graphics pipeline.
 */
-void RenderOverridePipeline::InitializeInternal() NOEXCEPT
+void RenderOverrideGraphicsPipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -47,7 +47,7 @@ void RenderOverridePipeline::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(PipelineMainStage::RenderOverride);
+	SetMainStage(RenderPassStage::RenderOverride);
 
 	//Set the sub stage.
 	SetSubStage(PipelineSubStage::RenderOverride);
@@ -64,7 +64,7 @@ void RenderOverridePipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -95,9 +95,9 @@ void RenderOverridePipeline::InitializeInternal() NOEXCEPT
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
-	SetRenderFunction([](void *const RESTRICT)
+	SetExecutionFunction([]()
 	{
-		RenderOverridePipeline::Instance->RenderInternal();
+		RenderOverrideGraphicsPipeline::Instance->RenderInternal();
 	});
 
 	//Initialize the pipeline.
@@ -107,7 +107,7 @@ void RenderOverridePipeline::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void RenderOverridePipeline::CreateRenderDataTableLayout() NOEXCEPT
+void RenderOverrideGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -120,7 +120,7 @@ void RenderOverridePipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void RenderOverridePipeline::CreateRenderDataTable() NOEXCEPT
+void RenderOverrideGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 }
@@ -128,7 +128,7 @@ void RenderOverridePipeline::CreateRenderDataTable() NOEXCEPT
 /*
 *	Renders the render override.
 */
-void RenderOverridePipeline::RenderInternal() NOEXCEPT
+void RenderOverrideGraphicsPipeline::RenderInternal() NOEXCEPT
 {
 	//If there's no texture, then don't render.
 	if (!_Texture)

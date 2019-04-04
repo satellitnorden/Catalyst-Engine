@@ -7,5 +7,5 @@
 RayTracingPipeline::RayTracingPipeline() NOEXCEPT
 {
 	//Set the type.
-	_Type = Type::RayTracing;
+	SetType(Type::RayTracing);
 }
