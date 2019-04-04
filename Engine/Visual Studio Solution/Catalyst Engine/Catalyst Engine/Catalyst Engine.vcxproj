@@ -311,6 +311,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorPool.cpp" />

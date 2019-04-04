@@ -1301,6 +1301,9 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Systems\EntitySystem.inl">
