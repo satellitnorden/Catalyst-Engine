@@ -4,12 +4,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Platform.
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	#include <Platform/Windows/VulkanCoreWindows.h>
-#elif defined(CATALYST_PLATFORM_ANDROID)
-	#include <Platform/Android/VulkanCoreAndroid.h>
-#endif
+//ThirdParty
+#define VK_USE_PLATFORM_WIN32_KHR
+#include <ThirdParty/vulkan/vulkan.h>
 
 /*
 *	Turns Vulkan debugging on/off.

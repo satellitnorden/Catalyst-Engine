@@ -10,7 +10,15 @@
 */
 void VulkanSurface::Initialize() NOEXCEPT
 {
-	PlatformVulkan::CreateVulkanSurface(&_VulkanSurface);
+	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
+
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = nullptr;
+	surfaceCreateInfo.flags = 0;
+	surfaceCreateInfo.hinstance = CatalystPlatform::_Instance;
+	surfaceCreateInfo.hwnd = CatalystPlatform::_Window;
+
+	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 }
 
 /*

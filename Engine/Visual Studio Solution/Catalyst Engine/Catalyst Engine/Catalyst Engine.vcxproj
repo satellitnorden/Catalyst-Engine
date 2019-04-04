@@ -148,10 +148,8 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocator.h" />
@@ -303,9 +301,7 @@
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Windows\VulkanCoreWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />

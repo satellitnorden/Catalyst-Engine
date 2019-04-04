@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/Vulkan2DTexture.h>

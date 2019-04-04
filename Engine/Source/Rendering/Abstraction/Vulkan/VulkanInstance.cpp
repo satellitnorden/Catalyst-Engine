@@ -59,7 +59,7 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "Catalyst Engine";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	applicationInfo.apiVersion = VULKAN_API_VERSION;
+	applicationInfo.apiVersion = VK_API_VERSION_1_1;
 }
 
 /*
@@ -80,7 +80,10 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.ppEnabledLayerNames = nullptr;
 #endif
 
-	PlatformVulkan::GetRequiredInstanceExtensions(extensions);
+	extensions.Reserve(2);
+
+	extensions.EmplaceFast(VK_KHR_SURFACE_EXTENSION_NAME);
+	extensions.EmplaceFast(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 
 #if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
 	extensions.EmplaceSlow(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

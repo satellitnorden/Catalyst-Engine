@@ -483,12 +483,6 @@
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h">
-      <Filter>Platform\Include\Android</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h">
-      <Filter>Platform\Include\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1099,12 +1093,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp">
       <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp">
-      <Filter>Platform\Source\Android</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\VulkanCoreWindows.cpp">
-      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
