@@ -19,8 +19,14 @@ public:
 	//The framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
 
+	//The extent.
+	VkExtent2D _Extent;
+
 	//The number of attachments.
 	uint32 _NumberOfAttachments;
+
+	//Denotes whether or not this render pass is aimed to be rendered unto the screen.
+	bool _RenderToScreeen;
 
 };
 #endif

@@ -29,7 +29,7 @@ void VulkanRayTracingPipeline::Initialize(const VulkanRayTracingPipelineCreation
 	CreateRayTracingPipelineCreateInfo(ArrayProxy<VkPipelineShaderStageCreateInfo>(stages), ArrayProxy<VkRayTracingShaderGroupCreateInfoNV>(groups), _VulkanPipelineLayout, &rayTracingPipelineCreateInfo);
 
 	//Create the Vulkan ray tracing pipeline!
-	//VULKAN_ERROR_CHECK(vkCreateRayTracingPipelinesNV(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &_VulkanPipeline));
+	VULKAN_ERROR_CHECK(vkCreateRayTracingPipelinesNV(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfo, nullptr, &_VulkanPipeline));
 }
 
 /*

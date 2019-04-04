@@ -19,7 +19,6 @@
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
-#include <Rendering/Native/Pipelines/Core/Pipelines.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 
@@ -111,9 +110,6 @@ void RenderingSystem::PostInitializeSystem()
 {
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses();
-
-	//Register all pipelines.
-	RegisterPipelines();
 }
 
 /*
@@ -382,19 +378,6 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
-}
-
-/*
-*	Registers all pipelines.
-*/
-void RenderingSystem::RegisterPipelines() NOEXCEPT
-{
-	//Register all render passes.
-	_Pipelines[UNDERLYING(PipelineSubStage::ToneMapping)] = ToneMappingGraphicsPipeline::Instance;
-	_Pipelines[UNDERLYING(PipelineSubStage::AntiAliasing)] = AntiAliasingGraphicsPipeline::Instance;
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	_Pipelines[UNDERLYING(PipelineSubStage::RenderOverride)] = RenderOverrideGraphicsPipeline::Instance;
-#endif
 }
 
 /*

@@ -23,6 +23,7 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
+#include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanPipelineMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanPipelineSubStageData.h>
@@ -108,44 +109,32 @@ namespace VulkanRenderingSystemLogic
 		currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
-		RenderPassStage currentStage{ RenderPassStage::NumberOfRenderPassStages };
-
-		for (const Pipeline *const RESTRICT pipeline : RenderingSystem::Instance->GetPipelines())
+		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
 		{
-			const GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<const GraphicsPipeline *const RESTRICT>(pipeline) };
+			vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
-			//Begin a new render pass, if necessary.
-			if (currentStage != graphicsPipeline->GetMainStage())
+			currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
+																VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+																VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent,
+																VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+			for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
 			{
-				if (currentStage != RenderPassStage::NumberOfRenderPassStages)
+				const GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<const GraphicsPipeline *const RESTRICT>(pipeline) };
+
+				if (graphicsPipeline->IncludeInRender())
 				{
-					currentPrimaryCommandBuffer->CommandEndRenderPass();
+					currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(graphicsPipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
 				}
 
-				currentStage = graphicsPipeline->GetMainStage();
-
-				vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
-
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-					VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(currentStage)]._FrameBuffers[graphicsPipeline->GetRenderTargets()[0] == RenderTarget::Screen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-					graphicsPipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ graphicsPipeline->GetRenderResolution()._Width, graphicsPipeline->GetRenderResolution()._Height },
-					VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+				if (pipeline != renderPass->GetPipelines().Back())
+				{
+					currentPrimaryCommandBuffer->CommandNextSubpass();
+				}
 			}
-
-			else
-			{
-				currentPrimaryCommandBuffer->CommandNextSubpass();
-			}
-
-			//Record the execute commands.
-			if (graphicsPipeline->IncludeInRender())
-			{
-				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(graphicsPipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
-			}
+			
+			currentPrimaryCommandBuffer->CommandEndRenderPass();
 		}
-
-		//End the last remaining render pass.
-		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 
 	/*
@@ -824,7 +813,9 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 			VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
+		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = true;
 	}
 	
 	else
@@ -847,7 +838,9 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 
 		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.Reserve(1);
 		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = false;
 	}
 }
 

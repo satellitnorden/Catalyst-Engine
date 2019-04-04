@@ -106,14 +106,6 @@ public:
 	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
 
 	/*
-	*	Returns the pipelines.
-	*/
-	const StaticArray<Pipeline *RESTRICT, UNDERLYING(PipelineSubStage::NumberOfPipelineSubStages)>& GetPipelines() const
-	{
-		return _Pipelines;
-	}
-
-	/*
 	*	Returns the given depth buffer.
 	*/
 	DepthBufferHandle GetDepthBuffer(const DepthBuffer depthBuffer) const NOEXCEPT
@@ -288,9 +280,6 @@ private:
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;
 
-	//Container for all pipelines.
-	StaticArray<Pipeline *RESTRICT, UNDERLYING(PipelineSubStage::NumberOfPipelineSubStages)> _Pipelines;
-
 	//Container for all depth buffers.
 	StaticArray<DepthBufferHandle, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
@@ -352,11 +341,6 @@ private:
 	*	Initializes all samplers.
 	*/
 	void InitializeSamplers() NOEXCEPT;
-
-	/*
-	*	Registers all pipelines.
-	*/
-	void RegisterPipelines() NOEXCEPT;
 
 	/*
 	*	Initializes all common render data table layouts.
