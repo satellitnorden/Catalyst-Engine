@@ -4,6 +4,9 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(ToneMappingRenderPass);
 
@@ -42,6 +45,15 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 	{
 		pipeline->Initialize();
 	}
+
+	//Initialize this render pass.
+	RenderingSystem::Instance->InitializeRenderPass(this);
+
+	//Post-initialize all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->PostInitialize();
+	}
 }
 
 /*
@@ -49,5 +61,9 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 */
 void ToneMappingRenderPass::Execute() NOEXCEPT
 {
-
+	//Execute all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->Execute();
+	}
 }

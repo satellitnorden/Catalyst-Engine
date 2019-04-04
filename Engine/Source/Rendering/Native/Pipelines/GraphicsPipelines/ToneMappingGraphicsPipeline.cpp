@@ -20,6 +20,12 @@ ToneMappingGraphicsPipeline::ToneMappingGraphicsPipeline() NOEXCEPT
 	{
 		ToneMappingGraphicsPipeline::Instance->InitializeInternal();
 	});
+
+	//Set the execution function.
+	SetExecutionFunction([]()
+	{
+		ToneMappingGraphicsPipeline::Instance->RenderInternal();
+	});
 }
 
 /*
@@ -84,15 +90,6 @@ void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
-
-	//Set the render function.
-	SetExecutionFunction([]()
-	{
-		ToneMappingGraphicsPipeline::Instance->RenderInternal();
-	});
-
-	//Initialize the pipeline.
-	RenderingSystem::Instance->InitializePipeline(this);
 }
 
 /*

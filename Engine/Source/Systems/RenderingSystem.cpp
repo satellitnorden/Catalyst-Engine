@@ -54,6 +54,18 @@ namespace RenderingSystemLogic
 		}
 	}
 
+	/*
+	*	Executes all render passes.
+	*/
+	FORCE_INLINE void ExecuteRenderPasses() NOEXCEPT
+	{
+		//Executes all render passes.
+		for (RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
+		{
+			renderPass->Execute();
+		}
+	}
+
 }
 
 /*
@@ -115,11 +127,8 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	//Update the global render data.
 	UpdateGlobalRenderData();
 
-	//Render all render passes.
-	for (Pipeline *const RESTRICT pipeline : _Pipelines)
-	{
-		pipeline->Execute();
-	}
+	//Execute all render passes.
+	RenderingSystemLogic::ExecuteRenderPasses();
 
 	//End the frame.
 	EndFrame();

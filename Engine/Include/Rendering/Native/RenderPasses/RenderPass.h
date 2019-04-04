@@ -61,6 +61,14 @@ public:
 	}
 
 	/*
+	*	Returns the number of pipelines.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetNumberOfPipelines() const NOEXCEPT
+	{
+		return _Pipelines.Size();
+	}
+
+	/*
 	*	Returns the pipelines.
 	*/
 	FORCE_INLINE NO_DISCARD const DynamicArray<Pipeline *RESTRICT>& GetPipelines() const NOEXCEPT

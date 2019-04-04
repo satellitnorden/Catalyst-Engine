@@ -19,9 +19,6 @@ public:
 	//The framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
 
-	//Defines whether or not to clear the framebuffers.
-	bool _ShouldClear;
-
 	//The number of attachments.
 	uint32 _NumberOfAttachments;
 

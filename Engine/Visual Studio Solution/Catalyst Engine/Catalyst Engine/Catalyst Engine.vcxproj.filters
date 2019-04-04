@@ -340,6 +340,9 @@
     <Filter Include="Rendering\Source\Native\Render Passes">
       <UniqueIdentifier>{c825100c-a9db-4d85-a36e-2924e0d33181}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Source\Native\Pipelines\Core">
+      <UniqueIdentifier>{d4a2d52c-b71f-405c-84cc-0af9de1f0dca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1294,6 +1297,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,9 +15,12 @@ class CommandBuffer final
 public:
 
 	/*
-	*	Default constructor, prohibited - must be constructed with the proper arguments.
+	*	Default constructor.
 	*/
-	CommandBuffer() NOEXCEPT = delete;
+	CommandBuffer() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Constructor taking the command buffer data.

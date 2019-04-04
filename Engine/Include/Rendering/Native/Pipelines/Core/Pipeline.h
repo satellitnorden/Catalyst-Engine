@@ -39,6 +39,11 @@ public:
 	}
 
 	/*
+	*	Post-initializes this pipeline.
+	*/
+	void PostInitialize() NOEXCEPT;
+
+	/*
 	*	Executes this pipeline.
 	*/
 	FORCE_INLINE void Execute() NOEXCEPT

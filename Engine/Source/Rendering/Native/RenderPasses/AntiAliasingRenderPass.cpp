@@ -4,6 +4,9 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingGraphicsPipeline.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(AntiAliasingRenderPass);
 
@@ -42,6 +45,15 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 	{
 		pipeline->Initialize();
 	}
+
+	//Initialize this render pass.
+	RenderingSystem::Instance->InitializeRenderPass(this);
+
+	//Post-initialize all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->PostInitialize();
+	}
 }
 
 /*
@@ -49,5 +61,9 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 */
 void AntiAliasingRenderPass::Execute() NOEXCEPT
 {
-
+	//Execute all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->Execute();
+	}
 }

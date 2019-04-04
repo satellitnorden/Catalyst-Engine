@@ -5,6 +5,9 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RenderOverrideGraphicsPipeline.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(RenderOverrideRenderPass);
 
@@ -43,6 +46,15 @@ void RenderOverrideRenderPass::Initialize() NOEXCEPT
 	{
 		pipeline->Initialize();
 	}
+
+	//Initialize this render pass.
+	RenderingSystem::Instance->InitializeRenderPass(this);
+
+	//Post-initialize all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->PostInitialize();
+	}
 }
 
 /*
@@ -50,6 +62,10 @@ void RenderOverrideRenderPass::Initialize() NOEXCEPT
 */
 void RenderOverrideRenderPass::Execute() NOEXCEPT
 {
-
+	//Execute all pipelines.
+	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	{
+		pipeline->Execute();
+	}
 }
 #endif
