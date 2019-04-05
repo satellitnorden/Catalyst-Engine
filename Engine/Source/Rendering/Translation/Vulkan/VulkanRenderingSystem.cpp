@@ -25,8 +25,8 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
-#include <Rendering/Translation/Vulkan/VulkanPipelineMainStageData.h>
-#include <Rendering/Translation/Vulkan/VulkanPipelineSubStageData.h>
+#include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
@@ -82,8 +82,8 @@ namespace VulkanRenderingSystemData
 	//Container for all shader modules.
 	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
 
-	//Container for all Vulkan render pass main stage data.
-	StaticArray<VulkanPipelineMainStageData, UNDERLYING(RenderPassStage::NumberOfRenderPassStages)> _VulkanPipelineMainStageData;
+	//Container for all Vulkan render pass data.
+	StaticArray<VulkanRenderPassData, UNDERLYING(RenderPassStage::NumberOfRenderPassStages)> _VulkanRenderPassData;
 
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;
@@ -110,9 +110,9 @@ namespace VulkanRenderingSystemLogic
 		{
 			vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
 
-			currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
-																VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-																VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent,
+			currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
+																VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+																VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._Extent,
 																VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 			for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
@@ -226,24 +226,24 @@ namespace VulkanRenderingSystemLogic
 		parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
 		parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
-		parameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
+		parameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
 
 		//Create the pipeline sub stage data.
-		VulkanPipelineSubStageData *const RESTRICT data{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(VulkanPipelineSubStageData))) VulkanPipelineSubStageData() };
+		VulkanGraphicsPipelineData *const RESTRICT data{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(VulkanGraphicsPipelineData))) VulkanGraphicsPipelineData() };
 		pipeline->SetData(data);
 
 		//Create the pipeline!
 		data->_Pipeline = VulkanInterface::Instance->CreateGraphicsPipeline(parameters);
 
 		//Update the Vulkan render pass data.
-		data->_Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
+		data->_Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
 
-		for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers)
+		for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers)
 		{
 			data->_Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 		}
 
-		data->_RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
+		data->_RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
 
 		//Add the command buffers.
 		const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
@@ -791,37 +791,37 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 	parameters._SubpassDependencies = nullptr;
 
 	//Create the render pass!
-	VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
+	VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
 
 	//Create the framebuffer(s).
 	if (uniqueAttachments.begin()->_First == RenderTarget::Screen)
 	{
 		//Create the framebuffers.
 		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.Reserve(swapchainImages.Size());
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.Reserve(swapchainImages.Size());
 
 		for (VkImageView swapchainImage : swapchainImages)
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get();
+			framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get();
 			framebufferParameters._AttachmentCount = 1;
 			framebufferParameters._Attachments = &swapchainImage;
 			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-			VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+			VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = true;
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = true;
 	}
 	
 	else
 	{
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get();
+		framebufferParameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get();
 
 		DynamicArray<VkImageView> attachments;
 		attachments.Reserve(uniqueAttachments.Size());
@@ -835,11 +835,11 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.Reserve(1);
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
-		VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = false;
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.Reserve(1);
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._NumberOfAttachments = 1;
+		VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen = false;
 	}
 }
 

@@ -8,18 +8,18 @@
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
 
-class VulkanPipelineSubStageData final
+class VulkanGraphicsPipelineData final
 {
 
 public:
 
-	//The framebuffer associated with the render pass.
+	//The framebuffer associated with the graphics pipeline.
 	DynamicArray<VkFramebuffer> _Framebuffers;
 
-	//The pipeline associated with the render pass.
+	//The pipeline associated with the graphics pipeline.
 	VulkanGraphicsPipeline *RESTRICT _Pipeline;
 
-	//The render pass associated with the render pass.
+	//The render pass associated with the graphics pipeline.
 	VkRenderPass _RenderPass;
 
 };

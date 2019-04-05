@@ -3,12 +3,13 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 
-class VulkanPipelineMainStageData final
+class VulkanRenderPassData final
 {
 
 public:
