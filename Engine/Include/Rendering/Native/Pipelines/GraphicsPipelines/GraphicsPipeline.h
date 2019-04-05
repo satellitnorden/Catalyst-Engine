@@ -9,9 +9,6 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-//Forward declarations.
-class CommandBuffer;
-
 class GraphicsPipeline : public Pipeline
 {
 
@@ -188,29 +185,9 @@ public:
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
 
 	/*
-	*	Sets the number of command buffers.
-	*/
-	void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT { _CommandBuffers.Reserve(numberOfCommandBuffers); }
-
-	/*
-	*	Adds a command buffer.
-	*/
-	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { _CommandBuffers.EmplaceFast(newCommandBuffer); }
-
-	/*
 	*	Returns whether or not this pipeline should be included in the final render.
 	*/
 	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
-
-	/*
-	*	Returns the current command buffer, non-const.
-	*/
-	RESTRICTED const CommandBuffer *const RESTRICT GetCurrentCommandBuffer() const NOEXCEPT;
-
-	/*
-	*	Returns the current command buffer, non-const.
-	*/
-	RESTRICTED CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
 
 	/*
 	*	Sets the main stage.
@@ -497,8 +474,5 @@ private:
 
 	//Denotes whether or not this pipeline should be included in the final render.
 	bool _IncludeInRender;
-
-	//The command buffers.
-	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
 
 };

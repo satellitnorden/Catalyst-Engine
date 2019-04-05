@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -9,6 +10,9 @@
 //Type alises.
 using InitializationFunction = void(*)();
 using ExecutionFunction = void(*)();
+
+//Forward declarations.
+class CommandBuffer;
 
 class Pipeline
 {
@@ -51,6 +55,35 @@ public:
 		_ExecutionFunction();
 	}
 
+	/*
+	*	Sets the number of command buffers.
+	*/
+	FORCE_INLINE void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT
+	{
+		_CommandBuffers.Reserve(numberOfCommandBuffers);
+	}
+
+	/*
+	*	Adds a command buffer.
+	*/
+	FORCE_INLINE void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT
+	{
+		_CommandBuffers.EmplaceFast(newCommandBuffer);
+	}
+
+	/*
+	*	Returns the current command buffer, const.
+	*/
+	RESTRICTED NO_DISCARD const CommandBuffer *const RESTRICT GetCurrentCommandBuffer() const NOEXCEPT
+	{
+		return const_cast<Pipeline *const RESTRICT>(this)->GetCurrentCommandBuffer();
+	}
+
+	/*
+	*	Returns the current command buffer, non-const.
+	*/
+	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
+
 protected:
 
 	/*
@@ -87,5 +120,8 @@ private:
 
 	//The execution function.
 	ExecutionFunction _ExecutionFunction;
+
+	//The command buffers.
+	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
 
 };

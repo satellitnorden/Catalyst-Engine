@@ -11,3 +11,12 @@ void Pipeline::PostInitialize() NOEXCEPT
 {
 	RenderingSystem::Instance->InitializePipeline(this);
 }
+
+
+/*
+*	Returns the current command buffer, non-const.
+*/
+RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT Pipeline::GetCurrentCommandBuffer() NOEXCEPT
+{
+	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+}

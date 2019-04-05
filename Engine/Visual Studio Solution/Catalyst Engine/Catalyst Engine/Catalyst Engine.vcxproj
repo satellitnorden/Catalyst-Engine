@@ -200,6 +200,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AntiAliasingRenderPass.h" />
@@ -339,6 +340,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderOverrideRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
