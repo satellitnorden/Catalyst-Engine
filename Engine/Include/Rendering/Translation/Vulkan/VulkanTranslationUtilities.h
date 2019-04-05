@@ -17,40 +17,6 @@ class VulkanTranslationUtilities
 public:
 
 	/*
-	*	Given a main stage and a sub stage, return the corresponding sub stage index.
-	*/
-	static uint8 GetSubStageIndex(const RenderPassStage main, const PipelineSubStage sub) NOEXCEPT
-	{
-		switch (main)
-		{
-			case RenderPassStage::ToneMapping:
-			{
-				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::ToneMapping);
-			}
-
-			case RenderPassStage::AntiAliasing:
-			{
-				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::AntiAliasing);
-			}
-
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-			case RenderPassStage::RenderOverride:
-			{
-				return UNDERLYING(sub) - UNDERLYING(PipelineSubStage::RenderOverride);
-			}
-#endif
-
-			default:
-			{
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-				ASSERT(false, "Unhandled case.");
-#endif
-				return 0;
-			}
-		}
-	}
-
-	/*
 	*	Given an address mode, return the corresponding Vulkan address mode.
 	*/
 	static VkSamplerAddressMode GetVulkanAddressMode(const AddressMode addressMode) NOEXCEPT

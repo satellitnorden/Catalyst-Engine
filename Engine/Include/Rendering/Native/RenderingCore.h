@@ -51,6 +51,7 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
 *	Enumeration covering all render pass stages.
+*	The order of the stages define in what order they will execute in.
 */
 enum class RenderPassStage : uint8
 {
@@ -61,26 +62,6 @@ enum class RenderPassStage : uint8
 	AntiAliasing,
 
 	NumberOfRenderPassStages
-};
-
-/*
-*	Enumeration covering all pipeline sub stages.
-*	The order of the pipeline sub stage defines the order that the render passes will be rendered in.
-*/
-enum class PipelineSubStage : uint8
-{
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	//Render override main stage.
-	RenderOverride,
-#endif
-
-	//Tone mapping main stage.
-	ToneMapping,
-
-	//Anti-aliasing main stage.
-	AntiAliasing,
-
-	NumberOfPipelineSubStages
 };
 
 //Enumeration covering all physical flags.

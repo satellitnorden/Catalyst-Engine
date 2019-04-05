@@ -38,11 +38,6 @@ public:
 	RenderPassStage GetMainStage() const NOEXCEPT { return _MainStage; }
 
 	/*
-	*	Returns the sub stage.
-	*/
-	PipelineSubStage GetSubStage() const NOEXCEPT { return _SubStage; }
-
-	/*
 	*	Returns the vertex shader.
 	*/
 	Shader GetVertexShader() const NOEXCEPT { return _VertexShader; }
@@ -221,11 +216,6 @@ public:
 	*	Sets the main stage.
 	*/
 	void SetMainStage(const RenderPassStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
-
-	/*
-	*	Sets the sub stage.
-	*/
-	void SetSubStage(const PipelineSubStage newSubStage) NOEXCEPT { _SubStage = newSubStage; }
 
 	/*
 	*	Sets the vertex shader.
@@ -414,9 +404,6 @@ private:
 
 	//The main stage.
 	RenderPassStage _MainStage;
-
-	//The sub stage.
-	PipelineSubStage _SubStage;
 
 	//The vertex shader.
 	Shader _VertexShader;

@@ -45,9 +45,6 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Set the main stage.
 	SetMainStage(RenderPassStage::AntiAliasing);
 
-	//Set the sub stage.
-	SetSubStage(PipelineSubStage::AntiAliasing);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);

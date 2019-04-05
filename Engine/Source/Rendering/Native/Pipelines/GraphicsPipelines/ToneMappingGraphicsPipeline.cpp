@@ -42,9 +42,6 @@ void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Set the main stage.
 	SetMainStage(RenderPassStage::ToneMapping);
 
-	//Set the sub stage.
-	SetSubStage(PipelineSubStage::ToneMapping);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);

@@ -85,9 +85,6 @@ namespace VulkanRenderingSystemData
 	//Container for all Vulkan render pass main stage data.
 	StaticArray<VulkanPipelineMainStageData, UNDERLYING(RenderPassStage::NumberOfRenderPassStages)> _VulkanPipelineMainStageData;
 
-	//Container for all Vulkan render pass data.
-	StaticArray<VulkanPipelineSubStageData, UNDERLYING(PipelineSubStage::NumberOfPipelineSubStages)> _VulkanPipelineSubStageData;
-
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;
 
@@ -202,7 +199,7 @@ namespace VulkanRenderingSystemLogic
 		parameters._StencilCompareMask = pipeline->GetStencilCompareMask();
 		parameters._StencilWriteMask = pipeline->GetStencilWriteMask();
 		parameters._StencilReferenceMask = pipeline->GetStencilReferenceMask();
-		parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(pipeline->GetMainStage(), pipeline->GetSubStage());
+		parameters._Subpass = 0;
 
 		parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(pipeline->GetTopology());
 
@@ -231,20 +228,22 @@ namespace VulkanRenderingSystemLogic
 
 		parameters._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
 
+		//Create the pipeline sub stage data.
+		VulkanPipelineSubStageData *const RESTRICT data{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(VulkanPipelineSubStageData))) VulkanPipelineSubStageData() };
+		pipeline->SetData(data);
+
 		//Create the pipeline!
-		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreateGraphicsPipeline(parameters);
+		data->_Pipeline = VulkanInterface::Instance->CreateGraphicsPipeline(parameters);
 
 		//Update the Vulkan render pass data.
-		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
+		data->_Framebuffers.Reserve(VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers.Size());
 
 		for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._FrameBuffers)
 		{
-			VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+			data->_Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 		}
 
-		VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]._RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
-
-		pipeline->SetData(&VulkanRenderingSystemData::_VulkanPipelineSubStageData[UNDERLYING(pipeline->GetSubStage())]);
+		data->_RenderPass = VulkanRenderingSystemData::_VulkanPipelineMainStageData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
 
 		//Add the command buffers.
 		const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };

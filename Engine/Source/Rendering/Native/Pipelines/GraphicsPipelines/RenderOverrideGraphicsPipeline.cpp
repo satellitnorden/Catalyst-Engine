@@ -55,9 +55,6 @@ void RenderOverrideGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Set the main stage.
 	SetMainStage(RenderPassStage::RenderOverride);
 
-	//Set the sub stage.
-	SetSubStage(PipelineSubStage::RenderOverride);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
