@@ -229,7 +229,7 @@ namespace VulkanRenderingSystemLogic
 		parameters._RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._RenderPass;
 
 		//Create the pipeline sub stage data.
-		VulkanGraphicsPipelineData *const RESTRICT data{ new (MemoryUtilities::GlobalLinearAllocator()->Allocate(sizeof(VulkanGraphicsPipelineData))) VulkanGraphicsPipelineData() };
+		VulkanGraphicsPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanGraphicsPipelineData))) VulkanGraphicsPipelineData() };
 		pipeline->SetData(data);
 
 		//Create the pipeline!
@@ -254,9 +254,9 @@ namespace VulkanRenderingSystemLogic
 
 		for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
 		{
-			VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
+			VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
 			pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-			pipeline->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
+			pipeline->AddCommandBuffer(new (Memory::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
 		}
 	}
 

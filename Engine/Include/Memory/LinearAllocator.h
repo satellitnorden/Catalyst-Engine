@@ -15,7 +15,7 @@ public:
 	LinearAllocator() NOEXCEPT
 	{
 		//Allocate the memory.
-		_Memory = MemoryUtilities::AllocateMemory(SIZE);
+		_Memory = Memory::AllocateMemory(SIZE);
 	}
 
 	/*
@@ -24,7 +24,7 @@ public:
 	~LinearAllocator() NOEXCEPT
 	{
 		//Free the memory.
-		MemoryUtilities::FreeMemory(_Memory);
+		Memory::FreeMemory(_Memory);
 	}
 
 	/*

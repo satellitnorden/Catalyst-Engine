@@ -49,14 +49,14 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 		const uint64 resourceFileSize{ resourceFile.Size() };
 
 		//Read the data in the resource file.
-		void *RESTRICT resourceFileData = MemoryUtilities::AllocateMemory(resourceFileSize);
+		void *RESTRICT resourceFileData = Memory::AllocateMemory(resourceFileSize);
 		resourceFile.Read(resourceFileData, resourceFileSize);
 
 		//Write the resource file data to the resource collection file.
 		file.Write(resourceFileData, resourceFileSize);
 
 		//Free the resource file data.
-		MemoryUtilities::FreeMemory(resourceFileData);
+		Memory::FreeMemory(resourceFileData);
 
 		//Close the resource file.
 		resourceFile.Close();
@@ -163,7 +163,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint32>(width), static_cast<uint32>(height) };
 
 	//Copy the data into the cpu texture.
-	MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
+	Memory::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 	//Create the diffuse output textures.
 	StaticArray<Texture2D<Vector4<float>>, 6> outputTextures
@@ -274,12 +274,12 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 				//Else, the image data should be resized.
 				else
 				{
-					byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize)) };
+					byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize)) };
 					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
 					file.Write(downsampledData, textureSize);
 
-					MemoryUtilities::FreeMemory(downsampledData);
+					Memory::FreeMemory(downsampledData);
 				}
 			}
 
@@ -330,10 +330,10 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 
 				else
 				{
-					byte *RESTRICT downsampledDataR{ dataR ? static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataG{ dataG ? static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataB{ dataB ? static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataA{ dataA ? static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataR{ dataR ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataG{ dataG ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataB{ dataB ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataA{ dataA ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
 
 					if (dataR) stbir_resize_uint8(dataR, width, height, 0, downsampledDataR, uWidth >> i, uHeight >> i, 0, 4);
 					if (dataG) stbir_resize_uint8(dataG, width, height, 0, downsampledDataG, uWidth >> i, uHeight >> i, 0, 4);
@@ -348,10 +348,10 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 						file.Write(downsampledDataA ? &downsampledDataA[j * 4] : &DEFAULT_A, sizeof(byte));
 					}
 
-					MemoryUtilities::FreeMemory(downsampledDataR);
-					MemoryUtilities::FreeMemory(downsampledDataG);
-					MemoryUtilities::FreeMemory(downsampledDataB);
-					MemoryUtilities::FreeMemory(downsampledDataA);
+					Memory::FreeMemory(downsampledDataR);
+					Memory::FreeMemory(downsampledDataG);
+					Memory::FreeMemory(downsampledDataB);
+					Memory::FreeMemory(downsampledDataA);
 				}
 			}
 

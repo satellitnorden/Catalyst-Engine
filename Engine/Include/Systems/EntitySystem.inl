@@ -47,7 +47,7 @@ RESTRICTED EntityClass *const RESTRICT EntityCreationSystem::CreateChildEntity(E
 template <typename Type>
 RESTRICTED Type* const RESTRICT EntityCreationSystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ MemoryUtilities::GlobalPoolAllocate<sizeof(Type)>() };
+	void* const RESTRICT memory{ Memory::GlobalPoolAllocate<sizeof(Type)>() };
 
 	new (memory) Type;
 
@@ -60,5 +60,5 @@ RESTRICTED Type* const RESTRICT EntityCreationSystem::CreateInitializationData()
 template <typename Type>
 void EntityCreationSystem::DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
-	MemoryUtilities::GlobalPoolDeAllocate<sizeof(Type)>(data);
+	Memory::GlobalPoolDeAllocate<sizeof(Type)>(data);
 }

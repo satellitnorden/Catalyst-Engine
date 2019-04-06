@@ -8,13 +8,13 @@
 #include <Multithreading/ScopedWriteLock.h>
 #include <Multithreading/Spinlock.h>
 
-//Memory utilities constants.
-namespace MemoryUtilitiesConstants
+//Memory constants.
+namespace MemoryConstants
 {
 	constexpr uint64 GLOBAL_LINEAR_ALLOCATOR_SIZE{ 16'384 };
 }
 
-class MemoryUtilities
+class Memory
 {
 
 public:
@@ -74,9 +74,9 @@ public:
 	/*
 	*	Returns the global linear allocator.
 	*/
-	RESTRICTED static NO_DISCARD LinearAllocator<MemoryUtilitiesConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
+	RESTRICTED static NO_DISCARD LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
 	{
-		static LinearAllocator<MemoryUtilitiesConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> allocator;
+		static LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> allocator;
 
 		return &allocator;
 	}

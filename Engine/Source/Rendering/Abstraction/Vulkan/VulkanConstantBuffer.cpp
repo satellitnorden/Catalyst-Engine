@@ -59,7 +59,7 @@ void VulkanConstantBuffer::UploadData(const void *const RESTRICT *const RESTRICT
 
 	for (uint32 i = 0; i < dataChunks; ++i)
 	{
-		MemoryUtilities::CopyMemory(static_cast<void*>(static_cast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
+		Memory::CopyMemory(static_cast<void*>(static_cast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
 
 		currentOffset = dataSizes[i];
 	}

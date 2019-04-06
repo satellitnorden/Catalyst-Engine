@@ -363,9 +363,6 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h">
-      <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
@@ -1052,6 +1049,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Memory\Memory.h">
+      <Filter>Memory\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

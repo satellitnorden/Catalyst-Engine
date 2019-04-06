@@ -85,7 +85,6 @@
     <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\CollisionInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
@@ -130,6 +129,7 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h" />
+    <ClInclude Include="..\..\..\Include\Memory\Memory.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />

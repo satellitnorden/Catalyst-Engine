@@ -38,7 +38,7 @@ void VulkanUniformBuffer::UploadData(const void *RESTRICT newData) const NOEXCEP
 	void *mappedMemory;
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, 0, _UniformBufferSize, 0, &mappedMemory));
-	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<uint64>(_UniformBufferSize));
+	Memory::CopyMemory(mappedMemory, newData, static_cast<uint64>(_UniformBufferSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory);
 }
 #endif

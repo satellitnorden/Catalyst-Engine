@@ -15,7 +15,7 @@ public:
 	PoolAllocator() NOEXCEPT
 	{
 		//Allocate a new node that will be both the root node.
-		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(PoolAllocatorNode)));
+		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::AllocateMemory(sizeof(PoolAllocatorNode)));
 
 		//Reset the new node.
 		_Root->_Active = static_cast<uint64>(0);
@@ -34,7 +34,7 @@ public:
 		{
 			PoolAllocatorNode *RESTRICT previous{ next };
 			next = next->_Next;
-			MemoryUtilities::FreeMemory(previous);
+			Memory::FreeMemory(previous);
 		} while (next);
 	}
 
@@ -64,7 +64,7 @@ public:
 
 			else
 			{
-				current->_Next = static_cast<PoolAllocatorNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(PoolAllocatorNode)));
+				current->_Next = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::AllocateMemory(sizeof(PoolAllocatorNode)));
 				current->_Next->_Active = 0;
 				current->_Next->_Next = nullptr;
 

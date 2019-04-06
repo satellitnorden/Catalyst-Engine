@@ -30,7 +30,7 @@ public:
 		ReserveConstruct(initializerList.size());
 
 		//Copy all elements of the initializer list to this dynamic array.
-		MemoryUtilities::CopyMemory(_Array, initializerList.begin(), sizeof(Type) * _Capacity);
+		Memory::CopyMemory(_Array, initializerList.begin(), sizeof(Type) * _Capacity);
 
 		//Set the size equal to the capacity.
 		_Size = _Capacity;
@@ -44,7 +44,7 @@ public:
 		ReserveConstruct(otherDynamicArray._Capacity);
 		_Size = otherDynamicArray._Size;
 
-		MemoryUtilities::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
+		Memory::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
 	}
 
 	/*
@@ -78,7 +78,7 @@ public:
 		ReserveConstruct(otherDynamicArray._Capacity);
 		_Size = otherDynamicArray._Size;
 
-		MemoryUtilities::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
+		Memory::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
 	}
 
 	/*
@@ -241,7 +241,10 @@ public:
 	/*
 	*	Returns the last index if this dynamic array.
 	*/
-	FORCE_INLINE uint64 LastIndex() const NOEXCEPT { return _Size - 1; }
+	FORCE_INLINE uint64 LastIndex() const NOEXCEPT
+	{
+		return _Size - 1;
+	}
 
 	/*
 	*	Clears this dynamic array of elements without calling the destructor on the underlying elements.
@@ -332,13 +335,13 @@ public:
 	FORCE_INLINE void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(_Array);
+		Memory::FreeMemory(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -351,13 +354,13 @@ public:
 	FORCE_INLINE void UpsizeFast(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(_Array);
+		Memory::FreeMemory(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -371,10 +374,10 @@ public:
 	FORCE_INLINE void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
 
 		//Default construct the remaining objects.
 		for (uint64 i = _Size; i < newCapacity; ++i)
@@ -383,7 +386,7 @@ public:
 		}
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(_Array);
+		Memory::FreeMemory(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -416,7 +419,7 @@ private:
 			}
 
 			//Free the memory used by the array.
-			MemoryUtilities::FreeMemory(_Array);
+			Memory::FreeMemory(_Array);
 
 			//Set it to nullptr.
 			_Array = nullptr;
@@ -429,7 +432,7 @@ private:
 	FORCE_INLINE void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		_Array = static_cast<Type *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity));
+		_Array = static_cast<Type *RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity));
 
 		//Update the capacity.
 		_Capacity = newCapacity;

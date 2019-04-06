@@ -17,7 +17,7 @@ public:
 	void* allocate(size_t size, const char* typeName, const char* filename, int line) override
 	{
 		//PhysX memory needs to be 16-byte aligned. (:
-		return MemoryUtilities::AllocateAlignedMemory(16, size);
+		return Memory::AllocateAlignedMemory(16, size);
 	}
 
 	/*
@@ -25,7 +25,7 @@ public:
 	*/
 	void deallocate(void* ptr) override
 	{
-		MemoryUtilities::FreeMemory(ptr);
+		Memory::FreeMemory(ptr);
 	}
 
 };

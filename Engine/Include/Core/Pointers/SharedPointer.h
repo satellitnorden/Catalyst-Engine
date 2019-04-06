@@ -42,7 +42,7 @@ public:
 	SharedPointer(Type *const RESTRICT newPointer) RESTRICT
 		:
 		_Pointer(newPointer),
-		_ReferenceCount(new (MemoryUtilities::GlobalPoolAllocate<sizeof(int8)>()) int8)
+		_ReferenceCount(new (Memory::GlobalPoolAllocate<sizeof(int8)>()) int8)
 	{
 		++(*_ReferenceCount);
 	}
@@ -55,7 +55,7 @@ public:
 		//Decrement the reference count and delete the pointer if it's reached 0.
 		if (--(*_ReferenceCount) == 0)
 		{
-			MemoryUtilities::GlobalPoolDeAllocate<sizeof(int8)>(_ReferenceCount);
+			Memory::GlobalPoolDeAllocate<sizeof(int8)>(_ReferenceCount);
 			delete _Pointer;
 		}
 	}

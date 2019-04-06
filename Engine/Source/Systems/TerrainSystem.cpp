@@ -524,7 +524,7 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 		_Update._CombineNodeUpdate._PatchInformationIdentifiers[i] = node->_ChildNodes[i]._Identifier;
 	}
 
-	MemoryUtilities::FreeMemory(node->_ChildNodes);
+	Memory::FreeMemory(node->_ChildNodes);
 
 	node->_ChildNodes = nullptr;
 
@@ -562,7 +562,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 	};
 
 	node->_Subdivided = true;
-	node->_ChildNodes = static_cast<TerrainQuadTreeNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
+	node->_ChildNodes = static_cast<TerrainQuadTreeNode *const RESTRICT>(Memory::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
 
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{

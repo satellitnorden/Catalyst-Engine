@@ -23,8 +23,8 @@
 //Platform.
 #include <Platform/General/Platform.h>
 
-//Utilities.
-#include <Core/Utilities/MemoryUtilities.h>
+//Memory.
+#include <Memory/Memory.h>
 
 //Enumeration covering all update phases.
 enum class UpdatePhase : uint8
