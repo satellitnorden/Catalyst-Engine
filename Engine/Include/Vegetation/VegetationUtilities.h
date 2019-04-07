@@ -172,7 +172,7 @@ namespace VegetationUtilities
 	void SortTransformations(	const DynamicArray<Matrix4> &transformations,
 								const TYPE &properties,
 								StaticArray<DynamicArray<Matrix4>, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT levelOfDetailTransformations,
-								StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT buffers,
+								StaticArray<BufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT buffers,
 								StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Cache the perceiver position.
@@ -219,7 +219,7 @@ namespace VegetationUtilities
 	*/
 	void SortTreeVegetationTransformations(	const TreeVegetationTypeProperties &properties,
 											DynamicArray<Matrix4> *const RESTRICT transformations,
-											ConstantBufferHandle *const RESTRICT transformationsBuffer,
+											BufferHandle *const RESTRICT transformationsBuffer,
 											StaticArray<uint32, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT numberOfTransformations,
 											StaticArray<uint64, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> *const RESTRICT transformationsOffsets) NOEXCEPT
 	{

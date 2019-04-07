@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/Map.h>
 #include <Core/Containers/StaticArray.h>
@@ -15,6 +16,7 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -130,19 +132,34 @@ public:
 	}
 
 	/*
+	*	Creates a bottom level acceleration structure.
+	*/
+	void CreateBottomLevelAccelerationStructure(const BufferHandle &buffer,
+												const uint32 verticesOffset,
+												const uint32 numberOfVertices,
+												const uint32 indicesOffset,
+												const uint32 numberOfIndices,
+												AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Creates a top level acceleration structure.
+	*/
+	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
 	*	Creates a buffer.
 	*/
-	void CreateBuffer(const uint64 size, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memoryProperties, BufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Uploads data to a buffer.
 	*/
-	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Destroys a buffer.
 	*/
-	void DestroyBuffer(ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.
@@ -179,7 +196,7 @@ public:
 	/*
 	*	Binds a uniform buffer to a render data table.
 	*/
-	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, UniformBufferHandle uniformBuffer) const NOEXCEPT;
+	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT;
 
 	/*
 	*	Destroys a render data table.
@@ -210,21 +227,6 @@ public:
 	*	Creates a texture cube.
 	*/
 	void CreateTextureCube(const float *const RESTRICT data, const Resolution resolution, TextureCubeHandle *const RESTRICT) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a uniform buffer.
-	*/
-	void CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Uploads data to a uniform buffer.
-	*/
-	void UploadDataToUniformBuffer(const void *const RESTRICT data, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Destroys a uniform buffer.
-	*/
-	void DestroyUniformBuffer(UniformBufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Initializes a render pass

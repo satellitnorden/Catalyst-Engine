@@ -38,7 +38,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(AntiAliasingGraphicsPipeline::Instance);
+	AddPipeline(AntiAliasingGraphicsPipeline::Instance.Get());
 
 	//Initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

@@ -1,44 +1,44 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/ToneMappingRenderPass.h>
+#include <Rendering/Native/RenderPasses/WorldRayTracingRenderPass.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/WorldRayTracingPipeline.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ToneMappingRenderPass);
+DEFINE_SINGLETON(WorldRayTracingRenderPass);
 
 /*
 *	Default constructor.
 */
-ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
+WorldRayTracingRenderPass::WorldRayTracingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::ToneMapping);
+	SetStage(RenderPassStage::WorldRayTracing);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		ToneMappingRenderPass::Instance->Initialize();
+		WorldRayTracingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		ToneMappingRenderPass::Instance->Execute();
+		WorldRayTracingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void ToneMappingRenderPass::Initialize() NOEXCEPT
+void WorldRayTracingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(ToneMappingGraphicsPipeline::Instance.Get());
+	AddPipeline(WorldRayTracingPipeline::Instance.Get());
 
 	//Initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,7 +59,7 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void ToneMappingRenderPass::Execute() NOEXCEPT
+void WorldRayTracingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

@@ -18,6 +18,60 @@ class VulkanUtilities
 public:
 
 	/*
+	*	Builds an acceleration structure.
+	*/
+	static void BuildAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, const VkAccelerationStructureNV accelerationStructure, const VkBuffer scratchBuffer) NOEXCEPT
+	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+
+		//Create a command buffer.
+		VulkanCommandBuffer commandBuffer;
+		commandPool->AllocatePrimaryCommandBuffer(commandBuffer);
+
+		//Begin the command buffer.
+		commandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+		//Issue the build command!
+		VkAccelerationStructureInfoNV accelerationStructureInfo;
+
+		accelerationStructureInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
+		accelerationStructureInfo.pNext = nullptr;
+		accelerationStructureInfo.type = type;
+		accelerationStructureInfo.flags = 0;
+		accelerationStructureInfo.instanceCount = instanceCount;
+		accelerationStructureInfo.geometryCount = static_cast<uint32>(geometry.Size());
+		accelerationStructureInfo.pGeometries = geometry.Data();
+
+		vkCmdBuildAccelerationStructureNV(	commandBuffer.Get(),
+											&accelerationStructureInfo,
+											instanceData,
+											0,
+											VK_FALSE,
+											accelerationStructure,
+											VK_NULL_HANDLE,
+											scratchBuffer,
+											0);
+
+		//End the command buffer.
+		commandBuffer.End();
+
+		//Submit the command buffer to the transfer queue.
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetComputeQueue()->Submit(commandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+
+		//Wait for the command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
+
+		//Free the copy command buffer.
+		commandPool->FreeCommandBuffer(commandBuffer);
+	}
+
+	/*
 	*	Copies a Vulkan buffer to another Vulkan buffer.
 	*/
 	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) NOEXCEPT
@@ -221,6 +275,110 @@ public:
 	}
 
 	/*
+	*	Creates an acceleration structure result buffer.
+	*/
+	static void AllocateAccelerationStructureMemory(const VkAccelerationStructureNV accelerationStructure, VkDeviceMemory *const RESTRICT vulkanDeviceMemory) NOEXCEPT
+	{
+		//Query the memory requirements.
+		VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
+
+		accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
+		accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
+		accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
+		accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV;
+
+		VkMemoryRequirements2 memoryRequirements;
+		vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements);
+
+		//Iterate over all memory types and find the proper memory type index.
+		uint32 memoryTypeIndex{ FindMemoryTypeIndex(memoryRequirements.memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
+
+		//Create the memory allocate info.
+		VkMemoryAllocateInfo memoryAllocateInfo;
+		memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		memoryAllocateInfo.pNext = nullptr;
+		memoryAllocateInfo.allocationSize = memoryRequirements.memoryRequirements.size;
+		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
+
+		//Allocate the memory!
+		VULKAN_ERROR_CHECK(vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, vulkanDeviceMemory));
+	}
+
+	/*
+	*	Creates an acceleration structure scratch buffer.
+	*/
+	static void CreateAccelerationStructureScratchBuffer(const VkAccelerationStructureNV accelerationStructure, const bool update, VkBuffer *const RESTRICT vulkanBuffer, VkDeviceMemory *const RESTRICT vulkanDeviceMemory) NOEXCEPT
+	{
+		//Query the memory requirements.
+		VkDeviceSize memorySizeRequirement{ 0 };
+
+		if (update)
+		{
+			VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
+
+			accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
+			accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
+			accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
+			accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV;
+
+			VkMemoryRequirements2 memoryRequirements2;
+			vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements2);
+
+			memorySizeRequirement = memoryRequirements2.memoryRequirements.size;
+		}
+
+		else
+		{
+			VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
+
+			accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
+			accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
+			accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
+			accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;
+
+			VkMemoryRequirements2 memoryRequirements2;
+			vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements2);
+
+			memorySizeRequirement = memoryRequirements2.memoryRequirements.size;
+		}
+
+		//Create the buffer create info.
+		VkBufferCreateInfo bufferCreateInfo;
+
+		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferCreateInfo.pNext = nullptr;
+		bufferCreateInfo.flags = 0;
+		bufferCreateInfo.size = memorySizeRequirement;
+		bufferCreateInfo.usage = VK_BUFFER_USAGE_RAY_TRACING_BIT_NV;
+		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		bufferCreateInfo.queueFamilyIndexCount = 0;
+		bufferCreateInfo.pQueueFamilyIndices = nullptr;
+
+		//Create the Vulkan buffer!
+		VULKAN_ERROR_CHECK(vkCreateBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &bufferCreateInfo, nullptr, vulkanBuffer));
+
+		//Get the memory requirements.
+		VkMemoryRequirements memoryRequirements;
+		vkGetBufferMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), *vulkanBuffer, &memoryRequirements);
+
+		//Iterate over all memory types and find the proper memory type index.
+		uint32 memoryTypeIndex{ FindMemoryTypeIndex(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
+
+		//Create the memory allocate info.
+		VkMemoryAllocateInfo memoryAllocateInfo;
+		memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		memoryAllocateInfo.pNext = nullptr;
+		memoryAllocateInfo.allocationSize = memoryRequirements.size;
+		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
+
+		//Allocate the memory!
+		VULKAN_ERROR_CHECK(vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, vulkanDeviceMemory));
+
+		//Bind the buffer to the memory.
+		VULKAN_ERROR_CHECK(vkBindBufferMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), *vulkanBuffer, *vulkanDeviceMemory, 0));
+	}
+
+	/*
 	*	Creates an attachment description.
 	*/
 	static constexpr VkAttachmentDescription CreateAttachmentDescription(	const VkFormat format,
@@ -339,10 +497,10 @@ public:
 		vkGetBufferMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, &memoryRequirements);
 
 		//Find the memory type index.
-		const VkPhysicalDeviceMemoryProperties &physicalDeviceMemoryProperties = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceMemoryProperties();
+		const VkPhysicalDeviceMemoryProperties &physicalDeviceMemoryProperties{ VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceMemoryProperties() };
 
 		//Iterate over all memory types and find the proper memory type index.
-		uint32 memoryTypeIndex = 0;
+		uint32 memoryTypeIndex{ 0 };
 
 		for (uint32 i = 0; i < physicalDeviceMemoryProperties.memoryTypeCount; ++i)
 		{
@@ -488,6 +646,24 @@ public:
 
 		//Create the sampler!
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
+	}
+
+	/*
+	*	Finds a memory type index.
+	*/
+	static uint32 FindMemoryTypeIndex(const uint32 memoryTypeBits, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT
+	{
+		const VkPhysicalDeviceMemoryProperties &physicalDeviceMemoryProperties{ VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceMemoryProperties() };
+
+		for (uint32 i = 0; i < physicalDeviceMemoryProperties.memoryTypeCount; ++i)
+		{
+			if ((memoryTypeBits & (1 << i)) && ((physicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & memoryProperties) == memoryProperties))
+			{
+				return i;
+			}
+		}
+
+		return 0;
 	}
 
 	/*

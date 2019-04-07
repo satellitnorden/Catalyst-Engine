@@ -7,9 +7,10 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/Vulkan2DTexture.h>
+#include <Rendering/Abstraction/Vulkan/VulkanAccelerationStructure.h>
+#include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
-#include <Rendering/Abstraction/Vulkan/VulkanConstantBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCubeMapTexture.h>
 #include <Rendering/Abstraction/Vulkan/VulkanDepthBuffer.h>
@@ -34,7 +35,6 @@
 #include <Rendering/Abstraction/Vulkan/VulkanStorageBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
-#include <Rendering/Abstraction/Vulkan/VulkanUniformBuffer.h>
 
 class VulkanInterface final
 {
@@ -100,27 +100,42 @@ public:
 	/*
 	*	Returns the compute queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute); }
+	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT
+	{
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute);
+	}
 
 	/*
 	*	Returns the graphics queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics); }
+	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT
+	{
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics);
+	}
 
 	/*
 	*	Returns the present queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present); }
+	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT
+	{
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present);
+	}
 
 	/*
 	*	Returns the transfer queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer); }
+	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT
+	{
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer);
+	}
 
 	/*
 	*	Returns the descriptor pool.
 	*/
-	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return _VulkanDescriptorPool; }
+	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT
+	{
+		return _VulkanDescriptorPool;
+	}
 
 	/*
 	*	Creates and returns a 2D texture.
@@ -133,6 +148,26 @@ public:
 	void Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT;
 
 	/*
+	*	Creates an acceleration structure.
+	*/
+	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT;
+
+	/*
+	*	Creates and returns a buffer.
+	*/
+	RESTRICTED VulkanBuffer *const RESTRICT CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT;
+
+	/*
+	*	Destroys a buffer.
+	*/
+	void DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEPT;
+
+	/*
+	*	Creates and returns a compute command pool.
+	*/
+	RESTRICTED VulkanCommandPool *const RESTRICT CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+
+	/*
 	*	Creates and returns a graphics command pool.
 	*/
 	RESTRICTED VulkanCommandPool *const RESTRICT CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
@@ -141,16 +176,6 @@ public:
 	*	Creates and returns a transfer command pool.
 	*/
 	RESTRICTED VulkanCommandPool *const RESTRICT CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
-
-	/*
-	*	Creates and returns a buffer.
-	*/
-	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateBuffer(const VkDeviceSize size) NOEXCEPT;
-
-	/*
-	*	Destroys a constant buffer.
-	*/
-	void DestroyConstantBuffer(VulkanConstantBuffer *const RESTRICT buffer) NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
@@ -227,16 +252,6 @@ public:
 	*/
 	RESTRICTED VulkanStorageBuffer *const RESTRICT CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT;
 
-	/*
-	*	Creates and returns a uniform buffer.
-	*/
-	RESTRICTED VulkanUniformBuffer *const RESTRICT CreateUniformBuffer(const uint64 newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT;
-
-	/*
-	*	Destroys a uniform buffer.
-	*/
-	void DestroyUniformBuffer(VulkanUniformBuffer *const RESTRICT uniformBuffer) NOEXCEPT;
-
 private:
 
 	//The Vulkan instance.
@@ -260,14 +275,17 @@ private:
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> _Vulkan2DTextures;
 
+	//Container for all Vulkan acceleration structures.
+	DynamicArray<VulkanAccelerationStructure *RESTRICT> _VulkanAccelerationStructures;
+
+	//Container for all Vulkan buffers.
+	DynamicArray<VulkanBuffer *RESTRICT> _VulkanBuffers;
+
 	//The lock for all Vulkan command pools.
 	Spinlock _VulkanCommandPoolsLock;
 
 	//Container for all Vulkan command pools.
 	DynamicArray<VulkanCommandPool *RESTRICT> _VulkanCommandPools;
-
-	//Container for all Vulkan constant buffers.
-	DynamicArray<VulkanConstantBuffer *RESTRICT> _VulkanConstantBuffers;
 
 	//Container for all Vulkan cube map textures.
 	DynamicArray<VulkanCubeMapTexture *RESTRICT> _VulkanCubeMapTextures;
@@ -310,9 +328,6 @@ private:
 
 	//Container for all Vulkan storage buffers.
 	DynamicArray<VulkanStorageBuffer *RESTRICT> _VulkanStorageBuffers;
-
-	//Container for all Vulkan uniform buffers.
-	DynamicArray<VulkanUniformBuffer *RESTRICT> _VulkanUniformBuffers;
 
 };
 #endif

@@ -6,10 +6,11 @@ glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVer
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
+glslangValidator.exe -V WorldRayClosestHitShader.rchit -o 				WorldRayClosestHitShader.spv
+glslangValidator.exe -V WorldRayGenerationShader.rgen -o 				WorldRayGenerationShader.spv
+glslangValidator.exe -V WorldRayMissShader.rmiss -o 					WorldRayMissShader.spv
 
 VulkanShaderBuilder.exe
-
-
 
 Copy CatalystShaderCollection.csc ..\..\..\..\Clairvoyant\Resources\Final\CatalystShaderCollection.csc
 Copy CatalystShaderCollection.csc ..\..\..\..\Path-Tracing-Prototype\Resources\Final\CatalystShaderCollection.csc

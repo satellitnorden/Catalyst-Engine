@@ -18,7 +18,7 @@ public:
 	StaticArray<AxisAlignedBoundingBox, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 	//The buffers for the crown.
-	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownBuffers;
+	StaticArray<BufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownBuffers;
 
 	//The index offset in the buffers for the crown.
 	StaticArray<uint64, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownIndexOffsets;
@@ -27,7 +27,7 @@ public:
 	StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _CrownIndexCounts;
 
 	//The buffers for the trunk.
-	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkBuffers;
+	StaticArray<BufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkBuffers;
 
 	//The index offset in the buffers for the trunk.
 	StaticArray<uint64, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TrunkIndexOffsets;

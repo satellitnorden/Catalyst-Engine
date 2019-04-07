@@ -21,6 +21,7 @@
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/Vertex.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
@@ -51,10 +52,9 @@ namespace VulkanRenderingSystemData
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
-			ConstantBuffer,
+			Buffer,
 			RenderDataTable,
-			Texture2D,
-			UniformBuffer
+			Texture2D
 		};
 
 		//The number of frames since destruction was requested.
@@ -108,7 +108,10 @@ namespace VulkanRenderingSystemLogic
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
 		{
-			vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
+			if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::RayTracing)
+			{
+				continue;
+			}
 
 			currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
 																VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
@@ -356,6 +359,36 @@ namespace VulkanRenderingSystemLogic
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
 
+		{
+			//Initialize the world ray closest hit shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayClosestHitShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+		}
+
+		{
+			//Initialize the world ray generation shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayGenerationShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+		}
+
+		{
+			//Initialize the world ray miss shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayMissShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+		}
+
 		shaderCollection.Close();
 	}
 
@@ -372,9 +405,9 @@ namespace VulkanRenderingSystemLogic
 			{
 				switch (VulkanRenderingSystemData::_DestructionQueue[i]._Type)
 				{
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::ConstantBuffer:
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer:
 					{
-						VulkanInterface::Instance->DestroyConstantBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
@@ -389,13 +422,6 @@ namespace VulkanRenderingSystemLogic
 					case VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D:
 					{
 						VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::UniformBuffer:
-					{
-						VulkanInterface::Instance->DestroyUniformBuffer(static_cast<VulkanUniformBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
@@ -422,30 +448,101 @@ namespace VulkanRenderingSystemLogic
 }
 
 /*
+*	Creates a bottom level acceleration structure.
+*/
+void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &buffer,
+																const uint32 verticesOffset,
+																const uint32 numberOfVertices,
+																const uint32 indicesOffset,
+																const uint32 numberOfIndices,
+																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	VkGeometryNV geometry;
+
+	geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
+	geometry.pNext = nullptr;
+	geometry.geometryType = VkGeometryTypeNV::VK_GEOMETRY_TYPE_TRIANGLES_NV;
+	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
+	geometry.geometry.triangles.pNext = nullptr;
+	geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get();
+	geometry.geometry.triangles.vertexOffset = verticesOffset;
+	geometry.geometry.triangles.vertexCount = numberOfVertices;
+	geometry.geometry.triangles.vertexStride = sizeof(Vertex);
+	geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+	geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get();
+	geometry.geometry.triangles.indexOffset = indicesOffset;
+	geometry.geometry.triangles.indexCount = numberOfIndices;
+	geometry.geometry.triangles.indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
+	geometry.geometry.triangles.transformData = VK_NULL_HANDLE;
+	geometry.geometry.triangles.transformOffset = 0;
+	geometry.geometry.aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
+	geometry.geometry.aabbs.pNext = nullptr;
+	geometry.geometry.aabbs.aabbData = VK_NULL_HANDLE;
+	geometry.geometry.aabbs.numAABBs = 0;
+	geometry.geometry.aabbs.stride = 0;
+	geometry.geometry.aabbs.offset = 0;
+	geometry.flags = 0;
+
+	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
+																		0,
+																		ArrayProxy<VkGeometryNV>(geometry),
+																		VK_NULL_HANDLE);
+}
+
+/*
+*	Creates a top level acceleration structure.
+*/
+void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Create the Vulkan geometry instance structres.
+	DynamicArray<VulkanGeometryInstance> geometryInstances;
+	geometryInstances.UpsizeFast(instanceData.Size());
+
+	for (uint64 i{ 0 }, size{ instanceData.Size() }; i < size; ++i)
+	{
+		VulkanTranslationUtilities::GetVulkanGeometryInstance(instanceData[i], &geometryInstances[i]);
+	}
+
+	//Create the instance buffer.
+	BufferHandle instancesBuffer;
+	CreateBuffer(sizeof(VulkanGeometryInstance) * geometryInstances.Size(), BufferUsage::RayTracing, MemoryProperty::DeviceLocal, &instancesBuffer);
+
+	const void *const RESTRICT dataChunks[]{ geometryInstances.Data() };
+	const uint64 dataSizes[]{ sizeof(VulkanGeometryInstance) * geometryInstances.Size() };
+
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &instancesBuffer);
+
+	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
+																		static_cast<uint32>(instanceData.Size()),
+																		ArrayProxy<VkGeometryNV>(),
+																		static_cast<VulkanBuffer *const RESTRICT>(instancesBuffer)->Get());
+}
+
+/*
 *	Creates a buffer.
 */
-void RenderingSystem::CreateBuffer(const uint64 size, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memoryProperties, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the buffer.
-	*handle = static_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateBuffer(size));
+	*handle = static_cast<BufferHandle>(VulkanInterface::Instance->CreateBuffer(size, VulkanTranslationUtilities::GetVulkanBufferUsage(usage), VulkanTranslationUtilities::GetVulkanMemoryProperty(memoryProperties)));
 }
 
 /*
 *	Uploads data to a buffer.
 */
-void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Upload data to the buffer.
-	static_cast<VulkanConstantBuffer *const RESTRICT>(*handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks);
+	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks);
 }
 
 /*
 *	Destroys a buffer.
 */
-void RenderingSystem::DestroyBuffer(ConstantBufferHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::ConstantBuffer, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer, *handle);
 }
 
 /*
@@ -592,18 +689,18 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 /*
 *	Binds a uniform buffer to a render data table.
 */
-void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, UniformBufferHandle uniformBuffer) const NOEXCEPT
+void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
-	VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer{ static_cast<VulkanUniformBuffer *const RESTRICT>(uniformBuffer) };
+	VulkanBuffer *const RESTRICT vulkanUniformBuffer{ static_cast<VulkanBuffer *const RESTRICT>(buffer) };
 
 	//Create the destriptor buffer info.
 	VkDescriptorBufferInfo descriptorBufferInfo;
 
 	descriptorBufferInfo.buffer = vulkanUniformBuffer->Get();
 	descriptorBufferInfo.offset = 0;
-	descriptorBufferInfo.range = vulkanUniformBuffer->GetSize();
+	descriptorBufferInfo.range = VK_WHOLE_SIZE;
 
 	//Create the write descriptor set.
 	VkWriteDescriptorSet writeDescriptorSet;
@@ -686,47 +783,16 @@ void RenderingSystem::CreateTextureCube(const float *const RESTRICT data, const 
 }
 
 /*
-*	Creates a uniform buffer and returns the identifier for the uniform buffer.
-*/
-void RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT
-{
-	VkBufferUsageFlags vulkanUsage{ 0 };
-
-	if (TEST_BIT(usage, BufferUsage::UniformBuffer))
-	{
-		vulkanUsage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	}
-
-	if (TEST_BIT(usage, BufferUsage::VertexBuffer))
-	{
-		vulkanUsage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	}
-
-	*handle = static_cast<UniformBufferHandle>(VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize, vulkanUsage));
-}
-
-/*
-*	Uploads data to a uniform buffer.
-*/
-void RenderingSystem::UploadDataToUniformBuffer(const void *const RESTRICT data, UniformBufferHandle *const RESTRICT handle) const NOEXCEPT
-{
-	static_cast<VulkanUniformBuffer *const RESTRICT>(*handle)->UploadData(data);
-}
-
-/*
-*	Destroys a uniform buffer.
-*/
-void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle *const RESTRICT handle) const NOEXCEPT
-{
-	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::UniformBuffer, *handle);
-}
-
-/*
 *	Initializes a render pass
 */
 void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass) const NOEXCEPT
 {
+	//For now, don't create a render pass for ray tracing thingies...
+	if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::RayTracing)
+	{
+		return;
+	}
+
 	//Create the vulkan render pass.
 	VulkanRenderPassCreationParameters parameters;
 

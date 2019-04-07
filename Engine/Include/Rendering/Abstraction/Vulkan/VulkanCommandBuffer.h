@@ -12,11 +12,6 @@
 
 //Forward declarations.
 class VulkanCommandPool;
-class VulkanConstantBuffer;
-class VulkanDescriptorSet;
-class VulkanLogicalDevice;
-class VulkanPipeline;
-class VulkanRenderPass;
 
 class VulkanCommandBuffer final
 {

@@ -81,8 +81,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
-    <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h" />
-    <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
@@ -128,9 +126,11 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />
+    <ClInclude Include="..\..\..\Include\Memory\DestructorPointer.h" />
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\Memory.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
+    <ClInclude Include="..\..\..\Include\Memory\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h" />
@@ -151,11 +151,12 @@
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocator.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCommandPool.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanFence.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanFramebuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanFramebufferCreationParameters.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGeometryInstance.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGraphicsPipelineCreationParameters.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanImage.h" />
@@ -186,7 +188,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSurface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSwapChain.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
@@ -208,11 +209,13 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPassManager.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Texture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureCube.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureDataContainer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\TopLevelAccelerationStructureInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanGraphicsPipelineData.h" />
@@ -304,10 +307,11 @@
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.cpp" />
@@ -333,7 +337,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanUniformBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.cpp" />
@@ -345,6 +348,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderOverrideRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />

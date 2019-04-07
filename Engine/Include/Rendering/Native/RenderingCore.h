@@ -34,7 +34,8 @@ namespace RenderingConstants
 */
 using OpaqueHandle = void *RESTRICT; //Opaque handle that represents abstract data.
 
-using ConstantBufferHandle = void *RESTRICT;
+using AccelerationStructureHandle = void *RESTRICT;
+using BufferHandle = void *RESTRICT;
 using DepthBufferHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
@@ -42,7 +43,6 @@ using RenderTargetHandle = void *RESTRICT;
 using SamplerHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeHandle = void *RESTRICT;
-using UniformBufferHandle = void *RESTRICT;
 
 /*
 *	Definition of an empty handle.
@@ -55,6 +55,7 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class RenderPassStage : uint8
 {
+	WorldRayTracing,
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
@@ -91,11 +92,24 @@ enum class BlendFactor : uint8
 //Enumeration covering all buffer usages.
 enum class BufferUsage : uint8
 {
-	UniformBuffer = BIT(0),
-	VertexBuffer = BIT(1)
+	IndexBuffer = BIT(0),
+	RayTracing = BIT(1),
+	UniformBuffer = BIT(2),
+	VertexBuffer = BIT(3)
 };
 
 ENUMERATION_BIT_OPERATIONS(BufferUsage);
+
+//Enumeration covering all common render data table layouts.
+enum class CommonRenderDataTableLayout : uint8
+{
+	Global,
+	OceanMaterial,
+	ParticleSystem,
+	GaussianBlur,
+
+	NumberOfCommonRenderDataTableLayouts
+};
 
 //Enumeration covering all compare operators.
 enum class CompareOperator : uint8
@@ -130,17 +144,6 @@ enum class DepthBuffer : uint8
 	None
 };
 
-//Enumeration covering all common render data table layouts.
-enum class CommonRenderDataTableLayout : uint8
-{
-	Global,
-	OceanMaterial,
-	ParticleSystem,
-	GaussianBlur,
-
-	NumberOfCommonRenderDataTableLayouts
-};
-
 //Enumeration covering all level of details.
 enum class LevelOfDetail : uint8
 {
@@ -150,6 +153,16 @@ enum class LevelOfDetail : uint8
 
 	NumberOfLevelOfDetails
 };
+
+//Enumeration covering all memory properties.
+enum class MemoryProperty : uint8
+{
+	DeviceLocal = BIT(0),
+	HostCoherent = BIT(1),
+	HostVisible = BIT(2)
+};
+
+ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
@@ -204,6 +217,9 @@ enum class Shader : uint8
 	PassthroughFragment,
 	ToneMappingFragment,
 	ViewportVertex,
+	WorldRayClosestHitShader,
+	WorldRayGenerationShader,
+	WorldRayMissShader,
 
 	NumberOfShaders,
 
@@ -211,14 +227,19 @@ enum class Shader : uint8
 };
 
 //Enumeration covering all shader stages.
-enum class ShaderStage : uint8
+enum class ShaderStage : uint16
 {
-	Vertex = BIT(0),
-	TessellationControl = BIT(1),
-	TessellationEvaluation = BIT(2),
-	Geometry = BIT(3),
-	Fragment = BIT(4),
-	Compute = BIT(5)
+	Compute					= BIT(0),
+	Fragment				= BIT(1),
+	Geometry				= BIT(2),
+	RayAnyHit				= BIT(3),
+	RayClosestHit			= BIT(4),
+	RayGeneration			= BIT(5),
+	RayIntersection			= BIT(6),
+	RayMiss					= BIT(7),
+	TessellationControl		= BIT(8),
+	TessellationEvaluation	= BIT(9),
+	Vertex					= BIT(10)
 };
 
 ENUMERATION_BIT_OPERATIONS(ShaderStage);
@@ -368,9 +389,12 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		AccelerationStructure,
 		CombinedImageSampler,
 		SampledImage,
 		Sampler,
+		StorageBuffer,
+		StorageImage,
 		UniformBuffer
 	};
 

@@ -7,7 +7,7 @@
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 
-class VulkanConstantBuffer final
+class VulkanBuffer final
 {
 
 public:
@@ -20,7 +20,7 @@ public:
 	/*
 	*	Initializes this Vulkan buffer.
 	*/
-	void Initialize(const VkDeviceSize size) NOEXCEPT;
+	void Initialize(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan buffer.
@@ -43,6 +43,9 @@ private:
 
 	//The Vulkan device memory.
 	VkDeviceMemory _VulkanDeviceMemory;
+
+	//The memory properties.
+	VkMemoryPropertyFlags _MemoryProperties;
 
 };
 #endif

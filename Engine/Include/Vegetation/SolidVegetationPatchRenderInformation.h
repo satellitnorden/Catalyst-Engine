@@ -18,7 +18,7 @@ public:
 	StaticArray<VisibilityFlag, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Visibilities;
 
 	//The transformations buffers.
-	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TransformationsBuffers;
+	StaticArray<BufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _TransformationsBuffers;
 
 	//The number of transformations.
 	StaticArray<uint32, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _NumberOfTransformations;

@@ -3,8 +3,8 @@
 #include <Rendering/Native/CommandBuffer.h>
 
 //Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
-#include <Rendering/Abstraction/Vulkan/VulkanConstantBuffer.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
@@ -30,10 +30,10 @@ void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 /*
 *	Binds an index buffer.
 */
-void CommandBuffer::BindIndexBuffer(const Pipeline *const RESTRICT pipeline, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT
+void CommandBuffer::BindIndexBuffer(const Pipeline *const RESTRICT pipeline, BufferHandle buffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindIndexBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), offset);
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindIndexBuffer(static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get(), offset);
 }
 
 /*
@@ -51,10 +51,10 @@ void CommandBuffer::BindRenderDataTable(const Pipeline *const RESTRICT pipeline,
 /*
 *	Binds a number of vertex buffers.
 */
-void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT
+void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, BufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT
 {
 	//Bind the vertex buffers.
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindVertexBuffers(binding, 1, &static_cast<const VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), reinterpret_cast<const VkDeviceSize *const RESTRICT>(offset));
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindVertexBuffers(binding, 1, &static_cast<const VulkanBuffer *const RESTRICT>(buffer)->Get(), reinterpret_cast<const VkDeviceSize *const RESTRICT>(offset));
 }
 
 /*

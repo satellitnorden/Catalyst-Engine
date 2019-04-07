@@ -77,18 +77,25 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(vulkan2DTexture);
 	}
 
+	//Release all Vulkan acceleration structures.
+	for (VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure : _VulkanAccelerationStructures)
+	{
+		vulkanAccelerationStructure->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanAccelerationStructure)>(vulkanAccelerationStructure);
+	}
+
+	//Release all Vulkan bufferrs.
+	for (VulkanBuffer *const RESTRICT vulkanBuffer : _VulkanBuffers)
+	{
+		vulkanBuffer->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanBuffer)>(vulkanBuffer);
+	}
+
 	//Release all Vulkan command pools.
 	for (VulkanCommandPool *const RESTRICT vulkanCommandPool : _VulkanCommandPools)
 	{
 		vulkanCommandPool->Release();
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanCommandPool)>(vulkanCommandPool);
-	}
-
-	//Release all Vulkan bufferrs.
-	for (VulkanConstantBuffer *const RESTRICT vulkanConstantBuffer : _VulkanConstantBuffers)
-	{
-		vulkanConstantBuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanConstantBuffer)>(vulkanConstantBuffer);
 	}
 
 	//Release all Vulkan cube map textures.
@@ -188,13 +195,6 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanStorageBuffer)>(vulkanStorageBuffer);
 	}
 
-	//Release all Vulkan uniform buffers.
-	for (VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer : _VulkanUniformBuffers)
-	{
-		vulkanUniformBuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanUniformBuffer)>(vulkanUniformBuffer);
-	}
-
 	//Release the Vulkan descriptor pool.
 	_VulkanDescriptorPool.Release();
 
@@ -243,6 +243,63 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 }
 
 /*
+*	Creates an acceleration structure.
+*/
+RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT
+{
+	VulkanAccelerationStructure *const RESTRICT newAccelerationStructure = static_cast<VulkanAccelerationStructure *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanAccelerationStructure)>());
+	newAccelerationStructure->Initialize(type, instanceCount, geometry, instanceData);
+
+	static Spinlock lock;
+	ScopedWriteLock<Spinlock> scopedLock{ lock };
+
+	_VulkanAccelerationStructures.EmplaceSlow(newAccelerationStructure);
+
+	return newAccelerationStructure;
+}
+
+/*
+*	Creates and returns a  buffer.
+*/
+RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT
+{
+	VulkanBuffer *const RESTRICT newBuffer = static_cast<VulkanBuffer *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanBuffer)>());
+	newBuffer->Initialize(size, usage, memoryProperties);
+
+	static Spinlock lock;
+	ScopedWriteLock<Spinlock> scopedLock{ lock };
+
+	_VulkanBuffers.EmplaceSlow(newBuffer);
+
+	return newBuffer;
+}
+
+/*
+*	Destroys a buffer.
+*/
+void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEPT
+{
+	buffer->Release();
+	_VulkanBuffers.Erase(buffer);
+	Memory::GlobalPoolDeAllocate<sizeof(VulkanBuffer)>(buffer);
+}
+
+/*
+*	Creates and returns a compute command pool.
+*/
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+{
+	VulkanCommandPool *const RESTRICT newCommandPool = static_cast<VulkanCommandPool *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanCommandPool)>());
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Compute));
+
+	_VulkanCommandPoolsLock.WriteLock();
+	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPoolsLock.WriteUnlock();
+
+	return newCommandPool;
+}
+
+/*
 *	Creates and returns a graphics command pool.
 */
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
@@ -270,32 +327,6 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferComm
 	_VulkanCommandPoolsLock.WriteUnlock();
 
 	return newCommandPool;
-}
-
-/*
-*	Creates and returns a constant buffer.
-*/
-RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size) NOEXCEPT
-{
-	VulkanConstantBuffer *const RESTRICT newBuffer = static_cast<VulkanConstantBuffer *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanConstantBuffer)>());
-	newBuffer->Initialize(size);
-
-	static Spinlock lock;
-	ScopedWriteLock<Spinlock> scopedLock{ lock };
-
-	_VulkanConstantBuffers.EmplaceSlow(newBuffer);
-
-	return newBuffer;
-}
-
-/*
-*	Destroys a constant buffer.
-*/
-void VulkanInterface::DestroyConstantBuffer(VulkanConstantBuffer *const RESTRICT buffer) NOEXCEPT
-{
-	buffer->Release();
-	_VulkanConstantBuffers.Erase(buffer);
-	Memory::GlobalPoolDeAllocate<sizeof(VulkanConstantBuffer)>(buffer);
 }
 
 /*
@@ -530,31 +561,5 @@ RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuf
 	_VulkanStorageBuffers.EmplaceSlow(newStorageBuffer);
 
 	return newStorageBuffer;
-}
-
-/*
-*	Creates and returns a uniform buffer.
-*/
-RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT
-{
-	VulkanUniformBuffer *const RESTRICT newUniformBuffer = static_cast<VulkanUniformBuffer *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanUniformBuffer)>());
-	newUniformBuffer->Initialize(newUniformBufferSize, usage);
-
-	static Spinlock lock;
-	ScopedWriteLock<Spinlock> scopedLock{ lock };
-
-	_VulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
-
-	return newUniformBuffer;
-}
-
-/*
-*	Destroys a uniform buffer.
-*/
-void VulkanInterface::DestroyUniformBuffer(VulkanUniformBuffer *const RESTRICT uniformBuffer) NOEXCEPT
-{
-	uniformBuffer->Release();
-	_VulkanUniformBuffers.Erase(uniformBuffer);
-	Memory::GlobalPoolDeAllocate<sizeof(VulkanUniformBuffer)>(uniformBuffer);
 }
 #endif

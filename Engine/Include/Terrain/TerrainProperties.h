@@ -15,7 +15,7 @@ class TerrainProperties final
 public:
 
 	//The buffer.
-	ConstantBufferHandle _Buffer;
+	BufferHandle _Buffer;
 
 	//The index offset.
 	uint64 _IndexOffset;

@@ -39,6 +39,11 @@ public:
 	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const NOEXCEPT { return _PhysicalDeviceProperties; }
 
 	/*
+	*	Returns the ray tracing properties.
+	*/
+	const VkPhysicalDeviceRayTracingPropertiesNV& GetRayTracingProperties() const NOEXCEPT { return _RayTracingProperties; }
+
+	/*
 	*	Returns the surface format.
 	*/
 	const VkPresentModeKHR& GetPresentMode() const NOEXCEPT { return _PresentMode; }
@@ -66,6 +71,9 @@ private:
 
 	//The physical device properties.
 	VkPhysicalDeviceProperties _PhysicalDeviceProperties;
+
+	//The ray tracing properties.
+	VkPhysicalDeviceRayTracingPropertiesNV _RayTracingProperties;
 
 	//The present mode.
 	VkPresentModeKHR _PresentMode;

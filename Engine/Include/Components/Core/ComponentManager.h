@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/Pointers/UniquePointer.h>
 
 //Components.
 #include <Components/Singleton/CatalystEngineComponent.h>
@@ -96,9 +95,9 @@ private:
 	template <typename TYPE>
 	RESTRICTED static NO_DISCARD TYPE *const RESTRICT RetrieveSingletonComponent() NOEXCEPT
 	{
-		static TYPE *const RESTRICT component{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(TYPE))) TYPE() };
+		static DestructorPointer<TYPE> component{ DestructorPointer<TYPE>(new (Memory::GlobalLinearAllocator()->Allocate(sizeof(TYPE))) TYPE()) };
 
-		return component;
+		return component.Get();
 	}
 
 };

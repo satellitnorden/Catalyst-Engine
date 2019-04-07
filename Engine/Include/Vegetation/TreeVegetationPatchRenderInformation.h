@@ -18,7 +18,7 @@ public:
 	StaticArray<VisibilityFlag, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> _Visibilities;
 
 	//The transformations buffer.
-	ConstantBufferHandle _TransformationsBuffer;
+	BufferHandle _TransformationsBuffer;
 
 	//The number of transformations.
 	StaticArray<uint32, UNDERLYING(TreeVegetationLevelOfDetail::NumberOfTreeVegetationLevelOfDetails)> _NumberOfTransformations;

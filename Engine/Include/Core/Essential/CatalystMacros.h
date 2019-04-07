@@ -74,34 +74,29 @@
 /*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
-#define DECLARE_SINGLETON(CLASS) public: static CLASS *RESTRICT Instance; CLASS(const CLASS &other) = delete; CLASS(CLASS &&other) = delete;
+#define DECLARE_SINGLETON(CLASS) public: static DestructorPointer<CLASS> Instance; CLASS(const CLASS &other) = delete; CLASS(CLASS &&other) = delete;
 
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
-#define DEFINE_SINGLETON(CLASS) CLASS *RESTRICT CLASS::Instance{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() };
+#define DEFINE_SINGLETON(CLASS) DestructorPointer<CLASS> CLASS::Instance{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() };
 
 /*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.
 */
-#define ENUMERATION_BIT_OPERATIONS(ENUMERATION)														\
-constexpr static ENUMERATION operator|(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
-{																									\
-	return static_cast<ENUMERATION>(UNDERLYING(first) | UNDERLYING(second));						\
-}																									\
-constexpr static ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
-{																									\
-	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));						\
-}																									\
-constexpr static ENUMERATION operator~(const ENUMERATION first) NOEXCEPT							\
-{																									\
-return static_cast<ENUMERATION>(~UNDERLYING(first));												\
-}																									\
-
-/*
-*	Returns whether or not a bit is set.
-*/
-#define IS_BIT_SET(bitfield, bit) ((bitfield & bit) == bit)
+#define ENUMERATION_BIT_OPERATIONS(ENUMERATION)																				\
+FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator|(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																															\
+	return static_cast<ENUMERATION>(UNDERLYING(first) | UNDERLYING(second));												\
+}																															\
+FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																															\
+	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));												\
+}																															\
+FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator~(const ENUMERATION enumeration) NOEXCEPT						\
+{																															\
+return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																	\
+}																															\
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times be true.

@@ -18,7 +18,7 @@ public:
 	StaticArray<AxisAlignedBoundingBox, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _AxisAlignedBoundingBoxes;
 
 	//The buffer.
-	StaticArray<ConstantBufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Buffers;
+	StaticArray<BufferHandle, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _Buffers;
 
 	//The index offset in the buffer.
 	StaticArray<uint64, UNDERLYING(LevelOfDetail::NumberOfLevelOfDetails)> _IndexOffsets;

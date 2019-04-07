@@ -136,9 +136,6 @@
     <Filter Include="Platform\Source\Windows">
       <UniqueIdentifier>{e7808115-0193-40f6-a619-eef50e6af51c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Include\Pointers">
-      <UniqueIdentifier>{caaed6a2-14e5-4370-9f45-cdcee1679450}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Include\General">
       <UniqueIdentifier>{2de41bd6-d32e-49fc-8a95-48c301aefab9}</UniqueIdentifier>
     </Filter>
@@ -425,12 +422,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h">
       <Filter>Platform\Include\Android</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h">
-      <Filter>Core\Include\Pointers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h">
-      <Filter>Core\Include\Pointers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h">
       <Filter>Core\Include\General</Filter>
@@ -867,9 +858,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCommandPool.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.h">
-      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCore.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
@@ -946,9 +934,6 @@
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSwapChain.h">
-      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUniformBuffer.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h">
@@ -1052,6 +1037,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\Memory.h">
       <Filter>Memory\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Memory\UniquePointer.h">
+      <Filter>Memory\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Memory\DestructorPointer.h">
+      <Filter>Memory\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanBuffer.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\TopLevelAccelerationStructureInstanceData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanGeometryInstance.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1181,9 +1187,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanUniformBuffer.cpp">
-      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
@@ -1194,9 +1197,6 @@
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp">
-      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanConstantBuffer.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp">
@@ -1297,6 +1297,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

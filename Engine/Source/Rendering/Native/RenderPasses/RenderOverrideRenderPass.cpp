@@ -39,7 +39,7 @@ void RenderOverrideRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(RenderOverrideGraphicsPipeline::Instance);
+	AddPipeline(RenderOverrideGraphicsPipeline::Instance.Get());
 
 	//Initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

@@ -47,7 +47,7 @@ void TerrainSystem::InitializeSystem() NOEXCEPT
 	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
 
-	RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1], &_Properties._Buffer);
+	RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_Properties._Buffer);
 	RenderingSystem::Instance->UploadDataToBuffer(bufferData.Data(), bufferDataSizes.Data(), 2, &_Properties._Buffer);
 
 	_Properties._IndexOffset = bufferDataSizes[0];

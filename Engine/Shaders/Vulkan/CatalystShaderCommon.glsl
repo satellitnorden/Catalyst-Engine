@@ -4,6 +4,7 @@
 //Extensions.
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
+#extension GL_NV_ray_tracing : require
 
 //Preprocessor defines.
 #define MAXIMUM_NUMBER_OF_TERRAIN_PATCHES 255

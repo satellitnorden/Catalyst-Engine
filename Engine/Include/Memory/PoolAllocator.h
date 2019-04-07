@@ -49,7 +49,7 @@ public:
 		{
 			for (uint8 i = 0; i < 64; ++i)
 			{
-				if (!IS_BIT_SET(current->_Active, BIT(i)))
+				if (!TEST_BIT(current->_Active, BIT(i)))
 				{
 					SET_BIT(current->_Active, BIT(i));
 

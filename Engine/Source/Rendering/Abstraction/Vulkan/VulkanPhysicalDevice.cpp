@@ -5,6 +5,27 @@
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
+//Vulkan physical device logic.
+namespace VulkanPhysicalDeviceLogic
+{
+
+	/*
+	*	Returns a physical device's ray tracing properties.
+	*/
+	FORCE_INLINE void GetRayTracingProperties(const VkPhysicalDevice physicalDevice, VkPhysicalDeviceRayTracingPropertiesNV *const RESTRICT rayTracingProperties) NOEXCEPT
+	{
+		rayTracingProperties->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
+		rayTracingProperties->pNext = nullptr;
+
+		VkPhysicalDeviceProperties2 properties;
+		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		properties.pNext = rayTracingProperties;
+
+		vkGetPhysicalDeviceProperties2(physicalDevice, &properties);
+	}
+
+}
+
 /*
 *	Initializes this Vulkan physical device.
 */
@@ -43,6 +64,9 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 	//Get the physical device properties.
 	vkGetPhysicalDeviceProperties(_VulkanPhysicalDevice, &_PhysicalDeviceProperties);
+
+	//Get the ray tracing properties.
+	VulkanPhysicalDeviceLogic::GetRayTracingProperties(_VulkanPhysicalDevice, &_RayTracingProperties);
 
 	//Get the most optimal present mode.
 	_PresentMode = GetMostOptimalPresentMode();

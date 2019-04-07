@@ -8,6 +8,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
+#include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Vertex.h>
 
 class Model final
@@ -24,5 +25,10 @@ public:
 	//The indices of this model.
 	DynamicArray<uint32> _Indices;
 
+	//The buffer.
+	BufferHandle _Buffer;
+
+	//The acceleration structure.
+	AccelerationStructureHandle _AccelerationStructure;
 
 };

@@ -1,8 +1,10 @@
 #pragma once
 
 //Memory.
+#include <Memory/DestructorPointer.h>
 #include <Memory/LinearAllocator.h>
 #include <Memory/PoolAllocator.h>
+#include <Memory/UniquePointer.h>
 
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>

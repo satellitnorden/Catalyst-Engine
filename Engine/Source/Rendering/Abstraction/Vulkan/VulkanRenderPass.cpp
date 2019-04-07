@@ -3,14 +3,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 
 //Vulkan.
-#include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
-#include <Rendering/Abstraction/Vulkan/VulkanDescriptorSet.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
-#include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
-#include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/Abstraction/Vulkan/VulkanSemaphore.h>
-#include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
-#include <Rendering/Abstraction/Vulkan/VulkanUniformBuffer.h>
 
 /*
 *	Initializes this Vulkan render pass.

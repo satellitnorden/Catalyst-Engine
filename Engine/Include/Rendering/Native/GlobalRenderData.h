@@ -19,7 +19,7 @@ public:
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 	//The dynamic uniform data buffers.
-	DynamicArray<UniformBufferHandle> _DynamicUniformDataBuffers;
+	DynamicArray<BufferHandle> _DynamicUniformDataBuffers;
 
 	//The global texture lock.
 	Spinlock _GlobalTexturesLock;
@@ -46,9 +46,9 @@ public:
 	DynamicArray<DynamicArray<Pair<uint8, Texture2DHandle>>> _AddTerrainHeightTextureUpdates;
 
 	//The terrain patch data buffers.
-	DynamicArray<UniformBufferHandle> _TerrainPatchDataBuffers;
+	DynamicArray<BufferHandle> _TerrainPatchDataBuffers;
 
 	//The terrain material data buffers.
-	DynamicArray<UniformBufferHandle> _TerrainMaterialDataBuffers;
+	DynamicArray<BufferHandle> _TerrainMaterialDataBuffers;
 
 };

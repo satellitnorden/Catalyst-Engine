@@ -301,7 +301,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
 
 		//Create the dynamic uniform data buffer.
-		CreateUniformBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
+		CreateBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
 
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
@@ -313,13 +313,13 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Create the terrain patch data buffer.
-		CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, &_GlobalRenderData._TerrainPatchDataBuffers[i]);
+		CreateBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._TerrainPatchDataBuffers[i]);
 	
 		//Bind the terrain patch data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
 
 		//Create the terrain material data buffer.
-		CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, &_GlobalRenderData._TerrainMaterialDataBuffers[i]);
+		CreateBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._TerrainMaterialDataBuffers[i]);
 
 		//Bind the terrain material data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
@@ -485,7 +485,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 
-	UploadDataToUniformBuffer(&data, &_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex]);
+	void *const RESTRICT dataChunks[]{ &data };
+	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
+
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex]);
 }
 
 /*
@@ -551,7 +554,10 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 		terrainUniformData[counter++] = informations->At(i)._InstanceInformation;
 	}
 
-	UploadDataToUniformBuffer(terrainUniformData.Data(), &_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex]);
+	void *const RESTRICT dataChunks[]{ terrainUniformData.Data() };
+	const uint64 dataSizes[]{ sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES };
+
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex]);
 }
 
 /*
@@ -559,5 +565,8 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 */
 void RenderingSystem::UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
-	UploadDataToUniformBuffer(TerrainSystem::Instance->GetTerrainMaterials()->Data(), &_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex]);
+	void *const RESTRICT dataChunks[]{ TerrainSystem::Instance->GetTerrainMaterials()->Data() };
+	const uint64 dataSizes[]{ sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES };
+
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex]);
 }

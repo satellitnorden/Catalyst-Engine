@@ -45,7 +45,7 @@ public:
 	/*
 	*	Binds an index buffer.
 	*/
-	void BindIndexBuffer(const Pipeline *const RESTRICT pipeline, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT;
+	void BindIndexBuffer(const Pipeline *const RESTRICT pipeline, BufferHandle buffer, const uint64 offset) NOEXCEPT;
 
 	/*
 	*	Binds a render data table.
@@ -55,7 +55,7 @@ public:
 	/*
 	*	Binds a number of vertex buffers.
 	*/
-	void BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
+	void BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, BufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
 
 	/*
 	*	Draws.

@@ -17,17 +17,17 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	FindQueueFamilyIndices();
 
 	//Create the device queue create info.
-	static const float queuePriorities = 1.0f;
+	constexpr float QUEUE_PRIORITIES{ 0.0f };
 
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
-	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, &queuePriorities);
+	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, &QUEUE_PRIORITIES);
 
 	//Create the physical device features.
 	VkPhysicalDeviceFeatures physicalDeviceFeatures;
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME };
+	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_NV_RAY_TRACING_EXTENSION_NAME };
 
 	VkDeviceCreateInfo deviceCreateInfo;
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);

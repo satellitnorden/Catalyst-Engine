@@ -5,11 +5,12 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGeometryInstance.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
-
-//Vulkan.
-#include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 
 class VulkanTranslationUtilities
 {
@@ -68,6 +69,25 @@ public:
 	}
 
 	/*
+	*	Given a buffer usage, returns the corresponding Vulkan buffer usage.
+	*/
+	static VkBufferUsageFlags GetVulkanBufferUsage(const BufferUsage usage) NOEXCEPT
+	{
+		VkBufferUsageFlags flags{ 0 };
+
+#define MAPPING(USAGE, BIT) if (TEST_BIT(usage, USAGE)) flags |= BIT;
+
+		MAPPING(BufferUsage::IndexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		MAPPING(BufferUsage::RayTracing, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
+		MAPPING(BufferUsage::UniformBuffer, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		MAPPING(BufferUsage::VertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+#undef MAPPING
+
+		return flags;
+	}
+
+	/*
 	*	Given a compare operator, return the corresponding Vulkan compare operator.
 	*/
 	static VkCompareOp GetVulkanCompareOperator(const CompareOperator compareOperator) NOEXCEPT
@@ -108,9 +128,12 @@ public:
 	{
 		switch (type)
 		{
+			case RenderDataTableLayoutBinding::Type::AccelerationStructure: return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
 			case RenderDataTableLayoutBinding::Type::CombinedImageSampler: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			case RenderDataTableLayoutBinding::Type::SampledImage: return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 			case RenderDataTableLayoutBinding::Type::Sampler: return VK_DESCRIPTOR_TYPE_SAMPLER;
+			case RenderDataTableLayoutBinding::Type::StorageBuffer: return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			case RenderDataTableLayoutBinding::Type::StorageImage: return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 			case RenderDataTableLayoutBinding::Type::UniformBuffer: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
 			default:
@@ -170,6 +193,54 @@ public:
 	}
 
 	/*
+	*	Given a top level acceleration structure instance data, convert it to a Vulkan geometry instance.
+	*/
+	static void GetVulkanGeometryInstance(const TopLevelAccelerationStructureInstanceData &data, VulkanGeometryInstance *const RESTRICT geometryInstance)
+	{
+		//Transpose the transform.
+		Matrix4 transposedTransform{ data._Transform };
+		transposedTransform.Transpose();
+
+		Memory::CopyMemory(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));
+
+		//Set the custom index.
+		geometryInstance->_InstanceCustomIndex = 0;
+
+		//Set the mask.
+		geometryInstance->_Mask = UINT8_MAXIMUM;
+
+		//Set the instance offset.
+		geometryInstance->_InstanceOffset = 0;
+
+		//Set the flags.
+		geometryInstance->_Flags = VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV;
+
+		//Get the bottom level acceleration structure handle.
+		vkGetAccelerationStructureHandleNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
+											static_cast<VulkanAccelerationStructure *const RESTRICT>(data._BottomLevelAccelerationStructure)->GetAccelerationStructure(),
+											sizeof(uint64),
+											&geometryInstance->_BottomLevelAccelerationStructureHandle);
+	}
+
+	/*
+	*	Given a memory property, returns the corresponding Vulkan memory property.
+	*/
+	static VkMemoryPropertyFlags GetVulkanMemoryProperty(const MemoryProperty property) NOEXCEPT
+	{
+		VkMemoryPropertyFlags flags{ 0 };
+
+#define MAPPING(PROPERTY, BIT) if (TEST_BIT(property, PROPERTY)) flags |= BIT;
+
+		MAPPING(MemoryProperty::DeviceLocal, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		MAPPING(MemoryProperty::HostCoherent, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		MAPPING(MemoryProperty::HostVisible, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+#undef MAPPING
+
+		return flags;
+	}
+
+	/*
 	*	Given a mipmap mode, return the corresponding Vulkan mipmap mode.
 	*/
 	static VkSamplerMipmapMode GetVulkanMipmapMode(const MipmapMode mipmapMode) NOEXCEPT
@@ -206,35 +277,21 @@ public:
 	{
 		VkShaderStageFlags flags{ 0 };
 
-		if (IS_BIT_SET(shaderStage, ShaderStage::Vertex))
-		{
-			flags |= VK_SHADER_STAGE_VERTEX_BIT;
-		}
+#define MAPPING(STAGE, BIT) if (TEST_BIT(shaderStage, STAGE)) flags |= BIT;
 
-		if (IS_BIT_SET(shaderStage, ShaderStage::TessellationControl))
-		{
-			flags |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		}
+		MAPPING(ShaderStage::Compute,					VK_SHADER_STAGE_COMPUTE_BIT);
+		MAPPING(ShaderStage::Fragment,				VK_SHADER_STAGE_FRAGMENT_BIT);
+		MAPPING(ShaderStage::Geometry,				VK_SHADER_STAGE_GEOMETRY_BIT);
+		MAPPING(ShaderStage::RayAnyHit,				VK_SHADER_STAGE_ANY_HIT_BIT_NV);
+		MAPPING(ShaderStage::RayClosestHit,			VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+		MAPPING(ShaderStage::RayGeneration,			VK_SHADER_STAGE_RAYGEN_BIT_NV);
+		MAPPING(ShaderStage::RayIntersection,			VK_SHADER_STAGE_INTERSECTION_BIT_NV);
+		MAPPING(ShaderStage::RayMiss,					VK_SHADER_STAGE_MISS_BIT_NV);
+		MAPPING(ShaderStage::TessellationControl,		VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		MAPPING(ShaderStage::TessellationEvaluation,	VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		MAPPING(ShaderStage::Vertex,					VK_SHADER_STAGE_VERTEX_BIT);
 
-		if (IS_BIT_SET(shaderStage, ShaderStage::TessellationEvaluation))
-		{
-			flags |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-		}
-
-		if (IS_BIT_SET(shaderStage, ShaderStage::Geometry))
-		{
-			flags |= VK_SHADER_STAGE_GEOMETRY_BIT;
-		}
-
-		if (IS_BIT_SET(shaderStage, ShaderStage::Fragment))
-		{
-			flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-		}
-
-		if (IS_BIT_SET(shaderStage, ShaderStage::Compute))
-		{
-			flags |= VK_SHADER_STAGE_COMPUTE_BIT;
-		}
+#undef MAPPING
 
 		return flags;
 	}

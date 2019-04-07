@@ -1,0 +1,29 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+
+layout(binding = 0, set = 0) uniform accelerationStructureNV topLevelAS;
+layout(binding = 1, set = 0, rgba8) uniform image2D image;
+
+/*
+*	Calculates the direction.
+*/
+vec3 CalculateDirection()
+{
+	vec2 center = vec2(gl_LaunchIDNV.xy) + vec2(0.5f);
+    vec2 textureCoordinate = center / vec2(gl_LaunchSizeNV.xy);
+    textureCoordinate = textureCoordinate * 2.0f - 1.0f;
+    vec4 origin = inversePerceiverMatrix * vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    vec4 target = inverseProjectionMatrix * vec4(textureCoordinate.x, textureCoordinate.y, 1.0f, 1.0f) ;
+    return vec4(inversePerceiverMatrix * vec4(normalize(target.xyz), 0.0f)).xyz;
+}
+
+void main() 
+{
+    imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(0.5, 0.5, 0.5, 1.0));
+}

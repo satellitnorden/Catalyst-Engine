@@ -73,11 +73,11 @@ namespace RenderingUtilities
 	/*
 	*	Creates a transformations buffer.
 	*/
-	static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, ConstantBufferHandle *const RESTRICT buffer) NOEXCEPT
+	static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, BufferHandle *const RESTRICT buffer) NOEXCEPT
 	{
 		const void *RESTRICT data[]{ transformations.Data() };
 		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
-		RenderingSystem::Instance->CreateBuffer(dataSizes[0], buffer);
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, buffer);
 		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, buffer);
 	}
 
