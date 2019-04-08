@@ -152,7 +152,7 @@ public:
 	/*
 	*	Returns whether or not a floating point number is NaN (not a number).
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool IsNan(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool IsNaN(const float number) NOEXCEPT
 	{
 		return !(number == number);
 	}

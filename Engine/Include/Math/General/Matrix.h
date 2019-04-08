@@ -386,7 +386,7 @@ public:
 		{
 			for (uint8 j{ 0 }; j < 4; ++j)
 			{
-				if (CatalystBaseMath::IsNan(_Matrix[i][j]))
+				if (CatalystBaseMath::IsNaN(_Matrix[i][j]))
 				{
 					return false;
 				}
