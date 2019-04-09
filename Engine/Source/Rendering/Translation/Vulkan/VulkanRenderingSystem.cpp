@@ -109,23 +109,29 @@ namespace VulkanRenderingSystemLogic
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
 		{
-			if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::RayTracing)
+			if (renderPass->GetPipelines()[0]->GetType() != Pipeline::Type::RayTracing)
 			{
-				continue;
+				currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
+																	VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+																	VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._Extent,
+																	VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
-
-			currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
-																VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-																VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._Extent,
-																VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 			for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
 			{
-				const GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<const GraphicsPipeline *const RESTRICT>(pipeline) };
-
-				if (graphicsPipeline->IncludeInRender())
+				if (pipeline->GetType() == Pipeline::Type::Graphics)
 				{
-					currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(graphicsPipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
+					const GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<const GraphicsPipeline *const RESTRICT>(pipeline) };
+
+					if (graphicsPipeline->IncludeInRender())
+					{
+						currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(graphicsPipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
+					}
+				}
+				
+				else
+				{
+					currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
 				}
 
 				if (pipeline != renderPass->GetPipelines().Back())
@@ -134,7 +140,10 @@ namespace VulkanRenderingSystemLogic
 				}
 			}
 			
-			currentPrimaryCommandBuffer->CommandEndRenderPass();
+			if (renderPass->GetPipelines()[0]->GetType() != Pipeline::Type::RayTracing)
+			{
+				currentPrimaryCommandBuffer->CommandEndRenderPass();
+			}
 		}
 	}
 
@@ -280,6 +289,29 @@ namespace VulkanRenderingSystemLogic
 
 		//Create the pipeline!
 		data->_Pipeline = VulkanInterface::Instance->CreateRayTracingPipeline(parameters);
+
+		//Create the shader binding table buffer.
+		const uint32 shaderGroupHandleSize{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
+		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * 3 };
+
+		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, 0, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		//Upload the data to it.
+		uint8 *const RESTRICT shaderHandleStorage{ static_cast<uint8 *const RESTRICT>(Memory::AllocateMemory(shaderHandleStorageSize)) };
+
+		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
+																data->_Pipeline->GetPipeline(),
+																0,
+																3,
+																shaderHandleStorageSize,
+																shaderHandleStorage));
+
+		void *const RESTRICT dataChunks[]{ shaderHandleStorage };
+		const uint64 dataSizes[]{ shaderHandleStorageSize };
+
+		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1);
+
+		Memory::FreeMemory(shaderHandleStorage);
 	}
 
 	/*
@@ -593,6 +625,41 @@ void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle re
 }
 
 /*
+*	Binds an acceleration structure to a render data table.
+*/
+void RenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, AccelerationStructureHandle accelerationStructure) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
+	VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure{ static_cast<VulkanAccelerationStructure *const RESTRICT>(accelerationStructure) };
+
+	//Create the acceleration structure write descriptor set.
+	VkWriteDescriptorSetAccelerationStructureNV accelerationStructureWriteDescriptorSet;
+
+	accelerationStructureWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV;
+	accelerationStructureWriteDescriptorSet.pNext = nullptr;
+	accelerationStructureWriteDescriptorSet.accelerationStructureCount = 1;
+	accelerationStructureWriteDescriptorSet.pAccelerationStructures = &vulkanAccelerationStructure->GetAccelerationStructure();
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = &accelerationStructureWriteDescriptorSet;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
+	writeDescriptorSet.pImageInfo = nullptr;
+	writeDescriptorSet.pBufferInfo = nullptr;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
 *	Binds a combined image sampler to a render data table.
 *	Accepts render target, texture 2D and texture cube handles.
 */
@@ -689,6 +756,40 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 	writeDescriptorSet.dstArrayElement = arrayElement;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+	writeDescriptorSet.pBufferInfo = nullptr;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
+*	Binds a storage image to a render data table.
+*/
+void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
+	VulkanImage *const RESTRICT vulkanImage{ static_cast<VulkanImage *const RESTRICT>(image) };
+
+	//Create the destriptor image info.
+	VkDescriptorImageInfo descriptorImageInfo;
+
+	descriptorImageInfo.sampler = VK_NULL_HANDLE;
+	descriptorImageInfo.imageView = vulkanImage->GetImageView();
+	descriptorImageInfo.imageLayout = vulkanImage->GetImageLayout();
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
 	writeDescriptorSet.pBufferInfo = nullptr;
 	writeDescriptorSet.pTexelBufferView = nullptr;

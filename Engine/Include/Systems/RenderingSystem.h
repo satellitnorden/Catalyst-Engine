@@ -177,6 +177,11 @@ public:
 	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
+	*	Binds an acceleration structure to a render data table.
+	*/
+	void BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, AccelerationStructureHandle accelerationStructure) const NOEXCEPT;
+
+	/*
 	*	Binds a combined image sampler to a render data table.
 	*	Accepts render target, texture 2D and texture cube handles.
 	*/
@@ -192,6 +197,11 @@ public:
 	*	Binds a sampler to a render data table.
 	*/
 	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, SamplerHandle sampler) const NOEXCEPT;
+
+	/*
+	*	Binds a storage image to a render data table.
+	*/
+	void BindStorageImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT;
 
 	/*
 	*	Binds a uniform buffer to a render data table.

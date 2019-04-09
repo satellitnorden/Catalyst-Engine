@@ -123,3 +123,16 @@ VKAPI_ATTR void VKAPI_CALL vkGetAccelerationStructureMemoryRequirementsNV(
 
 	return function(device, pInfo, pMemoryRequirements);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL vkGetRayTracingShaderGroupHandlesNV(
+	VkDevice                                    device,
+	VkPipeline                                  pipeline,
+	uint32_t                                    firstGroup,
+	uint32_t                                    groupCount,
+	size_t                                      dataSize,
+	void*                                       pData)
+{
+	static const auto function{ reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesNV>(vkGetDeviceProcAddr(VulkanInterface::Instance->GetLogicalDevice().Get(), "vkGetRayTracingShaderGroupHandlesNV")) };
+
+	return function(device, pipeline, firstGroup, groupCount, dataSize, pData);
+}

@@ -254,23 +254,23 @@ void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineS
 /*
 *	Records a trace rays command.
 */
-void VulkanCommandBuffer::CommandTraceRays() NOEXCEPT
+void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuffer) NOEXCEPT
 {
 	vkCmdTraceRaysNV(	_VulkanCommandBuffer,
+						shaderBindingTableBuffer,
+						0,
+						shaderBindingTableBuffer,
+						16,
+						16,
+						shaderBindingTableBuffer,
+						32,
+						16,
 						VK_NULL_HANDLE,
 						0,
 						0,
-						0,
-						0,
-						VK_NULL_HANDLE,
-						0,
-						0,
-						VK_NULL_HANDLE,
-						0,
-						0,
-						0,
-						0,
-						0);
+						1'920,
+						1'080,
+						1);
 }
 
 /*

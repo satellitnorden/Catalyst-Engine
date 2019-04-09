@@ -120,7 +120,9 @@ void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, Shade
 */
 void CommandBuffer::TraceRays(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 {
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays();
+	const VulkanRayTracingPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
+
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays(pipelineData->_ShaderBindingTableBuffer->Get());
 }
 
 /*

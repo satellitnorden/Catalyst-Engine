@@ -25,7 +25,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan acceleration structure.
 	*/
-	VkAccelerationStructureNV GetAccelerationStructure() const NOEXCEPT
+	const VkAccelerationStructureNV& GetAccelerationStructure() const NOEXCEPT
 	{
 		return _VulkanAccelerationStructure;
 	}

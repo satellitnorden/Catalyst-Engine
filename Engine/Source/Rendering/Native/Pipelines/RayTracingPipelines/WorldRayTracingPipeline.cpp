@@ -75,7 +75,7 @@ void WorldRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	//RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 }
 
 #include <Resources/Loading/ResourceLoader.h>
@@ -94,6 +94,8 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		TopLevelAccelerationStructureInstanceData data{ MatrixConstants::IDENTITY, ResourceLoader::GetModel(HashString("Dresser_Model"))._AccelerationStructure };
 		AccelerationStructureHandle handle;
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(data), &handle);
+
+		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, handle);
 	}
 
 	//Cache data the will be used.
@@ -107,7 +109,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Trace rays!
-	//commandBuffer->TraceRays(this);
+	commandBuffer->TraceRays(this);
 
 	//End the command buffer.
 	commandBuffer->End(this);

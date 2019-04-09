@@ -16,5 +16,8 @@ public:
 	//The pipeline associated with this ray tracing pipeline.
 	VulkanRayTracingPipeline *RESTRICT _Pipeline;
 
+	//The shader binding table buffer.
+	VulkanBuffer *RESTRICT _ShaderBindingTableBuffer;
+
 };
 #endif

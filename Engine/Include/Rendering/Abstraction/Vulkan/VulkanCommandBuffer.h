@@ -121,7 +121,7 @@ public:
 	/*
 	*	Records a trace rays command.
 	*/
-	void CommandTraceRays() NOEXCEPT;
+	void CommandTraceRays(const VkBuffer shaderBindingTableBuffer) NOEXCEPT;
 
 	/*
 	*	Records a wait events command.
