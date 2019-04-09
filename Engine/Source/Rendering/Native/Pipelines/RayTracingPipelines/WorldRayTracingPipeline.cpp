@@ -109,7 +109,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Trace rays!
-	commandBuffer->TraceRays(this);
+	//commandBuffer->TraceRays(this);
 
 	//End the command buffer.
 	commandBuffer->End(this);

@@ -164,28 +164,14 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {
-	//Directional Shadows.
-	DirectionalShadowMap,
-	DirectionalShadow,
-
 	//Intermediate.
 	Intermediate,
-	IntermediateHalf,
-	IntermediateQuarter,
-	IntermediateEighth,
 
 	//Scene.
-	SceneBufferAlbedo,
-	SceneBufferNormalDepth,
-	SceneBufferMaterialProperties,
 	Scene,
-	SceneProperties,
 
 	//Screen.
 	Screen,
-
-	//Screen space ambient occlusion.
-	ScreenSpaceAmbientOcclusion,
 
 	NumberOfRenderTargets
 };
