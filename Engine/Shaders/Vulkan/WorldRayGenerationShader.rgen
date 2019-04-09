@@ -7,8 +7,8 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
-layout(binding = 0, set = 0) uniform accelerationStructureNV topLevelAS;
-layout(binding = 1, set = 0, rgba8) uniform image2D image;
+layout(set = 1, binding = 0, rgba8) uniform image2D image;
+layout(set = 1, binding = 1) uniform accelerationStructureNV topLevelAS;
 
 /*
 *	Calculates the direction.

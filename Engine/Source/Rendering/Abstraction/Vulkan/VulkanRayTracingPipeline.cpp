@@ -19,7 +19,7 @@ void VulkanRayTracingPipeline::Initialize(const VulkanRayTracingPipelineCreation
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
-	CreatePipelineLayoutCreateInfo(&pipelineLayoutCreateInfo);
+	CreatePipelineLayoutCreateInfo(parameters, &pipelineLayoutCreateInfo);
 
 	//Create the Vulkan pipeline layout!
 	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &_VulkanPipelineLayout));
@@ -74,20 +74,30 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 */
 void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreationParameters &parameters, DynamicArray<VkRayTracingShaderGroupCreateInfoNV> *const RESTRICT groups) const NOEXCEPT
 {
-	//Reserve the appropriate size.
+	VkRayTracingShaderGroupCreateInfoNV rayTracingShaderGroupCreateInfo;
+
+	rayTracingShaderGroupCreateInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+	rayTracingShaderGroupCreateInfo.pNext = nullptr;
+	rayTracingShaderGroupCreateInfo.type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;
+	rayTracingShaderGroupCreateInfo.generalShader = 0;
+	rayTracingShaderGroupCreateInfo.closestHitShader = 1;
+	rayTracingShaderGroupCreateInfo.anyHitShader = VK_SHADER_UNUSED_NV;
+	rayTracingShaderGroupCreateInfo.intersectionShader = VK_SHADER_UNUSED_NV;
+
 	groups->Reserve(1);
+	groups->EmplaceFast(rayTracingShaderGroupCreateInfo);
 }
 
 /*
 *	Creates a pipeline layout create info.
 */
-void VulkanRayTracingPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo *const RESTRICT pipelineLayoutCreateInfo) const NOEXCEPT
+void VulkanRayTracingPipeline::CreatePipelineLayoutCreateInfo(const VulkanRayTracingPipelineCreationParameters &parameters, VkPipelineLayoutCreateInfo *const RESTRICT pipelineLayoutCreateInfo) const NOEXCEPT
 {
 	pipelineLayoutCreateInfo->sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutCreateInfo->pNext = nullptr;
 	pipelineLayoutCreateInfo->flags = 0;
-	pipelineLayoutCreateInfo->setLayoutCount = 0;
-	pipelineLayoutCreateInfo->pSetLayouts = nullptr;
+	pipelineLayoutCreateInfo->setLayoutCount = parameters._DescriptorSetLayoutCount;
+	pipelineLayoutCreateInfo->pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(parameters._DescriptorSetLayouts);
 	pipelineLayoutCreateInfo->pushConstantRangeCount = 0;
 	pipelineLayoutCreateInfo->pPushConstantRanges = nullptr;
 }

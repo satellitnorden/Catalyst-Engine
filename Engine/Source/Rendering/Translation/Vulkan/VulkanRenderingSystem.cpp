@@ -27,6 +27,7 @@
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
+#include <Rendering/Translation/Vulkan/VulkanRayTracingPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
@@ -247,20 +248,6 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		data->_RenderPass = VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(pipeline->GetMainStage())]._RenderPass->Get();
-
-		//Add the command buffers.
-		const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
-		pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
-
-		//Create the directional shadow command pool.
-		VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
-
-		for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
-		{
-			VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
-			pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-			pipeline->AddCommandBuffer(new (Memory::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
-		}
 	}
 
 	/*
@@ -268,7 +255,31 @@ namespace VulkanRenderingSystemLogic
 	*/
 	void InitializeRayTracingPipeline(RayTracingPipeline *const RESTRICT pipeline) NOEXCEPT
 	{
+		//Create the pipeline.
+		VulkanRayTracingPipelineCreationParameters parameters;
 
+		DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
+		pipelineDescriptorSetLayouts.Reserve(pipeline->GetRenderDataTableLayouts().Size());
+
+		for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
+		{
+			pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+		}
+
+		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
+		parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
+
+		parameters._ShaderModules.Reserve(3);
+		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
+		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
+		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetMissShader())]);
+
+		//Create the pipeline sub stage data.
+		VulkanRayTracingPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanRayTracingPipelineData))) VulkanRayTracingPipelineData() };
+		pipeline->SetData(data);
+
+		//Create the pipeline!
+		data->_Pipeline = VulkanInterface::Instance->CreateRayTracingPipeline(parameters);
 	}
 
 	/*
@@ -929,6 +940,20 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 
 			break;
 		}
+	}
+
+	//Add the command buffers.
+	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
+	pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
+
+	//Create the directional shadow command pool.
+	VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
+
+	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
+	{
+		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
+		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
+		pipeline->AddCommandBuffer(new (Memory::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
 	}
 }
 

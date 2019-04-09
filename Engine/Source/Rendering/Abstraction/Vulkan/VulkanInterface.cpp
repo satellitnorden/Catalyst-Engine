@@ -153,11 +153,18 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanRenderTarget)>(vulkanRenderTarget);
 	}
 
-	//Release all Vulkan pipelines.
-	for (VulkanGraphicsPipeline *const RESTRICT vulkanPipeline : _VulkanPipelines)
+	//Release all Vulkan graphics pipelines.
+	for (VulkanGraphicsPipeline *const RESTRICT vulkanGraphicsPipeline : _VulkanGraphicsPipelines)
 	{
-		vulkanPipeline->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanGraphicsPipeline)>(vulkanPipeline);
+		vulkanGraphicsPipeline->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanGraphicsPipeline)>(vulkanGraphicsPipeline);
+	}
+
+	//Release all Vulkan ray tracing pipelines.
+	for (VulkanRayTracingPipeline *const RESTRICT vulkanRayTracingPipeline : _VulkanRayTracingPipelines)
+	{
+		vulkanRayTracingPipeline->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanRayTracingPipeline)>(vulkanRayTracingPipeline);
 	}
 
 	//Release all Vulkan render passes.
@@ -462,7 +469,23 @@ RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphic
 	static Spinlock lock;
 	ScopedWriteLock<Spinlock> scopedLock{ lock };
 
-	_VulkanPipelines.EmplaceSlow(newPipeline);
+	_VulkanGraphicsPipelines.EmplaceSlow(newPipeline);
+
+	return newPipeline;
+}
+
+/*
+*	Creates and returns a ray tracing pipeline.
+*/
+RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT
+{
+	VulkanRayTracingPipeline *const RESTRICT newPipeline = static_cast<VulkanRayTracingPipeline *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanRayTracingPipeline)>());
+	newPipeline->Initialize(parameters);
+
+	static Spinlock lock;
+	ScopedWriteLock<Spinlock> scopedLock{ lock };
+
+	_VulkanRayTracingPipelines.EmplaceSlow(newPipeline);
 
 	return newPipeline;
 }

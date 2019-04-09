@@ -20,16 +20,6 @@ public:
 	GraphicsPipeline() NOEXCEPT;
 
 	/*
-	*	Returns the data for this pipeline.
-	*/
-	const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
-
-	/*
-	*	Sets the data for this pipeline.
-	*/
-	void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
-
-	/*
 	*	Returns the main stage.
 	*/
 	RenderPassStage GetMainStage() const NOEXCEPT { return _MainStage; }
@@ -68,11 +58,6 @@ public:
 	*	Returns the render targets.
 	*/
 	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
-
-	/*
-	*	Returns the render data table layouts.
-	*/
-	const DynamicArray<RenderDataTableLayoutHandle>& GetRenderDataTableLayouts() const NOEXCEPT { return _RenderDataTableLayouts; }
 
 	/*
 	*	Returns the push constant ranges.
@@ -235,16 +220,6 @@ public:
 	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
-	*	Sets the number of render data table layouts.
-	*/
-	void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT { _RenderDataTableLayouts.Reserve(numberOfRenderDataTableLayouts); }
-
-	/*
-	*	Adds a render data table layout.
-	*/
-	void AddRenderDataTableLayout(RenderDataTableLayoutHandle newRenderDataTableLayout) NOEXCEPT { _RenderDataTableLayouts.EmplaceFast(newRenderDataTableLayout); }
-
-	/*
 	*	Sets the number of push constant ranges.
 	*/
 	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { _PushConstantRanges.Reserve(numberOfPushConstantRanges); }
@@ -376,9 +351,6 @@ public:
 
 private:
 
-	//The data for this pipeline.
-	const void *RESTRICT _Data;
-
 	//The main stage.
 	RenderPassStage _MainStage;
 
@@ -402,9 +374,6 @@ private:
 
 	//The render targets.
 	DynamicArray<RenderTarget> _RenderTargets;
-
-	//The render data table layouts.
-	DynamicArray<RenderDataTableLayoutHandle> _RenderDataTableLayouts;
 
 	//The push constant ranges.
 	DynamicArray<PushConstantRange> _PushConstantRanges;

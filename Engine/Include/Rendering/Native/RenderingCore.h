@@ -104,9 +104,6 @@ ENUMERATION_BIT_OPERATIONS(BufferUsage);
 enum class CommonRenderDataTableLayout : uint8
 {
 	Global,
-	OceanMaterial,
-	ParticleSystem,
-	GaussianBlur,
 
 	NumberOfCommonRenderDataTableLayouts
 };

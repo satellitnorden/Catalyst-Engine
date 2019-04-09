@@ -30,6 +30,17 @@ WorldRayTracingPipeline::WorldRayTracingPipeline() NOEXCEPT
 */
 void WorldRayTracingPipeline::Initialize() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
+	//Add the render data table layouts.
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
+
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::WorldRayGenerationShader);
 
@@ -38,6 +49,30 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 
 	//Set the miss shader shader.
 	SetMissShader(Shader::WorldRayMissShader);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void WorldRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	//RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 #include <Resources/Loading/ResourceLoader.h>

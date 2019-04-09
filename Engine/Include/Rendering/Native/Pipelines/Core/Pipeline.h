@@ -56,6 +56,21 @@ public:
 	}
 
 	/*
+	*	Returns the data for this pipeline.
+	*/
+	FORCE_INLINE const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
+
+	/*
+	*	Sets the data for this pipeline.
+	*/
+	FORCE_INLINE void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
+
+	/*
+*	Returns the render data table layouts.
+*/
+	const DynamicArray<RenderDataTableLayoutHandle>& GetRenderDataTableLayouts() const NOEXCEPT { return _RenderDataTableLayouts; }
+
+	/*
 	*	Sets the number of command buffers.
 	*/
 	FORCE_INLINE void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT
@@ -110,6 +125,22 @@ protected:
 		_ExecutionFunction = function;
 	}
 
+	/*
+	*	Sets the number of render data table layouts.
+	*/
+	FORCE_INLINE void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT
+	{
+		_RenderDataTableLayouts.Reserve(numberOfRenderDataTableLayouts);
+	}
+
+	/*
+	*	Adds a render data table layout.
+	*/
+	FORCE_INLINE void AddRenderDataTableLayout(RenderDataTableLayoutHandle newRenderDataTableLayout) NOEXCEPT
+	{
+		_RenderDataTableLayouts.EmplaceFast(newRenderDataTableLayout);
+	}
+
 private:
 
 	//The pipeline type.
@@ -120,6 +151,12 @@ private:
 
 	//The execution function.
 	ExecutionFunction _ExecutionFunction;
+
+	//The data for this pipeline.
+	const void *RESTRICT _Data;
+
+	//The render data table layouts.
+	DynamicArray<RenderDataTableLayoutHandle> _RenderDataTableLayouts;
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;

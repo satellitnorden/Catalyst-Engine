@@ -44,7 +44,7 @@ private:
 	/*
 	*	Creates a pipeline layout create info.
 	*/
-	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo *const RESTRICT pipelineLayoutCreateInfo) const NOEXCEPT;
+	void CreatePipelineLayoutCreateInfo(const VulkanRayTracingPipelineCreationParameters &parameters, VkPipelineLayoutCreateInfo *const RESTRICT pipelineLayoutCreateInfo) const NOEXCEPT;
 
 	/*
 	*	Creates the ray tracing pipeline create info.

@@ -23,6 +23,8 @@
 #include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInstance.h>
+#include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipeline.h>
+#include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanQueue.h>
@@ -223,6 +225,11 @@ public:
 	RESTRICTED VulkanGraphicsPipeline *const RESTRICT CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Creates and returns a ray tracing pipeline.
+	*/
+	RESTRICTED VulkanRayTracingPipeline *const RESTRICT CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT;
+
+	/*
 	*	Creates and returns a render pass.
 	*/
 	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
@@ -308,8 +315,11 @@ private:
 	//Container for all Vulkan framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _VulkanFramebuffers;
 
-	//Container for all Vulkan pipelines.
-	DynamicArray<VulkanGraphicsPipeline *RESTRICT> _VulkanPipelines;
+	//Container for all Vulkan graphics pipelines.
+	DynamicArray<VulkanGraphicsPipeline *RESTRICT> _VulkanGraphicsPipelines;
+
+	//Container for all Vulkan ray tracing pipelines.
+	DynamicArray<VulkanRayTracingPipeline *RESTRICT> _VulkanRayTracingPipelines;
 
 	//Container for all Vulkan render passes.
 	DynamicArray<VulkanRenderPass *RESTRICT> _VulkanRenderPasses;
