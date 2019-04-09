@@ -280,8 +280,8 @@ namespace VulkanRenderingSystemLogic
 
 		parameters._ShaderModules.Reserve(3);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
-		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetMissShader())]);
+		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
 
 		//Create the pipeline sub stage data.
 		VulkanRayTracingPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanRayTracingPipelineData))) VulkanRayTracingPipelineData() };
@@ -294,7 +294,7 @@ namespace VulkanRenderingSystemLogic
 		const uint32 shaderGroupHandleSize{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
 		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * 3 };
 
-		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, 0, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		//Upload the data to it.
 		uint8 *const RESTRICT shaderHandleStorage{ static_cast<uint8 *const RESTRICT>(Memory::AllocateMemory(shaderHandleStorageSize)) };
