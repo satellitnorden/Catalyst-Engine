@@ -127,9 +127,9 @@ void VulkanCommandBuffer::CommandBindIndexBuffer(const VkBuffer vulkanIndexBuffe
 /*
 *	Records a bind pipeline command.
 */
-void VulkanCommandBuffer::CommandBindPipeline(const VkPipeline vulkanPipeline) NOEXCEPT
+void VulkanCommandBuffer::CommandBindPipeline(const VkPipelineBindPoint pipelineBindPoint, const VkPipeline vulkanPipeline) NOEXCEPT
 {
-	vkCmdBindPipeline(_VulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+	vkCmdBindPipeline(_VulkanCommandBuffer, pipelineBindPoint, vulkanPipeline);
 }
 
 /*
@@ -249,6 +249,28 @@ void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelin
 void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
 {
 	vkCmdSetEvent(_VulkanCommandBuffer, event, stageMask);
+}
+
+/*
+*	Records a trace rays command.
+*/
+void VulkanCommandBuffer::CommandTraceRays() NOEXCEPT
+{
+	vkCmdTraceRaysNV(	_VulkanCommandBuffer,
+						VK_NULL_HANDLE,
+						0,
+						0,
+						0,
+						0,
+						VK_NULL_HANDLE,
+						0,
+						0,
+						VK_NULL_HANDLE,
+						0,
+						0,
+						0,
+						0,
+						0);
 }
 
 /*

@@ -61,7 +61,7 @@ public:
 	/*
 	*	Records a bind pipeline command.
 	*/
-	void CommandBindPipeline(const VkPipeline vulkanPipeline) NOEXCEPT;
+	void CommandBindPipeline(const VkPipelineBindPoint pipelineBindPoint, const VkPipeline vulkanPipeline) NOEXCEPT;
 
 	/*
 	*	Records a bind vertex buffers command.
@@ -117,6 +117,11 @@ public:
 	*	Records a set event command.
 	*/
 	void CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT;
+
+	/*
+	*	Records a trace rays command.
+	*/
+	void CommandTraceRays() NOEXCEPT;
 
 	/*
 	*	Records a wait events command.

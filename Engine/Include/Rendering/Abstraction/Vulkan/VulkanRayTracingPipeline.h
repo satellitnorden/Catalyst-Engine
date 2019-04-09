@@ -23,6 +23,22 @@ public:
 	*/
 	void Release() NOEXCEPT;
 
+	/*
+	*	Returns the underlying Vulkan pipeline.
+	*/
+	const VkPipeline& GetPipeline() const NOEXCEPT
+	{
+		return _VulkanPipeline;
+	}
+
+	/*
+	*	Returns the underlying Vulkan pipeline layout.
+	*/
+	const VkPipelineLayout& GetPipelineLayout() const NOEXCEPT
+	{
+		return _VulkanPipelineLayout;
+	}
+
 private:
 
 	//The underlying Vulkan pipeline.

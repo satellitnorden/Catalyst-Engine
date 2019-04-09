@@ -33,6 +33,42 @@ VKAPI_ATTR void VKAPI_CALL vkCmdBuildAccelerationStructureNV(
 	return function(commandBuffer, pInfo, instanceData, instanceOffset, update, dst, src, scratch, scratchOffset);
 }
 
+VKAPI_ATTR void VKAPI_CALL vkCmdTraceRaysNV(
+	VkCommandBuffer                             commandBuffer,
+	VkBuffer                                    raygenShaderBindingTableBuffer,
+	VkDeviceSize                                raygenShaderBindingOffset,
+	VkBuffer                                    missShaderBindingTableBuffer,
+	VkDeviceSize                                missShaderBindingOffset,
+	VkDeviceSize                                missShaderBindingStride,
+	VkBuffer                                    hitShaderBindingTableBuffer,
+	VkDeviceSize                                hitShaderBindingOffset,
+	VkDeviceSize                                hitShaderBindingStride,
+	VkBuffer                                    callableShaderBindingTableBuffer,
+	VkDeviceSize                                callableShaderBindingOffset,
+	VkDeviceSize                                callableShaderBindingStride,
+	uint32_t                                    width,
+	uint32_t                                    height,
+	uint32_t                                    depth)
+{
+	static const auto function{ reinterpret_cast<PFN_vkCmdTraceRaysNV>(vkGetDeviceProcAddr(VulkanInterface::Instance->GetLogicalDevice().Get(), "vkCmdTraceRaysNV")) };
+
+	return function(commandBuffer,
+					raygenShaderBindingTableBuffer,
+					raygenShaderBindingOffset,
+					missShaderBindingTableBuffer,
+					missShaderBindingOffset,
+					missShaderBindingStride,
+					hitShaderBindingTableBuffer,
+					hitShaderBindingOffset,
+					hitShaderBindingStride,
+					callableShaderBindingTableBuffer,
+					callableShaderBindingOffset,
+					callableShaderBindingStride,
+					width,
+					height,
+					depth);
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL vkCreateAccelerationStructureNV(
 	VkDevice                                    device,
 	const VkAccelerationStructureCreateInfoNV*  pCreateInfo,

@@ -73,6 +73,11 @@ public:
 	void PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Traces rays.
+	*/
+	void TraceRays(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
+
+	/*
 	*	Ends the command buffer.
 	*/
 	void End(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
