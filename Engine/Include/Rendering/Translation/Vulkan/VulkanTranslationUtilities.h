@@ -197,7 +197,7 @@ public:
 	*/
 	static void GetVulkanGeometryInstance(const TopLevelAccelerationStructureInstanceData &data, VulkanGeometryInstance *const RESTRICT geometryInstance)
 	{
-		//Transpose the transform.
+		//Transpose and copy the transform.
 		Matrix4 transposedTransform{ data._Transform };
 		transposedTransform.Transpose();
 
