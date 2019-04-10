@@ -254,16 +254,6 @@ public:
 	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
 
 	/*
-	*	Adds a terrain height texture to the global render data and returns it's index.
-	*/
-	uint8 AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
-
-	/*
-	*	Returns a terrain height texture to the global render data and marks it's index as available.
-	*/
-	void ReturnTerrainHeightTextureToGlobalRenderData(const uint8 index) NOEXCEPT;
-
-	/*
 	*	Adds a texture to the global render data and returns it's index.
 	*/
 	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;

@@ -6,34 +6,6 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_NV_ray_tracing : require
 
-//Preprocessor defines.
-#define MAXIMUM_NUMBER_OF_TERRAIN_PATCHES 255
-
-//Terrain patch data definition.
-struct TerrainPatchData
-{
-    vec2 worldPosition;
-    float patchSize;
-    int borders;
-    int heightTextureIndex;
-    int normalTextureIndex;
-    int materialTextureIndex;
-    float materialTextureResolution;
-    float materialTextureResolutionSquared;
-    float inverseMaterialTextureResolution;
-    int padding1;
-    int padding2;
-};
-
-//Terrain material data definition.
-struct TerrainMaterialData
-{
-    int albedoTextureIndex;
-    int normalMapTextureIndex;
-    int materialPropertiesTextureIndex;
-    float textureScalingFactor;
-};
-
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
@@ -60,35 +32,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     //Total size; 472
 };
 
-//The global samplers.
-layout (set = 0, binding = 1) uniform sampler globalSamplers[6];
-
 //The global textures.
-layout (set = 0, binding = 2) uniform texture2D globalTextures[512];
-
-//The terrain height textures.
-layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
-
-//The terrain patch uniform data.
-layout (std140, set = 0, binding = 4) uniform TerrainPatchUniformData
-{
-    layout (offset = 0) TerrainPatchData terrainPatchData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
-};
-
-//The terrain material uniform data.
-layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
-{
-    layout (offset = 0) TerrainMaterialData terrainMaterialData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
-};
+layout (set = 0, binding = 1) uniform sampler2D globalTextures[512];
 
 //Constants.
-#define FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index 0
-#define FilterLinear_MipmapModeLinear_AddressModeRepeat_Index 1
-#define FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index 2
-#define FilterLinear_MipmapModeNearest_AddressModeRepeat_Index 3
-#define FilterNearest_MipmapModeNearest_AddressModeClampToBorder_Index 4
-#define FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index 5
-
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)

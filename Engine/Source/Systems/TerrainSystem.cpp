@@ -609,7 +609,7 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 													&maximumHeight,
 													&patchInformation->_HeightTexture);
 
-	patchRenderInformation->_InstanceInformation._HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainHeightTextureToGlobalRenderData(patchInformation->_HeightTexture));
+	patchRenderInformation->_InstanceInformation._HeightTextureIndex = 0;
 
 	//Generate the terrain textures.
 	const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_RESOLUTIONS[depth] };
@@ -637,7 +637,6 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 */
 void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 {
-	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._HeightTextureIndex);
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex));
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._MaterialTextureIndex));
 	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._HeightTexture);
