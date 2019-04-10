@@ -19,15 +19,40 @@ vec3 CalculateDirection()
 {
 	vec2 center = vec2(gl_LaunchIDNV.xy) + vec2(0.5f);
     vec2 textureCoordinate = center / vec2(gl_LaunchSizeNV.xy);
-    textureCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec4 origin = inversePerceiverMatrix * vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    vec4 target = inverseProjectionMatrix * vec4(textureCoordinate.x, textureCoordinate.y, 1.0f, 1.0f) ;
-    return vec4(inversePerceiverMatrix * vec4(normalize(target.xyz), 0.0f)).xyz;
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+	vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, 1.0f), 1.0f);
+	float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
+	viewSpacePosition *= inverseViewSpacePositionDenominator;
+	vec4 worldSpacePosition = inversePerceiverMatrix * viewSpacePosition;
+
+	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
+
+	return normalize(worldPosition - perceiverWorldPosition);
+
+	/*
+	vec3 randomPosition = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, totalTime * PI)) * 2.0f - 1.0f,
+											RandomFloat(vec3(gl_LaunchIDNV.xy, totalTime * PHI)) * 2.0f - 1.0f,
+											RandomFloat(vec3(gl_LaunchIDNV.xy, totalTime * SQUARE_ROOT_OF_TWO)) * 2.0f - 1.0f)) * 0.0001f;
+
+	return normalize(worldPosition + randomPosition - perceiverWorldPosition);
+	*/
 }
 
 void main() 
 {
-	traceNV(topLevelAccelerationStructure, gl_RayFlagsOpaqueNV, 0xff, 0, 0, 0, perceiverWorldPosition, 0.1f, CalculateDirection(), 100.0f, 0);
+	traceNV(
+			topLevelAccelerationStructure, 	//topLevel
+			gl_RayFlagsOpaqueNV, 			//rayFlags
+			0xff, 							//cullMask
+			0, 								//sbtRecordOffset
+			0, 								//sbtRecordStride
+			0, 								//missIndex
+			perceiverWorldPosition, 		//origin
+			0.1f, 							//Tmin
+			CalculateDirection(), 			//direction
+			100.0f, 						//Tmax
+			0 								//paylod
+			);
 
     imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(hitValue, 1.0));
 }
