@@ -217,10 +217,11 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		VkBool32 hasPresentSupport{ false };
 		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
-		if (hasPresentSupport && queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && _QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] == UINT32_MAXIMUM)
+		if (hasPresentSupport && queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && _QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] == UINT32_MAXIMUM)
 		{
 			_QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] = queueFamilyCounter++;
 			_QueueFamilyIndices[UNDERLYING(QueueType::Present)] = _QueueFamilyIndices[UNDERLYING(QueueType::Graphics)];
+			_QueueFamilyIndices[UNDERLYING(QueueType::Compute)] = _QueueFamilyIndices[UNDERLYING(QueueType::Present)];
 
 			continue;
 		}

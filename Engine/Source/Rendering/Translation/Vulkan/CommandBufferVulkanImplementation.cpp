@@ -63,7 +63,7 @@ void CommandBuffer::BindRenderDataTable(const Pipeline *const RESTRICT pipeline,
 		const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(pipeline->GetData()) };
 
 		//Bind the render data tables.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindDescriptorSets(pipelineData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindDescriptorSets(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
 	}
 
 	else if (pipeline->GetType() == Pipeline::Type::RayTracing)
@@ -72,7 +72,7 @@ void CommandBuffer::BindRenderDataTable(const Pipeline *const RESTRICT pipeline,
 		const VulkanRayTracingPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
 
 		//Bind the render data tables.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindDescriptorSets(pipelineData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindDescriptorSets(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, pipelineData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
 	}
 }
 

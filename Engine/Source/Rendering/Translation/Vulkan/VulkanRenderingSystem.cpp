@@ -1048,7 +1048,7 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 	pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
 
 	//Create the directional shadow command pool.
-	VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
+	VulkanCommandPool *const RESTRICT pipelineCommandPool{ pipeline->GetType() == Pipeline::Type::Graphics ? VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) : VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
 
 	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
 	{

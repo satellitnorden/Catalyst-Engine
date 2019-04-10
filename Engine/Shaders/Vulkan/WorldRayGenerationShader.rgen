@@ -8,7 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 layout(set = 1, binding = 0, rgba32f) uniform image2D image;
-layout(set = 1, binding = 1) uniform accelerationStructureNV topLevelAS;
+layout(set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerationStructure;
+
+layout(location = 0) rayPayloadNV vec3 hitValue;
 
 /*
 *	Calculates the direction.
@@ -25,5 +27,7 @@ vec3 CalculateDirection()
 
 void main() 
 {
-    imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(0.5, 0.5, 0.5, 1.0));
+	traceNV(topLevelAccelerationStructure, gl_RayFlagsOpaqueNV, 0xff, 0, 0, 0, perceiverWorldPosition, 0.1f, CalculateDirection(), 100.0f, 0);
+
+    imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(hitValue, 1.0));
 }

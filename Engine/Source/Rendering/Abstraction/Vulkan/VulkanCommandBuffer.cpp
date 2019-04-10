@@ -111,9 +111,9 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const Vector4<float> &c
 /*
 *	Records a bind descriptor sets command.
 */
-void VulkanCommandBuffer::CommandBindDescriptorSets(const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT
+void VulkanCommandBuffer::CommandBindDescriptorSets(const VkPipelineBindPoint pipelineBindPoint, const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT
 {
-	vkCmdBindDescriptorSets(_VulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, firstBinding, descriptorSetCount, descriptorSets, 0, nullptr);
+	vkCmdBindDescriptorSets(_VulkanCommandBuffer, pipelineBindPoint, pipelineLayout, firstBinding, descriptorSetCount, descriptorSets, 0, nullptr);
 }
 
 /*

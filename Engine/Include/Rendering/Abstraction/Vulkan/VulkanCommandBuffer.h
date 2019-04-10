@@ -51,7 +51,7 @@ public:
 	/*
 	*	Records a bind descriptor sets command.
 	*/
-	void CommandBindDescriptorSets(const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT;
+	void CommandBindDescriptorSets(const VkPipelineBindPoint pipelineBindPoint, const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT;
 
 	/*
 	*	Records a bind index buffer command.

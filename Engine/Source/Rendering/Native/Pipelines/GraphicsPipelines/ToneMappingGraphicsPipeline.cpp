@@ -117,6 +117,7 @@ void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 */
 void ToneMappingGraphicsPipeline::RenderInternal() NOEXCEPT
 {
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
