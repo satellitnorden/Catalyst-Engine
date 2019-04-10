@@ -23,16 +23,8 @@
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 
 //Systems.
-#include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
-#include <Systems/TerrainSystem.h>
-
-//Vegetation.
-#include <Vegetation/GrassVegetationMaterial.h>
-#include <Vegetation/GrassVegetationModel.h>
-#include <Vegetation/TreeVegetationMaterial.h>
-#include <Vegetation/TreeVegetationModel.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
