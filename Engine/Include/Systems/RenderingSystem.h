@@ -134,10 +134,9 @@ public:
 	/*
 	*	Creates a bottom level acceleration structure.
 	*/
-	void CreateBottomLevelAccelerationStructure(const BufferHandle &buffer,
-												const uint32 verticesOffset,
+	void CreateBottomLevelAccelerationStructure(const BufferHandle &vertexBuffer,
 												const uint32 numberOfVertices,
-												const uint32 indicesOffset,
+												const BufferHandle &indexBuffer,
 												const uint32 numberOfIndices,
 												AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
@@ -197,6 +196,11 @@ public:
 	*	Binds a sampler to a render data table.
 	*/
 	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, SamplerHandle sampler) const NOEXCEPT;
+
+	/*
+	*	Binds a storage buffer to a render data table.
+	*/
+	void BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT;
 
 	/*
 	*	Binds a storage image to a render data table.

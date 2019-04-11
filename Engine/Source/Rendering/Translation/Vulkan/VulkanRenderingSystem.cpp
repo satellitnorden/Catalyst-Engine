@@ -493,10 +493,9 @@ namespace VulkanRenderingSystemLogic
 /*
 *	Creates a bottom level acceleration structure.
 */
-void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &buffer,
-																const uint32 verticesOffset,
+void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &vertexBuffer,
 																const uint32 numberOfVertices,
-																const uint32 indicesOffset,
+																const BufferHandle &indexBuffer,
 																const uint32 numberOfIndices,
 																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
@@ -507,13 +506,13 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 	geometry.geometryType = VkGeometryTypeNV::VK_GEOMETRY_TYPE_TRIANGLES_NV;
 	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
 	geometry.geometry.triangles.pNext = nullptr;
-	geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get();
-	geometry.geometry.triangles.vertexOffset = verticesOffset;
+	geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(vertexBuffer)->Get();
+	geometry.geometry.triangles.vertexOffset = 0;
 	geometry.geometry.triangles.vertexCount = numberOfVertices;
 	geometry.geometry.triangles.vertexStride = sizeof(Vertex);
 	geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-	geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get();
-	geometry.geometry.triangles.indexOffset = indicesOffset;
+	geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(indexBuffer)->Get();
+	geometry.geometry.triangles.indexOffset = 0;
 	geometry.geometry.triangles.indexCount = numberOfIndices;
 	geometry.geometry.triangles.indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
 	geometry.geometry.triangles.transformData = VK_NULL_HANDLE;
@@ -799,18 +798,52 @@ void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, co
 }
 
 /*
+*	Binds a storage buffer to a render data table.
+*/
+void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
+	VulkanBuffer *const RESTRICT vulkanBuffer{ static_cast<VulkanBuffer *const RESTRICT>(buffer) };
+
+	//Create the destriptor buffer info.
+	VkDescriptorBufferInfo descriptorBufferInfo;
+
+	descriptorBufferInfo.buffer = vulkanBuffer->Get();
+	descriptorBufferInfo.offset = 0;
+	descriptorBufferInfo.range = VK_WHOLE_SIZE;
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	writeDescriptorSet.pImageInfo = nullptr;
+	writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
 *	Binds a uniform buffer to a render data table.
 */
 void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
-	VulkanBuffer *const RESTRICT vulkanUniformBuffer{ static_cast<VulkanBuffer *const RESTRICT>(buffer) };
+	VulkanBuffer *const RESTRICT vulkanBuffer{ static_cast<VulkanBuffer *const RESTRICT>(buffer) };
 
 	//Create the destriptor buffer info.
 	VkDescriptorBufferInfo descriptorBufferInfo;
 
-	descriptorBufferInfo.buffer = vulkanUniformBuffer->Get();
+	descriptorBufferInfo.buffer = vulkanBuffer->Get();
 	descriptorBufferInfo.offset = 0;
 	descriptorBufferInfo.range = VK_WHOLE_SIZE;
 

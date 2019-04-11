@@ -14,17 +14,25 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 	model->_Vertices = std::move(data->_Vertices);
 	model->_Indices = std::move(data->_Indices);
 
-	//Create the buffer.
-	const void *const RESTRICT dataChunks[]{ &model->_AxisAlignedBoundingBox, model->_Vertices.Data(), model->_Indices.Data() };
-	const uint64 dataSizes[]{ sizeof(AxisAlignedBoundingBox), sizeof(Vertex) * model->_Vertices.Size(), sizeof(uint32) * model->_Indices.Size() };
-	RenderingSystem::Instance->CreateBuffer(dataSizes[0] + dataSizes[1] + dataSizes[2], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 3, &model->_Buffer);
+	//Create the buffers.
+	{
+		const void *const RESTRICT dataChunks[]{ model->_Vertices.Data() };
+		const uint64 dataSizes[]{ sizeof(Vertex) * model->_Vertices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_VertexBuffer);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_VertexBuffer);
+	}
+
+	{
+		const void *const RESTRICT dataChunks[]{ model->_Indices.Data() };
+		const uint64 dataSizes[]{ sizeof(uint32) * model->_Indices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &model->_IndexBuffer);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffer);
+	}
 
 	//Create the acceleration structure.
-	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_Buffer,
-																		static_cast<uint32>(dataSizes[0]),
+	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_VertexBuffer,
 																		static_cast<uint32>(model->_Vertices.Size()),
-																		static_cast<uint32>(dataSizes[0] + dataSizes[1]),
+																		model->_IndexBuffer,
 																		static_cast<uint32>(model->_Indices.Size()),
 																		&model->_AccelerationStructure);
 }

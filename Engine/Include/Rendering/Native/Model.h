@@ -25,8 +25,11 @@ public:
 	//The indices of this model.
 	DynamicArray<uint32> _Indices;
 
-	//The buffer.
-	BufferHandle _Buffer;
+	//The vertex buffer.
+	BufferHandle _VertexBuffer;
+
+	//The index buffer.
+	BufferHandle _IndexBuffer;
 
 	//The acceleration structure.
 	AccelerationStructureHandle _AccelerationStructure;

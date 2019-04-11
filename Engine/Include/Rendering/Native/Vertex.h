@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -23,6 +24,9 @@ public:
 
 	//The texture coordinate of this vertex.
 	Vector2<float> _TextureCoordinate;
+
+	//Some padding. (:
+	Padding<4> _Padding;
 
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.

@@ -93,9 +93,10 @@ enum class BlendFactor : uint8
 enum class BufferUsage : uint8
 {
 	IndexBuffer = BIT(0),
-	RayTracing = BIT(1),
-	UniformBuffer = BIT(2),
-	VertexBuffer = BIT(3)
+	StorageBuffer = BIT(1),
+	RayTracing = BIT(2),
+	UniformBuffer = BIT(3),
+	VertexBuffer = BIT(4)
 };
 
 ENUMERATION_BIT_OPERATIONS(BufferUsage);

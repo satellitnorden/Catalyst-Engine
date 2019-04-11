@@ -78,6 +78,7 @@ public:
 #define MAPPING(USAGE, BIT) if (TEST_BIT(usage, USAGE)) flags |= BIT;
 
 		MAPPING(BufferUsage::IndexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		MAPPING(BufferUsage::StorageBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		MAPPING(BufferUsage::RayTracing, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
 		MAPPING(BufferUsage::UniformBuffer, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		MAPPING(BufferUsage::VertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);

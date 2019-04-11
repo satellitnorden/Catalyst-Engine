@@ -59,10 +59,12 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -96,6 +98,8 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(data), &handle);
 
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, handle);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._VertexBuffer);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._IndexBuffer);
 	}
 
 	//Cache data the will be used.
