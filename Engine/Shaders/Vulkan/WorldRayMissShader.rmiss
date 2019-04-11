@@ -7,9 +7,13 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
+//Descriptor set data.
+layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
+
+//In parameters.
 layout(location = 0) rayPayloadInNV vec3 hitValue;
 
 void main()
 {
-    hitValue = vec3(0.0, 0.1, 0.3);
+    hitValue = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
 }

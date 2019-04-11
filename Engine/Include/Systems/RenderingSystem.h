@@ -25,6 +25,7 @@ class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
 class Entity;
 class Resolution;
+class TextureCubeData;
 
 class RenderingSystem final
 {
@@ -240,7 +241,7 @@ public:
 	/*
 	*	Creates a texture cube.
 	*/
-	void CreateTextureCube(const float *const RESTRICT data, const Resolution resolution, TextureCubeHandle *const RESTRICT) const NOEXCEPT;
+	void CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Initializes a render pass

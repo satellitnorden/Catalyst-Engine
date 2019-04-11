@@ -23,8 +23,8 @@ struct Vertex
 #define INDICES_OFFSET (2637)
 
 //Descriptor set data.
-layout (set = 1, binding = 2) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
-layout (set = 1, binding = 3) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
+layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
+layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
 
 //In parameters.
 layout(location = 0) rayPayloadInNV vec3 hitValue;

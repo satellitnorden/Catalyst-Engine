@@ -16,7 +16,7 @@
 //Static variable definitions.
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
-Map<HashString, TextureCube> ResourceLoader::_TextureCubes;
+Map<HashString, TextureCubeHandle> ResourceLoader::_TextureCubes;
 Map<HashString, Texture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
 
 /*

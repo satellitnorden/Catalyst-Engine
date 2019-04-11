@@ -59,12 +59,13 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayMiss),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -98,8 +99,9 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(data), &handle);
 
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, handle);
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._VertexBuffer);
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._IndexBuffer);
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._VertexBuffer);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._IndexBuffer);
 	}
 
 	//Cache data the will be used.

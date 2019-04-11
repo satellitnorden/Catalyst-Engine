@@ -26,7 +26,7 @@ public:
 	/*
 	*	Creates a texture cube.
 	*/
-	static void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube *const RESTRICT texture) NOEXCEPT;
+	static void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Creates a texture 2D.

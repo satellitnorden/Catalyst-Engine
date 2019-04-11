@@ -40,10 +40,10 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 /*
 *	Creates a texture cube.
 */
-void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCube *const RESTRICT texture) NOEXCEPT
+void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT
 {
-	//Initialize the texture.
-	texture->Initialize(data->_Resolution, reinterpret_cast<const Vector4<float> *const RESTRICT>(data->_Data.Data()));
+	//Create the texture cube.
+	RenderingSystem::Instance->CreateTextureCube(*data, texture);
 }
 
 /*

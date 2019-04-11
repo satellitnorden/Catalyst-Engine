@@ -8,7 +8,6 @@
 
 //Rendering.
 #include <Rendering/Native/Model.h>
-#include <Rendering/Native/TextureCube.h>
 #include <Rendering/Native/Texture2D.h>
 
 //Resources.
@@ -40,7 +39,7 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding texture cube.
 	*/
-	static const TextureCube& GetTextureCube(const HashString resourceID) { return _TextureCubes[resourceID]; }
+	static const TextureCubeHandle& GetTextureCube(const HashString resourceID) { return _TextureCubes[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding texture 2D.
@@ -56,7 +55,7 @@ private:
 	static Map<HashString, SoundBankHandle> _SoundBanks;
 
 	//Container for all texture cubes.
-	static Map<HashString, TextureCube> _TextureCubes;
+	static Map<HashString, TextureCubeHandle> _TextureCubes;
 
 	//Container for all texture 2Ds.
 	static Map<HashString, Texture2D<Vector4<byte>>> _Texture2Ds;

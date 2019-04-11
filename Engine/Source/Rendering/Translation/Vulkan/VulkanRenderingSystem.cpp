@@ -31,6 +31,9 @@
 #include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
+//Resources.
+#include <Resources/Data/TextureCubeData.h>
+
 //Systems.
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -921,10 +924,10 @@ void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) c
 /*
 *	Creates a texture cube.
 */
-void RenderingSystem::CreateTextureCube(const float *const RESTRICT data, const Resolution resolution, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture cube.
-	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data, resolution._Width, resolution._Height));
+	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data.Data(), data._Resolution, data._Resolution));
 }
 
 /*
