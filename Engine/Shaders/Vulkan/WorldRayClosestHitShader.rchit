@@ -67,6 +67,11 @@ void main()
 	finalVertex.tangent = vertex1.tangent * barycentricCoordinates.x + vertex2.tangent * barycentricCoordinates.y + vertex3.tangent * barycentricCoordinates.z;
 	finalVertex.textureCoordinate = vertex1.textureCoordinate * barycentricCoordinates.x + vertex2.textureCoordinate * barycentricCoordinates.y + vertex3.textureCoordinate * barycentricCoordinates.z;
 
+	//Transform the final vertex into world space.
+	finalVertex.position = gl_ObjectToWorldNV * vec4(finalVertex.position, 1.0f);
+	finalVertex.normal = gl_ObjectToWorldNV * vec4(finalVertex.normal, 0.0f);
+	finalVertex.tangent = gl_ObjectToWorldNV * vec4(finalVertex.tangent, 0.0f);
+
 	//Sample the albedo.
 	vec3 albedo = texture(globalTextures[3], finalVertex.textureCoordinate).rgb;
 
