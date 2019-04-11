@@ -52,6 +52,9 @@ Vertex UnpackVertex(uint index)
 
 void main()
 {
+	//Calculate the hit position.
+	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
+
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
 	Vertex vertex2 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
@@ -87,8 +90,8 @@ void main()
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	hitValue = CalculateLight(	normalize(perceiverWorldPosition - finalVertex.position),
-								normalize(vec3(2.5f, 2.5f, 2.5f) - finalVertex.position),
+	hitValue = CalculateLight(	normalize(perceiverWorldPosition - hitPosition),
+								normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
 								finalNormal,
 								1.0f,
 								materialProperties.x,
