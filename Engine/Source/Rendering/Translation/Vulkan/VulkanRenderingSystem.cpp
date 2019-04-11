@@ -122,17 +122,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
 			{
-				if (pipeline->GetType() == Pipeline::Type::Graphics)
-				{
-					const GraphicsPipeline *const RESTRICT graphicsPipeline{ static_cast<const GraphicsPipeline *const RESTRICT>(pipeline) };
-
-					if (graphicsPipeline->IncludeInRender())
-					{
-						currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(graphicsPipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
-					}
-				}
-				
-				else
+				if (pipeline->IncludeInRender())
 				{
 					currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
 				}

@@ -20,6 +20,9 @@ public:
 	//The bottom level acceleration structure.
 	AccelerationStructureHandle _BottomLevelAccelerationStructure{ EMPTY_HANDLE };
 
+	//The index.
+	uint64 _Index{ UINT64_MAXIMUM };
+
 	/*
 	*	Default constructor.
 	*/
@@ -31,10 +34,11 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(const Matrix4 &initialTransform, const AccelerationStructureHandle &initialBottomLevelAccelerationStructure) NOEXCEPT
+	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(const Matrix4 &initialTransform, const AccelerationStructureHandle &initialBottomLevelAccelerationStructure, const uint64 initialIndex) NOEXCEPT
 		:
 		_Transform(initialTransform),
-		_BottomLevelAccelerationStructure(initialBottomLevelAccelerationStructure)
+		_BottomLevelAccelerationStructure(initialBottomLevelAccelerationStructure),
+		_Index(initialIndex)
 	{
 
 	}

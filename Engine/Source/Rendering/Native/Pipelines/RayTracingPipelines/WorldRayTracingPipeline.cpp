@@ -1,14 +1,26 @@
 //Header file.
 #include <Rendering/Native/Pipelines/RayTracingPipelines/WorldRayTracingPipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+
+//Resources.
+#include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(WorldRayTracingPipeline);
+
+//World ray tracing pipeline constants.
+namespace WorldRayTracingPipelineConstants
+{
+	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 4 };
+}
 
 /*
 *	Default constructor.
@@ -64,8 +76,8 @@ void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayMiss),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, 4, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -81,8 +93,6 @@ void WorldRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 }
 
-#include <Resources/Loading/ResourceLoader.h>
-
 /*
 *	Executes this ray tracing pipeline.
 */
@@ -92,16 +102,37 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 	if (!once)
 	{
-		once = true;
+		const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
+		const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
 
-		TopLevelAccelerationStructureInstanceData data{ MatrixConstants::IDENTITY, ResourceLoader::GetModel(HashString("Dresser_Model"))._AccelerationStructure };
+		ASSERT(numberOfStaticModelComponents < WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
+
+		if (numberOfStaticModelComponents == 0)
+		{
+			SetIncludeInRender(false);
+
+			return;
+		}
+
+		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
+		instances.Reserve(numberOfStaticModelComponents);
+
+		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent, ++transformComponent)
+		{
+			instances.EmplaceFast(transformComponent->_LocalTransform, staticModelComponent->_Model->_AccelerationStructure, i);
+
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, static_cast<uint32>(i), &_RenderDataTable, staticModelComponent->_Model->_VertexBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, static_cast<uint32>(i), &_RenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+		}
+
 		AccelerationStructureHandle handle;
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(data), &handle);
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &handle);
 
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, handle);
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._VertexBuffer);
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, 0, &_RenderDataTable, ResourceLoader::GetModel(HashString("Dresser_Model"))._IndexBuffer);
+	
+		once = true;
 	}
 
 	//Cache data the will be used.
@@ -119,4 +150,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 	//End the command buffer.
 	commandBuffer->End(this);
+
+	//Include in render.
+	SetIncludeInRender(true);
 }

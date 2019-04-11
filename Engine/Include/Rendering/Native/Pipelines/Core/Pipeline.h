@@ -99,6 +99,11 @@ public:
 	*/
 	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
 
+	/*
+	*	Returns whether or not this pipeline should be included in the final render.
+	*/
+	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
+
 protected:
 
 	/*
@@ -141,6 +146,11 @@ protected:
 		_RenderDataTableLayouts.EmplaceFast(newRenderDataTableLayout);
 	}
 
+	/*
+	*	Sets whether or not this render pass should be included in the final render.
+	*/
+	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
+
 private:
 
 	//The pipeline type.
@@ -160,5 +170,8 @@ private:
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
+
+	//Denotes whether or not this pipeline should be included in the final render.
+	bool _IncludeInRender;
 
 };

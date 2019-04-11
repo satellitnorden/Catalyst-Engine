@@ -170,11 +170,6 @@ public:
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
 
 	/*
-	*	Returns whether or not this pipeline should be included in the final render.
-	*/
-	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
-
-	/*
 	*	Sets the main stage.
 	*/
 	void SetMainStage(const RenderPassStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
@@ -344,11 +339,6 @@ public:
 	*/
 	void SetTopology(const Topology newTopology) NOEXCEPT { _Topology = newTopology; }
 
-	/*
-	*	Sets whether or not this render pass should be included in the final render.
-	*/
-	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
-
 private:
 
 	//The main stage.
@@ -440,8 +430,5 @@ private:
 
 	//The topology.
 	Topology _Topology;
-
-	//Denotes whether or not this pipeline should be included in the final render.
-	bool _IncludeInRender;
 
 };
