@@ -7,8 +7,8 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
+#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
-#include <Rendering/Native/Texture2D.h>
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
@@ -44,7 +44,7 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding texture 2D.
 	*/
-	static const Texture2D<Vector4<byte>>& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
+	static const GlobalTexture2D& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
 
 private:
 
@@ -58,7 +58,7 @@ private:
 	static Map<HashString, TextureCubeHandle> _TextureCubes;
 
 	//Container for all texture 2Ds.
-	static Map<HashString, Texture2D<Vector4<byte>>> _Texture2Ds;
+	static Map<HashString, GlobalTexture2D> _Texture2Ds;
 
 	/*
 	*	Loads a resource collection, internal implementation.

@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Vertex struct definition.
 struct Vertex
@@ -37,9 +38,9 @@ Vertex UnpackVertex(uint index)
 {
 	Vertex vertex;
 
-  	vec4 vertexData1 = vertexBuffers[0].vertexData[VERTEX_SIZE * index + 0];
-  	vec4 vertexData2 = vertexBuffers[0].vertexData[VERTEX_SIZE * index + 1];
-  	vec4 vertexData3 = vertexBuffers[0].vertexData[VERTEX_SIZE * index + 2];
+  	vec4 vertexData1 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 0];
+  	vec4 vertexData2 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 1];
+  	vec4 vertexData3 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 2];
 
   	vertex.position = vertexData1.xyz;
   	vertex.normal = vec3(vertexData1.w, vertexData2.x, vertexData2.y);
@@ -52,9 +53,9 @@ Vertex UnpackVertex(uint index)
 void main()
 {
 	//Unpack the vertices making up the triangle.
-	Vertex vertex1 = UnpackVertex(indexBuffers[0].indicesData[gl_PrimitiveID * 3]);
-	Vertex vertex2 = UnpackVertex(indexBuffers[0].indicesData[gl_PrimitiveID * 3 + 1]);
-	Vertex vertex3 = UnpackVertex(indexBuffers[0].indicesData[gl_PrimitiveID * 3 + 2]);
+	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
+	Vertex vertex2 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
+	Vertex vertex3 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 2]);
 
 	//Calculate the final vertex using the barycentric coordinates.
 	vec3 barycentricCoordinates = vec3(1.0f - hitAttribute.x - hitAttribute.y, hitAttribute.x, hitAttribute.y);
@@ -66,5 +67,27 @@ void main()
 	finalVertex.tangent = vertex1.tangent * barycentricCoordinates.x + vertex2.tangent * barycentricCoordinates.y + vertex3.tangent * barycentricCoordinates.z;
 	finalVertex.textureCoordinate = vertex1.textureCoordinate * barycentricCoordinates.x + vertex2.textureCoordinate * barycentricCoordinates.y + vertex3.textureCoordinate * barycentricCoordinates.z;
 
-	hitValue = vec3(max(dot(finalVertex.normal, normalize(finalVertex.position + vec3(1.0f, 1.0f, 1.0f) - finalVertex.position)), 0.0f));
+	//Sample the albedo.
+	vec3 albedo = texture(globalTextures[3], finalVertex.textureCoordinate).rgb;
+
+	//Sample the normal map.
+	vec3 normalMap = texture(globalTextures[4], finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
+
+	//Sample the material properties.
+	vec4 materialProperties = texture(globalTextures[5], finalVertex.textureCoordinate);
+
+	//Calculate the tangent space matrix.
+	mat3 tangentSpaceMatrix = mat3(finalVertex.tangent, cross(finalVertex.tangent, finalVertex.normal), finalVertex.normal);
+
+	//Calculate the final normal.
+	vec3 finalNormal = tangentSpaceMatrix * normalMap;
+
+	hitValue = CalculateLight(	normalize(perceiverWorldPosition - finalVertex.position),
+								normalize(vec3(2.5f, 2.5f, 2.5f) - finalVertex.position),
+								finalNormal,
+								1.0f,
+								materialProperties.x,
+								materialProperties.y,
+								albedo,
+								vec3(1.0f, 0.9f, 0.8f) * 2.5f);
 }

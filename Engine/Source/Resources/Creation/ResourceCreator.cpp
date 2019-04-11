@@ -49,8 +49,11 @@ void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, Te
 /*
 *	Creates a texture 2D.
 */
-void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
+void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, GlobalTexture2D *const RESTRICT texture) NOEXCEPT
 {
-	//Do something. Please. ):
-	texture->Initialize(data->_Width, data->_Height, reinterpret_cast<const Vector4<byte> *const RESTRICT>(data->_Data[0].Data()));
+	//Create the texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::R8G8B8A8_Byte), &texture->_Texture2D);
+
+	//Add the texture to the global render data.
+	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2D);
 }

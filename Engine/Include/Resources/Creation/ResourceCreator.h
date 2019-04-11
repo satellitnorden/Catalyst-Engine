@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
-#include <Rendering/Native/Texture2D.h>
 
 //Resources.
 #include <Resources/Data/ModelData.h>
@@ -31,6 +31,6 @@ public:
 	/*
 	*	Creates a texture 2D.
 	*/
-	static void CreateTexture2D(Texture2DData *const RESTRICT data, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT;
+	static void CreateTexture2D(Texture2DData *const RESTRICT data, GlobalTexture2D *const RESTRICT texture) NOEXCEPT;
 
 };

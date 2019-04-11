@@ -17,7 +17,7 @@
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TextureCubeHandle> ResourceLoader::_TextureCubes;
-Map<HashString, Texture2D<Vector4<byte>>> ResourceLoader::_Texture2Ds;
+Map<HashString, GlobalTexture2D> ResourceLoader::_Texture2Ds;
 
 /*
 *	Given a file path, load a resource collection.
