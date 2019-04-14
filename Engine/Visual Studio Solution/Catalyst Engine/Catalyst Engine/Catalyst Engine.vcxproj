@@ -50,7 +50,7 @@
     <ClInclude Include="..\..\..\Include\Components\Singleton\CatalystEngineComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\FrustumCullingComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\CollisionInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
@@ -95,6 +96,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\CollisionEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
@@ -297,6 +299,7 @@
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\CollisionEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />

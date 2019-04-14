@@ -819,9 +819,6 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\FrustumCullingComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
@@ -1071,6 +1068,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1318,6 +1324,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RadianceIntegrationRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
