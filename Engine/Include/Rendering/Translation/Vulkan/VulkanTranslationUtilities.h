@@ -214,7 +214,7 @@ public:
 		geometryInstance->_InstanceOffset = 0;
 
 		//Set the flags.
-		geometryInstance->_Flags = VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV;
+		geometryInstance->_Flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_NV | VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV;
 
 		//Get the bottom level acceleration structure handle.
 		vkGetAccelerationStructureHandleNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),

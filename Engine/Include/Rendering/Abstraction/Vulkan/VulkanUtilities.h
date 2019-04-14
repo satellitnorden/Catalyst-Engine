@@ -38,7 +38,7 @@ public:
 		accelerationStructureInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
 		accelerationStructureInfo.pNext = nullptr;
 		accelerationStructureInfo.type = type;
-		accelerationStructureInfo.flags = 0;
+		accelerationStructureInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
 		accelerationStructureInfo.instanceCount = instanceCount;
 		accelerationStructureInfo.geometryCount = static_cast<uint32>(geometry.Size());
 		accelerationStructureInfo.pGeometries = geometry.Data();

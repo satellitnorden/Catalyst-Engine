@@ -41,7 +41,7 @@ namespace VulkanAccelerationStructureLogic
 		accelerationStructureCreateInfo->info.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
 		accelerationStructureCreateInfo->info.pNext = nullptr;
 		accelerationStructureCreateInfo->info.type = type;
-		accelerationStructureCreateInfo->info.flags = 0;
+		accelerationStructureCreateInfo->info.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
 		accelerationStructureCreateInfo->info.instanceCount = instanceCount;
 		accelerationStructureCreateInfo->info.geometryCount = static_cast<uint32>(geometry.Size());
 		accelerationStructureCreateInfo->info.pGeometries = geometry.Data();
