@@ -18,14 +18,14 @@ struct Vertex
 };
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_VERTEX_BUFFERS (4)
+#define MAXIMUM_NUMBER_OF_MODELS (4)
 #define VERTEX_SIZE (3)
 
 #define INDICES_OFFSET (2637)
 
 //Descriptor set data.
-layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
-layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_VERTEX_BUFFERS];
+layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 
 //In parameters.
 layout(location = 0) rayPayloadInNV vec3 hitValue;

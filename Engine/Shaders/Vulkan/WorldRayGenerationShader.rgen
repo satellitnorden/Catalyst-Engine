@@ -27,7 +27,11 @@ vec3 CalculateDirection()
 
 	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
 
-	return normalize(worldPosition - perceiverWorldPosition);
+	vec3 randomPosition = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed * EULERS_NUMBER)),
+											RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed * PHI)),
+											RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed * PI)))) * 0.0000625f; //0.0000025f step
+
+	return normalize(worldPosition + randomPosition - perceiverWorldPosition);
 }
 
 void main() 

@@ -4,6 +4,7 @@ glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugA
 glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxFragmentShader.spv
 glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVertexShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
+glslangValidator.exe -V RadianceIntegrationFragmentShader.frag -o 			RadianceIntegrationFragmentShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V WorldRayClosestHitShader.rchit -o 				WorldRayClosestHitShader.spv

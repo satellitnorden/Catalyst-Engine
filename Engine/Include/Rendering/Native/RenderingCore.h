@@ -59,6 +59,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
+	RadianceIntegration,
 	ToneMapping,
 	AntiAliasing,
 
@@ -165,13 +166,9 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {
-	//Intermediate.
 	Intermediate,
-
-	//Scene.
+	PreviousRadiance,
 	Scene,
-
-	//Screen.
 	Screen,
 
 	NumberOfRenderTargets
@@ -199,6 +196,7 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	PassthroughFragment,
+	RadianceIntegrationFragment,
 	ToneMappingFragment,
 	ViewportVertex,
 	WorldRayClosestHitShader,

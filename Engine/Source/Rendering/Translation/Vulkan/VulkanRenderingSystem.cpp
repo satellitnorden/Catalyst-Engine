@@ -376,6 +376,16 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
+			//Initialize the radiance integration fragment shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::RadianceIntegrationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
 			//Initialize the tone mapping fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
@@ -956,6 +966,11 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 	DynamicArray<VkAttachmentDescription> attachmentDescriptions;
 	attachmentDescriptions.Reserve(uniqueAttachments.Size());
 
+	DynamicArray<VkAttachmentReference> attachmentReferences;
+	attachmentReferences.Reserve(uniqueAttachments.Size());
+
+	uint32 counter{ 0 };
+
 	for (const Pair<RenderTarget, uint32> uniqueAttachment : uniqueAttachments)
 	{
 		attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderTarget::Screen ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(uniqueAttachment._First))->GetFormat(),
@@ -965,6 +980,8 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 																						VK_ATTACHMENT_STORE_OP_DONT_CARE,
 																						uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
 																						uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
+
+		attachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
 	}
 
 	parameters._AttachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
@@ -974,14 +991,12 @@ void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass
 	DynamicArray<VkSubpassDescription> subpassDescriptions;
 	subpassDescriptions.Reserve(renderPass->GetNumberOfPipelines());
 
-	VkAttachmentReference attachmentReference{ 0, uniqueAttachments.begin()->_First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL };
-
 	for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
 	{
 		subpassDescriptions.EmplaceFast(VulkanUtilities::CreateSubpassDescription(	0,
 																					nullptr,
-																					1,
-																					&attachmentReference,
+																					static_cast<uint32>(attachmentReferences.Size()),
+																					attachmentReferences.Data(),
 																					nullptr,
 																					0,
 																					nullptr));
