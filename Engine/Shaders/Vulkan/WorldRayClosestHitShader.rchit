@@ -28,7 +28,7 @@ struct Vertex
 };
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_MODELS (4)
+#define MAXIMUM_NUMBER_OF_MODELS (8)
 #define VERTEX_SIZE (3)
 
 #define INDICES_OFFSET (2637)
@@ -196,6 +196,7 @@ void main()
 										materialProperties.y,
 										materialProperties.x);
 
+	/*
 	//Calculate all light sources.
 	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
 									normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
@@ -205,6 +206,7 @@ void main()
 									materialProperties.y,
 									albedo,
 									vec3(0.8f, 0.9f, 1.0f));
+	*/
 
 	//Write the final radiance.
 	rayPayload.rgb = finalRadiance;

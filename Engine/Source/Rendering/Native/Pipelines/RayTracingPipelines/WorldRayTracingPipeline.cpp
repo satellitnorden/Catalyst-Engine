@@ -19,7 +19,7 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 //World ray tracing pipeline constants.
 namespace WorldRayTracingPipelineConstants
 {
-	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 4 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 8 };
 }
 
 /*
