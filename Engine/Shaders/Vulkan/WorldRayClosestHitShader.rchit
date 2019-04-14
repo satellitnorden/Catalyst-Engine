@@ -9,6 +9,15 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Light struct definition.
+struct Light
+{
+	vec3 color;
+	vec3 position;
+	float attenuationDistance;
+	float size;
+};
+
 //Material struct definition.
 struct Material
 {
@@ -29,6 +38,7 @@ struct Vertex
 
 //Constants.
 #define MAXIMUM_NUMBER_OF_MODELS (8)
+#define MAXIMUM_NUMBER_OF_LIGHTS (4)
 #define VERTEX_SIZE (3)
 
 #define INDICES_OFFSET (2637)
@@ -43,13 +53,36 @@ layout (std140, set = 1, binding = 5) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
+layout (std140, set = 1, binding = 6) uniform LightUniformData
+{
+	layout (offset = 0) int numberOfLights;
+    layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
+};
 
 //In parameters.
 layout(location = 0) rayPayloadInNV vec4 rayPayload;
 hitAttributeNV vec3 hitAttribute;
 
 /*
-*	Unpacks the vertex at the given position.
+*	Unpacks the light at the given index.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 lightData1 = lightData[index * 2 + 0];
+  	vec4 lightData2 = lightData[index * 2 + 1];
+
+  	light.color = lightData1.xyz;
+  	light.position = vec3(lightData1.w, lightData2.xy);
+  	light.attenuationDistance = lightData2.z;
+  	light.size = lightData2.w;
+
+  	return light;
+}
+
+/*
+*	Unpacks the vertex at the given index.
 */
 Vertex UnpackVertex(uint index)
 {
@@ -196,17 +229,20 @@ void main()
 										materialProperties.y,
 										materialProperties.x);
 
-	/*
-	//Calculate all light sources.
-	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
-									normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
-									finalNormal,
-									1.0f,
-									materialProperties.x,
-									materialProperties.y,
-									albedo,
-									vec3(0.8f, 0.9f, 1.0f));
-	*/
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		//Calculate all light sources.
+		finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
+										normalize(light.position - hitPosition),
+										finalNormal,
+										1.0f,
+										materialProperties.x,
+										materialProperties.y,
+										albedo,
+										light.color);
+	}
 
 	//Write the final radiance.
 	rayPayload.rgb = finalRadiance;

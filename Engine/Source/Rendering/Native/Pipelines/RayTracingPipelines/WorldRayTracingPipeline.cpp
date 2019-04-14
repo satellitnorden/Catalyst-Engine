@@ -20,7 +20,27 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 namespace WorldRayTracingPipelineConstants
 {
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 8 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }
+
+/*
+*	Light uniform data definition.
+*/
+class LightUniformData final
+{
+
+public:
+
+	//The number of lights.
+	int32 _NumberOfLights;
+
+	//Some padding.
+	Padding<12> _Padding;
+
+	//The light data.
+	StaticArray<LightComponent, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightData;
+
+};
 
 /*
 *	Default constructor.
@@ -71,14 +91,15 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 6> bindings
+	StaticArray<RenderDataTableLayoutBinding, 7> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss),
 		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::UniformBuffer,1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -137,15 +158,38 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, handle);
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	
-		BufferHandle materialsBuffer;
-		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &materialsBuffer);
-		
-		const void *const RESTRICT dataChunks[]{ materials.Data() };
-		const uint64 dataSizes[]{ sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS };
-		
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &materialsBuffer);
+		{
+			BufferHandle materialsBuffer;
+			RenderingSystem::Instance->CreateBuffer(sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &materialsBuffer);
 
-		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(5, 0, &_RenderDataTable, materialsBuffer);
+			const void *const RESTRICT dataChunks[]{ materials.Data() };
+			const uint64 dataSizes[]{ sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS };
+
+			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &materialsBuffer);
+
+			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(5, 0, &_RenderDataTable, materialsBuffer);
+		}
+
+		{
+			LightUniformData lightUniformData;
+
+			BufferHandle lightsBuffer;
+			RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &lightsBuffer);
+
+			lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
+
+			for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
+			{
+				lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
+			}
+
+			const void *const RESTRICT dataChunks[]{ &lightUniformData };
+			const uint64 dataSizes[]{ sizeof(LightUniformData) };
+
+			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &lightsBuffer);
+
+			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(6, 0, &_RenderDataTable, lightsBuffer);
+		}
 
 		once = true;
 	}
