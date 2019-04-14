@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Vertex struct definition.
@@ -24,11 +25,13 @@ struct Vertex
 #define INDICES_OFFSET (2637)
 
 //Descriptor set data.
+layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
 layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 
 //In parameters.
-layout(location = 0) rayPayloadInNV vec3 hitValue;
+layout(location = 0) rayPayloadInNV vec4 rayPayload;
 hitAttributeNV vec3 hitAttribute;
 
 /*
@@ -84,18 +87,113 @@ void main()
 	//Sample the material properties.
 	vec4 materialProperties = texture(globalTextures[5], finalVertex.textureCoordinate);
 
+	//Store the roughness, metallic and ambient occlusion.
+	float roughness = materialProperties.x;
+	float metallic = materialProperties.y;
+	float ambientOcclusion = materialProperties.z;
+
 	//Calculate the tangent space matrix.
 	mat3 tangentSpaceMatrix = mat3(finalVertex.tangent, cross(finalVertex.tangent, finalVertex.normal), finalVertex.normal);
 
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	hitValue = CalculateLight(	normalize(perceiverWorldPosition - hitPosition),
-								normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
-								finalNormal,
-								1.0f,
-								materialProperties.x,
-								materialProperties.y,
-								albedo,
-								vec3(1.0f, 0.9f, 0.8f) * 2.5f);
+	//Get the recursion level.
+	int recursionLevel = int(rayPayload.w);
+
+	//Calculate the diffuse irradiance.
+	vec3 diffuseIrradiance;
+
+	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed * DOUBLE_PI) * 2.0f - 1.0f,
+															RandomFloat(hitPosition * globalRandomSeed * HALF_PI) * 2.0f - 1.0f,
+															RandomFloat(hitPosition * globalRandomSeed * INVERSE_PI) * 2.0f - 1.0f));
+
+	randomDiffuseIrradianceDirection *= dot(randomDiffuseIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
+
+	vec3 diffuseIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomDiffuseIrradianceDirection);
+
+	if (recursionLevel == 0)
+	{
+		rayPayload.w = 1.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 	//topLevel
+				gl_RayFlagsOpaqueNV, 			//rayFlags
+				0xff, 							//cullMask
+				0, 								//sbtRecordOffset
+				0, 								//sbtRecordStride
+				0, 								//missIndex
+				hitPosition, 					//origin
+				0.1f, 							//Tmin
+				diffuseIrradianceDirection, 	//direction
+				CATALYST_RAY_TRACING_T_MAX, 	//Tmax
+				0 								//payload
+				);
+
+		diffuseIrradiance = rayPayload.rgb;
+	}
+
+	else
+	{
+		diffuseIrradiance = texture(environmentTexture, diffuseIrradianceDirection).rgb;
+	}
+
+	//Calculate the specular irradiance.
+	vec3 specularIrradiance;
+
+	vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
+
+	if (recursionLevel == 0)
+	{
+		rayPayload.w = 1.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 	//topLevel
+				gl_RayFlagsOpaqueNV, 			//rayFlags
+				0xff, 							//cullMask
+				0, 								//sbtRecordOffset
+				0, 								//sbtRecordStride
+				0, 								//missIndex
+				hitPosition, 					//origin
+				0.1f, 							//Tmin
+				specularIrradianceDirection, 	//direction
+				CATALYST_RAY_TRACING_T_MAX, 	//Tmax
+				0 								//payload
+				);
+
+		specularIrradiance = rayPayload.rgb;
+	}
+
+	else
+	{
+		specularIrradiance = texture(environmentTexture, specularIrradianceDirection).rgb;
+	}
+
+	//Calculate the final radiance.
+	vec3 finalRadiance = vec3(0.0f);
+
+	//Start off with the ambient lighting.
+	finalRadiance += CalculateAmbient(	albedo,
+										diffuseIrradiance,
+										finalNormal,
+										specularIrradiance,
+										normalize(gl_WorldRayOriginNV - hitPosition),
+										materialProperties.z,
+										materialProperties.y,
+										materialProperties.x);
+
+	/*
+	//Calculate all light sources.
+	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
+									normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
+									finalNormal,
+									1.0f,
+									materialProperties.x,
+									materialProperties.y,
+									albedo,
+									vec3(1.0f, 0.9f, 0.8f) * 2.5f);
+	*/
+
+	//Write the final radiance.
+	rayPayload.rgb = finalRadiance;
 }

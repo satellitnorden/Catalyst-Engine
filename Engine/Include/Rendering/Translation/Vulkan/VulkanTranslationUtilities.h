@@ -205,7 +205,7 @@ public:
 		Memory::CopyMemory(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));
 
 		//Set the custom index.
-		geometryInstance->_InstanceCustomIndex = 0;
+		geometryInstance->_InstanceCustomIndex = data._Index;
 
 		//Set the mask.
 		geometryInstance->_Mask = UINT8_MAXIMUM;
