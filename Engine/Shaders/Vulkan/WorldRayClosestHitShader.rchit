@@ -118,9 +118,9 @@ void main()
 	//Calculate the diffuse irradiance.
 	vec3 diffuseIrradiance;
 
-	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed * DOUBLE_PI) * 2.0f - 1.0f,
-															RandomFloat(hitPosition * globalRandomSeed * HALF_PI) * 2.0f - 1.0f,
-															RandomFloat(hitPosition * globalRandomSeed * INVERSE_PI) * 2.0f - 1.0f));
+	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed1 * PHI) * 2.0f - 1.0f,
+															RandomFloat(hitPosition * globalRandomSeed2 * PHI) * 2.0f - 1.0f,
+															RandomFloat(hitPosition * globalRandomSeed3 * PHI) * 2.0f - 1.0f));
 
 	randomDiffuseIrradianceDirection *= dot(randomDiffuseIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
 

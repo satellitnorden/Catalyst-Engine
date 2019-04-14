@@ -25,11 +25,13 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 448) float deltaTime; //Offset; 448 - Size; 4
     layout (offset = 452) float directionalLightIntensity; //Offset; 452 - Size; 4
     layout (offset = 456) float environmentBlend; //Offset; 456 - Size; 4
-    layout (offset = 460) float globalRandomSeed; //Offset; 456 - Size; 4
-    layout (offset = 464) float totalTime; //Offset; 460 - Size; 4
-    layout (offset = 468) float windSpeed; //Offset; 464 - Size; 4
+    layout (offset = 460) float globalRandomSeed1; //Offset; 460 - Size; 4
+    layout (offset = 464) float globalRandomSeed2; //Offset; 464 - Size; 4
+    layout (offset = 468) float globalRandomSeed3; //Offset; 468 - Size; 4
+    layout (offset = 472) float totalTime; //Offset; 472 - Size; 4
+    layout (offset = 476) float windSpeed; //Offset; 476 - Size; 4
 
-    //Total size; 472
+    //Total size; 480
 };
 
 //The global textures.

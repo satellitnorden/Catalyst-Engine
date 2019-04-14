@@ -27,12 +27,14 @@ public:
 	float _DeltaTime;
 	float _DirectionalLightIntensity;
 	float _EnvironmentBlend;
-	float _GlobalRandomSeed;
+	float _GlobalRandomSeed1;
+	float _GlobalRandomSeed2;
+	float _GlobalRandomSeed3;
 	float _TotalTime;
 	float _WindSpeed;
 };
 
-static_assert(sizeof(DynamicUniformData) == 472, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 480, "Size of dynamic uniform data is wrong!");
 
 static_assert(offsetof(DynamicUniformData, _DirectionalLightViewMatrix) == 0, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _InversePerceiverMatrix) == 64, "Offset inside dynamic uniform data is wrong!");
@@ -49,6 +51,8 @@ static_assert(offsetof(DynamicUniformData, _WindDirection) == 432, "Offset insid
 static_assert(offsetof(DynamicUniformData, _DeltaTime) == 448, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 452, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _EnvironmentBlend) == 456, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed) == 460, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _TotalTime) == 464, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindSpeed) == 468, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed1) == 460, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed2) == 464, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed3) == 468, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _TotalTime) == 472, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _WindSpeed) == 476, "Offset inside dynamic uniform data is wrong!");
