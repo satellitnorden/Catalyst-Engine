@@ -1080,6 +1080,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RadianceIntegrationRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

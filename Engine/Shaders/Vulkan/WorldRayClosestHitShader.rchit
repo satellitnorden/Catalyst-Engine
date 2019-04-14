@@ -9,6 +9,15 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Material struct definition.
+struct Material
+{
+	int type;
+	int firstTextureIndex;
+	int secondTextureIndex;
+	int thirdTextureIndex;	
+};
+
 //Vertex struct definition.
 struct Vertex
 {
@@ -29,6 +38,11 @@ layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerati
 layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
 layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+//Global uniform data.
+layout (std140, set = 1, binding = 5) uniform ModelUniformData
+{
+    layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
+};
 
 //In parameters.
 layout(location = 0) rayPayloadInNV vec4 rayPayload;
@@ -79,13 +93,13 @@ void main()
 	finalVertex.tangent = gl_ObjectToWorldNV * vec4(finalVertex.tangent, 0.0f);
 
 	//Sample the albedo.
-	vec3 albedo = texture(globalTextures[3], finalVertex.textureCoordinate).rgb;
+	vec3 albedo = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate).rgb;
 
 	//Sample the normal map.
-	vec3 normalMap = texture(globalTextures[4], finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
+	vec3 normalMap = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].secondTextureIndex], finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
 
 	//Sample the material properties.
-	vec4 materialProperties = texture(globalTextures[5], finalVertex.textureCoordinate);
+	vec4 materialProperties = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].thirdTextureIndex], finalVertex.textureCoordinate);
 
 	//Store the roughness, metallic and ambient occlusion.
 	float roughness = materialProperties.x;
@@ -182,7 +196,6 @@ void main()
 										materialProperties.y,
 										materialProperties.x);
 
-	/*
 	//Calculate all light sources.
 	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
 									normalize(vec3(2.5f, 2.5f, 2.5f) - hitPosition),
@@ -191,8 +204,7 @@ void main()
 									materialProperties.x,
 									materialProperties.y,
 									albedo,
-									vec3(1.0f, 0.9f, 0.8f) * 2.5f);
-	*/
+									vec3(0.8f, 0.9f, 1.0f));
 
 	//Write the final radiance.
 	rayPayload.rgb = finalRadiance;

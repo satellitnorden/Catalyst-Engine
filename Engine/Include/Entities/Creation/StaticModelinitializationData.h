@@ -10,6 +10,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
+#include <Rendering/Native/Material.h>
 #include <Rendering/Native/Model.h>
 
 class StaticModelInitializationData final : public EntityInitializationData
@@ -22,5 +23,8 @@ public:
 
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
+
+	//The material.
+	Material _Material;
 
 };

@@ -33,6 +33,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	TransformComponent& transformComponent{ ComponentManager::GetStaticModelTransformComponents()[_ComponentsIndex] };
 
 	staticModelComponent._Model = staticModelInitializationData->_Model;
+	staticModelComponent._Material = staticModelInitializationData->_Material;
 	transformComponent._LocalTransform = transformComponent._WorldTransform = staticModelInitializationData->_Transform;
 
 	//Destroy the initialization data.
