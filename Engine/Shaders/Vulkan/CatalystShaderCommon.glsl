@@ -6,6 +6,18 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_NV_ray_tracing : require
 
+//Constants.
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (16)
+
+#define EULERS_NUMBER (2.718281f)
+#define PHI (1.618033f)
+#define PI (3.141592f)
+#define DOUBLE_PI (6.283185f)
+#define HALF_PI (1.570796f)
+#define INVERSE_PI (0.318309f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
+#define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
+
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
@@ -35,17 +47,7 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 };
 
 //The global textures.
-layout (set = 0, binding = 1) uniform sampler2D globalTextures[512];
-
-//Constants.
-#define EULERS_NUMBER (2.718281f)
-#define PHI (1.618033f)
-#define PI (3.141592f)
-#define DOUBLE_PI (6.283185f)
-#define HALF_PI (1.570796f)
-#define INVERSE_PI (0.318309f)
-#define SQUARE_ROOT_OF_TWO (1.414213f)
-#define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
+layout (set = 0, binding = 1) uniform sampler2D globalTextures[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
 /*
 *   Defines the bit at the specified index.
