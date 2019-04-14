@@ -7,7 +7,6 @@
 //Entities.
 #include <Entities/Types/CollisionEntity.h>
 #include <Entities/Types/PhysicsEntity.h>
-#include <Entities/Types/PointLightEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
 

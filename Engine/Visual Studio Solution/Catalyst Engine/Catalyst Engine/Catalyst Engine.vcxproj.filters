@@ -573,12 +573,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -831,13 +825,7 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\PointLightComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\SpotLightComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h">
@@ -1149,9 +1137,6 @@
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp">
-      <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">

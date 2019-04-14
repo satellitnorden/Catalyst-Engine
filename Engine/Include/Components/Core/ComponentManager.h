@@ -10,9 +10,7 @@
 #include <Components/Transient/CollisionComponent.h>
 #include <Components/Transient/FrustumCullingComponent.h>
 #include <Components/Transient/PhysicsComponent.h>
-#include <Components/Transient/PointLightComponent.h>
 #include <Components/Transient/SoundComponent.h>
-#include <Components/Transient/SpotLightComponent.h>
 #include <Components/Transient/StaticModelComponent.h>
 #include <Components/Transient/TransformComponent.h>
 
@@ -84,9 +82,7 @@ public:
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
 
 private:

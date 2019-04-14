@@ -6,7 +6,6 @@
 //Entity types.
 #define ENTITY_TYPES	ENTITY_TYPE(Collision)		\
 						ENTITY_TYPE(Physics)		\
-						ENTITY_TYPE(PointLight)		\
 						ENTITY_TYPE(Sound)			\
 						ENTITY_TYPE(StaticModel)
 
