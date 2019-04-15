@@ -6,14 +6,16 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
 layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
 
 //In parameters.
-layout(location = 0) rayPayloadInNV vec4 rayPayload;
+layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 
 void main()
 {
-    rayPayload.rgb = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
+    rayPayload.radiance = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
+    rayPayload.hit = false;
 }

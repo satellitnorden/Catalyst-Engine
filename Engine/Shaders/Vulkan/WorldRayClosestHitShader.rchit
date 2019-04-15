@@ -60,7 +60,7 @@ layout (std140, set = 1, binding = 6) uniform LightUniformData
 };
 
 //In parameters.
-layout(location = 0) rayPayloadInNV vec4 rayPayload;
+layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 hitAttributeNV vec3 hitAttribute;
 
 /*
@@ -102,6 +102,9 @@ Vertex UnpackVertex(uint index)
 
 void main()
 {
+	//Indicate that there was a hit.
+	rayPayload.hit = true;
+
 	//Calculate the hit position.
 	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
 
@@ -145,8 +148,8 @@ void main()
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	//Get the recursion level.
-	int recursionLevel = int(rayPayload.w);
+	//Store the current recursion depth.
+	int currentRecursionDepth = rayPayload.currentRecursionDepth;
 
 	//Calculate the diffuse irradiance.
 	vec3 diffuseIrradiance;
@@ -159,9 +162,9 @@ void main()
 
 	vec3 diffuseIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomDiffuseIrradianceDirection);
 
-	if (recursionLevel == 0)
+	if (currentRecursionDepth == 0)
 	{
-		rayPayload.w = 1.0f;
+		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
 				topLevelAccelerationStructure, 	//topLevel
@@ -177,7 +180,7 @@ void main()
 				0 								//payload
 				);
 
-		diffuseIrradiance = rayPayload.rgb;
+		diffuseIrradiance = rayPayload.radiance;
 	}
 
 	else
@@ -190,9 +193,9 @@ void main()
 
 	vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
 
-	if (recursionLevel == 0)
+	if (currentRecursionDepth == 0)
 	{
-		rayPayload.w = 1.0f;
+		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
 				topLevelAccelerationStructure, 	//topLevel
@@ -208,7 +211,7 @@ void main()
 				0 								//payload
 				);
 
-		specularIrradiance = rayPayload.rgb;
+		specularIrradiance = rayPayload.radiance;
 	}
 
 	else
@@ -229,11 +232,35 @@ void main()
 										materialProperties.y,
 										materialProperties.x);
 
+	//Calculate all light sources.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
 
-		//Calculate all light sources.
+		//Calculate the shadow multiplier.
+		float shadowMultiplier = 1.0f;
+
+		if (currentRecursionDepth == 0)
+		{
+			rayPayload.currentRecursionDepth = 1;
+
+			traceNV(
+					topLevelAccelerationStructure, 				//topLevel
+					gl_RayFlagsOpaqueNV, 						//rayFlags
+					0xff, 										//cullMask
+					0, 											//sbtRecordOffset
+					0, 											//sbtRecordStride
+					0, 											//missIndex
+					hitPosition, 								//origin
+					0.1f, 										//Tmin
+					normalize(light.position - hitPosition),	//direction
+					length(light.position - hitPosition), 		//Tmax
+					0 											//payload
+					);
+
+			shadowMultiplier = rayPayload.hit ? 0.0f : 1.0f;
+		}
+
 		finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
 										normalize(light.position - hitPosition),
 										finalNormal,
@@ -241,9 +268,9 @@ void main()
 										materialProperties.x,
 										materialProperties.y,
 										albedo,
-										light.color);
+										light.color) * shadowMultiplier;
 	}
 
 	//Write the final radiance.
-	rayPayload.rgb = finalRadiance;
+	rayPayload.radiance = finalRadiance;
 }
