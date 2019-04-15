@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
@@ -243,6 +244,19 @@ void main()
 		{
 			rayPayload.currentRecursionDepth = 1;
 
+			//Generate a random position in the light sphere.
+			vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed1 * PI * float(i + 1)) * 2.0f - 1.0f,
+																		RandomFloat(hitPosition * globalRandomSeed2 * PI * float(i + 1)) * 2.0f - 1.0f,
+																		RandomFloat(hitPosition * globalRandomSeed3 * PI * float(i + 1)) * 2.0f - 1.0f)) * light.size;
+
+			//Generate the light direction.
+			vec3 lightDirection = normalize(randomLightPosition - hitPosition);
+
+			//Do a line-sphere intersection to determine the light max T.
+			float lightMaxT;
+			LineSphereIntersection(hitPosition, lightDirection, light.position, light.size, lightMaxT);
+
+			//Do the actual ray cast.
 			traceNV(
 					topLevelAccelerationStructure, 				//topLevel
 					gl_RayFlagsOpaqueNV, 						//rayFlags
@@ -252,8 +266,8 @@ void main()
 					0, 											//missIndex
 					hitPosition, 								//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-					normalize(light.position - hitPosition),	//direction
-					CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
+					lightDirection,								//direction
+					lightMaxT,									//Tmax
 					0 											//payload
 					);
 
@@ -268,6 +282,8 @@ void main()
 										materialProperties.y,
 										albedo,
 										light.color) * shadowMultiplier;
+
+		//finalRadiance = vec3(shadowMultiplier);
 	}
 
 	//Write the final radiance.

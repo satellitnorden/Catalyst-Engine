@@ -4,7 +4,7 @@
 /*
 *   Performs a line/sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
 */
-bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosition, float sphereRadius, out vec3 intersectionPoint)
+bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosition, float sphereRadius, out float T)
 {
     vec3 L = lineOrigin - spherePosition;
     float B = 2.0f * dot(lineDirection, L);
@@ -30,9 +30,7 @@ bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosi
         return false;
     }
 
-    float T = T0 < T1 ? T0 / 2.0f : T1 / 2.0f;
-
-   intersectionPoint = lineOrigin + T * lineDirection;
+    T = T0 < T1 ? T0 / 2.0f : T1 / 2.0f;
 
     return true;
 }
