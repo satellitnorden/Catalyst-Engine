@@ -30,7 +30,7 @@ bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosi
         return false;
     }
 
-    T = T0 < T1 ? T0 / 2.0f : T1 / 2.0f;
+    T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
 
     return true;
 }

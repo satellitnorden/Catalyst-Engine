@@ -149,7 +149,7 @@ void main()
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
 	//Store the current recursion depth.
-	int currentRecursionDepth = rayPayload.currentRecursionDepth;
+	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
 
 	//Calculate the diffuse irradiance.
 	vec3 diffuseIrradiance;
@@ -164,8 +164,6 @@ void main()
 
 	if (currentRecursionDepth == 0)
 	{
-		rayPayload.currentRecursionDepth = 1;
-
 		traceNV(
 				topLevelAccelerationStructure, 	//topLevel
 				gl_RayFlagsOpaqueNV, 			//rayFlags
@@ -195,8 +193,6 @@ void main()
 
 	if (currentRecursionDepth == 0)
 	{
-		rayPayload.currentRecursionDepth = 1;
-
 		traceNV(
 				topLevelAccelerationStructure, 	//topLevel
 				gl_RayFlagsOpaqueNV, 			//rayFlags
@@ -242,8 +238,6 @@ void main()
 
 		if (currentRecursionDepth == 0)
 		{
-			rayPayload.currentRecursionDepth = 1;
-
 			//Generate a random position in the light sphere.
 			vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed1 * PI * float(i + 1)) * 2.0f - 1.0f,
 																		RandomFloat(hitPosition * globalRandomSeed2 * PI * float(i + 1)) * 2.0f - 1.0f,
