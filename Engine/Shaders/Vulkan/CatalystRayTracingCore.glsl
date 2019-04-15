@@ -2,7 +2,8 @@
 #define CATALYST_RAY_TRACING_CORE
 
 //Preprocessor defines.
-#define CATALYST_RAY_TRACING_T_MAX (100.0f)
+#define CATALYST_RAY_TRACING_T_MINIMUM (0.0001f)
+#define CATALYST_RAY_TRACING_T_MAXIMUM (100.0f)
 
 /*
 *	Ray payload struct definition.

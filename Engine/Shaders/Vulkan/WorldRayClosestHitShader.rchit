@@ -48,7 +48,6 @@ layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerati
 layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
 layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-//Global uniform data.
 layout (std140, set = 1, binding = 5) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
@@ -174,9 +173,9 @@ void main()
 				0, 								//sbtRecordStride
 				0, 								//missIndex
 				hitPosition, 					//origin
-				0.1f, 							//Tmin
+				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
 				diffuseIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAX, 	//Tmax
+				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
 				0 								//payload
 				);
 
@@ -205,9 +204,9 @@ void main()
 				0, 								//sbtRecordStride
 				0, 								//missIndex
 				hitPosition, 					//origin
-				0.1f, 							//Tmin
+				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
 				specularIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAX, 	//Tmax
+				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
 				0 								//payload
 				);
 
@@ -252,9 +251,9 @@ void main()
 					0, 											//sbtRecordStride
 					0, 											//missIndex
 					hitPosition, 								//origin
-					0.1f, 										//Tmin
+					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
 					normalize(light.position - hitPosition),	//direction
-					length(light.position - hitPosition), 		//Tmax
+					CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
 					0 											//payload
 					);
 

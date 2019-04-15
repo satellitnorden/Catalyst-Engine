@@ -48,9 +48,9 @@ void main()
 			0, 								//sbtRecordStride
 			0, 								//missIndex
 			perceiverWorldPosition, 		//origin
-			0.1f, 							//Tmin
+			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
 			CalculateDirection(), 			//direction
-			CATALYST_RAY_TRACING_T_MAX, 	//Tmax
+			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
 			0 								//payload
 			);
 
