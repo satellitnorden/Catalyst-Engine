@@ -363,6 +363,8 @@ public:
 		_Matrix[3]._Y *= scalar;
 		_Matrix[3]._Z *= scalar;
 		_Matrix[3]._W *= scalar;
+
+		Verify();
 	}
 
 	/*
@@ -450,6 +452,8 @@ public:
 		_Matrix[3]._X = newTranslation._X;
 		_Matrix[3]._Y = newTranslation._Y;
 		_Matrix[3]._Z = newTranslation._Z;
+
+		Verify();
 	}
 
 	/*
@@ -460,6 +464,8 @@ public:
 		_Matrix[0]._X = newScale._X;
 		_Matrix[1]._Y = newScale._Y;
 		_Matrix[2]._Z = newScale._Z;
+
+		Verify();
 	}
 
 	/*
@@ -525,6 +531,8 @@ public:
 		_Matrix[1] = Inverse._Matrix[1];
 		_Matrix[2] = Inverse._Matrix[2];
 		_Matrix[3] = Inverse._Matrix[3];
+
+		Verify();
 	}
 
 	/*
@@ -564,6 +572,8 @@ public:
 
 			*this = *this * zRotationMatrix;
 		}
+
+		Verify();
 	}
 
 	/*
@@ -597,6 +607,19 @@ public:
 		_Matrix[1] = transposedMatrix[1];
 		_Matrix[2] = transposedMatrix[2];
 		_Matrix[3] = transposedMatrix[3];
+
+		Verify();
+	}
+
+	/*
+	*	Verrifies this matrix.
+	*/
+	FORCE_INLINE constexpr void Verify() const NOEXCEPT
+	{
+		if (!IsValid())
+		{
+			CRASH();
+		}
 	}
 
 };

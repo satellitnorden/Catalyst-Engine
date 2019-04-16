@@ -48,9 +48,9 @@ private:
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Normal._X), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Normal._Y), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Normal._Z), "NaN detected!");
-			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._X), "NaN detected!");
-			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._Y), "NaN detected!");
-			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._Z), "NaN detected!");
+			//ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._X), "NaN detected!");
+			//ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._Y), "NaN detected!");
+			//ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Tangent._Z), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._TextureCoordinate._X), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._TextureCoordinate._Y), "NaN detected!");
 		}

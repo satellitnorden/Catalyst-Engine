@@ -261,7 +261,7 @@ void main()
 					hitPosition, 								//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
 					lightDirection,								//direction
-					lightMaxT,									//Tmax
+					CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
 					0 											//payload
 					);
 
