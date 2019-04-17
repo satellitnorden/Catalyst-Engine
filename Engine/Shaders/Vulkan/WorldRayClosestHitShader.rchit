@@ -246,10 +246,6 @@ void main()
 			//Generate the light direction.
 			vec3 lightDirection = normalize(randomLightPosition - hitPosition);
 
-			//Do a line-sphere intersection to determine the light max T.
-			float lightMaxT;
-			LineSphereIntersection(hitPosition, lightDirection, light.position, light.size, lightMaxT);
-
 			//Do the actual ray cast.
 			traceNV(
 					topLevelAccelerationStructure, 				//topLevel
@@ -261,7 +257,7 @@ void main()
 					hitPosition, 								//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
 					lightDirection,								//direction
-					CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
+					length(randomLightPosition - hitPosition),	//Tmax
 					0 											//payload
 					);
 
