@@ -25,19 +25,27 @@ public:
 	}
 
 	/*
-	*	Returns the closest shader.
-	*/
-	FORCE_INLINE NO_DISCARD Shader GetClosestHitShader() const NOEXCEPT
-	{
-		return _ClosestHitShader;
-	}
-
-	/*
 	*	Returns the miss shader.
 	*/
 	FORCE_INLINE NO_DISCARD Shader GetMissShader() const NOEXCEPT
 	{
 		return _MissShader;
+	}
+
+	/*
+	*	Returns the visiblity miss shader.
+	*/
+	FORCE_INLINE NO_DISCARD Shader GetVisiblityMissShader() const NOEXCEPT
+	{
+		return _VisibilityMissShader;
+	}
+
+	/*
+	*	Returns the closest shader.
+	*/
+	FORCE_INLINE NO_DISCARD Shader GetClosestHitShader() const NOEXCEPT
+	{
+		return _ClosestHitShader;
 	}
 
 protected:
@@ -51,14 +59,6 @@ protected:
 	}
 
 	/*
-	*	Sets the closest shader.
-	*/
-	FORCE_INLINE void SetClosestHitShader(const Shader shader) NOEXCEPT
-	{
-		_ClosestHitShader = shader;
-	}
-
-	/*
 	*	Sets the miss shader.
 	*/
 	FORCE_INLINE void SetMissShader(const Shader shader) NOEXCEPT
@@ -66,15 +66,34 @@ protected:
 		_MissShader = shader;
 	}
 
+	/*
+	*	Sets the visibility miss shader.
+	*/
+	FORCE_INLINE void SetVisiblityMissShader(const Shader shader) NOEXCEPT
+	{
+		_VisibilityMissShader = shader;
+	}
+
+	/*
+	*	Sets the closest shader.
+	*/
+	FORCE_INLINE void SetClosestHitShader(const Shader shader) NOEXCEPT
+	{
+		_ClosestHitShader = shader;
+	}
+
 private:
 
 	//The ray generation shader.
 	Shader _RayGenerationShader;
 
-	//The closest hit shader.
-	Shader _ClosestHitShader;
-
 	//The miss shader.
 	Shader _MissShader;
+
+	//The visibility miss shader.
+	Shader _VisibilityMissShader;
+
+	//The closest hit shader.
+	Shader _ClosestHitShader;
 
 };

@@ -78,6 +78,7 @@ layout (push_constant) uniform PushConstantData
 
 //In parameters.
 layout(location = 0) rayPayloadInNV RayPayload rayPayload;
+layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
 
 /*
@@ -119,9 +120,6 @@ Vertex UnpackVertex(uint index)
 
 void main()
 {
-	//Indicate that there was a hit.
-	rayPayload.hit = true;
-
 	//Calculate the hit position.
 	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
 
@@ -250,40 +248,33 @@ void main()
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f));
 	randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
-	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.025f);
+	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.0225f); //0.0025f step.
 
-	float shadowMultiplier = 1.0f;
+	//Determine the visibility of the directional light.
+	visibility = 0.0f;
 
-	if (currentRecursionDepth == 0)
-	{
-		
-
-		//Do the actual ray cast.
-		traceNV(
-				topLevelAccelerationStructure, 				//topLevel
-				gl_RayFlagsOpaqueNV, 						//rayFlags
-				0xff, 										//cullMask
-				0, 											//sbtRecordOffset
-				0, 											//sbtRecordStride
-				0, 											//missIndex
-				hitPosition, 								//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-				-randomLightDirection,						//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
-				0 											//payload
-				);
-
-		shadowMultiplier = rayPayload.hit ? 0.0f : 1.0f;
-	}
+	traceNV(
+			topLevelAccelerationStructure, 																//topLevel
+			gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+			0xff, 																						//cullMask
+			0, 																							//sbtRecordOffset
+			0, 																							//sbtRecordStride
+			1, 																							//missIndex
+			hitPosition, 																				//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+			-randomLightDirection,																		//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+			1 																							//payload
+			);
 
 	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
 									-randomLightDirection,
 									finalNormal,
 									1.0f,
-									materialProperties.x,
-									materialProperties.y,
+									roughness,
+									metallic,
 									albedo,
-									directionalLightColor) * shadowMultiplier;
+									directionalLightColor) * visibility;
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;

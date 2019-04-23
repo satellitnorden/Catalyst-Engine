@@ -292,9 +292,10 @@ namespace VulkanRenderingSystemLogic
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._ShaderModules.Reserve(3);
+		parameters._ShaderModules.Reserve(4);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetMissShader())]);
+		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVisiblityMissShader())]);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
 
 		//Create the pipeline sub stage data.
@@ -306,7 +307,7 @@ namespace VulkanRenderingSystemLogic
 
 		//Create the shader binding table buffer.
 		const uint32 shaderGroupHandleSize{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
-		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * 3 };
+		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * 4 };
 
 		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
@@ -316,7 +317,7 @@ namespace VulkanRenderingSystemLogic
 		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
 																data->_Pipeline->GetPipeline(),
 																0,
-																3,
+																4,
 																shaderHandleStorageSize,
 																shaderHandleStorage));
 
@@ -424,6 +425,16 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		}
+
+		{
+			//Initialize the visibility ray miss shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VisibilityRayMissShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
 		}
 
 		{

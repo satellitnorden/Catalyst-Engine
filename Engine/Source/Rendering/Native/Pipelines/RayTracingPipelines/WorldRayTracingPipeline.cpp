@@ -110,11 +110,14 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::WorldRayGenerationShader);
 
+	//Set the miss shader.
+	SetMissShader(Shader::WorldRayMissShader);
+
+	//Set the visibility miss shader.
+	SetVisiblityMissShader(Shader::VisibilityRayMissShader);
+
 	//Set the closest hit shader.
 	SetClosestHitShader(Shader::WorldRayClosestHitShader);
-
-	//Set the miss shader shader.
-	SetMissShader(Shader::WorldRayMissShader);
 }
 
 /*

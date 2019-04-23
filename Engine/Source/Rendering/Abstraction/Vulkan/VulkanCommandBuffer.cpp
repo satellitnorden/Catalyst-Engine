@@ -263,7 +263,7 @@ void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuff
 						16,
 						16,
 						shaderBindingTableBuffer,
-						32,
+						48,
 						16,
 						VK_NULL_HANDLE,
 						0,

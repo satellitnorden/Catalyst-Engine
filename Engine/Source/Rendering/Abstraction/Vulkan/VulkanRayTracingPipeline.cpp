@@ -74,7 +74,7 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 */
 void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreationParameters &parameters, DynamicArray<VkRayTracingShaderGroupCreateInfoNV> *const RESTRICT groups) const NOEXCEPT
 {
-	groups->Reserve(3);
+	groups->Reserve(4);
 
 	groups->EmplaceFast();
 
@@ -100,9 +100,19 @@ void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreati
 
 	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
 	groups->Back().pNext = nullptr;
+	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+	groups->Back().generalShader = 2;
+	groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
+	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
+	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
+
+	groups->EmplaceFast();
+
+	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+	groups->Back().pNext = nullptr;
 	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;
 	groups->Back().generalShader = VK_SHADER_UNUSED_NV;
-	groups->Back().closestHitShader = 2;
+	groups->Back().closestHitShader = 3;
 	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
 	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
 }

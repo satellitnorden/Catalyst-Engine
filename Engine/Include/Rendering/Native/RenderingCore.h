@@ -199,6 +199,7 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	ToneMappingFragment,
 	ViewportVertex,
+	VisibilityRayMissShader,
 	WorldRayClosestHitShader,
 	WorldRayGenerationShader,
 	WorldRayMissShader,

@@ -17,5 +17,4 @@ layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 void main()
 {
     rayPayload.radiance = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
-    rayPayload.hit = false;
 }
