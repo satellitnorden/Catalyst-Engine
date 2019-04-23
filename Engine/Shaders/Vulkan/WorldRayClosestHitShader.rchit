@@ -62,15 +62,17 @@ layout (std140, set = 1, binding = 6) uniform LightUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float seed1;
-    layout (offset = 4) float seed2;
-    layout (offset = 8) float seed3;
-    layout (offset = 12) float seed4;
-    layout (offset = 16) float seed5;
-    layout (offset = 20) float seed6;
-    layout (offset = 24) float seed7;
-    layout (offset = 28) float seed8;
-    layout (offset = 32) float seed9;
+	layout (offset = 0) int iteration;
+
+    layout (offset = 4) float seed1;
+    layout (offset = 8) float seed2;
+    layout (offset = 12) float seed3;
+    layout (offset = 16) float seed4;
+    layout (offset = 20) float seed5;
+    layout (offset = 24) float seed6;
+    layout (offset = 28) float seed7;
+    layout (offset = 32) float seed8;
+    layout (offset = 36) float seed9;
 };
 
 //In parameters.

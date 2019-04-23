@@ -8,6 +8,10 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
 
+//Constants.
+#define NUMBER_OF_ITERATIONS (2)
+#define INVERSE_NUMBER_OF_ITERATIONS (1.0f / NUMBER_OF_ITERATIONS)
+
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D image;
 layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerationStructure;
@@ -15,15 +19,17 @@ layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerati
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float seed1;
-    layout (offset = 4) float seed2;
-    layout (offset = 8) float seed3;
-    layout (offset = 12) float seed4;
-    layout (offset = 16) float seed5;
-    layout (offset = 20) float seed6;
-    layout (offset = 24) float seed7;
-    layout (offset = 28) float seed8;
-    layout (offset = 32) float seed9;
+	layout (offset = 0) int iteration;
+
+    layout (offset = 4) float seed1;
+    layout (offset = 8) float seed2;
+    layout (offset = 12) float seed3;
+    layout (offset = 16) float seed4;
+    layout (offset = 20) float seed5;
+    layout (offset = 24) float seed6;
+    layout (offset = 28) float seed7;
+    layout (offset = 32) float seed8;
+    layout (offset = 36) float seed9;
 };
 
 //In parameters.
@@ -70,5 +76,15 @@ void main()
 			0 								//payload
 			);
 
-    imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0));
+	if (iteration == 0)
+    {
+    	imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance * INVERSE_NUMBER_OF_ITERATIONS, 1.0f));
+    }
+
+    else
+    {
+    	vec4 previousRadiance = imageLoad(image, ivec2(gl_LaunchIDNV.xy));
+
+    	imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(previousRadiance.rgb + rayPayload.radiance * INVERSE_NUMBER_OF_ITERATIONS, 1.0f));
+    }
 }

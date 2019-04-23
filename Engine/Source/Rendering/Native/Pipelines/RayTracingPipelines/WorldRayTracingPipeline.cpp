@@ -22,6 +22,7 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 //World ray tracing pipeline constants.
 namespace WorldRayTracingPipelineConstants
 {
+	constexpr int32 NUMBER_OF_ITERATIONS{ 2 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 8 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }
@@ -53,9 +54,16 @@ class PushConstantData final
 
 public:
 
+	//The iteration.
+	int32 _Iteration;
+
+	//The seeds.
 	StaticArray<float, 10> _Seeds;
 
 };
+
+static_assert(offsetof(PushConstantData, _Iteration) == 0, "Oh no. ):");
+static_assert(offsetof(PushConstantData, _Seeds) == 4, "Oh no. ):");
 
 /*
 *	Default constructor.
@@ -223,19 +231,24 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
-	//Push constants.
-	PushConstantData data;
-
-	for (float &seed : data._Seeds)
+	for (int32 i{ 0 }; i < WorldRayTracingPipelineConstants::NUMBER_OF_ITERATIONS; ++i)
 	{
-		seed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+		//Push constants.
+		PushConstantData data;
+
+		data._Iteration = i;
+
+		for (float &seed : data._Seeds)
+		{
+			seed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+		}
+
+		commandBuffer->PushConstants(this, ShaderStage::RayClosestHit | ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
+
+		//Trace rays!
+		commandBuffer->TraceRays(this);
 	}
-
-	commandBuffer->PushConstants(this, ShaderStage::RayClosestHit | ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
-
-	//Trace rays!
-	commandBuffer->TraceRays(this);
-
+	
 	//End the command buffer.
 	commandBuffer->End(this);
 
