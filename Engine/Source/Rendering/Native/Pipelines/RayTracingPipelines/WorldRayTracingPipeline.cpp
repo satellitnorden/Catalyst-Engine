@@ -54,16 +54,20 @@ class PushConstantData final
 
 public:
 
-	//The iteration.
-	int32 _Iteration;
+	//The number of iterations.
+	int32 _NumberOfIterations;
+
+	//The current iteration.
+	int32 _CurrentIteration;
 
 	//The seeds.
 	StaticArray<float, 10> _Seeds;
 
 };
 
-static_assert(offsetof(PushConstantData, _Iteration) == 0, "Oh no. ):");
-static_assert(offsetof(PushConstantData, _Seeds) == 4, "Oh no. ):");
+static_assert(offsetof(PushConstantData, _NumberOfIterations) == 0, "Oh no. ):");
+static_assert(offsetof(PushConstantData, _CurrentIteration) == 4, "Oh no. ):");
+static_assert(offsetof(PushConstantData, _Seeds) == 8, "Oh no. ):");
 
 /*
 *	Default constructor.
@@ -236,7 +240,8 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		//Push constants.
 		PushConstantData data;
 
-		data._Iteration = i;
+		data._NumberOfIterations = WorldRayTracingPipelineConstants::NUMBER_OF_ITERATIONS;
+		data._CurrentIteration = i;
 
 		for (float &seed : data._Seeds)
 		{

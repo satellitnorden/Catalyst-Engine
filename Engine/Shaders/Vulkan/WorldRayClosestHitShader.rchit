@@ -62,17 +62,18 @@ layout (std140, set = 1, binding = 6) uniform LightUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) int iteration;
+	layout (offset = 0) int numberOfIterations;
+	layout (offset = 4) int currentIteration;
 
-    layout (offset = 4) float seed1;
-    layout (offset = 8) float seed2;
-    layout (offset = 12) float seed3;
-    layout (offset = 16) float seed4;
-    layout (offset = 20) float seed5;
-    layout (offset = 24) float seed6;
-    layout (offset = 28) float seed7;
-    layout (offset = 32) float seed8;
-    layout (offset = 36) float seed9;
+    layout (offset = 8) float seed1;
+    layout (offset = 12) float seed2;
+    layout (offset = 16) float seed3;
+    layout (offset = 20) float seed4;
+    layout (offset = 24) float seed5;
+    layout (offset = 28) float seed6;
+    layout (offset = 32) float seed7;
+    layout (offset = 36) float seed8;
+    layout (offset = 40) float seed9;
 };
 
 //In parameters.
@@ -244,53 +245,45 @@ void main()
 										materialProperties.y,
 										materialProperties.x);
 
-	//Calculate all light sources.
-	for (int i = 0; i < 1; ++i)
+	//Calculate the directional light.
+	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f));
+	randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
+	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.025f);
+
+	float shadowMultiplier = 1.0f;
+
+	if (currentRecursionDepth == 0)
 	{
-		Light light = UnpackLight(i);
+		
 
-		//Calculate the shadow multiplier.
-		float shadowMultiplier = 1.0f;
+		//Do the actual ray cast.
+		traceNV(
+				topLevelAccelerationStructure, 				//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				hitPosition, 								//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				-randomLightDirection,						//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM,				//Tmax
+				0 											//payload
+				);
 
-		if (currentRecursionDepth == 0)
-		{
-			//Generate a random position in the light sphere.
-			vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f,
-																		RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
-																		RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f)) * light.size;
-
-			//Generate the light direction.
-			vec3 lightDirection = normalize(randomLightPosition - hitPosition);
-
-			//Do the actual ray cast.
-			traceNV(
-					topLevelAccelerationStructure, 				//topLevel
-					gl_RayFlagsOpaqueNV, 						//rayFlags
-					0xff, 										//cullMask
-					0, 											//sbtRecordOffset
-					0, 											//sbtRecordStride
-					0, 											//missIndex
-					hitPosition, 								//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-					lightDirection,								//direction
-					length(randomLightPosition - hitPosition),	//Tmax
-					0 											//payload
-					);
-
-			shadowMultiplier = rayPayload.hit ? 0.0f : 1.0f;
-		}
-
-		finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
-										normalize(light.position - hitPosition),
-										finalNormal,
-										1.0f,
-										materialProperties.x,
-										materialProperties.y,
-										albedo,
-										light.color) * shadowMultiplier;
-
-		//finalRadiance = vec3(shadowMultiplier);
+		shadowMultiplier = rayPayload.hit ? 0.0f : 1.0f;
 	}
+
+	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
+									-randomLightDirection,
+									finalNormal,
+									1.0f,
+									materialProperties.x,
+									materialProperties.y,
+									albedo,
+									directionalLightColor) * shadowMultiplier;
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
