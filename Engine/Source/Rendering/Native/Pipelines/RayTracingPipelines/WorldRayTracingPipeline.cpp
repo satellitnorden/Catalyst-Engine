@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Math.
+#include <Math/Core/CatalystRandomMath.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -43,6 +46,18 @@ public:
 };
 
 /*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	StaticArray<float, 10> _Seeds;
+
+};
+
+/*
 *	Default constructor.
 */
 WorldRayTracingPipeline::WorldRayTracingPipeline() NOEXCEPT
@@ -75,6 +90,10 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::RayClosestHit | ShaderStage::RayGeneration, 0, sizeof(PushConstantData));
 
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::WorldRayGenerationShader);
@@ -203,6 +222,16 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	PushConstantData data;
+
+	for (float &seed : data._Seeds)
+	{
+		seed = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	}
+
+	commandBuffer->PushConstants(this, ShaderStage::RayClosestHit | ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
 
 	//Trace rays!
 	commandBuffer->TraceRays(this);

@@ -59,6 +59,20 @@ layout (std140, set = 1, binding = 6) uniform LightUniformData
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float seed1;
+    layout (offset = 4) float seed2;
+    layout (offset = 8) float seed3;
+    layout (offset = 12) float seed4;
+    layout (offset = 16) float seed5;
+    layout (offset = 20) float seed6;
+    layout (offset = 24) float seed7;
+    layout (offset = 28) float seed8;
+    layout (offset = 32) float seed9;
+};
+
 //In parameters.
 layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 hitAttributeNV vec3 hitAttribute;
@@ -154,9 +168,9 @@ void main()
 	//Calculate the diffuse irradiance.
 	vec3 diffuseIrradiance;
 
-	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed1 * PHI) * 2.0f - 1.0f,
-															RandomFloat(hitPosition * globalRandomSeed2 * PHI) * 2.0f - 1.0f,
-															RandomFloat(hitPosition * globalRandomSeed3 * PHI) * 2.0f - 1.0f));
+	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
+															RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
+															RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
 
 	randomDiffuseIrradianceDirection *= dot(randomDiffuseIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
 
@@ -229,7 +243,7 @@ void main()
 										materialProperties.x);
 
 	//Calculate all light sources.
-	for (int i = 0; i < numberOfLights; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		Light light = UnpackLight(i);
 
@@ -239,9 +253,9 @@ void main()
 		if (currentRecursionDepth == 0)
 		{
 			//Generate a random position in the light sphere.
-			vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(hitPosition * globalRandomSeed1 * PI * float(i + 1)) * 2.0f - 1.0f,
-																		RandomFloat(hitPosition * globalRandomSeed2 * PI * float(i + 1)) * 2.0f - 1.0f,
-																		RandomFloat(hitPosition * globalRandomSeed3 * PI * float(i + 1)) * 2.0f - 1.0f)) * light.size;
+			vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f,
+																		RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
+																		RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f)) * light.size;
 
 			//Generate the light direction.
 			vec3 lightDirection = normalize(randomLightPosition - hitPosition);

@@ -19,6 +19,12 @@ public:
 	//The descriptor set layouts.
 	const VulkanDescriptorSetLayout *RESTRICT _DescriptorSetLayouts;
 
+	//The number of push constant ranges.
+	uint32 _PushConstantRangeCount;
+
+	//The push constant ranges.
+	VkPushConstantRange *RESTRICT _PushConstantRanges;
+
 	//The shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> _ShaderModules;
 

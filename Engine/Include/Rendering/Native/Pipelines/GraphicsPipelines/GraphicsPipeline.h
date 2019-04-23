@@ -60,11 +60,6 @@ public:
 	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
 
 	/*
-	*	Returns the push constant ranges.
-	*/
-	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return _PushConstantRanges; }
-
-	/*
 	*	Returns the vertex input attribute descriptions.
 	*/
 	const DynamicArray<VertexInputAttributeDescription>& GetVertexInputAttributeDescriptions() const NOEXCEPT { return _VertexInputAttributeDescriptions; }
@@ -215,16 +210,6 @@ public:
 	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
-	*	Sets the number of push constant ranges.
-	*/
-	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { _PushConstantRanges.Reserve(numberOfPushConstantRanges); }
-
-	/*
-	*	Adds a push constant range.
-	*/
-	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.EmplaceFast(shaderStage, offset, size); }
-
-	/*
 	*	Sets the number of vertex input attribute descriptions.
 	*/
 	void SetNumberOfVertexInputAttributeDescriptions(const uint64 numberOfVertexInputAttributeDescriptions) NOEXCEPT { _VertexInputAttributeDescriptions.Reserve(numberOfVertexInputAttributeDescriptions); }
@@ -364,9 +349,6 @@ private:
 
 	//The render targets.
 	DynamicArray<RenderTarget> _RenderTargets;
-
-	//The push constant ranges.
-	DynamicArray<PushConstantRange> _PushConstantRanges;
 
 	//The vertex input attribute descriptions.
 	DynamicArray<VertexInputAttributeDescription> _VertexInputAttributeDescriptions;

@@ -66,9 +66,14 @@ public:
 	FORCE_INLINE void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
 
 	/*
-*	Returns the render data table layouts.
-*/
+	*	Returns the render data table layouts.
+	*/
 	const DynamicArray<RenderDataTableLayoutHandle>& GetRenderDataTableLayouts() const NOEXCEPT { return _RenderDataTableLayouts; }
+
+	/*
+	*	Returns the push constant ranges.
+	*/
+	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return _PushConstantRanges; }
 
 	/*
 	*	Sets the number of command buffers.
@@ -147,6 +152,16 @@ protected:
 	}
 
 	/*
+	*	Sets the number of push constant ranges.
+	*/
+	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { _PushConstantRanges.Reserve(numberOfPushConstantRanges); }
+
+	/*
+	*	Adds a push constant range.
+	*/
+	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.EmplaceFast(shaderStage, offset, size); }
+
+	/*
 	*	Sets whether or not this render pass should be included in the final render.
 	*/
 	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
@@ -167,6 +182,9 @@ private:
 
 	//The render data table layouts.
 	DynamicArray<RenderDataTableLayoutHandle> _RenderDataTableLayouts;
+
+	//The push constant ranges.
+	DynamicArray<PushConstantRange> _PushConstantRanges;
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;

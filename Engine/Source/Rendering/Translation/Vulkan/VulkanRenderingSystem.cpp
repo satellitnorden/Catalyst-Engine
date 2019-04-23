@@ -271,6 +271,27 @@ namespace VulkanRenderingSystemLogic
 		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
 		parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
 
+		DynamicArray<VkPushConstantRange> pushConstantRanges;
+
+		if (pipeline->GetPushConstantRanges().Empty())
+		{
+			parameters._PushConstantRangeCount = 0;
+			parameters._PushConstantRanges = nullptr;
+		}
+
+		else
+		{
+			pushConstantRanges.Reserve(pipeline->GetPushConstantRanges().Size());
+
+			for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
+			{
+				pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+			}
+
+			parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
+			parameters._PushConstantRanges = pushConstantRanges.Data();
+		}
+
 		parameters._ShaderModules.Reserve(3);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
 		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetMissShader())]);

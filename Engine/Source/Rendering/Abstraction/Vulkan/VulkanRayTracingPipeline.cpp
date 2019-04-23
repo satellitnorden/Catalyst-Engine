@@ -117,8 +117,8 @@ void VulkanRayTracingPipeline::CreatePipelineLayoutCreateInfo(const VulkanRayTra
 	pipelineLayoutCreateInfo->flags = 0;
 	pipelineLayoutCreateInfo->setLayoutCount = parameters._DescriptorSetLayoutCount;
 	pipelineLayoutCreateInfo->pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(parameters._DescriptorSetLayouts);
-	pipelineLayoutCreateInfo->pushConstantRangeCount = 0;
-	pipelineLayoutCreateInfo->pPushConstantRanges = nullptr;
+	pipelineLayoutCreateInfo->pushConstantRangeCount = parameters._PushConstantRangeCount;
+	pipelineLayoutCreateInfo->pPushConstantRanges = parameters._PushConstantRanges;
 }
 
 /*
