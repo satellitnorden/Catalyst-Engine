@@ -123,6 +123,13 @@ void RadianceIntegrationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 */
 void RadianceIntegrationGraphicsPipeline::RenderInternal() NOEXCEPT
 {
+	if (false)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
