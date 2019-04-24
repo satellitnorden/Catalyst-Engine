@@ -9,8 +9,9 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D image;
-layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 0, rgba32f) uniform image2D sceneImage;
+layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeaturesImage;
+layout (set = 1, binding = 2) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -24,9 +25,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 20) float seed4;
     layout (offset = 24) float seed5;
     layout (offset = 28) float seed6;
-    layout (offset = 32) float seed7;
-    layout (offset = 36) float seed8;
-    layout (offset = 40) float seed9;
 };
 
 //In parameters.
@@ -47,11 +45,7 @@ vec3 CalculateDirection()
 
 	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
 
-	vec3 randomPosition = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)),
-											RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)),
-											RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)))) * 0.0000625f; //0.0000025f step
-
-	return normalize(worldPosition + randomPosition - perceiverWorldPosition);
+	return normalize(worldPosition - perceiverWorldPosition);
 }
 
 void main() 
@@ -75,13 +69,16 @@ void main()
 
 	if (currentIteration == 0)
     {
-    	imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance / numberOfIterations, 1.0f));
+    	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f) / numberOfIterations);
+    	imageStore(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.normal, rayPayload.depth) / numberOfIterations);
     }
 
     else
     {
-    	vec4 previousRadiance = imageLoad(image, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousRadiance = imageLoad(sceneImage, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousSceneFeatures = imageLoad(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy));
 
-    	imageStore(image, ivec2(gl_LaunchIDNV.xy), vec4(previousRadiance.rgb + rayPayload.radiance / numberOfIterations, 1.0f));
+    	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), (previousRadiance + vec4(rayPayload.radiance, 1.0f)) / numberOfIterations);
+    	imageStore(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy), (previousSceneFeatures + vec4(rayPayload.normal, rayPayload.depth)) / numberOfIterations);
     }
 }

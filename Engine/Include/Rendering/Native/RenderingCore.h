@@ -167,9 +167,30 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {
+	/*
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
 	Intermediate,
+
+	/*
+	*	Contains an accumulated buffer of all previous color values in the scene.
+	*/
 	PreviousRadiance,
+
+	/*
+	*	Should contain the final color for the scene.
+	*	Also used for intermediate purposes.
+	*/
 	Scene,
+
+	/*
+	*	Contains the world space normal as well as the perceiver-space depth.
+	*/
+	SceneFeatures,
+
+	/*
+	*	For rendering directly to the screen.
+	*/
 	Screen,
 
 	NumberOfRenderTargets

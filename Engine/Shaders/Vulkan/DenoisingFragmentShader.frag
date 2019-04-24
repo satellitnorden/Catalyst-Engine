@@ -26,6 +26,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeaturesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;

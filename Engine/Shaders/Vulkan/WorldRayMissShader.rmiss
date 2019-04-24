@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 3) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV RayPayload rayPayload;

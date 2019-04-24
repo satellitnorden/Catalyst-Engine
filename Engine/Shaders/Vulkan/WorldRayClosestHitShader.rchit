@@ -45,15 +45,15 @@ struct Vertex
 #define INDICES_OFFSET (2637)
 
 //Descriptor set data.
-layout (set = 1, binding = 1) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 2) uniform samplerCube environmentTexture;
-layout (set = 1, binding = 3) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 4) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 5) uniform ModelUniformData
+layout (set = 1, binding = 2) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 3) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 4) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 5) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 6) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
-layout (std140, set = 1, binding = 6) uniform LightUniformData
+layout (std140, set = 1, binding = 7) uniform LightUniformData
 {
 	layout (offset = 0) int numberOfLights;
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
@@ -180,9 +180,9 @@ void main()
 	//Calculate the indirect lighting.
 	vec3 indirectLighting;
 
-	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
+	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
 	randomIrradianceDirection *= dot(randomIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
 	randomIrradianceDirection = mix(finalNormal, randomIrradianceDirection, pow(roughness * (1.0f - metallic), 1.0f));
 	randomIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomIrradianceDirection);
@@ -212,9 +212,9 @@ void main()
 										roughness);
 
 	//Calculate the direct lighting.
-	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f,
-												RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
-												RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f));
+	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
 	randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
 	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.0175f); //0.0025f step.
 
@@ -246,4 +246,11 @@ void main()
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
+
+	//Write the normal/depth if this is the first recursion.
+	if (currentRecursionDepth == 0)
+	{
+		rayPayload.normal = finalNormal;
+		rayPayload.depth = vec4(perceiverMatrix * vec4(hitPosition, 1.0f)).z;
+	}
 }
