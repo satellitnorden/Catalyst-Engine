@@ -22,7 +22,7 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 //World ray tracing pipeline constants.
 namespace WorldRayTracingPipelineConstants
 {
-	constexpr int32 NUMBER_OF_ITERATIONS{ 2 };
+	constexpr int32 NUMBER_OF_ITERATIONS{ 4 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 8 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }
@@ -146,7 +146,7 @@ void WorldRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
 }
 
 /*

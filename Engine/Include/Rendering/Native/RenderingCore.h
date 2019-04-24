@@ -59,6 +59,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
+	Denoising,
 	RadianceIntegration,
 	ToneMapping,
 	AntiAliasing,
@@ -195,6 +196,7 @@ enum class Shader : uint8
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
+	DenoisingFragment,
 	PassthroughFragment,
 	RadianceIntegrationFragment,
 	ToneMappingFragment,
