@@ -120,6 +120,17 @@ Vertex UnpackVertex(uint index)
 
 void main()
 {
+	//Store the current recursion depth.
+	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
+
+	//Don't go below the current recursion depth.
+	if (currentRecursionDepth == CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
+	{
+		rayPayload.radiance = vec3(0.0f);
+
+		return;
+	}
+
 	//Calculate the hit position.
 	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
 
@@ -163,94 +174,51 @@ void main()
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	//Store the current recursion depth.
-	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
-
-	//Calculate the diffuse irradiance.
-	vec3 diffuseIrradiance;
-
-	vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
-															RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
-															RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
-
-	randomDiffuseIrradianceDirection *= dot(randomDiffuseIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
-
-	vec3 diffuseIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomDiffuseIrradianceDirection);
-
-	if (currentRecursionDepth == 0)
-	{
-		traceNV(
-				topLevelAccelerationStructure, 	//topLevel
-				gl_RayFlagsOpaqueNV, 			//rayFlags
-				0xff, 							//cullMask
-				0, 								//sbtRecordOffset
-				0, 								//sbtRecordStride
-				0, 								//missIndex
-				hitPosition, 					//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-				diffuseIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-				0 								//payload
-				);
-
-		diffuseIrradiance = rayPayload.radiance;
-	}
-
-	else
-	{
-		diffuseIrradiance = texture(environmentTexture, diffuseIrradianceDirection).rgb;
-	}
-
-	//Calculate the specular irradiance.
-	vec3 specularIrradiance;
-
-	vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
-
-	if (currentRecursionDepth == 0)
-	{
-		traceNV(
-				topLevelAccelerationStructure, 	//topLevel
-				gl_RayFlagsOpaqueNV, 			//rayFlags
-				0xff, 							//cullMask
-				0, 								//sbtRecordOffset
-				0, 								//sbtRecordStride
-				0, 								//missIndex
-				hitPosition, 					//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-				specularIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-				0 								//payload
-				);
-
-		specularIrradiance = rayPayload.radiance;
-	}
-
-	else
-	{
-		specularIrradiance = texture(environmentTexture, specularIrradianceDirection).rgb;
-	}
-
 	//Calculate the final radiance.
 	vec3 finalRadiance = vec3(0.0f);
 
-	//Start off with the ambient lighting.
-	finalRadiance += CalculateAmbient(	albedo,
-										diffuseIrradiance,
-										finalNormal,
-										specularIrradiance,
-										normalize(gl_WorldRayOriginNV - hitPosition),
-										materialProperties.z,
-										materialProperties.y,
-										materialProperties.x);
+	//Calculate the indirect lighting.
+	vec3 indirectLighting;
 
-	//Calculate the directional light.
+	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
+	randomIrradianceDirection *= dot(randomIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
+	randomIrradianceDirection = mix(finalNormal, randomIrradianceDirection, pow(roughness * (1.0f - metallic), 2.0f));
+	randomIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomIrradianceDirection);
+
+	traceNV(
+			topLevelAccelerationStructure, 	//topLevel
+			gl_RayFlagsOpaqueNV, 			//rayFlags
+			0xff, 							//cullMask
+			0, 								//sbtRecordOffset
+			0, 								//sbtRecordStride
+			0, 								//missIndex
+			hitPosition, 					//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
+			randomIrradianceDirection, 		//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
+			0 								//payload
+			);
+
+	indirectLighting = rayPayload.radiance;
+
+	finalRadiance += CalculateAmbient(	albedo,
+										finalNormal,
+										indirectLighting,
+										normalize(gl_WorldRayOriginNV - hitPosition),
+										ambientOcclusion,
+										metallic,
+										roughness);
+
+	//Calculate the direct lighting.
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed8)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed9)) * 2.0f - 1.0f));
 	randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
-	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.0225f); //0.0025f step.
+	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.02f); //0.0025f step.
 
-	//Determine the visibility of the directional light.
+	//Determine the visibility.
 	visibility = 0.0f;
 
 	traceNV(
@@ -274,7 +242,7 @@ void main()
 									roughness,
 									metallic,
 									albedo,
-									directionalLightColor) * visibility;
+									directionalLightColor * directionalLightIntensity) * visibility;
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
