@@ -184,7 +184,7 @@ void main()
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
 	randomIrradianceDirection *= dot(randomIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
-	randomIrradianceDirection = mix(finalNormal, randomIrradianceDirection, pow(roughness * (1.0f - metallic), 1.0f));
+	randomIrradianceDirection = mix(finalNormal, randomIrradianceDirection, pow(roughness * (1.0f - metallic), 2.0f));
 	randomIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomIrradianceDirection);
 
 	traceNV(
