@@ -119,7 +119,7 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 */
 float RandomFloat(vec3 seed)
 {
-    return fract(sin(dot(seed.xy * seed.z, vec2(12.9898f, 78.233f))) * 43758.5453f);
+    return fract(sin(dot(vec2(seed.x * (EULERS_NUMBER + seed.z + 1.0f), seed.y * (PHI + seed.z + 1.0f)), vec2(12.9898f, 78.233f))) * 43758.5453f);
 }
 
 /*
