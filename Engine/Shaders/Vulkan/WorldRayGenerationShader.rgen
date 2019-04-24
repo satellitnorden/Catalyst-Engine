@@ -9,9 +9,11 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D sceneImage;
-layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeaturesImage;
-layout (set = 1, binding = 2) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
+layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingImage;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -67,18 +69,36 @@ void main()
 			0 								//payload
 			);
 
+	//In case the first ray missed, fill in some values in the payload. (:
+	if (rayPayload.currentRecursionDepth == 0)
+	{
+		rayPayload.indirectLighting = rayPayload.radiance;
+		rayPayload.directLighting = rayPayload.radiance;
+		rayPayload.normal = vec3(1.0f, 1.0f, 1.0f);
+		rayPayload.depth = 0.0f;
+		rayPayload.roughness = 1.0f;
+		rayPayload.metallic = 0.0f;
+		rayPayload.ambientOcclusion = 1.0f;
+	}
+
 	if (currentIteration == 0)
     {
-    	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f) / numberOfIterations);
-    	imageStore(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.normal, rayPayload.depth) / numberOfIterations);
+    	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f) / numberOfIterations);
+    	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.directLighting, 1.0f) / numberOfIterations);
+    	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.normal, rayPayload.depth) / numberOfIterations);
+    	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f) / numberOfIterations);
     }
 
     else
     {
-    	vec4 previousRadiance = imageLoad(sceneImage, ivec2(gl_LaunchIDNV.xy));
-    	vec4 previousSceneFeatures = imageLoad(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousIndirectLighting = imageLoad(indirectLightingImage, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousDirectLighting = imageLoad(directLightingImage, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousSceneFeatures1 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
+    	vec4 previousSceneFeatures2 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
 
-    	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), (previousRadiance + vec4(rayPayload.radiance, 1.0f)) / numberOfIterations);
-    	imageStore(sceneFeaturesImage, ivec2(gl_LaunchIDNV.xy), (previousSceneFeatures + vec4(rayPayload.normal, rayPayload.depth)) / numberOfIterations);
+    	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), previousIndirectLighting + vec4(rayPayload.indirectLighting, 1.0f) / numberOfIterations);
+    	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), previousDirectLighting + vec4(rayPayload.directLighting, 1.0f) / numberOfIterations);
+    	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), previousSceneFeatures1 + vec4(rayPayload.normal, rayPayload.depth) / numberOfIterations);
+    	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), previousSceneFeatures2 + vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f) / numberOfIterations);
     }
 }

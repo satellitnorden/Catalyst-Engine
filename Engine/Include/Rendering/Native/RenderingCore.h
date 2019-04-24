@@ -168,6 +168,16 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
+	*	Contains the indirect lighting.
+	*/
+	IndirectLighting,
+
+	/*
+	*	Contains the direct lighting.
+	*/
+	DirectLighting,
+
+	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
 	Intermediate,
@@ -184,9 +194,14 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
-	*	Contains the world space normal as well as the perceiver-space depth.
+	*	Contains the world space normal as well as the hit distance.
 	*/
-	SceneFeatures,
+	SceneFeatures1,
+
+	/*
+	*	Contains the roughness, metallic and ambient occlusion.
+	*/
+	SceneFeatures2,
 
 	/*
 	*	For rendering directly to the screen.

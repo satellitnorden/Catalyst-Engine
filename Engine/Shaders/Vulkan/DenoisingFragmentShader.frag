@@ -10,7 +10,21 @@
 //Constants.
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
-#define MAXIMUM_VARIANCE (1.0f)
+#define INDIRECT_LIGHTING_DENOISE_SIZE (3)
+#define INDIRECT_LIGHTING_DENOISE_START ((INDIRECT_LIGHTING_DENOISE_SIZE - 1) / 2)
+#define INDIRECT_LIGHTING_CONTRIBUTION (1.0f / (INDIRECT_LIGHTING_DENOISE_SIZE * INDIRECT_LIGHTING_DENOISE_SIZE))
+
+/*
+*	Scene features struct definition.
+*/
+struct SceneFeatures
+{
+	vec3 normal;
+	float hitDistance;
+	float roughness;
+	float metallic;
+	float ambientOcclusion;
+};
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -25,65 +39,75 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeaturesTexture;
+layout (set = 1, binding = 0) uniform sampler2D indirectLightingTexture;
+layout (set = 1, binding = 1) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures1Texture;
+layout (set = 1, binding = 3) uniform sampler2D sceneFeatures2Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
+
+/*
+*	Samples the scene features at the specified coordinates.
+*/
+SceneFeatures SampleSceneFeatures(vec2 coordinate)
+{
+	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
+	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
+
+	SceneFeatures features;
+
+	features.normal = sceneFeatures1.xyz;
+	features.hitDistance = sceneFeatures1.w;
+	features.roughness = sceneFeatures2.x;
+	features.metallic = sceneFeatures2.y;
+	features.ambientOcclusion = sceneFeatures2.z;
+
+	return features;
+}
 
 void main()
 {
 	if (enabled)
 	{
-		//Sample the current fragment.
-		vec3 currentFragment = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+		//Sample the indirect lighting and scene features.
+		vec3 indirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
+		SceneFeatures features = SampleSceneFeatures(fragmentTextureCoordinate);
 
-		//Sample the adjacent fragments.
-		vec3 adjacentFragments[8] = vec3[]
-		(
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, 0.0f)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, -INVERSE_HEIGHT)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(INVERSE_WIDTH, 0.0f)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, INVERSE_HEIGHT)).rgb,
+		//Denoise the indirect lighting term.
+		vec3 denoisedIndirectLighting = indirectLighting * INDIRECT_LIGHTING_CONTRIBUTION;
 
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, -INVERSE_HEIGHT)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, INVERSE_HEIGHT)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(INVERSE_WIDTH, -INVERSE_HEIGHT)).rgb,
-			texture(sceneTexture, fragmentTextureCoordinate + vec2(INVERSE_WIDTH, INVERSE_HEIGHT)).rgb
-		);
-
-		//Calculate the current average.
-		float currentAverage = CalculateAverage(currentFragment);
-
-		//Determine the minimum and maximum averages for the adjacent fragments.
-		float minimumAverage;
-		float maximumAverage;
-
-		minimumAverage = maximumAverage = currentAverage;
-
-		for (int i = 0; i < 8; ++i)
+		for (int i = -INDIRECT_LIGHTING_DENOISE_START; i <= INDIRECT_LIGHTING_DENOISE_SIZE; ++i)
 		{
-			minimumAverage = min(minimumAverage, CalculateAverage(adjacentFragments[i]));
-			maximumAverage = max(maximumAverage, CalculateAverage(adjacentFragments[i]));
+			for (int j = -INDIRECT_LIGHTING_DENOISE_START; j <= INDIRECT_LIGHTING_DENOISE_SIZE; ++j)
+			{
+				if (i == 0 && j == 0)
+				{
+					continue;
+				}
+
+				vec2 sampleTextureCoordinate = fragmentTextureCoordinate + vec2(INVERSE_WIDTH, INVERSE_HEIGHT) * vec2(i, j);
+
+				vec3 sampleIndirectLighting = texture(indirectLightingTexture, sampleTextureCoordinate).rgb;
+				SceneFeatures sampleFeatures = SampleSceneFeatures(sampleTextureCoordinate);
+
+				/*
+				*	Blend the indirect lighting and the sample indirect lighting based on a few different criteria;
+				*	
+				*	1. How much do the normals align? This weight is less important the more diffuse the material are.
+				*	2. How close are the hit distances to each other?
+				*	3. How closely aligned are the ambient occlusion terms?
+				*	4. How far away is the fragment?
+				*/
+				float weight1 = mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, features.roughness * (1.0f - features.metallic));
+				float weight2 = max(1.0f - abs(features.hitDistance - sampleFeatures.hitDistance), 0.0f);
+				float weight3 = 1.0f - abs(features.ambientOcclusion - sampleFeatures.ambientOcclusion);
+				float weight4 = 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_START, 0.0f, 1.0f);
+				float finalWeight = weight1 * weight2 * weight3 * weight4;
+
+				denoisedIndirectLighting += mix(indirectLighting, sampleIndirectLighting, finalWeight) * INDIRECT_LIGHTING_CONTRIBUTION;
+			}
 		}
-
-		//Calculate the variance.
-		float variance = min((maximumAverage - minimumAverage) * 1.0f, 1.0f);
-
-		//Calculate the weights based on the variance.
-		float currentWeight = mix(1.0f, 0.1111111111111111f, variance);
-		float indirectWeight = mix(0.0f, 0.1111111111111111f, variance);
-
-		//Average the current fragment.
-		currentFragment = 	currentFragment * currentWeight
-							+ adjacentFragments[0] * indirectWeight
-							+ adjacentFragments[1] * indirectWeight
-							+ adjacentFragments[2] * indirectWeight
-							+ adjacentFragments[3] * indirectWeight
-							+ adjacentFragments[4] * indirectWeight
-							+ adjacentFragments[5] * indirectWeight
-							+ adjacentFragments[6] * indirectWeight
-							+ adjacentFragments[7] * indirectWeight;
 
 		//Write the fragment.
 		if (gl_FragCoord.x < 100.0f && gl_FragCoord.y < 100.0f)
@@ -93,7 +117,7 @@ void main()
 
 		else
 		{
-			fragment = vec4(currentFragment, 1.0f);
+			fragment = vec4(denoisedIndirectLighting, 1.0f) + texture(directLightingTexture, fragmentTextureCoordinate);
 		}
 	}
 
@@ -107,7 +131,7 @@ void main()
 
 		else
 		{
-			fragment = texture(sceneTexture, fragmentTextureCoordinate);
+			fragment = texture(indirectLightingTexture, fragmentTextureCoordinate) + texture(directLightingTexture, fragmentTextureCoordinate);
 		}
 	}
 }

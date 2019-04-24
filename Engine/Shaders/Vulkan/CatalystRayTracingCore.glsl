@@ -11,10 +11,16 @@
 */
 struct RayPayload
 {
+	int currentRecursionDepth;
+
 	vec3 radiance;
+	vec3 indirectLighting;
+	vec3 directLighting;
 	vec3 normal;
 	float depth;
-	int currentRecursionDepth;
+	float roughness;
+	float metallic;
+	float ambientOcclusion;
 };
 
 #endif

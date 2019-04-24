@@ -42,18 +42,16 @@ struct Vertex
 #define MAXIMUM_NUMBER_OF_LIGHTS (4)
 #define VERTEX_SIZE (3)
 
-#define INDICES_OFFSET (2637)
-
 //Descriptor set data.
-layout (set = 1, binding = 2) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 3) uniform samplerCube environmentTexture;
-layout (set = 1, binding = 4) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 5) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 6) uniform ModelUniformData
+layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 5) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 6) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 7) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 8) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
-layout (std140, set = 1, binding = 7) uniform LightUniformData
+layout (std140, set = 1, binding = 9) uniform LightUniformData
 {
 	layout (offset = 0) int numberOfLights;
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
@@ -201,15 +199,15 @@ void main()
 			0 								//payload
 			);
 
-	indirectLighting = rayPayload.radiance;
-
-	finalRadiance += CalculateAmbient(	albedo,
+	indirectLighting = CalculateAmbient(albedo,
 										finalNormal,
-										indirectLighting,
+										rayPayload.radiance,
 										normalize(gl_WorldRayOriginNV - hitPosition),
 										ambientOcclusion,
 										metallic,
 										roughness);
+
+	finalRadiance += indirectLighting;
 
 	//Calculate the direct lighting.
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
@@ -235,22 +233,29 @@ void main()
 			1 																							//payload
 			);
 
-	finalRadiance += CalculateLight(normalize(gl_WorldRayOriginNV - hitPosition),
-									-randomLightDirection,
-									finalNormal,
-									1.0f,
-									roughness,
-									metallic,
-									albedo,
-									directionalLightColor * directionalLightIntensity) * visibility;
+	vec3 directLighting = CalculateLight(	normalize(gl_WorldRayOriginNV - hitPosition),
+											-randomLightDirection,
+											finalNormal,
+											1.0f,
+											roughness,
+											metallic,
+											albedo,
+											directionalLightColor * directionalLightIntensity) * visibility;
+
+	finalRadiance += directLighting;
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
 
-	//Write the normal/depth if this is the first recursion.
+	//Write tspecial properties if this is the first recursion.
 	if (currentRecursionDepth == 0)
 	{
+		rayPayload.indirectLighting = indirectLighting;
+		rayPayload.directLighting = directLighting;
 		rayPayload.normal = finalNormal;
-		rayPayload.depth = vec4(perceiverMatrix * vec4(hitPosition, 1.0f)).z;
+		rayPayload.depth = gl_HitTNV;
+		rayPayload.roughness = roughness;
+		rayPayload.metallic = metallic;
+		rayPayload.ambientOcclusion = ambientOcclusion;
 	}
 }
