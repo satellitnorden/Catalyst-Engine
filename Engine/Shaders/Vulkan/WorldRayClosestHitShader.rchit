@@ -176,7 +176,7 @@ void main()
 	vec3 finalRadiance = vec3(0.0f);
 
 	//Calculate the indirect lighting.
-	vec3 indirectLighting;
+	vec3 indirectLighting = vec3(0.0f);
 
 	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
@@ -209,11 +209,7 @@ void main()
 
 	finalRadiance += indirectLighting;
 
-
 	//Calculate the direct lighting.
-	vec3 directLighting = vec3(0.0f);
-
-	/*
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
@@ -237,7 +233,7 @@ void main()
 			1 																							//payload
 			);
 
-	vec3 directLighting = CalculateLight(	normalize(gl_WorldRayOriginNV - hitPosition),
+	vec3 directLighting = CalculateLight(	-gl_WorldRayDirectionNV,
 											-randomLightDirection,
 											finalNormal,
 											1.0f,
@@ -247,7 +243,6 @@ void main()
 											directionalLightColor * directionalLightIntensity) * visibility;
 
 	finalRadiance += directLighting;
-	*/
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;

@@ -122,6 +122,6 @@ void main()
 	else
 	{
 		//Write the fragment.
-		fragment = texture(indirectLightingTexture, fragmentTextureCoordinate)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
+		fragment = texture(indirectLightingTexture, fragmentTextureCoordinate) + texture(directLightingTexture, fragmentTextureCoordinate);
 	}
 }
