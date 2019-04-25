@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
 
 //Constants.
 #define INVERSE_WIDTH (1.0f / 1920.0f)
@@ -99,7 +100,7 @@ void main()
 				*	3. How closely aligned are the ambient occlusion terms?
 				*	4. How far away is the fragment?
 				*/
-				float weight1 = mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, features.roughness * (1.0f - features.metallic));
+				float weight1 = mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(features.roughness, features.metallic));
 				float weight2 = max(1.0f - abs(features.hitDistance - sampleFeatures.hitDistance), 0.0f);
 				float weight3 = 1.0f - abs(features.ambientOcclusion - sampleFeatures.ambientOcclusion);
 				float weight4 = 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_RANGE, 0.0f, 1.0f);
@@ -117,7 +118,7 @@ void main()
 
 		else
 		{
-			fragment = vec4(denoisedIndirectLighting, 1.0f) + texture(directLightingTexture, fragmentTextureCoordinate);
+			fragment = vec4(denoisedIndirectLighting, 1.0f)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
 		}
 	}
 
@@ -131,7 +132,7 @@ void main()
 
 		else
 		{
-			fragment = texture(indirectLightingTexture, fragmentTextureCoordinate) + texture(directLightingTexture, fragmentTextureCoordinate);
+			fragment = texture(indirectLightingTexture, fragmentTextureCoordinate)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
 		}
 	}
 }
