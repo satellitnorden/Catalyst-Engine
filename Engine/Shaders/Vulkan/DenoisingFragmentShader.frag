@@ -116,7 +116,7 @@ void main()
 		denoisedIndirectLighting *= 1.0f / weightSum;
 
 		//Write the fragment.
-		fragment = vec4(denoisedIndirectLighting, 1.0f)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
+		fragment = vec4(denoisedIndirectLighting, 1.0f) + texture(directLightingTexture, fragmentTextureCoordinate);
 	}
 
 	else

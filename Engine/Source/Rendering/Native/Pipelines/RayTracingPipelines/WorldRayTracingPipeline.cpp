@@ -23,7 +23,7 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 namespace WorldRayTracingPipelineConstants
 {
 	constexpr int32 NUMBER_OF_ITERATIONS{ 1 };
-	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 8 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 16 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }
 

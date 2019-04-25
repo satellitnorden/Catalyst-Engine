@@ -38,7 +38,7 @@ struct Vertex
 };
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_MODELS (8)
+#define MAXIMUM_NUMBER_OF_MODELS (16)
 #define MAXIMUM_NUMBER_OF_LIGHTS (4)
 #define VERTEX_SIZE (3)
 
@@ -130,7 +130,7 @@ void main()
 	}
 
 	//Calculate the hit position.
-	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
+	vec3 hitPosition = (gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV) + -gl_WorldRayDirectionNV * 0.01f;
 
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
@@ -209,7 +209,11 @@ void main()
 
 	finalRadiance += indirectLighting;
 
+
 	//Calculate the direct lighting.
+	vec3 directLighting = vec3(0.0f);
+
+	/*
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
@@ -243,6 +247,7 @@ void main()
 											directionalLightColor * directionalLightIntensity) * visibility;
 
 	finalRadiance += directLighting;
+	*/
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
