@@ -70,14 +70,8 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Set the scaled resolution.
 	_ScaledResolution = Resolution(static_cast<uint32>(static_cast<float>(_Resolution._Width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float>(_Resolution._Height) * configuration._ResolutionScale));
 
-	//Set the directional shadow map resolution.
-	_DirectionalShadowMapResolution = Resolution(configuration._ShadowMapResolution, configuration._ShadowMapResolution);
-
 	//Pre-initialize the rendering system.
 	PreInitialize();
-
-	//Initialize all depth buffers.
-	InitializeDepthBuffers();
 
 	//Initialize all render targets.
 	InitializeRenderTargets();
@@ -241,15 +235,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	{
 		_GlobalRenderData._GlobalTextureSlots[i] = false;
 	}
-}
-
-/*
-*	Initializes all depth buffers.
-*/
-void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
-{
-	CreateDepthBuffer(GetDirectionalShadowMapResolution(), &_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]);
-	CreateDepthBuffer(GetScaledResolution(), &_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]);
 }
 
 /*

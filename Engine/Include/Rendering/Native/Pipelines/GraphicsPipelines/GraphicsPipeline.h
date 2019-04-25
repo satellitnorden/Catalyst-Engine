@@ -50,11 +50,6 @@ public:
 	Shader GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
 
 	/*
-	*	Returns the depth buffer.
-	*/
-	DepthBuffer GetDepthBuffer() const NOEXCEPT { return _DepthBuffer; }
-
-	/*
 	*	Returns the render targets.
 	*/
 	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
@@ -193,11 +188,6 @@ public:
 	*	Sets the fragment shader.
 	*/
 	void SetFragmentShader(const Shader newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
-
-	/*
-	*	Sets the depth buffer.
-	*/
-	void SetDepthBuffer(const DepthBuffer newDepthBuffer) NOEXCEPT { _DepthBuffer = newDepthBuffer; }
 
 	/*
 	*	Sets the number of render targets.
@@ -343,9 +333,6 @@ private:
 
 	//The fragment shader.
 	Shader _FragmentShader;
-
-	//The depth buffer.
-	DepthBuffer _DepthBuffer;
 
 	//The render targets.
 	DynamicArray<RenderTarget> _RenderTargets;

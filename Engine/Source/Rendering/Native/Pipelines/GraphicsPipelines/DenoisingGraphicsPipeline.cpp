@@ -68,9 +68,6 @@ void DenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::DenoisingFragment);
 
-	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
-
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);

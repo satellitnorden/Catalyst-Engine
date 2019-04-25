@@ -52,9 +52,6 @@ public:
 	//The resolution scale.
 	float _ResolutionScale;
 
-	//The shadow map resolution.
-	uint32 _ShadowMapResolution;
-
 	/*
 	*	Default constructor.
 	*/

@@ -89,15 +89,7 @@ public:
 	{
 		return _ScaledResolution;
 	}
-
-	/*
-	*	Returns the directional shadow map resolution.
-	*/
-	Resolution GetDirectionalShadowMapResolution() const NOEXCEPT
-	{
-		return _DirectionalShadowMapResolution;
-	}
-	
+	 
 	/*
 	*	Returns the number of framebuffers.
 	*/
@@ -107,14 +99,6 @@ public:
 	*	Returns the current framebuffer index.
 	*/
 	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
-
-	/*
-	*	Returns the given depth buffer.
-	*/
-	DepthBufferHandle GetDepthBuffer(const DepthBuffer depthBuffer) const NOEXCEPT
-	{
-		return _DepthBuffers[UNDERLYING(depthBuffer)];
-	}
 
 	/*
 	*	Returns the given render target.
@@ -281,14 +265,8 @@ private:
 	//The scaled resolution.
 	Resolution _ScaledResolution;
 
-	//The directional shadow map resolution.
-	Resolution _DirectionalShadowMapResolution;
-
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;
-
-	//Container for all depth buffers.
-	StaticArray<DepthBufferHandle, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
 	//Container for all render targets.
 	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
@@ -333,11 +311,6 @@ private:
 	*	Pre-initializes the global render data.
 	*/
 	void PreInitializeGlobalRenderData() NOEXCEPT;
-
-	/*
-	*	Initializes all depth buffers.
-	*/
-	void InitializeDepthBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all render targets.

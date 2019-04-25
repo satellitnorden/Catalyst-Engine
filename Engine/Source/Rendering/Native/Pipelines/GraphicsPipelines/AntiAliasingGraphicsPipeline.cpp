@@ -52,9 +52,6 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::AntiAliasingFragment);
 
-	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
-
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Screen);

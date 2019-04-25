@@ -52,9 +52,6 @@ void RadianceIntegrationGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::RadianceIntegrationFragment);
 
-	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
-
 	//Add the render targets.
 	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::Scene);

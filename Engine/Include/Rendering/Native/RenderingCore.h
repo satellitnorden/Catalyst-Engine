@@ -133,17 +133,6 @@ enum class CullMode : uint8
 	FrontAndBack
 };
 
-//Enumeration covering all depth buffers.
-enum class DepthBuffer : uint8
-{
-	DirectionalLight,
-	SceneBuffer,
-
-	NumberOfDepthBuffers,
-
-	None
-};
-
 //Enumeration covering all level of details.
 enum class LevelOfDetail : uint8
 {

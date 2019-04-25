@@ -49,9 +49,6 @@ void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::ToneMappingFragment);
 
-	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
-
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Intermediate);
