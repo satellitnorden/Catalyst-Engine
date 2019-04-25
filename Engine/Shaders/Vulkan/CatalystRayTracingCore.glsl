@@ -25,6 +25,22 @@ struct RayPayload
 };
 
 /*
+*	Calculates the ray direction.
+*/
+vec3 CalculateRayDirection(vec2 coordinate)
+{
+    vec2 nearPlaneCoordinate = coordinate * 2.0f - 1.0f;
+	vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, 1.0f), 1.0f);
+	float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
+	viewSpacePosition *= inverseViewSpacePositionDenominator;
+	vec4 worldSpacePosition = inversePerceiverMatrix * viewSpacePosition;
+
+	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
+
+	return normalize(worldPosition - perceiverWorldPosition);
+}
+
+/*
 *	Returns the specular component of a surface.
 */
 float GetSpecularComponent(float roughness, float metallic)
