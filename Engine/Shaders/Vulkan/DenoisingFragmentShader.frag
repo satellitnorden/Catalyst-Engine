@@ -100,11 +100,12 @@ void main()
 				*	3. How closely aligned are the ambient occlusion terms?
 				*	4. How far away is the fragment?
 				*/
-				float weight1 = mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(features.roughness, features.metallic));
-				float weight2 = max(1.0f - abs(features.hitDistance - sampleFeatures.hitDistance), 0.0f);
-				float weight3 = 1.0f - abs(features.ambientOcclusion - sampleFeatures.ambientOcclusion);
-				float weight4 = 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_RANGE, 0.0f, 1.0f);
-				float finalWeight = weight1 * weight2 * weight3 * weight4;
+				float finalWeight = 1.0f;
+
+				finalWeight *= mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(features.roughness, features.metallic));
+				finalWeight *= max(1.0f - abs(features.hitDistance - sampleFeatures.hitDistance), 0.0f);
+				finalWeight *= 1.0f - abs(features.ambientOcclusion - sampleFeatures.ambientOcclusion);
+				finalWeight *= 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_RANGE, 0.0f, 1.0f);
 
 				denoisedIndirectLighting += mix(indirectLighting, sampleIndirectLighting, finalWeight) * INDIRECT_LIGHTING_CONTRIBUTION;
 			}

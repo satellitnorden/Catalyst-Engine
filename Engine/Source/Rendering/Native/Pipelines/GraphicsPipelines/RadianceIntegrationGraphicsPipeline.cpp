@@ -120,7 +120,7 @@ void RadianceIntegrationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 */
 void RadianceIntegrationGraphicsPipeline::RenderInternal() NOEXCEPT
 {
-	if (false)
+	if (true)
 	{
 		SetIncludeInRender(false);
 
