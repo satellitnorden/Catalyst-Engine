@@ -10,9 +10,9 @@
 //Constants.
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
-#define INDIRECT_LIGHTING_DENOISE_SIZE (3)
-#define INDIRECT_LIGHTING_DENOISE_START ((INDIRECT_LIGHTING_DENOISE_SIZE - 1) / 2)
-#define INDIRECT_LIGHTING_CONTRIBUTION (1.0f / (INDIRECT_LIGHTING_DENOISE_SIZE * INDIRECT_LIGHTING_DENOISE_SIZE))
+#define INDIRECT_LIGHTING_DENOISE_SIZE (5)
+#define INDIRECT_LIGHTING_DENOISE_RANGE ((INDIRECT_LIGHTING_DENOISE_SIZE - 1) / 2)
+#define INDIRECT_LIGHTING_CONTRIBUTION (1.0f / (INDIRECT_LIGHTING_DENOISE_SIZE * INDIRECT_LIGHTING_DENOISE_SIZE - 1))
 
 /*
 *	Scene features struct definition.
@@ -75,11 +75,11 @@ void main()
 		SceneFeatures features = SampleSceneFeatures(fragmentTextureCoordinate);
 
 		//Denoise the indirect lighting term.
-		vec3 denoisedIndirectLighting = indirectLighting * INDIRECT_LIGHTING_CONTRIBUTION;
+		vec3 denoisedIndirectLighting = vec3(0.0f);
 
-		for (int i = -INDIRECT_LIGHTING_DENOISE_START; i <= INDIRECT_LIGHTING_DENOISE_SIZE; ++i)
+		for (int i = -INDIRECT_LIGHTING_DENOISE_RANGE; i <= INDIRECT_LIGHTING_DENOISE_RANGE; ++i)
 		{
-			for (int j = -INDIRECT_LIGHTING_DENOISE_START; j <= INDIRECT_LIGHTING_DENOISE_SIZE; ++j)
+			for (int j = -INDIRECT_LIGHTING_DENOISE_RANGE; j <= INDIRECT_LIGHTING_DENOISE_RANGE; ++j)
 			{
 				if (i == 0 && j == 0)
 				{
@@ -102,7 +102,7 @@ void main()
 				float weight1 = mix(max(dot(features.normal, sampleFeatures.normal), 0.0f), 1.0f, features.roughness * (1.0f - features.metallic));
 				float weight2 = max(1.0f - abs(features.hitDistance - sampleFeatures.hitDistance), 0.0f);
 				float weight3 = 1.0f - abs(features.ambientOcclusion - sampleFeatures.ambientOcclusion);
-				float weight4 = 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_START, 0.0f, 1.0f);
+				float weight4 = 1.0f - clamp(length(vec2(i, j)) / INDIRECT_LIGHTING_DENOISE_RANGE, 0.0f, 1.0f);
 				float finalWeight = weight1 * weight2 * weight3 * weight4;
 
 				denoisedIndirectLighting += mix(indirectLighting, sampleIndirectLighting, finalWeight) * INDIRECT_LIGHTING_CONTRIBUTION;
