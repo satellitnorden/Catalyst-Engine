@@ -4,6 +4,9 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -120,8 +123,18 @@ void RadianceIntegrationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 */
 void RadianceIntegrationGraphicsPipeline::RenderInternal() NOEXCEPT
 {
-	if (true)
+	static bool enabled{ false };
+
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._B == ButtonState::Pressed)
 	{
+		enabled = !enabled;
+	}
+
+	if (!enabled)
+	{
+		_CurrentPerceiverMatrix = MatrixConstants::IDENTITY;
+		_Accumulations = 0;
+
 		SetIncludeInRender(false);
 
 		return;

@@ -11,7 +11,7 @@
 //Constants.
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
-#define INDIRECT_LIGHTING_DENOISE_SIZE (9)
+#define WEIGHT_EXPONENT (16.0f)
 
 /*
 *	Scene features struct definition.
@@ -19,7 +19,7 @@
 struct SceneFeatures
 {
 	vec3 normal;
-	vec3 hitPosition;
+	float hitDistance;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
@@ -57,7 +57,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.normal = sceneFeatures1.xyz;
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures1.w;
+	features.hitDistance = sceneFeatures1.w;
 	features.roughness = sceneFeatures2.x;
 	features.metallic = sceneFeatures2.y;
 	features.ambientOcclusion = sceneFeatures2.z;
@@ -73,82 +73,55 @@ void main()
 		vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
 		SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
-		//Determine the weights for all samples.
-		float sampleWeights[INDIRECT_LIGHTING_DENOISE_SIZE];
-		sampleWeights[0] = 1.0f;
-		vec3 indirectLightingSamples[INDIRECT_LIGHTING_DENOISE_SIZE];
-		indirectLightingSamples[0] = currentIndirectLighting;
-		vec2 sampleCoordinates[INDIRECT_LIGHTING_DENOISE_SIZE] = vec2[]
-		(
-			vec2(0.0f),
-			fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, 0.0f),
-			fragmentTextureCoordinate + vec2(INVERSE_WIDTH, 0.0f),
-			fragmentTextureCoordinate + vec2(0.0f, -INVERSE_HEIGHT),
-			fragmentTextureCoordinate + vec2(0.0f, -INVERSE_HEIGHT),
-
-			fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, -INVERSE_HEIGHT),
-			fragmentTextureCoordinate + vec2(-INVERSE_WIDTH, INVERSE_HEIGHT),
-			fragmentTextureCoordinate + vec2(INVERSE_WIDTH, -INVERSE_HEIGHT),
-			fragmentTextureCoordinate + vec2(INVERSE_WIDTH, INVERSE_HEIGHT)
-		);
-
-		//Calculate the weight sum.
-		float weightSum = 1.0f;
-
-		for (int i = 1; i < INDIRECT_LIGHTING_DENOISE_SIZE; ++i)
-		{
-			indirectLightingSamples[i] = texture(indirectLightingTexture, sampleCoordinates[i]).rgb;
-			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinates[i]);
-
-			/*
-			*	Calculate the sample weight based on certein criteria;
-			*	
-			*	1. How much do the normals align? This weight is less important the more diffuse the material are.
-			*	2. How close are the hit position to each other?
-			*	3. How closely aligned are the ambient occlusion terms?
-			*/
-			sampleWeights[i] = 1.0f;
-
-			sampleWeights[i] *= mix(max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
-			//sampleWeights[i] *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
-			sampleWeights[i] *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
-
-			weightSum += sampleWeights[i];
-		}
-
-		//Add together all the samples.
-		float normalizedWeightSum = 1.0f / weightSum;
+		//Sample neighboring fragments.
+		vec3 minimumIndirectLighting = currentIndirectLighting;
+		vec3 maximumIndirectLighting = currentIndirectLighting;
 
 		vec3 denoisedIndirectLighting = vec3(0.0f);
+		float weightSum = 0.0f;
 
-		for (int i = 0; i < INDIRECT_LIGHTING_DENOISE_SIZE; ++i)
+		for (float x = -3.0f; x <= 3.0f; ++x)
 		{
-			denoisedIndirectLighting += indirectLightingSamples[i] * (sampleWeights[i] * normalizedWeightSum);
+			for (float y = -3.0f; y <= 3.0f; ++y)
+			{
+				vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, y) * vec2(INVERSE_WIDTH, INVERSE_HEIGHT);
+
+				vec3 sampleIndirectLighting = texture(indirectLightingTexture, sampleCoordinate).rgb;
+				SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
+
+				/*
+				*	Calculate the sample weight based on certein criteria;
+				*	
+				*	1. How much do the normals align? This weight is less important the more diffuse the material are.
+				*	2. How close are the hit distances to each other?
+				*	3. How closely aligned are the ambient occlusion terms?
+				*	4. How much is the variance from the average indirect lighting?
+				*/
+				float sampleWeight = 1.0f;
+
+				sampleWeight *= mix(max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
+				sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
+
+				sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
+
+				denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
+				weightSum += sampleWeight;
+
+				minimumIndirectLighting = min(minimumIndirectLighting, sampleIndirectLighting);
+				maximumIndirectLighting = max(maximumIndirectLighting, sampleIndirectLighting);
+			}
 		}
+		
+		denoisedIndirectLighting *= 1.0f / weightSum;
 
 		//Write the fragment.
-		if (gl_FragCoord.x < 100.0f && gl_FragCoord.y < 100.0f)
-		{
-			fragment = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		}
-
-		else
-		{
-			fragment = vec4(denoisedIndirectLighting, 1.0f)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
-		}
+		fragment = vec4(denoisedIndirectLighting, 1.0f)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
 	}
 
 	else
 	{
 		//Write the fragment.
-		if (gl_FragCoord.x < 100.0f && gl_FragCoord.y < 100.0f)
-		{
-			fragment = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		}
-
-		else
-		{
-			fragment = texture(indirectLightingTexture, fragmentTextureCoordinate)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
-		}
+		fragment = texture(indirectLightingTexture, fragmentTextureCoordinate)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
 	}
 }
