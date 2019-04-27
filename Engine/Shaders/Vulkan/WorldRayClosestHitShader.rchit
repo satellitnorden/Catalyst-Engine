@@ -199,13 +199,13 @@ void main()
 			0 								//payload
 			);
 
-	indirectLighting = CalculateAmbient(albedo,
-										finalNormal,
-										rayPayload.radiance,
-										normalize(gl_WorldRayOriginNV - hitPosition),
-										ambientOcclusion,
-										metallic,
-										roughness);
+	indirectLighting = CalculateIndirectLight(	-gl_WorldRayDirectionNV,
+												albedo,
+												finalNormal,
+												roughness,
+												metallic,
+												ambientOcclusion,
+												rayPayload.radiance);
 
 	finalRadiance += indirectLighting;
 
@@ -233,14 +233,13 @@ void main()
 			1 																							//payload
 			);
 
-	vec3 directLighting = CalculateLight(	-gl_WorldRayDirectionNV,
-											-randomLightDirection,
-											finalNormal,
-											1.0f,
-											roughness,
-											metallic,
-											albedo,
-											directionalLightColor * directionalLightIntensity) * visibility;
+	vec3 directLighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
+												-randomLightDirection,
+												albedo,
+												finalNormal,
+												roughness,
+												metallic,
+												directionalLightColor * directionalLightIntensity) * visibility;
 
 	finalRadiance += directLighting;
 
