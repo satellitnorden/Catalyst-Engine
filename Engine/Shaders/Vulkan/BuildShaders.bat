@@ -17,5 +17,6 @@ VulkanShaderBuilder.exe
 
 Copy CatalystShaderCollection.csc ..\..\..\..\Clairvoyant\Resources\Final\CatalystShaderCollection.csc
 Copy CatalystShaderCollection.csc ..\..\..\..\Weird-HAL\Resources\Final\CatalystShaderCollection.csc
+Copy CatalystShaderCollection.csc ..\..\..\..\Path-Tracing-Prototype\Resources\Final\CatalystShaderCollection.csc
 
 pause

@@ -80,6 +80,14 @@ layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
 
 /*
+*	Returns the previous respresentable floating point number before the given number.
+*/
+float PreviousFloat(float number)
+{
+	return number - 0.01f; //TODO: Actually properly implement this. ):
+}
+
+/*
 *	Unpacks the light at the given index.
 */
 Light UnpackLight(uint index)
@@ -130,7 +138,7 @@ void main()
 	}
 
 	//Calculate the hit position.
-	vec3 hitPosition = (gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV) + -gl_WorldRayDirectionNV * 0.01f;
+	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * PreviousFloat(gl_HitTNV);
 
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
@@ -178,12 +186,13 @@ void main()
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = vec3(0.0f);
 
+	///*
 	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
-	randomIrradianceDirection *= dot(randomIrradianceDirection, finalNormal) >= 0.0f ? 1.0f : -1.0f;
-	randomIrradianceDirection = mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic));
-	randomIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomIrradianceDirection);
+	randomIrradianceDirection *= (dot(randomIrradianceDirection, finalNormal) >= 0.0f) ? 1.0f : -1.0f;
+	randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
+	randomIrradianceDirection = normalize(reflect(gl_WorldRayDirectionNV, randomIrradianceDirection));
 
 	traceNV(
 			topLevelAccelerationStructure, 	//topLevel
@@ -208,8 +217,12 @@ void main()
 												rayPayload.radiance);
 
 	finalRadiance += indirectLighting;
+	//*/
 
 	//Calculate the direct lighting.
+	vec3 directLighting = vec3(0.0f);
+
+	/*
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
@@ -233,15 +246,16 @@ void main()
 			1 																							//payload
 			);
 
-	vec3 directLighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
-												-randomLightDirection,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												directionalLightColor * directionalLightIntensity) * visibility;
+	directLighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
+											-randomLightDirection,
+											albedo,
+											finalNormal,
+											roughness,
+											metallic,
+											directionalLightColor * directionalLightIntensity) * visibility;
 
 	finalRadiance += directLighting;
+	//*/
 
 	//Write the final radiance.
 	rayPayload.radiance = finalRadiance;
