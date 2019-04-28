@@ -19,7 +19,7 @@
 struct SceneFeatures
 {
 	vec3 normal;
-	float hitDistance;
+	vec3 hitPosition;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
@@ -57,7 +57,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.normal = sceneFeatures1.xyz;
-	features.hitDistance = sceneFeatures1.w;
+	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures1.w;
 	features.roughness = sceneFeatures2.x;
 	features.metallic = sceneFeatures2.y;
 	features.ambientOcclusion = sceneFeatures2.z;
@@ -90,16 +90,18 @@ void main()
 				SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
 
 				/*
-				*	Calculate the sample weight based on certein criteria;
+				*	Calculate the sample weight based on certain criteria;
 				*	
 				*	1. How much do the normals align? This weight is less important the more diffuse the material are.
-				*	2. How close are the hit distances to each other?
+				*	2. How close are the hit positions to each other? This weight is less important the more diffuse the material are.
 				*	3. How closely aligned are the ambient occlusion terms?
 				*/
+				float specularComponent = GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic);
+
 				float sampleWeight = 1.0f;
 
-				sampleWeight *= mix(max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f), 1.0f, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
-				sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+				sampleWeight *= mix(max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f), 1.0f, specularComponent);
+				sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition) * specularComponent, 1.0f);
 				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
 
 				sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
