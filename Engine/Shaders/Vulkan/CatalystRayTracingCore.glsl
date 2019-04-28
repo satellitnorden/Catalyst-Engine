@@ -14,7 +14,6 @@ struct RayPayload
 {
 	int currentRecursionDepth;
 
-	vec3 radiance;
 	vec3 indirectLighting;
 	vec3 directLighting;
 	vec3 normal;

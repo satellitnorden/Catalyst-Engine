@@ -16,5 +16,11 @@ layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 
 void main()
 {
-    rayPayload.radiance = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
+	//Write to the ray payload.
+	rayPayload.indirectLighting = rayPayload.directLighting = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
+	rayPayload.normal = vec3(0.0f, 1.0f, 0.0f);
+	rayPayload.depth = CATALYST_RAY_TRACING_T_MAXIMUM;
+	rayPayload.roughness = 1.0f;
+	rayPayload.metallic = 0.0f;
+	rayPayload.ambientOcclusion = 1.0f;
 }

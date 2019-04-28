@@ -44,7 +44,6 @@ struct Vertex
 
 //Descriptor set data.
 layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 5) uniform samplerCube environmentTexture;
 layout (set = 1, binding = 6) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (set = 1, binding = 7) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (std140, set = 1, binding = 8) uniform ModelUniformData
@@ -133,7 +132,7 @@ void main()
 	//Don't go below the current recursion depth.
 	if (currentRecursionDepth == CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
 	{
-		rayPayload.radiance = vec3(0.0f);
+		rayPayload.indirectLighting = rayPayload.directLighting = vec3(0.0f);
 
 		return;
 	}
@@ -181,9 +180,6 @@ void main()
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	//Calculate the final radiance.
-	vec3 finalRadiance = vec3(0.0f);
-
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = vec3(0.0f);
 
@@ -215,9 +211,7 @@ void main()
 												roughness,
 												metallic,
 												ambientOcclusion,
-												rayPayload.radiance);
-
-	finalRadiance += indirectLighting;
+												rayPayload.indirectLighting + rayPayload.directLighting);
 	//*/
 
 	//Calculate the direct lighting.
@@ -254,22 +248,14 @@ void main()
 											roughness,
 											metallic,
 											directionalLightColor * directionalLightIntensity) * visibility;
-
-	finalRadiance += directLighting;
 	//*/
 
-	//Write the final radiance.
-	rayPayload.radiance = finalRadiance;
-
-	//Write tspecial properties if this is the first recursion.
-	if (currentRecursionDepth == 0)
-	{
-		rayPayload.indirectLighting = indirectLighting;
-		rayPayload.directLighting = directLighting;
-		rayPayload.normal = finalNormal;
-		rayPayload.depth = gl_HitTNV;
-		rayPayload.roughness = roughness;
-		rayPayload.metallic = metallic;
-		rayPayload.ambientOcclusion = ambientOcclusion;
-	}
+	//Write to the ray payload.
+	rayPayload.indirectLighting = indirectLighting;
+	rayPayload.directLighting = directLighting;
+	rayPayload.normal = finalNormal;
+	rayPayload.depth = gl_HitTNV;
+	rayPayload.roughness = roughness;
+	rayPayload.metallic = metallic;
+	rayPayload.ambientOcclusion = ambientOcclusion;
 }

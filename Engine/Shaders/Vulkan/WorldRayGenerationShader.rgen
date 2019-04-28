@@ -51,18 +51,6 @@ void main()
 			0 																							//payload
 			);
 
-	//In case the first ray missed, fill in some values in the payload. (:
-	if (rayPayload.currentRecursionDepth == 0)
-	{
-		rayPayload.indirectLighting = rayPayload.radiance;
-		rayPayload.directLighting = rayPayload.radiance;
-		rayPayload.normal = vec3(1.0f, 1.0f, 1.0f);
-		rayPayload.depth = 0.0f;
-		rayPayload.roughness = 1.0f;
-		rayPayload.metallic = 0.0f;
-		rayPayload.ambientOcclusion = 1.0f;
-	}
-
 	if (currentIteration == 0)
     {
     	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f) / numberOfIterations);
