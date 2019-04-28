@@ -84,7 +84,8 @@ hitAttributeNV vec3 hitAttribute;
 */
 float PreviousFloat(float number)
 {
-	return number - 0.01f; //TODO: Actually properly implement this. ):
+	//TODO: Actually properly implement this. ):
+	return number - 0.00125f; //0.00025f step.
 }
 
 /*
@@ -222,7 +223,7 @@ void main()
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
-	/*
+	///*
 	vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
