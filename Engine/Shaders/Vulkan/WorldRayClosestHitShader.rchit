@@ -228,7 +228,7 @@ void main()
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
 												RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
 	randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
-	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.0175f); //0.0025f step.
+	randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.015f); //0.0025f step.
 
 	//Determine the visibility.
 	visibility = 0.0f;
