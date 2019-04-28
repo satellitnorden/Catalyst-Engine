@@ -130,7 +130,7 @@ void main()
 	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
 
 	//Don't go below the current recursion depth.
-	if (currentRecursionDepth == CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
+	if (currentRecursionDepth > CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
 	{
 		rayPayload.indirectLighting = rayPayload.directLighting = vec3(0.0f);
 

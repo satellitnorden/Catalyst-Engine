@@ -95,7 +95,6 @@ void main()
 				*	1. How much do the normals align? This weight is less important the more diffuse the material are.
 				*	2. How close are the hit distances to each other?
 				*	3. How closely aligned are the ambient occlusion terms?
-				*	4. How much is the variance from the average indirect lighting?
 				*/
 				float sampleWeight = 1.0f;
 
