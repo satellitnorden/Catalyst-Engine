@@ -9,9 +9,10 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
+#define DENOISING_SIZE (2.0f)
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
-#define WEIGHT_EXPONENT (16.0f)
+#define WEIGHT_EXPONENT (1.0f)
 
 /*
 *	Scene features struct definition.
@@ -80,9 +81,9 @@ void main()
 		vec3 denoisedIndirectLighting = vec3(0.0f);
 		float weightSum = 0.0f;
 
-		for (float x = -3.0f; x <= 3.0f; ++x)
+		for (float x = -DENOISING_SIZE; x <= DENOISING_SIZE; ++x)
 		{
-			for (float y = -3.0f; y <= 3.0f; ++y)
+			for (float y = -DENOISING_SIZE; y <= DENOISING_SIZE; ++y)
 			{
 				vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, y) * vec2(INVERSE_WIDTH, INVERSE_HEIGHT);
 
