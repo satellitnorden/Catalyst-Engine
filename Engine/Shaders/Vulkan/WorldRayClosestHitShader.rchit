@@ -283,7 +283,7 @@ void main()
 				);
 
 		//Calculate the attenuation distance.
-		float attenuation = 1.0f - clamp(lengthToLight / light.strength, 0.0f, 1.0f);
+		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
 		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
 												lightDirection,
