@@ -137,9 +137,6 @@ void main()
 		return;
 	}
 
-	//Calculate the hit position.
-	vec3 hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * PreviousFloat(gl_HitTNV);
-
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
 	Vertex vertex2 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
@@ -159,6 +156,9 @@ void main()
 	finalVertex.position = gl_ObjectToWorldNV * vec4(finalVertex.position, 1.0f);
 	finalVertex.normal = gl_ObjectToWorldNV * vec4(finalVertex.normal, 0.0f);
 	finalVertex.tangent = gl_ObjectToWorldNV * vec4(finalVertex.tangent, 0.0f);
+
+	//Calculate the hit position.
+	vec3 hitPosition = finalVertex.position + finalVertex.normal * 0.000001f;
 
 	//Sample the albedo.
 	vec3 albedo = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate).rgb;
