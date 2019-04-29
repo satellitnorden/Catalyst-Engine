@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (2.0f)
+#define DENOISING_SIZE (3.0f)
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
 #define WEIGHT_EXPONENT (1.0f)
@@ -93,16 +93,12 @@ void main()
 				/*
 				*	Calculate the sample weight based on certain criteria;
 				*	
-				*	1. How much do the normals align? This weight is less important the more diffuse the material are.
-				*	2. How close are the hit positions to each other? This weight is less important the more diffuse the material are.
-				*	3. How closely aligned are the ambient occlusion terms?
+				*	1. How close are the hit positions to each other?
+				*	2. How closely aligned are the ambient occlusion terms?
 				*/
-				float specularComponent = GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic);
-
 				float sampleWeight = 1.0f;
 
-				sampleWeight *= mix(max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f), 1.0f, specularComponent);
-				sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition) * specularComponent, 1.0f);
+				sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
 				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
 
 				sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
@@ -115,7 +111,11 @@ void main()
 			}
 		}
 		
+		//Normalize the denoised indirect lighting.
 		denoisedIndirectLighting *= 1.0f / weightSum;
+
+		//Linearly interpolate the denoised indirect lighting with the current indirect lighting based on how diffuse the material are.
+		denoisedIndirectLighting = mix(currentIndirectLighting, denoisedIndirectLighting, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
 
 		//Write the fragment.
 		fragment = vec4(denoisedIndirectLighting, 1.0f) + texture(directLightingTexture, fragmentTextureCoordinate);
