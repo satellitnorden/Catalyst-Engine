@@ -130,7 +130,7 @@ void main()
 	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
 
 	//Don't go below the current recursion depth.
-	if (currentRecursionDepth > CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
+	if (currentRecursionDepth == CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
 	{
 		rayPayload.indirectLighting = rayPayload.directLighting = vec3(0.0f);
 
@@ -187,7 +187,8 @@ void main()
 	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
 													RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
-	randomIrradianceDirection *= (dot(randomIrradianceDirection, finalNormal) >= 0.0f) ? 1.0f : -1.0f;
+	float randomIrradianceDirectionDot = dot(randomIrradianceDirection, finalVertex.normal);
+	randomIrradianceDirection = randomIrradianceDirectionDot == 0.0f ? finalNormal : randomIrradianceDirectionDot > 0.0f ? randomIrradianceDirection : randomIrradianceDirection * -1.0f;
 	randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
 	randomIrradianceDirection = normalize(reflect(gl_WorldRayDirectionNV, randomIrradianceDirection));
 
