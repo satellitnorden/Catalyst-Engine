@@ -27,6 +27,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 20) float seed4;
     layout (offset = 24) float seed5;
     layout (offset = 28) float seed6;
+    layout (offset = 32) float seed7;
 };
 
 //In parameters.

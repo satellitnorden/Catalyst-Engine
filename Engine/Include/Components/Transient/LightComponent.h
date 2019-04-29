@@ -17,10 +17,10 @@ public:
 	//The position.
 	Vector3<float> _Position;
 
-	//The attenuation distance.
-	float _AttenuationDistance;
-
 	//The size.
 	float _Size;
+
+	//The strength.
+	float _Strength;
 
 };

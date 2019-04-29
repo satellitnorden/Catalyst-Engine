@@ -33,8 +33,8 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 
 	lightComponent._Color = lightInitializationData->_Color;
 	lightComponent._Position = lightInitializationData->_Position;
-	lightComponent._AttenuationDistance = lightInitializationData->_AttenuationDistance;
 	lightComponent._Size = lightInitializationData->_Size;
+	lightComponent._Strength = lightInitializationData->_Strength;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<LightInitializationData>(data);

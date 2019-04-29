@@ -61,7 +61,7 @@ public:
 	int32 _CurrentIteration;
 
 	//The seeds.
-	StaticArray<float, 6> _Seeds;
+	StaticArray<float, 7> _Seeds;
 
 };
 
