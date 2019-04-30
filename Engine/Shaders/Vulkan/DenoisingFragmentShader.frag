@@ -9,7 +9,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (3.0f)
+#define DENOISING_SIZE (7)
+#define DENOISING_START_END ((DENOISING_SIZE - 1) * 0.5f)
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
 #define WEIGHT_EXPONENT (2.0f)
@@ -71,7 +72,7 @@ void main()
 	if (enabled)
 	{
 		//Sample the indirect lighting and scene features at the current fragment.
-		vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
+		vec3 currentIndirectLighting =texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
 		SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 		//Sample neighboring fragments.
@@ -81,9 +82,9 @@ void main()
 		vec3 denoisedIndirectLighting = vec3(0.0f);
 		float weightSum = 0.0f;
 
-		for (float x = -DENOISING_SIZE; x <= DENOISING_SIZE; ++x)
+		for (float x = -DENOISING_START_END; x <= DENOISING_START_END; ++x)
 		{
-			for (float y = -DENOISING_SIZE; y <= DENOISING_SIZE; ++y)
+			for (float y = -DENOISING_START_END; y <= DENOISING_START_END; ++y)
 			{
 				vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, y) * vec2(INVERSE_WIDTH, INVERSE_HEIGHT);
 
@@ -94,10 +95,11 @@ void main()
 				*	Calculate the sample weight based on certain criteria;
 				*	
 				*	1. How closely aligned are the normals?
-				*	2. How close are the hit positions to each other?
+				*	2. How closely aligned are the hit positions to each other?
 				*	3. How closely aligned are the roughness terms?
 				*	4. How closely aligned are the metallic terms?
 				*	5. How closely aligned are the ambient occlusion terms?
+				*	6. How closely aligned is it with the average indirect lighting?
 				*/
 				float sampleWeight = 1.0f;
 
@@ -106,6 +108,7 @@ void main()
 				sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
 				sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
 				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
+				sampleWeight *= 1.0f - (abs(CalculateAverage(sampleIndirectLighting) - CalculateAverage(minimumIndirectLighting + ((maximumIndirectLighting - minimumIndirectLighting) * 0.5f))) * 2.0f - 1.0f);
 
 				sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
 
