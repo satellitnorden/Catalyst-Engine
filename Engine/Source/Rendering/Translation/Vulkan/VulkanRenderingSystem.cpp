@@ -335,7 +335,7 @@ namespace VulkanRenderingSystemLogic
 	void InitializeShaderModules() NOEXCEPT
 	{
 		//Open the shader collection file.
-		BinaryFile<IOMode::In> shaderCollection{ "..\\..\\..\\Resources\\Final\\CatalystShaderCollection.csc" };
+		BinaryFile<IOMode::In> shaderCollection{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\CatalystShaderCollection.csc" };
 
 		{
 			//Initialize the anti-aliasing fragment shader module.
