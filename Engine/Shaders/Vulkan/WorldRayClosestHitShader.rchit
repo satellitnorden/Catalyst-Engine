@@ -38,7 +38,7 @@ struct Vertex
 };
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_MODELS (16)
+#define MAXIMUM_NUMBER_OF_MODELS (32)
 #define MAXIMUM_NUMBER_OF_LIGHTS (4)
 #define VERTEX_SIZE (3)
 
