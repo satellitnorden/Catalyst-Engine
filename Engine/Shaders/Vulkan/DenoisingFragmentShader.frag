@@ -12,7 +12,7 @@
 #define DENOISING_SIZE (3.0f)
 #define INVERSE_WIDTH (1.0f / 1920.0f)
 #define INVERSE_HEIGHT (1.0f / 1080.0f)
-#define WEIGHT_EXPONENT (1.0f)
+#define WEIGHT_EXPONENT (2.0f)
 
 /*
 *	Scene features struct definition.
