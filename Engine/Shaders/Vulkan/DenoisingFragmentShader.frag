@@ -93,12 +93,18 @@ void main()
 				/*
 				*	Calculate the sample weight based on certain criteria;
 				*	
-				*	1. How close are the hit positions to each other?
-				*	2. How closely aligned are the ambient occlusion terms?
+				*	1. How closely aligned are the normals?
+				*	2. How close are the hit positions to each other?
+				*	3. How closely aligned are the roughness terms?
+				*	4. How closely aligned are the metallic terms?
+				*	5. How closely aligned are the ambient occlusion terms?
 				*/
 				float sampleWeight = 1.0f;
 
+				sampleWeight *= max(dot(currentFeatures.normal, sampleFeatures.normal), 1.0f);
 				sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
+				sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
+				sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
 				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
 
 				sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
