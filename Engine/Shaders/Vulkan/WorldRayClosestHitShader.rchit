@@ -127,14 +127,6 @@ void main()
 	//Store the current recursion depth.
 	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
 
-	//Don't go below the current recursion depth.
-	if (currentRecursionDepth == CATALYST_RAY_TRACING_MAXIMUM_DEPTH)
-	{
-		rayPayload.indirectLighting = rayPayload.directLighting = vec3(0.0f);
-
-		return;
-	}
-
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
 	Vertex vertex2 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
@@ -181,44 +173,45 @@ void main()
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = vec3(0.0f);
 
-	///*
-	vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
-	float randomIrradianceDirectionDot = dot(randomIrradianceDirection, finalVertex.normal);
-	randomIrradianceDirection = randomIrradianceDirectionDot >= 0.0f ? randomIrradianceDirection : randomIrradianceDirection * -1.0f;
-	randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
-	randomIrradianceDirection = normalize(reflect(gl_WorldRayDirectionNV, randomIrradianceDirection));
+	//Don't go below the maximum recursion depth.
+	if (currentRecursionDepth < (CATALYST_RAY_TRACING_MAXIMUM_DEPTH - 1))
+	{
+		vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
+														RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
+														RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
+		float randomIrradianceDirectionDot = dot(randomIrradianceDirection, finalVertex.normal);
+		randomIrradianceDirection = randomIrradianceDirectionDot >= 0.0f ? randomIrradianceDirection : randomIrradianceDirection * -1.0f;
+		randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
+		randomIrradianceDirection = normalize(reflect(gl_WorldRayDirectionNV, randomIrradianceDirection));
 
-	traceNV(
-			topLevelAccelerationStructure, 	//topLevel
-			gl_RayFlagsOpaqueNV, 			//rayFlags
-			0xff, 							//cullMask
-			0, 								//sbtRecordOffset
-			0, 								//sbtRecordStride
-			0, 								//missIndex
-			hitPosition, 					//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-			randomIrradianceDirection, 		//direction
-			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-			0 								//payload
-			);
+		traceNV(
+				topLevelAccelerationStructure, 	//topLevel
+				gl_RayFlagsOpaqueNV, 			//rayFlags
+				0xff, 							//cullMask
+				0, 								//sbtRecordOffset
+				0, 								//sbtRecordStride
+				0, 								//missIndex
+				hitPosition, 					//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
+				randomIrradianceDirection, 		//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
+				0 								//payload
+				);
 
-	indirectLighting = CalculateIndirectLight(	-gl_WorldRayDirectionNV,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												ambientOcclusion,
-												rayPayload.indirectLighting + rayPayload.directLighting);
-	//*/
-
+		indirectLighting = CalculateIndirectLight(	-gl_WorldRayDirectionNV,
+													randomIrradianceDirection,
+													albedo,
+													finalNormal,
+													roughness,
+													metallic,
+													ambientOcclusion,
+													rayPayload.indirectLighting + rayPayload.directLighting);
+	}
+	
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
 	///*
-	//Randomize which light to calculate.
-
 	//Calculate the directional light.
 	{
 		vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
