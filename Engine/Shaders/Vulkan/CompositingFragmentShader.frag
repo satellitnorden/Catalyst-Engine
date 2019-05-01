@@ -24,5 +24,5 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
 	//Write the fragment.
-	fragment = texture(indirectLightingTexture, fragmentTextureCoordinate)/* + texture(directLightingTexture, fragmentTextureCoordinate)*/;
+	fragment = texture(indirectLightingTexture, fragmentTextureCoordinate) + texture(directLightingTexture, fragmentTextureCoordinate);
 }
