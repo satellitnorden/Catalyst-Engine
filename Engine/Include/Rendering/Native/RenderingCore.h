@@ -59,7 +59,9 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	Denoising,
+	HorizontalDenoising,
+	VerticalDenoising,
+	Compositing,
 	RadianceIntegration,
 	ToneMapping,
 	AntiAliasing,
@@ -167,9 +169,14 @@ enum class RenderTarget : uint8
 	DirectLighting,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	First intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate,
+	Intermediate1,
+
+	/*
+	*	Second intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate2,
 
 	/*
 	*	Contains an accumulated buffer of all previous color values in the scene.
@@ -217,6 +224,7 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AntiAliasingFragment,
+	CompositingFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,

@@ -51,7 +51,7 @@ void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Intermediate);
+	AddRenderTarget(RenderTarget::Intermediate1);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

@@ -1,44 +1,44 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/DenoisingRenderPass.h>
+#include <Rendering/Native/RenderPasses/HorizontalDenoisingRenderPass.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/HorizontalDenoisingGraphicsPipeline.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DenoisingRenderPass);
+DEFINE_SINGLETON(HorizontalDenoisingRenderPass);
 
 /*
 *	Default constructor.
 */
-DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
+HorizontalDenoisingRenderPass::HorizontalDenoisingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Denoising);
+	SetStage(RenderPassStage::HorizontalDenoising);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		DenoisingRenderPass::Instance->Initialize();
+		HorizontalDenoisingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		DenoisingRenderPass::Instance->Execute();
+		HorizontalDenoisingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void DenoisingRenderPass::Initialize() NOEXCEPT
+void HorizontalDenoisingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(DenoisingGraphicsPipeline::Instance.Get());
+	AddPipeline(HorizontalDenoisingGraphicsPipeline::Instance.Get());
 
 	//Initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,7 +59,7 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void DenoisingRenderPass::Execute() NOEXCEPT
+void HorizontalDenoisingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

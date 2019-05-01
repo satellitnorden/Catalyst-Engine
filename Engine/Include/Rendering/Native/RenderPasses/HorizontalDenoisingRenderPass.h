@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DenoisingRenderPass final : public RenderPass
+class HorizontalDenoisingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DenoisingRenderPass);
+	DECLARE_SINGLETON(HorizontalDenoisingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	DenoisingRenderPass() NOEXCEPT;
+	HorizontalDenoisingRenderPass() NOEXCEPT;
 
 private:
 

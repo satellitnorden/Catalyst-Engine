@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingGraphicsPipeline.h>
-
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/CompositingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,30 +8,30 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AntiAliasingGraphicsPipeline);
+DEFINE_SINGLETON(CompositingGraphicsPipeline);
 
 /*
 *	Default constructor.
 */
-AntiAliasingGraphicsPipeline::AntiAliasingGraphicsPipeline() NOEXCEPT
+CompositingGraphicsPipeline::CompositingGraphicsPipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		AntiAliasingGraphicsPipeline::Instance->InitializeInternal();
+		CompositingGraphicsPipeline::Instance->InitializeInternal();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		AntiAliasingGraphicsPipeline::Instance->RenderInternal();
+		CompositingGraphicsPipeline::Instance->RenderInternal();
 	});
 }
 
 /*
-*	Initializes the anti-aliasing graphics pipeline.
+*	Initializes the radiance integration graphics pipeline.
 */
-void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
+void CompositingGraphicsPipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -43,18 +40,18 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassStage::AntiAliasing);
+	SetMainStage(RenderPassStage::Compositing);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AntiAliasingFragment);
+	SetFragmentShader(Shader::CompositingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -62,7 +59,7 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -88,11 +85,12 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void AntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void CompositingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -101,18 +99,26 @@ void AntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AntiAliasingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void CompositingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate1), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectLighting), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the anti-aliasing.
+*	Renders the previous radiance.
 */
-void AntiAliasingGraphicsPipeline::RenderInternal() NOEXCEPT
+void CompositingGraphicsPipeline::RenderInternal() NOEXCEPT
 {
+	if (false)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

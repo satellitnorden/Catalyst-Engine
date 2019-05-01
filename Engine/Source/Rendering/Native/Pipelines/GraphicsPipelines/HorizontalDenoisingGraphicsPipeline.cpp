@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/HorizontalDenoisingGraphicsPipeline.h>
 
 //Core.
 #include <Core/General/Perceiver.h>
@@ -14,7 +14,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DenoisingGraphicsPipeline);
+DEFINE_SINGLETON(HorizontalDenoisingGraphicsPipeline);
 
 /*
 *	Push constant data definition.
@@ -24,6 +24,9 @@ class PushConstantData final
 
 public:
 
+	//The direction.
+	Vector2<float> _Direction;
+
 	//Denotes whether or not denoising is enabled.
 	int32 _Enabled;
 
@@ -32,25 +35,25 @@ public:
 /*
 *	Default constructor.
 */
-DenoisingGraphicsPipeline::DenoisingGraphicsPipeline() NOEXCEPT
+HorizontalDenoisingGraphicsPipeline::HorizontalDenoisingGraphicsPipeline() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		DenoisingGraphicsPipeline::Instance->InitializeInternal();
+		HorizontalDenoisingGraphicsPipeline::Instance->InitializeInternal();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		DenoisingGraphicsPipeline::Instance->RenderInternal();
+		HorizontalDenoisingGraphicsPipeline::Instance->RenderInternal();
 	});
 }
 
 /*
 *	Initializes the radiance integration graphics pipeline.
 */
-void DenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
+void HorizontalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -59,7 +62,7 @@ void DenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassStage::Denoising);
+	SetMainStage(RenderPassStage::HorizontalDenoising);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -69,8 +72,9 @@ void DenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetFragmentShader(Shader::DenoisingFragment);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Scene);
+	SetNumberOfRenderTargets(2);
+	AddRenderTarget(RenderTarget::Intermediate1);
+	AddRenderTarget(RenderTarget::Intermediate2);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -108,7 +112,7 @@ void DenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void DenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void HorizontalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
@@ -124,7 +128,7 @@ void DenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void DenoisingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void HorizontalDenoisingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -137,7 +141,7 @@ void DenoisingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 /*
 *	Renders the previous radiance.
 */
-void DenoisingGraphicsPipeline::RenderInternal() NOEXCEPT
+void HorizontalDenoisingGraphicsPipeline::RenderInternal() NOEXCEPT
 {
 	if (false)
 	{
@@ -166,6 +170,7 @@ void DenoisingGraphicsPipeline::RenderInternal() NOEXCEPT
 
 	PushConstantData data;
 
+	data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), 0.0f);
 	data._Enabled = static_cast<int32>(enabled);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);

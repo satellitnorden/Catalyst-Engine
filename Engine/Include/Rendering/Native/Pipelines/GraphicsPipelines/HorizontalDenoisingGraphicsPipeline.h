@@ -9,18 +9,18 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class DenoisingGraphicsPipeline final : public GraphicsPipeline
+class HorizontalDenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DenoisingGraphicsPipeline);
+	DECLARE_SINGLETON(HorizontalDenoisingGraphicsPipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	DenoisingGraphicsPipeline() NOEXCEPT;
+	HorizontalDenoisingGraphicsPipeline() NOEXCEPT;
 
 private:
 
@@ -31,7 +31,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the denoising graphics pipeline.
+	*	Initializes the horizontal denoising graphics pipeline.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -46,7 +46,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the denoising.
+	*	Renders the horizontal denoising.
 	*/
 	void RenderInternal() NOEXCEPT;
 
