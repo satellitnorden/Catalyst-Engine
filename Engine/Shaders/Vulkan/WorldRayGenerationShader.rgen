@@ -25,9 +25,9 @@ void main()
 	rayPayload.currentRecursionDepth = 0;
 
 	//Generate the random vector.
-	rayPayload.randomVector = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed1)) * 2.0f - 1.0f,
-												RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed2)) * 2.0f - 1.0f,
-												RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed3)) * 2.0f - 1.0f));
+	rayPayload.randomVector = normalize(vec3(	RandomFloat(gl_LaunchIDNV.xy, globalRandomSeed1) * 2.0f - 1.0f,
+												RandomFloat(gl_LaunchIDNV.xy, globalRandomSeed2) * 2.0f - 1.0f,
+												RandomFloat(gl_LaunchIDNV.xy, globalRandomSeed3) * 2.0f - 1.0f));
 
 	traceNV(
 			topLevelAccelerationStructure, 																//topLevel
