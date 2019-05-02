@@ -117,9 +117,23 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 /*
 *   Given a seed, returns a random number.
 */
+#define RANDOM_FLOAT_IMPLEMENTATION 1
+
 float RandomFloat(vec3 seed)
 {
+
+#if RANDOM_FLOAT_IMPLEMENTATION == 0
+
     return fract(sin(dot(vec2(seed.x * (EULERS_NUMBER + seed.z + 1.0f), seed.y * (PHI + seed.z + 1.0f)), vec2(12.9898f, 78.233f))) * 43758.5453f);
+
+#elif RANDOM_FLOAT_IMPLEMENTATION == 1
+
+    #define SEED_1 (1.61803398874989484820459f * 00000.1f)
+    #define SEED_2 (3.14159265358979323846264f * 00000.1f)
+    #define SEED_3 (1.41421356237309504880169f * 10000.0f)
+
+    return fract(tan(distance(seed.xy * (seed.z + SEED_1), vec2(SEED_1, SEED_2))) * SEED_3);
+#endif
 }
 
 /*

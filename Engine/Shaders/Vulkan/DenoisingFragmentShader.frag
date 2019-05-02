@@ -11,7 +11,6 @@
 //Constants.
 #define DENOISING_SIZE (15)
 #define DENOISING_START_END ((DENOISING_SIZE - 1) * 0.5f)
-#define WEIGHT_EXPONENT (1.0f)
 
 /*
 *	Scene features struct definition.
@@ -72,12 +71,12 @@ void main()
 	if (enabled)
 	{
 		//Sample the indirect lighting and scene features at the current fragment.
-		vec3 currentIndirectLighting =texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
+		vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
 		SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 		//Sample neighboring fragments.
 		vec3 denoisedIndirectLighting = vec3(0.0f);
-		float weightSum = 0.0f;
+		float weightSum = 1.0f;
 
 		for (float x = -DENOISING_START_END; x <= DENOISING_START_END; ++x)
 		{
@@ -102,8 +101,6 @@ void main()
 			sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
 			sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
 			sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
-
-			sampleWeight = pow(sampleWeight, WEIGHT_EXPONENT);
 
 			denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
 			weightSum += sampleWeight;
