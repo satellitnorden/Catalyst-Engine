@@ -7,7 +7,7 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (16)
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (32)
 
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)

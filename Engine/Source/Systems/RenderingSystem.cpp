@@ -22,6 +22,9 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 
+//Resources.
+#include <Resources/Creation/ResourceCreator.h>
+
 //Systems.
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -87,6 +90,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Post-initialize the rendering system.
 	PostInitialize();
+
+	//Initialize all common materials.
+	InitializeCommonMaterials();
 }
 
 /*
@@ -196,6 +202,14 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 }
 
 /*
+*	Returns the given common material.
+*/
+Material RenderingSystem::GetCommonMaterial(const CommonMaterial material) const NOEXCEPT
+{
+	return _CommonMaterials[UNDERLYING(material)];
+}
+
+/*
 *	Returns the given common render data table layout.
 */
 RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT
@@ -264,6 +278,77 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
+}
+
+/*
+*	Initializes all common materials.
+*/
+void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
+{
+	//Initialize the gray common material.
+	Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::Gray)] };
+
+	material._Type = Material::Type::Opaque;
+
+	{
+		Texture2DData data;
+
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._Data.UpsizeSlow(1);
+		data._Data[0].Reserve(4);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(255);
+
+		GlobalTexture2D texture;
+
+		ResourceCreator::CreateTexture2D(&data, &texture);
+
+		material._FirstTextureIndex = texture._Index;
+	}
+
+	{
+		Texture2DData data;
+
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._Data.UpsizeSlow(1);
+		data._Data[0].Reserve(4);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(255);
+		data._Data[0].EmplaceFast(255);
+
+		GlobalTexture2D texture;
+
+		ResourceCreator::CreateTexture2D(&data, &texture);
+
+		material._SecondTextureIndex = texture._Index;
+	}
+
+	{
+		Texture2DData data;
+
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._Data.UpsizeSlow(1);
+		data._Data[0].Reserve(4);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(127);
+		data._Data[0].EmplaceFast(255);
+		data._Data[0].EmplaceFast(0);
+
+		GlobalTexture2D texture;
+
+		ResourceCreator::CreateTexture2D(&data, &texture);
+
+		material._ThirdTextureIndex = texture._Index;
+	}
 }
 
 /*

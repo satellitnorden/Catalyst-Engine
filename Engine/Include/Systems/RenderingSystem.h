@@ -13,6 +13,7 @@
 
 //Rendering.
 #include <Rendering/Native/GlobalRenderData.h>
+#include <Rendering/Native/Material.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
@@ -253,6 +254,11 @@ public:
 	void ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT;
 
 	/*
+	*	Returns the given common material.
+	*/
+	Material GetCommonMaterial(const CommonMaterial materia) const NOEXCEPT;
+
+	/*
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
@@ -273,6 +279,9 @@ private:
 
 	//Container for all samplers.
 	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;
+
+	//Container for all common materials.
+	StaticArray<Material, UNDERLYING(CommonMaterial::NumberOfCommonMaterials)> _CommonMaterials;
 
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
@@ -356,5 +365,10 @@ private:
 	*	Updates the terrain material data.
 	*/
 	void UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
+	/*
+	*	Initializes all common materials.
+	*/
+	void InitializeCommonMaterials() NOEXCEPT;
 
 };

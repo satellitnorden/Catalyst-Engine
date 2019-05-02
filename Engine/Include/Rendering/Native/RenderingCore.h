@@ -22,7 +22,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
-	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 16 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 32 };
 
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 	constexpr uint32 SCENE_BUFFER_GENERAL_STENCIL_BIT{ BIT(1) };
@@ -104,6 +104,14 @@ enum class BufferUsage : uint8
 };
 
 ENUMERATION_BIT_OPERATIONS(BufferUsage);
+
+//Enumeration covering all common materials.
+enum class CommonMaterial : uint8
+{
+	Gray,
+
+	NumberOfCommonMaterials
+};
 
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
