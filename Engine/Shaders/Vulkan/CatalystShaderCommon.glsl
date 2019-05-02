@@ -90,6 +90,28 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
 }
 
 /*
+*   Hash function taking a lone uint.
+*/
+uint Hash1(uint x)
+{
+    x += (x << 10u);
+    x ^= (x >>  6u);
+    x += (x <<  3u);
+    x ^= (x >> 11u);
+    x += (x << 15u);
+
+    return x;
+}
+
+/*
+*   Hash function taking a vector of uint's.
+*/
+uint Hash3(uvec3 x)
+{
+    return Hash1(x.x ^ Hash1(x.y) ^ Hash1(x.z));
+}
+
+/*
 *   Returns the length of a vector with two components squared.
 */
 float LengthSquared2(vec2 vector)
@@ -115,9 +137,9 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 }
 
 /*
-*   Given a seed, returns a random number.
+*   Given a coordinate and a seed, returns a random number.
 */
-#define RANDOM_FLOAT_IMPLEMENTATION 0
+#define RANDOM_FLOAT_IMPLEMENTATION 1
 
 float RandomFloat(vec2 coordinate, float seed)
 {
@@ -128,11 +150,14 @@ float RandomFloat(vec2 coordinate, float seed)
 
 #elif RANDOM_FLOAT_IMPLEMENTATION == 1
 
-    #define SEED_1 (1.61803398874989484820459f * 00000.1f)
-    #define SEED_2 (3.14159265358979323846264f * 00000.1f)
-    #define SEED_3 (1.41421356237309504880169f * 10000.0f)
+    uint h = Hash3(uvec3(floatBitsToUint(coordinate.x), floatBitsToUint(coordinate.y), floatBitsToUint(seed)));
 
-    return fract(tan(distance(coordinate * (seed + SEED_1), vec2(SEED_1, SEED_2))) * SEED_3);
+    h &= 0x007FFFFFu;
+    h |= 0x3F800000u;
+    
+    float r2 = uintBitsToFloat(h);
+
+    return r2 - 1.0f;
     
 #endif
 }
