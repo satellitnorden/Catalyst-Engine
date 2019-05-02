@@ -59,31 +59,18 @@ layout (std140, set = 1, binding = 9) uniform LightUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) int numberOfIterations;
-	layout (offset = 4) int currentIteration;
-
-    layout (offset = 8) float seed1;
-    layout (offset = 12) float seed2;
-    layout (offset = 16) float seed3;
-    layout (offset = 20) float seed4;
-    layout (offset = 24) float seed5;
-    layout (offset = 28) float seed6;
-    layout (offset = 32) float seed7;
+    layout (offset = 0) float seed1;
+    layout (offset = 4) float seed2;
+    layout (offset = 8) float seed3;
+    layout (offset = 12) float seed4;
+    layout (offset = 16) float seed5;
+    layout (offset = 20) float seed6;
 };
 
 //In parameters.
 layout(location = 0) rayPayloadInNV RayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
-
-/*
-*	Returns the previous respresentable floating point number before the given number.
-*/
-float PreviousFloat(float number)
-{
-	//TODO: Actually properly implement this. ):
-	return number - 0.00125f; //0.00025f step.
-}
 
 /*
 *	Unpacks the light at the given index.
@@ -214,9 +201,9 @@ void main()
 	///*
 	//Calculate the directional light.
 	{
-		vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed7)) * 2.0f - 1.0f));
+		vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
+													RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
 		randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
 		randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.015f); //0.0025f step.
 
@@ -251,9 +238,9 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed5 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
-																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed6 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
-																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed7 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f)) * light.size;
+		vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
+																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed5 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
+																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed6 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f)) * light.size;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
