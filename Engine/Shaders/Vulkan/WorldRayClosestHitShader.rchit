@@ -56,19 +56,8 @@ layout (std140, set = 1, binding = 9) uniform LightUniformData
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
 };
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-    layout (offset = 0) float seed1;
-    layout (offset = 4) float seed2;
-    layout (offset = 8) float seed3;
-    layout (offset = 12) float seed4;
-    layout (offset = 16) float seed5;
-    layout (offset = 20) float seed6;
-};
-
 //In parameters.
-layout(location = 0) rayPayloadInNV RayPayload rayPayload;
+layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
 
@@ -163,9 +152,7 @@ void main()
 	//Don't go below the maximum recursion depth.
 	if (currentRecursionDepth < (CATALYST_RAY_TRACING_MAXIMUM_DEPTH - 1))
 	{
-		vec3 randomIrradianceDirection = normalize(vec3(RandomFloat(vec3(gl_LaunchIDNV.xy, seed1)) * 2.0f - 1.0f,
-														RandomFloat(vec3(gl_LaunchIDNV.xy, seed2)) * 2.0f - 1.0f,
-														RandomFloat(vec3(gl_LaunchIDNV.xy, seed3)) * 2.0f - 1.0f));
+		vec3 randomIrradianceDirection = rayPayload.randomVector;
 		float randomIrradianceDirectionDot = dot(randomIrradianceDirection, finalVertex.normal);
 		randomIrradianceDirection = randomIrradianceDirectionDot >= 0.0f ? randomIrradianceDirection : randomIrradianceDirection * -1.0f;
 		randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
@@ -201,9 +188,7 @@ void main()
 	///*
 	//Calculate the directional light.
 	{
-		vec3 randomLightDirection = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed5)) * 2.0f - 1.0f,
-													RandomFloat(vec3(gl_LaunchIDNV.xy, seed6)) * 2.0f - 1.0f));
+		vec3 randomLightDirection = rayPayload.randomVector;
 		randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
 		randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.015f); //0.0025f step.
 
@@ -238,9 +223,7 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		vec3 randomLightPosition = light.position + normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, seed4 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
-																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed5 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f,
-																	RandomFloat(vec3(gl_LaunchIDNV.xy, seed6 + (i + 1) * EULERS_NUMBER)) * 2.0f - 1.0f)) * light.size;
+		vec3 randomLightPosition = light.position + rayPayload.randomVector * light.size;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;

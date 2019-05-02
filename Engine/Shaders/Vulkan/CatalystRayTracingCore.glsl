@@ -10,13 +10,14 @@
 /*
 *	Ray payload struct definition.
 */
-struct RayPayload
+struct PrimaryRayPayload
 {
 	int currentRecursionDepth;
 
 	vec3 indirectLighting;
 	vec3 directLighting;
 	vec3 normal;
+	vec3 randomVector;
 	float depth;
 	float roughness;
 	float metallic;

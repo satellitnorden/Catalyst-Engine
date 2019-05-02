@@ -12,7 +12,7 @@
 layout (set = 1, binding = 5) uniform samplerCube environmentTexture;
 
 //In parameters.
-layout(location = 0) rayPayloadInNV RayPayload rayPayload;
+layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 
 void main()
 {

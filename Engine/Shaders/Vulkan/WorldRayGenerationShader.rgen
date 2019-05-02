@@ -16,24 +16,18 @@ layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-    layout (offset = 0) float seed1;
-    layout (offset = 4) float seed2;
-    layout (offset = 8) float seed3;
-    layout (offset = 12) float seed4;
-    layout (offset = 16) float seed5;
-    layout (offset = 20) float seed6;
-};
-
 //In parameters.
-layout(location = 0) rayPayloadNV RayPayload rayPayload;
+layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
 
 void main() 
 {
 	//Inidicate that this is the top recursion level.
 	rayPayload.currentRecursionDepth = 0;
+
+	//Generate the random vector.
+	rayPayload.randomVector = normalize(vec3(	RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed1)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed2)) * 2.0f - 1.0f,
+												RandomFloat(vec3(gl_LaunchIDNV.xy, globalRandomSeed3)) * 2.0f - 1.0f));
 
 	traceNV(
 			topLevelAccelerationStructure, 																//topLevel
