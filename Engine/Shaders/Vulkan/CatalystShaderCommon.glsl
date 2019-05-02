@@ -133,6 +133,7 @@ float RandomFloat(vec3 seed)
     #define SEED_3 (1.41421356237309504880169f * 10000.0f)
 
     return fract(tan(distance(seed.xy * (seed.z + SEED_1), vec2(SEED_1, SEED_2))) * SEED_3);
+    
 #endif
 }
 
