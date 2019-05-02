@@ -9,7 +9,6 @@
 #include <Components/Core/ComponentManager.h>
 
 //Systems.
-#include <Systems/CullingSystem.h>
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 #include <Systems/DebugRenderingSystem.h>
 #endif
@@ -17,7 +16,6 @@
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/InputSystem.h>
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
@@ -95,9 +93,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	CullingSystem::Instance->InitializeSystem();
 	EntityPlacementSystem::Instance->InitializeSystem();
-	LevelOfDetailSystem::Instance->InitializeSystem();
 	PhysicsSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
@@ -150,8 +146,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
 	PhysicsSystem::Instance->Update(&context);
-	CullingSystem::Instance->UpdateSystemSynchronous(&context);
-	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
 #endif

@@ -9,7 +9,6 @@
 //Multithreading.
 #include <Multithreading/ScopedWriteLock.h>
 
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 

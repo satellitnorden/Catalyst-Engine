@@ -340,6 +340,12 @@
     <Filter Include="Rendering\Source\Native\Pipelines\Core">
       <UniqueIdentifier>{d4a2d52c-b71f-405c-84cc-0af9de1f0dca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="User Interface">
+      <UniqueIdentifier>{e8f7a5d7-66fe-4403-940c-710b47c2da88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User Interface\Include">
+      <UniqueIdentifier>{072827f0-d27c-421a-a2c8-e131d23385ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -384,13 +390,7 @@
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
       <Filter>Platform\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h">
@@ -1095,6 +1095,18 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\VerticalDenoisingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElement.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h">
+      <Filter>Components\Include\Singleton</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1103,13 +1115,7 @@
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
       <Filter>Managers\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp">
@@ -1363,6 +1369,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\VerticalDenoisingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
