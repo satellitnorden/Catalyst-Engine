@@ -63,6 +63,8 @@ enum class RenderPassStage : uint8
 	VerticalDenoising,
 	Compositing,
 	RadianceIntegration,
+	MotionBlur,
+	PostProcessing,
 	ToneMapping,
 	AntiAliasing,
 
