@@ -16,7 +16,6 @@
 #include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
-#include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
@@ -388,33 +387,32 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 */
 void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
-	DynamicUniformData data;
-
 	//Update matrices.
-	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
-	data._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
-	data._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
-	data._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
-	data._ProjectionMatrix = *Perceiver::Instance->GetProjectionMatrix();
-	data._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
+	_DynamicUniformData._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
+	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
+	_DynamicUniformData._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
+	_DynamicUniformData._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
+	_DynamicUniformData._PreviousViewMatrix = _DynamicUniformData._ViewMatrix;
+	_DynamicUniformData._ProjectionMatrix = *Perceiver::Instance->GetProjectionMatrix();
+	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.
-	data._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
-	data._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
-	data._WindDirection = PhysicsSystem::Instance->GetWindDirection();
+	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
+	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
+	_DynamicUniformData._WindDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	//Update floats.
-	data._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
-	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
-	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
-	data._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	data._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	data._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	data._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
-	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
+	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+	_DynamicUniformData._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	_DynamicUniformData._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
+	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	_DynamicUniformData._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
+	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 
-	void *const RESTRICT dataChunks[]{ &data };
+	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 
 	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex]);

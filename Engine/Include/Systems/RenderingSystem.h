@@ -12,6 +12,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
+#include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/RenderingCore.h>
@@ -285,6 +286,9 @@ private:
 
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
+
+	//The dynamic uniform data.
+	DynamicUniformData _DynamicUniformData;
 
 	/*
 	*	Pre-initializes the rendering system.

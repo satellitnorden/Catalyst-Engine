@@ -287,10 +287,20 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 	{
 		state->_LeftThumbstickX = 0.0f;
 	}
+
+	else
+	{
+		state->_LeftThumbstickX = CatalystBaseMath::Scale(state->_LeftThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+	}
 		
 	if (CatalystBaseMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_LeftThumbstickY = 0.0f;
+	}
+
+	else
+	{
+		state->_LeftThumbstickY = CatalystBaseMath::Scale(state->_LeftThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 
 	if (CatalystBaseMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
@@ -298,9 +308,19 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 		state->_RightThumbstickX = 0.0f;
 	}
 
+	else
+	{
+		state->_RightThumbstickX = CatalystBaseMath::Scale(state->_RightThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+	}
+
 	if (CatalystBaseMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_RightThumbstickY = 0.0f;
+	}
+
+	else
+	{
+		state->_RightThumbstickY = CatalystBaseMath::Scale(state->_RightThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 }
 

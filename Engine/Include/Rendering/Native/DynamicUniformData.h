@@ -16,6 +16,7 @@ public:
 	Matrix4 _InversePerceiverMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _PerceiverMatrix;
+	Matrix4 _PreviousViewMatrix;
 	Matrix4 _ProjectionMatrix;
 	Matrix4 _ViewMatrix;
 
@@ -34,25 +35,26 @@ public:
 	float _WindSpeed;
 };
 
-static_assert(sizeof(DynamicUniformData) == 480, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 544, "Size of dynamic uniform data is wrong!");
 
 static_assert(offsetof(DynamicUniformData, _DirectionalLightViewMatrix) == 0, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _InversePerceiverMatrix) == 64, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _InverseProjectionMatrix) == 128, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _PerceiverMatrix) == 192, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _ProjectionMatrix) == 256, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 320, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PreviousViewMatrix) == 256, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _ProjectionMatrix) == 320, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 384, "Offset inside dynamic uniform data is wrong!");
 
-static_assert(offsetof(DynamicUniformData, _DirectionalLightColor) == 384, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _DirectionalLightDirection) == 400, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 416, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindDirection) == 432, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightColor) == 448, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightDirection) == 464, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 480, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _WindDirection) == 496, "Offset inside dynamic uniform data is wrong!");
 
-static_assert(offsetof(DynamicUniformData, _DeltaTime) == 448, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 452, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _EnvironmentBlend) == 456, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed1) == 460, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed2) == 464, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed3) == 468, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _TotalTime) == 472, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindSpeed) == 476, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DeltaTime) == 512, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 516, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _EnvironmentBlend) == 520, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed1) == 524, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed2) == 528, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _GlobalRandomSeed3) == 532, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _TotalTime) == 536, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _WindSpeed) == 540, "Offset inside dynamic uniform data is wrong!");
