@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (15)
+#define DENOISING_SIZE (7)
 #define DENOISING_START_END ((DENOISING_SIZE - 1) * 0.5f)
 
 /*
@@ -110,7 +110,7 @@ void main()
 		denoisedIndirectLighting *= 1.0f / weightSum;
 
 		//Linearly interpolate the denoised indirect lighting with the current indirect lighting based on how diffuse the material are.
-		denoisedIndirectLighting = mix(currentIndirectLighting, denoisedIndirectLighting, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
+		//denoisedIndirectLighting = mix(currentIndirectLighting, denoisedIndirectLighting, GetSpecularComponent(currentFeatures.roughness, currentFeatures.metallic));
 
 		//Write the fragment.
 		indirectLighting = vec4(denoisedIndirectLighting, 1.0f);

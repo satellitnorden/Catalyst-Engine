@@ -43,14 +43,14 @@ struct Vertex
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 6) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 7) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 8) uniform ModelUniformData
+layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 7) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 8) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 9) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
-layout (std140, set = 1, binding = 9) uniform LightUniformData
+layout (std140, set = 1, binding = 10) uniform LightUniformData
 {
 	layout (offset = 0) int numberOfLights;
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
@@ -268,4 +268,6 @@ void main()
 	rayPayload.roughness = roughness;
 	rayPayload.metallic = metallic;
 	rayPayload.ambientOcclusion = ambientOcclusion;
+	rayPayload.hitInstanceID = gl_InstanceCustomIndexNV;
+	rayPayload.hitPrimitiveID = gl_PrimitiveID;
 }

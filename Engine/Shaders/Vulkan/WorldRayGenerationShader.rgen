@@ -14,7 +14,8 @@ layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
 layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingImage;
 layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
@@ -47,4 +48,5 @@ void main()
     imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(ToneMap(rayPayload.directLighting), 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.normal, rayPayload.depth));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(uintBitsToFloat(rayPayload.hitInstanceID), uintBitsToFloat(rayPayload.hitPrimitiveID), 0.0f, 0.0f));
 }

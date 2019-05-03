@@ -62,6 +62,9 @@ enum class RenderPassStage : uint8
 	HorizontalDenoising,
 	VerticalDenoising,
 	Compositing,
+	TemporalAccumulation,
+	SecondTemporalAccumulation,
+	TemporalCompositing,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,
@@ -210,9 +213,24 @@ enum class RenderTarget : uint8
 	SceneFeatures2,
 
 	/*
+	*	Contains the hit instance ID.
+	*/
+	SceneFeatures3,
+
+	/*
 	*	For rendering directly to the screen.
 	*/
 	Screen,
+
+	/*
+	*	The first temporal accumulation buffer - The temporal accumulation render pass will ping-pong the first and second buffers.
+	*/
+	TemporalAccumulationBuffer1,
+
+	/*
+	*	The second temporal accumulation buffer - The temporal accumulation render pass will ping-pong the first and second buffers.
+	*/
+	TemporalAccumulationBuffer2,
 
 	NumberOfRenderTargets
 };
@@ -244,6 +262,8 @@ enum class Shader : uint8
 	PassthroughFragment,
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
+	TemporalAccumulationFragment,
+	TemporalCompositingFragment,
 	ToneMappingFragment,
 	ViewportVertex,
 	VisibilityRayMissShader,
