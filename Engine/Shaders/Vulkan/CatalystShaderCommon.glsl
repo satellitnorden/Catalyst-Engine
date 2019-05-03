@@ -32,8 +32,8 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 
     layout (offset = 448) vec3 directionalLightColor; //Offset; 448 - Size; 16
     layout (offset = 464) vec3 directionalLightDirection; //Offset; 464 - Size; 16
-    layout (offset = 480) vec3 perceiverWorldPosition; //Offset; 480 - Size; 16
-    layout (offset = 496) vec3 windDirection; //Offset; 496 - Size; 16
+    layout (offset = 480) vec3 perceiverForwardVector; //Offset; 480 - Size; 16
+    layout (offset = 496) vec3 perceiverWorldPosition; //Offset; 496 - Size; 16
 
     layout (offset = 512) float deltaTime; //Offset; 512 - Size; 4
     layout (offset = 516) float directionalLightIntensity; //Offset; 516 - Size; 4

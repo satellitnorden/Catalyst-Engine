@@ -22,8 +22,8 @@ public:
 
 	Vector4<float> _DirectionalLightColor;
 	Vector4<float> _DirectionalLightDirection;
+	Vector4<float> _PerceiverForwardVector;
 	Vector4<float> _PerceiverWorldPosition;
-	Vector4<float> _WindDirection;
 
 	float _DeltaTime;
 	float _DirectionalLightIntensity;
@@ -47,8 +47,8 @@ static_assert(offsetof(DynamicUniformData, _ViewMatrix) == 384, "Offset inside d
 
 static_assert(offsetof(DynamicUniformData, _DirectionalLightColor) == 448, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _DirectionalLightDirection) == 464, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 480, "Offset inside dynamic uniform data is wrong!");
-static_assert(offsetof(DynamicUniformData, _WindDirection) == 496, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PerceiverForwardVector) == 480, "Offset inside dynamic uniform data is wrong!");
+static_assert(offsetof(DynamicUniformData, _PerceiverWorldPosition) == 496, "Offset inside dynamic uniform data is wrong!");
 
 static_assert(offsetof(DynamicUniformData, _DeltaTime) == 512, "Offset inside dynamic uniform data is wrong!");
 static_assert(offsetof(DynamicUniformData, _DirectionalLightIntensity) == 516, "Offset inside dynamic uniform data is wrong!");

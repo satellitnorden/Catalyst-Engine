@@ -399,8 +399,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	//Update vectors.
 	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
 	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
-	_DynamicUniformData._WindDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;

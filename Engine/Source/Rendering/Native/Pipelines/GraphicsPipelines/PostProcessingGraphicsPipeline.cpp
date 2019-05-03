@@ -50,7 +50,7 @@ void PostProcessingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::PassthroughFragment);
+	SetFragmentShader(Shader::PostProcessingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

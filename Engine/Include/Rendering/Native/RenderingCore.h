@@ -242,6 +242,7 @@ enum class Shader : uint8
 	DenoisingFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
+	PostProcessingFragment,
 	RadianceIntegrationFragment,
 	ToneMappingFragment,
 	ViewportVertex,

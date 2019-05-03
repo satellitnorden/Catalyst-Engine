@@ -27,7 +27,7 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	//Calculate the world position at this pixel the current frame.
+	//Calculate the world position at this fragment the current frame.
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeaturesTexture, fragmentTextureCoordinate).w;
 
 	//Now calculate it's previous screen position using the previous view matrix.
