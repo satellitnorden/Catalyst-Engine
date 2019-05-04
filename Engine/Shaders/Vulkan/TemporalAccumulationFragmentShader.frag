@@ -10,7 +10,7 @@
 #include "CatalystTemporalAccumulationCore.glsl"
 
 //Constants.
-#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.875f) //0.025f step.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.9f) //0.025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
