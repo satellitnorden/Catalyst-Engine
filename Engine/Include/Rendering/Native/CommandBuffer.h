@@ -58,6 +58,11 @@ public:
 	void BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, BufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
 
 	/*
+	*	Dispatches.
+	*/
+	void Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;
+
+	/*
 	*	Draws.
 	*/
 	void Draw(const Pipeline *const RESTRICT pipeline, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;

@@ -74,6 +74,11 @@ public:
 	void CommandCopyImage(VkImage source, VkImage destination, const VkExtent3D extent) NOEXCEPT;
 
 	/*
+	*	Records a dispatch command.
+	*/
+	void CommandDispatch(const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;
+
+	/*
 	*	Records a draw command.
 	*/
 	void CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;

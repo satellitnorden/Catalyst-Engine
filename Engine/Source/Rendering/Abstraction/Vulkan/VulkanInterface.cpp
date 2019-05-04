@@ -153,6 +153,13 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanRenderTarget)>(vulkanRenderTarget);
 	}
 
+	//Release all Vulkan compute pipelines.
+	for (VulkanComputePipeline *const RESTRICT vulkanComputePipeline : _VulkanComputePipelines)
+	{
+		vulkanComputePipeline->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanComputePipeline)>(vulkanComputePipeline);
+	}
+
 	//Release all Vulkan graphics pipelines.
 	for (VulkanGraphicsPipeline *const RESTRICT vulkanGraphicsPipeline : _VulkanGraphicsPipelines)
 	{
@@ -456,6 +463,22 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 	_VulkanFramebuffers.EmplaceSlow(newFramebuffer);
 
 	return newFramebuffer;
+}
+
+/*
+*	Creates and returns a compute pipeline.
+*/
+RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputePipeline(const VulkanComputePipelineCreationParameters &parameters) NOEXCEPT
+{
+	VulkanComputePipeline *const RESTRICT newPipeline = static_cast<VulkanComputePipeline *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanComputePipeline)>());
+	newPipeline->Initialize(parameters);
+
+	static Spinlock lock;
+	ScopedWriteLock<Spinlock> scopedLock{ lock };
+
+	_VulkanComputePipelines.EmplaceSlow(newPipeline);
+
+	return newPipeline;
 }
 
 /*

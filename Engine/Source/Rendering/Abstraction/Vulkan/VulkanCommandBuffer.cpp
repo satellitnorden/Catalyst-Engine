@@ -163,6 +163,14 @@ void VulkanCommandBuffer::CommandCopyImage(VkImage source, VkImage destination, 
 }
 
 /*
+*	Records a dispatch command.
+*/
+void VulkanCommandBuffer::CommandDispatch(const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT
+{
+	vkCmdDispatch(_VulkanCommandBuffer, width, height, depth);
+}
+
+/*
 *	Records a draw command.
 */
 void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT

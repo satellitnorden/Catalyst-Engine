@@ -159,6 +159,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCommandPool.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanComputePipelineCreationParameters.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.h" />
@@ -198,6 +200,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipelines.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingGraphicsPipeline.h" />
@@ -335,6 +339,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.cpp" />
@@ -360,6 +365,8 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\CompositingGraphicsPipeline.cpp" />

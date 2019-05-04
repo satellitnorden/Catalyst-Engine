@@ -1,0 +1,149 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystTemporalAccumulationCore.glsl"
+
+//Constants.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.9325f) //0.0025f step.
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) bool enabled;
+};
+
+//Texture samplers.
+layout (set = 1, binding = 0, rgba32f) uniform image2D previousTemporalAccumulationBuffer;
+layout (set = 1, binding = 1, rgba32f) uniform image2D sceneTexture;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Texture;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures3Texture;
+layout (set = 1, binding = 4, rgba32f) uniform image2D currentTemporalAccumulationBuffer;
+
+/*
+*	Returns if a coordinate is valid.
+*/
+bool ValidCoordinate(uvec2 coordinate)
+{
+	return 	coordinate.x >= gl_WorkGroupSize.x
+			&& coordinate.x < gl_WorkGroupSize.x
+			&& coordinate.y >= gl_WorkGroupSize.y
+			&& coordinate.y < gl_WorkGroupSize.y;
+}
+
+/*
+*	Searches for temporal accumulation data.
+*/
+bool SearchForTemporalAccumulationData(ivec2 coordinate, uint currentInstanceID, uint currentPrimitiveID, out vec3 previousAccumulatedColor, out AccumulationDescription previousAccumulationDescription)
+{
+	//Discard data randomly even if potential valid data could be found.
+	if (RandomFloat(vec2(coordinate), globalRandomSeed1) >= TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF)
+	{
+		return false;
+	}
+
+	//Keep track of whether valid data was found.
+	bool foundValidData = false;
+
+	//The sample coordinates.
+	ivec2 samplesCoordinates[9] = ivec2[]
+	(
+		coordinate,
+
+		coordinate + uvec2(-1, 0),
+		coordinate + uvec2(1, 0),
+		coordinate + uvec2(0, -1),
+		coordinate + uvec2(0, 1),
+
+		coordinate + uvec2(-1, -1),
+		coordinate + uvec2(-1, 1),
+		coordinate + uvec2(1, -1),
+		coordinate + uvec2(1, 1)
+	);
+
+	//Check the surrounding fragment.
+	for (int i = 0; i < 9; ++i)
+	{
+		AccumulationDescription sampleAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(imageLoad(previousTemporalAccumulationBuffer, samplesCoordinates[i]).w));
+
+		if (!foundValidData
+			&& currentInstanceID == sampleAccumulationDescription.instanceID
+			&& currentPrimitiveID == sampleAccumulationDescription.primitiveID
+			&& ValidCoordinate(samplesCoordinates[i]))
+		{
+			foundValidData = true;
+			previousAccumulatedColor = imageLoad(previousTemporalAccumulationBuffer, samplesCoordinates[i]).rgb;
+			previousAccumulationDescription = sampleAccumulationDescription;
+		}
+	}
+	
+
+	//Return if valid data was found.
+	return foundValidData;
+}
+
+void main()
+{
+	//Sample the scene texture.
+	vec4 sceneTextureSampler = imageLoad(sceneTexture, ivec2(gl_GlobalInvocationID.xy));
+
+	//Sample the scene features 2 texture.
+	vec4 sceneFeatures1TextureSampler = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy));
+
+	//Sample the scene features 3 texture.
+	vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
+
+	//Calculate the world position at this fragment the current frame.
+	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(gl_WorkGroupSize.xy)) * sceneFeatures1TextureSampler.w;
+
+	//Now calculate it's previous screen coordinate using the previous view matrix.
+	vec4 previousViewSpacePosition = previousViewMatrix * vec4(currentWorldPosition, 1.0f);
+
+	//Perform perspective division.
+	float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
+	previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
+
+	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
+
+	//Retrieve the current instance ID.
+	uint currentInstanceID = floatBitsToUint(sceneFeatures3TextureSampler.x);
+
+	//Retrieve the current primitive ID.
+	uint currentPrimitiveID = floatBitsToUint(sceneFeatures3TextureSampler.y);
+
+	//Search for previous temporal accumulation data.
+	vec3 previousAccumulatedColor;
+	AccumulationDescription previousAccumulationDescription;
+
+	if (enabled
+		&& SearchForTemporalAccumulationData(ivec2(previousScreenCoordinate.x * gl_WorkGroupSize.x, previousScreenCoordinate.y * gl_WorkGroupSize.y), currentInstanceID, currentPrimitiveID, previousAccumulatedColor, previousAccumulationDescription))
+	{
+		//Write the accumulation description.
+		AccumulationDescription accumulationDescription;
+
+		accumulationDescription.accumulations = previousAccumulationDescription.accumulations + 1;
+		accumulationDescription.instanceID = currentInstanceID;
+		accumulationDescription.primitiveID = currentPrimitiveID;
+
+		//Write the current temporal accumulation.
+		imageStore(currentTemporalAccumulationBuffer, ivec2(gl_GlobalInvocationID.xy), vec4(previousAccumulatedColor + sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription))));
+	}
+
+	else
+	{
+		//Write the accumulation description.
+		AccumulationDescription accumulationDescription;
+
+		accumulationDescription.accumulations = 1;
+		accumulationDescription.instanceID = currentInstanceID;
+		accumulationDescription.primitiveID = currentPrimitiveID;
+
+		//Write the current temporal accumulation.
+   		imageStore(currentTemporalAccumulationBuffer, ivec2(gl_GlobalInvocationID.xy), vec4(sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription))));
+	}
+}

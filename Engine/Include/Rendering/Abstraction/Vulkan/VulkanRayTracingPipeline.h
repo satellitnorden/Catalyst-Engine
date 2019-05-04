@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
 //Core.
@@ -71,3 +72,4 @@ private:
 											VkRayTracingPipelineCreateInfoNV *const RESTRICT rayTracingPipelineCreateInfo) const NOEXCEPT;
 
 };
+#endif

@@ -1,3 +1,4 @@
+#if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipeline.h>
 
@@ -151,3 +152,4 @@ void VulkanRayTracingPipeline::CreateRayTracingPipelineCreateInfo(	const ArrayPr
 	rayTracingPipelineCreateInfo->basePipelineHandle = VK_NULL_HANDLE;
 	rayTracingPipelineCreateInfo->basePipelineIndex = -1;
 }
+#endif

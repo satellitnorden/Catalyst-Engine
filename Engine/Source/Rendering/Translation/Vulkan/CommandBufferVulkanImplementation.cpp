@@ -86,6 +86,14 @@ void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, co
 }
 
 /*
+*	Dispatches.
+*/
+void CommandBuffer::Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT
+{
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandDispatch(width, height, depth);
+}
+
+/*
 *	Draws.
 */
 void CommandBuffer::Draw(const Pipeline *const RESTRICT pipeline, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT

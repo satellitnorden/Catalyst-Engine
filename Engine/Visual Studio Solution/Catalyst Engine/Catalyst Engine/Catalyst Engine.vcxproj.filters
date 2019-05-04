@@ -346,6 +346,12 @@
     <Filter Include="User Interface\Include">
       <UniqueIdentifier>{072827f0-d27c-421a-a2c8-e131d23385ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Native\Pipelines\Compute Pipelines">
+      <UniqueIdentifier>{9b55b8fc-7c36-4f6c-9404-5047f4a58d72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source\Native\Pipelines\Compute Pipelines">
+      <UniqueIdentifier>{877dd111-b348-49c9-bdd9-711ea81507ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1137,6 +1143,18 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanComputePipeline.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanComputePipelineCreationParameters.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1432,6 +1450,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanComputePipeline.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

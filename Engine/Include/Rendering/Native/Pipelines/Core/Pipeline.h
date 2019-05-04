@@ -22,6 +22,7 @@ public:
 	//Enumeration covering all pipeline types.
 	enum class Type : uint8
 	{
+		Compute,
 		Graphics,
 		RayTracing
 	};

@@ -11,6 +11,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
+#include <Rendering/Abstraction/Vulkan/VulkanComputePipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCubeMapTexture.h>
 #include <Rendering/Abstraction/Vulkan/VulkanDepthBuffer.h>
@@ -21,10 +22,8 @@
 #include <Rendering/Abstraction/Vulkan/VulkanFence.h>
 #include <Rendering/Abstraction/Vulkan/VulkanFramebuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
-#include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInstance.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipeline.h>
-#include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipelineCreationParameters.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanQueue.h>
@@ -220,6 +219,11 @@ public:
 	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Creates and returns a compute pipeline.
+	*/
+	RESTRICTED VulkanComputePipeline *const RESTRICT CreateComputePipeline(const VulkanComputePipelineCreationParameters &parameters) NOEXCEPT;
+
+	/*
 	*	Creates and returns a graphics pipeline.
 	*/
 	RESTRICTED VulkanGraphicsPipeline *const RESTRICT CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT;
@@ -314,6 +318,9 @@ private:
 
 	//Container for all Vulkan framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _VulkanFramebuffers;
+
+	//Container for all Vulkan compute pipelines.
+	DynamicArray<VulkanComputePipeline *RESTRICT> _VulkanComputePipelines;
 
 	//Container for all Vulkan graphics pipelines.
 	DynamicArray<VulkanGraphicsPipeline *RESTRICT> _VulkanGraphicsPipelines;
