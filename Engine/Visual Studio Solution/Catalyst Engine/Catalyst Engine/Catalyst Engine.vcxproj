@@ -401,7 +401,7 @@
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />

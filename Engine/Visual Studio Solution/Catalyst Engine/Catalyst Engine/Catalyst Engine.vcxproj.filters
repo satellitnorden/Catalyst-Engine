@@ -1193,9 +1193,6 @@
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
       <Filter>Core\Source\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -1438,6 +1435,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

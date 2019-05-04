@@ -17,6 +17,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
+#include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -27,25 +28,6 @@ namespace WorldRayTracingPipelineConstants
 {
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 32 };
 }
-
-/*
-*	Light uniform data definition.
-*/
-class LightUniformData final
-{
-
-public:
-
-	//The number of lights.
-	int32 _NumberOfLights;
-
-	//Some padding.
-	Padding<12> _Padding;
-
-	//The light data.
-	StaticArray<LightComponent, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightData;
-
-};
 
 /*
 *	Default constructor.
@@ -77,9 +59,10 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataRenderDataTableLayout());
 
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::WorldRayGenerationShader);
@@ -99,7 +82,7 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 11> bindings
+	StaticArray<RenderDataTableLayoutBinding, 10> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
@@ -110,8 +93,7 @@ void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss),
 		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -186,27 +168,6 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(9, 0, &_RenderDataTable, materialsBuffer);
 		}
 
-		{
-			LightUniformData lightUniformData;
-
-			BufferHandle lightsBuffer;
-			RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &lightsBuffer);
-
-			lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
-
-			for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
-			{
-				lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
-			}
-
-			const void *const RESTRICT dataChunks[]{ &lightUniformData };
-			const uint64 dataSizes[]{ sizeof(LightUniformData) };
-
-			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &lightsBuffer);
-
-			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(10, 0, &_RenderDataTable, lightsBuffer);
-		}
-
 		once = true;
 	}
 
@@ -219,6 +180,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
 
 	//Trace rays!
 	commandBuffer->TraceRays(this);

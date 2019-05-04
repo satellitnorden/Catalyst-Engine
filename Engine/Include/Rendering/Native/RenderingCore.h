@@ -262,7 +262,6 @@ enum class Shader : uint8
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
 	TemporalAccumulationCompute,
-	TemporalAccumulationFragment,
 	TemporalCompositingFragment,
 	ToneMappingFragment,
 	ViewportVertex,

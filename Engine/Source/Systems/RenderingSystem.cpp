@@ -114,6 +114,9 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	//Update the global render data.
 	UpdateGlobalRenderData();
 
+	//Update the lighting system.
+	LightingSystem::Instance->Update(context);
+
 	//Execute all render passes.
 	RenderingSystemLogic::ExecuteRenderPasses();
 

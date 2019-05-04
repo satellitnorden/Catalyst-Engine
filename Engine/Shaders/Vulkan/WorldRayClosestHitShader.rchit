@@ -9,15 +9,7 @@
 #include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
-
-//Light struct definition.
-struct Light
-{
-	vec3 color;
-	vec3 position;
-	float size;
-	float strength;
-};
+#include "CatalystLightingData.glsl"
 
 //Material struct definition.
 struct Material
@@ -39,7 +31,6 @@ struct Vertex
 
 //Constants.
 #define MAXIMUM_NUMBER_OF_MODELS (32)
-#define MAXIMUM_NUMBER_OF_LIGHTS (4)
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
@@ -50,34 +41,11 @@ layout (std140, set = 1, binding = 9) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
-layout (std140, set = 1, binding = 10) uniform LightUniformData
-{
-	layout (offset = 0) int numberOfLights;
-    layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
-};
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
-
-/*
-*	Unpacks the light at the given index.
-*/
-Light UnpackLight(uint index)
-{
-	Light light;
-
-  	vec4 lightData1 = lightData[index * 2 + 0];
-  	vec4 lightData2 = lightData[index * 2 + 1];
-
-  	light.color = lightData1.xyz;
-  	light.position = vec3(lightData1.w, lightData2.xy);
-  	light.size = lightData2.z;
-  	light.strength = lightData2.w;
-
-  	return light;
-}
 
 /*
 *	Unpacks the vertex at the given index.
