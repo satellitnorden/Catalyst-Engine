@@ -5,5 +5,5 @@
 
 namespace LightingConstants
 {
-	constexpr float DIRECTIONAL_SHADOW_VIEW_DISTANCE{ 100.0f };
+	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }

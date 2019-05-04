@@ -109,7 +109,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
-    <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
@@ -323,7 +322,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />

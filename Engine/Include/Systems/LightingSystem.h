@@ -7,7 +7,6 @@
 //Lighting.
 #include <Lighting/DirectionalLight.h>
 #include <Lighting/LightingCore.h>
-#include <Lighting/SpotLight.h>
 
 class LightingSystem final
 {

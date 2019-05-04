@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Lighting.
+#include <Lighting/LightingCore.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -23,7 +26,6 @@ DEFINE_SINGLETON(WorldRayTracingPipeline);
 namespace WorldRayTracingPipelineConstants
 {
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 32 };
-	constexpr uint64 MAXIMUM_NUMBER_OF_LIGHTS{ 4 };
 }
 
 /*
@@ -41,7 +43,7 @@ public:
 	Padding<12> _Padding;
 
 	//The light data.
-	StaticArray<LightComponent, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightData;
+	StaticArray<LightComponent, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightData;
 
 };
 

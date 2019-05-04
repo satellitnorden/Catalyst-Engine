@@ -21,30 +21,28 @@
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
-    //Viewer data.
-    layout (offset = 0) mat4 directionalLightViewMatrix; //Offset; 0 - Size; 64
-    layout (offset = 64) mat4 inversePerceiverMatrix; //Offset; 64 - Size; 64
-    layout (offset = 128) mat4 inverseProjectionMatrix; //Offset; 128 - Size; 64
-    layout (offset = 192) mat4 perceiverMatrix; //Offset; 192 - Size; 64
-    layout (offset = 256) mat4 previousViewMatrix; //Offset; 256 - Size; 64
-    layout (offset = 320) mat4 projectionMatrix; //Offset; 320 - Size; 64
-    layout (offset = 384) mat4 viewMatrix; //Offset; 384 - Size; 64
+    layout (offset = 0) mat4 inversePerceiverMatrix;
+    layout (offset = 64) mat4 inverseProjectionMatrix;
+    layout (offset = 128) mat4 perceiverMatrix;
+    layout (offset = 192) mat4 previousViewMatrix;
+    layout (offset = 256) mat4 projectionMatrix;
+    layout (offset = 320) mat4 viewMatrix;
 
-    layout (offset = 448) vec3 directionalLightColor; //Offset; 448 - Size; 16
-    layout (offset = 464) vec3 directionalLightDirection; //Offset; 464 - Size; 16
-    layout (offset = 480) vec3 perceiverForwardVector; //Offset; 480 - Size; 16
-    layout (offset = 496) vec3 perceiverWorldPosition; //Offset; 496 - Size; 16
+    layout (offset = 384) vec3 directionalLightColor;
+    layout (offset = 400) vec3 directionalLightDirection;
+    layout (offset = 416) vec3 perceiverForwardVector;
+    layout (offset = 432) vec3 perceiverWorldPosition;
 
-    layout (offset = 512) float deltaTime; //Offset; 512 - Size; 4
-    layout (offset = 516) float directionalLightIntensity; //Offset; 516 - Size; 4
-    layout (offset = 520) float environmentBlend; //Offset; 520 - Size; 4
-    layout (offset = 524) float globalRandomSeed1; //Offset; 524 - Size; 4
-    layout (offset = 528) float globalRandomSeed2; //Offset; 528 - Size; 4
-    layout (offset = 532) float globalRandomSeed3; //Offset; 532 - Size; 4
-    layout (offset = 536) float totalTime; //Offset; 536 - Size; 4
-    layout (offset = 540) float windSpeed; //Offset; 540 - Size; 4
+    layout (offset = 448) float deltaTime;
+    layout (offset = 452) float directionalLightIntensity;
+    layout (offset = 456) float environmentBlend;
+    layout (offset = 460) float globalRandomSeed1;
+    layout (offset = 464) float globalRandomSeed2;
+    layout (offset = 468) float globalRandomSeed3;
+    layout (offset = 472) float totalTime;
+    layout (offset = 476) float windSpeed;
 
-    //Total size; 544
+    //Total size; 480
 };
 
 //The global textures.

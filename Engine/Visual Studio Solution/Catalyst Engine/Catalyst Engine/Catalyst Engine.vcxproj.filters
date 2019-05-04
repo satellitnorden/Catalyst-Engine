@@ -531,9 +531,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h">
-      <Filter>Lighting\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1198,9 +1195,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp">
       <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp">
-      <Filter>Lighting\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
       <Filter>Systems\Source</Filter>
