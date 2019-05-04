@@ -15,6 +15,12 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) bool enabled;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -62,7 +68,8 @@ void main()
 	//Unpack the previous accumulation description.
 	AccumulationDescription previousAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(previousTemporalAccumulationBufferSampler.w));
 
-	if (currentInstanceID == previousAccumulationDescription.instanceID
+	if (enabled
+		&& currentInstanceID == previousAccumulationDescription.instanceID
 		&& currentPrimitiveID == previousAccumulationDescription.primitiveID
 		&& previousScreenCoordinate.x >= 0.0f
 		&& previousScreenCoordinate.x < 1.0f

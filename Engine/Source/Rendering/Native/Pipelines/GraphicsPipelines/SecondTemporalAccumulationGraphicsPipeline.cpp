@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SecondTemporalAccumulationGraphicsPipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
 
@@ -12,6 +15,19 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(SecondTemporalAccumulationGraphicsPipeline);
+
+/*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	//Denotes whether or not denoising is enabled.
+	int32 _Enabled;
+
+};
 
 /*
 *	Default constructor.
@@ -60,6 +76,10 @@ void SecondTemporalAccumulationGraphicsPipeline::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -119,6 +139,14 @@ void SecondTemporalAccumulationGraphicsPipeline::CreateRenderDataTable() NOEXCEP
 */
 void SecondTemporalAccumulationGraphicsPipeline::RenderInternal() NOEXCEPT
 {
+	//Toggle enabled.
+	static bool enabled{ false };
+
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._Y == ButtonState::Pressed)
+	{
+		enabled = !enabled;
+	}
+
 	//Don't include in render if it is not this pipeline's turn.
 	if (_CurrentIndex != 1)
 	{
@@ -139,6 +167,13 @@ void SecondTemporalAccumulationGraphicsPipeline::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	PushConstantData data;
+
+	data._Enabled = static_cast<int32>(enabled);
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
