@@ -77,7 +77,7 @@ void main()
 	{
 		//Sample the temporal accumulation buffer. Calculate a denoising weight depending on how many accumulations have been made.
 		AccumulationDescription temporalAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(texture(temporalAccumulationBufferTexture, fragmentTextureCoordinate).w));
-		float temporalAccumulationWeight = 1.0f - float(temporalAccumulationDescription.accumulations / DENOISING_MAXIMUM_TEMPORAL_ACCUMULATIONS);
+		float temporalAccumulationWeight = clamp(1.0f - float(temporalAccumulationDescription.accumulations / DENOISING_MAXIMUM_TEMPORAL_ACCUMULATIONS), 0.0f, 1.0f);
 
 		//Sample the indirect lighting and scene features at the current fragment.
 		vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
