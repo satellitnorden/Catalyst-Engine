@@ -9,6 +9,9 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystTemporalAccumulationCore.glsl"
 
+//Constants.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.875f) //0.025f step.
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -61,7 +64,11 @@ void main()
 
 	if (currentInstanceID == previousAccumulationDescription.instanceID
 		&& currentPrimitiveID == previousAccumulationDescription.primitiveID
-		&& RandomFloat(fragmentTextureCoordinate, globalRandomSeed1) < 0.999f)
+		&& previousScreenCoordinate.x >= 0.0f
+		&& previousScreenCoordinate.x < 1.0f
+		&& previousScreenCoordinate.y >= 0.0f
+		&& previousScreenCoordinate.y < 1.0f
+		&& RandomFloat(fragmentTextureCoordinate, globalRandomSeed1) < TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF)
 	{
 		//Write the accumulation description.
 		AccumulationDescription accumulationDescription;

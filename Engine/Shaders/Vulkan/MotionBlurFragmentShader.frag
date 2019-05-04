@@ -10,7 +10,7 @@
 
 //Constants.
 #define MOTION_BLUR_SAMPLES (10)
-#define MOTION_BLUR_SCALE (0.1f)
+#define MOTION_BLUR_SCALE (0.125f)
 
 //Layout specification.
 layout (early_fragment_tests) in;

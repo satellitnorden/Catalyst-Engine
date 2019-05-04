@@ -30,18 +30,22 @@ void main()
 												RandomFloat(gl_LaunchIDNV.xy, globalRandomSeed2) * 2.0f - 1.0f,
 												RandomFloat(gl_LaunchIDNV.xy, globalRandomSeed3) * 2.0f - 1.0f));
 
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection((vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy));
+	rayDirection = mix(rayDirection, dot(rayDirection, rayPayload.randomVector) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f, 0.000125f);
+
 	traceNV(
-			topLevelAccelerationStructure, 																//topLevel
-			gl_RayFlagsOpaqueNV, 																		//rayFlags
-			0xff, 																						//cullMask
-			0, 																							//sbtRecordOffset
-			0, 																							//sbtRecordStride
-			0, 																							//missIndex
-			perceiverWorldPosition, 																	//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-			CalculateRayDirection((vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy)), 	//direction
-			CATALYST_RAY_TRACING_T_MAXIMUM, 															//Tmax
-			0 																							//payload
+			topLevelAccelerationStructure, 	//topLevel
+			gl_RayFlagsOpaqueNV, 			//rayFlags
+			0xff, 							//cullMask
+			0, 								//sbtRecordOffset
+			0, 								//sbtRecordStride
+			0, 								//missIndex
+			perceiverWorldPosition, 		//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
+			rayDirection, 					//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
+			0 								//payload
 			);
 
 	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(ToneMap(rayPayload.indirectLighting), 1.0f));
