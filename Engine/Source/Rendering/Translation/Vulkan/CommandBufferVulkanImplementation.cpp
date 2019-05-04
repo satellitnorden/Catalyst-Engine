@@ -6,6 +6,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanRayTracingPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
@@ -18,7 +19,19 @@
 */
 void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 {
-	if (pipeline->GetType() == Pipeline::Type::Graphics)
+	if (pipeline->GetType() == Pipeline::Type::Compute)
+	{
+		//Cache the Vulkan ray tracing pipeline data.
+		const VulkanComputePipelineData *const RESTRICT pipelineData{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Begin the command buffer.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+
+		//Bind the pipeline.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pipelineData->_Pipeline->GetPipeline());
+	}
+
+	else if (pipeline->GetType() == Pipeline::Type::Graphics)
 	{
 		//Cache the Vulkan graphics pipeline data.
 		const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
@@ -57,7 +70,16 @@ void CommandBuffer::BindIndexBuffer(const Pipeline *const RESTRICT pipeline, Buf
 */
 void CommandBuffer::BindRenderDataTable(const Pipeline *const RESTRICT pipeline, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT
 {
-	if (pipeline->GetType() == Pipeline::Type::Graphics)
+	if (pipeline->GetType() == Pipeline::Type::Compute)
+	{
+		//Cache the Vulkan ray tracing pipeline data.
+		const VulkanComputePipelineData *const RESTRICT pipelineData{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Bind the render data tables.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindDescriptorSets(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pipelineData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
+	}
+
+	else if (pipeline->GetType() == Pipeline::Type::Graphics)
 	{
 		//Cache the Vulkan graphics pipeline data.
 		const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(pipeline->GetData()) };
@@ -116,7 +138,17 @@ void CommandBuffer::DrawIndexed(const Pipeline *const RESTRICT pipeline, const u
 */
 void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT
 {
-	if (pipeline->GetType() == Pipeline::Type::Graphics)
+	if (pipeline->GetType() == Pipeline::Type::Compute)
+	{
+		//Cache the Vulkan ray tracing pipeline data.
+		const VulkanComputePipelineData *const RESTRICT pipelineData{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
+
+
+		//Push the constants.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandPushConstants(pipelineData->_Pipeline->GetPipelineLayout(), VulkanTranslationUtilities::GetVulkanShaderStages(shaderStage), offset, size, data);
+	}
+
+	else if (pipeline->GetType() == Pipeline::Type::Graphics)
 	{
 		//Cache the Vulkan graphics pipeline data.
 		const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(pipeline->GetData()) };

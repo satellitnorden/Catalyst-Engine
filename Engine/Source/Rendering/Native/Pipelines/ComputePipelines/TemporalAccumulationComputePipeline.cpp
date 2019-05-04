@@ -21,6 +21,9 @@ class PushConstantData final
 
 public:
 
+	//The resolution.
+	Vector2<int32> _Resolution;
+
 	//Denotes whether or not temporal accumulation is enabled.
 	int32 _Enabled;
 
@@ -75,11 +78,11 @@ void TemporalAccumulationComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -134,10 +137,10 @@ void TemporalAccumulationComputePipeline::Execute() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
+	data._Resolution = Vector2<int32>(static_cast<int32>(RenderingSystem::Instance->GetScaledResolution()._Width), static_cast<int32>(RenderingSystem::Instance->GetScaledResolution()._Height));
 	data._Enabled = static_cast<int32>(enabled);
 
 	commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
-
 
 	//Dispatch!
 	commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);

@@ -10,12 +10,13 @@
 #include "CatalystTemporalAccumulationCore.glsl"
 
 //Constants.
-#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.9325f) //0.0025f step.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.93f) //0.0025f step.
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) bool enabled;
+    layout (offset = 0) ivec2 resolution;
+    layout (offset = 8) bool enabled;
 };
 
 //Texture samplers.
@@ -28,12 +29,12 @@ layout (set = 1, binding = 4, rgba32f) uniform image2D currentTemporalAccumulati
 /*
 *	Returns if a coordinate is valid.
 */
-bool ValidCoordinate(uvec2 coordinate)
+bool ValidCoordinate(ivec2 coordinate)
 {
-	return 	coordinate.x >= gl_WorkGroupSize.x
-			&& coordinate.x < gl_WorkGroupSize.x
-			&& coordinate.y >= gl_WorkGroupSize.y
-			&& coordinate.y < gl_WorkGroupSize.y;
+	return 	coordinate.x >= 0
+			&& coordinate.x < resolution.x
+			&& coordinate.y >= 0
+			&& coordinate.y < resolution.y;
 }
 
 /*
@@ -55,15 +56,15 @@ bool SearchForTemporalAccumulationData(ivec2 coordinate, uint currentInstanceID,
 	(
 		coordinate,
 
-		coordinate + uvec2(-1, 0),
-		coordinate + uvec2(1, 0),
-		coordinate + uvec2(0, -1),
-		coordinate + uvec2(0, 1),
+		coordinate + ivec2(-1, 0),
+		coordinate + ivec2(1, 0),
+		coordinate + ivec2(0, -1),
+		coordinate + ivec2(0, 1),
 
-		coordinate + uvec2(-1, -1),
-		coordinate + uvec2(-1, 1),
-		coordinate + uvec2(1, -1),
-		coordinate + uvec2(1, 1)
+		coordinate + ivec2(-1, -1),
+		coordinate + ivec2(-1, 1),
+		coordinate + ivec2(1, -1),
+		coordinate + ivec2(1, 1)
 	);
 
 	//Check the surrounding fragment.
@@ -81,7 +82,6 @@ bool SearchForTemporalAccumulationData(ivec2 coordinate, uint currentInstanceID,
 			previousAccumulationDescription = sampleAccumulationDescription;
 		}
 	}
-	
 
 	//Return if valid data was found.
 	return foundValidData;
@@ -99,7 +99,7 @@ void main()
 	vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
 
 	//Calculate the world position at this fragment the current frame.
-	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(gl_WorkGroupSize.xy)) * sceneFeatures1TextureSampler.w;
+	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(resolution.xy)) * sceneFeatures1TextureSampler.w;
 
 	//Now calculate it's previous screen coordinate using the previous view matrix.
 	vec4 previousViewSpacePosition = previousViewMatrix * vec4(currentWorldPosition, 1.0f);
@@ -121,7 +121,7 @@ void main()
 	AccumulationDescription previousAccumulationDescription;
 
 	if (enabled
-		&& SearchForTemporalAccumulationData(ivec2(previousScreenCoordinate.x * gl_WorkGroupSize.x, previousScreenCoordinate.y * gl_WorkGroupSize.y), currentInstanceID, currentPrimitiveID, previousAccumulatedColor, previousAccumulationDescription))
+		&& SearchForTemporalAccumulationData(ivec2(previousScreenCoordinate.x * resolution.x, previousScreenCoordinate.y * resolution.y), currentInstanceID, currentPrimitiveID, previousAccumulatedColor, previousAccumulationDescription))
 	{
 		//Write the accumulation description.
 		AccumulationDescription accumulationDescription;

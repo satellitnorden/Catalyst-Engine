@@ -1125,9 +1125,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\PostProcessingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalCompositingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1135,12 +1132,6 @@
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalCompositingRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SecondTemporalAccumulationGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanComputePipeline.h">
@@ -1154,6 +1145,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h">
+      <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1433,22 +1427,10 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\PostProcessingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalCompositingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalCompositingRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SecondTemporalAccumulationGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanComputePipeline.cpp">
@@ -1459,6 +1441,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

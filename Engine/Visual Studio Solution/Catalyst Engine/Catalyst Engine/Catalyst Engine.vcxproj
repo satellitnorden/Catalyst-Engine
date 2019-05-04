@@ -212,8 +212,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SecondTemporalAccumulationGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalCompositingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VerticalDenoisingGraphicsPipeline.h" />
@@ -230,7 +228,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderOverrideRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPassManager.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalCompositingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h" />
@@ -243,6 +240,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TopLevelAccelerationStructureInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanGraphicsPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h" />
@@ -376,8 +374,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SecondTemporalAccumulationGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalCompositingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VerticalDenoisingGraphicsPipeline.cpp" />
@@ -391,7 +387,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RadianceIntegrationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderOverrideRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SecondTemporalAccumulationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalCompositingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />

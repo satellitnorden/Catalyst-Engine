@@ -23,9 +23,11 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/Vertex.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
+#include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanRayTracingPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
@@ -112,7 +114,7 @@ namespace VulkanRenderingSystemLogic
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
 		{
-			if (renderPass->GetPipelines()[0]->GetType() != Pipeline::Type::RayTracing)
+			if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::Graphics)
 			{
 				currentPrimaryCommandBuffer->CommandBeginRenderPass(VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderPass->Get(),
 																	VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._FrameBuffers[VulkanRenderingSystemData::_VulkanRenderPassData[UNDERLYING(renderPass->GetStage())]._RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
@@ -125,6 +127,7 @@ namespace VulkanRenderingSystemLogic
 				if (pipeline->IncludeInRender())
 				{
 					currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
+			
 				}
 
 				if (pipeline != renderPass->GetPipelines().Back())
@@ -133,11 +136,61 @@ namespace VulkanRenderingSystemLogic
 				}
 			}
 			
-			if (renderPass->GetPipelines()[0]->GetType() != Pipeline::Type::RayTracing)
+			if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::Graphics)
 			{
 				currentPrimaryCommandBuffer->CommandEndRenderPass();
 			}
 		}
+	}
+
+	/*
+	*	Initializes a compute pipeline.
+	*/
+	void InitializeComputePipeline(ComputePipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+		//Create the pipeline.
+		VulkanComputePipelineCreationParameters parameters;
+
+		DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
+		pipelineDescriptorSetLayouts.Reserve(pipeline->GetRenderDataTableLayouts().Size());
+
+		for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
+		{
+			pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+		}
+
+		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
+		parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
+
+		DynamicArray<VkPushConstantRange> pushConstantRanges;
+
+		if (pipeline->GetPushConstantRanges().Empty())
+		{
+			parameters._PushConstantRangeCount = 0;
+			parameters._PushConstantRanges = nullptr;
+		}
+
+		else
+		{
+			pushConstantRanges.Reserve(pipeline->GetPushConstantRanges().Size());
+
+			for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
+			{
+				pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+			}
+
+			parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
+			parameters._PushConstantRanges = pushConstantRanges.Data();
+		}
+
+		parameters._ShaderModule = VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetShader())];
+
+		//Create the pipeline sub stage data.
+		VulkanComputePipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanComputePipelineData))) VulkanComputePipelineData() };
+		pipeline->SetData(data);
+
+		//Create the pipeline!
+		data->_Pipeline = VulkanInterface::Instance->CreateComputePipeline(parameters);
 	}
 
 	/*
@@ -1037,8 +1090,8 @@ void RenderingSystem::CreateTextureCube(const TextureCubeData& data, TextureCube
 */
 void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT renderPass) const NOEXCEPT
 {
-	//For now, don't create a render pass for ray tracing thingies...
-	if (renderPass->GetPipelines()[0]->GetType() == Pipeline::Type::RayTracing)
+	//Only create a render pass for graphics pipelines.
+	if (renderPass->GetPipelines()[0]->GetType() != Pipeline::Type::Graphics)
 	{
 		return;
 	}
@@ -1171,6 +1224,13 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 {
 	switch (pipeline->GetType())
 	{
+		case Pipeline::Type::Compute:
+		{
+			VulkanRenderingSystemLogic::InitializeComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
+
+			break;
+		}
+
 		case Pipeline::Type::Graphics:
 		{
 			VulkanRenderingSystemLogic::InitializeGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
