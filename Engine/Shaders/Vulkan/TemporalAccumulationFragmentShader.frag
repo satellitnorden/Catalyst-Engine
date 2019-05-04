@@ -10,7 +10,7 @@
 #include "CatalystTemporalAccumulationCore.glsl"
 
 //Constants.
-#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.9f) //0.025f step.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.9325f) //0.0025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -18,7 +18,8 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) bool enabled;
+	layout (offset = 0) vec2 inverseResolution;
+    layout (offset = 8) bool enabled;
 };
 
 //In parameters.
@@ -32,6 +33,68 @@ layout (set = 1, binding = 3) uniform sampler2D sceneFeatures3Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 temporalAccumulation;
+
+/*
+*	Returns if a coordinate is valid.
+*/
+bool ValidCoordinate(vec2 coordinate)
+{
+	return 	coordinate.x >= 0.0f
+			&& coordinate.x < 1.0f
+			&& coordinate.y >= 0.0f
+			&& coordinate.y < 1.0f;
+}
+
+/*
+*	Searches for temporal accumulation data.
+*/
+bool SearchForTemporalAccumulationData(vec2 coordinate, uint currentInstanceID, uint currentPrimitiveID, out vec3 previousAccumulatedColor, out AccumulationDescription previousAccumulationDescription)
+{
+	//Discard data randomly even if potential valid data could be found.
+	if (RandomFloat(fragmentTextureCoordinate, globalRandomSeed1) >= TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF)
+	{
+		return false;
+	}
+
+	//Keep track of whether valid data was found.
+	bool foundValidData = false;
+
+	//The sample coordinates.
+	vec2 samplesCoordinates[9] = vec2[]
+	(
+		coordinate,
+
+		coordinate + vec2(-inverseResolution.x, 0.0f),
+		coordinate + vec2(inverseResolution.x, 0.0f),
+		coordinate + vec2(0.0f, -inverseResolution.y),
+		coordinate + vec2(0.0f, inverseResolution.y),
+
+		coordinate + vec2(-inverseResolution.x, -inverseResolution.y),
+		coordinate + vec2(-inverseResolution.x, inverseResolution.y),
+		coordinate + vec2(inverseResolution.x, -inverseResolution.y),
+		coordinate + vec2(inverseResolution.x, inverseResolution.y)
+	);
+
+	//Check the surrounding pixels.
+	for (int i = 0; i < 9; ++i)
+	{
+		AccumulationDescription sampleAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(texture(previousTemporalAccumulationBuffer, samplesCoordinates[i]).w));
+
+		if (!foundValidData
+			&& currentInstanceID == sampleAccumulationDescription.instanceID
+			&& currentPrimitiveID == sampleAccumulationDescription.primitiveID
+			&& ValidCoordinate(samplesCoordinates[i]))
+		{
+			foundValidData = true;
+			previousAccumulatedColor = texture(previousTemporalAccumulationBuffer, samplesCoordinates[i]).rgb;
+			previousAccumulationDescription = sampleAccumulationDescription;
+		}
+	}
+	
+
+	//Return if valid data was found.
+	return foundValidData;
+}
 
 void main()
 {
@@ -62,20 +125,12 @@ void main()
 	//Retrieve the current primitive ID.
 	uint currentPrimitiveID = floatBitsToUint(sceneFeatures3TextureSampler.y);
 
-	//Sample the previous temporal accumulation buffer.
-	vec4 previousTemporalAccumulationBufferSampler = texture(previousTemporalAccumulationBuffer, previousScreenCoordinate);
-
-	//Unpack the previous accumulation description.
-	AccumulationDescription previousAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(previousTemporalAccumulationBufferSampler.w));
+	//Search for previous temporal accumulation data.
+	vec3 previousAccumulatedColor;
+	AccumulationDescription previousAccumulationDescription;
 
 	if (enabled
-		&& currentInstanceID == previousAccumulationDescription.instanceID
-		&& currentPrimitiveID == previousAccumulationDescription.primitiveID
-		&& previousScreenCoordinate.x >= 0.0f
-		&& previousScreenCoordinate.x < 1.0f
-		&& previousScreenCoordinate.y >= 0.0f
-		&& previousScreenCoordinate.y < 1.0f
-		&& RandomFloat(fragmentTextureCoordinate, globalRandomSeed1) < TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF)
+		&& SearchForTemporalAccumulationData(previousScreenCoordinate, currentInstanceID, currentPrimitiveID, previousAccumulatedColor, previousAccumulationDescription))
 	{
 		//Write the accumulation description.
 		AccumulationDescription accumulationDescription;
@@ -85,7 +140,7 @@ void main()
 		accumulationDescription.primitiveID = currentPrimitiveID;
 
 		//Write the temporal accumulation.
-   		temporalAccumulation = vec4(previousTemporalAccumulationBufferSampler.rgb + sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription)));
+   		temporalAccumulation = vec4(previousAccumulatedColor + sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription)));
 	}
 
 	else

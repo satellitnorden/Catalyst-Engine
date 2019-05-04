@@ -24,6 +24,9 @@ class PushConstantData final
 
 public:
 
+	//The inverse resolution.
+	Vector2<float> _InverseResolution;
+
 	//Denotes whether or not denoising is enabled.
 	int32 _Enabled;
 
@@ -171,6 +174,7 @@ void SecondTemporalAccumulationGraphicsPipeline::RenderInternal() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
+	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width), 1.0f / static_cast<float>(GetRenderResolution()._Height));
 	data._Enabled = static_cast<int32>(enabled);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
