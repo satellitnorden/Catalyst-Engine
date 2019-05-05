@@ -1,0 +1,19 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+
+//Descriptor set data.
+layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingTexture;
+layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingTexture;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneTexture;
+
+void main()
+{
+	//Write the fragment.
+	imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), imageLoad(indirectLightingTexture, ivec2(gl_GlobalInvocationID.xy)) + imageLoad(directLightingTexture, ivec2(gl_GlobalInvocationID.xy)));
+}

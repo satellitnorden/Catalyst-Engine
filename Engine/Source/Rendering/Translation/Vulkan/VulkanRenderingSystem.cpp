@@ -401,13 +401,13 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
-			//Initialize the compositing fragment shader module.
+			//Initialize the compositing compute shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::CompositingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::CompositingCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
 		}
 
 		{

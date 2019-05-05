@@ -2,7 +2,7 @@
 #include <Rendering/Native/RenderPasses/CompositingRenderPass.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/CompositingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/CompositingComputePipeline.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -38,7 +38,7 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(CompositingGraphicsPipeline::Instance.Get());
+	AddPipeline(CompositingComputePipeline::Instance.Get());
 
 	//Initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

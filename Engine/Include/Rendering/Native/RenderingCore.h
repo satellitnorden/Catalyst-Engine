@@ -251,7 +251,7 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AntiAliasingFragment,
-	CompositingFragment,
+	CompositingCompute,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,

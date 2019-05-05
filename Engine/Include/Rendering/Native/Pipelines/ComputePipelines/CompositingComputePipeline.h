@@ -3,24 +3,21 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 
-class CompositingGraphicsPipeline final : public GraphicsPipeline
+class CompositingComputePipeline final : public ComputePipeline
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(CompositingGraphicsPipeline);
+	DECLARE_SINGLETON(CompositingComputePipeline);
 
 	/*
 	*	Default constructor.
 	*/
-	CompositingGraphicsPipeline() NOEXCEPT;
+	CompositingComputePipeline() NOEXCEPT;
 
 private:
 
@@ -31,9 +28,9 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the compositing graphics pipeline.
+	*	Initializes this compute pipeline.
 	*/
-	void InitializeInternal() NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.
@@ -46,8 +43,8 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the compositing.
+	*	Executes this compute pipeline.
 	*/
-	void RenderInternal() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 };
