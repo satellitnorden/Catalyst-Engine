@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystDenoisingUtilities.glsl"
 #include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
@@ -191,7 +192,7 @@ void main()
 		//Write the directional light direct lighting result to the texture.
 		if (currentRecursionDepth == 0)
 		{
-			imageStore(directionalLightDirectLightingResultTexture, ivec2(gl_LaunchIDNV.xy), vec4(directionalLightLighting, visibility));
+			imageStore(directionalLightDirectLightingResultTexture, ivec2(gl_LaunchIDNV.xy), vec4(directionalLightLighting, PackVisibilityTerm(visibility, visibility)));
 		}
 	}
 
@@ -239,7 +240,7 @@ void main()
 		//Write the light direct lighting result to the texture.
 		if (currentRecursionDepth == 0)
 		{
-			imageStore(lightsDirectLightingResultsTexture[i], ivec2(gl_LaunchIDNV.xy), vec4(lighting, visibility));
+			imageStore(lightsDirectLightingResultsTexture[i], ivec2(gl_LaunchIDNV.xy), vec4(lighting, PackVisibilityTerm(visibility, visibility)));
 		}
 	}
 	

@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystDenoisingUtilities.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 
@@ -30,13 +31,13 @@ void main()
 	{
 		//Add the directional light direct lighting result.
 		vec4 directionalLightDirectLightingResultTextureSampler = imageLoad(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy));
-		compositedLighting += directionalLightDirectLightingResultTextureSampler.rgb * directionalLightDirectLightingResultTextureSampler.a;
+		compositedLighting += directionalLightDirectLightingResultTextureSampler.rgb * UnpackVisibilityTerm(directionalLightDirectLightingResultTextureSampler.a, 0);
 
 		//Add the lights direct lighting results.
 		for (int i = 0; i < numberOfLights; ++i)
 		{
 			vec4 lightDirectLightingResultTextureSampler = imageLoad(lightsDirectLightingResultsTexture[i], ivec2(gl_GlobalInvocationID.xy));
-			compositedLighting += lightDirectLightingResultTextureSampler.rgb * lightDirectLightingResultTextureSampler.a;
+			compositedLighting += lightDirectLightingResultTextureSampler.rgb * UnpackVisibilityTerm(lightDirectLightingResultTextureSampler.a, 0);
 		}
 	}
 	

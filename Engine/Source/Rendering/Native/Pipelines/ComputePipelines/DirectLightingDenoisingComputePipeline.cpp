@@ -22,9 +22,6 @@ class PushConstantData final
 
 public:
 
-	//The index.
-	int32 _Index;
-
 	//The pass.
 	int32 _Pass;
 
@@ -129,12 +126,11 @@ void DirectLightingDenoisingComputePipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
 
-	//Denoise the direct lighting result of the directional light.
+	//Denoise the direct lighting result of all lights.
 	{
 		//Push constants.
 		PushConstantData data;
 
-		data._Index = 0;
 		data._Pass = 0;
 
 		commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
@@ -147,43 +143,12 @@ void DirectLightingDenoisingComputePipeline::Execute() NOEXCEPT
 		//Push constants.
 		PushConstantData data;
 
-		data._Index = 0;
 		data._Pass = 1;
 
 		commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
 
 		//Dispatch!
 		commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
-	}
-
-	//Denoise all lights.
-	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
-	{
-		{
-			//Push constants.
-			PushConstantData data;
-
-			data._Index = static_cast<int32>(i + 1);
-			data._Pass = 0;
-
-			commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
-
-			//Dispatch!
-			commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
-		}
-
-		{
-			//Push constants.
-			PushConstantData data;
-
-			data._Index = static_cast<int32>(i + 1);
-			data._Pass = 1;
-
-			commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
-
-			//Dispatch!
-			commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
-		}
 	}
 
 	//End the command buffer.
