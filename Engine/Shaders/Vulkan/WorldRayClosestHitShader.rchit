@@ -195,7 +195,6 @@ void main()
 		}
 	}
 
-	/*
 	//Calculate all other lights.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
@@ -226,15 +225,23 @@ void main()
 		//Calculate the attenuation distance.
 		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+		//Calculate the lighting.
+		vec3 lighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
 												lightDirection,
 												albedo,
 												finalNormal,
 												roughness,
 												metallic,
-												light.color * light.strength) * visibility * attenuation;
+												light.color * light.strength) * attenuation;
+
+		directLighting += lighting * visibility;
+
+		//Write the light direct lighting result to the texture.
+		if (currentRecursionDepth == 0)
+		{
+			imageStore(lightsDirectLightingResultsTexture[i], ivec2(gl_LaunchIDNV.xy), vec4(lighting, visibility));
+		}
 	}
-	*/
 	
 	//Write to the ray payload.
 	rayPayload.indirectLighting = indirectLighting;

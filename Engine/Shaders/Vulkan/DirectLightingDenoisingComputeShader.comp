@@ -9,7 +9,7 @@
 #include "CatalystLightingData.glsl"
 
 //Constants.
-#define DIRECT_LIGHTING_DENOISING_SIZE (7)
+#define DIRECT_LIGHTING_DENOISING_SIZE (9)
 #define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1) / 2)
 
 /*
@@ -113,6 +113,65 @@ void main()
 
 	else
 	{
-		//Other lights thingies goes here... : D
+		//Sample the direct lighting result and the scene features at the current fragment.
+		vec4 currentDirectLightingResult;
+		SceneFeatures currentFeatures = SampleSceneFeatures(ivec2(gl_GlobalInvocationID.xy));
+
+		if (pass == 0)
+		{
+			currentDirectLightingResult = imageLoad(lightsDirectLightingResultsTexture[index - 1], ivec2(gl_GlobalInvocationID.xy));
+		}
+		
+		else
+		{
+			currentDirectLightingResult = imageLoad(intermediateTexture, ivec2(gl_GlobalInvocationID.xy));
+		}
+
+		//Denoise the visibility term in the direct lighting result.
+		float denoisedVisibility = 0.0f;
+		float denoisedVisibilityTotalWeight = 0.0f;
+
+		for (int x = -DIRECT_LIGHTING_DENOISING_START_END; x <= DIRECT_LIGHTING_DENOISING_START_END; ++x)
+		{
+
+			//Calculate the sample coordinate.
+			ivec2 sampleCoordinate = ivec2(gl_GlobalInvocationID.xy) + ivec2(pass == 0 ? x : 0, pass == 0 ? 0 : x);
+			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
+
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. How closely aligned are the hit distances?
+			*/
+			float sampleWeight = 1.0f;
+
+			sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+
+			if (pass == 0)
+			{
+				denoisedVisibility += imageLoad(lightsDirectLightingResultsTexture[index - 1], sampleCoordinate).w * sampleWeight;
+			}
+
+			else
+			{
+				denoisedVisibility += imageLoad(intermediateTexture, sampleCoordinate).w * sampleWeight;
+			}
+
+			denoisedVisibilityTotalWeight += sampleWeight;
+		}
+
+		//Normalize the denoised visibility.
+		denoisedVisibility /= denoisedVisibilityTotalWeight;
+
+		//Write the fragment.
+		if (pass == 0)
+		{
+			imageStore(intermediateTexture, ivec2(gl_GlobalInvocationID.xy), vec4(currentDirectLightingResult.rgb, denoisedVisibility));
+		}
+
+		else
+		{
+			imageStore(lightsDirectLightingResultsTexture[index - 1], ivec2(gl_GlobalInvocationID.xy), vec4(currentDirectLightingResult.rgb, denoisedVisibility));
+		}
 	}
 }

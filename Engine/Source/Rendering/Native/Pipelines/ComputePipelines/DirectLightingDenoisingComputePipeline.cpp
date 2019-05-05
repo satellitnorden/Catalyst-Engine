@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/ComputePipelines/DirectLightingDenoisingComputePipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -136,6 +139,36 @@ void DirectLightingDenoisingComputePipeline::Execute() NOEXCEPT
 
 		//Dispatch!
 		commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
+	}
+
+	//Denoise all lights.
+	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
+	{
+		{
+			//Push constants.
+			PushConstantData data;
+
+			data._Index = static_cast<int32>(i + 1);
+			data._Pass = 0;
+
+			commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
+
+			//Dispatch!
+			commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
+		}
+
+		{
+			//Push constants.
+			PushConstantData data;
+
+			data._Index = static_cast<int32>(i + 1);
+			data._Pass = 1;
+
+			commandBuffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(PushConstantData), &data);
+
+			//Dispatch!
+			commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
+		}
 	}
 
 	//End the command buffer.

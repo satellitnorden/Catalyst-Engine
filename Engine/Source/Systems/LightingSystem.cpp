@@ -7,9 +7,6 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
-//Lighting.
-#include <Lighting/LightingCore.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -84,6 +81,12 @@ void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEP
 
 	//Bind the directional light direct lighting result render target to the current render data table.
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, _DirectionalLightDirectLightingResultRenderTarget);
+
+	//Bind the lights direct lighting results render targets to the current render data table.
+	for (uint64 i{ 0 }, size{ _LightsDirectLightingResultsRenderTargets.Size() }; i < size; ++i)
+	{
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, static_cast<uint32>(i), &currentRenderDataTable, _LightsDirectLightingResultsRenderTargets[i]);
+	}
 }
 
 /*
@@ -101,10 +104,11 @@ RenderDataTableHandle LightingSystem::GetCurrentLightingDataRenderDataTable() co
 void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute | ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS, ShaderStage::Compute | ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -145,4 +149,10 @@ void LightingSystem::CreateRenderTargets() NOEXCEPT
 {
 	//Create the directional light direct lighting result render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_DirectionalLightDirectLightingResultRenderTarget);
+
+	//Create the lights direct lighting results render targets.
+	for (RenderTargetHandle &lightDirectLightingResultRenderTarget : _LightsDirectLightingResultsRenderTargets)
+	{
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &lightDirectLightingResultRenderTarget);
+	}
 }

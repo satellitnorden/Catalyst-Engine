@@ -7,7 +7,7 @@
 
 //Lighting.
 #include <Lighting/DirectionalLight.h>
-
+#include <Lighting/LightingCore.h>
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
@@ -74,6 +74,9 @@ private:
 
 	//The directional light direct lighting result render target.
 	RenderTargetHandle _DirectionalLightDirectLightingResultRenderTarget;
+
+	//The lights direct lighting result render targets.
+	StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightsDirectLightingResultsRenderTargets;
 
 	/*
 	*	Creates the render data table layout.

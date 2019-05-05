@@ -7,10 +7,12 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
+#include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingTexture;
-layout (set = 1, binding = 1, rgba32f) uniform image2D sceneTexture;
+layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeatures1Texture;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneTexture;
 
 void main()
 {
@@ -20,10 +22,24 @@ void main()
 	//Add the denoised indirect lighting.
 	compositedLighting += imageLoad(indirectLightingTexture, ivec2(gl_GlobalInvocationID.xy)).rgb;
 
-	//Add the directional light direct lighting result.
-	vec4 directionalLightDirectLightingResultTextureSampler = imageLoad(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy));
-	compositedLighting += directionalLightDirectLightingResultTextureSampler.rgb * directionalLightDirectLightingResultTextureSampler.a;
+	//Sample the hit distance.
+	float hitDistance = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy)).w;
 
+	//Only add the direct lighting if there was a hit.
+	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
+	{
+		//Add the directional light direct lighting result.
+		vec4 directionalLightDirectLightingResultTextureSampler = imageLoad(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy));
+		compositedLighting += directionalLightDirectLightingResultTextureSampler.rgb * directionalLightDirectLightingResultTextureSampler.a;
+
+		//Add the lights direct lighting results.
+		for (int i = 0; i < numberOfLights; ++i)
+		{
+			vec4 lightDirectLightingResultTextureSampler = imageLoad(lightsDirectLightingResultsTexture[i], ivec2(gl_GlobalInvocationID.xy));
+			compositedLighting += lightDirectLightingResultTextureSampler.rgb * lightDirectLightingResultTextureSampler.a;
+		}
+	}
+	
 	//Write the fragment.
 	imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(compositedLighting, 1.0f));
 }
