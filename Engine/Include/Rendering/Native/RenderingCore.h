@@ -176,19 +176,9 @@ enum class RenderTarget : uint8
 	IndirectLighting,
 
 	/*
-	*	Contains the direct lighting.
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	DirectLighting,
-
-	/*
-	*	First intermediate render target, useful when pipelines needs to do ping-pong rendering.
-	*/
-	Intermediate1,
-
-	/*
-	*	Second intermediate render target, useful when pipelines needs to do ping-pong rendering.
-	*/
-	Intermediate2,
+	Intermediate,
 
 	/*
 	*	Contains an accumulated buffer of all previous color values in the scene.

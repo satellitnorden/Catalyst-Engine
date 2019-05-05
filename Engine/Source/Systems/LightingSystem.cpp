@@ -48,6 +48,9 @@ void LightingSystem::PostInitialize() NOEXCEPT
 
 	//Create the uniform buffers.
 	CreateUniformBuffers();
+
+	//Create the render targets.
+	CreateRenderTargets();
 }
 
 /*
@@ -78,6 +81,9 @@ void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEP
 
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
 	}
+
+	//Bind the directional light direct lighting result render target to the current render data table.
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, _DirectionalLightDirectLightingResultRenderTarget);
 }
 
 /*
@@ -95,9 +101,10 @@ RenderDataTableHandle LightingSystem::GetCurrentLightingDataRenderDataTable() co
 void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute | ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -129,4 +136,13 @@ void LightingSystem::CreateUniformBuffers() NOEXCEPT
 	{
 		RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &uniformBuffer);
 	}
+}
+
+/*
+*	Creates the render targets.
+*/
+void LightingSystem::CreateRenderTargets() NOEXCEPT
+{
+	//Create the directional light direct lighting result render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_DirectionalLightDirectLightingResultRenderTarget);
 }

@@ -72,6 +72,9 @@ private:
 	//The uniform buffers.
 	DynamicArray<BufferHandle> _UniformBuffers;
 
+	//The directional light direct lighting result render target.
+	RenderTargetHandle _DirectionalLightDirectLightingResultRenderTarget;
+
 	/*
 	*	Creates the render data table layout.
 	*/
@@ -86,5 +89,10 @@ private:
 	*	Creates the uniform buffers.
 	*/
 	void CreateUniformBuffers() NOEXCEPT;
+
+	/*
+	*	Creates the render targets.
+	*/
+	void CreateRenderTargets() NOEXCEPT;
 
 };

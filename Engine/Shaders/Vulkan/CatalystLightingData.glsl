@@ -10,7 +10,7 @@ struct Light
 	vec3 color;
 	vec3 position;
 	float size;
-	float strength;
+  float strength;
 };
 
 //Light uniform data.
@@ -19,6 +19,7 @@ layout (std140, set = 2, binding = 0) uniform LightUniformData
 	layout (offset = 0) int numberOfLights;
     layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
 };
+layout (set = 2, binding = 1, rgba32f) uniform image2D directionalLightDirectLightingResultTexture;
 
 /*
 *	Unpacks the light at the given index.

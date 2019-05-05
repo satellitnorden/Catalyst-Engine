@@ -34,10 +34,10 @@ struct Vertex
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 7) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 8) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 9) uniform ModelUniformData
+layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 6) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 7) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 8) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
@@ -153,7 +153,6 @@ void main()
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
-	///*
 	//Calculate the directional light.
 	{
 		vec3 randomLightDirection = rayPayload.randomVector;
@@ -177,15 +176,26 @@ void main()
 				1 																							//payload
 				);
 
-		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
-												-randomLightDirection,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												directionalLightColor * directionalLightIntensity) * visibility;
+		//Calculate the directional light lighting.
+		vec3 directionalLightLighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
+																-randomLightDirection,
+																albedo,
+																finalNormal,
+																roughness,
+																metallic,
+																directionalLightColor * directionalLightIntensity);
+
+		//Add it the the direct lighting term.
+		directLighting += directionalLightLighting * visibility;
+
+		//Write the directional light direct lighting result to the texture.
+		if (currentRecursionDepth == 0)
+		{
+			imageStore(directionalLightDirectLightingResultTexture, ivec2(gl_LaunchIDNV.xy), vec4(directionalLightLighting, visibility));
+		}
 	}
 
+	/*
 	//Calculate all other lights.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
@@ -224,10 +234,8 @@ void main()
 												metallic,
 												light.color * light.strength) * visibility * attenuation;
 	}
-
+	*/
 	
-	//*/
-
 	//Write to the ray payload.
 	rayPayload.indirectLighting = indirectLighting;
 	rayPayload.directLighting = directLighting;
