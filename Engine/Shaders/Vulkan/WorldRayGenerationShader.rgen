@@ -30,7 +30,7 @@ void main()
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection((vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy));
-	rayDirection = mix(rayDirection, dot(rayDirection, rayPayload.randomVector) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f, 0.000175f); //0.000025f step.
+	rayDirection = mix(rayDirection, dot(rayDirection, rayPayload.randomVector) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f, 0.0002f); //0.000025f step.
 
 	traceNV(
 			topLevelAccelerationStructure, 	//topLevel
