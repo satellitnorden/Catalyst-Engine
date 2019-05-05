@@ -61,6 +61,7 @@ enum class RenderPassStage : uint8
 #endif
 	HorizontalDenoising,
 	VerticalDenoising,
+	DirectLightingDenoising,
 	Compositing,
 	TemporalAccumulation,
 	TemporalCompositing,
@@ -247,6 +248,7 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
+	DirectLightingDenoisingCompute,
 	MotionBlurFragment,
 	PassthroughFragment,
 	PostProcessingFragment,

@@ -10,10 +10,8 @@
 
 //Constants.
 #define DENOISING_MAXIMUM_TEMPORAL_ACCUMULATIONS (64)
-#define INDIRECT_LIGHTING_DENOISING_SIZE (27)
+#define INDIRECT_LIGHTING_DENOISING_SIZE (21)
 #define INDIRECT_LIGHTING_DENOISING_START_END ((INDIRECT_LIGHTING_DENOISING_SIZE - 1) * 0.5f)
-#define DIRECT_LIGHTING_DENOISING_SIZE (3)
-#define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1) * 0.5f)
 
 /*
 *	Scene features struct definition.
@@ -72,8 +70,7 @@ void main()
 {
 	if (enabled)
 	{
-		//Sample the indirect lighting and scene features at the current fragment.
-		vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
+		//Sample the scene features at the current fragment.
 		SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 		//Sample neighboring fragments.

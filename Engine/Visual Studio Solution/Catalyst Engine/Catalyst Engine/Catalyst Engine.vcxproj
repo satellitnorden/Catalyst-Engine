@@ -201,6 +201,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\DirectLightingDenoisingComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipelines.h" />
@@ -220,6 +221,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AntiAliasingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\CompositingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\HorizontalDenoisingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\MotionBlurRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\PostProcessingRenderPass.h" />
@@ -363,6 +365,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\DirectLightingDenoisingComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingGraphicsPipeline.cpp" />
@@ -379,6 +382,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\CompositingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\HorizontalDenoisingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\MotionBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\PostProcessingRenderPass.cpp" />

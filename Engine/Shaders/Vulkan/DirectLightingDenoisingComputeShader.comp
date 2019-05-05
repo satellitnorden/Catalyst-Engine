@@ -1,0 +1,118 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
+
+//Constants.
+#define DIRECT_LIGHTING_DENOISING_SIZE (7)
+#define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1) / 2)
+
+/*
+*	Scene features struct definition.
+*/
+struct SceneFeatures
+{
+	float hitDistance;
+};
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) int index;
+    layout (offset = 4) int pass;
+};
+
+//Descriptor set data.
+layout (set = 1, binding = 0, rgba32f) uniform image2D sceneFeatures1Texture;
+layout (set = 1, binding = 1, rgba32f) uniform image2D intermediateTexture;
+
+/*
+*	Samples the scene features at the specified coordinates.
+*/
+SceneFeatures SampleSceneFeatures(ivec2 coordinate)
+{
+	vec4 sceneFeatures1 = imageLoad(sceneFeatures1Texture, coordinate);
+
+	SceneFeatures features;
+
+	features.hitDistance = sceneFeatures1.w;
+
+	return features;
+}
+
+void main()
+{
+	if (index == 0)
+	{
+		//Sample the direct lighting result and the scene features at the current fragment.
+		vec4 currentDirectLightingResult;
+		SceneFeatures currentFeatures = SampleSceneFeatures(ivec2(gl_GlobalInvocationID.xy));
+
+		if (pass == 0)
+		{
+			currentDirectLightingResult = imageLoad(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy));
+		}
+		
+		else
+		{
+			currentDirectLightingResult = imageLoad(intermediateTexture, ivec2(gl_GlobalInvocationID.xy));
+		}
+
+		//Denoise the visibility term in the direct lighting result.
+		float denoisedVisibility = 0.0f;
+		float denoisedVisibilityTotalWeight = 0.0f;
+
+		for (int x = -DIRECT_LIGHTING_DENOISING_START_END; x <= DIRECT_LIGHTING_DENOISING_START_END; ++x)
+		{
+
+			//Calculate the sample coordinate.
+			ivec2 sampleCoordinate = ivec2(gl_GlobalInvocationID.xy) + ivec2(pass == 0 ? x : 0, pass == 0 ? 0 : x);
+			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
+
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. How closely aligned are the hit distances?
+			*/
+			float sampleWeight = 1.0f;
+
+			sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+
+			if (pass == 0)
+			{
+				denoisedVisibility += imageLoad(directionalLightDirectLightingResultTexture, sampleCoordinate).w * sampleWeight;
+			}
+
+			else
+			{
+				denoisedVisibility += imageLoad(intermediateTexture, sampleCoordinate).w * sampleWeight;
+			}
+
+			denoisedVisibilityTotalWeight += sampleWeight;
+		}
+
+		//Normalize the denoised visibility.
+		denoisedVisibility /= denoisedVisibilityTotalWeight;
+
+		//Write the fragment.
+		if (pass == 0)
+		{
+			imageStore(intermediateTexture, ivec2(gl_GlobalInvocationID.xy), vec4(currentDirectLightingResult.rgb, denoisedVisibility));
+		}
+
+		else
+		{
+			imageStore(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy), vec4(currentDirectLightingResult.rgb, denoisedVisibility));
+		}
+	}
+
+	else
+	{
+		//Other lights thingies goes here... : D
+	}
+}

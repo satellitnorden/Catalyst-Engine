@@ -157,7 +157,7 @@ void main()
 	{
 		vec3 randomLightDirection = rayPayload.randomVector;
 		randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
-		randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.015f); //0.0025f step.
+		randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.0175f); //0.0025f step.
 
 		//Determine the visibility.
 		visibility = 0.0f;

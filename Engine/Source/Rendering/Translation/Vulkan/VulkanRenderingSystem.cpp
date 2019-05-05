@@ -461,6 +461,16 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
+			//Initialize the direct lighting denoising compute shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingDenoisingCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
+		}
+
+		{
 			//Initialize the motion blur fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
