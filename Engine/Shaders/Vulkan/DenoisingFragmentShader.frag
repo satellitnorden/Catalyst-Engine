@@ -9,9 +9,9 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_MAXIMUM_TEMPORAL_ACCUMULATIONS (64)
-#define INDIRECT_LIGHTING_DENOISING_SIZE (19)
+#define INDIRECT_LIGHTING_DENOISING_SIZE (11)
 #define INDIRECT_LIGHTING_DENOISING_START_END ((INDIRECT_LIGHTING_DENOISING_SIZE - 1) * 0.5f)
+#define INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF (3.7f) //0.025f step.
 
 /*
 *	Scene features struct definition.
@@ -96,6 +96,7 @@ void main()
 				*	2. How closely aligned are the roughness terms?
 				*	3. How closely aligned are the metallic terms?
 				*	4. How closely aligned are the ambient occlusion terms?
+				*	5. Is the average of the fragment below a set threshold? (Fireflies elimination)
 				*/
 				float sampleWeight = 1.0f;
 
@@ -103,6 +104,7 @@ void main()
 				sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
 				sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
 				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
+				sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
 
 				denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
 				indirectLightingWeightSum += sampleWeight;
