@@ -10,7 +10,7 @@
 #include "CatalystTemporalAccumulationCore.glsl"
 
 //Constants.
-#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.95f) //0.0025f step.
+#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.985f) //0.0025f step.
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData

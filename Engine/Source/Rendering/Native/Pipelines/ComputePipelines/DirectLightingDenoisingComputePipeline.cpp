@@ -103,6 +103,21 @@ void DirectLightingDenoisingComputePipeline::CreateRenderDataTable() NOEXCEPT
 */
 void DirectLightingDenoisingComputePipeline::Execute() NOEXCEPT
 {
+	//Update enabled.
+	static bool enabled{ false };
+
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._X == ButtonState::Pressed)
+	{
+		enabled = !enabled;
+	}
+
+	if (!enabled)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
