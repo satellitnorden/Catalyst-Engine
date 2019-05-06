@@ -193,19 +193,24 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
-	*	Contains the world space normal as well as the hit distance.
+	*	Contains the albedo.
 	*/
 	SceneFeatures1,
 
 	/*
-	*	Contains the roughness, metallic and ambient occlusion.
+	*	Contains the world space normal as well as the hit distance.
 	*/
 	SceneFeatures2,
 
 	/*
-	*	Contains the hit instance ID.
+	*	Contains the roughness, metallic and ambient occlusion.
 	*/
 	SceneFeatures3,
+
+	/*
+	*	Contains the hit instance ID and primitive ID.
+	*/
+	SceneFeatures4,
 
 	/*
 	*	For rendering directly to the screen.

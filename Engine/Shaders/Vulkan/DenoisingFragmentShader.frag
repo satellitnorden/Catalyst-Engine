@@ -41,8 +41,8 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D indirectLightingTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeatures1Texture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
 layout (set = 1, binding = 3) uniform sampler2D temporalAccumulationBufferTexture;
 
 //Out parameters.
@@ -53,17 +53,17 @@ layout (location = 0) out vec4 indirectLighting;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
+	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
 
 	SceneFeatures features;
 
-	features.normal = sceneFeatures1.xyz;
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures1.w;
-	features.hitDistance = sceneFeatures1.w;
-	features.roughness = sceneFeatures2.x;
-	features.metallic = sceneFeatures2.y;
-	features.ambientOcclusion = sceneFeatures2.z;
+	features.normal = sceneFeatures2.xyz;
+	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.hitDistance = sceneFeatures2.w;
+	features.roughness = sceneFeatures3.x;
+	features.metallic = sceneFeatures3.y;
+	features.ambientOcclusion = sceneFeatures3.z;
 
 	return features;
 }

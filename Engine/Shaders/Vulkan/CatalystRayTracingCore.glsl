@@ -12,12 +12,13 @@
 */
 struct PrimaryRayPayload
 {
+	vec3 randomVector;
 	int currentRecursionDepth;
 
 	vec3 indirectLighting;
 	vec3 directLighting;
+	vec3 albedo;
 	vec3 normal;
-	vec3 randomVector;
 	float depth;
 	float roughness;
 	float metallic;

@@ -9,11 +9,14 @@
 #include "CatalystDenoisingUtilities.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingTexture;
-layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeatures1Texture;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneTexture;
+layout (set = 1, binding = 1, rgba8) uniform image2D sceneFeatures1Texture;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Texture;
+layout (set = 1, binding = 3, rgba8) uniform image2D sceneFeatures3Texture;
+layout (set = 1, binding = 4, rgba32f) uniform image2D sceneTexture;
 
 void main()
 {
@@ -23,21 +26,61 @@ void main()
 	//Add the denoised indirect lighting.
 	compositedLighting += imageLoad(indirectLightingTexture, ivec2(gl_GlobalInvocationID.xy)).rgb;
 
-	//Sample the hit distance.
-	float hitDistance = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy)).w;
+	//Sample the albedo.
+	vec3 albedo = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy)).rgb;
+
+	//Sample the normal and hit distance.
+	vec4 sceneFeatures2TextureSampler = imageLoad(sceneFeatures2Texture, ivec2(gl_GlobalInvocationID.xy));
+	vec3 normal = sceneFeatures2TextureSampler.xyz;
+	float hitDistance = sceneFeatures2TextureSampler.w;
+
+	//Sample the roughness and metallic.
+	vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
+	float roughness = sceneFeatures3TextureSampler.x;
+	float metallic = sceneFeatures3TextureSampler.y;
+
+	//Calculate the world position.
+	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(1920.0f, 1080.0f)) * hitDistance;
+
+	//Calculate the view direction.
+	vec3 viewDirection = normalize(perceiverWorldPosition - worldPosition);
 
 	//Only add the direct lighting if there was a hit.
 	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
 	{
 		//Add the directional light direct lighting result.
-		vec4 directionalLightDirectLightingResultTextureSampler = imageLoad(directionalLightDirectLightingResultTexture, ivec2(gl_GlobalInvocationID.xy));
-		compositedLighting += directionalLightDirectLightingResultTextureSampler.rgb * UnpackVisibilityTerm(directionalLightDirectLightingResultTextureSampler.a, 0);
+		float directionalLightVisibility = UnpackVisibilityTerm(imageLoad(directionalLightVisibilityTexture, ivec2(gl_GlobalInvocationID.xy)).x, 0);
+
+		compositedLighting += CalculateDirectLight(	viewDirection,
+													-directionalLightDirection,
+													albedo,
+													normal,
+													roughness,
+													metallic,
+													directionalLightColor * directionalLightIntensity) * directionalLightVisibility;
 
 		//Add the lights direct lighting results.
 		for (int i = 0; i < numberOfLights; ++i)
 		{
-			vec4 lightDirectLightingResultTextureSampler = imageLoad(lightsDirectLightingResultsTexture[i], ivec2(gl_GlobalInvocationID.xy));
-			compositedLighting += lightDirectLightingResultTextureSampler.rgb * UnpackVisibilityTerm(lightDirectLightingResultTextureSampler.a, 0);
+			Light light = UnpackLight(i);
+
+			float lengthToLight = length(light.position - worldPosition);
+			vec3 lightDirection = vec3(light.position - worldPosition) / lengthToLight;
+
+			//Calculate the attenuation distance.
+			float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+			//Unpack the visibility.
+			float lightVisibility = UnpackVisibilityTerm(imageLoad(lightsVisibilityTextures[i], ivec2(gl_GlobalInvocationID.xy)).x, 0);
+
+			//Calculate the lighting.
+			compositedLighting += CalculateDirectLight(	viewDirection,
+														lightDirection,
+														albedo,
+														normal,
+														roughness,
+														metallic,
+														light.color * light.strength) * attenuation * lightVisibility;
 		}
 	}
 	

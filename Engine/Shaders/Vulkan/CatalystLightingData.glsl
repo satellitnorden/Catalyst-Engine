@@ -19,8 +19,8 @@ layout (std140, set = 2, binding = 0) uniform LightUniformData
   layout (offset = 0) int numberOfLights;
   layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
 };
-layout (set = 2, binding = 1, rgba32f) uniform image2D directionalLightDirectLightingResultTexture;
-layout (set = 2, binding = 2, rgba32f) uniform image2D lightsDirectLightingResultsTexture[MAXIMUM_NUMBER_OF_LIGHTS];
+layout (set = 2, binding = 1, r32f) uniform image2D directionalLightVisibilityTexture;
+layout (set = 2, binding = 2, r32f) uniform image2D lightsVisibilityTextures[MAXIMUM_NUMBER_OF_LIGHTS];
 
 /*
 *	Unpacks the light at the given index.

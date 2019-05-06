@@ -148,11 +148,11 @@ void LightingSystem::CreateUniformBuffers() NOEXCEPT
 void LightingSystem::CreateRenderTargets() NOEXCEPT
 {
 	//Create the directional light direct lighting result render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_DirectionalLightDirectLightingResultRenderTarget);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &_DirectionalLightDirectLightingResultRenderTarget);
 
 	//Create the lights direct lighting results render targets.
 	for (RenderTargetHandle &lightDirectLightingResultRenderTarget : _LightsDirectLightingResultsRenderTargets)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &lightDirectLightingResultRenderTarget);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &lightDirectLightingResultRenderTarget);
 	}
 }

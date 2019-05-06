@@ -22,8 +22,8 @@ layout (push_constant) uniform PushConstantData
 //Texture samplers.
 layout (set = 1, binding = 0, rgba32f) uniform image2D previousTemporalAccumulationBuffer;
 layout (set = 1, binding = 1, rgba32f) uniform image2D sceneTexture;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Texture;
-layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures3Texture;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Texture;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures4Texture;
 layout (set = 1, binding = 4, rgba32f) uniform image2D currentTemporalAccumulationBuffer;
 
 /*
@@ -93,13 +93,13 @@ void main()
 	vec4 sceneTextureSampler = imageLoad(sceneTexture, ivec2(gl_GlobalInvocationID.xy));
 
 	//Sample the scene features 2 texture.
-	vec4 sceneFeatures1TextureSampler = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy));
+	vec4 sceneFeatures2TextureSampler = imageLoad(sceneFeatures2Texture, ivec2(gl_GlobalInvocationID.xy));
 
 	//Sample the scene features 3 texture.
-	vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
+	vec4 sceneFeatures4TextureSampler = imageLoad(sceneFeatures4Texture, ivec2(gl_GlobalInvocationID.xy));
 
 	//Calculate the world position at this fragment the current frame.
-	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(resolution.xy)) * sceneFeatures1TextureSampler.w;
+	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(resolution.xy)) * sceneFeatures2TextureSampler.w;
 
 	//Now calculate it's previous screen coordinate using the previous view matrix.
 	vec4 previousViewSpacePosition = previousViewMatrix * vec4(currentWorldPosition, 1.0f);
@@ -111,10 +111,10 @@ void main()
 	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
 
 	//Retrieve the current instance ID.
-	uint currentInstanceID = floatBitsToUint(sceneFeatures3TextureSampler.x);
+	uint currentInstanceID = floatBitsToUint(sceneFeatures4TextureSampler.x);
 
 	//Retrieve the current primitive ID.
-	uint currentPrimitiveID = floatBitsToUint(sceneFeatures3TextureSampler.y);
+	uint currentPrimitiveID = floatBitsToUint(sceneFeatures4TextureSampler.y);
 
 	//Search for previous temporal accumulation data.
 	vec3 previousAccumulatedColor;

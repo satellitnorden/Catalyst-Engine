@@ -35,10 +35,10 @@ struct Vertex
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 4) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 6) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 7) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 8) uniform ModelUniformData
+layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 7) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 8) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 9) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
@@ -189,11 +189,8 @@ void main()
 		//Add it the the direct lighting term.
 		directLighting += directionalLightLighting * visibility;
 
-		//Write the directional light direct lighting result to the texture.
-		if (currentRecursionDepth == 0)
-		{
-			imageStore(directionalLightDirectLightingResultTexture, ivec2(gl_LaunchIDNV.xy), vec4(directionalLightLighting, PackVisibilityTerm(visibility, visibility)));
-		}
+		//Write the directional light visibility to the texture.
+		imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(PackVisibilityTerm(visibility, visibility), 0.0f, 0.0f, 0.0f));
 	}
 
 	//Calculate all other lights.
@@ -238,15 +235,13 @@ void main()
 		directLighting += lighting * visibility;
 
 		//Write the light direct lighting result to the texture.
-		if (currentRecursionDepth == 0)
-		{
-			imageStore(lightsDirectLightingResultsTexture[i], ivec2(gl_LaunchIDNV.xy), vec4(lighting, PackVisibilityTerm(visibility, visibility)));
-		}
+		imageStore(lightsVisibilityTextures[i], ivec2(gl_LaunchIDNV.xy), vec4(PackVisibilityTerm(visibility, visibility), 0.0f, 0.0f, 0.0f));
 	}
 	
 	//Write to the ray payload.
 	rayPayload.indirectLighting = indirectLighting;
 	rayPayload.directLighting = directLighting;
+	rayPayload.albedo = albedo;
 	rayPayload.normal = finalNormal;
 	rayPayload.depth = gl_HitTNV;
 	rayPayload.roughness = roughness;
