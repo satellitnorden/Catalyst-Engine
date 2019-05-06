@@ -20,7 +20,6 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
-#include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
@@ -228,11 +227,6 @@ public:
 	*	Creates a texture cube.
 	*/
 	void CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Initializes a render pass
-	*/
-	void InitializeRenderPass(RenderPass *const RESTRICT renderPass) const NOEXCEPT;
 
 	/*
 	*	Initializes a pipeline

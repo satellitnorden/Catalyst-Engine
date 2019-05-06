@@ -13,14 +13,24 @@ class VulkanGraphicsPipelineData final
 
 public:
 
-	//The framebuffer associated with the graphics pipeline.
-	DynamicArray<VkFramebuffer> _Framebuffers;
 
 	//The pipeline associated with the graphics pipeline.
 	VulkanGraphicsPipeline *RESTRICT _Pipeline;
 
-	//The render pass associated with the graphics pipeline.
-	VkRenderPass _RenderPass;
+	//The render pass.
+	VulkanRenderPass *RESTRICT _RenderPass;
+
+	//The framebuffers.
+	DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
+
+	//The extent.
+	VkExtent2D _Extent;
+
+	//The number of attachments.
+	uint32 _NumberOfAttachments;
+
+	//Denotes whether or not this render pass is aimed to be rendered unto the screen.
+	bool _RenderToScreeen;
 
 };
 #endif

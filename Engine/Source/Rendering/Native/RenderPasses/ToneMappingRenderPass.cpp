@@ -46,8 +46,6 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 		pipeline->Initialize();
 	}
 
-	//Initialize this render pass.
-	RenderingSystem::Instance->InitializeRenderPass(this);
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

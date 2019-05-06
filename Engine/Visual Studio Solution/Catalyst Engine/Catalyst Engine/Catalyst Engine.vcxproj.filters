@@ -1017,9 +1017,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanGraphicsPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassData.h">
-      <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClInclude>
