@@ -42,9 +42,6 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Create the render data table.
 	CreateRenderDataTable();
 
-	//Set the main stage.
-	SetMainStage(RenderPassStage::AntiAliasing);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
@@ -54,7 +51,7 @@ void AntiAliasingGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

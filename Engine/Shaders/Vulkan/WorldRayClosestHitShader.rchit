@@ -6,7 +6,6 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystDenoisingUtilities.glsl"
 #include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
@@ -190,7 +189,7 @@ void main()
 		directLighting += directionalLightLighting * visibility;
 
 		//Write the directional light visibility to the texture.
-		imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(PackVisibilityTerm(visibility, visibility), 0.0f, 0.0f, 0.0f));
+		imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(visibility));
 	}
 
 	//Calculate all other lights.
@@ -235,7 +234,7 @@ void main()
 		directLighting += lighting * visibility;
 
 		//Write the light direct lighting result to the texture.
-		imageStore(lightsVisibilityTextures[i], ivec2(gl_LaunchIDNV.xy), vec4(PackVisibilityTerm(visibility, visibility), 0.0f, 0.0f, 0.0f));
+		imageStore(lightsVisibilityTextures[i], ivec2(gl_LaunchIDNV.xy), vec4(visibility));
 	}
 	
 	//Write to the ray payload.

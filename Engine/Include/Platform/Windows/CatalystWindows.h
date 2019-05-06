@@ -14,6 +14,7 @@
 #undef CreateEvent
 #undef CreateSemaphore
 #undef GetCurrentTime
+#undef MemoryBarrier
 #undef far
 #undef max
 #undef min

@@ -1143,11 +1143,11 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\DirectLightingDenoisingComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VisibilityDenoisingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1442,11 +1442,11 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\DirectLightingDenoisingComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VisibilityDenoisingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

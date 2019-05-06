@@ -20,11 +20,6 @@ public:
 	GraphicsPipeline() NOEXCEPT;
 
 	/*
-	*	Returns the main stage.
-	*/
-	RenderPassStage GetMainStage() const NOEXCEPT { return _MainStage; }
-
-	/*
 	*	Returns the vertex shader.
 	*/
 	Shader GetVertexShader() const NOEXCEPT { return _VertexShader; }
@@ -52,7 +47,7 @@ public:
 	/*
 	*	Returns the render targets.
 	*/
-	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
+	const DynamicArray<RenderTargetHandle>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
 
 	/*
 	*	Returns the vertex input attribute descriptions.
@@ -160,11 +155,6 @@ public:
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
 
 	/*
-	*	Sets the main stage.
-	*/
-	void SetMainStage(const RenderPassStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
-
-	/*
 	*	Sets the vertex shader.
 	*/
 	void SetVertexShader(const Shader newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
@@ -197,7 +187,7 @@ public:
 	/*
 	*	Adds a render target.
 	*/
-	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
+	void AddRenderTarget(const RenderTargetHandle newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.
@@ -316,9 +306,6 @@ public:
 
 private:
 
-	//The main stage.
-	RenderPassStage _MainStage;
-
 	//The vertex shader.
 	Shader _VertexShader;
 
@@ -335,7 +322,7 @@ private:
 	Shader _FragmentShader;
 
 	//The render targets.
-	DynamicArray<RenderTarget> _RenderTargets;
+	DynamicArray<RenderTargetHandle> _RenderTargets;
 
 	//The vertex input attribute descriptions.
 	DynamicArray<VertexInputAttributeDescription> _VertexInputAttributeDescriptions;

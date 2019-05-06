@@ -61,9 +61,6 @@ void VerticalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Create the render data table.
 	CreateRenderDataTable();
 
-	//Set the main stage.
-	SetMainStage(RenderPassStage::VerticalDenoising);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
@@ -73,7 +70,7 @@ void VerticalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::IndirectLighting);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

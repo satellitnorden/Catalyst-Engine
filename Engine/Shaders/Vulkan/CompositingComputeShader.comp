@@ -6,7 +6,6 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystDenoisingUtilities.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
@@ -49,7 +48,7 @@ void main()
 	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
 	{
 		//Add the directional light direct lighting result.
-		float directionalLightVisibility = UnpackVisibilityTerm(imageLoad(directionalLightVisibilityTexture, ivec2(gl_GlobalInvocationID.xy)).x, 0);
+		float directionalLightVisibility = imageLoad(directionalLightVisibilityTexture, ivec2(gl_GlobalInvocationID.xy)).x;
 
 		compositedLighting += CalculateDirectLight(	viewDirection,
 													-directionalLightDirection,
@@ -71,7 +70,7 @@ void main()
 			float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
 			//Unpack the visibility.
-			float lightVisibility = UnpackVisibilityTerm(imageLoad(lightsVisibilityTextures[i], ivec2(gl_GlobalInvocationID.xy)).x, 0);
+			float lightVisibility = imageLoad(lightsVisibilityTextures[i], ivec2(gl_GlobalInvocationID.xy)).x;
 
 			//Calculate the lighting.
 			compositedLighting += CalculateDirectLight(	viewDirection,

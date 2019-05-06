@@ -100,8 +100,8 @@ void TemporalAccumulationComputePipeline::CreateRenderDataTables() NOEXCEPT
 		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
 
 		RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
 	}
 }
 

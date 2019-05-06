@@ -58,6 +58,22 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentLightingDataRenderDataTable() const NOEXCEPT;
 
+	/*
+	*	Returns the directional light visibility render target.
+	*/
+	RenderTargetHandle GetDirectionalLightVisibilityRenderTarget() const NOEXCEPT
+	{
+		return _DirectionalLightVisibilityRenderTarget;
+	}
+
+	/*
+	*	Returns the light visibility render targets.
+	*/
+	const StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS>& GetLightVisibilityRenderTargets() const NOEXCEPT
+	{
+		return _LightVisibilityRenderTargets;
+	}
+
 private:
 
 	//The directional light.
@@ -72,11 +88,11 @@ private:
 	//The uniform buffers.
 	DynamicArray<BufferHandle> _UniformBuffers;
 
-	//The directional light direct lighting result render target.
-	RenderTargetHandle _DirectionalLightDirectLightingResultRenderTarget;
+	//The directional light visibility render target.
+	RenderTargetHandle _DirectionalLightVisibilityRenderTarget;
 
-	//The lights direct lighting result render targets.
-	StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightsDirectLightingResultsRenderTargets;
+	//The light visibility render targets.
+	StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightVisibilityRenderTargets;
 
 	/*
 	*	Creates the render data table layout.

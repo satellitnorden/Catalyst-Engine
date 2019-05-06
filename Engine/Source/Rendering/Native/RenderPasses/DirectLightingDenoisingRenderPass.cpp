@@ -1,10 +1,8 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/DirectLightingDenoisingRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/DirectLightingDenoisingComputePipeline.h>
-
 //Systems.
+#include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -37,13 +35,34 @@ DirectLightingDenoisingRenderPass::DirectLightingDenoisingRenderPass() NOEXCEPT
 void DirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
-	AddPipeline(DirectLightingDenoisingComputePipeline::Instance.Get());
+	SetNumberOfPipelines(_VisibilityDenoisingGraphicsPipelines.Size());
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	_VisibilityDenoisingGraphicsPipelines[0].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Horizontal,
+														LightingSystem::Instance->GetDirectionalLightVisibilityRenderTarget(),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+	AddPipeline(&_VisibilityDenoisingGraphicsPipelines[0]);
+
+	_VisibilityDenoisingGraphicsPipelines[1].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Vertical,
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+														LightingSystem::Instance->GetDirectionalLightVisibilityRenderTarget());
+	AddPipeline(&_VisibilityDenoisingGraphicsPipelines[1]);
+
+	uint8 renderTargetCounter{ 0 };
+
+	for (uint8 i{ 0 }; i < LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS * 2; i += 2)
 	{
-		pipeline->Initialize();
+		_VisibilityDenoisingGraphicsPipelines[2 + i].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Horizontal,
+																LightingSystem::Instance->GetLightVisibilityRenderTargets()[renderTargetCounter],
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+		AddPipeline(&_VisibilityDenoisingGraphicsPipelines[2 + i]);
+
+		_VisibilityDenoisingGraphicsPipelines[2 + i + 1].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Vertical,
+																	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																	LightingSystem::Instance->GetLightVisibilityRenderTargets()[renderTargetCounter]);
+		AddPipeline(&_VisibilityDenoisingGraphicsPipelines[i + 1 + 2]);
+
+		++renderTargetCounter;
 	}
 
 	//Post-initialize all pipelines.
@@ -59,8 +78,8 @@ void DirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 void DirectLightingDenoisingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
+	for (VisibilityDenoisingGraphicsPipeline &pipeline : _VisibilityDenoisingGraphicsPipelines)
 	{
-		pipeline->Execute();
+		pipeline.Execute();
 	}
 }

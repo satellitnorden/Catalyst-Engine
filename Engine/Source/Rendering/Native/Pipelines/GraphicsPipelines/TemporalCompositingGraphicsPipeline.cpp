@@ -42,9 +42,6 @@ void TemporalCompositingGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Create the render data tables.
 	CreateRenderDataTables();
 
-	//Set the main stage.
-	SetMainStage(RenderPassStage::TemporalCompositing);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
@@ -54,7 +51,7 @@ void TemporalCompositingGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Scene);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

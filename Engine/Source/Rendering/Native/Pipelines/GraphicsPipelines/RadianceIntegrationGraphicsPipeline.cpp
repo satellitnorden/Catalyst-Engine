@@ -45,9 +45,6 @@ void RadianceIntegrationGraphicsPipeline::InitializeInternal() NOEXCEPT
 	//Create the render data table.
 	CreateRenderDataTable();
 
-	//Set the main stage.
-	SetMainStage(RenderPassStage::RadianceIntegration);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
@@ -57,8 +54,8 @@ void RadianceIntegrationGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(2);
-	AddRenderTarget(RenderTarget::Scene);
-	AddRenderTarget(RenderTarget::PreviousRadiance);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::PreviousRadiance));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

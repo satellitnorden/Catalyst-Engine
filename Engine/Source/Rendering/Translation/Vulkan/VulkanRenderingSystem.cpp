@@ -202,15 +202,15 @@ namespace VulkanRenderingSystemLogic
 			VulkanRenderPassCreationParameters parameters;
 
 			//Determine the attachments that will be used by the pipelines in this render pass.
-			Map<RenderTarget, uint32> uniqueAttachments;
+			Map<RenderTargetHandle, uint32> uniqueAttachments;
 			uint32 attachmentCounter{ 0 };
 
-			for (const RenderTarget renderTarget : pipeline->GetRenderTargets())
+			for (const RenderTargetHandle renderTarget : pipeline->GetRenderTargets())
 			{
-if (!uniqueAttachments.Find(renderTarget))
-{
-	uniqueAttachments.EmplaceSlow(renderTarget, attachmentCounter++);
-}
+				if (!uniqueAttachments.Find(renderTarget))
+				{
+					uniqueAttachments.EmplaceSlow(renderTarget, attachmentCounter++);
+				}
 			}
 
 			//Create the attachment descriptions.
@@ -222,17 +222,17 @@ if (!uniqueAttachments.Find(renderTarget))
 
 			uint32 counter{ 0 };
 
-			for (const Pair<RenderTarget, uint32> uniqueAttachment : uniqueAttachments)
+			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
-				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderTarget::Screen ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(uniqueAttachment._First))->GetFormat(),
-					VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					VK_ATTACHMENT_STORE_OP_STORE,
-					VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					VK_ATTACHMENT_STORE_OP_DONT_CARE,
-					uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
-					uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
+				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
+																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								VK_ATTACHMENT_STORE_OP_STORE,
+																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
+																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
 
-				attachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderTarget::Screen ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
+				attachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
 			}
 
 			parameters._AttachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
@@ -258,7 +258,7 @@ if (!uniqueAttachments.Find(renderTarget))
 			data->_RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
 
 			//Create the framebuffer(s).
-			if (uniqueAttachments.begin()->_First == RenderTarget::Screen)
+			if (uniqueAttachments.begin()->_First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen))
 			{
 				//Create the framebuffers.
 				const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
@@ -290,9 +290,9 @@ if (!uniqueAttachments.Find(renderTarget))
 				DynamicArray<VkImageView> attachments;
 				attachments.Reserve(uniqueAttachments.Size());
 
-				for (const Pair<RenderTarget, uint32> uniqueAttachment : uniqueAttachments)
+				for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 				{
-					attachments.EmplaceFast(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(uniqueAttachment._First))->GetImageView());
+					attachments.EmplaceFast(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
 				}
 
 				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -393,7 +393,7 @@ if (!uniqueAttachments.Find(renderTarget))
 
 			parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 			parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-			parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+			parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
 			parameters._RenderPass = data->_RenderPass;
 
@@ -558,13 +558,13 @@ if (!uniqueAttachments.Find(renderTarget))
 		}
 
 		{
-			//Initialize the direct lighting denoising compute shader module.
+			//Initialize the direct lighting denoising fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingDenoisingCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{

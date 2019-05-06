@@ -79,13 +79,13 @@ void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEP
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
 	}
 
-	//Bind the directional light direct lighting result render target to the current render data table.
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, _DirectionalLightDirectLightingResultRenderTarget);
+	//Bind the directional light visibility render target to the current render data table.
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, _DirectionalLightVisibilityRenderTarget);
 
-	//Bind the lights direct lighting results render targets to the current render data table.
-	for (uint64 i{ 0 }, size{ _LightsDirectLightingResultsRenderTargets.Size() }; i < size; ++i)
+	//Bind the light visibility render targets to the current render data table.
+	for (uint64 i{ 0 }, size{ _LightVisibilityRenderTargets.Size() }; i < size; ++i)
 	{
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, static_cast<uint32>(i), &currentRenderDataTable, _LightsDirectLightingResultsRenderTargets[i]);
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, static_cast<uint32>(i), &currentRenderDataTable, _LightVisibilityRenderTargets[i]);
 	}
 }
 
@@ -147,12 +147,12 @@ void LightingSystem::CreateUniformBuffers() NOEXCEPT
 */
 void LightingSystem::CreateRenderTargets() NOEXCEPT
 {
-	//Create the directional light direct lighting result render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &_DirectionalLightDirectLightingResultRenderTarget);
+	//Create the directional light visibility render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &_DirectionalLightVisibilityRenderTarget);
 
-	//Create the lights direct lighting results render targets.
-	for (RenderTargetHandle &lightDirectLightingResultRenderTarget : _LightsDirectLightingResultsRenderTargets)
+	//Create the light visibility render targets.
+	for (RenderTargetHandle &lightVisibilityRenderTarget : _LightVisibilityRenderTargets)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &lightDirectLightingResultRenderTarget);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32_Float, &lightVisibilityRenderTarget);
 	}
 }
