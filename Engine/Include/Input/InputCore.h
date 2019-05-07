@@ -6,7 +6,7 @@
 //Input constants.
 namespace InputConstants
 {
-	constexpr float GAMEPAD_DEADZONE{ 0.125f };
+	constexpr float GAMEPAD_DEADZONE{ 0.1275f }; //0.0025f step.
 	constexpr uint8 MAXIMUM_NUMBER_OF_GAMEPADS{ 4 };
 }
 
