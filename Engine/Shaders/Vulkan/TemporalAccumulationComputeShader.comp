@@ -57,14 +57,14 @@ bool SearchForTemporalAccumulationData(ivec2 coordinate, uint currentInstanceID,
 		coordinate,
 		coordinate + ivec2(1, 0),
 		coordinate + ivec2(0, 1),
-		coordinate + ivec2(1, 1)
+		coordinate + ivec2(1, 1),
 
 		coordinate + ivec2(-1, 0),
 		coordinate + ivec2(0, -1),
 
 		coordinate + ivec2(-1, -1),
 		coordinate + ivec2(-1, 1),
-		coordinate + ivec2(1, -1),
+		coordinate + ivec2(1, -1)
 
 	);
 
