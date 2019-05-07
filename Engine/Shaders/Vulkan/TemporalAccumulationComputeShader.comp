@@ -55,16 +55,17 @@ bool SearchForTemporalAccumulationData(ivec2 coordinate, uint currentInstanceID,
 	ivec2 samplesCoordinates[9] = ivec2[]
 	(
 		coordinate,
+		coordinate + ivec2(1, 0),
+		coordinate + ivec2(0, 1),
+		coordinate + ivec2(1, 1)
 
 		coordinate + ivec2(-1, 0),
-		coordinate + ivec2(1, 0),
 		coordinate + ivec2(0, -1),
-		coordinate + ivec2(0, 1),
 
 		coordinate + ivec2(-1, -1),
 		coordinate + ivec2(-1, 1),
 		coordinate + ivec2(1, -1),
-		coordinate + ivec2(1, 1)
+
 	);
 
 	//Check the surrounding fragment.
