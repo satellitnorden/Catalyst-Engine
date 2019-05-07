@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/AntiAliasingRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingGraphicsPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(AntiAliasingGraphicsPipeline::Instance.Get());
+	AddPipeline(&_AntiAliasingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_AntiAliasingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 void AntiAliasingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_AntiAliasingGraphicsPipeline.Execute();
 }

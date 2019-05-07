@@ -11,13 +11,15 @@ class CompositingComputePipeline final : public ComputePipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(CompositingComputePipeline);
+	/*
+	*	Initializes this compute pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this compute pipeline.
 	*/
-	CompositingComputePipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -27,10 +29,7 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	/*
-	*	Initializes this compute pipeline.
-	*/
-	void Initialize() NOEXCEPT;
+
 
 	/*
 	*	Creates the render data table layout.
@@ -41,10 +40,5 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Executes this compute pipeline.
-	*/
-	void Execute() NOEXCEPT;
 
 };

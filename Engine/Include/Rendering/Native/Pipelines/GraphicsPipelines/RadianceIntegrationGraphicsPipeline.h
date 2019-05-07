@@ -14,13 +14,15 @@ class RadianceIntegrationGraphicsPipeline final : public GraphicsPipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(RadianceIntegrationGraphicsPipeline);
+	/*
+	*	Initializes this graphics pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this graphics pipeline.
 	*/
-	RadianceIntegrationGraphicsPipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -37,11 +39,6 @@ private:
 	int32 _Accumulations{ 0 };
 
 	/*
-	*	Initializes the radiance integration graphics pipeline.
-	*/
-	void InitializeInternal() NOEXCEPT;
-
-	/*
 	*	Creates the render data table layout.
 	*/
 	void CreateRenderDataTableLayout() NOEXCEPT;
@@ -50,10 +47,5 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Renders the radiance integration.
-	*/
-	void RenderInternal() NOEXCEPT;
 
 };

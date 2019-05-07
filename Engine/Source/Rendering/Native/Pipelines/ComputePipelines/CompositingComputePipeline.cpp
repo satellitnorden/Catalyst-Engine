@@ -8,27 +8,6 @@
 #include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(CompositingComputePipeline);
-
-/*
-*	Default constructor.
-*/
-CompositingComputePipeline::CompositingComputePipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		CompositingComputePipeline::Instance->Initialize();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		CompositingComputePipeline::Instance->Execute();
-	});
-}
-
 /*
 *	Initializes this compute pipeline.
 */
@@ -48,6 +27,32 @@ void CompositingComputePipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataRenderDataTableLayout());
+}
+
+/*
+*	Executes this compute pipeline.
+*/
+void CompositingComputePipeline::Execute() NOEXCEPT
+{
+	//Cache data the will be used.
+	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(this);
+
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
+
+	//Dispatch!
+	commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
+
+	//End the command buffer.
+	commandBuffer->End(this);
+
+	//Include in the final render.
+	SetIncludeInRender(true);
 }
 
 /*
@@ -79,30 +84,4 @@ void CompositingComputePipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
-}
-
-/*
-*	Executes this compute pipeline.
-*/
-void CompositingComputePipeline::Execute() NOEXCEPT
-{
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->Begin(this);
-
-	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
-
-	//Dispatch!
-	commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);
-
-	//End the command buffer.
-	commandBuffer->End(this);
-
-	//Include in the final render.
-	SetIncludeInRender(true);
 }

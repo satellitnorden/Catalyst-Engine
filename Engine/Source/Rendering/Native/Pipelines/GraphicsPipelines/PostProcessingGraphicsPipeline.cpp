@@ -10,31 +10,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(PostProcessingGraphicsPipeline);
-
 /*
-*	Default constructor.
+*	Initializes this graphics pipeline.
 */
-PostProcessingGraphicsPipeline::PostProcessingGraphicsPipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		PostProcessingGraphicsPipeline::Instance->InitializeInternal();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		PostProcessingGraphicsPipeline::Instance->RenderInternal();
-	});
-}
-
-/*
-*	Initializes the post processing graphics pipeline.
-*/
-void PostProcessingGraphicsPipeline::InitializeInternal() NOEXCEPT
+void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -83,6 +62,31 @@ void PostProcessingGraphicsPipeline::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Initializes this graphics pipeline.
+*/
+void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
+{
+	//Cache data the will be used.
+	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(this);
+
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Draw!
+	commandBuffer->Draw(this, 3, 1);
+
+	//End the command buffer.
+	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
+}
+
+/*
 *	Creates the render data table layout.
 */
 void PostProcessingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
@@ -103,29 +107,4 @@ void PostProcessingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Renders the anti-aliasing.
-*/
-void PostProcessingGraphicsPipeline::RenderInternal() NOEXCEPT
-{
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->Begin(this);
-
-	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-
-	//Draw!
-	commandBuffer->Draw(this, 3, 1);
-
-	//End the command buffer.
-	commandBuffer->End(this);
-
-	//Include this render pass in the final render.
-	SetIncludeInRender(true);
 }

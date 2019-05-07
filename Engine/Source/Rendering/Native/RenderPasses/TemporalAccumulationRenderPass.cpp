@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/TemporalAccumulationRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/TemporalAccumulationComputePipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(TemporalAccumulationComputePipeline::Instance.Get());
+	AddPipeline(&_TemporalAccumulationComputePipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_TemporalAccumulationComputePipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 void TemporalAccumulationRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_TemporalAccumulationComputePipeline.Execute();
 }

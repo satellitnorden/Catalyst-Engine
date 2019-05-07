@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/RadianceIntegrationGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class RadianceIntegrationRenderPass final : public RenderPass
@@ -20,6 +21,9 @@ public:
 	RadianceIntegrationRenderPass() NOEXCEPT;
 
 private:
+
+	//The radiance integration graphics pipeline.
+	RadianceIntegrationGraphicsPipeline _RadianceIntegrationGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

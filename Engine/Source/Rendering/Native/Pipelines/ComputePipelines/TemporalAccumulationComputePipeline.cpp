@@ -10,9 +10,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(TemporalAccumulationComputePipeline);
-
 /*
 *	Push constant data definition.
 */
@@ -28,24 +25,6 @@ public:
 	int32 _Enabled;
 
 };
-
-/*
-*	Default constructor.
-*/
-TemporalAccumulationComputePipeline::TemporalAccumulationComputePipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		TemporalAccumulationComputePipeline::Instance->Initialize();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		TemporalAccumulationComputePipeline::Instance->Execute();
-	});
-}
 
 /*
 *	Initializes this compute pipeline.
@@ -69,40 +48,6 @@ void TemporalAccumulationComputePipeline::Initialize() NOEXCEPT
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::Compute, 0, sizeof(PushConstantData));
-}
-
-/*
-*	Creates the render data table layout.
-*/
-void TemporalAccumulationComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 5> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data tables.
-*/
-void TemporalAccumulationComputePipeline::CreateRenderDataTables() NOEXCEPT
-{
-	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
-
-	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
-	{
-		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
-
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
-	}
 }
 
 /*
@@ -153,4 +98,38 @@ void TemporalAccumulationComputePipeline::Execute() NOEXCEPT
 
 	//Update the current buffer index.
 	_CurrentBufferIndex = _CurrentBufferIndex == 0 ? 1 : 0;
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void TemporalAccumulationComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data tables.
+*/
+void TemporalAccumulationComputePipeline::CreateRenderDataTables() NOEXCEPT
+{
+	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
+
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	}
 }

@@ -11,13 +11,15 @@ class MotionBlurGraphicsPipeline final : public GraphicsPipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(MotionBlurGraphicsPipeline);
+	/*
+	*	Initializes this graphics pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this graphics pipeline.
 	*/
-	MotionBlurGraphicsPipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -28,11 +30,6 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the motion blur graphics pipeline.
-	*/
-	void InitializeInternal() NOEXCEPT;
-
-	/*
 	*	Creates the render data table layout.
 	*/
 	void CreateRenderDataTableLayout() NOEXCEPT;
@@ -41,10 +38,5 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Renders the motion blur.
-	*/
-	void RenderInternal() NOEXCEPT;
 
 };

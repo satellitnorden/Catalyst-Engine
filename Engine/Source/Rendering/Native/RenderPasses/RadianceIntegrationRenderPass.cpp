@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/RadianceIntegrationRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/RadianceIntegrationGraphicsPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void RadianceIntegrationRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(RadianceIntegrationGraphicsPipeline::Instance.Get());
+	AddPipeline(&_RadianceIntegrationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_RadianceIntegrationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void RadianceIntegrationRenderPass::Initialize() NOEXCEPT
 void RadianceIntegrationRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_RadianceIntegrationGraphicsPipeline.Execute();
 }

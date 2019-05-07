@@ -132,6 +132,9 @@ void main()
 
 		//Write the current temporal accumulation.
 		imageStore(currentTemporalAccumulationBuffer, ivec2(gl_GlobalInvocationID.xy), vec4(previousAccumulatedColor + sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription))));
+
+		//Write the result to the scene texture. (:
+		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4((previousAccumulatedColor + sceneTextureSampler.rgb) / accumulationDescription.accumulations, 1.0f));
 	}
 
 	else
@@ -145,5 +148,8 @@ void main()
 
 		//Write the current temporal accumulation.
    		imageStore(currentTemporalAccumulationBuffer, ivec2(gl_GlobalInvocationID.xy), vec4(sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription))));
+
+   		//Write the result to the scene texture. (:
+		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(sceneTextureSampler.rgb, 1.0f));
 	}
 }

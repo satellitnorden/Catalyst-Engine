@@ -11,13 +11,15 @@ class TemporalAccumulationComputePipeline final : public ComputePipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(TemporalAccumulationComputePipeline);
+	/*
+	*	Initializes this compute pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this compute pipeline.
 	*/
-	TemporalAccumulationComputePipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -31,11 +33,6 @@ private:
 	uint8 _CurrentBufferIndex{ 0 };
 
 	/*
-	*	Initializes this compute pipeline.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
 	*	Creates the render data table layout.
 	*/
 	void CreateRenderDataTableLayout() NOEXCEPT;
@@ -44,10 +41,5 @@ private:
 	*	Creates the render data tables.
 	*/
 	void CreateRenderDataTables() NOEXCEPT;
-
-	/*
-	*	Executes this compute pipeline.
-	*/
-	void Execute() NOEXCEPT;
 
 };

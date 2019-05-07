@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/PostProcessingRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/PostProcessingGraphicsPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(PostProcessingGraphicsPipeline::Instance.Get());
+	AddPipeline(&_PostProcessingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_PostProcessingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 void PostProcessingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_PostProcessingGraphicsPipeline.Execute();
 }

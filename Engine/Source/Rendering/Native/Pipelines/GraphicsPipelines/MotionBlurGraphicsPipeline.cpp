@@ -10,31 +10,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(MotionBlurGraphicsPipeline);
-
-/*
-*	Default constructor.
-*/
-MotionBlurGraphicsPipeline::MotionBlurGraphicsPipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		MotionBlurGraphicsPipeline::Instance->InitializeInternal();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		MotionBlurGraphicsPipeline::Instance->RenderInternal();
-	});
-}
-
-/*
-*	Initializes the motion blur graphics pipeline.
-*/
-void MotionBlurGraphicsPipeline::InitializeInternal() NOEXCEPT
+	/*
+	*	Initializes this graphics pipeline.
+	*/
+void MotionBlurGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -83,6 +62,31 @@ void MotionBlurGraphicsPipeline::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Executes this graphics pipeline.
+*/
+void MotionBlurGraphicsPipeline::Execute() NOEXCEPT
+{
+	//Cache data the will be used.
+	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(this);
+
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Draw!
+	commandBuffer->Draw(this, 3, 1);
+
+	//End the command buffer.
+	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
+}
+
+/*
 *	Creates the render data table layout.
 */
 void MotionBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
@@ -105,29 +109,4 @@ void MotionBlurGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Renders the anti-aliasing.
-*/
-void MotionBlurGraphicsPipeline::RenderInternal() NOEXCEPT
-{
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->Begin(this);
-
-	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-
-	//Draw!
-	commandBuffer->Draw(this, 3, 1);
-
-	//End the command buffer.
-	commandBuffer->End(this);
-
-	//Include this render pass in the final render.
-	SetIncludeInRender(true);
 }

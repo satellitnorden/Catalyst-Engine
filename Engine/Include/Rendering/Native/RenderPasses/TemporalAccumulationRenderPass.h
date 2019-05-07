@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/ComputePipelines/TemporalAccumulationComputePipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class TemporalAccumulationRenderPass final : public RenderPass
@@ -20,6 +21,9 @@ public:
 	TemporalAccumulationRenderPass() NOEXCEPT;
 
 private:
+
+	//The temporal accumulation compute pipeline.
+	TemporalAccumulationComputePipeline _TemporalAccumulationComputePipeline;
 
 	/*
 	*	Initializes this render pass.

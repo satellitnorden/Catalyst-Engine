@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/MotionBlurRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/MotionBlurGraphicsPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void MotionBlurRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(MotionBlurGraphicsPipeline::Instance.Get());
+	AddPipeline(&_MotionBlurGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_MotionBlurGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void MotionBlurRenderPass::Initialize() NOEXCEPT
 void MotionBlurRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_MotionBlurGraphicsPipeline.Execute();
 }
