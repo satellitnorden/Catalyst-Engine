@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/ToneMappingRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,14 +35,10 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(ToneMappingGraphicsPipeline::Instance.Get());
+	AddPipeline(&_ToneMappingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
-
+	_ToneMappingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -60,8 +53,5 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 void ToneMappingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_ToneMappingGraphicsPipeline.Execute();
 }

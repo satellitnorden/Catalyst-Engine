@@ -7,31 +7,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(ToneMappingGraphicsPipeline);
-
 /*
-*	Default constructor.
+*	Initializes this graphics pipeline.
 */
-ToneMappingGraphicsPipeline::ToneMappingGraphicsPipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		ToneMappingGraphicsPipeline::Instance->InitializeInternal();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		ToneMappingGraphicsPipeline::Instance->RenderInternal();
-	});
-}
-
-/*
-*	Initializes the tone mapping graphics pipeline.
-*/
-void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
+void ToneMappingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -84,32 +63,9 @@ void ToneMappingGraphicsPipeline::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Creates the render data table layout.
+*	Executes this graphics pipeline.
 */
-void ToneMappingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Renders the tone mapping.
-*/
-void ToneMappingGraphicsPipeline::RenderInternal() NOEXCEPT
+void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 {
 
 	//Cache data the will be used.
@@ -130,4 +86,27 @@ void ToneMappingGraphicsPipeline::RenderInternal() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void ToneMappingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

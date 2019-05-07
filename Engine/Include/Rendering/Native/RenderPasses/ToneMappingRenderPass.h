@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ToneMappingRenderPass final : public RenderPass
@@ -20,6 +21,9 @@ public:
 	ToneMappingRenderPass() NOEXCEPT;
 
 private:
+
+	//The tone mapping graphics pipeline.
+	ToneMappingGraphicsPipeline _ToneMappingGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

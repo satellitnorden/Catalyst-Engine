@@ -8,43 +8,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(RenderOverrideGraphicsPipeline);
-
 /*
-*	Default constructor.
+*	Initializes this graphics pipeline.
 */
-RenderOverrideGraphicsPipeline::RenderOverrideGraphicsPipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		RenderOverrideGraphicsPipeline::Instance->InitializeInternal();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		RenderOverrideGraphicsPipeline::Instance->RenderInternal();
-	});
-}
-
-/*
-*	Sets the texture.
-*/
-void RenderOverrideGraphicsPipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
-{
-	//Set the texture.
-	_Texture = texture;
-
-	//Bind the texture to the render data table.
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _Texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
-*	Initializes the render override graphics pipeline.
-*/
-void RenderOverrideGraphicsPipeline::InitializeInternal() NOEXCEPT
+void RenderOverrideGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -93,30 +60,9 @@ void RenderOverrideGraphicsPipeline::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Creates the render data table layout.
+*	Executes this graphics pipeline.
 */
-void RenderOverrideGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void RenderOverrideGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-}
-
-/*
-*	Renders the render override.
-*/
-void RenderOverrideGraphicsPipeline::RenderInternal() NOEXCEPT
+void RenderOverrideGraphicsPipeline::Execute() NOEXCEPT
 {
 	//If there's no texture, then don't render.
 	if (!_Texture)
@@ -144,5 +90,38 @@ void RenderOverrideGraphicsPipeline::RenderInternal() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Sets the texture.
+*/
+void RenderOverrideGraphicsPipeline::SetTexture(const Texture2DHandle texture) NOEXCEPT
+{
+	//Set the texture.
+	_Texture = texture;
+
+	//Bind the texture to the render data table.
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _Texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void RenderOverrideGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void RenderOverrideGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 }
 #endif

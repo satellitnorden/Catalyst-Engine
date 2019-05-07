@@ -12,13 +12,15 @@ class RenderOverrideGraphicsPipeline final : public GraphicsPipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(RenderOverrideGraphicsPipeline);
+	/*
+	*	Initializes this graphics pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this graphics pipeline.
 	*/
-	RenderOverrideGraphicsPipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 	/*
 	*	Returns if there is an override.
@@ -45,11 +47,6 @@ private:
 	Texture2DHandle _Texture{ EMPTY_HANDLE };
 
 	/*
-	*	Initializes the render override graphics pipeline.
-	*/
-	void InitializeInternal() NOEXCEPT;
-
-	/*
 	*	Creates the render data table layout.
 	*/
 	void CreateRenderDataTableLayout() NOEXCEPT;
@@ -58,11 +55,6 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Renders the render override.
-	*/
-	void RenderInternal() NOEXCEPT;
 
 };
 #endif
