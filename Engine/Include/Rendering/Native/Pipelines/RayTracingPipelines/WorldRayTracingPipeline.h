@@ -11,13 +11,15 @@ class WorldRayTracingPipeline final : public RayTracingPipeline
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(WorldRayTracingPipeline);
+	/*
+	*	Initializes this ray tracing pipeline.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Executes this ray tracing pipeline.
 	*/
-	WorldRayTracingPipeline() NOEXCEPT;
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -28,11 +30,6 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes this ray tracing pipeline.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
 	*	Creates the render data table layout.
 	*/
 	void CreateRenderDataTableLayout() NOEXCEPT;
@@ -41,10 +38,5 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Executes this ray tracing pipeline.
-	*/
-	void Execute() NOEXCEPT;
 
 };

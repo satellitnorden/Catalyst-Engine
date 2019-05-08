@@ -33,7 +33,6 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 direction;
-    layout (offset = 8) bool enabled;
 };
 
 //In parameters.
@@ -43,7 +42,6 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (set = 1, binding = 0) uniform sampler2D indirectLightingTexture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
-layout (set = 1, binding = 3) uniform sampler2D temporalAccumulationBufferTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 indirectLighting;
@@ -70,58 +68,49 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 void main()
 {
-	if (enabled)
+	//Sample the scene features at the current fragment.
+	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
+
+	//Only denoise if there was a hit.
+	if (currentFeatures.hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
 	{
-		//Sample the scene features at the current fragment.
-		SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
+		//Sample neighboring fragments.
+		vec3 denoisedIndirectLighting = vec3(0.0f);
+		float indirectLightingWeightSum = 0.0f;
 
-		//Only denoise if there was a hit.
-		if (currentFeatures.hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
+		for (float x = -INDIRECT_LIGHTING_DENOISING_START_END; x <= INDIRECT_LIGHTING_DENOISING_START_END; ++x)
 		{
-			//Sample neighboring fragments.
-			vec3 denoisedIndirectLighting = vec3(0.0f);
-			float indirectLightingWeightSum = 0.0f;
+			vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
 
-			for (float x = -INDIRECT_LIGHTING_DENOISING_START_END; x <= INDIRECT_LIGHTING_DENOISING_START_END; ++x)
-			{
-				vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
+			vec3 sampleIndirectLighting = texture(indirectLightingTexture, sampleCoordinate).rgb;
+			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
 
-				vec3 sampleIndirectLighting = texture(indirectLightingTexture, sampleCoordinate).rgb;
-				SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. How closely aligned are the hit positions to each other?
+			*	2. How closely aligned are the roughness terms?
+			*	3. How closely aligned are the metallic terms?
+			*	4. How closely aligned are the ambient occlusion terms?
+			*	5. Is the average of the fragment below a set threshold? (Fireflies elimination)
+			*/
+			float sampleWeight = 1.0f;
 
-				/*
-				*	Calculate the sample weight based on certain criteria;
-				*	
-				*	1. How closely aligned are the hit positions to each other?
-				*	2. How closely aligned are the roughness terms?
-				*	3. How closely aligned are the metallic terms?
-				*	4. How closely aligned are the ambient occlusion terms?
-				*	5. Is the average of the fragment below a set threshold? (Fireflies elimination)
-				*/
-				float sampleWeight = 1.0f;
+			sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
+			sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
+			sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
+			sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
+			sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
 
-				sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
-				sampleWeight *= 1.0f - abs(currentFeatures.roughness - sampleFeatures.roughness);
-				sampleWeight *= 1.0f - abs(currentFeatures.metallic - sampleFeatures.metallic);
-				sampleWeight *= 1.0f - abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion);
-				sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
-
-				denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
-				indirectLightingWeightSum += sampleWeight;
-			}
+			denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
+			indirectLightingWeightSum += sampleWeight;
+		}
 			
-			//Normalize the denoised indirect lighting.
-			denoisedIndirectLighting *= 1.0f / indirectLightingWeightSum;
+		//Normalize the denoised indirect lighting.
+		denoisedIndirectLighting *= 1.0f / indirectLightingWeightSum;
 
-			//Write the fragment.
-			indirectLighting = vec4(denoisedIndirectLighting, 1.0f);
-		}
-
-		else
-		{
-			//Write the fragment.
-			indirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate);
-		}
+		//Write the fragment.
+		indirectLighting = vec4(denoisedIndirectLighting, 1.0f);
 	}
 
 	else

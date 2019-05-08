@@ -59,8 +59,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	HorizontalDenoising,
-	VerticalDenoising,
+	IndirectLightingDenoising,
 	DirectLightingDenoising,
 	Compositing,
 	TemporalAccumulation,

@@ -9,18 +9,27 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class HorizontalDenoisingGraphicsPipeline final : public GraphicsPipeline
+class IndirectLightingDenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(HorizontalDenoisingGraphicsPipeline);
+	//Enumeration covering all direction.
+	enum class Direction : uint8
+	{
+		Horizontal,
+		Vertical
+	};
 
 	/*
-	*	Default constructor.
+	*	Initializes this graphics pipeline.
 	*/
-	HorizontalDenoisingGraphicsPipeline() NOEXCEPT;
+	void Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
+
+	/*
+	*	Executes this graphics pipeline.
+	*/
+	void Execute() NOEXCEPT;
 
 private:
 
@@ -30,10 +39,8 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	/*
-	*	Initializes the horizontal denoising graphics pipeline.
-	*/
-	void InitializeInternal() NOEXCEPT;
+	//The direction.
+	Direction _Direction;
 
 	/*
 	*	Creates the render data table layout.
@@ -43,11 +50,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
-
-	/*
-	*	Renders the horizontal denoising.
-	*/
-	void RenderInternal() NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
 
 };

@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VerticalDenoisingGraphicsPipeline.h>
-
-//Core.
-#include <Core/General/Perceiver.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingDenoisingGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -12,9 +9,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-
-//Singleton definition.
-DEFINE_SINGLETON(VerticalDenoisingGraphicsPipeline);
 
 /*
 *	Push constant data definition.
@@ -27,39 +21,21 @@ public:
 	//The direction.
 	Vector2<float> _Direction;
 
-	//Denotes whether or not denoising is enabled.
-	int32 _Enabled;
-
 };
 
 /*
-*	Default constructor.
+*	Initializes this graphics pipeline.
 */
-VerticalDenoisingGraphicsPipeline::VerticalDenoisingGraphicsPipeline() NOEXCEPT
-{
-	//Set the initialization function.
-	SetInitializationFunction([]()
-	{
-		VerticalDenoisingGraphicsPipeline::Instance->InitializeInternal();
-	});
-
-	//Set the execution function.
-	SetExecutionFunction([]()
-	{
-		VerticalDenoisingGraphicsPipeline::Instance->RenderInternal();
-	});
-}
-
-/*
-*	Initializes the radiance integration graphics pipeline.
-*/
-void VerticalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
+void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable();
+	CreateRenderDataTable(source);
+
+	//Set the direction.
+	_Direction = direction;
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -70,7 +46,7 @@ void VerticalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting));
+	AddRenderTarget(target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -108,14 +84,13 @@ void VerticalDenoisingGraphicsPipeline::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void VerticalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -124,28 +99,20 @@ void VerticalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void VerticalDenoisingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
-*	Renders the previous radiance.
+*	Executes this graphics pipeline.
 */
-void VerticalDenoisingGraphicsPipeline::RenderInternal() NOEXCEPT
+void IndirectLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 {
-	if (false)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -157,17 +124,17 @@ void VerticalDenoisingGraphicsPipeline::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
-	static bool enabled{ false };
-
-	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._X == ButtonState::Pressed)
-	{
-		enabled = !enabled;
-	}
-
 	PushConstantData data;
 
-	data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
-	data._Enabled = static_cast<int32>(enabled);
+	if (_Direction == Direction::Horizontal)
+	{
+		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), 0.0f);
+	}
+
+	else
+	{
+		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
+	}
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

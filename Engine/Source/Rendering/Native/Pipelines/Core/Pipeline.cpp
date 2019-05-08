@@ -12,7 +12,6 @@ void Pipeline::PostInitialize() NOEXCEPT
 	RenderingSystem::Instance->InitializePipeline(this);
 }
 
-
 /*
 *	Returns the current command buffer, non-const.
 */

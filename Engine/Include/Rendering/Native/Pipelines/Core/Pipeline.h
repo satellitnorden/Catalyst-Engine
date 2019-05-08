@@ -7,10 +7,6 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
-//Type alises.
-using InitializationFunction = void(*)();
-using ExecutionFunction = void(*)();
-
 //Forward declarations.
 class CommandBuffer;
 
@@ -36,25 +32,9 @@ public:
 	}
 
 	/*
-	*	Initializes this pipeline.
-	*/
-	FORCE_INLINE void Initialize() NOEXCEPT
-	{
-		_InitializationFunction();
-	}
-
-	/*
 	*	Post-initializes this pipeline.
 	*/
 	void PostInitialize() NOEXCEPT;
-
-	/*
-	*	Executes this pipeline.
-	*/
-	FORCE_INLINE void Execute() NOEXCEPT
-	{
-		_ExecutionFunction();
-	}
 
 	/*
 	*	Returns the data for this pipeline.
@@ -121,22 +101,6 @@ protected:
 	}
 
 	/*
-	*	Sets the initialization function.
-	*/
-	FORCE_INLINE void SetInitializationFunction(const InitializationFunction function) NOEXCEPT
-	{
-		_InitializationFunction = function;
-	}
-
-	/*
-	*	Sets the execution function.
-	*/
-	FORCE_INLINE void SetExecutionFunction(const ExecutionFunction function) NOEXCEPT
-	{
-		_ExecutionFunction = function;
-	}
-
-	/*
 	*	Sets the number of render data table layouts.
 	*/
 	FORCE_INLINE void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT
@@ -171,12 +135,6 @@ private:
 
 	//The pipeline type.
 	Type _Type;
-
-	//The initialization function.
-	InitializationFunction _InitializationFunction;
-
-	//The execution function.
-	ExecutionFunction _ExecutionFunction;
 
 	//The data for this pipeline.
 	const void *RESTRICT _Data;

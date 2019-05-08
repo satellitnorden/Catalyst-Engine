@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/WorldRayTracingRenderPass.h>
 
-//Rendering.
-#include <Rendering/Native/Pipelines/RayTracingPipelines/WorldRayTracingPipeline.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -38,13 +35,10 @@ void WorldRayTracingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(WorldRayTracingPipeline::Instance.Get());
+	AddPipeline(&_WorldRayTracingPipeline);
 
 	//Initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Initialize();
-	}
+	_WorldRayTracingPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -59,8 +53,5 @@ void WorldRayTracingRenderPass::Initialize() NOEXCEPT
 void WorldRayTracingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->Execute();
-	}
+	_WorldRayTracingPipeline.Execute();	
 }
