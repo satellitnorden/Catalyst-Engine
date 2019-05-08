@@ -133,6 +133,49 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 }
 
 /*
+*	Builds a sound bank.
+*/
+void ResourceBuilder::BuildSoundBank(const SoundBankBuildParameters &parameters) NOEXCEPT
+{
+	//What should the sound bank be called?
+	DynamicString fileName{ parameters._Output };
+	fileName += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ fileName.CString() };
+
+	//Write the resource type to the file.
+	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::SoundBank) };
+	file.Write(&resourceType, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resourceID{ parameters._ID };
+	file.Write(&resourceID, sizeof(HashString));
+
+	//Read the sound bank file.
+	BinaryFile<IOMode::In> soundBankFile{ parameters._File };
+
+	//Write the sound bank size to the file.
+	const uint64 soundBankSize{ soundBankFile.Size() };
+	file.Write(&soundBankSize, sizeof(uint64));
+
+	//Read the sound bank data.
+	DynamicArray<byte> soundBankData;
+	soundBankData.UpsizeFast(soundBankSize);
+	
+	soundBankFile.Read(soundBankData.Data(), soundBankSize);
+
+	//Close the sound bank file.
+	soundBankFile.Close();
+
+	//Write the sound bank data to the file.
+	file.Write(soundBankData.Data(), soundBankSize);
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Builds a texture cube
 */
 void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT

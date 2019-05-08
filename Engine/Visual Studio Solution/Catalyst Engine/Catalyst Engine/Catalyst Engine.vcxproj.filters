@@ -1137,6 +1137,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LightingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\SoundBankBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -246,6 +246,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\SoundBankBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
