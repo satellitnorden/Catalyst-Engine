@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 
-class CompositingComputePipeline final : public ComputePipeline
+class LightingComputePipeline final : public ComputePipeline
 {
 
 public:
@@ -28,8 +28,6 @@ private:
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-
 
 	/*
 	*	Creates the render data table layout.

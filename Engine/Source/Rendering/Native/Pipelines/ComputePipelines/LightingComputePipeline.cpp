@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/ComputePipelines/CompositingComputePipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/LightingComputePipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -11,7 +11,7 @@
 /*
 *	Initializes this compute pipeline.
 */
-void CompositingComputePipeline::Initialize() NOEXCEPT
+void LightingComputePipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -20,7 +20,7 @@ void CompositingComputePipeline::Initialize() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the shader.
-	SetShader(Shader::CompositingCompute);
+	SetShader(Shader::LightingCompute);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
@@ -32,7 +32,7 @@ void CompositingComputePipeline::Initialize() NOEXCEPT
 /*
 *	Executes this compute pipeline.
 */
-void CompositingComputePipeline::Execute() NOEXCEPT
+void LightingComputePipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -58,7 +58,7 @@ void CompositingComputePipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void CompositingComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
+void LightingComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
@@ -75,7 +75,7 @@ void CompositingComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void CompositingComputePipeline::CreateRenderDataTable() NOEXCEPT
+void LightingComputePipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 

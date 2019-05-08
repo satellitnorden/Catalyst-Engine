@@ -61,7 +61,7 @@ enum class RenderPassStage : uint8
 #endif
 	IndirectLightingDenoising,
 	DirectLightingDenoising,
-	Compositing,
+	Lighting,
 	TemporalAccumulation,
 	RadianceIntegration,
 	MotionBlur,
@@ -245,13 +245,13 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AntiAliasingFragment,
-	CompositingCompute,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
 	DirectLightingDenoisingFragment,
+	LightingCompute,
 	MotionBlurFragment,
 	PassthroughFragment,
 	PostProcessingFragment,

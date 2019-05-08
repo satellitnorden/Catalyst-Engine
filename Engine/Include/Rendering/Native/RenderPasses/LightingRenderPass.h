@@ -4,26 +4,26 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/CompositingComputePipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/LightingComputePipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class CompositingRenderPass final : public RenderPass
+class LightingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(CompositingRenderPass);
+	DECLARE_SINGLETON(LightingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	CompositingRenderPass() NOEXCEPT;
+	LightingRenderPass() NOEXCEPT;
 
 private:
 
-	//The compositing compute pipeline.
-	CompositingComputePipeline _CompositingComputePipeline;
+	//The lighting compute pipeline.
+	LightingComputePipeline _LightingComputePipeline;
 
 	/*
 	*	Initializes this render pass.

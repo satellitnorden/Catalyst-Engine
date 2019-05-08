@@ -1,44 +1,44 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/CompositingRenderPass.h>
+#include <Rendering/Native/RenderPasses/LightingRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(CompositingRenderPass);
+DEFINE_SINGLETON(LightingRenderPass);
 
 /*
 *	Default constructor.
 */
-CompositingRenderPass::CompositingRenderPass() NOEXCEPT
+LightingRenderPass::LightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Compositing);
+	SetStage(RenderPassStage::Lighting);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		CompositingRenderPass::Instance->Initialize();
+		LightingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		CompositingRenderPass::Instance->Execute();
+		LightingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void CompositingRenderPass::Initialize() NOEXCEPT
+void LightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_CompositingComputePipeline);
+	AddPipeline(&_LightingComputePipeline);
 
 	//Initialize all pipelines.
-	_CompositingComputePipeline.Initialize();
+	_LightingComputePipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -50,8 +50,8 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void CompositingRenderPass::Execute() NOEXCEPT
+void LightingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_CompositingComputePipeline.Execute();
+	_LightingComputePipeline.Execute();
 }

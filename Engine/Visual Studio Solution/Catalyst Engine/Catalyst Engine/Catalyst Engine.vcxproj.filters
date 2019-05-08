@@ -1077,9 +1077,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\CompositingRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1122,9 +1119,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
@@ -1135,6 +1129,12 @@
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\LightingComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LightingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1376,9 +1376,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\CompositingRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -1409,9 +1406,6 @@
     <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\CompositingComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingDenoisingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
@@ -1422,6 +1416,12 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\LightingComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\LightingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>

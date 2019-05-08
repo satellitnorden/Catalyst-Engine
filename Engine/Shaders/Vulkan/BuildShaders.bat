@@ -1,11 +1,11 @@
 glslangValidator.exe -V AntiAliasingFragmentShader.frag -o 				AntiAliasingFragmentShader.spv
-glslangValidator.exe -V CompositingComputeShader.comp -o 				CompositingComputeShader.spv
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxFragmentShader.frag -o 		DebugAxisAlignedBoundingBoxFragmentShader.spv
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugAxisAlignedBoundingBoxVertexShader.spv
 glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxFragmentShader.spv
 glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVertexShader.spv
 glslangValidator.exe -V DenoisingFragmentShader.frag -o 				DenoisingFragmentShader.spv
 glslangValidator.exe -V DirectLightingDenoisingFragmentShader.frag -o 			DirectLightingDenoisingFragmentShader.spv
+glslangValidator.exe -V LightingComputeShader.comp -o 					LightingComputeShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
