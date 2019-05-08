@@ -10,7 +10,7 @@
 
 //Constants.
 #define MOTION_BLUR_SAMPLES (16)
-#define MOTION_BLUR_SCALE (0.125f)
+#define MOTION_BLUR_SCALE (1.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -42,12 +42,15 @@ void main()
 	//Now calculate the blur direction!.
 	vec2 blurDirection = (fragmentTextureCoordinate - previousScreenPosition) * MOTION_BLUR_SCALE;
 
+	//Calculate the blur step.
+	vec2 blurStep = blurDirection / MOTION_BLUR_SAMPLES;
+
 	//Perform the blur.
 	vec3 blurred = vec3(0.0f);
 
 	for (int i = 0; i < MOTION_BLUR_SAMPLES; ++i)
 	{
-		blurred += texture(sceneTexture, fragmentTextureCoordinate + blurDirection * i).rgb;
+		blurred += texture(sceneTexture, fragmentTextureCoordinate + blurStep * i).rgb;
 	}
 
 	blurred /= MOTION_BLUR_SAMPLES;
