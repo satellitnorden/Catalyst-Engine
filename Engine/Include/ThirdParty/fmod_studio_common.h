@@ -1,6 +1,6 @@
 /*
     fmod_studio_common.h
-    Copyright (c), Firelight Technologies Pty, Ltd. 2018.
+    Copyright (c), Firelight Technologies Pty, Ltd. 2019.
 
     This header defines common enumerations, structs and callbacks that are shared between the C and C++ interfaces.
 */
@@ -589,6 +589,7 @@ typedef struct FMOD_STUDIO_ADVANCEDSETTINGS
     unsigned int    handleinitialsize;          /* [r/w] Optional. Specify 0 to ignore. Specify the initial size to allocate for handles.  Memory for handles will grow as needed in pages. Default 8192 * sizeof(void*) */
     int             studioupdateperiod;         /* [r/w] Optional. Specify 0 to ignore. Specify the update period of Studio when in async mode, in milliseconds.  Will be quantised to the nearest multiple of mixer duration.  Default is 20ms. */
     int             idlesampledatapoolsize;     /* [r/w] Optional. Specify 0 to ignore. Specify the amount of sample data to keep in memory when no longer used, to avoid repeated disk IO.  Use -1 to disable.  Default is 256kB. */
+    unsigned int    streamingscheduledelay;     /* [r/w] Optional. Specify 0 to ignore. Specify the schedule delay for streams, in samples.  Lower values can reduce latency when scheduling events containing streams but may cause scheduling issues if too small. Default is 8192 samples. */
 } FMOD_STUDIO_ADVANCEDSETTINGS;
 
 

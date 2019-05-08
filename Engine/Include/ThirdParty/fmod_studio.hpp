@@ -1,6 +1,6 @@
 /*
     fmod_studio.hpp - FMOD Studio API
-    Copyright (c), Firelight Technologies Pty, Ltd. 2018.
+    Copyright (c), Firelight Technologies Pty, Ltd. 2019.
 
     This header defines the C++ API. If you are programming in C use fmod_studio.h.
 */
@@ -206,7 +206,7 @@ namespace Studio
 
         FMOD_RESULT F_API release();
 
-        FMOD_RESULT F_API isVirtual(bool *virtualState) const;
+        FMOD_RESULT F_API isVirtual(bool *virtualstate) const;
 
         FMOD_RESULT F_API getParameterValue(const char *name, float *value, float *finalvalue = 0);
         FMOD_RESULT F_API setParameterValue(const char *name, float value);

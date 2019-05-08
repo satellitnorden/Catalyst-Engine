@@ -1,6 +1,6 @@
 /* ========================================================================================== */
 /*                                                                                            */
-/* FMOD Studio - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2018.      */
+/* FMOD Studio - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2019.      */
 /*                                                                                            */
 /* ========================================================================================== */
 
@@ -16,7 +16,7 @@ namespace FMOD
     */
     public class VERSION
     {
-        public const int    number = 0x00011010;
+        public const int    number = 0x00011012;
 #if WIN64
         public const string dll    = "fmod64";
 #else
@@ -1854,10 +1854,6 @@ namespace FMOD
         public RESULT loadPlugin             (string filename, out uint handle, uint priority = 0)
         {
             return FMOD_System_LoadPlugin(rawPtr, Encoding.UTF8.GetBytes(filename + Char.MinValue), out handle, priority);
-        }
-        public RESULT loadPlugin             (string filename, out uint handle)
-        {
-            return loadPlugin(filename, out handle, 0);
         }
         public RESULT unloadPlugin           (uint handle)
         {

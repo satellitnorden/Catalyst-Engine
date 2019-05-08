@@ -1,5 +1,5 @@
 /* ========================================================================================== */
-/* FMOD System - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2018.      */
+/* FMOD System - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2012-2019.      */
 /*                                                                                            */
 /*                                                                                            */
 /* ========================================================================================== */
@@ -74,11 +74,12 @@ namespace Studio
     [StructLayout(LayoutKind.Sequential)]
     public struct ADVANCEDSETTINGS
     {
-        public int cbsize;               /* [w]   Size of this structure.  NOTE: For C# wrapper, users can leave this at 0. ! */
-        public int commandqueuesize;     /* [r/w] Optional. Specify 0 to ignore. Specify the command queue size for studio async processing.  Default 4096 (4kb) */
-        public int handleinitialsize;    /* [r/w] Optional. Specify 0 to ignore. Specify the initial size to allocate for handles.  Memory for handles will grow as needed in pages. */
-        public int studioupdateperiod;   /* [r/w] Optional. Specify 0 to ignore. Specify the update period of Studio when in async mode, in milliseconds.  Will be quantised to the nearest multiple of mixer duration.  Default is 20ms. */
-        public int idlesampledatapoolsize; /* [r/w] Optional. Specify 0 to ignore. Specify the amount of sample data to keep in memory when no longer used, to avoid repeated disk IO.  Use -1 to disable.  Default is 256kB. */
+        public int cbsize;                  /* [w]   Size of this structure.  NOTE: For C# wrapper, users can leave this at 0. ! */
+        public int commandqueuesize;        /* [r/w] Optional. Specify 0 to ignore. Specify the command queue size for studio async processing.  Default 4096 (4kb) */
+        public int handleinitialsize;       /* [r/w] Optional. Specify 0 to ignore. Specify the initial size to allocate for handles.  Memory for handles will grow as needed in pages. */
+        public int studioupdateperiod;      /* [r/w] Optional. Specify 0 to ignore. Specify the update period of Studio when in async mode, in milliseconds.  Will be quantised to the nearest multiple of mixer duration.  Default is 20ms. */
+        public int idlesampledatapoolsize;  /* [r/w] Optional. Specify 0 to ignore. Specify the amount of sample data to keep in memory when no longer used, to avoid repeated disk IO.  Use -1 to disable.  Default is 256kB. */
+        public int streamingscheduledelay;  /* [r/w] Optional. Specify 0 to ignore. Specify the schedule delay for streams, in samples.  Lower values can reduce latency when scheduling events containing streams but may cause scheduling issues if too small. Default is 8192 samples. */
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1463,9 +1464,9 @@ namespace Studio
         {
             return FMOD_Studio_EventInstance_Release(rawPtr);
         }
-        public RESULT isVirtual(out bool virtualState)
+        public RESULT isVirtual(out bool virtualstate)
         {
-            return FMOD_Studio_EventInstance_IsVirtual(rawPtr, out virtualState);
+            return FMOD_Studio_EventInstance_IsVirtual(rawPtr, out virtualstate);
         }
         public RESULT getParameter(string name, out ParameterInstance instance)
         {
@@ -1584,7 +1585,7 @@ namespace Studio
         [DllImport(STUDIO_VERSION.dll)]
         private static extern RESULT FMOD_Studio_EventInstance_Release                      (IntPtr _event);
         [DllImport(STUDIO_VERSION.dll)]
-        private static extern RESULT FMOD_Studio_EventInstance_IsVirtual                    (IntPtr _event, out bool virtualState);
+        private static extern RESULT FMOD_Studio_EventInstance_IsVirtual                    (IntPtr _event, out bool virtualstate);
         [DllImport(STUDIO_VERSION.dll)]
         private static extern RESULT FMOD_Studio_EventInstance_GetParameter                 (IntPtr _event, byte[] name, out IntPtr parameter);
         [DllImport(STUDIO_VERSION.dll)]
