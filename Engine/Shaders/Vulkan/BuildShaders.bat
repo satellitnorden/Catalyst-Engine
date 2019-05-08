@@ -3,8 +3,7 @@ glslangValidator.exe -V DebugAxisAlignedBoundingBoxFragmentShader.frag -o 		Debu
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugAxisAlignedBoundingBoxVertexShader.spv
 glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxFragmentShader.spv
 glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVertexShader.spv
-glslangValidator.exe -V DenoisingFragmentShader.frag -o 				DenoisingFragmentShader.spv
-glslangValidator.exe -V DirectLightingDenoisingFragmentShader.frag -o 			DirectLightingDenoisingFragmentShader.spv
+glslangValidator.exe -V IndirectLightingDenoisingFragmentShader.frag -o 		IndirectLightingDenoisingFragmentShader.spv
 glslangValidator.exe -V LightingComputeShader.comp -o 					LightingComputeShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
@@ -13,6 +12,7 @@ glslangValidator.exe -V RadianceIntegrationFragmentShader.frag -o 			RadianceInt
 glslangValidator.exe -V TemporalAccumulationComputeShader.comp -o 			TemporalAccumulationComputeShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
+glslangValidator.exe -V VisibilityDenoisingFragmentShader.frag -o 			VisibilityDenoisingFragmentShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv
 glslangValidator.exe -V WorldRayClosestHitShader.rchit -o 				WorldRayClosestHitShader.spv
 glslangValidator.exe -V WorldRayGenerationShader.rgen -o 				WorldRayGenerationShader.spv

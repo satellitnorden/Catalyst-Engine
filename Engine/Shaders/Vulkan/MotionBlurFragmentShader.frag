@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MOTION_BLUR_SAMPLES (10)
+#define MOTION_BLUR_SAMPLES (16)
 #define MOTION_BLUR_SCALE (0.125f)
 
 //Layout specification.

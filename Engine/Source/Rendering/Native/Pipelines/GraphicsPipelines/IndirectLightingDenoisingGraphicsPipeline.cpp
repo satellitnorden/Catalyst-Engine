@@ -42,7 +42,7 @@ void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direc
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DenoisingFragment);
+	SetFragmentShader(Shader::IndirectLightingDenoisingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

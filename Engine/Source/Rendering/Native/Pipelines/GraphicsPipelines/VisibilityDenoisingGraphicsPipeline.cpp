@@ -45,7 +45,7 @@ void VisibilityDenoisingGraphicsPipeline::Initialize(const Direction direction, 
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DirectLightingDenoisingFragment);
+	SetFragmentShader(Shader::VisibilityDenoisingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
