@@ -138,7 +138,7 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 /*
 *   Given a coordinate and a seed, returns a random number.
 */
-#define RANDOM_FLOAT_IMPLEMENTATION 1
+#define RANDOM_FLOAT_IMPLEMENTATION 0
 
 float RandomFloat(vec2 coordinate, float seed)
 {

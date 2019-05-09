@@ -4,9 +4,6 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 

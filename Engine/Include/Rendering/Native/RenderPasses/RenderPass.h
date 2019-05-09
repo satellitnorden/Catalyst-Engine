@@ -21,6 +21,14 @@ class RenderPass
 public:
 
 	/*
+	*	Returns whether or not this render pass is enabled.
+	*/
+	bool IsEnabled() const NOEXCEPT
+	{
+		return _Enabled;
+	}
+
+	/*
 	*	Initializes this render pass.
 	*/
 	FORCE_INLINE void Initialize() NOEXCEPT
@@ -45,22 +53,6 @@ public:
 	}
 
 	/*
-	*	Returns the data.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const void *const RESTRICT GetData() const NOEXCEPT
-	{
-		return _Data;
-	}
-
-	/*
-	*	Sets the data.
-	*/
-	FORCE_INLINE void SetData(void *const RESTRICT data) NOEXCEPT
-	{
-		_Data = data;
-	}
-
-	/*
 	*	Returns the number of pipelines.
 	*/
 	FORCE_INLINE NO_DISCARD uint64 GetNumberOfPipelines() const NOEXCEPT
@@ -77,6 +69,14 @@ public:
 	}
 
 protected:
+
+	/*
+	*	Ses whether or not this render pass is enabled.
+	*/
+	void SetEnabled(const bool enabled) NOEXCEPT
+	{
+		_Enabled = enabled;
+	}
 
 	/*
 	*	Sets the stage.
@@ -117,6 +117,9 @@ protected:
 
 private:
 
+	//Denotes if this render pass is enabled or not.
+	bool _Enabled{ true };
+
 	//The stage.
 	RenderPassStage _Stage;
 
@@ -125,9 +128,6 @@ private:
 
 	//The execution function.
 	ExecutionFunction _ExecutionFunction;
-
-	//The data.
-	void *RESTRICT _Data;
 
 	//The pipelines.
 	DynamicArray<Pipeline *RESTRICT> _Pipelines;

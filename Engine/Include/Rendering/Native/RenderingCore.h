@@ -170,9 +170,14 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the indirect lighting.
+	*	Contains the diffuse irradiance.
 	*/
-	IndirectLighting,
+	DiffuseIrradiance,
+
+	/*
+	*	Contains the specular irradiance.
+	*/
+	SpecularIrradiance,
 
 	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.

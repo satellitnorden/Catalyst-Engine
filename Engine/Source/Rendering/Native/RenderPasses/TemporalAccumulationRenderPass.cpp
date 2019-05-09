@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/TemporalAccumulationRenderPass.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -54,6 +57,12 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 */
 void TemporalAccumulationRenderPass::Execute() NOEXCEPT
 {
+	//Toggle enabled.
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._Y == ButtonState::Pressed)
+	{
+		SetEnabled(!IsEnabled());
+	}
+
 	//Execute the current graphics pipeline.
 	_TemporalAccumulationGraphicsPipelines[_CurrentBufferIndex].Execute();
 

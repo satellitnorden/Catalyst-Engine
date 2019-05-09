@@ -11,42 +11,57 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingTexture;
-layout (set = 1, binding = 1, rgba8) uniform image2D sceneFeatures1Texture;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Texture;
-layout (set = 1, binding = 3, rgba8) uniform image2D sceneFeatures3Texture;
-layout (set = 1, binding = 4, rgba32f) uniform image2D sceneTexture;
+layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceTexture;
+layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceTexture;
+layout (set = 1, binding = 2, rgba8) uniform image2D sceneFeatures1Texture;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Texture;
+layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Texture;
+layout (set = 1, binding = 5, rgba32f) uniform image2D sceneTexture;
 
 void main()
 {
-	//Calculate the composited lighting.
-	vec3 compositedLighting = vec3(0.0f);
-
-	//Add the denoised indirect lighting.
-	compositedLighting += imageLoad(indirectLightingTexture, ivec2(gl_GlobalInvocationID.xy)).rgb;
-
-	//Sample the albedo.
-	vec3 albedo = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy)).rgb;
-
 	//Sample the normal and hit distance.
 	vec4 sceneFeatures2TextureSampler = imageLoad(sceneFeatures2Texture, ivec2(gl_GlobalInvocationID.xy));
 	vec3 normal = sceneFeatures2TextureSampler.xyz;
 	float hitDistance = sceneFeatures2TextureSampler.w;
 
-	//Sample the roughness and metallic.
-	vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
-	float roughness = sceneFeatures3TextureSampler.x;
-	float metallic = sceneFeatures3TextureSampler.y;
-
-	//Calculate the world position.
-	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(1920.0f, 1080.0f)) * hitDistance;
-
-	//Calculate the view direction.
-	vec3 viewDirection = normalize(perceiverWorldPosition - worldPosition);
-
-	//Only add the direct lighting if there was a hit.
+	//Only calculate the lighting if there was a hit.
 	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
 	{
+		//Sample the diffuse irradiance.
+		vec3 diffuseIrradiance = imageLoad(diffuseIrradianceTexture, ivec2(gl_GlobalInvocationID.xy)).rgb;
+
+		//Sample the specular irradiance.
+		vec3 specularIrradiance = imageLoad(specularIrradianceTexture, ivec2(gl_GlobalInvocationID.xy)).rgb;
+
+		//Sample the albedo.
+		vec3 albedo = imageLoad(sceneFeatures1Texture, ivec2(gl_GlobalInvocationID.xy)).rgb;
+
+		//Sample the roughness and metallic.
+		vec4 sceneFeatures3TextureSampler = imageLoad(sceneFeatures3Texture, ivec2(gl_GlobalInvocationID.xy));
+		float roughness = sceneFeatures3TextureSampler.x;
+		float metallic = sceneFeatures3TextureSampler.y;
+		float ambientOcclusion = sceneFeatures3TextureSampler.z;
+
+		//Calculate the world position.
+		vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(1920.0f, 1080.0f)) * hitDistance;
+
+		//Calculate the view direction.
+		vec3 viewDirection = normalize(perceiverWorldPosition - worldPosition);
+
+		//Calculate the composited lighting.
+		vec3 compositedLighting = vec3(0.0f);
+
+		//Add the indirect lighting.
+		compositedLighting += CalculateIndirectLighting(viewDirection,
+														albedo,
+														normal,
+														roughness,
+														metallic,
+														ambientOcclusion,
+														diffuseIrradiance,
+														specularIrradiance);
+
 		//Add the directional light direct lighting result.
 		float directionalLightVisibility = imageLoad(directionalLightVisibilityTexture, ivec2(gl_GlobalInvocationID.xy)).x;
 
@@ -81,8 +96,15 @@ void main()
 														metallic,
 														light.color * light.strength) * attenuation * lightVisibility;
 		}
+		
+		//Write the fragment.
+		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(compositedLighting, 1.0f));
 	}
 	
-	//Write the fragment.
-	imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(compositedLighting, 1.0f));
+	//If there wasn't a hit, then the sky color is stored in the specular irradiance texture.
+	else
+	{
+		//Write the fragment.
+		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(imageLoad(specularIrradianceTexture, ivec2(gl_GlobalInvocationID.xy)).rgb, 1.0f));
+	}
 }

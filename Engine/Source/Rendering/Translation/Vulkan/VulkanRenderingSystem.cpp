@@ -110,6 +110,11 @@ namespace VulkanRenderingSystemLogic
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
 		{
+			if (!renderPass->IsEnabled())
+			{
+				continue;
+			}
+
 			for (const Pipeline *const RESTRICT pipeline : renderPass->GetPipelines())
 			{
 				if (!pipeline->IncludeInRender())

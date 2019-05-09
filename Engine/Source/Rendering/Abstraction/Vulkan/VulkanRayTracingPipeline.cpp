@@ -147,7 +147,7 @@ void VulkanRayTracingPipeline::CreateRayTracingPipelineCreateInfo(	const ArrayPr
 	rayTracingPipelineCreateInfo->pStages = stages._Array;
 	rayTracingPipelineCreateInfo->groupCount = static_cast<uint32>(groups._Size);
 	rayTracingPipelineCreateInfo->pGroups = groups._Array;
-	rayTracingPipelineCreateInfo->maxRecursionDepth = 3;
+	rayTracingPipelineCreateInfo->maxRecursionDepth = 2;
 	rayTracingPipelineCreateInfo->layout = layout;
 	rayTracingPipelineCreateInfo->basePipelineHandle = VK_NULL_HANDLE;
 	rayTracingPipelineCreateInfo->basePipelineIndex = -1;

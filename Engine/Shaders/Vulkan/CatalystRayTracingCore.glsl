@@ -4,19 +4,16 @@
 //Preprocessor defines.
 #define CATALYST_RAY_TRACING_T_MINIMUM (0.0f)
 #define CATALYST_RAY_TRACING_T_MAXIMUM (100.0f)
-#define CATALYST_RAY_TRACING_MAXIMUM_DEPTH (3)
-#define CATALYST_RAY_TRACING_SPECULAR_POWER (1.0f)
 
 /*
 *	Ray payload struct definition.
 */
 struct PrimaryRayPayload
 {
-	vec3 randomVector;
 	int currentRecursionDepth;
 
-	vec3 indirectLighting;
-	vec3 directLighting;
+	vec3 diffuseIrradiance;
+	vec3 specularIrradiance;
 	vec3 albedo;
 	vec3 normal;
 	float depth;
@@ -25,6 +22,8 @@ struct PrimaryRayPayload
 	float ambientOcclusion;
 	uint hitInstanceID;
 	uint hitPrimitiveID;
+
+	vec3 radiance;
 };
 
 /*
@@ -48,7 +47,7 @@ vec3 CalculateRayDirection(vec2 coordinate)
 */
 float GetSpecularComponent(float roughness, float metallic)
 {
-	return pow(roughness * (1.0f - metallic), CATALYST_RAY_TRACING_SPECULAR_POWER);
+	return roughness * (1.0f - metallic);
 }
 
 #endif

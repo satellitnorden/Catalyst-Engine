@@ -30,14 +30,16 @@ struct Vertex
 };
 
 //Constants.
+//#define DIRECTIONAL_LIGHT_SOFTNESS (0.02f)
+#define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
 #define MAXIMUM_NUMBER_OF_MODELS (64)
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 7) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 8) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 9) uniform ModelUniformData
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 8) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 9) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 10) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
@@ -69,7 +71,7 @@ Vertex UnpackVertex(uint index)
 void main()
 {
 	//Store the current recursion depth.
-	int currentRecursionDepth = rayPayload.currentRecursionDepth++;
+	int currentRecursionDepth = rayPayload.currentRecursionDepth;
 
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
@@ -114,138 +116,202 @@ void main()
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
 
-	//Calculate the indirect lighting.
-	vec3 indirectLighting = vec3(0.0f);
-
-	//Don't go below the maximum recursion depth.
-	if (currentRecursionDepth < (CATALYST_RAY_TRACING_MAXIMUM_DEPTH - 1))
+	//Treat this ray differently depending on the recursion depth.
+	if (currentRecursionDepth == 0)
 	{
-		vec3 randomIrradianceDirection = rayPayload.randomVector;
-		float randomIrradianceDirectionDot = dot(randomIrradianceDirection, finalVertex.normal);
-		randomIrradianceDirection = randomIrradianceDirectionDot >= 0.0f ? randomIrradianceDirection : randomIrradianceDirection * -1.0f;
-		randomIrradianceDirection = normalize(mix(finalNormal, randomIrradianceDirection, GetSpecularComponent(roughness, metallic)));
-		randomIrradianceDirection = normalize(reflect(gl_WorldRayDirectionNV, randomIrradianceDirection));
+		//Calculate the diffuse irradiance.
+		vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed1 * EULERS_NUMBER) * 2.0f - 1.0f,
+																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * EULERS_NUMBER) * 2.0f - 1.0f,
+																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * EULERS_NUMBER) * 2.0f - 1.0f));
+		randomDiffuseIrradianceDirection = dot(randomDiffuseIrradianceDirection, finalVertex.normal) >= 0.0f ? randomDiffuseIrradianceDirection : randomDiffuseIrradianceDirection * -1.0f;
+		randomDiffuseIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomDiffuseIrradianceDirection);
+
+		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
-				topLevelAccelerationStructure, 	//topLevel
-				gl_RayFlagsOpaqueNV, 			//rayFlags
-				0xff, 							//cullMask
-				0, 								//sbtRecordOffset
-				0, 								//sbtRecordStride
-				0, 								//missIndex
-				hitPosition, 					//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-				randomIrradianceDirection, 		//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-				0 								//payload
+				topLevelAccelerationStructure, 		//topLevel
+				gl_RayFlagsOpaqueNV, 				//rayFlags
+				0xff, 								//cullMask
+				0, 									//sbtRecordOffset
+				0, 									//sbtRecordStride
+				0, 									//missIndex
+				hitPosition, 						//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+				randomDiffuseIrradianceDirection, 	//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				0 									//payload
 				);
 
-		indirectLighting = CalculateIndirectLight(	-gl_WorldRayDirectionNV,
-													randomIrradianceDirection,
-													albedo,
-													finalNormal,
-													roughness,
-													metallic,
-													ambientOcclusion,
-													rayPayload.indirectLighting + rayPayload.directLighting);
-	}
-	
-	//Calculate the direct lighting.
-	vec3 directLighting = vec3(0.0f);
+		rayPayload.diffuseIrradiance = rayPayload.radiance;
 
-	//Calculate the directional light.
-	{
-		vec3 randomLightDirection = rayPayload.randomVector;
-		randomLightDirection *= dot(randomLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
-		randomLightDirection = mix(directionalLightDirection, randomLightDirection, 0.02f); //0.0025f step.
-
-		//Determine the visibility.
-		visibility = 0.0f;
+		/*
+		//Calculate the specular irradiance.
+		vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
 
 		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				1, 																							//missIndex
-				hitPosition, 																				//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				-randomLightDirection,																		//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
-				1 																							//payload
+				topLevelAccelerationStructure, 		//topLevel
+				gl_RayFlagsOpaqueNV, 				//rayFlags
+				0xff, 								//cullMask
+				0, 									//sbtRecordOffset
+				0, 									//sbtRecordStride
+				0, 									//missIndex
+				hitPosition, 						//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+				specularIrradianceDirection, 		//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				0 									//payload
 				);
 
-		//Calculate the directional light lighting.
-		vec3 directionalLightLighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
-																-randomLightDirection,
-																albedo,
-																finalNormal,
-																roughness,
-																metallic,
-																directionalLightColor * directionalLightIntensity);
+		rayPayload.specularIrradiance = rayPayload.radiance;
+		*/
 
-		//Add it the the direct lighting term.
-		directLighting += directionalLightLighting * visibility;
+		rayPayload.specularIrradiance = vec3(0.0f);
 
-		//Write the directional light visibility to the texture.
-		imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(visibility));
+		//Calculate the directional light visibility.
+		{
+			vec3 randomDirectionalLightDirection = normalize(vec3(	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed1 * PHI) * 2.0f - 1.0f,
+																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * PHI) * 2.0f - 1.0f,
+																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * PHI) * 2.0f - 1.0f));
+			randomDirectionalLightDirection *= dot(randomDirectionalLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
+			randomDirectionalLightDirection = mix(directionalLightDirection, randomDirectionalLightDirection, DIRECTIONAL_LIGHT_SOFTNESS);
+
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					-randomDirectionalLightDirection,															//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+					1 																							//payload
+					);
+
+			//Write the directional light visibility to the texture.
+			imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(visibility));
+		}
+		
+		//Calculate all other lights visibilities.
+		for (int i = 0; i < numberOfLights; ++i)
+		{
+			Light light = UnpackLight(i);
+
+			vec3 randomLightPosition = light.position;
+
+			float lengthToLight = length(randomLightPosition - hitPosition);
+			vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
+
+			//Determine the visibility.
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			//Write the light visibility to it's texture.
+			imageStore(lightsVisibilityTextures[i], ivec2(gl_LaunchIDNV.xy), vec4(visibility));
+		}
+
+		//Write to the ray payload.
+		rayPayload.albedo = albedo;
+		rayPayload.normal = finalNormal;
+		rayPayload.depth = gl_HitTNV;
+		rayPayload.roughness = roughness;
+		rayPayload.metallic = metallic;
+		rayPayload.ambientOcclusion = ambientOcclusion;
+		rayPayload.hitInstanceID = gl_InstanceCustomIndexNV;
+		rayPayload.hitPrimitiveID = gl_PrimitiveID;
 	}
 
-	//Calculate all other lights.
-	for (int i = 0; i < numberOfLights; ++i)
+	else
 	{
-		Light light = UnpackLight(i);
+		//Calculate the radiance.
+		rayPayload.radiance = vec3(0.0f);
 
-		vec3 randomLightPosition = light.position + rayPayload.randomVector * light.size;
+		//Calculate the directional light.
+		{
+			vec3 randomDirectionalLightDirection = normalize(vec3(	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed1 * PHI) * 2.0f - 1.0f,
+																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * PHI) * 2.0f - 1.0f,
+																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * PHI) * 2.0f - 1.0f));
+			randomDirectionalLightDirection *= dot(randomDirectionalLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
+			randomDirectionalLightDirection = directionalLightDirection;
 
-		float lengthToLight = length(randomLightPosition - hitPosition);
-		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
+			visibility = 0.0f;
 
-		//Determine the visibility.
-		visibility = 0.0f;
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					-randomDirectionalLightDirection,															//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+					1 																							//payload
+					);
 
-		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				1, 																							//missIndex
-				hitPosition, 																				//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				lightDirection,																				//direction
-				lengthToLight,																				//Tmax
-				1 																							//payload
-				);
+			rayPayload.radiance += CalculateDirectLight(-gl_WorldRayDirectionNV,
+														-randomDirectionalLightDirection,
+														albedo,
+														finalNormal,
+														roughness,
+														metallic,
+														directionalLightColor * directionalLightIntensity) * visibility;
+		}
 
-		//Calculate the attenuation distance.
-		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+		//Calculate all other lights.
+		for (int i = 0; i < numberOfLights; ++i)
+		{
+			Light light = UnpackLight(i);
 
-		//Calculate the lighting.
-		vec3 lighting = CalculateDirectLight(	-gl_WorldRayDirectionNV,
-												lightDirection,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												light.color * light.strength) * attenuation;
+			vec3 randomLightPosition = light.position;
 
-		directLighting += lighting * visibility;
+			float lengthToLight = length(randomLightPosition - hitPosition);
+			vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
 
-		//Write the light direct lighting result to the texture.
-		imageStore(lightsVisibilityTextures[i], ivec2(gl_LaunchIDNV.xy), vec4(visibility));
+			//Calculate the attenuation.
+			float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+			//Determine the visibility.
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			rayPayload.radiance += CalculateDirectLight(-gl_WorldRayDirectionNV,
+														lightDirection,
+														albedo,
+														finalNormal,
+														roughness,
+														metallic,
+														light.color * light.strength) * attenuation * visibility;
+		}
 	}
-	
-	//Write to the ray payload.
-	rayPayload.indirectLighting = indirectLighting;
-	rayPayload.directLighting = directLighting;
-	rayPayload.albedo = albedo;
-	rayPayload.normal = finalNormal;
-	rayPayload.depth = gl_HitTNV;
-	rayPayload.roughness = roughness;
-	rayPayload.metallic = metallic;
-	rayPayload.ambientOcclusion = ambientOcclusion;
-	rayPayload.hitInstanceID = gl_InstanceCustomIndexNV;
-	rayPayload.hitPrimitiveID = gl_PrimitiveID;
 }

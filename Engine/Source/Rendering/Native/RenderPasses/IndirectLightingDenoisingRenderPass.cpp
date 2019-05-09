@@ -37,13 +37,13 @@ void IndirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(_IndirectLightingDenoisingGraphicsPipelines.Size());
 
 	_IndirectLightingDenoisingGraphicsPipelines[0].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Horizontal,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
 	AddPipeline(&_IndirectLightingDenoisingGraphicsPipelines[0]);
 
 	_IndirectLightingDenoisingGraphicsPipelines[1].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 	AddPipeline(&_IndirectLightingDenoisingGraphicsPipelines[1]);
 
 
