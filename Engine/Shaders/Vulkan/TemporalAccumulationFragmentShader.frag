@@ -60,24 +60,13 @@ bool SearchForTemporalAccumulationData(vec2 coordinate, uint currentInstanceID, 
 	bool foundValidData = false;
 
 	//The sample coordinates.
-	vec2 samplesCoordinates[9] = vec2[]
+	vec2 samplesCoordinates[1] = vec2[]
 	(
-		coordinate,
-
-		coordinate + vec2(1.0f, 0.0f) * inverseResolution,
-		coordinate + vec2(0.0f, 1.0f) * inverseResolution,
-
-		coordinate + vec2(-1.0f, 0.0f) * inverseResolution,
-		coordinate + vec2(0.0f, -1.0f) * inverseResolution,
-
-		coordinate + vec2(1.0f, 1.0f) * inverseResolution,
-		coordinate + ivec2(-1.0f, -1.0f) * inverseResolution,
-		coordinate + vec2(-1.0f, 1.0f) * inverseResolution,
-		coordinate + vec2(1.0f, -1.0f) * inverseResolution
+		coordinate
 	);
 
 	//Check the surrounding fragment.
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		AccumulationDescription sampleAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(texture(previousTemporalAccumulationBuffer, samplesCoordinates[i]).w));
 
