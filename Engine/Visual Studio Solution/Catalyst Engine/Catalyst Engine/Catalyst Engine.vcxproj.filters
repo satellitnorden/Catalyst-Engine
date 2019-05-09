@@ -1113,9 +1113,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
@@ -1139,6 +1136,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\SoundBankBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1400,9 +1400,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TemporalAccumulationComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
@@ -1426,6 +1423,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\LightingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

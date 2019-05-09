@@ -2,9 +2,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/TemporalAccumulationComputePipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAccumulationGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class TemporalAccumulationRenderPass final : public RenderPass
@@ -22,8 +23,11 @@ public:
 
 private:
 
-	//The temporal accumulation compute pipeline.
-	TemporalAccumulationComputePipeline _TemporalAccumulationComputePipeline;
+	//The temporal accumulation graphics pipelines.
+	StaticArray<TemporalAccumulationGraphicsPipeline, 2> _TemporalAccumulationGraphicsPipelines;
+
+	//The current buffer index.
+	uint8 _CurrentBufferIndex{ 0 };
 
 	/*
 	*	Initializes this render pass.

@@ -90,6 +90,11 @@ public:
 	*/
 	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
 
+	/*
+	*	Sets whether or not this render pass should be included in the final render.
+	*/
+	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
+
 protected:
 
 	/*
@@ -125,11 +130,6 @@ protected:
 	*	Adds a push constant range.
 	*/
 	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.EmplaceFast(shaderStage, offset, size); }
-
-	/*
-	*	Sets whether or not this render pass should be included in the final render.
-	*/
-	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
 
 private:
 

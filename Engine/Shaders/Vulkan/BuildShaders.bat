@@ -9,7 +9,7 @@ glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentS
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
 glslangValidator.exe -V RadianceIntegrationFragmentShader.frag -o 			RadianceIntegrationFragmentShader.spv
-glslangValidator.exe -V TemporalAccumulationComputeShader.comp -o 			TemporalAccumulationComputeShader.spv
+glslangValidator.exe -V TemporalAccumulationFragmentShader.frag -o 			TemporalAccumulationFragmentShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VisibilityDenoisingFragmentShader.frag -o 			VisibilityDenoisingFragmentShader.spv

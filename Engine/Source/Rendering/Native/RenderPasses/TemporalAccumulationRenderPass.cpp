@@ -33,12 +33,14 @@ TemporalAccumulationRenderPass::TemporalAccumulationRenderPass() NOEXCEPT
 */
 void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 {
-	//Add the pipelines.
-	SetNumberOfPipelines(1);
-	AddPipeline(&_TemporalAccumulationComputePipeline);
+	//Initialize and add the pipelines.
+	SetNumberOfPipelines(_TemporalAccumulationGraphicsPipelines.Size());
 
-	//Initialize all pipelines.
-	_TemporalAccumulationComputePipeline.Initialize();
+	_TemporalAccumulationGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1), RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2));
+	_TemporalAccumulationGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2), RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1));
+
+	AddPipeline(&_TemporalAccumulationGraphicsPipelines[0]);
+	AddPipeline(&_TemporalAccumulationGraphicsPipelines[1]);
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -52,6 +54,12 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 */
 void TemporalAccumulationRenderPass::Execute() NOEXCEPT
 {
-	//Execute all pipelines.
-	_TemporalAccumulationComputePipeline.Execute();
+	//Execute the current graphics pipeline.
+	_TemporalAccumulationGraphicsPipelines[_CurrentBufferIndex].Execute();
+
+	//Update the current buffer index.
+	_CurrentBufferIndex = _CurrentBufferIndex == 0 ? 1 : 0;
+
+	//Don't include the other graphics pipeline in the render.
+	_TemporalAccumulationGraphicsPipelines[_CurrentBufferIndex].SetIncludeInRender(false);
 }
