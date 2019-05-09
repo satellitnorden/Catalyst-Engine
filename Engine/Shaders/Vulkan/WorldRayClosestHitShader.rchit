@@ -124,8 +124,7 @@ void main()
 																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * EULERS_NUMBER) * 2.0f - 1.0f,
 																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * EULERS_NUMBER) * 2.0f - 1.0f));
 		randomDiffuseIrradianceDirection = dot(randomDiffuseIrradianceDirection, finalVertex.normal) >= 0.0f ? randomDiffuseIrradianceDirection : randomDiffuseIrradianceDirection * -1.0f;
-		randomDiffuseIrradianceDirection = reflect(gl_WorldRayDirectionNV, randomDiffuseIrradianceDirection);
-
+		
 		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
