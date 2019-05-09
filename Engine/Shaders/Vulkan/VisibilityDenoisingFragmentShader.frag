@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DIRECT_LIGHTING_DENOISING_SIZE (7)
+#define DIRECT_LIGHTING_DENOISING_SIZE (9)
 #define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1) / 2)
 
 /*

@@ -124,7 +124,7 @@ void main()
 																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * EULERS_NUMBER) * 2.0f - 1.0f,
 																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * EULERS_NUMBER) * 2.0f - 1.0f));
 		randomDiffuseIrradianceDirection = dot(randomDiffuseIrradianceDirection, finalVertex.normal) >= 0.0f ? randomDiffuseIrradianceDirection : randomDiffuseIrradianceDirection * -1.0f;
-		
+
 		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
@@ -143,9 +143,10 @@ void main()
 
 		rayPayload.diffuseIrradiance = rayPayload.radiance;
 
-		/*
 		//Calculate the specular irradiance.
 		vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
+
+		rayPayload.currentRecursionDepth = 1;
 
 		traceNV(
 				topLevelAccelerationStructure, 		//topLevel
@@ -162,9 +163,6 @@ void main()
 				);
 
 		rayPayload.specularIrradiance = rayPayload.radiance;
-		*/
-
-		rayPayload.specularIrradiance = vec3(0.0f);
 
 		//Calculate the directional light visibility.
 		{

@@ -42,12 +42,4 @@ vec3 CalculateRayDirection(vec2 coordinate)
 	return normalize(worldPosition - perceiverWorldPosition);
 }
 
-/*
-*	Returns the specular component of a surface.
-*/
-float GetSpecularComponent(float roughness, float metallic)
-{
-	return roughness * (1.0f - metallic);
-}
-
 #endif
