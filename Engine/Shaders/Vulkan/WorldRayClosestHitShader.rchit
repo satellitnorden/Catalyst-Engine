@@ -141,7 +141,7 @@ void main()
 				0 									//payload
 				);
 
-		rayPayload.diffuseIrradiance = rayPayload.radiance;
+		vec3 diffuseIrradiance = rayPayload.radiance;
 
 		//Calculate the specular irradiance.
 		vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
@@ -162,7 +162,7 @@ void main()
 				0 									//payload
 				);
 
-		rayPayload.specularIrradiance = rayPayload.radiance;
+		vec3 specularIrradiance = rayPayload.radiance;
 
 		//Calculate the directional light visibility.
 		{
@@ -224,6 +224,8 @@ void main()
 		}
 
 		//Write to the ray payload.
+		rayPayload.diffuseIrradiance = diffuseIrradiance;
+		rayPayload.specularIrradiance = specularIrradiance;
 		rayPayload.albedo = albedo;
 		rayPayload.normal = finalNormal;
 		rayPayload.depth = gl_HitTNV;
