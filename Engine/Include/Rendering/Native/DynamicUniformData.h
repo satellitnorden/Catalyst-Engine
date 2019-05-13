@@ -12,6 +12,14 @@ class DynamicUniformData final
 
 public:
 
+	Matrix4 _PerceiverMatrixMinusSeven;
+	Matrix4 _ProjectionMatrixMinusSeven;
+	Matrix4 _PerceiverMatrixMinusSix;
+	Matrix4 _ProjectionMatrixMinusSix;
+	Matrix4 _PerceiverMatrixMinusFive;
+	Matrix4 _ProjectionMatrixMinusFive;
+	Matrix4 _PerceiverMatrixMinusFour;
+	Matrix4 _ProjectionMatrixMinusFour;
 	Matrix4 _PerceiverMatrixMinusThree;
 	Matrix4 _ProjectionMatrixMinusThree;
 	Matrix4 _PerceiverMatrixMinusTwo;
@@ -39,4 +47,4 @@ public:
 	float _WindSpeed;
 };
 
-static_assert(sizeof(DynamicUniformData) == 800, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 1312, "Size of dynamic uniform data is wrong!");

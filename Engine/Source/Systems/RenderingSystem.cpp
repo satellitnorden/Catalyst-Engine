@@ -271,6 +271,10 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer3)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer4)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer5)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer6)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer7)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer8)]);
 }
 
 /*
@@ -396,6 +400,14 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Update matrices.
+	_DynamicUniformData._PerceiverMatrixMinusSeven = _DynamicUniformData._PerceiverMatrixMinusSix;
+	_DynamicUniformData._ProjectionMatrixMinusSeven = _DynamicUniformData._ProjectionMatrixMinusSix;
+	_DynamicUniformData._PerceiverMatrixMinusSix = _DynamicUniformData._PerceiverMatrixMinusFive;
+	_DynamicUniformData._ProjectionMatrixMinusSix = _DynamicUniformData._ProjectionMatrixMinusFive;
+	_DynamicUniformData._PerceiverMatrixMinusFive = _DynamicUniformData._PerceiverMatrixMinusFour;
+	_DynamicUniformData._ProjectionMatrixMinusFive = _DynamicUniformData._ProjectionMatrixMinusFour;
+	_DynamicUniformData._PerceiverMatrixMinusFour = _DynamicUniformData._PerceiverMatrixMinusThree;
+	_DynamicUniformData._ProjectionMatrixMinusFour = _DynamicUniformData._ProjectionMatrixMinusThree;
 	_DynamicUniformData._PerceiverMatrixMinusThree = _DynamicUniformData._PerceiverMatrixMinusTwo;
 	_DynamicUniformData._ProjectionMatrixMinusThree = _DynamicUniformData._ProjectionMatrixMinusTwo;
 	_DynamicUniformData._PerceiverMatrixMinusTwo = _DynamicUniformData._PerceiverMatrixMinusOne;

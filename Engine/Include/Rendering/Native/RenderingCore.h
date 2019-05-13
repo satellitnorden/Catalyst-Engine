@@ -235,6 +235,26 @@ enum class RenderTarget : uint8
 	*/
 	TemporalAccumulationBuffer4,
 
+	/*
+	*	The fifth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationBuffer5,
+
+	/*
+	*	The sixth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationBuffer6,
+
+	/*
+	*	The seventh temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationBuffer7,
+
+	/*
+	*	The eighth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationBuffer8,
+
 	NumberOfRenderTargets
 };
 
