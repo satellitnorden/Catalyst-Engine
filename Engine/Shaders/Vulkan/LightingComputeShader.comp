@@ -99,7 +99,7 @@ void main()
 		}
 		
 		//Write the fragment.
-		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(diffuseIrradiance, 1.0f));
+		imageStore(sceneTexture, ivec2(gl_GlobalInvocationID.xy), vec4(compositedLighting, 1.0f));
 	}
 	
 	//If there wasn't a hit, then the sky color is stored in the specular irradiance texture.

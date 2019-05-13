@@ -96,7 +96,7 @@ void main()
 			float sampleWeight = 1.0f;
 
 			sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
-			sampleWeight *= max((dot(currentFeatures.normal, sampleFeatures.normal) + 1.0f) * 0.5f, 0.0f);
+			sampleWeight *= max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f);
 			sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
 
 			denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
