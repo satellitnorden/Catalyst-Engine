@@ -83,8 +83,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusOne, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -106,8 +110,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusTwo, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -129,8 +137,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusThree, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -152,8 +164,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusFour, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -175,8 +191,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusFive, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -198,8 +218,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusSix, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
@@ -221,8 +245,12 @@ void main()
 		//Sample the previous temporal accumulation buffer.
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusSeven, previousScreenCoordinate);
 
-		//Calculate if this frame is denied.
-		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH) * float(ValidCoordinate(previousScreenCoordinate));
+		//Calculate the weight.
+		float weight = 1.0f;
+		
+		weight *= float(ValidCoordinate(previousScreenCoordinate));
+		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
+		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;

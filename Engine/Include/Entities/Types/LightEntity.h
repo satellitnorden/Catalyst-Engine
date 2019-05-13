@@ -26,4 +26,14 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
+	/*
+	*	Returns the strength of this light.
+	*/
+	float GetStrength() NOEXCEPT;
+
+	/*
+	*	Sets the strength of this light.
+	*/
+	void SetStrength(const float strength) NOEXCEPT;
+
 };

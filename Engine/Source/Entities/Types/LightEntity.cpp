@@ -48,3 +48,19 @@ void LightEntity::Terminate() NOEXCEPT
 	//Return this entitiy's components index.
 	ComponentManager::ReturnLightComponentsIndex(_ComponentsIndex);
 }
+
+/*
+*	Returns the strength of this light.
+*/
+float LightEntity::GetStrength() NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Strength;
+}
+
+/*
+*	Sets the strength of this light.
+*/
+void LightEntity::SetStrength(const float strength) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Strength = strength;
+}
