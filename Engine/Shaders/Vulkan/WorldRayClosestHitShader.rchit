@@ -36,10 +36,10 @@ struct Vertex
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 9) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 10) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 11) uniform ModelUniformData
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 8) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 9) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 10) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
@@ -227,8 +227,6 @@ void main()
 		rayPayload.roughness = roughness;
 		rayPayload.metallic = metallic;
 		rayPayload.ambientOcclusion = ambientOcclusion;
-		rayPayload.hitInstanceID = gl_InstanceCustomIndexNV;
-		rayPayload.hitPrimitiveID = gl_PrimitiveID;
 	}
 
 	else

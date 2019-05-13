@@ -15,9 +15,8 @@ layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
 layout (set = 1, binding = 2, rgba8) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures4Image;
-layout (set = 1, binding = 6) uniform sampler2D noiseImage;
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 5) uniform sampler2D noiseImage;
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -58,5 +57,4 @@ void main()
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), 0.0f, rayPayload.depth));
     imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f));
-    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(uintBitsToFloat(rayPayload.hitInstanceID), uintBitsToFloat(rayPayload.hitPrimitiveID), 0.0f, 0.0f));
 }

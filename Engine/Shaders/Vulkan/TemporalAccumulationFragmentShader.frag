@@ -7,10 +7,6 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
-#include "CatalystTemporalAccumulationCore.glsl"
-
-//Constants.
-#define TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF (0.955f) //0.0025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -25,10 +21,9 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D previousTemporalAccumulationBuffer;
+layout (set = 1, binding = 0) uniform sampler2D temporalAccumulationBufferMinusOne;
 layout (set = 1, binding = 1) uniform sampler2D sceneTexture;
 layout (set = 1, binding = 2) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 currentTemporalAccumulationBuffer;
@@ -45,46 +40,6 @@ bool ValidCoordinate(vec2 coordinate)
 			&& coordinate.y < 1.0f;
 }
 
-/*
-*	Searches for temporal accumulation data.
-*/
-bool SearchForTemporalAccumulationData(vec2 coordinate, uint currentInstanceID, uint currentPrimitiveID, out vec3 previousAccumulatedColor, out AccumulationDescription previousAccumulationDescription)
-{
-	//Discard data randomly even if potential valid data could be found.
-	if (RandomFloat(vec2(coordinate), globalRandomSeed1) >= TEMPORAL_ACCUMULATION_RUSSIAN_ROULETTE_CUTOFF)
-	{
-		return false;
-	}
-
-	//Keep track of whether valid data was found.
-	bool foundValidData = false;
-
-	//The sample coordinates.
-	vec2 samplesCoordinates[1] = vec2[]
-	(
-		coordinate
-	);
-
-	//Check the surrounding fragment.
-	for (int i = 0; i < 1; ++i)
-	{
-		AccumulationDescription sampleAccumulationDescription = UnpackAccumulationDescription(floatBitsToUint(texture(previousTemporalAccumulationBuffer, samplesCoordinates[i]).w));
-
-		if (!foundValidData
-			&& currentInstanceID == sampleAccumulationDescription.instanceID
-			&& currentPrimitiveID == sampleAccumulationDescription.primitiveID
-			&& ValidCoordinate(samplesCoordinates[i]))
-		{
-			foundValidData = true;
-			previousAccumulatedColor = texture(previousTemporalAccumulationBuffer, samplesCoordinates[i]).rgb;
-			previousAccumulationDescription = sampleAccumulationDescription;
-		}
-	}
-
-	//Return if valid data was found.
-	return foundValidData;
-}
-
 void main()
 {
 	//Sample the scene texture.
@@ -93,60 +48,45 @@ void main()
 	//Sample the scene features 2 texture.
 	vec4 sceneFeatures2TextureSampler = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 
-	//Sample the scene features 3 texture.
-	vec4 sceneFeatures4TextureSampler = texture(sceneFeatures4Texture, fragmentTextureCoordinate);
-
-	//Calculate the world position at this fragment the current frame.
+	//Calculate the world position at this fragment for the current frame.
 	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * sceneFeatures2TextureSampler.w;
 
-	//Now calculate it's previous screen coordinate using the previous view matrix.
-	vec4 previousViewSpacePosition = previousViewMatrix * vec4(currentWorldPosition, 1.0f);
+	//Calculate it's current perceiver position.
+	vec4 currentPerceiverPosition = perceiverMatrix * vec4(currentWorldPosition, 1.0f);
 
-	//Perform perspective division.
-	float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-	previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
+	//Add all accumulated colors.
+	vec3 accumulatedColor = sceneTextureSampler.rgb;
+	float accumulatedWeight = 1.0f;
+	bool deniedFrame = false;
 
-	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-	//Retrieve the current instance ID.
-	uint currentInstanceID = floatBitsToUint(sceneFeatures4TextureSampler.x);
-
-	//Retrieve the current primitive ID.
-	uint currentPrimitiveID = floatBitsToUint(sceneFeatures4TextureSampler.y);
-
-	//Search for previous temporal accumulation data.
-	vec3 previousAccumulatedColor;
-	AccumulationDescription previousAccumulationDescription;
-
-	if (SearchForTemporalAccumulationData(previousScreenCoordinate, currentInstanceID, currentPrimitiveID, previousAccumulatedColor, previousAccumulationDescription))
 	{
-		//Write the accumulation description.
-		AccumulationDescription accumulationDescription;
+		//Calculate the current world position's previous perceiver position.
+		vec4 previousPerceiverPosition = perceiverMatrixMinusOne * vec4(currentWorldPosition, 1.0f);
 
-		accumulationDescription.accumulations = previousAccumulationDescription.accumulations + 1;
-		accumulationDescription.instanceID = currentInstanceID;
-		accumulationDescription.primitiveID = currentPrimitiveID;
+		//Calculate the current world position's previous screen coordinate.
+		vec4 previousViewSpacePosition = projectionMatrixMinusOne * previousPerceiverPosition;
 
-		//Write the current temporal accumulation.
-		currentTemporalAccumulationBuffer = vec4(previousAccumulatedColor + sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription)));
+		//Perform perspective division.
+		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
+		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
 
-		//Write the result to the scene texture.
-		scene =  vec4((previousAccumulatedColor + sceneTextureSampler.rgb) / accumulationDescription.accumulations, 1.0f);
+		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
+
+		//Sample the previous temporal accumulation buffer.
+		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusOne, previousScreenCoordinate);
+
+		//Calculate if this frame is denied.
+		deniedFrame = deniedFrame ? true : abs(currentPerceiverPosition.z - previousPerceiverPosition.z) > 0.1f;
+
+		float weight = float(!deniedFrame);
+
+		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
+		accumulatedWeight += weight;
 	}
 
-	else
-	{
-		//Write the accumulation description.
-		AccumulationDescription accumulationDescription;
+	//Write the current temporal accumulation.
+	currentTemporalAccumulationBuffer = vec4(sceneTextureSampler.rgb, currentPerceiverPosition.z);
 
-		accumulationDescription.accumulations = 1;
-		accumulationDescription.instanceID = currentInstanceID;
-		accumulationDescription.primitiveID = currentPrimitiveID;
-
-		//Write the current temporal accumulation.
-   		currentTemporalAccumulationBuffer = vec4(sceneTextureSampler.rgb, uintBitsToFloat(PackAccumulationDescription(accumulationDescription)));
-
-   		//Write the result to the scene texture. (:
-		scene = vec4(sceneTextureSampler.rgb, 1.0f);
-	}
+	//Write the result to the scene texture.
+	scene = vec4(accumulatedColor / accumulatedWeight, 1.0f);
 }

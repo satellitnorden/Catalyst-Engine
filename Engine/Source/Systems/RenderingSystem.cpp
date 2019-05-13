@@ -267,7 +267,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures3)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures4)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationBuffer2)]);
 }
@@ -395,10 +394,11 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Update matrices.
+	_DynamicUniformData._PerceiverMatrixMinusOne = _DynamicUniformData._PerceiverMatrix;
+	_DynamicUniformData._ProjectionMatrixMinusOne = _DynamicUniformData._ProjectionMatrix;
 	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
 	_DynamicUniformData._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
 	_DynamicUniformData._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
-	_DynamicUniformData._PreviousViewMatrix = _DynamicUniformData._ViewMatrix;
 	_DynamicUniformData._ProjectionMatrix = *Perceiver::Instance->GetProjectionMatrix();
 	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 

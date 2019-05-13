@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -23,6 +23,4 @@ void main()
 	rayPayload.roughness = 1.0f;
 	rayPayload.metallic = 0.0f;
 	rayPayload.ambientOcclusion = 1.0f;
-	rayPayload.hitInstanceID = 0xffffffff;
-	rayPayload.hitPrimitiveID = 0xffffffff;
 }

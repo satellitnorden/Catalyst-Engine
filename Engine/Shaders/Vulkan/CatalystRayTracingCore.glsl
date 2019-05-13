@@ -22,8 +22,6 @@ struct PrimaryRayPayload
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
-	uint hitInstanceID;
-	uint hitPrimitiveID;
 
 	vec3 radiance;
 };

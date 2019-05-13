@@ -61,8 +61,8 @@ enum class RenderPassStage : uint8
 #endif
 	IndirectLightingDenoising,
 	DirectLightingDenoising,
-	TemporalAccumulation,
 	Lighting,
+	TemporalAccumulation,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,
@@ -209,11 +209,6 @@ enum class RenderTarget : uint8
 	*	Contains the roughness, metallic and ambient occlusion.
 	*/
 	SceneFeatures3,
-
-	/*
-	*	Contains the hit instance ID and primitive ID.
-	*/
-	SceneFeatures4,
 
 	/*
 	*	For rendering directly to the screen.
