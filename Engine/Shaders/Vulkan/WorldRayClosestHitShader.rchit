@@ -227,7 +227,8 @@ void main()
 		rayPayload.diffuseIrradiance = diffuseIrradiance;
 		rayPayload.specularIrradiance = specularIrradiance;
 		rayPayload.albedo = albedo;
-		rayPayload.normal = finalNormal;
+		rayPayload.geometryNormal = finalVertex.normal;
+		rayPayload.shadingNormal = finalNormal;
 		rayPayload.depth = gl_HitTNV;
 		rayPayload.roughness = roughness;
 		rayPayload.metallic = metallic;

@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
@@ -46,7 +47,7 @@ void main()
 	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.diffuseIrradiance, 1.0f));
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.specularIrradiance, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
-    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.normal, rayPayload.depth));
+    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), 0.0f, rayPayload.depth));
     imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f));
     imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(uintBitsToFloat(rayPayload.hitInstanceID), uintBitsToFloat(rayPayload.hitPrimitiveID), 0.0f, 0.0f));
 }

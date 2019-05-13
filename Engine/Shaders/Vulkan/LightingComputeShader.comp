@@ -7,6 +7,7 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
@@ -22,7 +23,7 @@ void main()
 {
 	//Sample the normal and hit distance.
 	vec4 sceneFeatures2TextureSampler = imageLoad(sceneFeatures2Texture, ivec2(gl_GlobalInvocationID.xy));
-	vec3 normal = sceneFeatures2TextureSampler.xyz;
+	vec3 normal = UnpackNormal(sceneFeatures2TextureSampler.y);
 	float hitDistance = sceneFeatures2TextureSampler.w;
 
 	//Only calculate the lighting if there was a hit.

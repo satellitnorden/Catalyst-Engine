@@ -18,7 +18,7 @@ void main()
 {
 	//Write to the ray payload.
 	rayPayload.diffuseIrradiance = rayPayload.specularIrradiance = rayPayload.radiance = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
-	rayPayload.normal = vec3(0.0f, 1.0f, 0.0f);
+	rayPayload.geometryNormal = rayPayload.shadingNormal = vec3(0.0f, 1.0f, 0.0f);
 	rayPayload.depth = CATALYST_RAY_TRACING_T_MAXIMUM;
 	rayPayload.roughness = 1.0f;
 	rayPayload.metallic = 0.0f;

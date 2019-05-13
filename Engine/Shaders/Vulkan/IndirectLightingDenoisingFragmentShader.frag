@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
@@ -56,7 +57,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.normal = sceneFeatures2.xyz;
+	features.normal = UnpackNormal(sceneFeatures2.x);
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 	features.hitDistance = sceneFeatures2.w;
 	features.roughness = sceneFeatures3.x;
@@ -89,11 +90,13 @@ void main()
 			*	Calculate the sample weight based on certain criteria;
 			*	
 			*	1. How closely aligned are the hit positions to each other?
-			*	2. Is the average of the fragment below a set threshold? (Fireflies elimination)
+			*	2. How closely aligned are the normals to each other?
+			*	3. Is the average of the fragment below a set threshold? (Fireflies elimination)
 			*/
 			float sampleWeight = 1.0f;
 
 			sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
+			sampleWeight *= max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f);
 			sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
 
 			denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;

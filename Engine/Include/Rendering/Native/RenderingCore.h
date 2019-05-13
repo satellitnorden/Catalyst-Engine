@@ -201,7 +201,7 @@ enum class RenderTarget : uint8
 	SceneFeatures1,
 
 	/*
-	*	Contains the world space normal as well as the hit distance.
+	*	Contains the geometry normal in the R channel, the shading normal in the G channel and the hit distance in the A channel.
 	*/
 	SceneFeatures2,
 
