@@ -20,6 +20,19 @@
 #include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
+/*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	//The noise offset.
+	Vector2<int32> _NoiseOffset;
+
+};
+
 //World ray tracing pipeline constants.
 namespace WorldRayTracingPipelineConstants
 {
@@ -34,14 +47,18 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
-	//Create the render data table.
-	CreateRenderDataTable();
+	//Create the render data tables.
+	CreateRenderDataTables();
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataRenderDataTableLayout());
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::RayGeneration, 0, sizeof(PushConstantData));
 
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::WorldRayGenerationShader);
@@ -65,6 +82,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 	if (!once)
 	{
+		//Create the top level acceleration structure. (:
 		const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
 		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
 		const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
@@ -87,18 +105,18 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		{
 			instances.EmplaceFast(transformComponent->_LocalTransform, staticModelComponent->_Model->_AccelerationStructure, i);
 
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(8, static_cast<uint32>(i), &_RenderDataTable, staticModelComponent->_Model->_VertexBuffer);
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(9, static_cast<uint32>(i), &_RenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+			for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+			{
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(9, static_cast<uint32>(i), &renderDataTable, staticModelComponent->_Model->_VertexBuffer);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(10, static_cast<uint32>(i), &renderDataTable, staticModelComponent->_Model->_IndexBuffer);
+			}
 
 			materials[i] = staticModelComponent->_Material;
 		}
 
-		AccelerationStructureHandle handle;
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &handle);
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_TopLevelAccelerationStructure);
 
-		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(6, 0, &_RenderDataTable, handle);
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(7, 0, &_RenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-
+		//Create the materials buffer. (:
 		{
 			BufferHandle materialsBuffer;
 			RenderingSystem::Instance->CreateBuffer(sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &materialsBuffer);
@@ -108,11 +126,39 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &materialsBuffer);
 
-			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(10, 0, &_RenderDataTable, materialsBuffer);
+			for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+			{
+				RenderingSystem::Instance->BindUniformBufferToRenderDataTable(11, 0, &renderDataTable, materialsBuffer);
+			}
 		}
+
+		//Add the blue noise textures.
+		_BlueNoiseTextures.Reserve(8);
+
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_1_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_2_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_3_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_4_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_5_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_6_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_7_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_8_Texture2D"))._Texture2D);
 
 		once = true;
 	}
+
+	//Update the current render data table.
+	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SpecularIrradiance));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(5, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(6, 0, &currentRenderDataTable, _BlueNoiseTextures[_CurrentBlueNoiseTextureIndex == _BlueNoiseTextures.Size() - 1 ? 0 : _CurrentBlueNoiseTextureIndex++], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(7, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(8, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -122,8 +168,16 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
+
+	//Push constants.
+	PushConstantData data;
+
+	data._NoiseOffset._X = CatalystRandomMath::RandomIntegerInRange<int32>(0, 64);
+	data._NoiseOffset._Y = CatalystRandomMath::RandomIntegerInRange<int32>(0, 64);
+
+	commandBuffer->PushConstants(this, ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
 
 	//Trace rays!
 	commandBuffer->TraceRays(this);
@@ -140,7 +194,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 11> bindings
+	StaticArray<RenderDataTableLayoutBinding, 12> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
@@ -148,27 +202,26 @@ void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss),
-		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss),
 		RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
 }
 
 /*
-*	Creates the render data table.
+*	Creates the render data tables.
 */
-void WorldRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
+void WorldRayTracingPipeline::CreateRenderDataTables() NOEXCEPT
 {
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SpecularIrradiance));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(5, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
+	}
 }

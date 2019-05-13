@@ -36,10 +36,10 @@ struct Vertex
 #define VERTEX_SIZE (3)
 
 //Descriptor set data.
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 8) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 9) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 10) uniform ModelUniformData
+layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 9) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 10) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 11) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
@@ -120,10 +120,7 @@ void main()
 	if (currentRecursionDepth == 0)
 	{
 		//Calculate the diffuse irradiance.
-		vec3 randomDiffuseIrradianceDirection = normalize(vec3(	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed1 * EULERS_NUMBER) * 2.0f - 1.0f,
-																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * EULERS_NUMBER) * 2.0f - 1.0f,
-																RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * EULERS_NUMBER) * 2.0f - 1.0f));
-		randomDiffuseIrradianceDirection = dot(randomDiffuseIrradianceDirection, finalVertex.normal) >= 0.0f ? randomDiffuseIrradianceDirection : randomDiffuseIrradianceDirection * -1.0f;
+		vec3 randomDiffuseIrradianceDirection = dot(rayPayload.randomVector, finalVertex.normal) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f;
 
 		rayPayload.currentRecursionDepth = 1;
 
@@ -166,10 +163,7 @@ void main()
 
 		//Calculate the directional light visibility.
 		{
-			vec3 randomDirectionalLightDirection = normalize(vec3(	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed1 * PHI) * 2.0f - 1.0f,
-																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed2 * PHI) * 2.0f - 1.0f,
-																	RandomFloat(vec2(gl_LaunchIDNV), globalRandomSeed3 * PHI) * 2.0f - 1.0f));
-			randomDirectionalLightDirection *= dot(randomDirectionalLightDirection, directionalLightDirection) >= 0.0f ? 1.0f : -1.0f;
+			vec3 randomDirectionalLightDirection = dot(rayPayload.randomVector, directionalLightDirection) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f;
 			randomDirectionalLightDirection = mix(directionalLightDirection, randomDirectionalLightDirection, DIRECTIONAL_LIGHT_SOFTNESS);
 
 			visibility = 0.0f;

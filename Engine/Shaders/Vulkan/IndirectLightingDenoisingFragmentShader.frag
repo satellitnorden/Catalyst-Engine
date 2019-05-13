@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_DENOISING_SIZE (57)
+#define INDIRECT_LIGHTING_DENOISING_SIZE (65)
 #define INDIRECT_LIGHTING_DENOISING_START_END ((INDIRECT_LIGHTING_DENOISING_SIZE - 1) * 0.5f)
 #define INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF (3.7f) //0.025f step.
 
@@ -96,7 +96,7 @@ void main()
 			float sampleWeight = 1.0f;
 
 			sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
-			sampleWeight *= max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f);
+			sampleWeight *= max((dot(currentFeatures.normal, sampleFeatures.normal) + 1.0f) * 0.5f, 0.0f);
 			sampleWeight *= float(CalculateAverage(sampleIndirectLighting) <= INDIRECT_LIGHTING_DENOISING_FIREFLY_CUTOFF);
 
 			denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;

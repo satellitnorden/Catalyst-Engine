@@ -26,8 +26,17 @@ private:
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
+	//The render data tables.
+	DynamicArray<RenderDataTableHandle> _RenderDataTables;
+
+	//The top level acceleration structure.
+	AccelerationStructureHandle _TopLevelAccelerationStructure;
+
+	//The blue noise textures.
+	DynamicArray<Texture2DHandle> _BlueNoiseTextures;
+
+	//The current blue noise texture index.
+	uint8 _CurrentBlueNoiseTextureIndex{ 0 };
 
 	/*
 	*	Creates the render data table layout.
@@ -35,8 +44,8 @@ private:
 	void CreateRenderDataTableLayout() NOEXCEPT;
 
 	/*
-	*	Creates the render data table.
+	*	Creates the render data tables.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
+	void CreateRenderDataTables() NOEXCEPT;
 
 };

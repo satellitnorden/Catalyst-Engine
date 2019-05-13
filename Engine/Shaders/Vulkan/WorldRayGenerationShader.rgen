@@ -16,19 +16,28 @@ layout (set = 1, binding = 2, rgba8) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
 layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures4Image;
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 6) uniform sampler2D noiseImage;
+layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) ivec2 noiseOffset;
+};
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
 
 void main() 
 {
+	//Retrieve the random vector.
+	rayPayload.randomVector = normalize(texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f)).xyz * 2.0f - 1.0f);
+
 	//Inidicate that this is the top recursion level.
 	rayPayload.currentRecursionDepth = 0;
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy));
-	//rayDirection = mix(rayDirection, dot(rayDirection, rayPayload.randomVector) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f, 0.00025f); //0.000025f step.
 
 	traceNV(
 			topLevelAccelerationStructure, 	//topLevel

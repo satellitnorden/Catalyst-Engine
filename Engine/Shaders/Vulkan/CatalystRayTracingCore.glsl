@@ -10,6 +10,7 @@
 */
 struct PrimaryRayPayload
 {
+	vec3 randomVector;
 	int currentRecursionDepth;
 
 	vec3 diffuseIrradiance;
