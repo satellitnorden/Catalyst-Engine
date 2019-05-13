@@ -26,13 +26,13 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void TemporalAccumulationGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void TemporalAccumulationGraphicsPipeline::Initialize(const RenderTargetHandle source1, const RenderTargetHandle source2, const RenderTargetHandle source3, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(source);
+	CreateRenderDataTable(source1, source2, source3);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -116,11 +116,13 @@ void TemporalAccumulationGraphicsPipeline::Execute() NOEXCEPT
 */
 void TemporalAccumulationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 3> bindings
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -129,11 +131,13 @@ void TemporalAccumulationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEP
 /*
 *	Creates the render data table.
 */
-void TemporalAccumulationGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void TemporalAccumulationGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source1, const RenderTargetHandle source2, const RenderTargetHandle source3) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source1, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source2, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, source3, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

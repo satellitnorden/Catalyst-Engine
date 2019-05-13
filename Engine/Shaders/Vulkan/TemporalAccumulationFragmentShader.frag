@@ -22,8 +22,10 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D temporalAccumulationBufferMinusOne;
-layout (set = 1, binding = 1) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 1) uniform sampler2D temporalAccumulationBufferMinusTwo;
+layout (set = 1, binding = 2) uniform sampler2D temporalAccumulationBufferMinusThree;
+layout (set = 1, binding = 3) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 4) uniform sampler2D sceneFeatures2Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 currentTemporalAccumulationBuffer;
@@ -57,7 +59,6 @@ void main()
 	//Add all accumulated colors.
 	vec3 accumulatedColor = sceneTextureSampler.rgb;
 	float accumulatedWeight = 1.0f;
-	bool deniedFrame = false;
 
 	{
 		//Calculate the current world position's previous perceiver position.
@@ -76,9 +77,53 @@ void main()
 		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusOne, previousScreenCoordinate);
 
 		//Calculate if this frame is denied.
-		deniedFrame = deniedFrame ? true : abs(currentPerceiverPosition.z - previousPerceiverPosition.z) > 0.1f;
+		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < 0.1f) * float(ValidCoordinate(previousScreenCoordinate));
 
-		float weight = float(!deniedFrame);
+		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
+		accumulatedWeight += weight;
+	}
+
+	{
+		//Calculate the current world position's previous perceiver position.
+		vec4 previousPerceiverPosition = perceiverMatrixMinusTwo * vec4(currentWorldPosition, 1.0f);
+
+		//Calculate the current world position's previous screen coordinate.
+		vec4 previousViewSpacePosition = projectionMatrixMinusTwo * previousPerceiverPosition;
+
+		//Perform perspective division.
+		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
+		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
+
+		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
+
+		//Sample the previous temporal accumulation buffer.
+		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusTwo, previousScreenCoordinate);
+
+		//Calculate if this frame is denied.
+		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < 0.1f) * float(ValidCoordinate(previousScreenCoordinate));
+
+		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
+		accumulatedWeight += weight;
+	}
+
+	{
+		//Calculate the current world position's previous perceiver position.
+		vec4 previousPerceiverPosition = perceiverMatrixMinusThree * vec4(currentWorldPosition, 1.0f);
+
+		//Calculate the current world position's previous screen coordinate.
+		vec4 previousViewSpacePosition = projectionMatrixMinusThree * previousPerceiverPosition;
+
+		//Perform perspective division.
+		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
+		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
+
+		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
+
+		//Sample the previous temporal accumulation buffer.
+		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusThree, previousScreenCoordinate);
+
+		//Calculate if this frame is denied.
+		float weight = float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < 0.1f) * float(ValidCoordinate(previousScreenCoordinate));
 
 		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
 		accumulatedWeight += weight;
