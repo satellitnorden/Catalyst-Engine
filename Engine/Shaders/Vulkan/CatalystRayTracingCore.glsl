@@ -22,6 +22,7 @@ struct PrimaryRayPayload
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
+	float emissive;
 
 	vec3 radiance;
 };

@@ -43,6 +43,7 @@ void main()
 		float roughness = sceneFeatures3TextureSampler.x;
 		float metallic = sceneFeatures3TextureSampler.y;
 		float ambientOcclusion = sceneFeatures3TextureSampler.z;
+		float emissive = sceneFeatures3TextureSampler.w;
 
 		//Calculate the world position.
 		vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection((vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(1920.0f, 1080.0f)) * hitDistance;
@@ -52,6 +53,9 @@ void main()
 
 		//Calculate the composited lighting.
 		vec3 compositedLighting = vec3(0.0f);
+
+		//Add the emissive lighting.
+		compositedLighting += albedo * emissive;
 
 		//Add the indirect lighting.
 		compositedLighting += CalculateIndirectLighting(viewDirection,

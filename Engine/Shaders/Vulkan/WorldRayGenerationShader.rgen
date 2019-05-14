@@ -56,5 +56,5 @@ void main()
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.specularIrradiance, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), 0.0f, rayPayload.depth));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, 1.0f));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.emissive));
 }
