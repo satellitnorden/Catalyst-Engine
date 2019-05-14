@@ -24,7 +24,7 @@ public:
 private:
 
 	//The temporal accumulation graphics pipelines.
-	StaticArray<TemporalAccumulationGraphicsPipeline, 8> _TemporalAccumulationGraphicsPipelines;
+	StaticArray<TemporalAccumulationGraphicsPipeline, 2> _TemporalAccumulationGraphicsPipelines;
 
 	//The current buffer index.
 	uint8 _CurrentBufferIndex{ 0 };

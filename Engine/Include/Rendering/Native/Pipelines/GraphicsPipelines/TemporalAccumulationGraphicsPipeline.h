@@ -19,12 +19,8 @@ public:
 	*/
 	void Initialize(const RenderTargetHandle source1,
 					const RenderTargetHandle source2,
-					const RenderTargetHandle source3,
-					const RenderTargetHandle source4,
-					const RenderTargetHandle source5,
-					const RenderTargetHandle source6,
-					const RenderTargetHandle source7,
-					const RenderTargetHandle target) NOEXCEPT;
+					const RenderTargetHandle target1,
+					const RenderTargetHandle target2) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -48,11 +44,6 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable(	const RenderTargetHandle source1,
-								const RenderTargetHandle source2,
-								const RenderTargetHandle source3,
-								const RenderTargetHandle source4,
-								const RenderTargetHandle source5,
-								const RenderTargetHandle source6,
-								const RenderTargetHandle source7) NOEXCEPT;
+								const RenderTargetHandle source2) NOEXCEPT;
 
 };

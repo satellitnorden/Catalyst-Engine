@@ -39,77 +39,15 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 	//Initialize and add the pipelines.
 	SetNumberOfPipelines(_TemporalAccumulationGraphicsPipelines.Size());
 
-	_TemporalAccumulationGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1));
+	_TemporalAccumulationGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1));
 
-	_TemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2));
-
-	_TemporalAccumulationGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3));
-
-	_TemporalAccumulationGraphicsPipelines[3].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4));
-
-	_TemporalAccumulationGraphicsPipelines[4].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5));
-
-	_TemporalAccumulationGraphicsPipelines[5].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6));
-
-	_TemporalAccumulationGraphicsPipelines[6].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7));
-
-	_TemporalAccumulationGraphicsPipelines[7].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer3),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer4),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer5),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer6),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer7),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationBuffer8));
+	_TemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2));
 
 
 	for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipelines.Size() }; i < size; ++i)

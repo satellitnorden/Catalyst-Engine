@@ -216,44 +216,24 @@ enum class RenderTarget : uint8
 	Screen,
 
 	/*
-	*	The first temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationBuffer1,
+	TemporalAccumulationColorBuffer1,
 
 	/*
-	*	The second temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The first temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationBuffer2,
+	TemporalAccumulationDescriptionBuffer1,
 
 	/*
-	*	The third temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The second temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationBuffer3,
+	TemporalAccumulationColorBuffer2,
 
 	/*
-	*	The fourth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The second temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationBuffer4,
-
-	/*
-	*	The fifth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationBuffer5,
-
-	/*
-	*	The sixth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationBuffer6,
-
-	/*
-	*	The seventh temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationBuffer7,
-
-	/*
-	*	The eighth temporal accumulation buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationBuffer8,
+	TemporalAccumulationDescriptionBuffer2,
 
 	NumberOfRenderTargets
 };
