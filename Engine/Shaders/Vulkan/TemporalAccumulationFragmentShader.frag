@@ -79,7 +79,7 @@ void main()
 	if (ValidCoordinate(previousScreenCoordinate)
 		&& closestPreviousTemporalAccumulationBufferDepth < 0.1f
 		&& length(perceiverVelocity) <= randomFactor
-		/*&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) * 0.125f <= randomFactor*/)
+		&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) <= randomFactor)
 	{
 		//Retrieve the previous accumulations.
 		float previousAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y;
