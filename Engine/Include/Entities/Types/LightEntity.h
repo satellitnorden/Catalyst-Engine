@@ -27,6 +27,16 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns the position of this light.
+	*/
+	Vector3<float> GetPosition() NOEXCEPT;
+
+	/*
+	*	Sets the position of this light.
+	*/
+	void SetPosition(const Vector3<float> &position) NOEXCEPT;
+
+	/*
 	*	Returns the strength of this light.
 	*/
 	float GetStrength() NOEXCEPT;

@@ -50,6 +50,22 @@ void LightEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the position of this light.
+*/
+Vector3<float> LightEntity::GetPosition() NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position;
+}
+
+/*
+*	Sets the position of this light.
+*/
+void LightEntity::SetPosition(const Vector3<float> &position) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position = position;
+}
+
+/*
 *	Returns the strength of this light.
 */
 float LightEntity::GetStrength() NOEXCEPT
