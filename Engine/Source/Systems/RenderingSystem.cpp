@@ -396,18 +396,6 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Update matrices.
-	_DynamicUniformData._PerceiverMatrixMinusSeven = _DynamicUniformData._PerceiverMatrixMinusSix;
-	_DynamicUniformData._ProjectionMatrixMinusSeven = _DynamicUniformData._ProjectionMatrixMinusSix;
-	_DynamicUniformData._PerceiverMatrixMinusSix = _DynamicUniformData._PerceiverMatrixMinusFive;
-	_DynamicUniformData._ProjectionMatrixMinusSix = _DynamicUniformData._ProjectionMatrixMinusFive;
-	_DynamicUniformData._PerceiverMatrixMinusFive = _DynamicUniformData._PerceiverMatrixMinusFour;
-	_DynamicUniformData._ProjectionMatrixMinusFive = _DynamicUniformData._ProjectionMatrixMinusFour;
-	_DynamicUniformData._PerceiverMatrixMinusFour = _DynamicUniformData._PerceiverMatrixMinusThree;
-	_DynamicUniformData._ProjectionMatrixMinusFour = _DynamicUniformData._ProjectionMatrixMinusThree;
-	_DynamicUniformData._PerceiverMatrixMinusThree = _DynamicUniformData._PerceiverMatrixMinusTwo;
-	_DynamicUniformData._ProjectionMatrixMinusThree = _DynamicUniformData._ProjectionMatrixMinusTwo;
-	_DynamicUniformData._PerceiverMatrixMinusTwo = _DynamicUniformData._PerceiverMatrixMinusOne;
-	_DynamicUniformData._ProjectionMatrixMinusTwo = _DynamicUniformData._ProjectionMatrixMinusOne;
 	_DynamicUniformData._PerceiverMatrixMinusOne = _DynamicUniformData._PerceiverMatrix;
 	_DynamicUniformData._ProjectionMatrixMinusOne = _DynamicUniformData._ProjectionMatrix;
 	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
@@ -420,6 +408,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
 	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
+	_DynamicUniformData._PerceiverVelocity = Perceiver::Instance->GetPosition() - Vector3<float>(_DynamicUniformData._PerceiverWorldPosition._X, _DynamicUniformData._PerceiverWorldPosition._Y, _DynamicUniformData._PerceiverWorldPosition._Z);
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 
 	//Update floats.

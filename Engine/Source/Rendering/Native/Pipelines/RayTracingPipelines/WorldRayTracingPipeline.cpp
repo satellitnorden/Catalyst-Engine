@@ -133,7 +133,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		}
 
 		//Add the blue noise textures.
-		_BlueNoiseTextures.Reserve(8);
+		_BlueNoiseTextures.Reserve(16);
 
 		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_1_Texture2D"))._Texture2D);
 		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_2_Texture2D"))._Texture2D);
@@ -143,6 +143,14 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_6_Texture2D"))._Texture2D);
 		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_7_Texture2D"))._Texture2D);
 		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_8_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_9_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_10_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_11_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_12_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_13_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_14_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_15_Texture2D"))._Texture2D);
+		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_16_Texture2D"))._Texture2D);
 
 		once = true;
 	}

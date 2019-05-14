@@ -30,8 +30,8 @@ struct Vertex
 };
 
 //Constants.
-#define DIRECTIONAL_LIGHT_SOFTNESS (0.02f)
-//#define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
+//#define DIRECTIONAL_LIGHT_SOFTNESS (0.02f)
+#define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
 #define MAXIMUM_NUMBER_OF_MODELS (64)
 #define VERTEX_SIZE (3)
 
@@ -191,7 +191,7 @@ void main()
 		{
 			Light light = UnpackLight(i);
 
-			vec3 randomLightPosition = light.position + rayPayload.randomVector * light.size;
+			vec3 randomLightPosition = light.position/* + rayPayload.randomVector * light.size*/;
 
 			float lengthToLight = length(randomLightPosition - hitPosition);
 			vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;

@@ -70,61 +70,39 @@ void main()
 
 	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
 
-	//Find the closest sample, depth-wise.
-	vec2 sampleCoordinates[9] = vec2[]
-	(
-		previousScreenCoordinate + vec2(-1.0f, -1.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(-1.0f, 0.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(-1.0f, 1.0f) * inverseResolution,
-
-		previousScreenCoordinate + vec2(0.0f, -1.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(0.0f, 0.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(0.0f, 1.0f) * inverseResolution,
-
-		previousScreenCoordinate + vec2(1.0f, -1.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(1.0f, 0.0f) * inverseResolution,
-		previousScreenCoordinate + vec2(1.0f, 1.0f) * inverseResolution
-	);
+	vec4 closestPreviousTemporalAccumulationColorBuffer = texture(temporalAccumulationColorBufferMinusOne, previousScreenCoordinate);
+	vec4 closestPreviousTemporalAccumulationDescriptionBuffer = texture(temporalAccumulationDescriptionBufferMinusOne, previousScreenCoordinate);
+	float closestPreviousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - closestPreviousTemporalAccumulationDescriptionBuffer.x);
 	
-	vec4 closestPreviousTemporalAccumulationColorBuffer;
-	vec4 closestPreviousTemporalAccumulationDescriptionBuffer;
-	float closestPreviousTemporalAccumulationBufferDepth = 9999999.0f;
-
-	for (int i = 0; i < 9; ++i)
+	//Decide if history should be dropped, or if accumulation should continue.
+	float randomFactor = RandomFloat(fragmentTextureCoordinate, globalRandomSeed1);
+	if (ValidCoordinate(previousScreenCoordinate)
+		&& closestPreviousTemporalAccumulationBufferDepth < 0.1f
+		&& length(perceiverVelocity) <= randomFactor
+		&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) * 0.015625f <= randomFactor)
 	{
-		vec4 previousTemporalAccumulationDescriptionBufferSampler = texture(temporalAccumulationDescriptionBufferMinusOne, sampleCoordinates[i]);
-		float previousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - previousTemporalAccumulationDescriptionBufferSampler.x);
+		//Retrieve the previous accumulations.
+		float previousAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y;
 
-		if (closestPreviousTemporalAccumulationBufferDepth > previousTemporalAccumulationBufferDepth)
-		{
-			closestPreviousTemporalAccumulationBufferDepth = previousTemporalAccumulationBufferDepth;
-			closestPreviousTemporalAccumulationColorBuffer = texture(temporalAccumulationColorBufferMinusOne, sampleCoordinates[i]);
-			closestPreviousTemporalAccumulationDescriptionBuffer = previousTemporalAccumulationDescriptionBufferSampler;
-		}
+		//Write the current temporal accumulation color buffer.
+		currentTemporalAccumulationColorBuffer = vec4(closestPreviousTemporalAccumulationColorBuffer.rgb + sceneTextureSampler.rgb, 1.0f);
+
+		//Write the current temporal accumulation description buffer.
+		currentTemporalAccumulationDescriptionBuffer = vec4(currentPerceiverPosition.z, previousAccumulations + 1.0f, 0.0f, 0.0f);
+
+		//Write the result to the scene texture.
+		scene = vec4(currentTemporalAccumulationColorBuffer.rgb / currentTemporalAccumulationDescriptionBuffer.y, 1.0f);
 	}
-	
-	//Calculate the weight of the previous temporal accumulation color.
-	float weight = 1.0f;
-	
-	weight *= float(ValidCoordinate(previousScreenCoordinate));
-	weight *= pow(1.0f - min(closestPreviousTemporalAccumulationBufferDepth, 1.0f), 16.0f);
-	weight *= pow(1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)), 1.0f), 4.0f);
 
-	//Calculate the ideal average.
-	float idealAverage = closestPreviousTemporalAccumulationDescriptionBuffer.y + ((1.0f - closestPreviousTemporalAccumulationDescriptionBuffer.y) * 0.25f);
+	else
+	{
+		//Write the current temporal accumulation color buffer.
+		currentTemporalAccumulationColorBuffer = vec4(sceneTextureSampler.rgb, 1.0f);
 
-	//Calculate the current average.
-	float currentAverage = idealAverage * weight;
+		//Write the current temporal accumulation description buffer.
+		currentTemporalAccumulationDescriptionBuffer = vec4(currentPerceiverPosition.z, 1.0f, 0.0f, 0.0f);
 
-	//Calculate the accumulated scene color.
-	vec3 accumulatedSceneColor = mix(sceneTextureSampler.rgb, closestPreviousTemporalAccumulationColorBuffer.rgb, currentAverage);
-
-	//Write the current temporal accumulation color buffer.
-	currentTemporalAccumulationColorBuffer = vec4(accumulatedSceneColor, 1.0f);
-
-	//Write the current temporal accumulation description buffer.
-	currentTemporalAccumulationDescriptionBuffer = vec4(currentPerceiverPosition.z, currentAverage, 0.0f, 0.0f);
-
-	//Write the result to the scene texture.
-	scene = vec4(accumulatedSceneColor, 1.0f);
+		//Write the result to the scene texture.
+		scene = vec4(sceneTextureSampler.rgb, 1.0f);
+	}
 }

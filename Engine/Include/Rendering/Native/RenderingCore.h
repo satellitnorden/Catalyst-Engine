@@ -22,7 +22,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
-	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 32 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 64 };
 
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 	constexpr uint32 SCENE_BUFFER_GENERAL_STENCIL_BIT{ BIT(1) };
@@ -60,9 +60,9 @@ enum class RenderPassStage : uint8
 	RenderOverride,
 #endif
 	IndirectLightingDenoising,
+	TemporalAccumulation,
 	DirectLightingDenoising,
 	Lighting,
-	TemporalAccumulation,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,

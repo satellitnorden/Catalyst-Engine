@@ -7,7 +7,7 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (32)
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (64)
 
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
@@ -21,41 +21,30 @@
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
-    layout (offset = 0) mat4 perceiverMatrixMinusSeven;
-    layout (offset = 64) mat4 projectionMatrixMinusSeven;
-    layout (offset = 128) mat4 perceiverMatrixMinusSix;
-    layout (offset = 192) mat4 projectionMatrixMinusSix;
-    layout (offset = 256) mat4 perceiverMatrixMinusFive;
-    layout (offset = 320) mat4 projectionMatrixMinusFive;
-    layout (offset = 384) mat4 perceiverMatrixMinusFour;
-    layout (offset = 448) mat4 projectionMatrixMinusFour;
-    layout (offset = 512) mat4 perceiverMatrixMinusThree;
-    layout (offset = 576) mat4 projectionMatrixMinusThree;
-    layout (offset = 640) mat4 perceiverMatrixMinusTwo;
-    layout (offset = 704) mat4 projectionMatrixMinusTwo;
-    layout (offset = 768) mat4 perceiverMatrixMinusOne;
-    layout (offset = 832) mat4 projectionMatrixMinusOne;
-    layout (offset = 896) mat4 inversePerceiverMatrix;
-    layout (offset = 960) mat4 inverseProjectionMatrix;
-    layout (offset = 1024) mat4 perceiverMatrix;
-    layout (offset = 1088) mat4 projectionMatrix;
-    layout (offset = 1152) mat4 viewMatrix;
+    layout (offset = 0) mat4 perceiverMatrixMinusOne;
+    layout (offset = 64) mat4 projectionMatrixMinusOne;
+    layout (offset = 128) mat4 inversePerceiverMatrix;
+    layout (offset = 192) mat4 inverseProjectionMatrix;
+    layout (offset = 256) mat4 perceiverMatrix;
+    layout (offset = 320) mat4 projectionMatrix;
+    layout (offset = 384) mat4 viewMatrix;
 
-    layout (offset = 1216) vec3 directionalLightColor;
-    layout (offset = 1232) vec3 directionalLightDirection;
-    layout (offset = 1248) vec3 perceiverForwardVector;
-    layout (offset = 1264) vec3 perceiverWorldPosition;
+    layout (offset = 448) vec3 directionalLightColor;
+    layout (offset = 464) vec3 directionalLightDirection;
+    layout (offset = 480) vec3 perceiverForwardVector;
+    layout (offset = 496) vec3 perceiverVelocity;
+    layout (offset = 512) vec3 perceiverWorldPosition;
 
-    layout (offset = 1280) float deltaTime;
-    layout (offset = 1284) float directionalLightIntensity;
-    layout (offset = 1288) float environmentBlend;
-    layout (offset = 1292) float globalRandomSeed1;
-    layout (offset = 1296) float globalRandomSeed2;
-    layout (offset = 1300) float globalRandomSeed3;
-    layout (offset = 1304) float totalTime;
-    layout (offset = 1308) float windSpeed;
+    layout (offset = 528) float deltaTime;
+    layout (offset = 532) float directionalLightIntensity;
+    layout (offset = 536) float environmentBlend;
+    layout (offset = 540) float globalRandomSeed1;
+    layout (offset = 544) float globalRandomSeed2;
+    layout (offset = 548) float globalRandomSeed3;
+    layout (offset = 552) float totalTime;
+    layout (offset = 556) float windSpeed;
 
-    //Total size; 1312
+    //Total size; 560
 };
 
 //The global textures.
