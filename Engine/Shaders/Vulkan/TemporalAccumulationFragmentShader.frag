@@ -49,6 +49,62 @@ bool ValidCoordinate(vec2 coordinate)
 			&& coordinate.y < 1.0f;
 }
 
+/*
+*	Accumulates.
+*/
+#define ACCUMULATE(perceiverMatrixMinusN, projectionMatrixMinusN, temporalAccumulationBufferMinusN)													\
+{																																					\
+	vec4 previousPerceiverPosition = perceiverMatrixMinusN * vec4(currentWorldPosition, 1.0f);														\
+																																					\
+	vec4 previousViewSpacePosition = projectionMatrixMinusN * previousPerceiverPosition;															\
+																																					\
+	float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;																\
+	previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;																			\
+																																					\
+	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;																		\
+																																					\
+	vec2 sampleCoordinates[9] = vec2[]																												\
+	(																																				\
+		previousScreenCoordinate + vec2(-1.0f, -1.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(-1.0f, 0.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(-1.0f, 1.0f) * inverseResolution,																			\
+																																					\
+		previousScreenCoordinate + vec2(0.0f, -1.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(0.0f, 0.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(0.0f, 1.0f) * inverseResolution,																			\
+																																					\
+		previousScreenCoordinate + vec2(1.0f, -1.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(1.0f, 0.0f) * inverseResolution,																			\
+		previousScreenCoordinate + vec2(1.0f, 1.0f) * inverseResolution																				\
+	);																																				\
+																																					\
+	float closestPreviousTemporalAccumulationBufferDepth = 9999999.0f;																				\
+	vec3 closestPreviousTemporalAccumulationBufferColor;																							\
+																																					\
+	for (int i = 0; i < 9; ++i)																														\
+	{																																				\
+		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusN, sampleCoordinates[i]);							\
+		float previousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w);				\
+																																					\
+		if (closestPreviousTemporalAccumulationBufferDepth > previousTemporalAccumulationBufferDepth)												\
+		{																																			\
+			closestPreviousTemporalAccumulationBufferDepth = previousTemporalAccumulationBufferDepth;												\
+			closestPreviousTemporalAccumulationBufferColor = previousTemporalAccumulationBufferSampler.rgb;											\
+		}																																			\
+	}																																				\
+																																					\
+	float weight = 1.0f;																															\
+																																					\
+	weight *= float(ValidCoordinate(previousScreenCoordinate));																						\
+	weight *= pow(1.0f - min(closestPreviousTemporalAccumulationBufferDepth, 1.0f), 2.0f);															\
+	weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationBufferColor)), 1.0f);	\
+																																					\
+	weight = pow(weight, 2.0f);																														\
+																																					\
+	accumulatedColor += closestPreviousTemporalAccumulationBufferColor * weight;																	\
+	accumulatedWeight += weight;																													\
+}
+
 void main()
 {
 	//Sample the scene texture.
@@ -67,194 +123,13 @@ void main()
 	vec3 accumulatedColor = sceneTextureSampler.rgb;
 	float accumulatedWeight = 1.0f;
 
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusOne * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusOne * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusOne, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusTwo * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusTwo * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusTwo, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusThree * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusThree * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusThree, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusFour * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusFour * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusFour, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusFive * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusFive * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusFive, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusSix * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusSix * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusSix, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
-
-	{
-		//Calculate the current world position's previous perceiver position.
-		vec4 previousPerceiverPosition = perceiverMatrixMinusSeven * vec4(currentWorldPosition, 1.0f);
-
-		//Calculate the current world position's previous screen coordinate.
-		vec4 previousViewSpacePosition = projectionMatrixMinusSeven * previousPerceiverPosition;
-
-		//Perform perspective division.
-		float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-		previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;
-
-		vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
-
-		//Sample the previous temporal accumulation buffer.
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusSeven, previousScreenCoordinate);
-
-		//Calculate the weight.
-		float weight = 1.0f;
-		
-		weight *= float(ValidCoordinate(previousScreenCoordinate));
-		weight *= float(abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w) < TEMPORAL_ACCUMULATION_ACCEPTED_DEPTH);
-		weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(previousTemporalAccumulationBufferSampler.rgb)), 1.0f);
-
-		accumulatedColor += previousTemporalAccumulationBufferSampler.rgb * weight;
-		accumulatedWeight += weight;
-	}
+	ACCUMULATE(perceiverMatrixMinusOne, projectionMatrixMinusOne, temporalAccumulationBufferMinusOne);
+	ACCUMULATE(perceiverMatrixMinusTwo, projectionMatrixMinusTwo, temporalAccumulationBufferMinusTwo);
+	ACCUMULATE(perceiverMatrixMinusThree, projectionMatrixMinusThree, temporalAccumulationBufferMinusThree);
+	ACCUMULATE(perceiverMatrixMinusFour, projectionMatrixMinusFour, temporalAccumulationBufferMinusFour);
+	ACCUMULATE(perceiverMatrixMinusFive, projectionMatrixMinusFive, temporalAccumulationBufferMinusFive);
+	ACCUMULATE(perceiverMatrixMinusSix, projectionMatrixMinusSix, temporalAccumulationBufferMinusSix);
+	ACCUMULATE(perceiverMatrixMinusSeven, projectionMatrixMinusSeven, temporalAccumulationBufferMinusSeven);
 
 	//Write the current temporal accumulation.
 	currentTemporalAccumulationBuffer = vec4(sceneTextureSampler.rgb, currentPerceiverPosition.z);
