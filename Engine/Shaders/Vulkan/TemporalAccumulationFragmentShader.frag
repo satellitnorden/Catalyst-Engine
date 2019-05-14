@@ -52,57 +52,55 @@ bool ValidCoordinate(vec2 coordinate)
 /*
 *	Accumulates.
 */
-#define ACCUMULATE(perceiverMatrixMinusN, projectionMatrixMinusN, temporalAccumulationBufferMinusN)													\
-{																																					\
-	vec4 previousPerceiverPosition = perceiverMatrixMinusN * vec4(currentWorldPosition, 1.0f);														\
-																																					\
-	vec4 previousViewSpacePosition = projectionMatrixMinusN * previousPerceiverPosition;															\
-																																					\
-	float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;																\
-	previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;																			\
-																																					\
-	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;																		\
-																																					\
-	vec2 sampleCoordinates[9] = vec2[]																												\
-	(																																				\
-		previousScreenCoordinate + vec2(-1.0f, -1.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(-1.0f, 0.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(-1.0f, 1.0f) * inverseResolution,																			\
-																																					\
-		previousScreenCoordinate + vec2(0.0f, -1.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(0.0f, 0.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(0.0f, 1.0f) * inverseResolution,																			\
-																																					\
-		previousScreenCoordinate + vec2(1.0f, -1.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(1.0f, 0.0f) * inverseResolution,																			\
-		previousScreenCoordinate + vec2(1.0f, 1.0f) * inverseResolution																				\
-	);																																				\
-																																					\
-	float closestPreviousTemporalAccumulationBufferDepth = 9999999.0f;																				\
-	vec3 closestPreviousTemporalAccumulationBufferColor;																							\
-																																					\
-	for (int i = 0; i < 9; ++i)																														\
-	{																																				\
-		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusN, sampleCoordinates[i]);							\
-		float previousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w);				\
-																																					\
-		if (closestPreviousTemporalAccumulationBufferDepth > previousTemporalAccumulationBufferDepth)												\
-		{																																			\
-			closestPreviousTemporalAccumulationBufferDepth = previousTemporalAccumulationBufferDepth;												\
-			closestPreviousTemporalAccumulationBufferColor = previousTemporalAccumulationBufferSampler.rgb;											\
-		}																																			\
-	}																																				\
-																																					\
-	float weight = 1.0f;																															\
-																																					\
-	weight *= float(ValidCoordinate(previousScreenCoordinate));																						\
-	weight *= pow(1.0f - min(closestPreviousTemporalAccumulationBufferDepth, 1.0f), 2.0f);															\
-	weight *= 1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationBufferColor)), 1.0f);	\
-																																					\
-	weight = pow(weight, 2.0f);																														\
-																																					\
-	accumulatedColor += closestPreviousTemporalAccumulationBufferColor * weight;																	\
-	accumulatedWeight += weight;																													\
+#define ACCUMULATE(perceiverMatrixMinusN, projectionMatrixMinusN, temporalAccumulationBufferMinusN)																\
+{																																								\
+	vec4 previousPerceiverPosition = perceiverMatrixMinusN * vec4(currentWorldPosition, 1.0f);																	\
+																																								\
+	vec4 previousViewSpacePosition = projectionMatrixMinusN * previousPerceiverPosition;																		\
+																																								\
+	float previousInversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;																			\
+	previousViewSpacePosition.xy *= previousInversePerspectiveDenominator;																						\
+																																								\
+	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;																					\
+																																								\
+	vec2 sampleCoordinates[9] = vec2[]																															\
+	(																																							\
+		previousScreenCoordinate + vec2(-1.0f, -1.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(-1.0f, 0.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(-1.0f, 1.0f) * inverseResolution,																						\
+																																								\
+		previousScreenCoordinate + vec2(0.0f, -1.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(0.0f, 0.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(0.0f, 1.0f) * inverseResolution,																						\
+																																								\
+		previousScreenCoordinate + vec2(1.0f, -1.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(1.0f, 0.0f) * inverseResolution,																						\
+		previousScreenCoordinate + vec2(1.0f, 1.0f) * inverseResolution																							\
+	);																																							\
+																																								\
+	float closestPreviousTemporalAccumulationBufferDepth = 9999999.0f;																							\
+	vec3 closestPreviousTemporalAccumulationBufferColor;																										\
+																																								\
+	for (int i = 0; i < 9; ++i)																																	\
+	{																																							\
+		vec4 previousTemporalAccumulationBufferSampler = texture(temporalAccumulationBufferMinusN, sampleCoordinates[i]);										\
+		float previousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - previousTemporalAccumulationBufferSampler.w);							\
+																																								\
+		if (closestPreviousTemporalAccumulationBufferDepth > previousTemporalAccumulationBufferDepth)															\
+		{																																						\
+			closestPreviousTemporalAccumulationBufferDepth = previousTemporalAccumulationBufferDepth;															\
+			closestPreviousTemporalAccumulationBufferColor = previousTemporalAccumulationBufferSampler.rgb;														\
+		}																																						\
+	}																																							\
+																																								\
+	float weight = 1.0f;																																		\
+																																								\
+	weight *= float(ValidCoordinate(previousScreenCoordinate));																									\
+	weight *= pow(1.0f - min(closestPreviousTemporalAccumulationBufferDepth, 1.0f), 8.0f);																		\
+	weight *= pow(1.0f - min(abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationBufferColor)), 1.0f), 2.0f);	\
+																																								\
+	accumulatedColor += closestPreviousTemporalAccumulationBufferColor * weight;																				\
+	accumulatedWeight += weight;																																\
 }
 
 void main()
