@@ -197,6 +197,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
@@ -264,7 +265,6 @@
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
-    <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
@@ -359,6 +359,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AntiAliasingGraphicsPipeline.cpp" />

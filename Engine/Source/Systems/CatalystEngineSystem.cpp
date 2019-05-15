@@ -15,7 +15,6 @@
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
-#include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
@@ -104,7 +103,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	VegetationSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
-	LightingSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitializeSystem();
 
 	//Post-initialize the platform.

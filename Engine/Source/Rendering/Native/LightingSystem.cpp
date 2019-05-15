@@ -1,5 +1,5 @@
 //Header file.
-#include <Systems/LightingSystem.h>
+#include <Rendering/Native/LightingSystem.h>
 
 //Core.
 #include <Core/General/Padding.h>
@@ -9,9 +9,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-
-//Singleton definition.
-DEFINE_SINGLETON(LightingSystem);
 
 /*
 *	Light uniform data definition.

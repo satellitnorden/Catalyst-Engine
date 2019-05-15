@@ -2,7 +2,6 @@
 #include <Rendering/Native/RenderPasses/DirectLightingDenoisingRenderPass.h>
 
 //Systems.
-#include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -39,13 +38,13 @@ void DirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_VisibilityDenoisingGraphicsPipelines[0].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Horizontal,
-														LightingSystem::Instance->GetDirectionalLightVisibilityRenderTarget(),
+														RenderingSystem::Instance->GetLightingSystem()->GetDirectionalLightVisibilityRenderTarget(),
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
 	AddPipeline(&_VisibilityDenoisingGraphicsPipelines[0]);
 
 	_VisibilityDenoisingGraphicsPipelines[1].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Vertical,
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-														LightingSystem::Instance->GetDirectionalLightVisibilityRenderTarget());
+														RenderingSystem::Instance->GetLightingSystem()->GetDirectionalLightVisibilityRenderTarget());
 	AddPipeline(&_VisibilityDenoisingGraphicsPipelines[1]);
 
 	uint8 renderTargetCounter{ 0 };
@@ -53,13 +52,13 @@ void DirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 	for (uint8 i{ 0 }; i < LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS * 2; i += 2)
 	{
 		_VisibilityDenoisingGraphicsPipelines[2 + i].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Horizontal,
-																LightingSystem::Instance->GetLightVisibilityRenderTargets()[renderTargetCounter],
+																RenderingSystem::Instance->GetLightingSystem()->GetLightVisibilityRenderTargets()[renderTargetCounter],
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
 		AddPipeline(&_VisibilityDenoisingGraphicsPipelines[2 + i]);
 
 		_VisibilityDenoisingGraphicsPipelines[2 + i + 1].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Vertical,
 																	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-																	LightingSystem::Instance->GetLightVisibilityRenderTargets()[renderTargetCounter]);
+																	RenderingSystem::Instance->GetLightingSystem()->GetLightVisibilityRenderTargets()[renderTargetCounter]);
 		AddPipeline(&_VisibilityDenoisingGraphicsPipelines[i + 1 + 2]);
 
 		++renderTargetCounter;

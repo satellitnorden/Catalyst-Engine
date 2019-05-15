@@ -17,7 +17,6 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
-#include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -57,7 +56,7 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
-	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataComputeRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataComputeRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -159,7 +158,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataComputeRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataComputeRenderDataTable());
 
 	//Push constants.
 	PushConstantData data;

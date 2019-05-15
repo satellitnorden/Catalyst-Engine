@@ -25,7 +25,6 @@
 #include <Resources/Creation/ResourceCreator.h>
 
 //Systems.
-#include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
 
 //Singleton definition.
@@ -99,6 +98,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 */
 void RenderingSystem::PostInitializeSystem()
 {
+	//Post-initialize the lighting system.
+	_LightingSystem.PostInitialize();
+
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses();
 }
@@ -115,7 +117,7 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 	UpdateGlobalRenderData();
 
 	//Update the lighting system.
-	LightingSystem::Instance->Update(context);
+	_LightingSystem.Update(context);
 
 	//Execute all render passes.
 	RenderingSystemLogic::ExecuteRenderPasses();
@@ -405,15 +407,15 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.
-	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	_DynamicUniformData._DirectionalLightColor = _LightingSystem.GetDirectionalLight()->GetColor();
+	_DynamicUniformData._DirectionalLightDirection = _LightingSystem.GetDirectionalLight()->GetDirection();
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverVelocity = Perceiver::Instance->GetPosition() - Vector3<float>(_DynamicUniformData._PerceiverWorldPosition._X, _DynamicUniformData._PerceiverWorldPosition._Y, _DynamicUniformData._PerceiverWorldPosition._Z);
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
-	_DynamicUniformData._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	_DynamicUniformData._DirectionalLightIntensity = _LightingSystem.GetDirectionalLight()->GetIntensity();
 	_DynamicUniformData._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);

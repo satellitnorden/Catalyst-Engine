@@ -14,6 +14,7 @@
 //Rendering.
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
+#include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
@@ -115,6 +116,14 @@ public:
 	SamplerHandle GetSampler(const Sampler sampler) const NOEXCEPT
 	{
 		return _Samplers[UNDERLYING(sampler)];
+	}
+	
+	/*
+	*	Returns the lighting system.
+	*/
+	RESTRICTED NO_DISCARD LightingSystem *const RESTRICT GetLightingSystem() NOEXCEPT
+	{
+		return &_LightingSystem;
 	}
 
 	/*
@@ -283,6 +292,9 @@ private:
 
 	//The dynamic uniform data.
 	DynamicUniformData _DynamicUniformData;
+
+	//The lighting system.
+	LightingSystem _LightingSystem;
 
 	/*
 	*	Pre-initializes the rendering system.

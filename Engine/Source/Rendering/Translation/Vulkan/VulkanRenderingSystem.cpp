@@ -36,7 +36,6 @@
 #include <Resources/Data/TextureCubeData.h>
 
 //Systems.
-#include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 

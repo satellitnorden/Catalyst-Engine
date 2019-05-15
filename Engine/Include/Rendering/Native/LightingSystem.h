@@ -16,9 +16,6 @@ class LightingSystem final
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(LightingSystem);
-
 	/*
 	*	Default constructor.
 	*/
