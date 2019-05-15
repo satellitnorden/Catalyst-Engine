@@ -74,26 +74,45 @@ void main()
 	vec4 closestPreviousTemporalAccumulationDescriptionBuffer = texture(temporalAccumulationDescriptionBufferMinusOne, previousScreenCoordinate);
 	float closestPreviousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - closestPreviousTemporalAccumulationDescriptionBuffer.x);
 	
-	//Decide if history should be dropped, or if accumulation should continue.
-	float randomFactor = RandomFloat(fragmentTextureCoordinate, globalRandomSeed1);
-	if (ValidCoordinate(previousScreenCoordinate)
-		&& closestPreviousTemporalAccumulationBufferDepth < 0.1f
-		&& length(perceiverVelocity) <= randomFactor
-		&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) * 1.0f <= randomFactor)
+	//Retrieve the total accumulations.
+	float totalAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y + 1.0f;
+
+	//Calculate the weight between the current frame and the history.
+	float weight = 1.0f;
+
+	weight *= float(ValidCoordinate(previousScreenCoordinate));
+	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDepth, 0.0f), 2.0f);
+	weight *= max(1.0f - length(perceiverVelocity), 0.0f);
+	//weight *= pow(max(1.0f - abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)), 0.0f), 2.0f);
+	weight *= max(1.0f - (totalAccumulations / 4096.0f), 0.0f);
+
+	if (weight > 0.0f)
 	{
-		//Retrieve the previous accumulations.
-		float previousAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y;
+
+
+		//Calculate the previous average.
+		vec3 previousAverage = closestPreviousTemporalAccumulationColorBuffer.rgb;
+
+		//Calculate the smoothing constant.
+		float smoothingConstant = 2.0f / (totalAccumulations + 1.0f);
+
+		//Calculate the exponentially moving average.
+		vec3 exponentiallyMovingAverage = (sceneTextureSampler.rgb - previousAverage) * smoothingConstant + previousAverage;
+
+		//Calculate the blended average.
+		vec3 blendedAverage = mix(sceneTextureSampler.rgb, exponentiallyMovingAverage, weight);
 
 		//Write the current temporal accumulation color buffer.
-		currentTemporalAccumulationColorBuffer = vec4(closestPreviousTemporalAccumulationColorBuffer.rgb + sceneTextureSampler.rgb, 1.0f);
+		currentTemporalAccumulationColorBuffer = vec4(blendedAverage, 1.0f);
 
 		//Write the current temporal accumulation description buffer.
-		currentTemporalAccumulationDescriptionBuffer = vec4(currentPerceiverPosition.z, previousAccumulations + 1.0f, 0.0f, 0.0f);
+		currentTemporalAccumulationDescriptionBuffer = vec4(currentPerceiverPosition.z, mix(1.0f, totalAccumulations, weight), 0.0f, 0.0f);
 
 		//Write the result to the scene texture.
-		scene = vec4(currentTemporalAccumulationColorBuffer.rgb / currentTemporalAccumulationDescriptionBuffer.y, 1.0f);
+		scene = vec4(blendedAverage, 1.0f);
 	}
 
+	//At this point, it's better to just completely drop history.
 	else
 	{
 		//Write the current temporal accumulation color buffer.
