@@ -35,10 +35,10 @@ void LightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_LightingComputePipeline);
+	AddPipeline(&_LightingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_LightingComputePipeline.Initialize();
+	_LightingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -53,5 +53,5 @@ void LightingRenderPass::Initialize() NOEXCEPT
 void LightingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_LightingComputePipeline.Execute();
+	_LightingGraphicsPipeline.Execute();
 }

@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/LightingComputePipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/LightingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class LightingRenderPass final : public RenderPass
@@ -22,8 +22,8 @@ public:
 
 private:
 
-	//The lighting compute pipeline.
-	LightingComputePipeline _LightingComputePipeline;
+	//The lighting graphics pipeline.
+	LightingGraphicsPipeline _LightingGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

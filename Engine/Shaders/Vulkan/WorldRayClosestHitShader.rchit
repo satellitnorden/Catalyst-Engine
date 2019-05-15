@@ -9,6 +9,7 @@
 #include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
+#define COMPUTE_SHADER
 #include "CatalystLightingData.glsl"
 
 //Material struct definition.

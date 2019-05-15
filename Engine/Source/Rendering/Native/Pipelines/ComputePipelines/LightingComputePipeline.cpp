@@ -26,7 +26,7 @@ void LightingComputePipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
-	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataRenderDataTableLayout());
+	AddRenderDataTableLayout(LightingSystem::Instance->GetLightingDataComputeRenderDataTableLayout());
 }
 
 /*
@@ -43,7 +43,7 @@ void LightingComputePipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 2, LightingSystem::Instance->GetCurrentLightingDataComputeRenderDataTable());
 
 	//Dispatch!
 	commandBuffer->Dispatch(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height, 1);

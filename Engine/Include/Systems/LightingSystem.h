@@ -46,17 +46,30 @@ public:
 	}
 
 	/*
-	*	Returns the lighting data render data table layout.
+	*	Returns the lighting data compute render data table layout.
 	*/
-	RenderDataTableLayoutHandle GetLightingDataRenderDataTableLayout() const NOEXCEPT
+	RenderDataTableLayoutHandle GetLightingDataComputeRenderDataTableLayout() const NOEXCEPT
 	{
-		return _RenderDataTableLayout;
+		return _ComputeRenderDataTableLayout;
 	}
 
 	/*
-	*	Returns the current lighting data render data table.
+	*	Returns the lighting data fragment render data table layout.
 	*/
-	RenderDataTableHandle GetCurrentLightingDataRenderDataTable() const NOEXCEPT;
+	RenderDataTableLayoutHandle GetLightingDataFragmentRenderDataTableLayout() const NOEXCEPT
+	{
+		return _FragmentRenderDataTableLayout;
+	}
+
+	/*
+	*	Returns the current lighting data compute render data table.
+	*/
+	RenderDataTableHandle GetCurrentLightingDataComputeRenderDataTable() const NOEXCEPT;
+
+	/*
+	*	Returns the current lighting data fragment render data table.
+	*/
+	RenderDataTableHandle GetCurrentLightingDataFragmentRenderDataTable() const NOEXCEPT;
 
 	/*
 	*	Returns the directional light visibility render target.
@@ -79,11 +92,17 @@ private:
 	//The directional light.
 	DirectionalLight _DirectionalLight;
 
-	//The render data table layout.
-	RenderDataTableLayoutHandle _RenderDataTableLayout;
+	//The compute render data table layout.
+	RenderDataTableLayoutHandle _ComputeRenderDataTableLayout;
 
-	//The render data tables.
-	DynamicArray<RenderDataTableHandle> _RenderDataTables;
+	//The fragment render data table layout.
+	RenderDataTableLayoutHandle _FragmentRenderDataTableLayout;
+
+	//The compute render data tables.
+	DynamicArray<RenderDataTableHandle> _ComputeRenderDataTables;
+
+	//The fragment render data tables.
+	DynamicArray<RenderDataTableHandle> _FragmentRenderDataTables;
 
 	//The uniform buffers.
 	DynamicArray<BufferHandle> _UniformBuffers;
@@ -95,9 +114,9 @@ private:
 	StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightVisibilityRenderTargets;
 
 	/*
-	*	Creates the render data table layout.
+	*	Creates the render data table layouts.
 	*/
-	void CreateRenderDataTableLayout() NOEXCEPT;
+	void CreateRenderDataTableLayouts() NOEXCEPT;
 
 	/*
 	*	Creates the render data tables.

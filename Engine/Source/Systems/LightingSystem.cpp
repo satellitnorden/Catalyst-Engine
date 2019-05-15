@@ -37,8 +37,8 @@ public:
 */
 void LightingSystem::PostInitialize() NOEXCEPT
 {
-	//Create the render data table layout.
-	CreateRenderDataTableLayout();
+	//Create the render data table layouts.
+	CreateRenderDataTableLayouts();
 
 	//Create the render data tables.
 	CreateRenderDataTables();
@@ -55,63 +55,123 @@ void LightingSystem::PostInitialize() NOEXCEPT
 */
 void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Update the current render data table.
-	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
-
-	//Update the light uniform data.
 	{
-		BufferHandle &currentUniformBuffer{ _UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+		//Update the current compute render data table.
+		RenderDataTableHandle &currentComputeRenderDataTable{ _ComputeRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-		LightUniformData lightUniformData;
-
-		lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
-
-		for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
+		//Update the light uniform data.
 		{
-			lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
+			BufferHandle &currentUniformBuffer{ _UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+			LightUniformData lightUniformData;
+
+			lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
+
+			for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
+			{
+				lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
+			}
+
+			const void *const RESTRICT dataChunks[]{ &lightUniformData };
+			const uint64 dataSizes[]{ sizeof(LightUniformData) };
+
+			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
+
+			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentComputeRenderDataTable, currentUniformBuffer);
 		}
 
-		const void *const RESTRICT dataChunks[]{ &lightUniformData };
-		const uint64 dataSizes[]{ sizeof(LightUniformData) };
+		//Bind the directional light visibility render target to the current render data table.
+		RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentComputeRenderDataTable, _DirectionalLightVisibilityRenderTarget);
 
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
-
-		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
+		//Bind the light visibility render targets to the current render data table.
+		for (uint64 i{ 0 }, size{ _LightVisibilityRenderTargets.Size() }; i < size; ++i)
+		{
+			RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, static_cast<uint32>(i), &currentComputeRenderDataTable, _LightVisibilityRenderTargets[i]);
+		}
 	}
 
-	//Bind the directional light visibility render target to the current render data table.
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, _DirectionalLightVisibilityRenderTarget);
-
-	//Bind the light visibility render targets to the current render data table.
-	for (uint64 i{ 0 }, size{ _LightVisibilityRenderTargets.Size() }; i < size; ++i)
 	{
-		RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, static_cast<uint32>(i), &currentRenderDataTable, _LightVisibilityRenderTargets[i]);
+		//Update the current fragment render data table.
+		RenderDataTableHandle &currentFragmentRenderDataTable{ _FragmentRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+		//Update the light uniform data.
+		{
+			BufferHandle &currentUniformBuffer{ _UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+			LightUniformData lightUniformData;
+
+			lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
+
+			for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
+			{
+				lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
+			}
+
+			const void *const RESTRICT dataChunks[]{ &lightUniformData };
+			const uint64 dataSizes[]{ sizeof(LightUniformData) };
+
+			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
+
+			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentFragmentRenderDataTable, currentUniformBuffer);
+		}
+
+		//Bind the directional light visibility render target to the current render data table.
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &currentFragmentRenderDataTable, _DirectionalLightVisibilityRenderTarget, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+
+		//Bind the light visibility render targets to the current render data table.
+		for (uint64 i{ 0 }, size{ _LightVisibilityRenderTargets.Size() }; i < size; ++i)
+		{
+			RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, static_cast<uint32>(i), &currentFragmentRenderDataTable, _LightVisibilityRenderTargets[i], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		}
 	}
 }
 
 /*
-*	Returns the current lighting data render data table.
+*	Returns the current lighting data compute render data table.
 */
-RenderDataTableHandle LightingSystem::GetCurrentLightingDataRenderDataTable() const NOEXCEPT
+RenderDataTableHandle LightingSystem::GetCurrentLightingDataComputeRenderDataTable() const NOEXCEPT
 {
-	//Return the current lighting data render data table.
-	return _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+	//Return the current lighting data compute render data table.
+	return _ComputeRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }
 
 /*
-*	Creates the render data table layout.
+*	Returns the current lighting data fragment render data table.
 */
-void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
+RenderDataTableHandle LightingSystem::GetCurrentLightingDataFragmentRenderDataTable() const NOEXCEPT
 {
-	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 3> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS, ShaderStage::Compute | ShaderStage::RayClosestHit)
-	};
+	//Return the current lighting data fragment render data table.
+	return _FragmentRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+}
 
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+/*
+*	Creates the render data table layouts.
+*/
+void LightingSystem::CreateRenderDataTableLayouts() NOEXCEPT
+{
+	//Create the compute render data table layout.
+	{
+		StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute | ShaderStage::RayClosestHit),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS, ShaderStage::Compute | ShaderStage::RayClosestHit)
+		};
+
+		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_ComputeRenderDataTableLayout);
+	}
+
+	//Create the fragment render data table layout.
+	{
+		StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS, ShaderStage::Fragment)
+		};
+
+		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_FragmentRenderDataTableLayout);
+	}
 }
 
 /*
@@ -119,12 +179,20 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 */
 void LightingSystem::CreateRenderDataTables() NOEXCEPT
 {
-	//Create the render data tables.
-	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	//Create the compute render data tables.
+	_ComputeRenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+	for (RenderDataTableHandle &renderDataTable : _ComputeRenderDataTables)
 	{
-		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
+		RenderingSystem::Instance->CreateRenderDataTable(_ComputeRenderDataTableLayout, &renderDataTable);
+	}
+
+	//Create the fragment render data tables.
+	_FragmentRenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (RenderDataTableHandle &renderDataTable : _FragmentRenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(_FragmentRenderDataTableLayout, &renderDataTable);
 	}
 }
 
