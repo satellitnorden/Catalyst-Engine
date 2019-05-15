@@ -145,7 +145,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(5, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex == NUMBER_OF_NOISE_TEXTURES - 1 ? 0 : _CurrentNoiseTextureIndex++], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(5, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
 	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(6, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(7, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 
@@ -163,8 +163,8 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	data._NoiseOffset._X = CatalystRandomMath::RandomIntegerInRange<int32>(0, 64);
-	data._NoiseOffset._Y = CatalystRandomMath::RandomIntegerInRange<int32>(0, 64);
+	data._NoiseOffset._X = CatalystRandomMath::RandomIntegerInRange<int32>(0, 32);
+	data._NoiseOffset._Y = CatalystRandomMath::RandomIntegerInRange<int32>(0, 32);
 
 	commandBuffer->PushConstants(this, ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
 
@@ -176,6 +176,9 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 
 	//Include in render.
 	SetIncludeInRender(true);
+
+	//Update the current texture index.
+	_CurrentNoiseTextureIndex = _CurrentNoiseTextureIndex == NUMBER_OF_NOISE_TEXTURES - 1 ? 0 : _CurrentNoiseTextureIndex + 1;
 }
 
 /*
