@@ -7,67 +7,23 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
 #define COMPUTE_SHADER
 #include "CatalystLightingData.glsl"
-
-//Material struct definition.
-struct Material
-{
-	int type;
-	int firstTextureIndex;
-	int secondTextureIndex;
-	int thirdTextureIndex;	
-};
-
-//Vertex struct definition.
-struct Vertex
-{
-	vec3 position;
-	vec3 normal;
-	vec3 tangent;
-	vec2 textureCoordinate;
-};
+#include "CatalystModelData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
 //#define DIRECTIONAL_LIGHT_SOFTNESS (0.02f)
 #define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
-#define MAXIMUM_NUMBER_OF_MODELS (64)
-#define VERTEX_SIZE (3)
 
 //Descriptor set data.
 layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 8) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 1, binding = 9) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 1, binding = 10) uniform ModelUniformData
-{
-    layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
-};
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
-
-/*
-*	Unpacks the vertex at the given index.
-*/
-Vertex UnpackVertex(uint index)
-{
-	Vertex vertex;
-
-  	vec4 vertexData1 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 0];
-  	vec4 vertexData2 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 1];
-  	vec4 vertexData3 = vertexBuffers[gl_InstanceCustomIndexNV].vertexData[VERTEX_SIZE * index + 2];
-
-  	vertex.position = vertexData1.xyz;
-  	vertex.normal = vec3(vertexData1.w, vertexData2.x, vertexData2.y);
-  	vertex.tangent = vec3(vertexData2.z, vertexData2.w, vertexData3.x);
-  	vertex.textureCoordinate = vec2(vertexData3.y, vertexData3.z);
-
-  	return vertex;
-}
 
 void main()
 {
@@ -75,9 +31,9 @@ void main()
 	int currentRecursionDepth = rayPayload.currentRecursionDepth;
 
 	//Unpack the vertices making up the triangle.
-	Vertex vertex1 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
-	Vertex vertex2 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
-	Vertex vertex3 = UnpackVertex(indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 2]);
+	Vertex vertex1 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
+	Vertex vertex2 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
+	Vertex vertex3 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 2]);
 
 	//Calculate the final vertex using the barycentric coordinates.
 	vec3 barycentricCoordinates = vec3(1.0f - hitAttribute.x - hitAttribute.y, hitAttribute.x, hitAttribute.y);

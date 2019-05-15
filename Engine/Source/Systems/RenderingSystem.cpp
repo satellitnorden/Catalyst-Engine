@@ -101,6 +101,9 @@ void RenderingSystem::PostInitializeSystem()
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
+	//Post-initialize the model system.
+	_ModelSystem.PostInitialize();
+
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses();
 }
@@ -118,6 +121,9 @@ void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) 
 
 	//Update the lighting system.
 	_LightingSystem.Update(context);
+
+	//Update the model system.
+	_ModelSystem.Update(context);
 
 	//Execute all render passes.
 	RenderingSystemLogic::ExecuteRenderPasses();

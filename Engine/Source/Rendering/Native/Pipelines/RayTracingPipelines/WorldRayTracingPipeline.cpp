@@ -32,12 +32,6 @@ public:
 
 };
 
-//World ray tracing pipeline constants.
-namespace WorldRayTracingPipelineConstants
-{
-	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 64 };
-}
-
 /*
 *	Initializes this ray tracing pipeline.
 */
@@ -53,10 +47,11 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	CreateNoiseTextures();
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataComputeRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -89,7 +84,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
 		const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
 
-		ASSERT(numberOfStaticModelComponents < WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
+		ASSERT(numberOfStaticModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
 
 		if (numberOfStaticModelComponents == 0)
 		{
@@ -101,38 +96,12 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
 		instances.Reserve(numberOfStaticModelComponents);
 
-		StaticArray<Material, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS> materials;
-
 		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent, ++transformComponent)
 		{
 			instances.EmplaceFast(transformComponent->_LocalTransform, staticModelComponent->_Model->_AccelerationStructure, i);
-
-			for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
-			{
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(8, static_cast<uint32>(i), &renderDataTable, staticModelComponent->_Model->_VertexBuffer);
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(9, static_cast<uint32>(i), &renderDataTable, staticModelComponent->_Model->_IndexBuffer);
-			}
-
-			materials[i] = staticModelComponent->_Material;
 		}
 
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_TopLevelAccelerationStructure);
-
-		//Create the materials buffer. (:
-		{
-			BufferHandle materialsBuffer;
-			RenderingSystem::Instance->CreateBuffer(sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &materialsBuffer);
-
-			const void *const RESTRICT dataChunks[]{ materials.Data() };
-			const uint64 dataSizes[]{ sizeof(Material) * WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS };
-
-			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &materialsBuffer);
-
-			for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
-			{
-				RenderingSystem::Instance->BindUniformBufferToRenderDataTable(10, 0, &renderDataTable, materialsBuffer);
-			}
-		}
 
 		once = true;
 	}
@@ -159,6 +128,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataComputeRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 3, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
 
 	//Push constants.
 	PushConstantData data;
@@ -186,7 +156,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 11> bindings
+	StaticArray<RenderDataTableLayoutBinding, 8> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
@@ -195,10 +165,7 @@ void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss),
-		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::StorageBuffer, WorldRayTracingPipelineConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

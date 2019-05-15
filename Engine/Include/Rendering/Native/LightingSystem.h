@@ -8,6 +8,7 @@
 //Lighting.
 #include <Lighting/DirectionalLight.h>
 #include <Lighting/LightingCore.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
@@ -15,14 +16,6 @@ class LightingSystem final
 {
 
 public:
-
-	/*
-	*	Default constructor.
-	*/
-	LightingSystem() NOEXCEPT
-	{
-	
-	}
 
 	/*
 	*	Post-initializes the lighting system.

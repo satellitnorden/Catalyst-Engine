@@ -1140,6 +1140,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1428,6 +1431,9 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\LightingSystem.cpp">
+      <Filter>Rendering\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp">
       <Filter>Rendering\Source\Native</Filter>
     </ClCompile>
   </ItemGroup>

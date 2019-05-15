@@ -16,6 +16,7 @@
 #include <Rendering/Native/GlobalRenderData.h>
 #include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/Material.h>
+#include <Rendering/Native/ModelSystem.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
@@ -124,6 +125,14 @@ public:
 	RESTRICTED NO_DISCARD LightingSystem *const RESTRICT GetLightingSystem() NOEXCEPT
 	{
 		return &_LightingSystem;
+	}
+
+	/*
+	*	Returns the lighting system.
+	*/
+	RESTRICTED NO_DISCARD ModelSystem *const RESTRICT GetModelSystem() NOEXCEPT
+	{
+		return &_ModelSystem;
 	}
 
 	/*
@@ -295,6 +304,9 @@ private:
 
 	//The lighting system.
 	LightingSystem _LightingSystem;
+
+	//The model system.
+	ModelSystem _ModelSystem;
 
 	/*
 	*	Pre-initializes the rendering system.
