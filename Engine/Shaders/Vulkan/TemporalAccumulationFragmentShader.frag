@@ -70,10 +70,48 @@ void main()
 
 	vec2 previousScreenCoordinate = previousViewSpacePosition.xy * 0.5f + 0.5f;
 
+#define SEARCH_FOR_CLOSEST true
+
+#if SEARCH_FOR_CLOSEST
+	vec2 sampleCoordinates[9] = vec2[]
+	(
+		previousScreenCoordinate + vec2(-1.0f, -1.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(-1.0f, 0.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(-1.0f, 1.0f) * inverseResolution,
+
+		previousScreenCoordinate + vec2(0.0f, -1.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(0.0f, 0.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(0.0f, 1.0f) * inverseResolution,
+
+		previousScreenCoordinate + vec2(1.0f, -1.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(1.0f, 0.0f) * inverseResolution,
+		previousScreenCoordinate + vec2(1.0f, 1.0f) * inverseResolution
+	);
+
+	float closestPreviousTemporalAccumulationBufferDepth = 999999.0f;
+	vec4 closestPreviousTemporalAccumulationColorBuffer;
+	vec4 closestPreviousTemporalAccumulationDescriptionBuffer;
+
+	for (int i = 0; i < 9; ++i)
+	{
+		vec4 samplePreviousTemporalAccumulationDescriptionBuffer = texture(temporalAccumulationDescriptionBufferMinusOne, sampleCoordinates[i]);
+		float samplePreviousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - samplePreviousTemporalAccumulationDescriptionBuffer.x);
+
+		if (closestPreviousTemporalAccumulationBufferDepth > samplePreviousTemporalAccumulationBufferDepth)
+		{
+			closestPreviousTemporalAccumulationBufferDepth = samplePreviousTemporalAccumulationBufferDepth;
+			closestPreviousTemporalAccumulationColorBuffer = texture(temporalAccumulationColorBufferMinusOne, sampleCoordinates[i]);
+			closestPreviousTemporalAccumulationDescriptionBuffer = texture(temporalAccumulationDescriptionBufferMinusOne, sampleCoordinates[i]);
+		}
+	}
+
+#else
+
 	vec4 closestPreviousTemporalAccumulationColorBuffer = texture(temporalAccumulationColorBufferMinusOne, previousScreenCoordinate);
 	vec4 closestPreviousTemporalAccumulationDescriptionBuffer = texture(temporalAccumulationDescriptionBufferMinusOne, previousScreenCoordinate);
 	float closestPreviousTemporalAccumulationBufferDepth = abs(previousPerceiverPosition.z - closestPreviousTemporalAccumulationDescriptionBuffer.x);
 	
+#endif
 	//Retrieve the total accumulations.
 	float totalAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y + 1.0f;
 
@@ -81,8 +119,8 @@ void main()
 	float weight = 1.0f;
 
 	weight *= float(ValidCoordinate(previousScreenCoordinate));
-	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDepth, 0.0f), 2.0f);
-	weight *= max(1.0f - length(perceiverVelocity), 0.0f);
+	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDepth, 0.0f), 4.0f);
+	weight *= pow(max(1.0f - length(perceiverVelocity), 0.0f), 2.0f);
 	//weight *= pow(max(1.0f - abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)), 0.0f), 2.0f);
 	weight *= max(1.0f - (totalAccumulations / 4096.0f), 0.0f);
 

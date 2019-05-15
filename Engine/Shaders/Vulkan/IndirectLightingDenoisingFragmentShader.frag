@@ -104,7 +104,7 @@ void main()
 		}
 			
 		//Normalize the denoised indirect lighting.
-		denoisedIndirectLighting *= 1.0f / indirectLightingWeightSum;
+		denoisedIndirectLighting = indirectLightingWeightSum == 0.0f ? texture(indirectLightingTexture, fragmentTextureCoordinate).rgb : denoisedIndirectLighting / indirectLightingWeightSum;
 
 		//Write the fragment.
 		indirectLighting = vec4(denoisedIndirectLighting, 1.0f);

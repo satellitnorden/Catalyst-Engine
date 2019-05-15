@@ -57,9 +57,9 @@ enum class RenderPassStage : uint8
 	RenderOverride,
 #endif
 	IndirectLightingDenoising,
-	TemporalAccumulation,
 	DirectLightingDenoising,
 	Lighting,
+	TemporalAccumulation,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,
