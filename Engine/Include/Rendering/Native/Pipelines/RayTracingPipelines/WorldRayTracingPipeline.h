@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
@@ -23,6 +24,12 @@ public:
 
 private:
 
+	//The number of noise textures.
+	static constexpr uint8 NUMBER_OF_NOISE_TEXTURES{ 32 };
+
+	//The noise texture size.
+	static constexpr uint8 NOISE_TEXTURE_SIZE{ 32 };
+
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
@@ -32,11 +39,11 @@ private:
 	//The top level acceleration structure.
 	AccelerationStructureHandle _TopLevelAccelerationStructure;
 
-	//The blue noise textures.
-	DynamicArray<Texture2DHandle> _BlueNoiseTextures;
+	//The noise textures.
+	StaticArray<Texture2DHandle, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
 
-	//The current blue noise texture index.
-	uint8 _CurrentBlueNoiseTextureIndex{ 0 };
+	//The current noise texture index.
+	uint8 _CurrentNoiseTextureIndex{ 0 };
 
 	/*
 	*	Creates the render data table layout.
@@ -47,5 +54,10 @@ private:
 	*	Creates the render data tables.
 	*/
 	void CreateRenderDataTables() NOEXCEPT;
+
+	/*
+	*	Creates the noise textures.
+	*/
+	void CreateNoiseTextures() NOEXCEPT;
 
 };

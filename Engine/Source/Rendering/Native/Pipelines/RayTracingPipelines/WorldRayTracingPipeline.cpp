@@ -50,6 +50,9 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	//Create the render data tables.
 	CreateRenderDataTables();
 
+	//Create the noise textures.
+	CreateNoiseTextures();
+
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
@@ -132,26 +135,6 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 			}
 		}
 
-		//Add the blue noise textures.
-		_BlueNoiseTextures.Reserve(16);
-
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_1_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_2_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_3_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_4_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_5_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_6_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_7_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_8_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_9_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_10_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_11_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_12_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_13_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_14_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_15_Texture2D"))._Texture2D);
-		_BlueNoiseTextures.EmplaceFast(ResourceLoader::GetTexture2D(HashString("Blue_Noise_16_Texture2D"))._Texture2D);
-
 		once = true;
 	}
 
@@ -163,7 +146,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(5, 0, &currentRenderDataTable, _BlueNoiseTextures[_CurrentBlueNoiseTextureIndex == _BlueNoiseTextures.Size() - 1 ? 0 : _CurrentBlueNoiseTextureIndex++], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(5, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex == NUMBER_OF_NOISE_TEXTURES - 1 ? 0 : _CurrentNoiseTextureIndex++], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
 	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(6, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(7, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 
@@ -229,5 +212,32 @@ void WorldRayTracingPipeline::CreateRenderDataTables() NOEXCEPT
 	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
 	{
 		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
+	}
+}
+
+/*
+*	Creates the noise textures.
+*/
+void WorldRayTracingPipeline::CreateNoiseTextures() NOEXCEPT
+{
+	//Create all the noise textures.
+	for (uint8 i{ 0 }; i < NUMBER_OF_NOISE_TEXTURES; ++i)
+	{
+		Texture2D<Vector4<byte>> noiseTexture{ NOISE_TEXTURE_SIZE };
+
+		for (uint8 x{ 0 }; x < NOISE_TEXTURE_SIZE; ++x)
+		{
+			for (uint8 y{ 0 }; y < NOISE_TEXTURE_SIZE; ++y)
+			{
+				Vector4<byte> &noise{ noiseTexture.At(x, y) };
+
+				noise._X = CatalystRandomMath::RandomIntegerInRange<byte>(0, 255);
+				noise._Y = CatalystRandomMath::RandomIntegerInRange<byte>(0, 255);
+				noise._Z = CatalystRandomMath::RandomIntegerInRange<byte>(0, 255);
+				noise._W = CatalystRandomMath::RandomIntegerInRange<byte>(0, 255);
+			}
+		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(noiseTexture), TextureFormat::R8G8B8A8_Byte), &_NoiseTextures[i]);
 	}
 }

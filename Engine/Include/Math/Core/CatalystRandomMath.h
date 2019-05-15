@@ -39,6 +39,15 @@ public:
 	}
 
 	/*
+	*	Template specialization of the random integer in range function.
+	*/
+	template <>
+	FORCE_INLINE static NO_DISCARD uint8 RandomIntegerInRange<uint8>(const uint8 minimum, const uint8 maximum) NOEXCEPT
+	{
+		return static_cast<uint8>(RandomIntegerInRange<uint32>(minimum, maximum));
+	}
+
+	/*
 	*	Given a number between 0.0f and 1.0f, representing a chance in percent, return whether or not it succeeded.
 	*/
 	FORCE_INLINE static NO_DISCARD bool RandomChance(const float chance) NOEXCEPT
