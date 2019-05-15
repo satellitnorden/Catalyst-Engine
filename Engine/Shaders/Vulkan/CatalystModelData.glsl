@@ -8,7 +8,7 @@
 //Material struct definition.
 struct Material
 {
-  int type;
+  int properties;
   int firstTextureIndex;
   int secondTextureIndex;
   int thirdTextureIndex;  

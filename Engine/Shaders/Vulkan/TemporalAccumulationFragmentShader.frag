@@ -54,7 +54,7 @@ void main()
 	vec4 sceneFeatures2TextureSampler = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 
 	//Calculate the world position at this fragment for the current frame.
-	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * sceneFeatures2TextureSampler.w;
+	vec3 currentWorldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * sceneFeatures2TextureSampler.z;
 
 	//Calculate the current perceiver position.
 	vec4 currentPerceiverPosition = perceiverMatrix * vec4(currentWorldPosition, 1.0f);
@@ -79,7 +79,7 @@ void main()
 	if (ValidCoordinate(previousScreenCoordinate)
 		&& closestPreviousTemporalAccumulationBufferDepth < 0.1f
 		&& length(perceiverVelocity) <= randomFactor
-		&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) * 0.5f <= randomFactor)
+		&& abs(CalculateAverage(sceneTextureSampler.rgb) - CalculateAverage(closestPreviousTemporalAccumulationColorBuffer.rgb)) * 1.0f <= randomFactor)
 	{
 		//Retrieve the previous accumulations.
 		float previousAccumulations = closestPreviousTemporalAccumulationDescriptionBuffer.y;

@@ -303,7 +303,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 	//Initialize the gray common material.
 	Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::Gray)] };
 
-	material._Type = Material::Type::Opaque;
+	material._Properties = Material::Property::None;
 
 	{
 		Texture2DData data;

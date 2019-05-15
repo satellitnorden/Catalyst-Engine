@@ -48,3 +48,11 @@ void StaticModelEntity::Terminate() NOEXCEPT
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
 }
+
+/*
+*	Returns the material.
+*/
+RESTRICTED NO_DISCARD Material *const RESTRICT StaticModelEntity::GetMaterial() NOEXCEPT
+{
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._Material;
+}

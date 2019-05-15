@@ -6,6 +6,9 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Rendering.
+#include <Rendering/Native/Material.h>
+
 class StaticModelEntity : public Entity
 {
 
@@ -25,5 +28,10 @@ public:
 	*	Terminates this entity.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Returns the material.
+	*/
+	RESTRICTED NO_DISCARD Material *const RESTRICT GetMaterial() NOEXCEPT;
 
 };

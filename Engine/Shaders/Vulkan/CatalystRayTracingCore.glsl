@@ -19,6 +19,7 @@ struct PrimaryRayPayload
 	vec3 geometryNormal;
 	vec3 shadingNormal;
 	float depth;
+	int materialProperties;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;

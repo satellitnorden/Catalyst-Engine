@@ -7,8 +7,10 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
+#include "CatalystModelData.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Layout specification.
@@ -32,7 +34,7 @@ void main()
 	//Sample the normal and hit distance.
 	vec4 sceneFeatures2TextureSampler = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 	vec3 normal = UnpackNormal(sceneFeatures2TextureSampler.y);
-	float hitDistance = sceneFeatures2TextureSampler.w;
+	float hitDistance = sceneFeatures2TextureSampler.z;
 
 	//Only calculate the lighting if there was a hit.
 	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
@@ -64,6 +66,9 @@ void main()
 
 		//Add the emissive lighting.
 		compositedLighting += albedo * emissive;
+
+		//Add the highlight.
+		compositedLighting += CalculateHighlight(viewDirection, normal, floatBitsToInt(sceneFeatures2TextureSampler.w));
 
 		//Add the indirect lighting.
 		compositedLighting += CalculateIndirectLighting(viewDirection,

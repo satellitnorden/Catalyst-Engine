@@ -11,6 +11,7 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystModelData.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
@@ -182,6 +183,7 @@ void main()
 		rayPayload.geometryNormal = finalVertex.normal;
 		rayPayload.shadingNormal = finalNormal;
 		rayPayload.depth = gl_HitTNV;
+		rayPayload.materialProperties = modelMaterials[gl_InstanceCustomIndexNV].properties;
 		rayPayload.roughness = roughness;
 		rayPayload.metallic = metallic;
 		rayPayload.ambientOcclusion = ambientOcclusion;
@@ -195,6 +197,9 @@ void main()
 
 		//Add the emissive lighting.
 		rayPayload.radiance += albedo * emissive;
+
+		//Add the highlight.
+		rayPayload.radiance += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
 
 		//Calculate the directional light.
 		{
