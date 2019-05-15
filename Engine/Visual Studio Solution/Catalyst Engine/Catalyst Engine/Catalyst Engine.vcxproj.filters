@@ -1128,9 +1128,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\LightingComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LightingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
@@ -1420,9 +1417,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\LightingComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\LightingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>

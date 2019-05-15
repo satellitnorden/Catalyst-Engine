@@ -261,7 +261,6 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	IndirectLightingDenoisingFragment,
-	LightingCompute,
 	LightingFragment,
 	MotionBlurFragment,
 	PassthroughFragment,

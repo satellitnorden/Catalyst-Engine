@@ -4,7 +4,6 @@ glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugA
 glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxFragmentShader.spv
 glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVertexShader.spv
 glslangValidator.exe -V IndirectLightingDenoisingFragmentShader.frag -o 		IndirectLightingDenoisingFragmentShader.spv
-glslangValidator.exe -V LightingComputeShader.comp -o 					LightingComputeShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
