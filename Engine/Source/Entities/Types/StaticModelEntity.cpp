@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/Creation/StaticModelInitializationData.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/EntityCreationSystem.h>
 
@@ -33,6 +36,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	TransformComponent& transformComponent{ ComponentManager::GetStaticModelTransformComponents()[_ComponentsIndex] };
 
 	staticModelComponent._Model = staticModelInitializationData->_Model;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(staticModelComponent._Model->_ModelSpaceAxisAlignedBoundingBox, staticModelInitializationData->_Transform, &staticModelComponent._WorldSpaceAxisAlignedBoundingBox);
 	staticModelComponent._Material = staticModelInitializationData->_Material;
 	transformComponent._WorldTransform = staticModelInitializationData->_Transform;
 
@@ -47,6 +51,22 @@ void StaticModelEntity::Terminate() NOEXCEPT
 {
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
+}
+
+/*
+*	Returns the model space axis aligned bounding box.
+*/
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
+}
+
+/*
+*	Returns the world space axis aligned bounding box.
+*/
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }
 
 /*

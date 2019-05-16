@@ -441,7 +441,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
+		return Vector3<float>(_Matrix[2]._X, _Matrix[2]._Y, _Matrix[2]._Z);
 	}
 
 	/*

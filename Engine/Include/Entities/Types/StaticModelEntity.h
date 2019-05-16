@@ -30,6 +30,16 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns the model space axis aligned bounding box.
+	*/
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;
+
+	/*
+	*	Returns the world space axis aligned bounding box.
+	*/
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
+
+	/*
 	*	Returns the material.
 	*/
 	RESTRICTED NO_DISCARD Material *const RESTRICT GetMaterial() NOEXCEPT;

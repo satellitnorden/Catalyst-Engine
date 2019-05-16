@@ -15,6 +15,9 @@ public:
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
 
+	//The world space axis aligned bounding box.
+	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
+
 	//The material.
 	Material _Material;
 
