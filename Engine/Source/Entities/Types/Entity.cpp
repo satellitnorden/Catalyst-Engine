@@ -57,26 +57,6 @@ void Entity::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns the local transform of this entity, non-const.
-*/
-Matrix4 *const RESTRICT Entity::GetLocalTransform() NOEXCEPT
-{
-	switch (_Type)
-	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
-		{																										\
-			return &ComponentManager::Get ## VALUE ## TransformComponents()[_ComponentsIndex]._LocalTransform;	\
-		}
-		ENTITY_TYPES
-#undef ENTITY_TYPE
-	}
-
-	ASSERT(false, "What happened here?");
-
-	return nullptr;
-}
-
-/*
 *	Returns the world transform of this entity, non-const.
 */
 Matrix4 *const RESTRICT Entity::GetWorldTransform() NOEXCEPT
@@ -94,18 +74,4 @@ Matrix4 *const RESTRICT Entity::GetWorldTransform() NOEXCEPT
 	ASSERT(false, "What happened here?");
 
 	return nullptr;
-}
-
-/*
-*	Transforms this entity.
-*/
-void Entity::Transform(const Matrix4 &transformation) NOEXCEPT
-{
-	if (_Initialized)
-	{
-		Matrix4 *const RESTRICT localTransform{ GetLocalTransform() };
-		Matrix4 *const RESTRICT worldTransform{ GetWorldTransform() };
-
-		*worldTransform = transformation * *localTransform;
-	}
 }

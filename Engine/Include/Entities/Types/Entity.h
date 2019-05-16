@@ -26,12 +26,6 @@ public:
 	//The components index for this entity.
 	uint64 _ComponentsIndex;
 
-	//Pointer to this entity's parent.
-	Entity *RESTRICT _Parent{ nullptr };
-
-	//Pointers to this entity's children.
-	DynamicArray<Entity *RESTRICT> _Children;
-
 	/*
 	*	Initializes this entity.
 	*/
@@ -43,19 +37,9 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
-	*	Returns the local transform of this entity.
-	*/
-	Matrix4 *const RESTRICT GetLocalTransform() NOEXCEPT;
-
-	/*
 	*	Returns the world transform of this entity.
 	*/
 	Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
-
-	/*
-	*	Transforms this entity.
-	*/
-	void Transform(const Matrix4 &transformation) NOEXCEPT;
 
 protected:
 

@@ -54,12 +54,6 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 
 	//Set this entity to initialized.
 	entity->_Initialized = true;
-
-	//If this entity has a parent, transform it into world space.
-	if (entity->_Parent)
-	{
-		entity->Transform(*entity->_Parent->GetLocalTransform());
-	}
 }
 
 /*
@@ -170,28 +164,6 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 	if (forceInitialized == 0)
 	{
 		InitializationData *RESTRICT dataToInitialize = &_InitializationQueue.Back();
-
-		for (;;)
-		{
-			//If this entity has a parent, and that parent is not initialized, find the parent in the initialization queue and initialize that instead.
-			if (dataToInitialize->_Entity->_Parent && !dataToInitialize->_Entity->_Parent->_Initialized)
-			{
-				for (InitializationData &dataInQueue : _InitializationQueue)
-				{
-					if (dataInQueue._Entity == dataToInitialize->_Entity->_Parent)
-					{
-						dataToInitialize = &dataInQueue;
-
-						break;
-					}
-				}
-			}
-
-			else
-			{
-				break;
-			}
-		}
 
 		InitializeEntity(dataToInitialize->_Entity, dataToInitialize->_Data);
 

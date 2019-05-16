@@ -49,14 +49,8 @@ namespace CatalystPhysicsSystemLogic
 			//Apply the velocity to the position.
 			newTransform.SetTranslation(physicsComponent->_Velocity * context->_DeltaTime);
 
-			//Transform the local transform of the entity.
-			transformComponent->_LocalTransform = newTransform * transformComponent->_LocalTransform;
-
-			//Transform all children.
-			for (Entity *const RESTRICT child : (*physicsEntity)->_Children)
-			{
-				child->Transform(transformComponent->_LocalTransform);
-			}
+			//Transform the world transform of the entity.
+			transformComponent->_WorldTransform = newTransform * transformComponent->_WorldTransform;
 		}
 	}
 

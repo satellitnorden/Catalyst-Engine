@@ -20,28 +20,6 @@ RESTRICTED EntityClass* const RESTRICT EntityCreationSystem::CreateEntity(Argume
 }
 
 /*
-*	Creates a new child entity.
-*/
-template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass *const RESTRICT EntityCreationSystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
-{
-	_AllocatorLock.WriteLock();
-	void *const RESTRICT memory{ _Allocator.Allocate() };
-	_AllocatorLock.WriteUnlock();
-
-	EntityClass *const RESTRICT newChild{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
-
-	parentEntity->_Children.EmplaceSlow(newChild);
-	newChild->_Parent = parentEntity;
-
-	_EntitiesLock.WriteLock();
-	_Entities.EmplaceSlow(newChild);
-	_EntitiesLock.WriteUnlock();
-
-	return newChild;
-}
-
-/*
 *	Creates initialization data for an entity.
 */
 template <typename Type>

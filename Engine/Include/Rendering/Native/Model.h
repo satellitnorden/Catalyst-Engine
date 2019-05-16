@@ -16,14 +16,8 @@ class Model final
 
 public:
 
-	//The axis-aligned bounding box.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
-
-	//The vertices of this model.
-	DynamicArray<Vertex> _Vertices;
-
-	//The indices of this model.
-	DynamicArray<uint32> _Indices;
+	//The model space axis-aligned bounding box.
+	AxisAlignedBoundingBox _ModelSpaceAxisAlignedBoundingBox;
 
 	//The vertex buffer.
 	BufferHandle _VertexBuffer;
@@ -31,7 +25,7 @@ public:
 	//The index buffer.
 	BufferHandle _IndexBuffer;
 
-	//The acceleration structure.
-	AccelerationStructureHandle _AccelerationStructure;
+	//The bottom level acceleration structure.
+	AccelerationStructureHandle _BottomLevelAccelerationStructure;
 
 };

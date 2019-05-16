@@ -34,7 +34,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 
 	staticModelComponent._Model = staticModelInitializationData->_Model;
 	staticModelComponent._Material = staticModelInitializationData->_Material;
-	transformComponent._LocalTransform = transformComponent._WorldTransform = staticModelInitializationData->_Transform;
+	transformComponent._WorldTransform = staticModelInitializationData->_Transform;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);

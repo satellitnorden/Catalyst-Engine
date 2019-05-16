@@ -39,12 +39,6 @@ public:
 	RESTRICTED EntityClass* const RESTRICT CreateEntity(Arguments&&... arguments) NOEXCEPT;
 
 	/*
-	*	Creates a new child entity.
-	*/
-	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* const RESTRICT CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT;
-
-	/*
 	*	Creates initialization data for an entity.
 	*/
 	template <typename Type>
