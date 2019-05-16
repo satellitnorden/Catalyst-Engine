@@ -59,37 +59,7 @@ namespace CatalystPhysicsSystemLogic
 	*/
 	void HandleCollisions() NOEXCEPT
 	{
-		//Iterate over all physics components and handle collisions on them.
-		const uint64 numberOfPhysicsComponents{ ComponentManager::GetNumberOfPhysicsComponents() };
 
-		//Return early if there's none to update.
-		if (numberOfPhysicsComponents == 0)
-		{
-			return;
-		}
-
-		Entity **RESTRICT physicsEntity{ ComponentManager::GetPhysicsEntities()->Begin() };
-		PhysicsComponent *RESTRICT physicsComponent{ ComponentManager::GetPhysicsPhysicsComponents() };
-		TransformComponent *RESTRICT physicsTransformComponent{ ComponentManager::GetPhysicsTransformComponents() };
-
-		for (uint64 i{ 0 }; i < numberOfPhysicsComponents; ++i, ++physicsEntity, ++physicsComponent, ++physicsTransformComponent)
-		{
-			//Remember if a collision has happened.
-			bool hasCollided{ false };
-
-			//Check if this physics entity is colliding with any collision or physics entities and calculate a new velocity if so.
-			Entity **RESTRICT collisionEntity{ ComponentManager::GetCollisionEntities()->Begin() };
-			CollisionComponent *RESTRICT collisionComponent{ ComponentManager::GetCollisionCollisionComponents() };
-			TransformComponent *RESTRICT collisionTransformComponent{ ComponentManager::GetCollisionTransformComponents() };
-
-			for (uint64 j{ 0 }; j < numberOfPhysicsComponents; ++j, ++collisionEntity, ++collisionComponent, ++collisionTransformComponent)
-			{
-				if (CatalystPhysicsMath::IsColliding(physicsComponent->_PhysicsShape, physicsTransformComponent->_WorldTransform, collisionComponent->_PhysicsShape, collisionTransformComponent->_WorldTransform))
-				{
-					hasCollided = true;
-				}
-			}
-		}
 	}
 }
 

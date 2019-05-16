@@ -9,7 +9,7 @@
 */
 void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
 {
-	//Just... Copy. (:
+	//Copy the model space axis aligned bounding box.
 	model->_ModelSpaceAxisAlignedBoundingBox = std::move(data->_AxisAlignedBoundingBox);
 
 	//Create the buffers.
@@ -27,7 +27,7 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffer);
 	}
 
-	//Create the acceleration structure.
+	//Create the bottom level acceleration structure.
 	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_VertexBuffer,
 																		static_cast<uint32>(data->_Vertices.Size()),
 																		model->_IndexBuffer,

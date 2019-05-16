@@ -8,7 +8,6 @@
 #include <Components/Singleton/CatalystEngineComponent.h>
 #include <Components/Singleton/InputComponent.h>
 #include <Components/Singleton/UserInterfaceComponent.h>
-#include <Components/Transient/CollisionComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/PhysicsComponent.h>
 #include <Components/Transient/SoundComponent.h>
@@ -81,7 +80,6 @@ public:
 		return RetrieveSingletonComponent<TYPE>();
 	}
 
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);

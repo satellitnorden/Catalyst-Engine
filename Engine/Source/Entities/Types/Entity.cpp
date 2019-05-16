@@ -5,7 +5,6 @@
 #include <Components/Core/ComponentManager.h>
 
 //Entities.
-#include <Entities/Types/CollisionEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/PhysicsEntity.h>
 #include <Entities/Types/SoundEntity.h>

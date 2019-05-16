@@ -145,7 +145,6 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 	_ ## ENTITY_CLASS ## THIRD_COMPONENT ## s.EraseAt(componentsIndex);																\
 }
 
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Collision, CollisionComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);

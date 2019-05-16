@@ -705,12 +705,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
       <Filter>Entities\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\CollisionEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\CollisionInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h">
       <Filter>Components\Include\Core</Filter>
     </ClInclude>
@@ -815,9 +809,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
       <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\CollisionComponent.h">
-      <Filter>Components\Include\Transient</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
       <Filter>Components\Include\Transient</Filter>
@@ -1221,9 +1212,6 @@
       <Filter>Core\Source\General</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp">
-      <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\CollisionEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
