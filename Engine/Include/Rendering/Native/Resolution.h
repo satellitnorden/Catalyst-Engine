@@ -38,4 +38,12 @@ public:
 		return Resolution(_Width / scalar, _Height / scalar);
 	}
 
+	/*
+	*	Multiplication operator overload.
+	*/
+	Resolution operator*(const uint32 scalar) NOEXCEPT
+	{
+		return Resolution(_Width * scalar, _Height * scalar);
+	}
+
 };

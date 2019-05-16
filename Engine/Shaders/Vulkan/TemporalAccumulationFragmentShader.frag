@@ -144,7 +144,7 @@ void main()
 	float weight = 1.0f;
 
 	weight *= float(ValidCoordinate(previousScreenCoordinate));
-	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDistance, 0.0f), 8.0f);
+	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDistance, 0.0f), 16.0f);
 	weight *= max(1.0f - length(perceiverVelocity), 0.0f);
 	weight *= max(perceiverRotationVelocity, 0.0f);
 	weight *= max(1.0f - (totalAccumulations / 4096.0f), 0.0f);
