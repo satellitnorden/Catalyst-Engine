@@ -177,22 +177,6 @@ enum class RenderTarget : uint8
 	SpecularIrradiance,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
-	*/
-	Intermediate,
-
-	/*
-	*	Contains an accumulated buffer of all previous color values in the scene.
-	*/
-	PreviousRadiance,
-
-	/*
-	*	Should contain the final color for the scene.
-	*	Also used for intermediate purposes.
-	*/
-	Scene,
-
-	/*
 	*	Contains the albedo.
 	*/
 	SceneFeatures1,
@@ -203,14 +187,14 @@ enum class RenderTarget : uint8
 	SceneFeatures2,
 
 	/*
-	*	Contains the roughness, metallic and ambient occlusion.
+	*	Contains the roughness, metallic, ambient occlusion and emissive.
 	*/
 	SceneFeatures3,
-
+	
 	/*
-	*	For rendering directly to the screen.
+	*	Contains the instance ID, the primitive ID and the barycentric coordinates.
 	*/
-	Screen,
+	SceneFeatures4,
 
 	/*
 	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -231,6 +215,26 @@ enum class RenderTarget : uint8
 	*	The second temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
 	TemporalAccumulationDescriptionBuffer2,
+
+	/*
+	*	Contains an accumulated buffer of all previous color values in the scene.
+	*/
+	PreviousRadiance,
+
+	/*
+	*	Contains the final color for the scene.
+	*/
+	Scene,
+
+	/*
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate,
+
+	/*
+	*	For rendering directly to the screen.
+	*/
+	Screen,
 
 	NumberOfRenderTargets
 };

@@ -19,7 +19,7 @@
 #define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
 
 //Descriptor set data.
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -188,6 +188,9 @@ void main()
 		rayPayload.metallic = metallic;
 		rayPayload.ambientOcclusion = ambientOcclusion;
 		rayPayload.emissive = emissive;
+		rayPayload.instanceID = gl_InstanceCustomIndexNV;
+		rayPayload.primitiveID = gl_PrimitiveID;
+		rayPayload.barycentricCoordinates = vec2(hitAttribute.x, hitAttribute.y);
 	}
 
 	else

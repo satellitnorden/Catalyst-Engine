@@ -24,6 +24,9 @@ struct PrimaryRayPayload
 	float metallic;
 	float ambientOcclusion;
 	float emissive;
+	int instanceID;
+	int primitiveID;
+	vec2 barycentricCoordinates;
 
 	vec3 radiance;
 };

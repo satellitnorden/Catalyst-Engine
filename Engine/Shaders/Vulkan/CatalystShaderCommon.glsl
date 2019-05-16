@@ -37,10 +37,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 
     layout (offset = 528) float deltaTime;
     layout (offset = 532) float directionalLightIntensity;
-    layout (offset = 536) float environmentBlend;
-    layout (offset = 540) float globalRandomSeed1;
-    layout (offset = 544) float globalRandomSeed2;
-    layout (offset = 548) float globalRandomSeed3;
+    layout (offset = 536) float globalRandomSeed1;
+    layout (offset = 540) float globalRandomSeed2;
+    layout (offset = 544) float globalRandomSeed3;
+    layout (offset = 548) float perceiverRotationVelocity;
     layout (offset = 552) float totalTime;
     layout (offset = 556) float windSpeed;
 

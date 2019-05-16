@@ -269,16 +269,17 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	//Initialize all render targets.
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::DiffuseIrradiance)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SpecularIrradiance)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::PreviousRadiance)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures3)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures4)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationColorBuffer1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationDescriptionBuffer1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationColorBuffer2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationDescriptionBuffer2)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::PreviousRadiance)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate)]);
 }
 
 /*
@@ -403,6 +404,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 */
 void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
+	//Store the previous perceiver forward vector.
+	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
+
 	//Update matrices.
 	_DynamicUniformData._PerceiverMatrixMinusOne = _DynamicUniformData._PerceiverMatrix;
 	_DynamicUniformData._ProjectionMatrixMinusOne = _DynamicUniformData._ProjectionMatrix;
@@ -422,10 +426,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	//Update floats.
 	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 	_DynamicUniformData._DirectionalLightIntensity = _LightingSystem.GetDirectionalLight()->GetIntensity();
-	_DynamicUniformData._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	_DynamicUniformData._PerceiverRotationVelocity = Vector3<float>::DotProduct(previousPerceiverForwardVector, Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z));
 	_DynamicUniformData._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 

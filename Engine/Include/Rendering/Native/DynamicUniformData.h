@@ -28,10 +28,10 @@ public:
 
 	float _DeltaTime;
 	float _DirectionalLightIntensity;
-	float _EnvironmentBlend;
 	float _GlobalRandomSeed1;
 	float _GlobalRandomSeed2;
 	float _GlobalRandomSeed3;
+	float _PerceiverRotationVelocity;
 	float _TotalTime;
 	float _WindSpeed;
 };
