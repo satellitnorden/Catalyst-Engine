@@ -58,3 +58,12 @@ void SoundEntity::Terminate() NOEXCEPT
 	//Return this entitiy's components index.
 	ComponentManager::ReturnSoundComponentsIndex(_ComponentsIndex);
 }
+
+/*
+*	Returns whether or not this entity should automatically terminate.
+*/
+bool SoundEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
+{
+	//This sound entity should automatically terminate if the sound has stopped playing.
+	return SoundSystem::Instance->GetPlaybackState(ComponentManager::GetSoundSoundComponents()[_ComponentsIndex]._Instance) == PlaybackState::Stopped;
+}

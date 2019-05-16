@@ -30,6 +30,16 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns whether or not this entity should automatically terminate.
+	*/
+	bool ShouldAutomaticallyTerminate() const NOEXCEPT
+	{
+		ASSERT(false, "This entity type does not have this function implemented!");
+
+		return false;
+	}
+
+	/*
 	*	Returns the model space axis aligned bounding box.
 	*/
 	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;

@@ -33,20 +33,20 @@ void EntityCreationSystem::PostUpdateSystemSynchronous(const UpdateContext *cons
 */
 void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
-	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
-	if (TEST_BIT(data->_Properties, EntityInitializationData::EntityProperty::AutomaticDestruction))
-	{
-		ScopedWriteLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
-
-		_AutomaticDestructionQueue.EmplaceSlow(entity);
-	}
-
 	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
-	if (TEST_BIT(data->_Properties, EntityInitializationData::EntityProperty::AutomaticTermination))
+	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AutomaticTermination))
 	{
 		ScopedWriteLock<Spinlock> scopedLock{ _AutomaticTerminationQueueLock };
 
 		_AutomaticTerminationQueue.EmplaceSlow(entity);
+	}
+
+	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
+	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AutomaticDestruction))
+	{
+		ScopedWriteLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
+
+		_AutomaticDestructionQueue.EmplaceSlow(entity);
 	}
 
 	//Initialize this entity.

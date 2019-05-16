@@ -37,32 +37,16 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns whether or not this entity should automatically terminate.
+	*/
+	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
+
+	/*
 	*	Returns the world transform of this entity.
 	*/
 	Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
 
-protected:
-
-	/*
-	*	Returns whether or not this entity should automatically terminate.
-	*/
-	virtual bool ShouldAutomaticallyTerminate() const NOEXCEPT
-	{
-		return false;
-	}
-
-	/*
-	*	Callback for when this entity is moved.
-	*/
-	virtual void OnMove() NOEXCEPT
-	{
-
-	}
-
 private:
-
-	//Friend declaration.
-	friend class EntityCreationSystem;
 
 	//The default position.
 	static constexpr Vector3<float> _DefaultPosition{ 0.0f, 0.0f, 0.0f };
