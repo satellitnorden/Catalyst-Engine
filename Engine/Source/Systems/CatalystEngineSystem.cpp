@@ -117,6 +117,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
+
 	//Update the delta time.
 	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemInternalData::_DeltaTimer.Update();
 
@@ -132,7 +133,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	context._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 
 	/*
-	*	Pre update phase.
+	*	Pre-update phase.
 	*/
 	*CurrentUpdatePhase() = UpdatePhase::Pre;
 
@@ -141,9 +142,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	InputSystem::Update(&context);
 
 	/*
-	*	Update phase.
+	*	Main update phase.
 	*/
-	*CurrentUpdatePhase() = UpdatePhase::Logic;
+	*CurrentUpdatePhase() = UpdatePhase::Main;
 
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
 	PhysicsSystem::Instance->Update(&context);
@@ -154,7 +155,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	SoundSystem::Instance->Update(&context);
 
 	/*
-	*	Post update phase.
+	*	Post-update phase.
 	*/
 	*CurrentUpdatePhase() = UpdatePhase::Post;
 

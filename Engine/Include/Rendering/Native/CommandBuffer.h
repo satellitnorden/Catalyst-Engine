@@ -80,7 +80,7 @@ public:
 	/*
 	*	Traces rays.
 	*/
-	void TraceRays(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
+	void TraceRays(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
 	*	Ends the command buffer.

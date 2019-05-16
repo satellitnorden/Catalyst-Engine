@@ -30,10 +30,8 @@
 enum class UpdatePhase : uint8
 {
 	Pre = BIT(0),
-	Logic = BIT(1),
-	Physics = BIT(2),
-	Render = BIT(3),
-	Post = BIT(4)
+	Main = BIT(1),
+	Post = BIT(2)
 };
 
 ENUMERATION_BIT_OPERATIONS(UpdatePhase);
@@ -54,7 +52,7 @@ RESTRICTED static NO_DISCARD UpdatePhase *const RESTRICT CurrentUpdatePhase() NO
 template <typename TYPE>
 static NO_DISCARD UpdatePhase AllowedReadAccess() NOEXCEPT
 {
-	return UpdatePhase::Pre | UpdatePhase::Logic | UpdatePhase::Physics | UpdatePhase::Render | UpdatePhase::Post;
+	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
 }
 
 /*
@@ -63,7 +61,7 @@ static NO_DISCARD UpdatePhase AllowedReadAccess() NOEXCEPT
 template <typename TYPE>
 static NO_DISCARD UpdatePhase AllowedWriteAccess() NOEXCEPT
 {
-	return UpdatePhase::Pre | UpdatePhase::Logic | UpdatePhase::Physics | UpdatePhase::Render | UpdatePhase::Post;
+	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
 }
 
 /*

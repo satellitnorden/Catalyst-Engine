@@ -35,7 +35,7 @@ public:
 template <>
 static NO_DISCARD UpdatePhase AllowedReadAccess<InputComponent>() NOEXCEPT
 {
-	return UpdatePhase::Logic | UpdatePhase::Physics | UpdatePhase::Render | UpdatePhase::Post;
+	return UpdatePhase::Main | UpdatePhase::Post;
 }
 
 /*

@@ -139,7 +139,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->PushConstants(this, ShaderStage::RayGeneration, 0, sizeof(PushConstantData), &data);
 
 	//Trace rays!
-	commandBuffer->TraceRays(this);
+	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
 
 	//End the command buffer.
 	commandBuffer->End(this);

@@ -262,7 +262,7 @@ void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineS
 /*
 *	Records a trace rays command.
 */
-void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuffer) NOEXCEPT
+void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuffer, const uint32 width, const uint32 height) NOEXCEPT
 {
 	vkCmdTraceRaysNV(	_VulkanCommandBuffer,
 						shaderBindingTableBuffer,
@@ -276,8 +276,8 @@ void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuff
 						VK_NULL_HANDLE,
 						0,
 						0,
-						1'920,
-						1'080,
+						width,
+						height,
 						1);
 }
 

@@ -23,7 +23,7 @@ public:
 template <>
 static NO_DISCARD UpdatePhase AllowedReadAccess<UserInterfaceComponent>() NOEXCEPT
 {
-	return UpdatePhase::Pre | UpdatePhase::Logic | UpdatePhase::Physics | UpdatePhase::Render | UpdatePhase::Post;
+	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
 }
 
 /*
@@ -32,5 +32,5 @@ static NO_DISCARD UpdatePhase AllowedReadAccess<UserInterfaceComponent>() NOEXCE
 template <>
 static NO_DISCARD UpdatePhase AllowedWriteAccess<UserInterfaceComponent>() NOEXCEPT
 {
-	return UpdatePhase::Pre | UpdatePhase::Logic | UpdatePhase::Physics | UpdatePhase::Render | UpdatePhase::Post;
+	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
 }
