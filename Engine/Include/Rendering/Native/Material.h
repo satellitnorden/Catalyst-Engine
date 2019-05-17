@@ -12,7 +12,8 @@ public:
 	enum class Property : int32
 	{
 		None = 0,
-		Highlight = BIT(0)
+		Highlight = BIT(0),
+		Translucent = BIT(1)
 	};
 
 	//The properties.

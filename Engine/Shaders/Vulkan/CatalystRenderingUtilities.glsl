@@ -4,6 +4,7 @@
 //Preprocessor defines.
 #define HIGHLIGHT_COLOR (vec3(0.0f, 1.0f, 1.0f))
 #define MATERIAL_HIGHLIGHT_BIT (1 << 0)
+#define MATERIAL_TRANSLUCENT_BIT (1 << 1)
 
 /*
 *	Calculates the highlight of an object.

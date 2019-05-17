@@ -20,6 +20,7 @@
 
 //Descriptor set data.
 layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -74,6 +75,13 @@ void main()
 
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
+
+	//If this is a "translucent" material, modify some properties to make it appear that way.
+	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
+	{
+		albedo = texture(environmentTexture, refract(gl_WorldRayDirectionNV, finalNormal, 0.25f)).rgb;
+		emissive = 1.0f;
+	}
 
 	//Treat this ray differently depending on the recursion depth.
 	if (currentRecursionDepth == 0)

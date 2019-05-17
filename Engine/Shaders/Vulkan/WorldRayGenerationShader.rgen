@@ -12,7 +12,7 @@
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
 layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
-layout (set = 1, binding = 2, rgba8) uniform image2D sceneFeatures1Image;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
 layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures4Image;
