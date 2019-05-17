@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/IndirectLightingDenoisingRenderPass.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -59,6 +62,12 @@ void IndirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingDenoisingRenderPass::Execute() NOEXCEPT
 {
+	//Toggle enabled.
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._A == ButtonState::Pressed)
+	{
+		SetEnabled(!IsEnabled());
+	}
+
 	//Execute all pipelines.
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 	{
