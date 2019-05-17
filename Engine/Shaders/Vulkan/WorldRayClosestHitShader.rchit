@@ -120,6 +120,7 @@ void main()
 
 		vec3 specularIrradiance = rayPayload.radiance;
 
+		/*
 		//Calculate the directional light visibility.
 		{
 			vec3 randomDirectionalLightDirection = dot(rayPayload.randomVector, directionalLightDirection) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f;
@@ -144,13 +145,14 @@ void main()
 			//Write the directional light visibility to the texture.
 			imageStore(directionalLightVisibilityTexture, ivec2(gl_LaunchIDNV.xy), vec4(visibility));
 		}
+		*/
 		
 		//Calculate all other lights visibilities.
 		for (int i = 0; i < numberOfLights; ++i)
 		{
 			Light light = UnpackLight(i);
 
-			vec3 randomLightPosition = light.position/* + rayPayload.randomVector * light.size*/;
+			vec3 randomLightPosition = light.position + rayPayload.randomVector * light.size;
 
 			float lengthToLight = length(randomLightPosition - hitPosition);
 			vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;

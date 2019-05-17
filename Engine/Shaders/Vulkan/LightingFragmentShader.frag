@@ -80,6 +80,7 @@ void main()
 														diffuseIrradiance,
 														specularIrradiance);
 
+		/*
 		//Add the directional light direct lighting result.
 		float directionalLightVisibility = texture(directionalLightVisibilityTexture, fragmentTextureCoordinate).x;
 
@@ -90,6 +91,7 @@ void main()
 													roughness,
 													metallic,
 													directionalLightColor * directionalLightIntensity) * directionalLightVisibility;
+		*/
 
 		//Add the lights direct lighting results.
 		for (int i = 0; i < numberOfLights; ++i)
