@@ -167,14 +167,9 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the diffuse irradiance.
+	*	Contains the indirect lighting.
 	*/
-	DiffuseIrradiance,
-
-	/*
-	*	Contains the specular irradiance.
-	*/
-	SpecularIrradiance,
+	IndirectLighting,
 
 	/*
 	*	Contains the albedo.

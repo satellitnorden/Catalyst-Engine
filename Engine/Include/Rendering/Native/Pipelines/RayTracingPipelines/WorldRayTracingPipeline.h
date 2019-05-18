@@ -25,10 +25,10 @@ public:
 private:
 
 	//The number of noise textures.
-	static constexpr uint8 NUMBER_OF_NOISE_TEXTURES{ 32 };
+	static constexpr uint8 NUMBER_OF_NOISE_TEXTURES{ 64 };
 
 	//The noise texture size.
-	static constexpr uint8 NOISE_TEXTURE_SIZE{ 32 };
+	static constexpr uint8 NOISE_TEXTURE_SIZE{ 64 };
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;

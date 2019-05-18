@@ -3,6 +3,14 @@
 #include "CatalystShaderPhysicallyBasedLightingInternals.glsl"
 
 /*
+*   Calculates the diffuse component of a surface.
+*/
+float CalculateDiffuseComponent(float roughness, float metallic)
+{
+    return roughness * (1.0f - metallic);
+}
+
+/*
 *   Calculates the indirect lighting.
 *
 *   viewDirection - Direction vector going from the surface point to the perceiving point.
@@ -11,8 +19,7 @@
 *   roughness - The roughness of the surface at the surface point.
 *   ambientOcclusion - The ambient oclusion of the surface at the surface point.
 *   metallic - The metallic of the surface at the surface point.
-*   diffuseIrradiance - The diffuse irradiance in the hemisphere of the surface at the surface point.
-*   specularIrradiance - The diffuse irradiance in the reflection direction of the surface at the surface point.
+*   irradiance - The irradiance in the hemisphere of the surface at the surface point.
 */
 vec3 CalculateIndirectLighting( vec3 viewDirection,
                                 vec3 albedo,
@@ -20,16 +27,15 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
                                 float roughness,
                                 float metallic,
                                 float ambientOcclusion,
-                                vec3 diffuseIrradiance,
-                                vec3 specularIrradiance)
+                                vec3 irradiance)
 {
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
     vec3 specularComponent = CalculateFresnelRoughness(CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 diffuse = diffuseIrradiance * albedo;
-    vec3 specular = specularIrradiance;
+    vec3 diffuse = irradiance * albedo;
+    vec3 specular = irradiance;
 
     return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
 }

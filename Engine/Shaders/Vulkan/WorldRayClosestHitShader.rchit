@@ -19,8 +19,8 @@
 #define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
 
 //Descriptor set data.
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -86,8 +86,9 @@ void main()
 	//Treat this ray differently depending on the recursion depth.
 	if (currentRecursionDepth == 0)
 	{
-		//Calculate the diffuse irradiance.
-		vec3 randomDiffuseIrradianceDirection = dot(rayPayload.randomVector, finalVertex.normal) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f;
+		//Calculate the indirect lighting
+		vec3 randomIndirectLightingDirection = dot(rayPayload.randomVector, finalVertex.normal) >= 0.0f ? rayPayload.randomVector : rayPayload.randomVector * -1.0f;
+		randomIndirectLightingDirection = normalize(mix(reflect(gl_WorldRayDirectionNV, finalNormal), randomIndirectLightingDirection, CalculateDiffuseComponent(roughness, metallic)));
 
 		rayPayload.currentRecursionDepth = 1;
 
@@ -100,33 +101,12 @@ void main()
 				0, 									//missIndex
 				hitPosition, 						//origin
 				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-				randomDiffuseIrradianceDirection, 	//direction
+				randomIndirectLightingDirection, 	//direction
 				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
 				0 									//payload
 				);
 
-		vec3 diffuseIrradiance = rayPayload.radiance;
-
-		//Calculate the specular irradiance.
-		vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
-
-		rayPayload.currentRecursionDepth = 1;
-
-		traceNV(
-				topLevelAccelerationStructure, 		//topLevel
-				gl_RayFlagsOpaqueNV, 				//rayFlags
-				0xff, 								//cullMask
-				0, 									//sbtRecordOffset
-				0, 									//sbtRecordStride
-				0, 									//missIndex
-				hitPosition, 						//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-				specularIrradianceDirection, 		//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-				0 									//payload
-				);
-
-		vec3 specularIrradiance = rayPayload.radiance;
+		vec3 indirectLighting = rayPayload.radiance;
 
 		/*
 		//Calculate the directional light visibility.
@@ -187,8 +167,7 @@ void main()
 		}
 
 		//Write to the ray payload.
-		rayPayload.diffuseIrradiance = diffuseIrradiance;
-		rayPayload.specularIrradiance = specularIrradiance;
+		rayPayload.indirectLighting = indirectLighting;
 		rayPayload.albedo = albedo;
 		rayPayload.geometryNormal = finalVertex.normal;
 		rayPayload.shadingNormal = finalNormal;

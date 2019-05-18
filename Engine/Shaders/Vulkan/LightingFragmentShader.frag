@@ -20,11 +20,10 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Descriptor set data.
-layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
-layout (set = 1, binding = 1) uniform sampler2D specularIrradianceTexture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures1Texture;
-layout (set = 1, binding = 3) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 4) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 0) uniform sampler2D indirectLightingTexture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures1Texture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 3) uniform sampler2D sceneFeatures3Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -39,11 +38,8 @@ void main()
 	//Only calculate the lighting if there was a hit.
 	if (hitDistance < CATALYST_RAY_TRACING_T_MAXIMUM)
 	{
-		//Sample the diffuse irradiance.
-		vec3 diffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
-
-		//Sample the specular irradiance.
-		vec3 specularIrradiance = texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb;
+		//Sample the indirect lighting.
+		vec3 indirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
 
 		//Sample the albedo.
 		vec3 albedo = texture(sceneFeatures1Texture, fragmentTextureCoordinate).rgb;
@@ -77,8 +73,7 @@ void main()
 														roughness,
 														metallic,
 														ambientOcclusion,
-														diffuseIrradiance,
-														specularIrradiance);
+														indirectLighting);
 
 		/*
 		//Add the directional light direct lighting result.
@@ -121,10 +116,10 @@ void main()
 		scene = vec4(compositedLighting, 1.0f);
 	}
 	
-	//If there wasn't a hit, then the sky color is stored in the specular irradiance texture.
+	//If there wasn't a hit, then the sky color is stored in the indirect lighting texture.
 	else
 	{
 		//Write the fragment.
-		scene = vec4(texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, 1.0f);
+		scene = vec4(texture(indirectLightingTexture, fragmentTextureCoordinate).rgb, 1.0f);
 	}
 }

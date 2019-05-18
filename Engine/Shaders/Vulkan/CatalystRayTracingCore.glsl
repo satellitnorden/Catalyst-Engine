@@ -13,8 +13,7 @@ struct PrimaryRayPayload
 	vec3 randomVector;
 	int currentRecursionDepth;
 
-	vec3 diffuseIrradiance;
-	vec3 specularIrradiance;
+	vec3 indirectLighting;
 	vec3 albedo;
 	vec3 geometryNormal;
 	vec3 shadingNormal;

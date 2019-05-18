@@ -10,14 +10,13 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
-layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures4Image;
-layout (set = 1, binding = 6) uniform sampler2D noiseImage;
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
+layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 1, binding = 3, rgba8) uniform image2D sceneFeatures3Image;
+layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures4Image;
+layout (set = 1, binding = 5) uniform sampler2D noiseImage;
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -37,7 +36,7 @@ void main()
 #define USE_NOISE_TEXTURE true
 
 #if USE_NOISE_TEXTURE
-	rayPayload.randomVector = normalize(texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 31, (gl_LaunchIDNV.y + noiseOffset.y) & 31) / vec2(32.0f, 32.0f)).xyz * 2.0f - 1.0f);
+	rayPayload.randomVector = normalize(texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f)).xyz * 2.0f - 1.0f);
 #else
 	rayPayload.randomVector = normalize(vec3(	RandomFloat(screenCoordinate, globalRandomSeed1) * 2.0f - 1.0f,
 												RandomFloat(screenCoordinate, globalRandomSeed2) * 2.0f - 1.0f,
@@ -64,8 +63,7 @@ void main()
 			0 								//payload
 			);
 
-	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.diffuseIrradiance, 1.0f));
-	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.specularIrradiance, 1.0f));
+	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), rayPayload.depth, intBitsToFloat(rayPayload.materialProperties)));
     imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.emissive));
