@@ -63,7 +63,7 @@ void IndirectLightingDenoisingRenderPass::Initialize() NOEXCEPT
 void IndirectLightingDenoisingRenderPass::Execute() NOEXCEPT
 {
 	//Toggle enabled.
-	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._A == ButtonState::Pressed)
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadLeft == ButtonState::Pressed)
 	{
 		SetEnabled(!IsEnabled());
 	}

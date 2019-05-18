@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DIRECT_LIGHTING_DENOISING_SIZE (15)
+#define DIRECT_LIGHTING_DENOISING_SIZE (17)
 #define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1) / 2)
 
 /*
@@ -75,7 +75,7 @@ void main()
 		*/
 		float sampleWeight = 1.0f;
 
-		sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 4.0f);
+		sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 8.0f);
 
 		denoisedVisibility += texture(lightVisibilityTexture, sampleCoordinate).x * sampleWeight;
 

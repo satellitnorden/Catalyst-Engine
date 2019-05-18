@@ -139,7 +139,6 @@ void main()
 	*	2. How close to the current barycentric coordinate was the sample?
 	*	3. How fast is the perceiver moving?
 	*	4. How fast is the perceiver rotating?
-	*	5. To prioritize newer samples, decrease the weight as total accumulations increases.
 	*/
 	float weight = 1.0f;
 
@@ -147,8 +146,6 @@ void main()
 	weight *= pow(max(1.0f - closestPreviousTemporalAccumulationBufferDistance, 0.0f), 16.0f);
 	weight *= max(1.0f - length(perceiverVelocity), 0.0f);
 	weight *= max(perceiverRotationVelocity, 0.0f);
-	weight *= max(1.0f - (totalAccumulations / 4096.0f), 0.0f);
-
 	//Calculate the previous average.
 	vec3 previousAverage = closestPreviousTemporalAccumulationColorBuffer.rgb;
 

@@ -76,7 +76,7 @@ void RadianceIntegrationGraphicsPipeline::Execute() NOEXCEPT
 {
 	static bool enabled{ false };
 
-	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._B == ButtonState::Pressed)
+	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadRight == ButtonState::Pressed)
 	{
 		enabled = !enabled;
 	}
