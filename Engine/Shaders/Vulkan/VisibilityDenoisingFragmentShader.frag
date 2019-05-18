@@ -75,7 +75,7 @@ void main()
 		*/
 		float sampleWeight = 1.0f;
 
-		sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 8.0f);
+		sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 16.0f);
 
 		denoisedVisibility += texture(lightVisibilityTexture, sampleCoordinate).x * sampleWeight;
 
