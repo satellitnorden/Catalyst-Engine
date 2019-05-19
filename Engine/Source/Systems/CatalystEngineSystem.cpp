@@ -196,4 +196,5 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	PhysicsSystem::Instance->Terminate();
 	RenderingSystem::Instance->Release();
 	SoundSystem::Instance->Terminate();
+	UserInterfaceSystem::Terminate();
 }

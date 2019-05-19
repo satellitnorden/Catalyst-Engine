@@ -5,15 +5,15 @@
 #include <Core/Containers/DynamicArray.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElement.h>
+#include <UserInterface/UserInterfaceElement.h>
 
 class UserInterfaceComponent final
 {
 
 public:
 
-	//Container for all button user interface elements.
-	DynamicArray<ButtonUserInterfaceElement *RESTRICT> _ButtonUserInterfaceElements;
+	//Container for all user interface elements.
+	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
 
 };
 

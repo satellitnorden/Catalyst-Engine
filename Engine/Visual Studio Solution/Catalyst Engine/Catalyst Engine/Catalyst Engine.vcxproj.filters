@@ -1068,12 +1068,6 @@
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElement.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h">
       <Filter>Components\Include\Singleton</Filter>
     </ClInclude>
@@ -1133,6 +1127,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h">
       <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElementDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElement.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\UserInterfaceRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1423,6 +1444,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp">
       <Filter>Rendering\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\UserInterfaceRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

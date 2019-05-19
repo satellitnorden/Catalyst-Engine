@@ -308,6 +308,9 @@ private:
 	//The model system.
 	ModelSystem _ModelSystem;
 
+	//The default texture 2D.
+	Texture2DHandle _DefaultTexture2D;
+
 	/*
 	*	Pre-initializes the rendering system.
 	*/
@@ -357,6 +360,11 @@ private:
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
+
+	/*
+	*	Post-initializes the global render data.
+	*/
+	void PostInitializeGlobalRenderData() NOEXCEPT;
 
 	/*
 	*	Updates the global render data.

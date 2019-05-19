@@ -91,6 +91,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Initialize all common materials.
 	InitializeCommonMaterials();
+
+	//Post-initialize the global render data.
+	PostInitializeGlobalRenderData();
 }
 
 /*
@@ -323,6 +326,9 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 		ResourceCreator::CreateTexture2D(&data, &texture);
 
 		material._FirstTextureIndex = texture._Index;
+
+		//Make the albedo texture the default texture 2D.
+		_DefaultTexture2D = texture._Texture2D;
 	}
 
 	{
@@ -376,10 +382,25 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::RayClosestHit)
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
+	}
+}
+
+/*
+*	Post-initializes the global render data.
+*/
+void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
+{
+	//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
+	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
+	{
+		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D, _Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
+		}
 	}
 }
 

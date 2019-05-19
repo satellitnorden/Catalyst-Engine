@@ -65,6 +65,8 @@ enum class RenderPassStage : uint8
 	PostProcessing,
 	ToneMapping,
 	AntiAliasing,
+	UserInterface,
+	Screen,
 
 	NumberOfRenderPassStages
 };
@@ -264,6 +266,8 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	TemporalAccumulationFragment,
 	ToneMappingFragment,
+	UserInterfaceFragment,
+	UserInterfaceVertex,
 	ViewportVertex,
 	VisibilityDenoisingFragment,
 	VisibilityRayMissShader,

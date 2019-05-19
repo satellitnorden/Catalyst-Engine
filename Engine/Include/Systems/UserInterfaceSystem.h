@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElement.h>
+#include <UserInterface/UserInterfaceElement.h>
+#include <UserInterface/UserInterfaceElementDescription.h>
 
 class UserInterfaceSystem final
 {
@@ -17,8 +18,13 @@ public:
 	static void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Creates a button user interface element.
+	*	Terminates the user interface system.
 	*/
-	RESTRICTED static NO_DISCARD ButtonUserInterfaceElement *const RESTRICT CreateButtonUserInterfaceElement(const ButtonUserInterfaceElementDescription &description) NOEXCEPT;
+	static void Terminate() NOEXCEPT;
+
+	/*
+	*	Creates a user interface element.
+	*/
+	RESTRICTED static NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
 
 };
