@@ -13,7 +13,7 @@ struct PrimaryRayPayload
 	vec3 randomVector;
 	int currentRecursionDepth;
 
-	vec3 indirectLighting;
+	vec3 radiance;
 	vec3 albedo;
 	vec3 geometryNormal;
 	vec3 shadingNormal;
@@ -23,11 +23,6 @@ struct PrimaryRayPayload
 	float metallic;
 	float ambientOcclusion;
 	float emissive;
-	int instanceID;
-	int primitiveID;
-	vec2 barycentricCoordinates;
-
-	vec3 radiance;
 };
 
 /*
@@ -37,8 +32,7 @@ vec3 CalculateRayDirection(vec2 coordinate)
 {
     vec2 nearPlaneCoordinate = coordinate * 2.0f - 1.0f;
 	vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, 1.0f), 1.0f);
-	float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
-	viewSpacePosition *= inverseViewSpacePositionDenominator;
+	viewSpacePosition /= viewSpacePosition.w;
 	vec4 worldSpacePosition = inversePerceiverMatrix * viewSpacePosition;
 
 	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);

@@ -3,18 +3,28 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/General/Matrix.h>
+
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class LightingGraphicsPipeline final : public GraphicsPipeline
+class DenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
+	//Enumeration covering all direction.
+	enum class Direction : uint8
+	{
+		Horizontal,
+		Vertical
+	};
+
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -29,6 +39,9 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
+	//The direction.
+	Direction _Direction;
+
 	/*
 	*	Creates the render data table layout.
 	*/
@@ -37,6 +50,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
 
 };

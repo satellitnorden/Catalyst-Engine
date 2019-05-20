@@ -12,8 +12,8 @@ class DynamicUniformData final
 
 public:
 
-	Matrix4 _PerceiverMatrixMinusOne;
-	Matrix4 _ProjectionMatrixMinusOne;
+	Matrix4 _ViewMatrixMinusOne;
+	Matrix4 _UNUSED;
 	Matrix4 _InversePerceiverMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _PerceiverMatrix;
@@ -21,7 +21,7 @@ public:
 	Matrix4 _ViewMatrix;
 
 	Vector4<float> _DirectionalLightColor;
-	Vector4<float> _DirectionalLightDirection;
+	Vector4<float> _PerceiverWorldPositionMinusOne;
 	Vector4<float> _PerceiverForwardVector;
 	Vector4<float> _PerceiverVelocity;
 	Vector4<float> _PerceiverWorldPosition;

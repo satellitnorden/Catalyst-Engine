@@ -38,14 +38,6 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
 }
 
 /*
-*	Applies film grain.
-*/
-vec3 ApplyFilmGrain(vec3 fragment)
-{
-	return mix(fragment, vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
-}
-
-/*
 *	Applies vignette.
 */
 vec3 ApplyVignette(vec3 fragment, float edgeFactor)
@@ -66,9 +58,6 @@ void main()
 
 	//Apply chromatic aberration.
 	postProcessedFragment = ApplyChromaticAberration(postProcessedFragment, edgeFactor);
-
-	//Apply film grain.
-	postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
 
 	//Apply vignette.
 	postProcessedFragment = ApplyVignette(postProcessedFragment, edgeFactor);

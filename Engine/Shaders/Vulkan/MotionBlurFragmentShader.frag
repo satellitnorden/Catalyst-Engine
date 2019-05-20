@@ -31,11 +31,10 @@ void main()
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeaturesTexture, fragmentTextureCoordinate).z;
 
 	//Now calculate it's previous screen position using the previous view matrix.
-	vec4 previousViewSpacePosition = projectionMatrixMinusOne * perceiverMatrixMinusOne * vec4(worldPosition, 1.0f);
+	vec4 previousViewSpacePosition = viewMatrixMinusOne * vec4(worldPosition, 1.0f);
 
 	//Perform perspective division.
-	float inversePerspectiveDenominator = 1.0f / previousViewSpacePosition.w;
-	previousViewSpacePosition.xyz *= inversePerspectiveDenominator;
+	previousViewSpacePosition.xyz /= previousViewSpacePosition.w;
 
 	vec2 previousScreenPosition = (previousViewSpacePosition.xy + 1.0f) * 0.5f;
 

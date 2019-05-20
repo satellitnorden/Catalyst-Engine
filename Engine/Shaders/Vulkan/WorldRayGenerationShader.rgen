@@ -10,13 +10,12 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
+layout (set = 1, binding = 0, rgba32f) uniform image2D sceneImage;
 layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 3, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures4Image;
-layout (set = 1, binding = 5) uniform sampler2D noiseImage;
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 4) uniform sampler2D noiseImage;
+layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -33,15 +32,7 @@ void main()
 	vec2 screenCoordinate = vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy);
 
 	//Retrieve the random vector.
-#define USE_NOISE_TEXTURE true
-
-#if USE_NOISE_TEXTURE
 	rayPayload.randomVector = normalize(texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f)).xyz * 2.0f - 1.0f);
-#else
-	rayPayload.randomVector = normalize(vec3(	RandomFloat(screenCoordinate, globalRandomSeed1) * 2.0f - 1.0f,
-												RandomFloat(screenCoordinate, globalRandomSeed2) * 2.0f - 1.0f,
-												RandomFloat(screenCoordinate, globalRandomSeed3) * 2.0f - 1.0f));
-#endif
 
 	//Inidicate that this is the top recursion level.
 	rayPayload.currentRecursionDepth = 0;
@@ -63,9 +54,8 @@ void main()
 			0 								//payload
 			);
 
-	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f));
+	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), rayPayload.depth, intBitsToFloat(rayPayload.materialProperties)));
     imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.emissive));
-    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(intBitsToFloat(rayPayload.instanceID), intBitsToFloat(rayPayload.primitiveID), rayPayload.barycentricCoordinates.x, rayPayload.barycentricCoordinates.y));
 }

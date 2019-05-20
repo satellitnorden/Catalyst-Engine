@@ -56,9 +56,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	IndirectLightingDenoising,
-	DirectLightingDenoising,
-	Lighting,
+	Denoising,
 	TemporalAccumulation,
 	RadianceIntegration,
 	MotionBlur,
@@ -169,11 +167,6 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the indirect lighting.
-	*/
-	IndirectLighting,
-
-	/*
 	*	Contains the albedo.
 	*/
 	SceneFeatures1,
@@ -187,11 +180,6 @@ enum class RenderTarget : uint8
 	*	Contains the roughness, metallic, ambient occlusion and emissive.
 	*/
 	SceneFeatures3,
-	
-	/*
-	*	Contains the instance ID, the primitive ID and the barycentric coordinates.
-	*/
-	SceneFeatures4,
 
 	/*
 	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -258,8 +246,7 @@ enum class Shader : uint8
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
-	IndirectLightingDenoisingFragment,
-	LightingFragment,
+	DenoisingFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
 	PostProcessingFragment,

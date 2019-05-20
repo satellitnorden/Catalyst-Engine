@@ -21,8 +21,8 @@
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
-    layout (offset = 0) mat4 perceiverMatrixMinusOne;
-    layout (offset = 64) mat4 projectionMatrixMinusOne;
+    layout (offset = 0) mat4 viewMatrixMinusOne;
+    layout (offset = 64) mat4 UNUSED;
     layout (offset = 128) mat4 inversePerceiverMatrix;
     layout (offset = 192) mat4 inverseProjectionMatrix;
     layout (offset = 256) mat4 perceiverMatrix;
@@ -30,7 +30,7 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 384) mat4 viewMatrix;
 
     layout (offset = 448) vec3 directionalLightColor;
-    layout (offset = 464) vec3 directionalLightDirection;
+    layout (offset = 464) vec3 perceiverWorldPositionMinusOne;
     layout (offset = 480) vec3 perceiverForwardVector;
     layout (offset = 496) vec3 perceiverVelocity;
     layout (offset = 512) vec3 perceiverWorldPosition;
@@ -61,33 +61,6 @@ layout (set = 0, binding = 1) uniform sampler2D globalTextures[MAXIMUM_NUMBER_OF
 float CalculateAverage(vec3 fragment)
 {
     return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
-}
-
-/*
-*   Calculates a fragment's view space position.
-*/
-vec3 CalculateFragmentViewSpacePosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, depth), 1.0f);
-    float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
-    viewSpacePosition *= inverseViewSpacePositionDenominator;
-
-    return viewSpacePosition.xyz;
-}
-
-/*
-*   Calculates a fragment's world position.
-*/
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, depth), 1.0f);
-    float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
-    viewSpacePosition *= inverseViewSpacePositionDenominator;
-    vec4 worldSpacePosition = inversePerceiverMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
 }
 
 /*
