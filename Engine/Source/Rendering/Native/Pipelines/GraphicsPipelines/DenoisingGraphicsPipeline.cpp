@@ -32,7 +32,7 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const Rend
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(source);
+	CreateRenderDataTables(source);
 
 	//Set the direction.
 	_Direction = direction;
@@ -86,28 +86,34 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const Rend
 */
 void DenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
 }
 
 /*
-*	Creates the render data table.
+*	Creates the render data tables.
 */
-void DenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void DenoisingGraphicsPipeline::CreateRenderDataTables(const RenderTargetHandle source) NOEXCEPT
 {
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
+
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &renderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	}
 }
 
 /*
@@ -121,9 +127,14 @@ void DenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
+	//Update the current render data table.
+	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &currentRenderDataTable, _CurrentBufferIndex == 0 ? RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1) : RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
 
 	//Push constants.
 	PushConstantData data;
@@ -148,4 +159,7 @@ void DenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+
+	//Update the current buffer index.
+	_CurrentBufferIndex = _CurrentBufferIndex == 0 ? 1 : 0;
 }

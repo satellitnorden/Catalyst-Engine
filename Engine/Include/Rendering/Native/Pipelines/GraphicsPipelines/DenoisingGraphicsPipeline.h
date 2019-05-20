@@ -36,11 +36,14 @@ private:
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
+	//The render data tables.
+	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 	//The direction.
 	Direction _Direction;
+
+	//The current buffer index.
+	uint8 _CurrentBufferIndex{ 0 };
 
 	/*
 	*	Creates the render data table layout.
@@ -48,8 +51,8 @@ private:
 	void CreateRenderDataTableLayout() NOEXCEPT;
 
 	/*
-	*	Creates the render data table.
+	*	Creates the render data tables.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
+	void CreateRenderDataTables(const RenderTargetHandle source) NOEXCEPT;
 
 };
