@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (9.0f)
+#define DENOISING_SIZE (23.0f)
 #define DENOISING_START_END ((DENOISING_SIZE - 1.0f) * 0.5f)
 
 /*
@@ -110,8 +110,6 @@ void main()
 		sampleWeight *= 1.0f - min(abs(currentFeatures.metallic - sampleFeatures.metallic), 1.0f);
 		sampleWeight *= 1.0f - min(abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion), 1.0f);
 		sampleWeight *= 1.0f - min(abs(currentFeatures.emissive - sampleFeatures.emissive), 1.0f);
-
-		sampleWeight = pow(sampleWeight, 32.0f);
 
 		denoisedScene += sampleScene * sampleWeight;
 		sceneWeightSum += sampleWeight;

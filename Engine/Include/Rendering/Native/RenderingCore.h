@@ -56,6 +56,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
+	TemporalAccumulationWeightCalculation,
 	Denoising,
 	TemporalAccumulation,
 	RadianceIntegration,
@@ -252,6 +253,7 @@ enum class Shader : uint8
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
 	TemporalAccumulationFragment,
+	TemporalAccumulationWeightCalculationFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
