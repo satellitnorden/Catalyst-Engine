@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (65.0f)
+#define DENOISING_SIZE (69.0f)
 #define DENOISING_START_END ((DENOISING_SIZE - 1.0f) * 0.5f)
 
 /*
@@ -50,6 +50,17 @@ layout (set = 1, binding = 4) uniform sampler2D temporalAccumulationDescriptionB
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
+
+/*
+*	Returns if a coordinate is valid.
+*/
+bool ValidCoordinate(vec2 coordinate)
+{
+	return 	coordinate.x >= 0.0f
+			&& coordinate.x < 1.0f
+			&& coordinate.y >= 0.0f
+			&& coordinate.y < 1.0f;
+}
 
 /*
 *	Samples the scene features at the specified coordinates.
@@ -110,16 +121,18 @@ void main()
 			*	5. How closely aligned are the metallic terms to each other?
 			*	6. How closely aligned are the ambient occlusion terms to each other?
 			*	7. How closely aligned are the ambient occlusion terms to each other?
+			*	8. Is the sample coordinate valid?
 			*/
 			float sampleWeight = 1.0f;
 
-			sampleWeight *= 1.0f - min(CalculateAverage(currentFeatures.albedo) - CalculateAverage(sampleFeatures.albedo), 1.0f);
+			//sampleWeight *= 1.0f - min(CalculateAverage(currentFeatures.albedo) - CalculateAverage(sampleFeatures.albedo), 1.0f);
 			sampleWeight *= max(dot(currentFeatures.normal, sampleFeatures.normal), 0.0f);
 			sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
 			sampleWeight *= 1.0f - min(abs(currentFeatures.roughness - sampleFeatures.roughness), 1.0f);
 			sampleWeight *= 1.0f - min(abs(currentFeatures.metallic - sampleFeatures.metallic), 1.0f);
 			sampleWeight *= 1.0f - min(abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion), 1.0f);
 			sampleWeight *= 1.0f - min(abs(currentFeatures.emissive - sampleFeatures.emissive), 1.0f);
+			sampleWeight *= float(ValidCoordinate(sampleCoordinate));
 
 			denoisedScene += sampleScene * sampleWeight;
 			sceneWeightSum += sampleWeight;
