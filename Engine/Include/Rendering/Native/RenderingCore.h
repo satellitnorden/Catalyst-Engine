@@ -56,10 +56,12 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
+	DetachDetail,
 	TemporalAccumulationWeightCalculation,
 	FireflyReduction,
 	Denoising,
 	TemporalAccumulation,
+	AttachDetail,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,
@@ -244,11 +246,13 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AntiAliasingFragment,
+	AttachDetailFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
+	DetachDetailFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
