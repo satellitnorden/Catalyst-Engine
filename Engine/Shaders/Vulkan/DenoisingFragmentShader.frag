@@ -104,6 +104,9 @@ void main()
 		vec3 denoisedScene = vec3(0.0f);
 		float sceneWeightSum = 0.0f;
 
+		vec3 minimum = vec3(0.0f);
+		vec3 maximum = vec3(0.0f);
+
 		for (float x = -startAndEnd; x <= startAndEnd; ++x)
 		{
 			vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
@@ -136,10 +139,16 @@ void main()
 
 			denoisedScene += sampleScene * sampleWeight;
 			sceneWeightSum += sampleWeight;
+
+			minimum = min(minimum, sampleScene);
+			maximum = min(maximum, sampleScene);
 		}
-				
-		//Normalize the denoised scene.
-		denoisedScene = sceneWeightSum == 0.0f ? currentScene : denoisedScene / sceneWeightSum;
+					
+		//Calculate the variance.
+		float variance = min(abs(CalculateAverage(minimum) - CalculateAverage(maximum)), 1.0f);
+
+		//Normalize the denoised scene. Blend with the minimum sample based on the variance to fight fireflies.
+		denoisedScene = sceneWeightSum == 0.0f ? currentScene : mix(denoisedScene / sceneWeightSum, minimum, variance);
 
 		//Write the fragment.
 		scene = vec4(denoisedScene, 1.0f);
