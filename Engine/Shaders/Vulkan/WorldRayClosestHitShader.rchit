@@ -13,13 +13,9 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
-//Constants.
-//#define DIRECTIONAL_LIGHT_SOFTNESS (0.02f)
-#define DIRECTIONAL_LIGHT_SOFTNESS (0.0f)
-
 //Descriptor set data.
-layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 6) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -82,14 +78,14 @@ void main()
 		emissive = 1.0f;
 	}
 
-	//Calculate the radiance.
-	vec3 radiance = vec3(0.0f);
+	//Calculate the direct lighting.
+	vec3 directLighting = vec3(0.0f);
 
 	//Add the emissive lighting.
-	radiance += albedo * emissive;
+	directLighting += albedo * emissive;
 
 	//Add the highlight.
-	radiance += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
+	directLighting += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
 
 	if (currentRecursionDepth == 0)
 	{
@@ -113,13 +109,7 @@ void main()
 				0 									//payload
 				);
 
-		radiance += CalculateIndirectLighting(	-gl_WorldRayDirectionNV,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												ambientOcclusion,
-												rayPayload.radiance);
+		rayPayload.indirectLighting = rayPayload.directLighting;
 	}
 
 	//Calculate a randomly chosen light.
@@ -152,7 +142,7 @@ void main()
 			1 																							//payload
 			);
 
-	radiance += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+	directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
 										lightDirection,
 										albedo,
 										finalNormal,
@@ -161,7 +151,7 @@ void main()
 										light.color * light.strength) * attenuation * visibility;
 
 	//Write to the ray payload.
-	rayPayload.radiance = radiance;
+	rayPayload.directLighting = directLighting;
 		
 	if (currentRecursionDepth == 0)
 	{

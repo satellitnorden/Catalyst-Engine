@@ -10,12 +10,13 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D sceneImage;
-layout (set = 1, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 1, binding = 3, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 4) uniform sampler2D noiseImage;
-layout (set = 1, binding = 5) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
+layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingImage;
+layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
+layout (set = 1, binding = 5) uniform sampler2D noiseImage;
+layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -55,7 +56,8 @@ void main()
 			0 								//payload
 			);
 
-	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f));
+	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f));
+	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.directLighting, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), rayPayload.depth, intBitsToFloat(rayPayload.materialProperties)));
     imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.emissive));

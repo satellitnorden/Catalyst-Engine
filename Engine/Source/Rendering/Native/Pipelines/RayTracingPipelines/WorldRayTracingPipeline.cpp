@@ -109,13 +109,14 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(5, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(6, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectLighting));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(5, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(6, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(7, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -155,15 +156,16 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 */
 void WorldRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 7> bindings
+	StaticArray<RenderDataTableLayoutBinding, 8> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss)
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::RayClosestHit | ShaderStage::RayMiss)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

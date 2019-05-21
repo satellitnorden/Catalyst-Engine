@@ -40,13 +40,13 @@ void FireflyReductionRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(_FireflyReductionGraphicsPipelines.Size());
 
 	_FireflyReductionGraphicsPipelines[0].Initialize(	FireflyReductionGraphicsPipeline::Direction::Horizontal,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate1));
 	AddPipeline(&_FireflyReductionGraphicsPipelines[0]);
 
 	_FireflyReductionGraphicsPipelines[1].Initialize(	FireflyReductionGraphicsPipeline::Direction::Vertical,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate1),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::IndirectLighting));
 	AddPipeline(&_FireflyReductionGraphicsPipelines[1]);
 
 

@@ -171,6 +171,16 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
+	*	Contains the indirect lighting.
+	*/
+	IndirectLighting,
+
+	/*
+	*	Contains the direct lighting.
+	*/
+	DirectLighting,
+
+	/*
 	*	Contains the albedo.
 	*/
 	SceneFeatures1,
@@ -186,9 +196,14 @@ enum class RenderTarget : uint8
 	SceneFeatures3,
 
 	/*
-	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The first temporal accumulation indirect lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationColorBuffer1,
+	TemporalAccumulationIndirectLightingColorBuffer1,
+
+	/*
+	*	The first temporal accumulation direct lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationDirectLightingColorBuffer1,
 
 	/*
 	*	The first temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -196,9 +211,14 @@ enum class RenderTarget : uint8
 	TemporalAccumulationDescriptionBuffer1,
 
 	/*
-	*	The second temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The second temporal accumulation indirect lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationColorBuffer2,
+	TemporalAccumulationIndirectLightingColorBuffer2,
+
+	/*
+	*	The second temporal accumulation direct lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*/
+	TemporalAccumulationDirectLightingColorBuffer2,
 
 	/*
 	*	The second temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -216,9 +236,14 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	First intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate,
+	Intermediate1,
+
+	/*
+	*	Second intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate2,
 
 	/*
 	*	For rendering directly to the screen.
