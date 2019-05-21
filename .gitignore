@@ -13,5 +13,3 @@ Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/Microbenchmarker/
 Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/.vs/*
 Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/x64/*
 Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/Vulkan Shader Builder/x64/*
-
-*.crc
