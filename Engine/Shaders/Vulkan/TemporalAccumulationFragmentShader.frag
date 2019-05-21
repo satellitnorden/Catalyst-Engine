@@ -56,7 +56,7 @@ void main()
 	vec3 previousAverage = closestPreviousTemporalAccumulationColorBuffer.rgb;
 
 	//Calculate the smoothing constant.
-	float smoothingConstant = 2.0f / (totalAccumulations + 1.0f);
+	float smoothingConstant = 1.0f / (totalAccumulations + 1.0f);
 
 	//Calculate the exponentially moving average.
 	vec3 exponentiallyMovingAverage = (sceneTextureSampler.rgb - previousAverage) * smoothingConstant + previousAverage;

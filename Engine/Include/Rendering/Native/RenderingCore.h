@@ -57,6 +57,7 @@ enum class RenderPassStage : uint8
 	RenderOverride,
 #endif
 	TemporalAccumulationWeightCalculation,
+	FireflyReduction,
 	Denoising,
 	TemporalAccumulation,
 	RadianceIntegration,
@@ -248,6 +249,7 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
+	FireflyReductionFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
 	PostProcessingFragment,
