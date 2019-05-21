@@ -9,6 +9,9 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
+//Constants.
+#define SAMPLES (1)
+
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
 layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingImage;
@@ -32,33 +35,68 @@ void main()
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy);
 
-	//Retrieve the random vector.
-	rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
-	rayPayload.randomVector.xyz = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
+	//Accumulate results.
+	vec3 indirectLighting = vec3(0.0f);
+	vec3 directLighting = vec3(0.0f);
+	vec3 albedo = vec3(0.0f);
+	vec3 geometryNormal = vec3(0.0f);
+	vec3 shadingNormal = vec3(0.0f);
+	float depth = 0.0f;
+	int materialProperties = 0;
+	float roughness = 0.0f;
+	float metallic = 0.0f;
+	float ambientOcclusion = 0.0f;
+	float emissive = 0.0f;
 
-	//Inidicate that this is the top recursion level.
-	rayPayload.currentRecursionDepth = 0;
+	for (int i = 0; i < SAMPLES; ++i)
+	{
+		//Retrieve the random vector.
+		rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x + ((i & 1) == 0 ? i : 0)) & 63, (gl_LaunchIDNV.y + noiseOffset.y + ((i & 1) == 1 ? i : 0)) & 63) / vec2(64.0f, 64.0f));
 
-	//Generate the ray direction.
-	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+		//Jitter the screen coordinate a bit to get some anti-aliasing.
+		vec2 jitteredScreenCoordinate = screenCoordinate/* + vec2(rayPayload.randomVector.xy * 2.0f - 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f)*/;
 
-	traceNV(
-			topLevelAccelerationStructure, 	//topLevel
-			gl_RayFlagsOpaqueNV, 			//rayFlags
-			0xff, 							//cullMask
-			0, 								//sbtRecordOffset
-			0, 								//sbtRecordStride
-			0, 								//missIndex
-			perceiverWorldPosition, 		//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-			rayDirection, 					//direction
-			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-			0 								//payload
-			);
+		//Normalize the first three elements of the random vector.
+		rayPayload.randomVector.xyz = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
 
-	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.indirectLighting, 1.0f));
-	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.directLighting, 1.0f));
-    imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
-    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(rayPayload.geometryNormal), PackNormal(rayPayload.shadingNormal), rayPayload.depth, intBitsToFloat(rayPayload.materialProperties)));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.emissive));
+		//Inidicate that this is the top recursion level.
+		rayPayload.currentRecursionDepth = 0;
+
+		//Generate the ray direction.
+		vec3 rayDirection = CalculateRayDirection(jitteredScreenCoordinate);
+
+		traceNV(
+				topLevelAccelerationStructure, 	//topLevel
+				gl_RayFlagsOpaqueNV, 			//rayFlags
+				0xff, 							//cullMask
+				0, 								//sbtRecordOffset
+				0, 								//sbtRecordStride
+				0, 								//missIndex
+				perceiverWorldPosition, 		//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
+				rayDirection, 					//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
+				0 								//payload
+				);
+
+		//Accumulate the results.
+		indirectLighting += rayPayload.indirectLighting / SAMPLES;
+		directLighting += rayPayload.directLighting / SAMPLES;
+		albedo += rayPayload.albedo / SAMPLES;
+		geometryNormal += rayPayload.geometryNormal / SAMPLES;
+		shadingNormal += rayPayload.shadingNormal / SAMPLES;
+		depth += rayPayload.depth / SAMPLES;
+		materialProperties += rayPayload.materialProperties / SAMPLES;
+		roughness += rayPayload.roughness / SAMPLES;
+		metallic += rayPayload.metallic / SAMPLES;
+		ambientOcclusion += rayPayload.ambientOcclusion / SAMPLES;
+		emissive += rayPayload.emissive / SAMPLES;
+	}
+
+	//Write to the images.
+	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(indirectLighting, 1.0f));
+	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
+    imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
+    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(geometryNormal), PackNormal(shadingNormal), depth, intBitsToFloat(materialProperties)));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, emissive));
 }
