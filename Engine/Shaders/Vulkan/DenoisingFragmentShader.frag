@@ -11,10 +11,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_DENOISING_SIZE (65.0f)
-#define INDIRECT_LIGHTING_DENOISING_START_END ((INDIRECT_LIGHTING_DENOISING_SIZE - 1.0f) * 0.5f)
-#define DIRECT_LIGHTING_DENOISING_SIZE (17.0f)
-#define DIRECT_LIGHTING_DENOISING_START_END ((DIRECT_LIGHTING_DENOISING_SIZE - 1.0f) * 0.5f)
+#define DENOISING_SIZE (69.0f)
+#define DENOISING_START_END ((DENOISING_SIZE - 1.0f) * 0.5f)
 
 /*
 *	Scene features struct definition.
@@ -94,7 +92,7 @@ void main()
 	{
 		//Calculate the denoising weight. Denoise less the more accumulations that the temporal accumulation pass has done.
 		vec4 temporalAccumulationDescriptionBufferTextureSampler = texture(temporalAccumulationDescriptionBufferTexture, fragmentTextureCoordinate);
-		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 16.0f);
+		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 2.0f);
 
 		if (denoisingWeight > 0.0f)
 		{
@@ -106,7 +104,7 @@ void main()
 			float diffuseComponent = CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic);
 
 			//Calculate the start/end.
-			float startAndEnd = INDIRECT_LIGHTING_DENOISING_START_END * denoisingWeight;
+			float startAndEnd = DENOISING_START_END * denoisingWeight;
 
 			//Sample neighboring fragments.
 			vec3 denoisedIndirectLighting = vec3(0.0f);
@@ -154,7 +152,7 @@ void main()
 	{
 		//Calculate the denoising weight. Denoise less the more accumulations that the temporal accumulation pass has done.
 		vec4 temporalAccumulationDescriptionBufferTextureSampler = texture(temporalAccumulationDescriptionBufferTexture, fragmentTextureCoordinate);
-		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 32.0f);
+		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 512.0f);
 
 		if (denoisingWeight > 0.0f)
 		{
@@ -163,7 +161,7 @@ void main()
 			SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 			//Calculate the start/end.
-			float startAndEnd = DIRECT_LIGHTING_DENOISING_START_END * denoisingWeight;
+			float startAndEnd = DENOISING_START_END * denoisingWeight;
 
 			//Sample neighboring fragments.
 			vec3 denoisedDirectLighting = vec3(0.0f);
