@@ -258,7 +258,6 @@ enum class Shader : uint8
 	UserInterfaceFragment,
 	UserInterfaceVertex,
 	ViewportVertex,
-	VisibilityDenoisingFragment,
 	VisibilityRayMissShader,
 	WorldRayClosestHitShader,
 	WorldRayGenerationShader,

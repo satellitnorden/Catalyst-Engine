@@ -7,7 +7,6 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
-#define COMPUTE_SHADER
 #include "CatalystLightingData.glsl"
 #include "CatalystModelData.glsl"
 #include "CatalystRayTracingCore.glsl"

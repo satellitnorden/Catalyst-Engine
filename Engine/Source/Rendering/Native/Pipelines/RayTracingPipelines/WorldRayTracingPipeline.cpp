@@ -50,7 +50,7 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataComputeRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 
 	//Add the push constant ranges.
@@ -126,7 +126,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataComputeRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 3, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
 
 	//Push constants.

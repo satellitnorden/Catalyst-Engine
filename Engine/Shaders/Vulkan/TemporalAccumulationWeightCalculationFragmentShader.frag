@@ -58,15 +58,11 @@ void main()
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
 	*	2. How close were the hit distances?
-	*	3. How fast is the perceiver moving?
-	*	4. How fast is the perceiver rotating?
 	*/
 	float weight = 1.0f;
 
 	weight *= float(ValidCoordinate(previousScreenCoordinate));
 	weight *= pow(max(1.0f - abs(previousHitDistance - closestPreviousTemporalAccumulationDescriptionBuffer.x), 0.0f), 8.0f);
-	weight *= max(1.0f - length(perceiverVelocity), 0.0f);
-	weight *= max(perceiverRotationVelocity, 0.0f);
 
 	//Write the current temporal accumulation description buffer.
 	currentTemporalAccumulationDescriptionBuffer = vec4(length(currentWorldPosition - perceiverWorldPosition), weight, totalAccumulations, 0.0f);

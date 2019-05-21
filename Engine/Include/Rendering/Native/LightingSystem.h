@@ -36,77 +36,36 @@ public:
 	}
 
 	/*
-	*	Returns the lighting data compute render data table layout.
+	*	Returns the lighting data render data table layout.
 	*/
-	RenderDataTableLayoutHandle GetLightingDataComputeRenderDataTableLayout() const NOEXCEPT
+	RenderDataTableLayoutHandle GetLightingDataRenderDataTableLayout() const NOEXCEPT
 	{
-		return _ComputeRenderDataTableLayout;
+		return _RenderDataTableLayout;
 	}
 
 	/*
-	*	Returns the lighting data fragment render data table layout.
+	*	Returns the current lighting data render data table.
 	*/
-	RenderDataTableLayoutHandle GetLightingDataFragmentRenderDataTableLayout() const NOEXCEPT
-	{
-		return _FragmentRenderDataTableLayout;
-	}
-
-	/*
-	*	Returns the current lighting data compute render data table.
-	*/
-	RenderDataTableHandle GetCurrentLightingDataComputeRenderDataTable() const NOEXCEPT;
-
-	/*
-	*	Returns the current lighting data fragment render data table.
-	*/
-	RenderDataTableHandle GetCurrentLightingDataFragmentRenderDataTable() const NOEXCEPT;
-
-	/*
-	*	Returns the directional light visibility render target.
-	*/
-	RenderTargetHandle GetDirectionalLightVisibilityRenderTarget() const NOEXCEPT
-	{
-		return _DirectionalLightVisibilityRenderTarget;
-	}
-
-	/*
-	*	Returns the light visibility render targets.
-	*/
-	const StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS>& GetLightVisibilityRenderTargets() const NOEXCEPT
-	{
-		return _LightVisibilityRenderTargets;
-	}
+	RenderDataTableHandle GetCurrentLightingDataRenderDataTable() const NOEXCEPT;
 
 private:
 
 	//The directional light.
 	DirectionalLight _DirectionalLight;
 
-	//The compute render data table layout.
-	RenderDataTableLayoutHandle _ComputeRenderDataTableLayout;
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
-	//The fragment render data table layout.
-	RenderDataTableLayoutHandle _FragmentRenderDataTableLayout;
-
-	//The compute render data tables.
-	DynamicArray<RenderDataTableHandle> _ComputeRenderDataTables;
-
-	//The fragment render data tables.
-	DynamicArray<RenderDataTableHandle> _FragmentRenderDataTables;
+	//The render data tables.
+	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 	//The uniform buffers.
 	DynamicArray<BufferHandle> _UniformBuffers;
 
-	//The directional light visibility render target.
-	RenderTargetHandle _DirectionalLightVisibilityRenderTarget;
-
-	//The light visibility render targets.
-	StaticArray<RenderTargetHandle, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightVisibilityRenderTargets;
-
 	/*
-	*	Creates the render data table layouts.
+	*	Creates the render data table layout.
 	*/
-	void CreateRenderDataTableLayouts() NOEXCEPT;
+	void CreateRenderDataTableLayout() NOEXCEPT;
 
 	/*
 	*	Creates the render data tables.
@@ -117,10 +76,5 @@ private:
 	*	Creates the uniform buffers.
 	*/
 	void CreateUniformBuffers() NOEXCEPT;
-
-	/*
-	*	Creates the render targets.
-	*/
-	void CreateRenderTargets() NOEXCEPT;
 
 };
