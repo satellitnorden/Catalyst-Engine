@@ -33,7 +33,7 @@ Light UnpackLight(uint index)
   	light.color = lightData1.xyz;
   	light.position = vec3(lightData1.w, lightData2.xy);
   	light.size = lightData2.z;
-  	light.strength = lightData2.w;
+  	light.strength = lightData2.w * float(numberOfLights);
 
   	return light;
 }

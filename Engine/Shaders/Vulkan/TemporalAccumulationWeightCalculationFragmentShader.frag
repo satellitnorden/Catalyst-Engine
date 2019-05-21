@@ -58,11 +58,13 @@ void main()
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
 	*	2. How close were the hit distances?
+	*	3. Decrase weight over time as more accumulations are made.
 	*/
 	float weight = 1.0f;
 
 	weight *= float(ValidCoordinate(previousScreenCoordinate));
-	weight *= pow(max(1.0f - abs(previousHitDistance - closestPreviousTemporalAccumulationDescriptionBuffer.x), 0.0f), 8.0f);
+	weight *= pow(max(1.0f - abs(previousHitDistance - closestPreviousTemporalAccumulationDescriptionBuffer.x), 0.0f), 16.0f);
+	weight *= 1.0f - min(totalAccumulations / 262144.0f, 1.0f);
 
 	//Write the current temporal accumulation description buffer.
 	currentTemporalAccumulationDescriptionBuffer = vec4(length(currentWorldPosition - perceiverWorldPosition), weight, totalAccumulations, 0.0f);

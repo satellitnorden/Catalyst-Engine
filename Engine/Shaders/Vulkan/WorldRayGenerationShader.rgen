@@ -32,7 +32,8 @@ void main()
 	vec2 screenCoordinate = vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy);
 
 	//Retrieve the random vector.
-	rayPayload.randomVector = normalize(texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f)).xyz * 2.0f - 1.0f);
+	rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
+	rayPayload.randomVector.xyz = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
 
 	//Inidicate that this is the top recursion level.
 	rayPayload.currentRecursionDepth = 0;
