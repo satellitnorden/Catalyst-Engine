@@ -365,7 +365,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 		data._Data[0].EmplaceFast(255);
 		data._Data[0].EmplaceFast(0);
 		data._Data[0].EmplaceFast(255);
-		data._Data[0].EmplaceFast(0);
+		data._Data[0].EmplaceFast(255);
 
 		GlobalTexture2D texture;
 
