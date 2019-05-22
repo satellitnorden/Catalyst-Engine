@@ -11,6 +11,49 @@
 
 //Constants.
 #define SAMPLES (1)
+vec2 JITTER_OFFSETS[16] = vec2[]
+(
+	vec2(-0.25f, -0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(-0.25f, 0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.25f, -0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.25f, 0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+
+	vec2(-0.5f, -0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(-0.5f, 0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.5f, -0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.5f, 0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+
+	vec2(-0.75f, -0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(-0.75f, 0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.75f, -0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.75f, 0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+
+	vec2(-1.0f, -1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(-1.0f, 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(1.0f, -1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(1.0f, 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f)
+);
+ivec2 SAMPLE_OFFSETS[16] = ivec2[]
+(
+	ivec2(0, 0),
+	ivec2(1, 0),
+	ivec2(1, 1),
+	ivec2(0, 1),
+
+	ivec2(2, 0),
+	ivec2(2, 1),
+	ivec2(2, 2),
+	ivec2(1, 2),
+	ivec2(0, 2),
+
+	ivec2(3, 0),
+	ivec2(3, 1),
+	ivec2(3, 2),
+	ivec2(3, 3),
+	ivec2(2, 3),
+	ivec2(1, 3),
+	ivec2(0, 3)
+);
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
@@ -51,10 +94,20 @@ void main()
 	for (int i = 0; i < SAMPLES; ++i)
 	{
 		//Retrieve the random vector.
-		rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x + ((i & 1) == 0 ? i : 0)) & 63, (gl_LaunchIDNV.y + noiseOffset.y + ((i & 1) == 1 ? i : 0)) & 63) / vec2(64.0f, 64.0f));
+		rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x + SAMPLE_OFFSETS[i].x) & 63, (gl_LaunchIDNV.y + noiseOffset.y + SAMPLE_OFFSETS[i].y) & 63) / vec2(64.0f, 64.0f));
 
 		//Jitter the screen coordinate a bit to get some anti-aliasing.
-		vec2 jitteredScreenCoordinate = screenCoordinate/* + vec2(rayPayload.randomVector.xy * 2.0f - 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f)*/;
+		vec2 jitteredScreenCoordinate;
+
+		if (SAMPLES > 1)
+		{
+			jitteredScreenCoordinate = screenCoordinate + JITTER_OFFSETS[i];
+		}
+
+		else
+		{
+			jitteredScreenCoordinate = screenCoordinate;
+		}
 
 		//Normalize the first three elements of the random vector.
 		rayPayload.randomVector.xyz = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
