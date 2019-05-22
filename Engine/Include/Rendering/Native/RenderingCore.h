@@ -112,7 +112,8 @@ ENUMERATION_BIT_OPERATIONS(BufferUsage);
 //Enumeration covering all common materials.
 enum class CommonMaterial : uint8
 {
-	Gray,
+	Black,
+	White,
 
 	NumberOfCommonMaterials
 };

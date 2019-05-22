@@ -47,7 +47,6 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
 *   lightDirection - Direction vector going from the surface point to the light point.
 *   albedo - The albedo of the surface at the surface point.
 *   normal - The normal vector of the surface point.
-*   thickness - The thickness of the surface at the surface point.
 *   roughness - The roughness of the surface at the surface point.
 *   metallic - The metallic of the surface at the surface point.
 *   radiance - The radiance of the light.
