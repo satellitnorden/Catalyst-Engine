@@ -27,7 +27,7 @@ struct SceneFeatures
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
-	float emissive;
+	float luminance;
 };
 
 //Layout specification.
@@ -81,7 +81,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.roughness = sceneFeatures3.x;
 	features.metallic = sceneFeatures3.y;
 	features.ambientOcclusion = sceneFeatures3.z;
-	features.emissive = sceneFeatures3.w;
+	features.luminance = sceneFeatures3.w;
 
 	return features;
 }
@@ -104,7 +104,7 @@ void main()
 			float diffuseComponent = CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic);
 
 			//Calculate the start/end.
-			float startAndEnd = DENOISING_START_END * denoisingWeight;
+			float startAndEnd = DENOISING_START_END * denoisingWeight * diffuseComponent;
 
 			//Sample neighboring fragments.
 			vec3 denoisedIndirectLighting = vec3(0.0f);
@@ -182,7 +182,7 @@ void main()
 				*	3. How closely aligned are the roughness terms to each other?
 				*	4. How closely aligned are the metallic terms to each other?
 				*	5. How closely aligned are the ambient occlusion terms to each other?
-				*	6. How closely aligned are the ambient occlusion terms to each other?
+				*	6. How closely aligned are the luminance terms to each other?
 				*	7. Is the sample coordinate valid?
 				*/
 				float sampleWeight = 1.0f;
@@ -192,7 +192,7 @@ void main()
 				sampleWeight *= 1.0f - min(abs(currentFeatures.roughness - sampleFeatures.roughness), 1.0f);
 				sampleWeight *= 1.0f - min(abs(currentFeatures.metallic - sampleFeatures.metallic), 1.0f);
 				sampleWeight *= 1.0f - min(abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion), 1.0f);
-				sampleWeight *= 1.0f - min(abs(currentFeatures.emissive - sampleFeatures.emissive), 1.0f);
+				sampleWeight *= 1.0f - min(abs(currentFeatures.luminance - sampleFeatures.luminance), 1.0f);
 				sampleWeight *= float(ValidCoordinate(sampleCoordinate));
 
 				denoisedDirectLighting += sampleDirectLighting * sampleWeight;

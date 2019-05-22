@@ -46,7 +46,7 @@ void main()
 	float roughness = 0.0f;
 	float metallic = 0.0f;
 	float ambientOcclusion = 0.0f;
-	float emissive = 0.0f;
+	float luminance = 0.0f;
 
 	for (int i = 0; i < SAMPLES; ++i)
 	{
@@ -90,7 +90,7 @@ void main()
 		roughness += rayPayload.roughness / SAMPLES;
 		metallic += rayPayload.metallic / SAMPLES;
 		ambientOcclusion += rayPayload.ambientOcclusion / SAMPLES;
-		emissive += rayPayload.emissive / SAMPLES;
+		luminance += rayPayload.luminance / SAMPLES;
 	}
 
 	//Write to the images.
@@ -98,5 +98,5 @@ void main()
 	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(geometryNormal), PackNormal(shadingNormal), depth, intBitsToFloat(materialProperties)));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, emissive));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
 }

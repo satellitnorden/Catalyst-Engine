@@ -7,6 +7,16 @@ template <uint64 BYTES>
 class Padding final
 {
 
+public:
+
+	/*
+	*	Default constructor.
+	*/
+	constexpr Padding() NOEXCEPT
+	{
+
+	}
+
 private:
 
 	//The underlying padding.

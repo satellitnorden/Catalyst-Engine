@@ -11,7 +11,11 @@ struct Material
   int properties;
   int firstTextureIndex;
   int secondTextureIndex;
-  int thirdTextureIndex;  
+  int thirdTextureIndex;
+  float luminanceMultiplier;
+  int padding1;
+  int padding2;
+  int padding3;
 };
 
 //Vertex struct definition.

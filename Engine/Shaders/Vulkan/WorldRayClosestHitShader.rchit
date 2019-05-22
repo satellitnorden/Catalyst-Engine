@@ -59,11 +59,11 @@ void main()
 	//Sample the material properties.
 	vec4 materialProperties = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].thirdTextureIndex], finalVertex.textureCoordinate);
 
-	//Store the roughness, metallic, ambient occlusion and emissive.
+	//Store the roughness, metallic, ambient occlusion and luminance.
 	float roughness = materialProperties.x;
 	float metallic = materialProperties.y;
 	float ambientOcclusion = materialProperties.z;
-	float emissive = materialProperties.w;
+	float luminance = materialProperties.w;
 
 	//Calculate the tangent space matrix.
 	mat3 tangentSpaceMatrix = mat3(finalVertex.tangent, cross(finalVertex.tangent, finalVertex.normal), finalVertex.normal);
@@ -75,14 +75,14 @@ void main()
 	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
 	{
 		albedo = texture(environmentTexture, refract(gl_WorldRayDirectionNV, finalNormal, 0.25f)).rgb;
-		emissive = 1.0f;
+		luminance = 1.0f;
 	}
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
-	//Add the emissive lighting.
-	directLighting += albedo * emissive;
+	//Add the luminance lighting.
+	directLighting += albedo * luminance * modelMaterials[gl_InstanceCustomIndexNV].luminanceMultiplier;
 
 	//Add the highlight.
 	directLighting += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
@@ -163,6 +163,6 @@ void main()
 		rayPayload.roughness = roughness;
 		rayPayload.metallic = metallic;
 		rayPayload.ambientOcclusion = ambientOcclusion;
-		rayPayload.emissive = emissive;
+		rayPayload.luminance = luminance;
 	}
 }

@@ -24,5 +24,5 @@ void main()
 	rayPayload.roughness = 1.0f;
 	rayPayload.metallic = 0.0f;
 	rayPayload.ambientOcclusion = 1.0f;
-	rayPayload.emissive = 0.0f;
+	rayPayload.luminance = 0.0f;
 }

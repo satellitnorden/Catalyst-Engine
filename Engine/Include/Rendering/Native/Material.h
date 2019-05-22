@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
 class Material final
 {
@@ -28,6 +29,12 @@ public:
 	//The index of the third texture.
 	int32 _ThirdTextureIndex{ INT32_MAXIMUM };
 
+	//The luminance multiplier.
+	float _LuminanceMultiplier{ 0.0f };
+
+	//Some padding.
+	Padding<12> _Padding;
+
 	/*
 	*	Default constructor.
 	*/
@@ -39,12 +46,13 @@ public:
 	/*
 	*	Constructor taking all values arguments.
 	*/
-	FORCE_INLINE constexpr Material(const Property initialProperties, const int32 initialFirstTextureIndex, const int32 initialSecondTextureIndex, const int32 initialThirdTextureIndex) NOEXCEPT
+	FORCE_INLINE constexpr Material(const Property initialProperties, const int32 initialFirstTextureIndex, const int32 initialSecondTextureIndex, const int32 initialThirdTextureIndex, const float initialLuminanceMultiplier) NOEXCEPT
 		:
 		_Properties(initialProperties),
 		_FirstTextureIndex(initialFirstTextureIndex),
 		_SecondTextureIndex(initialSecondTextureIndex),
-		_ThirdTextureIndex(initialThirdTextureIndex)
+		_ThirdTextureIndex(initialThirdTextureIndex),
+		_LuminanceMultiplier(initialLuminanceMultiplier)
 	{
 
 	}
