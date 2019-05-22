@@ -373,6 +373,8 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 		material._ThirdTextureIndex = texture._Index;
 	}
+
+	material._LuminanceMultiplier = 0.0f;
 }
 
 /*
