@@ -74,7 +74,10 @@ void main()
 	//If this is a "translucent" material, modify some properties to make it appear that way.
 	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
 	{
-		albedo = texture(environmentTexture, refract(gl_WorldRayDirectionNV, finalNormal, 0.25f)).rgb;
+		albedo = texture(environmentTexture, refract(gl_WorldRayDirectionNV, finalNormal, 0.5f)).rgb;
+		roughness = 0.0f;
+		metallic = 1.0f;
+		ambientOcclusion = 1.0f;
 		luminance = 1.0f;
 	}
 
@@ -113,11 +116,11 @@ void main()
 	}
 
 	//Calculate a randomly chosen light.
-	int lightIndex = int(rayPayload.randomVector.w * float(numberOfLights + 1));
+	int lightIndex = int(rayPayload.randomVector.w * float(numberOfLights));
 
 	Light light = UnpackLight(lightIndex);
 
-	vec3 randomLightPosition = light.position + rayPayload.randomVector.xyz * light.size;
+	vec3 randomLightPosition = light.position + rayPayload.randomVector.xyz * rayPayload.randomVector.w * light.size;
 
 	float lengthToLight = length(randomLightPosition - hitPosition);
 	vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;

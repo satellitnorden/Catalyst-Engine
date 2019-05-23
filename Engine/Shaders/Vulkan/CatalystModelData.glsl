@@ -2,7 +2,7 @@
 #define CATALYST_MODEL_DATA
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_MODELS (64)
+#define MAXIMUM_NUMBER_OF_MODELS (128)
 #define VERTEX_SIZE (3)
 
 //Material struct definition.

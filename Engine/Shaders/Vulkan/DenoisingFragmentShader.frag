@@ -152,7 +152,7 @@ void main()
 	{
 		//Calculate the denoising weight. Denoise less the more accumulations that the temporal accumulation pass has done.
 		vec4 temporalAccumulationDescriptionBufferTextureSampler = texture(temporalAccumulationDescriptionBufferTexture, fragmentTextureCoordinate);
-		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 512.0f);
+		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 256.0f);
 
 		if (denoisingWeight > 0.0f)
 		{

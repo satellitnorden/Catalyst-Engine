@@ -99,7 +99,7 @@ void main()
 		//Jitter the screen coordinate a bit to get some anti-aliasing.
 		vec2 jitteredScreenCoordinate;
 
-		if (SAMPLES > 1)
+		if (SAMPLES > 2)
 		{
 			jitteredScreenCoordinate = screenCoordinate + JITTER_OFFSETS[i];
 		}
