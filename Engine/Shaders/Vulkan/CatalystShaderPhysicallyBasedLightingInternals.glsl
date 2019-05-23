@@ -30,8 +30,9 @@ float CalculateDistribution(    float roughness,
     float normalHalfwayAngleSquared = normalHalfwayAngle * normalHalfwayAngle;
 
     float denominator = normalHalfwayAngleSquared * (roughnessSquaredSquared - 1.0f) + 1.0f;
+    denominator = PI * denominator * denominator;
 
-    return roughnessSquaredSquared / (PI * denominator * denominator);
+    return denominator != 0.0f ? roughnessSquaredSquared / denominator : 0.0f;
 }
 
 /*

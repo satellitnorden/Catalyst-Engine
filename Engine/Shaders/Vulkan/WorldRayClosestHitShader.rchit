@@ -146,12 +146,12 @@ void main()
 			);
 
 	directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
-										lightDirection,
-										albedo,
-										finalNormal,
-										roughness,
-										metallic,
-										light.color * light.strength) * attenuation * visibility;
+											lightDirection,
+											albedo,
+											finalNormal,
+											roughness,
+											metallic,
+											light.color * light.strength) * attenuation * visibility;
 
 	//Write to the ray payload.
 	rayPayload.directLighting = directLighting;
