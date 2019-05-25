@@ -192,6 +192,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
@@ -251,6 +252,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
@@ -259,6 +261,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Data\FontData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h" />
@@ -293,6 +296,8 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElementDescription.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />

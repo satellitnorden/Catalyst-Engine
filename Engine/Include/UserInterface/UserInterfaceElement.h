@@ -23,7 +23,4 @@ public:
 	//The maximum of the screen space axis aligned box.
 	Vector2<float> _Maximum;
 
-	//The active texture index.
-	uint32 _ActiveTextureIndex;
-
 };

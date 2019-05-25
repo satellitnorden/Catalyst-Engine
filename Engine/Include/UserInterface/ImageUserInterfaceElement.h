@@ -9,6 +9,9 @@
 class ImageUserInterfaceElement final : public UserInterfaceElement
 {
 
-	//Acually nothing more to add here...
+public:
+
+	//The texture index.
+	uint32 _TextureIndex;
 
 };

@@ -5,6 +5,33 @@
 #include <Systems/RenderingSystem.h>
 
 /*
+*	Creates a font.
+*/
+void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT
+{
+	//Just copy the character descriptions.
+	font->_CharacterDescriptions = data->_CharacterDescriptions;
+
+	//Create all textures for each character description.
+	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	{
+		//It's valid for some characters to be missing (the font might be missing them), so just skip them. (:
+		if (data->_CharacterDimensions[i]._X == 0
+			|| data->_CharacterDimensions[i]._Y == 0)
+		{
+			continue;
+		}
+
+		//Create the texture.
+		Texture2DHandle texture;
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_TextureData[i]), TextureFormat::R8_Byte), &texture);
+
+		//Add the texture to the global render data.
+		font->_CharacterDescriptions[i]._TextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
+	}
+}
+
+/*
 *	Creates a model.
 */
 void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT

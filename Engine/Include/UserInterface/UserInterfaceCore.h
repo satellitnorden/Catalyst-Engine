@@ -7,6 +7,7 @@
 enum class UserInterfaceElementType : uint8
 {
 	Image,
+	Text,
 
 	NumberOfUserInterfaceElementTypes
 };

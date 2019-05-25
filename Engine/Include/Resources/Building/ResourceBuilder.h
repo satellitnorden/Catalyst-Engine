@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
+#include <Resources/Building/FontBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/SoundBankBuildParameters.h>
@@ -19,6 +20,11 @@ public:
 	*	Builds a resource collection.
 	*/
 	static void BuildResourceCollection(const ResourceCollectionBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a font.
+	*/
+	static void BuildFont(const FontBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a model.

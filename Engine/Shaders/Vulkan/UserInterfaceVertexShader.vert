@@ -25,11 +25,11 @@ void main()
 
     //Calculate the texture coordinate.
     fragmentTextureCoordinate.x = x;
-    fragmentTextureCoordinate.y = y;
+    fragmentTextureCoordinate.y = 1.0f - y;
     
     //Calculate the viewport coordinates.
-    vec2 viewportCoordinates = vec2(mix(minimum.x,  maximum.x, x), mix(minimum.y, maximum.y, y));
+    vec2 viewportCoordinates = vec2(mix(minimum.x,  maximum.x, x), 1.0f - mix(minimum.y, maximum.y, y));
 
     //Write the position.
-    gl_Position = vec4(viewportCoordinates.x * 2.0f - 1.0f, (1.0f - viewportCoordinates.y) * 2.0f - 1.0f, 0.0f, 1.0f);
+    gl_Position = vec4(viewportCoordinates.x * 2.0f - 1.0f, viewportCoordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
 } 

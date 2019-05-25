@@ -14,6 +14,7 @@
 #include <Systems/TaskSystem.h>
 
 //Static variable definitions.
+Map<HashString, Font> ResourceLoader::_Fonts;
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TextureCubeHandle> ResourceLoader::_TextureCubes;
@@ -55,6 +56,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				ASSERT(false, "Undefined resource type.");
 			}
 #endif
+			case ResourceType::Font:
+			{
+				LoadFont(file);
+
+				break;
+			}
+
 			case ResourceType::Model:
 			{
 				LoadModel(file);
@@ -84,6 +92,36 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			}
 		}
 	}
+}
+
+/*
+*	Given a file, load a font.
+*/
+void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Load the font data.
+	FontData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read all characters.
+	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	{
+		//Read the character description.
+		file.Read(&data._CharacterDescriptions[i], sizeof(Font::CharacterDescription));
+
+		//Read the texture dimensions.
+		file.Read(&data._CharacterDimensions[i], sizeof(Vector2<float>));
+
+		//Read the texture data.
+		data._TextureData[i].Initialize(data._CharacterDimensions[i]._X, data._CharacterDimensions[i]._Y);
+		file.Read(data._TextureData[i].Data(), data._CharacterDimensions[i]._X * data._CharacterDimensions[i]._Y);
+	}
+
+	//Create the font.
+	ResourceCreator::CreateFont(&data, &_Fonts[resourceID]);
 }
 
 /*
@@ -120,7 +158,6 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Create the model.
 	ResourceCreator::CreateModel(&data, &_Models[resourceID]);
 }
-
 
 /*
 *	Given a file, load a sound bank.

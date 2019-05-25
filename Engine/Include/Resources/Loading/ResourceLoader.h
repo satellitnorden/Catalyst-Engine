@@ -7,6 +7,7 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
+#include <Rendering/Native/Font.h>
 #include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
 
@@ -25,6 +26,11 @@ public:
 	*	Given a file path, loads a resource collection.
 	*/
 	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
+
+	/*
+	*	Given a resource ID, return the corresponding font.
+	*/
+	static const Font& GetFont(const HashString resourceID) { return _Fonts[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding model.
@@ -48,6 +54,9 @@ public:
 
 private:
 
+	//Container for all fonts.
+	static Map<HashString, Font> _Fonts;
+
 	//Container for all models.
 	static Map<HashString, Model> _Models;
 
@@ -64,6 +73,11 @@ private:
 	*	Loads a resource collection, internal implementation.
 	*/
 	static void LoadResourceCollectionInternal(const char *RESTRICT filePath) NOEXCEPT;
+
+	/*
+	*	Given a file, load a model.
+	*/
+	static void LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a model.

@@ -11,7 +11,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	DynamicString() NOEXCEPT
+	FORCE_INLINE DynamicString() NOEXCEPT
 		:
 		_String(nullptr),
 		_Length(0)
@@ -22,7 +22,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	DynamicString(const DynamicString &otherString) NOEXCEPT
+	FORCE_INLINE DynamicString(const DynamicString &otherString) NOEXCEPT
 	{
 		//Set the length of this string.
 		_Length = otherString.Length();
@@ -37,9 +37,9 @@ public:
 	/*
 	*	Move constructor.
 	*/
-	DynamicString(DynamicString &&otherString) NOEXCEPT
+	FORCE_INLINE DynamicString(DynamicString &&otherString) NOEXCEPT
 	{
-		//Steal the other string's underlying string and set it to null!
+		//Steal the other string's underlying string and set it to nullptr!
 		_String = otherString._String;
 		otherString._String = nullptr;
 
@@ -50,7 +50,7 @@ public:
 	/*
 	*	Constructor taking a C string.
 	*/
-	DynamicString(const char *const RESTRICT newString)
+	FORCE_INLINE DynamicString(const char *const RESTRICT newString) NOEXCEPT
 	{
 		//Determine how long the C string is.
 		_Length = strlen(newString);
@@ -65,7 +65,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~DynamicString() NOEXCEPT
+	FORCE_INLINE ~DynamicString() NOEXCEPT
 	{
 		//Free the underlying string.
 		Memory::FreeMemory(_String);
@@ -74,7 +74,7 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const DynamicString &otherString) NOEXCEPT
+	FORCE_INLINE void operator=(const DynamicString &otherString) NOEXCEPT
 	{
 		//Update the length of this string.
 		_Length = otherString.Length();
@@ -89,7 +89,7 @@ public:
 	/*
 	*	Move assignment operator overload.
 	*/
-	void operator=(DynamicString &&otherString) NOEXCEPT
+	FORCE_INLINE void operator=(DynamicString &&otherString) NOEXCEPT
 	{
 		//Steal the other string's underlying string and set it to nullptr!
 		_String = otherString._String;
@@ -102,7 +102,7 @@ public:
 	/*
 	*	Addition operator overload.
 	*/
-	DynamicString operator+(const char *const RESTRICT newString) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD DynamicString operator+(const char *const RESTRICT newString) const NOEXCEPT
 	{
 		//Construct the new dynamic string.
 		DynamicString newDynamicString;
@@ -127,7 +127,7 @@ public:
 	/*
 	*	Addition assignment operator overload.
 	*/
-	void operator+=(const char *const RESTRICT newString) NOEXCEPT
+	FORCE_INLINE void operator+=(const char *const RESTRICT newString) NOEXCEPT
 	{
 		//Calculate the new length.
 		const uint64 newStringLength = strlen(newString) + 1;
@@ -144,25 +144,73 @@ public:
 	}
 
 	/*
-	*	Less than operator overload.
+	*	Begin iterator, const.
 	*/
-	bool operator<(const DynamicString &otherString) const NOEXCEPT
-	{
-		return strcmp(this->_String, otherString._String) < 0;
-	}
-
-	/*
-	*	Returns the underlying C string, const.
-	*/
-	RESTRICTED const char *const CString() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Begin() const  NOEXCEPT
 	{
 		return _String;
 	}
 
 	/*
-	*	Returns the underlying C string, non-const.
+	*	Begin iterator, non-const.
 	*/
-	RESTRICTED char *const CString() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT Begin()  NOEXCEPT
+	{
+		return _String;
+	}
+
+	/*
+	*	End iterator, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT End() const NOEXCEPT
+	{
+		return _String + _Length;
+	}
+
+	/*
+	*	End iterator, non-const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT End() NOEXCEPT
+	{
+		return _String + _Length;
+	}
+
+	/*
+	*	Begin iterator, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT begin() const  NOEXCEPT
+	{
+		return Begin();
+	}
+
+	/*
+	*	Begin iterator, non-const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT begin()  NOEXCEPT
+	{
+		return Begin();
+	}
+
+	/*
+	*	End iterator, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT end() const NOEXCEPT
+	{
+		return End();
+	}
+
+	/*
+	*	End iterator, non-const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT end() NOEXCEPT
+	{
+		return End();
+	}
+
+	/*
+	*	Returns the underlying data.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Data() const NOEXCEPT
 	{
 		return _String;
 	}
@@ -170,7 +218,7 @@ public:
 	/*
 	*	Returns the length of the string.
 	*/
-	uint64 Length() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 Length() const NOEXCEPT
 	{
 		return _Length;
 	}

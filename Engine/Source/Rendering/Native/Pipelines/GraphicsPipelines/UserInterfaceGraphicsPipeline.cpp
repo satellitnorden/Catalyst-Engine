@@ -10,6 +10,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//User interface.
+#include <UserInterface/ImageUserInterfaceElement.h>
+#include <UserInterface/TextUserInterfaceElement.h>
+
 /*
 *	Vertex push constant data definition.
 */
@@ -33,6 +37,9 @@ class FragmentPushConstantData final
 {
 
 public:
+
+	//The type.
+	int32 _Type;
 
 	//The texture index.
 	int32 _TextureIndex;
@@ -116,22 +123,87 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	//Render all user interface elements.
 	for (const UserInterfaceElement *const RESTRICT element : ComponentManager::ReadSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements)
 	{
-		//Push constants.
-		VertexPushConstantData vertexData;
+		//Render differently based on the type.
+		switch (element->_Type)
+		{
+			case UserInterfaceElementType::Image:
+			{
+				const ImageUserInterfaceElement *const RESTRICT typeElement{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
 
-		vertexData._Minimum = element->_Minimum;
-		vertexData._Maximum = element->_Maximum;
+				//Push constants.
+				VertexPushConstantData vertexData;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				vertexData._Minimum = typeElement->_Minimum;
+				vertexData._Maximum = typeElement->_Maximum;
 
-		FragmentPushConstantData fragmentData;
+				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
-		fragmentData._TextureIndex = element->_ActiveTextureIndex;
+				FragmentPushConstantData fragmentData;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Image);
+				fragmentData._TextureIndex = typeElement->_TextureIndex;
 
-		//Draw!
-		commandBuffer->Draw(this, 4, 1);
+				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+
+				//Draw!
+				commandBuffer->Draw(this, 4, 1);
+
+				break;
+			}
+
+			case UserInterfaceElementType::Text:
+			{
+				constexpr float SCALE{ 0.05f };
+
+				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
+
+				//Draw all characters.
+				float currentOffsetX{ 0.0f };
+				float currentOffsetY{ typeElement->_Maximum._Y - typeElement->_Minimum._Y - SCALE };
+
+				for (const char &character : typeElement->_Text)
+				{
+					//Push constants.
+					VertexPushConstantData vertexData;
+
+					vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * SCALE;
+					vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * SCALE;
+
+					vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * SCALE;
+					vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * SCALE;
+
+					commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+					FragmentPushConstantData fragmentData;
+
+					fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Text);
+					fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
+
+					commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+
+					//Draw!
+					commandBuffer->Draw(this, 4, 1);
+
+					//Update the current offsets.
+					currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
+
+					if (currentOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
+					{
+						currentOffsetX = 0.0f;
+						currentOffsetY -= SCALE + (SCALE * 0.1f);
+					}
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Unhandled case!");
+
+				break;
+			}
+		}
 	}
 
 	//End the command buffer.

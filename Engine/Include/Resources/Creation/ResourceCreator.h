@@ -4,11 +4,13 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Font.h>
 #include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
+#include <Resources/Data/FontData.h>
 #include <Resources/Data/ModelData.h>
 #include <Resources/Data/TextureCubeData.h>
 #include <Resources/Data/Texture2DData.h>
@@ -17,6 +19,11 @@ class ResourceCreator final
 {
 
 public:
+
+	/*
+	*	Creates a font.
+	*/
+	static void CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT;
 
 	/*
 	*	Creates a model.

@@ -169,7 +169,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Create the window.
 	_Window = CreateWindow(	windowInfo.lpszClassName,
-							_T(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._ProjectName.CString()),
+							_T(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._ProjectName.Data()),
 							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
 							CW_USEDEFAULT,

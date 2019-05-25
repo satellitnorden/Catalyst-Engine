@@ -36,7 +36,7 @@ void VulkanSampler::CreateSamplerCreateInfo(VkSamplerCreateInfo &samplerCreateIn
 	samplerCreateInfo.pNext = nullptr;
 	samplerCreateInfo.flags = 0;
 	samplerCreateInfo.magFilter = magnificationFilter;
-	samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
+	samplerCreateInfo.minFilter = VK_FILTER_LINEAR;
 	samplerCreateInfo.mipmapMode = mipmapMode;
 	samplerCreateInfo.addressModeU = addressMode;
 	samplerCreateInfo.addressModeV = addressMode;

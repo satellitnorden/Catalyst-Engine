@@ -16,10 +16,13 @@
 #include <Resources/Core/ResourcesCore.h>
 
 //Rendering.
+#include <Rendering/Native/Font.h>
 #include <Rendering/Native/Texture2D.h>
 #include <Rendering/Native/Vertex.h>
 
 //Third party.
+#include <ThirdParty/ft2build.h>
+#include FT_FREETYPE_H
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
 
@@ -33,7 +36,7 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 	fileName += ".crc";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.CString() };
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the number of resources in the resource collection.
 	const uint64 numberOfResources{ parameters._Resources.Size() };
@@ -67,6 +70,110 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 }
 
 /*
+*	Builds a font.
+*/
+void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
+{
+	//What should the material be called?
+	DynamicString fileName{ parameters._Output };
+	fileName += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
+
+	//Write the resource type to the file.
+	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::Font) };
+	file.Write(&resourceType, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resourceID{ parameters._ID };
+	file.Write(&resourceID, sizeof(HashString));
+
+	//Initialize the FreeType library.
+	FT_Library freeTypeLibrary;
+
+	if (FT_Init_FreeType(&freeTypeLibrary))
+	{
+		ASSERT(false, "Failed to initialie the FreeType library!");
+	}
+
+	//Load the face.
+	FT_Face freeTypeFace;
+
+	if (FT_New_Face(freeTypeLibrary, parameters._File, 0, &freeTypeFace))
+	{
+		ASSERT(false, "Failed to load the FreeType face!");
+	}
+
+	//Set the maximum font size.
+	FT_Set_Pixel_Sizes(freeTypeFace, 0, parameters._MaximumFontResolution);
+
+	//Determine the minimum and maximum dimensions of all the characters.
+	/*
+	Vector2<uint32> minimum;
+	Vector2<uint32> maximum;
+
+	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	{
+		if (FT_Load_Char(freeTypeFace, i, FT_LOAD_RENDER))
+		{
+			ASSERT(false, "Failed to load the FreeType character!");
+		}
+
+		//Write the character description to the file.
+		Font::CharacterDescription characterDescription;
+
+		characterDescription._TextureIndex = UINT32_MAXIMUM;
+		characterDescription._Size._X = freeTypeFace->glyph->bitmap.width;
+		characterDescription._Size._Y = freeTypeFace->glyph->bitmap.rows;
+		characterDescription._Bearing._X = freeTypeFace->glyph->bitmap_left;
+		characterDescription._Bearing._Y = freeTypeFace->glyph->bitmap_top;
+		characterDescription._Advance = freeTypeFace->glyph->advance.x;
+
+		file.Write(&characterDescription, sizeof(Font::CharacterDescription));
+
+		//Write the texture data for this character to the file.
+		file.Write(freeTypeFace->glyph->bitmap.buffer, characterDescription._Size._X * characterDescription._Size._Y);
+	}
+	*/
+
+	//Load all characters.
+	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	{
+		if (FT_Load_Char(freeTypeFace, i, FT_LOAD_RENDER))
+		{
+			ASSERT(false, "Failed to load the FreeType character!");
+		}
+
+		//Write the character description to the file.
+		Font::CharacterDescription characterDescription;
+
+		characterDescription._TextureIndex = UINT32_MAXIMUM;
+		characterDescription._Size._X = static_cast<float>(freeTypeFace->glyph->bitmap.width) / static_cast<float>(parameters._MaximumFontResolution);
+		characterDescription._Size._Y = static_cast<float>(freeTypeFace->glyph->bitmap.rows) / static_cast<float>(parameters._MaximumFontResolution);
+		characterDescription._Bearing._X = static_cast<float>(freeTypeFace->glyph->bitmap_left) / static_cast<float>(parameters._MaximumFontResolution);
+		characterDescription._Bearing._Y = static_cast<float>(freeTypeFace->glyph->bitmap_top) / static_cast<float>(parameters._MaximumFontResolution);
+		characterDescription._Advance = static_cast<float>(freeTypeFace->glyph->advance.x >> 6) / static_cast<float>(parameters._MaximumFontResolution);
+
+		file.Write(&characterDescription, sizeof(Font::CharacterDescription));
+
+		//Write the character dimensions.
+		const Vector2<uint32> characterDimensions{ freeTypeFace->glyph->bitmap.width, freeTypeFace->glyph->bitmap.rows };
+		file.Write(&characterDimensions, sizeof(Vector2<float>));
+
+		//Write the texture data for this character to the file.
+		file.Write(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width * freeTypeFace->glyph->bitmap.rows);
+	}
+
+	//Free FreeType's resources.
+	FT_Done_Face(freeTypeFace);
+	FT_Done_FreeType(freeTypeLibrary);
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Builds a model.
 */
 void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEPT
@@ -76,7 +183,7 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 	fileName += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.CString() };
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
 	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::Model) };
@@ -142,7 +249,7 @@ void ResourceBuilder::BuildSoundBank(const SoundBankBuildParameters &parameters)
 	fileName += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.CString() };
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
 	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::SoundBank) };
@@ -188,7 +295,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 	fileName += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.CString() };
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
 	constexpr ResourceType resourceType{ ResourceType::TextureCube };
@@ -275,7 +382,7 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 	fileName += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.CString() };
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
 	constexpr ResourceType resourceType{ ResourceType::Texture2D };

@@ -1170,6 +1170,21 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AttachDetailRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\FontData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElementDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

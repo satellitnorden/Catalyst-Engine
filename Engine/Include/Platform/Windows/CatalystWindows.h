@@ -11,6 +11,7 @@
 
 //Undefine annoying Windows defines. Fuck Windows. I hate everything.
 #undef CopyMemory
+#undef CreateFont
 #undef CreateEvent
 #undef CreateSemaphore
 #undef GetCurrentTime

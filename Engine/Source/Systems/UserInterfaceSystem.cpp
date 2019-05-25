@@ -7,6 +7,8 @@
 //User interface.
 #include <UserInterface/ImageUserInterfaceElement.h>
 #include <UserInterface/ImageUserInterfaceElementDescription.h>
+#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/TextUserInterfaceElementDescription.h>
 
 /*
 *	Updates the user interface system.
@@ -24,7 +26,29 @@ void UserInterfaceSystem::Terminate() NOEXCEPT
 	//Deallocate all user interface elements.
 	for (UserInterfaceElement *const RESTRICT element : ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements)
 	{
-		Memory::GlobalPoolDeAllocate<sizeof(ImageUserInterfaceElement)>(element);
+		switch (element->_Type)
+		{
+			case UserInterfaceElementType::Image:
+			{
+				Memory::GlobalPoolDeAllocate<sizeof(ImageUserInterfaceElement)>(element);
+
+				break;
+			}
+
+			case UserInterfaceElementType::Text:
+			{
+				Memory::GlobalPoolDeAllocate<sizeof(TextUserInterfaceElement)>(element);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Unhandled case!");
+
+				break;
+			}
+		}
 	}
 }
 
@@ -43,7 +67,23 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Type = UserInterfaceElementType::Image;
 			element->_Minimum = typeDescription->_Minimum;
 			element->_Maximum = typeDescription->_Maximum;
-			element->_ActiveTextureIndex = typeDescription->_ImageTextureIndex;
+			element->_TextureIndex = typeDescription->_ImageTextureIndex;
+
+			ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.EmplaceSlow(element);
+
+			return element;
+		}
+
+		case UserInterfaceElementType::Text:
+		{
+			TextUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(TextUserInterfaceElement)>()) TextUserInterfaceElement() };
+			const TextUserInterfaceElementDescription *const RESTRICT typeDescription{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
+
+			element->_Type = UserInterfaceElementType::Text;
+			element->_Minimum = typeDescription->_Minimum;
+			element->_Maximum = typeDescription->_Maximum;
+			element->_Font = typeDescription->_Font;
+			element->_Text = std::move(typeDescription->_Text);
 
 			ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.EmplaceSlow(element);
 

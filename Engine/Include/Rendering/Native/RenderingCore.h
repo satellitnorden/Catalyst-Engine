@@ -22,7 +22,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
-	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 128 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 256 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 128 };
 }
 
