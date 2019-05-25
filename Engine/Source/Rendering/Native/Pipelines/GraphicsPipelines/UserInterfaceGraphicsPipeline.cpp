@@ -190,7 +190,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					if (currentOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
 					{
 						currentOffsetX = 0.0f;
-						currentOffsetY -= SCALE + (SCALE * 0.1f);
+						currentOffsetY -= SCALE;
 					}
 				}
 

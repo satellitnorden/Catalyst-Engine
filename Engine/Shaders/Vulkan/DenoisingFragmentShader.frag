@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (69.0f)
+#define DENOISING_SIZE (67.0f)
 #define DENOISING_START_END ((DENOISING_SIZE - 1.0f) * 0.5f)
 
 /*
@@ -152,7 +152,7 @@ void main()
 	{
 		//Calculate the denoising weight. Denoise less the more accumulations that the temporal accumulation pass has done.
 		vec4 temporalAccumulationDescriptionBufferTextureSampler = texture(temporalAccumulationDescriptionBufferTexture, fragmentTextureCoordinate);
-		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 256.0f);
+		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 128.0f);
 
 		if (denoisingWeight > 0.0f)
 		{
