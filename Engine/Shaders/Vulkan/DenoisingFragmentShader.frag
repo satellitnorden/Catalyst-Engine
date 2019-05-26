@@ -11,8 +11,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (63.0f)
-#define DENOISING_START_END ((DENOISING_SIZE - 1.0f) * 0.5f)
+#define DENOISING_SIZE (32.0f)
+#define DENOISING_START_END (DENOISING_SIZE * 0.5f)
 
 /*
 *	Scene features struct definition.

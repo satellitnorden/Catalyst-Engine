@@ -14,24 +14,24 @@
 vec2 JITTER_OFFSETS[16] = vec2[]
 (
 	vec2(-0.25f, -0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.25f, 0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(-0.25f, 0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(0.25f, -0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
-	vec2(0.25f, 0.25f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 
 	vec2(-0.5f, -0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.5f, 0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(-0.5f, 0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(0.5f, -0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
-	vec2(0.5f, 0.5f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 
 	vec2(-0.75f, -0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(0.75f, 0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(-0.75f, 0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(0.75f, -0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
-	vec2(0.75f, 0.75f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 
 	vec2(-1.0f, -1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
+	vec2(1.0f, 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
 	vec2(-1.0f, 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
-	vec2(1.0f, -1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f),
-	vec2(1.0f, 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f)
+	vec2(1.0f, -1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f)
 );
 ivec2 SAMPLE_OFFSETS[16] = ivec2[]
 (
@@ -99,7 +99,7 @@ void main()
 		//Jitter the screen coordinate a bit to get some anti-aliasing.
 		vec2 jitteredScreenCoordinate;
 
-		if (SAMPLES > 2)
+		if (SAMPLES > 1)
 		{
 			jitteredScreenCoordinate = screenCoordinate + JITTER_OFFSETS[i];
 		}
