@@ -13,6 +13,11 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_ENABLED false
+#define VOLUMETRIC_COLOR (vec3(1.0f))
+#define VOLUMETRIC_DENSITY (0.25f)
+
 //Descriptor set data.
 layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
 layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
@@ -152,6 +157,35 @@ void main()
 											roughness,
 											metallic,
 											light.color * light.strength) * attenuation * visibility;
+
+#if VOLUMETRIC_LIGHTING_ENABLED
+	//Also calculate some volumetric lighting for this light.
+	if (currentRecursionDepth == 0)
+	{
+		vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * rayPayload.randomVector.w;
+
+		lengthToLight = length(randomLightPosition - randomPositionAlongRay);
+		lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
+
+		visibility = 0.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				1, 																							//missIndex
+				randomPositionAlongRay, 																	//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
+
+		directLighting += VOLUMETRIC_COLOR * VOLUMETRIC_DENSITY * light.color * light.strength * visibility;
+	}
+#endif
 
 	//Write to the ray payload.
 	rayPayload.directLighting = directLighting;
