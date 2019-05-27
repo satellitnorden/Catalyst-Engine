@@ -127,7 +127,7 @@ void main()
 				float sampleWeight = 1.0f;
 
 				sampleWeight *= max(mix(dot(currentFeatures.shadingNormal, sampleFeatures.shadingNormal), dot(currentFeatures.geometryNormal, sampleFeatures.geometryNormal), diffuseComponent), 0.0f);
-				sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 1.0f);
+				sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 2.0f);
 				sampleWeight *= float(ValidCoordinate(sampleCoordinate));
 
 				denoisedIndirectLighting += sampleIndirectLighting * sampleWeight;
@@ -152,7 +152,7 @@ void main()
 	{
 		//Calculate the denoising weight. Denoise less the more accumulations that the temporal accumulation pass has done.
 		vec4 temporalAccumulationDescriptionBufferTextureSampler = texture(temporalAccumulationDescriptionBufferTexture, fragmentTextureCoordinate);
-		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 128.0f);
+		float denoisingWeight = pow(max(1.0f - ((temporalAccumulationDescriptionBufferTextureSampler.z * temporalAccumulationDescriptionBufferTextureSampler.y) / 1024.0f), 0.0f), 64.0f);
 
 		if (denoisingWeight > 0.0f)
 		{
@@ -188,7 +188,7 @@ void main()
 				float sampleWeight = 1.0f;
 
 				sampleWeight *= max(dot(currentFeatures.shadingNormal, sampleFeatures.shadingNormal), 0.0f);
-				sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 1.0f);
+				sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 2.0f);
 				sampleWeight *= 1.0f - min(abs(currentFeatures.roughness - sampleFeatures.roughness), 1.0f);
 				sampleWeight *= 1.0f - min(abs(currentFeatures.metallic - sampleFeatures.metallic), 1.0f);
 				sampleWeight *= 1.0f - min(abs(currentFeatures.ambientOcclusion - sampleFeatures.ambientOcclusion), 1.0f);
