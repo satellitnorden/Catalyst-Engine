@@ -19,8 +19,8 @@
 #define VOLUMETRIC_DENSITY (0.25f)
 
 //Descriptor set data.
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 8) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 9) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;

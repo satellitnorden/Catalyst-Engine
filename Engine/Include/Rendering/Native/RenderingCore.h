@@ -191,14 +191,19 @@ enum class RenderTarget : uint8
 	SceneFeatures1,
 
 	/*
-	*	Contains the geometry normal in the R channel, the shading normal in the G channel and the hit distance in the A channel.
+	*	Contains the geometry normal and the hit distance.
 	*/
 	SceneFeatures2,
 
 	/*
-	*	Contains the roughness, metallic, ambient occlusion and emissive.
+	*	Contains the shading normal and the material properties.
 	*/
 	SceneFeatures3,
+
+	/*
+	*	Contains the roughness, metallic, ambient occlusion and luminance.
+	*/
+	SceneFeatures4,
 
 	/*
 	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.

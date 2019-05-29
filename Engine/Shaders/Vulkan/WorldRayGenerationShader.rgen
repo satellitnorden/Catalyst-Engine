@@ -61,9 +61,10 @@ layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
 layout (set = 1, binding = 2, rgba32f) uniform image2D directLightingImage;
 layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 1, binding = 5, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 6) uniform sampler2D noiseImage;
-layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 1, binding = 6, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 1, binding = 7) uniform sampler2D noiseImage;
+layout (set = 1, binding = 8) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -156,6 +157,7 @@ void main()
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
 	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
-    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(geometryNormal), PackNormal(shadingNormal), depth, intBitsToFloat(materialProperties)));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
+    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(geometryNormal, depth));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(shadingNormal, intBitsToFloat(materialProperties)));
+    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
 }

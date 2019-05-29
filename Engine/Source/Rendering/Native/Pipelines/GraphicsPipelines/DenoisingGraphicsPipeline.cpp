@@ -116,7 +116,7 @@ void DenoisingGraphicsPipeline::CreateRenderDataTables(const RenderTargetHandle 
 
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &renderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 }
 

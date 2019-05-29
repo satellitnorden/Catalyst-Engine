@@ -20,7 +20,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeaturesTexture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -28,7 +28,7 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
 	//Calculate the world position at this fragment the current frame.
-	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeaturesTexture, fragmentTextureCoordinate).z;
+	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
 
 	//Now calculate it's previous screen position using the previous view matrix.
 	vec4 previousViewSpacePosition = viewMatrixMinusOne * vec4(worldPosition, 1.0f);

@@ -64,8 +64,8 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.normal = UnpackNormal(sceneFeatures2.y);
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.z;
+	features.normal = sceneFeatures2.xyz;
+	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 
 	return features;
 }
