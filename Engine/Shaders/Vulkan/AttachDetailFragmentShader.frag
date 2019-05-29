@@ -46,7 +46,7 @@ layout (location = 0) out vec4 scene;
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
 	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
-	vec4 sceneFeatures2 = texture(sceneFeatures1Texture, coordinate);
+	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
 	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
 
 	SceneFeatures features;
