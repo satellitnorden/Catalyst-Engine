@@ -58,3 +58,5 @@ public:
 	}
 
 };
+
+ENUMERATION_BIT_OPERATIONS(Material::Property);

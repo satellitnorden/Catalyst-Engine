@@ -16,12 +16,12 @@ public:
 	std::atomic<bool> _ShouldTerminate{ false };
 
 	//Denotes the total frames.
-	std::atomic<uint64> _TotalFrames{ 0 };
+	uint64 _TotalFrames{ 0 };
+
+	//Denotes the total time.
+	float _TotalTime{ 0.0f };
 
 	//Denotes the delta time.
 	float _DeltaTime{ 0.0f };
-
-	//Denotes the total game time.
-	float _TotalTime{ 0.0f };
 
 };

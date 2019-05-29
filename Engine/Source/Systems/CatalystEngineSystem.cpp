@@ -117,20 +117,21 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
-
-	//Update the delta time.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemInternalData::_DeltaTimer.Update();
+	//Update the total frames.
+	++ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
 	//Update the total time.
 	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalTime += ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 
-	//Update the total frames.
-	++ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
+	//Update the delta time.
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemInternalData::_DeltaTimer.Update();
 
 	//Construct the update context.
 	UpdateContext context;
-	context._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+
+	context._TotalFrames = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 	context._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
+	context._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 
 	/*
 	*	Pre-update phase.

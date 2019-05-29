@@ -98,3 +98,11 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 		}
 	}
 }
+
+/*
+*	Destroys a user interface element.
+*/
+void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT
+{
+	ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.Erase(element);
+}

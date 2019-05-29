@@ -8,10 +8,13 @@ class UpdateContext final
 
 public:
 
-	//The delta time.
-	float _DeltaTime;
+	//The total frames.
+	uint64 _TotalFrames;
 
 	//The total time.
 	float _TotalTime;
+
+	//The delta time.
+	float _DeltaTime;
 
 };

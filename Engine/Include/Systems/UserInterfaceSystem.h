@@ -27,4 +27,9 @@ public:
 	*/
 	RESTRICTED static NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
 
+	/*
+	*	Destroys a user interface element.
+	*/
+	static void DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT;
+
 };

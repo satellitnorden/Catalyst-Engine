@@ -30,12 +30,12 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
-layout (set = 1, binding = 1) uniform sampler2D specularIrradianceTexture;
-layout (set = 1, binding = 2) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 3) uniform sampler2D sceneFeatures1Texture;
-layout (set = 1, binding = 4) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 5) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 0) uniform sampler2D sceneFeatures1Texture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 3) uniform sampler2D diffuseIrradianceTexture;
+layout (set = 1, binding = 4) uniform sampler2D specularIrradianceTexture;
+layout (set = 1, binding = 5) uniform sampler2D directLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -63,17 +63,17 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 void main()
 {
+	//Sample the current features.
+	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
+
 	//Sample the current diffuse irradiance lighting.
 	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current specular irradiance lighting.
-	vec3 currentSpecularIrradiance = texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentSpecularIrradiance = mix(currentDiffuseIrradiance, texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 2.0f));
 
 	//Sample the current direct lighting.
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
-
-	//Sample the current features.
-	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),

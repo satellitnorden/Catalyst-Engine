@@ -24,39 +24,45 @@ public:
 	/*
 	*	Constructor taking an initializer list.
 	*/
-	FORCE_INLINE DynamicArray(std::initializer_list<Type> &&initializerList) NOEXCEPT
+	FORCE_INLINE DynamicArray(const std::initializer_list<Type> &initializerList) NOEXCEPT
+		:
+		_Size(0)
 	{
-		//Reserve memory for all the elements in the initializer list.
 		ReserveConstruct(initializerList.size());
 
-		//Copy all elements of the initializer list to this dynamic array.
-		Memory::CopyMemory(_Array, initializerList.begin(), sizeof(Type) * _Capacity);
-
-		//Set the size equal to the capacity.
-		_Size = _Capacity;
+		for (const Type &element : initializerList)
+		{
+			EmplaceFast(element);
+		}
 	}
 
 	/*
 	*	Copy constructor.
 	*/
-	FORCE_INLINE DynamicArray(const DynamicArray &otherDynamicArray) NOEXCEPT
+	FORCE_INLINE DynamicArray(const DynamicArray &other) NOEXCEPT
+		:
+		_Size(0)
 	{
-		ReserveConstruct(otherDynamicArray._Capacity);
-		_Size = otherDynamicArray._Size;
+		ReserveConstruct(other._Capacity);
 
-		Memory::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
+		for (uint64 i{ 0 }; i < other._Size; ++i)
+		{
+			EmplaceFast(other._Array[i]);
+		}
 	}
 
 	/*
 	*	Move constructor.
 	*/
-	FORCE_INLINE DynamicArray(DynamicArray &&otherDynamicArray) NOEXCEPT
+	FORCE_INLINE DynamicArray(DynamicArray &&other) NOEXCEPT
 	{
-		_Array = otherDynamicArray._Array;
-		_Size = otherDynamicArray._Size;
-		_Capacity = otherDynamicArray._Capacity;
+		_Array = other._Array;
+		_Size = other._Size;
+		_Capacity = other._Capacity;
 
-		otherDynamicArray._Array = nullptr;
+		other._Array = nullptr;
+		other._Size = 0;
+		other._Capacity = 0;
 	}
 
 	/*
@@ -64,35 +70,38 @@ public:
 	*/
 	FORCE_INLINE ~DynamicArray() NOEXCEPT
 	{
-		//This dynamic array might have been moved from, thus we need to test the array pointer.
 		DestroyArray();
 	}
 
 	/*
 	*	Copy assignment operator overload.
 	*/
-	FORCE_INLINE void operator=(const DynamicArray &otherDynamicArray) NOEXCEPT
+	FORCE_INLINE void operator=(const DynamicArray &other) NOEXCEPT
 	{
 		DestroyArray();
 
-		ReserveConstruct(otherDynamicArray._Capacity);
-		_Size = otherDynamicArray._Size;
+		ReserveConstruct(other._Capacity);
 
-		Memory::CopyMemory(_Array, otherDynamicArray._Array, sizeof(Type) * _Size);
+		for (uint64 i{ 0 }; i < other._Size; ++i)
+		{
+			EmplaceFast(other._Array[i]);
+		}
 	}
 
 	/*
 	*	Move assignment operator overload.
 	*/
-	FORCE_INLINE void operator=(DynamicArray &&otherDynamicArray) NOEXCEPT
+	FORCE_INLINE void operator=(DynamicArray &&other) NOEXCEPT
 	{
 		DestroyArray();
 
-		_Array = otherDynamicArray._Array;
-		_Size = otherDynamicArray._Size;
-		_Capacity = otherDynamicArray._Capacity;
+		_Array = other._Array;
+		_Size = other._Size;
+		_Capacity = other._Capacity;
 
-		otherDynamicArray._Array = nullptr;
+		other._Array = nullptr;
+		other._Size = 0;
+		other._Capacity = 0;
 	}
 
 	/*
@@ -410,6 +419,7 @@ private:
 	*/
 	FORCE_INLINE void DestroyArray() NOEXCEPT
 	{
+		//This dynamic array might have been moved from, thus we need to test the array pointer.
 		if (_Array)
 		{
 			//Call the destructor on all objects in the array.
@@ -423,6 +433,12 @@ private:
 
 			//Set it to nullptr.
 			_Array = nullptr;
+
+			//Update the size.
+			_Size = 0;
+
+			//Update the capacity.
+			_Capacity = 0;
 		}
 	}
 
