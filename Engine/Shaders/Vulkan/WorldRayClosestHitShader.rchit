@@ -19,8 +19,8 @@
 #define VOLUMETRIC_DENSITY (0.25f)
 
 //Descriptor set data.
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -95,68 +95,96 @@ void main()
 	//Add the highlight.
 	directLighting += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
 
+	vec3 diffuseIrradiance = vec3(0.0f);
+	vec3 specularIrradiance = vec3(0.0f);
+
 	if (currentRecursionDepth == 0)
 	{
-		//Add the indirect lighting.
-		vec3 randomIndirectLightingDirection = dot(rayPayload.randomVector.xyz, finalVertex.normal) >= 0.0f ? rayPayload.randomVector.xyz : rayPayload.randomVector.xyz * -1.0f;
-		randomIndirectLightingDirection = normalize(mix(reflect(gl_WorldRayDirectionNV, finalNormal), randomIndirectLightingDirection, CalculateDiffuseComponent(roughness, metallic)));
+		{
+			//Add the diffuse irradiance.
+			vec3 randomDiffuseIrradianceDirection = dot(rayPayload.randomVector.xyz, finalVertex.normal) >= 0.0f ? rayPayload.randomVector.xyz : rayPayload.randomVector.xyz * -1.0f;
 
-		rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
+			rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
 
-		traceNV(
-				topLevelAccelerationStructure, 		//topLevel
-				gl_RayFlagsOpaqueNV, 				//rayFlags
-				0xff, 								//cullMask
-				0, 									//sbtRecordOffset
-				0, 									//sbtRecordStride
-				0, 									//missIndex
-				hitPosition, 						//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-				randomIndirectLightingDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-				0 									//payload
-				);
+			traceNV(
+					topLevelAccelerationStructure, 		//topLevel
+					gl_RayFlagsOpaqueNV, 				//rayFlags
+					0xff, 								//cullMask
+					0, 									//sbtRecordOffset
+					0, 									//sbtRecordStride
+					0, 									//missIndex
+					hitPosition, 						//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+					randomDiffuseIrradianceDirection, 	//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+					0 									//payload
+					);
 
-		rayPayload.indirectLighting = rayPayload.directLighting;
+			diffuseIrradiance = rayPayload.directLighting;
+		}
+
+		{
+			//Add the specular irradiance.
+			vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
+
+			rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
+
+			traceNV(
+					topLevelAccelerationStructure, 		//topLevel
+					gl_RayFlagsOpaqueNV, 				//rayFlags
+					0xff, 								//cullMask
+					0, 									//sbtRecordOffset
+					0, 									//sbtRecordStride
+					0, 									//missIndex
+					hitPosition, 						//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+					specularIrradianceDirection, 	//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+					0 									//payload
+					);
+
+			specularIrradiance = rayPayload.directLighting;
+		}
 	}
 
 	//Calculate a randomly chosen light.
-	int lightIndex = int(rayPayload.randomVector.w * float(numberOfLights));
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
 
-	Light light = UnpackLight(lightIndex);
+		vec3 randomLightPosition = light.position/* + rayPayload.randomVector.xyz * rayPayload.randomVector.w * light.size*/;
 
-	vec3 randomLightPosition = light.position + rayPayload.randomVector.xyz * rayPayload.randomVector.w * light.size;
+		float lengthToLight = length(randomLightPosition - hitPosition);
+		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
 
-	float lengthToLight = length(randomLightPosition - hitPosition);
-	vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
+		//Calculate the attenuation.
+		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-	//Calculate the attenuation.
-	float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+		//Determine the visibility.
+		visibility = 0.0f;
 
-	//Determine the visibility.
-	visibility = 0.0f;
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				1, 																							//missIndex
+				hitPosition, 																				//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
 
-	traceNV(
-			topLevelAccelerationStructure, 																//topLevel
-			gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-			0xff, 																						//cullMask
-			0, 																							//sbtRecordOffset
-			0, 																							//sbtRecordStride
-			1, 																							//missIndex
-			hitPosition, 																				//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-			lightDirection,																				//direction
-			lengthToLight,																				//Tmax
-			1 																							//payload
-			);
-
-	directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
-											lightDirection,
-											albedo,
-											finalNormal,
-											roughness,
-											metallic,
-											light.color * light.strength) * attenuation * visibility;
+		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+												lightDirection,
+												albedo,
+												finalNormal,
+												roughness,
+												metallic,
+												light.color * light.strength) * attenuation * visibility;
+	}
 
 #if VOLUMETRIC_LIGHTING_ENABLED
 	//Also calculate some volumetric lighting for this light.
@@ -188,6 +216,8 @@ void main()
 #endif
 
 	//Write to the ray payload.
+	rayPayload.diffuseIrradiance = diffuseIrradiance;
+	rayPayload.specularIrradiance = specularIrradiance;
 	rayPayload.directLighting = directLighting;
 		
 	if (currentRecursionDepth == 0)

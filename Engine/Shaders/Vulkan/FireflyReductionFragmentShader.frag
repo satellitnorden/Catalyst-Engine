@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define FIREFLY_REDUCTION_SIZE (5.0f)
+#define FIREFLY_REDUCTION_SIZE (3.0f)
 #define FIREFLY_REDUCTION_START_END ((FIREFLY_REDUCTION_SIZE - 1.0f) * 0.5f)
 #define FIREFLY_REDUCTION_SCALE (0.01f)
 
@@ -37,12 +37,12 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 layout (set = 1, binding = 2) uniform sampler2D temporalAccumulationDescriptionBufferTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 scene;
+layout (location = 0) out vec4 diffuseIrradiance;
 
 /*
 *	Returns if a coordinate is valid.
@@ -73,7 +73,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void main()
 {
 	//Sample the scene features at the current fragment.
-	vec3 currentScene = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Sample neighboring fragments.
@@ -83,7 +83,7 @@ void main()
 	{
 		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
 	
-		vec3 sampleScene = texture(sceneTexture, sampleCoordinate).rgb;
+		vec3 sampleDiffuseIrradiance = texture(diffuseIrradianceTexture, sampleCoordinate).rgb;
 		SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
 
 		/*
@@ -99,12 +99,12 @@ void main()
 		sampleWeight *= 1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f);
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
 
-		minimum = mix(minimum, min(minimum, sampleScene), sampleWeight);
+		minimum = mix(minimum, min(minimum, sampleDiffuseIrradiance), sampleWeight);
 	}
 					
 	//Calculate the variance.
-	float variance = min(abs(CalculateAverage(minimum) - CalculateAverage(currentScene)) * FIREFLY_REDUCTION_SCALE, 1.0f);
+	float variance = min(abs(CalculateAverage(minimum) - CalculateAverage(currentDiffuseIrradiance)) * FIREFLY_REDUCTION_SCALE, 1.0f);
 
 	//Write the fragment.
-	scene = vec4(mix(currentScene, minimum, variance), 1.0f);
+	diffuseIrradiance = vec4(mix(currentDiffuseIrradiance, minimum, variance), 1.0f);
 }

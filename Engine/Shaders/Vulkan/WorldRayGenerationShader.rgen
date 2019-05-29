@@ -56,13 +56,14 @@ ivec2 SAMPLE_OFFSETS[16] = ivec2[]
 );
 
 //Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform image2D indirectLightingImage;
-layout (set = 1, binding = 1, rgba32f) uniform image2D directLightingImage;
-layout (set = 1, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 1, binding = 4, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 1, binding = 5) uniform sampler2D noiseImage;
-layout (set = 1, binding = 6) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
+layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
+layout (set = 1, binding = 2, rgba32f) uniform image2D directLightingImage;
+layout (set = 1, binding = 3, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 1, binding = 5, rgba8) uniform image2D sceneFeatures3Image;
+layout (set = 1, binding = 6) uniform sampler2D noiseImage;
+layout (set = 1, binding = 7) uniform accelerationStructureNV topLevelAccelerationStructure;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -79,7 +80,8 @@ void main()
 	vec2 screenCoordinate = vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy);
 
 	//Accumulate results.
-	vec3 indirectLighting = vec3(0.0f);
+	vec3 diffuseIrradiance = vec3(0.0f);
+	vec3 specularIrradiance = vec3(0.0f);
 	vec3 directLighting = vec3(0.0f);
 	vec3 albedo = vec3(0.0f);
 	vec3 geometryNormal = vec3(0.0f);
@@ -135,7 +137,8 @@ void main()
 				);
 
 		//Accumulate the results.
-		indirectLighting += rayPayload.indirectLighting / SAMPLES;
+		diffuseIrradiance += rayPayload.diffuseIrradiance / SAMPLES;
+		specularIrradiance += rayPayload.specularIrradiance / SAMPLES;
 		directLighting += rayPayload.directLighting / SAMPLES;
 		albedo += rayPayload.albedo / SAMPLES;
 		geometryNormal += rayPayload.geometryNormal / SAMPLES;
@@ -149,7 +152,8 @@ void main()
 	}
 
 	//Write to the images.
-	imageStore(indirectLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(indirectLighting, 1.0f));
+	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
+	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
 	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
     imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
     imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(PackNormal(geometryNormal), PackNormal(shadingNormal), depth, intBitsToFloat(materialProperties)));

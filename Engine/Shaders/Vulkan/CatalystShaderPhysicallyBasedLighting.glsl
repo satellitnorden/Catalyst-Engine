@@ -27,15 +27,16 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
                                 float roughness,
                                 float metallic,
                                 float ambientOcclusion,
-                                vec3 irradiance)
+                                vec3 diffuseIrradiance,
+                                vec3 specularIrradiance)
 {
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
     vec3 specularComponent = CalculateFresnelRoughness(CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 diffuse = irradiance * albedo;
-    vec3 specular = irradiance;
+    vec3 diffuse = diffuseIrradiance * albedo;
+    vec3 specular = specularIrradiance;
 
     return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
 }

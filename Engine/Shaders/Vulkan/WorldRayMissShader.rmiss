@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Descriptor set data.
-layout (set = 1, binding = 7) uniform samplerCube environmentTexture;
+layout (set = 1, binding = 8) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
@@ -17,7 +17,7 @@ layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 void main()
 {
 	//Write to the ray payload.
-	rayPayload.indirectLighting = rayPayload.directLighting = rayPayload.albedo = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
+	rayPayload.diffuseIrradiance = rayPayload.specularIrradiance = rayPayload.directLighting = rayPayload.albedo = texture(environmentTexture, gl_WorldRayDirectionNV).rgb;
 	rayPayload.geometryNormal = rayPayload.shadingNormal = vec3(0.0f, 1.0f, 0.0f);
 	rayPayload.depth = CATALYST_RAY_TRACING_T_MAXIMUM;
 	rayPayload.materialProperties = 0;

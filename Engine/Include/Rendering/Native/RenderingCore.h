@@ -56,7 +56,6 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	DetachDetail,
 	TemporalAccumulationWeightCalculation,
 	FireflyReduction,
 	Denoising,
@@ -172,9 +171,14 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the indirect lighting.
+	*	Contains the diffuse irradiance.
 	*/
-	IndirectLighting,
+	DiffuseIrradiance,
+
+	/*
+	*	Contains the specular irradiance.
+	*/
+	SpecularIrradiance,
 
 	/*
 	*	Contains the direct lighting.
@@ -197,14 +201,9 @@ enum class RenderTarget : uint8
 	SceneFeatures3,
 
 	/*
-	*	The first temporal accumulation indirect lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationIndirectLightingColorBuffer1,
-
-	/*
-	*	The first temporal accumulation direct lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationDirectLightingColorBuffer1,
+	TemporalAccumulationColorBuffer1,
 
 	/*
 	*	The first temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -212,14 +211,9 @@ enum class RenderTarget : uint8
 	TemporalAccumulationDescriptionBuffer1,
 
 	/*
-	*	The second temporal accumulation indirect lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
+	*	The second temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
 	*/
-	TemporalAccumulationIndirectLightingColorBuffer2,
-
-	/*
-	*	The second temporal accumulation direct lighting color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationDirectLightingColorBuffer2,
+	TemporalAccumulationColorBuffer2,
 
 	/*
 	*	The second temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
@@ -237,14 +231,9 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
-	*	First intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate1,
-
-	/*
-	*	Second intermediate render target, useful when pipelines needs to do ping-pong rendering.
-	*/
-	Intermediate2,
+	Intermediate,
 
 	/*
 	*	For rendering directly to the screen.
@@ -278,7 +267,6 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
-	DetachDetailFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,
 	PassthroughFragment,

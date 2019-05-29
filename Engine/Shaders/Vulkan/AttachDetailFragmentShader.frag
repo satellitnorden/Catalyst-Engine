@@ -30,11 +30,12 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D indirectLightingTexture;
-layout (set = 1, binding = 1) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures1Texture;
-layout (set = 1, binding = 3) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 4) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
+layout (set = 1, binding = 1) uniform sampler2D specularIrradianceTexture;
+layout (set = 1, binding = 2) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 3) uniform sampler2D sceneFeatures1Texture;
+layout (set = 1, binding = 4) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 5) uniform sampler2D sceneFeatures3Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -62,8 +63,11 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 void main()
 {
-	//Sample the current indirect lighting.
-	vec3 currentIndirectLighting = texture(indirectLightingTexture, fragmentTextureCoordinate).rgb;
+	//Sample the current diffuse irradiance lighting.
+	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
+
+	//Sample the current specular irradiance lighting.
+	vec3 currentSpecularIrradiance = texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current direct lighting.
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
@@ -72,17 +76,15 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Calculate the indirect lighting.
-	currentIndirectLighting = CalculateIndirectLighting(normalize(currentFeatures.hitPosition - perceiverWorldPosition),
+	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
 														currentFeatures.albedo,
 														currentFeatures.normal,
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														currentIndirectLighting);
-
-	//Attach the albedo detail to the current direct lighting.
-	currentDirectLighting *= mix(vec3(1.0f), currentFeatures.albedo, CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic));
+														currentDiffuseIrradiance,
+														currentSpecularIrradiance);
 
 	//Write the fragment.
-	scene = vec4(currentIndirectLighting + currentDirectLighting, 1.0f);
+	scene = vec4(indirectLighting + currentDirectLighting, 1.0f);
 }

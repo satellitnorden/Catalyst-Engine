@@ -40,17 +40,13 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(_TemporalAccumulationGraphicsPipelines.Size());
 
 	_TemporalAccumulationGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationIndirectLightingColorBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDirectLightingColorBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationIndirectLightingColorBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDirectLightingColorBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1));
 
 	_TemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationIndirectLightingColorBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDirectLightingColorBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationIndirectLightingColorBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDirectLightingColorBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2));
 
 
