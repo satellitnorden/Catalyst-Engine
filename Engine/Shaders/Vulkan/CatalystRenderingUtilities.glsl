@@ -11,6 +11,6 @@
 */
 vec3 CalculateHighlight(vec3 viewDirection, vec3 shadingNormal, int materialProperties)
 {
-	return HIGHLIGHT_COLOR * max(pow(((dot(viewDirection, shadingNormal) + 1.0f) * 0.5f) * ((sin(totalTime * 2.0f) + 1.0f) * 0.5f) * float(bool(materialProperties & MATERIAL_HIGHLIGHT_BIT)), 2.0f), 0.0f);
+	return HIGHLIGHT_COLOR * (0.125f + pow(max(((dot(viewDirection, shadingNormal) + 1.0f) * 0.5f) * ((sin(totalTime * 2.0f) + 1.0f) * 0.5f), 0.0f), 2.0f)) * float(bool(materialProperties & MATERIAL_HIGHLIGHT_BIT));
 }
 #endif
