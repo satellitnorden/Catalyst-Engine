@@ -36,19 +36,54 @@ DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
 */
 void DenoisingRenderPass::Initialize() NOEXCEPT
 {
-	//Add and initialize the pipelines.
+	//Initialize the pipelines.
 	SetNumberOfPipelines(_DenoisingGraphicsPipelines.Size());
 
 	_DenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
+												1.0f,
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
-	AddPipeline(&_DenoisingGraphicsPipelines[0]);
 
 	_DenoisingGraphicsPipelines[1].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
+												1.0f,
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
-	AddPipeline(&_DenoisingGraphicsPipelines[1]);
 
+	_DenoisingGraphicsPipelines[2].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
+												2.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_DenoisingGraphicsPipelines[3].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
+												2.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+
+	_DenoisingGraphicsPipelines[4].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
+												4.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_DenoisingGraphicsPipelines[5].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
+												4.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+
+	_DenoisingGraphicsPipelines[6].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
+												8.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_DenoisingGraphicsPipelines[7].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
+												8.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+
+	//Add all pipelines.
+	for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())

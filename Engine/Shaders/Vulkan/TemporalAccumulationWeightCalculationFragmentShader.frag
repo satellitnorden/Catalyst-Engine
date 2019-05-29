@@ -64,7 +64,7 @@ void main()
 
 	weight *= float(ValidCoordinate(previousScreenCoordinate));
 	weight *= pow(max(1.0f - abs(previousHitDistance - closestPreviousTemporalAccumulationDescriptionBuffer.x), 0.0f), 32.0f);
-	weight *= 1.0f - min(totalAccumulations / 1048576.0f, 1.0f);
+	weight *= 1.0f - min(totalAccumulations / 256.0f, 1.0f);
 
 	//Write the current temporal accumulation description buffer.
 	currentTemporalAccumulationDescriptionBuffer = vec4(length(currentWorldPosition - perceiverWorldPosition), weight, totalAccumulations, 0.0f);

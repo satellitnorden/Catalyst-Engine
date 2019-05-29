@@ -21,12 +21,15 @@ public:
 	//The direction.
 	Vector2<float> _Direction;
 
+	//The stride.
+	float _Stride;
+
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void DenoisingGraphicsPipeline::Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void DenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -36,6 +39,9 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const Rend
 
 	//Set the direction.
 	_Direction = direction;
+
+	//Set the stride.
+	_Stride = stride;
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -146,6 +152,8 @@ void DenoisingGraphicsPipeline::Execute() NOEXCEPT
 	{
 		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
 	}
+
+	data._Stride = _Stride;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
