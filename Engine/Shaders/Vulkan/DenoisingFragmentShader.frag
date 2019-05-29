@@ -121,7 +121,7 @@ void main()
 				*/
 				float sampleWeight = 1.0f;
 
-				sampleWeight *= max(dot(currentFeatures.geometryNormal, sampleFeatures.geometryNormal), 0.0f);
+				sampleWeight *= pow(max(dot(currentFeatures.geometryNormal, sampleFeatures.geometryNormal), 0.0f), 2.0f);
 				sampleWeight *= pow(1.0f - min(length(currentFeatures.hitPosition - sampleFeatures.hitPosition), 1.0f), 2.0f);
 				sampleWeight *= float(ValidCoordinate(sampleCoordinate));
 

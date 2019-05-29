@@ -55,14 +55,17 @@ void main()
 	//Calculate the hit position.
 	vec3 hitPosition = finalVertex.position + finalVertex.normal * 0.00001f;
 
+	//Calculate the mip level.
+	float mipLevel = 0.0f; //TODO. ):
+
 	//Sample the albedo.
-	vec3 albedo = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate).rgb;
+	vec3 albedo = textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate, mipLevel).rgb;
 
 	//Sample the normal map.
-	vec3 normalMap = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].secondTextureIndex], finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
+	vec3 normalMap = textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].secondTextureIndex], finalVertex.textureCoordinate, mipLevel).xyz * 2.0f - 1.0f;
 
 	//Sample the material properties.
-	vec4 materialProperties = texture(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].thirdTextureIndex], finalVertex.textureCoordinate);
+	vec4 materialProperties = textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].thirdTextureIndex], finalVertex.textureCoordinate, mipLevel);
 
 	//Store the roughness, metallic, ambient occlusion and luminance.
 	float roughness = materialProperties.x;
