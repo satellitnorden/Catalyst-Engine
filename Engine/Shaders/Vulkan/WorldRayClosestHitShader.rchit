@@ -14,9 +14,8 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_ENABLED false
-#define VOLUMETRIC_COLOR (vec3(1.0f))
-#define VOLUMETRIC_DENSITY (0.25f)
+#define VOLUMETRIC_SAMPLES (1)
+#define VOLUMETRIC_DENSITY (0.01f)
 
 //Descriptor set data.
 layout (set = 1, binding = 8) uniform accelerationStructureNV topLevelAccelerationStructure;
@@ -98,6 +97,10 @@ void main()
 	//Add the highlight.
 	directLighting += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
 
+	//Calculate the random direction.
+	vec3 randomDirection = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
+
+	//Calculate the irradiance.
 	vec3 diffuseIrradiance = vec3(0.0f);
 	vec3 specularIrradiance = vec3(0.0f);
 
@@ -105,7 +108,7 @@ void main()
 	{
 		{
 			//Add the diffuse irradiance.
-			vec3 randomDiffuseIrradianceDirection = dot(rayPayload.randomVector.xyz, finalVertex.normal) >= 0.0f ? rayPayload.randomVector.xyz : rayPayload.randomVector.xyz * -1.0f;
+			vec3 randomDiffuseIrradianceDirection = dot(randomDirection, finalVertex.normal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
 
 			rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
 
@@ -155,7 +158,7 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		vec3 randomLightPosition = light.position/* + rayPayload.randomVector.xyz * rayPayload.randomVector.w * light.size*/;
+		vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
@@ -187,36 +190,45 @@ void main()
 												roughness,
 												metallic,
 												light.color * light.strength) * attenuation * visibility;
+
+		/*
+		//Also calculate some volumetric lighting for this light.
+		if (currentRecursionDepth == 0)
+		{
+			float finalVisibility = 0.0f;
+
+			for (int i = 0; i < VOLUMETRIC_SAMPLES; ++i)
+			{
+				vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector[i + 1]);
+
+				lengthToLight = length(randomLightPosition - randomPositionAlongRay);
+				lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
+
+				visibility = 0.0f;
+
+				traceNV(
+						topLevelAccelerationStructure, 																//topLevel
+						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+						0xff, 																						//cullMask
+						0, 																							//sbtRecordOffset
+						0, 																							//sbtRecordStride
+						1, 																							//missIndex
+						randomPositionAlongRay, 																	//origin
+						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+						lightDirection,																				//direction
+						lengthToLight,																				//Tmax
+						1 																							//payload
+						);
+
+				finalVisibility += visibility;
+			}
+			
+			finalVisibility /= VOLUMETRIC_SAMPLES;
+
+			directLighting += light.color * light.strength * VOLUMETRIC_DENSITY * finalVisibility;
+		}
+		*/
 	}
-
-#if VOLUMETRIC_LIGHTING_ENABLED
-	//Also calculate some volumetric lighting for this light.
-	if (currentRecursionDepth == 0)
-	{
-		vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * rayPayload.randomVector.w;
-
-		lengthToLight = length(randomLightPosition - randomPositionAlongRay);
-		lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
-
-		visibility = 0.0f;
-
-		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				1, 																							//missIndex
-				randomPositionAlongRay, 																	//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				lightDirection,																				//direction
-				lengthToLight,																				//Tmax
-				1 																							//payload
-				);
-
-		directLighting += VOLUMETRIC_COLOR * VOLUMETRIC_DENSITY * light.color * light.strength * visibility;
-	}
-#endif
 
 	//Write to the ray payload.
 	rayPayload.diffuseIrradiance = diffuseIrradiance;
