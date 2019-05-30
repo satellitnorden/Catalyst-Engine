@@ -25,10 +25,10 @@ public:
 private:
 
 	//The denoising graphics pipelines.
-	StaticArray<DenoisingGraphicsPipeline, 10> _DenoisingGraphicsPipelines;
+	StaticArray<DenoisingGraphicsPipeline, 8> _DenoisingGraphicsPipelines;
 
 	//Thevolumetric lighting denoising graphics pipelines.
-	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 10> _VolumetricLightingDenoisingGraphicsPipelines;
+	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 8> _VolumetricLightingDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.

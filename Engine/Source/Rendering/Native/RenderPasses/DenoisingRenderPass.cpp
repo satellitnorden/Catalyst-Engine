@@ -79,16 +79,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
-	_DenoisingGraphicsPipelines[8].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
-												16.0f,
-												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
-
-	_DenoisingGraphicsPipelines[9].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
-												16.0f,
-												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
-
 	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
@@ -126,16 +116,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 
 	_VolumetricLightingDenoisingGraphicsPipelines[7].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																8.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
-
-	_VolumetricLightingDenoisingGraphicsPipelines[8].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
-																16.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
-
-	_VolumetricLightingDenoisingGraphicsPipelines[9].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
-																16.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
