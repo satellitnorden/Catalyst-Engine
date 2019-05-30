@@ -193,33 +193,37 @@ void main()
 												roughness,
 												metallic,
 												light.color * light.strength) * attenuation * visibility;
+	}
 
-		//Also calculate some volumetric lighting for this light.
-		if (currentRecursionDepth == 0)
-		{
-			vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector.w);
+	//Also calculate some volumetric lighting for a randomly chosen light.
+	if (currentRecursionDepth == 0)
+	{
+		Light light = UnpackLight(int(float(numberOfLights) * rayPayload.randomVector.z));
 
-			lengthToLight = length(randomLightPosition - randomPositionAlongRay);
-			lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
+		vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
 
-			visibility = 0.0f;
+		vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector.w);
 
-			traceNV(
-					topLevelAccelerationStructure, 																//topLevel
-					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-					0xff, 																						//cullMask
-					0, 																							//sbtRecordOffset
-					0, 																							//sbtRecordStride
-					1, 																							//missIndex
-					randomPositionAlongRay, 																	//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-					lightDirection,																				//direction
-					lengthToLight,																				//Tmax
-					1 																							//payload
-					);
+		float lengthToLight = length(randomLightPosition - randomPositionAlongRay);
+		vec3 lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
 
-			volumetricLighting += light.color * light.strength * VOLUMETRIC_DENSITY * visibility;
-		}
+		visibility = 0.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				1, 																							//missIndex
+				randomPositionAlongRay, 																	//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
+
+		volumetricLighting = light.color * light.strength * float(numberOfLights) * VOLUMETRIC_DENSITY * visibility;
 	}
 
 	//Write to the ray payload.
