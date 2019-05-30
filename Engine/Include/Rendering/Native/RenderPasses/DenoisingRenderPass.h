@@ -24,7 +24,7 @@ public:
 private:
 
 	//The denoising graphics pipelines.
-	StaticArray<DenoisingGraphicsPipeline, 8> _DenoisingGraphicsPipelines;
+	StaticArray<DenoisingGraphicsPipeline, 10> _DenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.

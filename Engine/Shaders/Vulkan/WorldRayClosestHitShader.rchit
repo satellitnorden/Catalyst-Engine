@@ -59,7 +59,7 @@ void main()
 	float mipLevel = 0.0f; //TODO. ):
 
 	//Sample the albedo.
-	vec3 albedo = textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate, mipLevel).rgb;
+	vec3 albedo = pow(textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].firstTextureIndex], finalVertex.textureCoordinate, mipLevel).rgb, vec3(2.2f));
 
 	//Sample the normal map.
 	vec3 normalMap = textureLod(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].secondTextureIndex], finalVertex.textureCoordinate, mipLevel).xyz * 2.0f - 1.0f;
