@@ -9,7 +9,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class DenoisingGraphicsPipeline final : public GraphicsPipeline
+class VolumetricLightingDenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

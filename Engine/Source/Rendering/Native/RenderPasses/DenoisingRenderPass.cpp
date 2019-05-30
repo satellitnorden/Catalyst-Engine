@@ -37,7 +37,7 @@ DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
 void DenoisingRenderPass::Initialize() NOEXCEPT
 {
 	//Initialize the pipelines.
-	SetNumberOfPipelines(_DenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_DenoisingGraphicsPipelines.Size() + _VolumetricLightingDenoisingGraphicsPipelines.Size());
 
 	_DenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 												1.0f,
@@ -89,8 +89,63 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
+	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																1.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[1].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																1.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[2].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																2.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[3].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																2.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[4].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[5].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[6].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																8.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[7].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																8.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[8].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																16.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[9].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																16.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
 	//Add all pipelines.
 	for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
+	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -115,6 +170,11 @@ void DenoisingRenderPass::Execute() NOEXCEPT
 
 	//Execute all pipelines.
 	for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
+	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}

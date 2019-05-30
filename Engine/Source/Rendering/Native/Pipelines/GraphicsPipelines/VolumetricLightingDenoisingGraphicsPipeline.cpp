@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -29,7 +29,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void DenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -48,7 +48,7 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const floa
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DenoisingFragment);
+	SetFragmentShader(Shader::VolumetricLightingDenoisingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -90,7 +90,7 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const floa
 /*
 *	Creates the render data table layout.
 */
-void DenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -104,7 +104,7 @@ void DenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void DenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -115,7 +115,7 @@ void DenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle s
 /*
 *	Executes this graphics pipeline.
 */
-void DenoisingGraphicsPipeline::Execute() NOEXCEPT
+void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

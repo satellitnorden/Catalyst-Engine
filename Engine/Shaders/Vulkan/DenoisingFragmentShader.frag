@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (16.0f)
+#define DENOISING_SIZE (8.0f)
 #define DENOISING_START_END (DENOISING_SIZE * 0.5f)
 
 /*
@@ -22,10 +22,6 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 hitPosition;
-	float roughness;
-	float metallic;
-	float ambientOcclusion;
-	float luminance;
 };
 
 //Layout specification.
@@ -44,8 +40,6 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures4Texture;
-layout (set = 1, binding = 3) uniform sampler2D temporalAccumulationDescriptionBufferTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 diffuseIrradiance;
@@ -67,16 +61,11 @@ bool ValidCoordinate(vec2 coordinate)
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
-	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
 
 	SceneFeatures features;
 
 	features.normal = sceneFeatures2.xyz;
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
-	features.roughness = sceneFeatures4.x;
-	features.metallic = sceneFeatures4.y;
-	features.ambientOcclusion = sceneFeatures4.z;
-	features.luminance = sceneFeatures4.w;
 
 	return features;
 }

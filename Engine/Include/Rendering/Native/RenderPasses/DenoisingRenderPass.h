@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DenoisingRenderPass final : public RenderPass
@@ -25,6 +26,9 @@ private:
 
 	//The denoising graphics pipelines.
 	StaticArray<DenoisingGraphicsPipeline, 10> _DenoisingGraphicsPipelines;
+
+	//Thevolumetric lighting denoising graphics pipelines.
+	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 10> _VolumetricLightingDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.

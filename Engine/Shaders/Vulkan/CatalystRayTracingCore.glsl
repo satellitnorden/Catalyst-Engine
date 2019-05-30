@@ -16,6 +16,7 @@ struct PrimaryRayPayload
 	vec3 diffuseIrradiance;
 	vec3 specularIrradiance;
 	vec3 directLighting;
+	vec3 volumetricLighting;
 	vec3 albedo;
 	vec3 geometryNormal;
 	vec3 shadingNormal;

@@ -186,6 +186,11 @@ enum class RenderTarget : uint8
 	DirectLighting,
 
 	/*
+	*	Contains the volumetric lighting.
+	*/
+	VolumetricLighting,
+
+	/*
 	*	Contains the albedo.
 	*/
 	SceneFeatures1,
@@ -283,10 +288,11 @@ enum class Shader : uint8
 	UserInterfaceFragment,
 	UserInterfaceVertex,
 	ViewportVertex,
-	VisibilityRayMissShader,
-	WorldRayClosestHitShader,
-	WorldRayGenerationShader,
-	WorldRayMissShader,
+	VisibilityRayMiss,
+	VolumetricLightingDenoisingFragment,
+	WorldRayClosestHit,
+	WorldRayGeneration,
+	WorldRayMiss,
 
 	NumberOfShaders,
 
