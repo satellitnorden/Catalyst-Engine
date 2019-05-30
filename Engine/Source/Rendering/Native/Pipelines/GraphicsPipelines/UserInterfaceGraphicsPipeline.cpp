@@ -153,7 +153,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfaceElementType::Text:
 			{
-				constexpr float SCALE{ 0.05f };
+				constexpr float SCALE{ 0.0325f };
 
 				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
 
@@ -161,8 +161,11 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				float currentOffsetX{ 0.0f };
 				float currentOffsetY{ typeElement->_Maximum._Y - typeElement->_Minimum._Y - SCALE };
 
-				for (const char &character : typeElement->_Text)
+				for (uint64 i{ 0 }, length{ typeElement->_Text.Length() }; i < length; ++i)
 				{
+					//Cache the chartacter.
+					const char character{ typeElement->_Text[i] };
+
 					//Push constants.
 					VertexPushConstantData vertexData;
 
@@ -184,13 +187,40 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					//Draw!
 					commandBuffer->Draw(this, 4, 1);
 
-					//Update the current offsets.
-					currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
-
-					if (currentOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
+					//If this character is a space, look ahead toward the next space to see if the line should wrap around.
+					if (character == ' ')
 					{
-						currentOffsetX = 0.0f;
-						currentOffsetY -= SCALE;
+						bool shouldWrapAround{ false };
+
+						float temporaryOffsetX{ currentOffsetX };
+
+						for (uint64 j{ i + 1 }; j < length && typeElement->_Text[j] != ' '; ++j)
+						{
+							temporaryOffsetX += typeElement->_Font->_CharacterDescriptions[typeElement->_Text[j]]._Advance * SCALE;
+
+							if (temporaryOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
+							{
+								shouldWrapAround = true;
+
+								break;
+							}
+						}
+
+						if (shouldWrapAround)
+						{
+							currentOffsetX = 0.0f;
+							currentOffsetY -= SCALE;
+						}
+
+						else
+						{
+							currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
+						}
+					}
+					
+					else
+					{
+						currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
 					}
 				}
 

@@ -144,6 +144,22 @@ public:
 	}
 
 	/*
+	*	Subscript operator overload, const.
+	*/
+	FORCE_INLINE NO_DISCARD char operator[](const uint64 index) const NOEXCEPT
+	{
+		return _String[index];
+	}
+
+	/*
+	*	Subscript operator overload, non-const.
+	*/
+	FORCE_INLINE NO_DISCARD char& operator[](const uint64 index) NOEXCEPT
+	{
+		return _String[index];
+	}
+
+	/*
 	*	Begin iterator, const.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Begin() const  NOEXCEPT
