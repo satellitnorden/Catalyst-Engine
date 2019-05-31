@@ -22,6 +22,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
+	constexpr uint8 TEMPORAL_ANTI_ALIASING_SAMPLES{ 4 };
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 256 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 256 };
 }
@@ -66,6 +67,7 @@ enum class RenderPassStage : uint8
 	PostProcessing,
 	ToneMapping,
 	AntiAliasing,
+	TemporalAntiAliasing,
 	UserInterface,
 	Screen,
 
@@ -284,6 +286,7 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	TemporalAccumulationFragment,
 	TemporalAccumulationWeightCalculationFragment,
+	TemporalAntiAliasing,
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
