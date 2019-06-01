@@ -13,26 +13,26 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void TemporalAntiAliasingGraphicsPipeline::Initialize(	const StaticArray<RenderTargetHandle, RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES> &sources,
+void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle source,
 														const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(sources);
+	CreateRenderDataTable(source);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::TemporalAntiAliasing);
+	SetFragmentShader(Shader::TemporalAntiAliasingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(2);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 	AddRenderTarget(target);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -93,10 +93,11 @@ void TemporalAntiAliasingGraphicsPipeline::Execute() NOEXCEPT
 */
 void TemporalAntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, static_cast<uint32>(RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES), ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -105,14 +106,11 @@ void TemporalAntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEP
 /*
 *	Creates the render data table.
 */
-void TemporalAntiAliasingGraphicsPipeline::CreateRenderDataTable(const StaticArray<RenderTargetHandle, RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES> &sources) NOEXCEPT
+void TemporalAntiAliasingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	for (uint8 i{ 0 }; i < RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES; ++i)
-	{
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, static_cast<uint32>(i), &_RenderDataTable, sources[i], RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	}
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

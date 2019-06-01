@@ -68,7 +68,7 @@ void main()
 	postProcessedFragment = ApplyChromaticAberration(postProcessedFragment, edgeFactor);
 
 	//Apply film grain.
-	postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
+	//postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
 
 	//Apply vignette.
 	postProcessedFragment = ApplyVignette(postProcessedFragment, edgeFactor);

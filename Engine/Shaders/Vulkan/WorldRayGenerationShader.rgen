@@ -102,19 +102,7 @@ void main()
 		rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x + SAMPLE_OFFSETS[i].x) & 63, (gl_LaunchIDNV.y + noiseOffset.y + SAMPLE_OFFSETS[i].y) & 63) / vec2(64.0f, 64.0f));
 
 		//Jitter the screen coordinate a bit to get some anti-aliasing.
-		vec2 jitteredScreenCoordinate;
-
-		if (SAMPLES > 1)
-		{
-			jitteredScreenCoordinate = screenCoordinate + JITTER_OFFSETS[i];
-		}
-
-		else
-		{
-			jitteredScreenCoordinate = screenCoordinate;
-		}
-
-		//jitteredScreenCoordinate = screenCoordinate + vec2(RandomFloat(screenCoordinate, globalRandomSeed1) * 2.0f - 1.0f, RandomFloat(screenCoordinate, globalRandomSeed2) * 2.0f - 1.0f) * vec2(1.0f / 1920.0f, 1.0f / 1080.0f);
+		vec2 jitteredScreenCoordinate = screenCoordinate + currentFrameJitter;
 
 		//Inidicate that this is the top recursion level.
 		rayPayload.currentRecursionDepth = 0;

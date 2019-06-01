@@ -22,7 +22,6 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
-	constexpr uint8 TEMPORAL_ANTI_ALIASING_SAMPLES{ 4 };
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 256 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 256 };
 }
@@ -243,6 +242,16 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
+	*	Contains the first temporal anti aliasing buffer.
+	*/
+	TemporalAntiAliasingBuffer1,
+
+	/*
+	*	Contains the second temporal anti aliasing buffer.
+	*/
+	TemporalAntiAliasingBuffer2,
+
+	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
 	Intermediate,
@@ -286,7 +295,7 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	TemporalAccumulationFragment,
 	TemporalAccumulationWeightCalculationFragment,
-	TemporalAntiAliasing,
+	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,

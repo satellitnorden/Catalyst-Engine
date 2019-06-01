@@ -18,7 +18,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const StaticArray<RenderTargetHandle, RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES> &sources,
+	void Initialize(const RenderTargetHandle source,
 					const RenderTargetHandle target) NOEXCEPT;
 
 	/*
@@ -42,6 +42,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const StaticArray<RenderTargetHandle, RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES> &sources) NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
 
 };

@@ -35,16 +35,21 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 496) vec3 perceiverVelocity;
     layout (offset = 512) vec3 perceiverWorldPosition;
 
-    layout (offset = 528) float deltaTime;
-    layout (offset = 532) float directionalLightIntensity;
-    layout (offset = 536) float globalRandomSeed1;
-    layout (offset = 540) float globalRandomSeed2;
-    layout (offset = 544) float globalRandomSeed3;
-    layout (offset = 548) float perceiverRotationVelocity;
-    layout (offset = 552) float totalTime;
-    layout (offset = 556) float windSpeed;
+    layout (offset = 528) vec2 scaledResolution;
+    layout (offset = 536) vec2 inverseScaledResolution;
+    layout (offset = 544) vec2 previousFrameJitter;
+    layout (offset = 552) vec2 currentFrameJitter;
 
-    //Total size; 560
+    layout (offset = 560) float deltaTime;
+    layout (offset = 564) float directionalLightIntensity;
+    layout (offset = 568) float globalRandomSeed1;
+    layout (offset = 572) float globalRandomSeed2;
+    layout (offset = 576) float globalRandomSeed3;
+    layout (offset = 580) float perceiverRotationVelocity;
+    layout (offset = 584) float totalTime;
+    layout (offset = 588) float windSpeed;
+
+    //Total size; 592
 };
 
 //The global textures.

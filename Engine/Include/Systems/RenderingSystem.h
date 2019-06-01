@@ -302,6 +302,9 @@ private:
 	//The dynamic uniform data.
 	DynamicUniformData _DynamicUniformData;
 
+	//The current jitter index.
+	uint8 _CurrentJitterIndex{ 0 };
+
 	//The lighting system.
 	LightingSystem _LightingSystem;
 

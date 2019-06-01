@@ -24,7 +24,7 @@ public:
 private:
 
 	//The temporal anti aliasing graphics pipelines.
-	StaticArray<TemporalAntiAliasingGraphicsPipeline, RenderingConstants::TEMPORAL_ANTI_ALIASING_SAMPLES> _TemporalAntiAliasingGraphicsPipelines;
+	StaticArray<TemporalAntiAliasingGraphicsPipeline, 2> _TemporalAntiAliasingGraphicsPipelines;
 
 	//The current buffer index.
 	uint8 _CurrentBufferIndex{ 0 };

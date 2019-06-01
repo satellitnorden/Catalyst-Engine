@@ -36,24 +36,19 @@ TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
 */
 void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 {
-	/*
 	//Initialize and add the pipelines.
 	SetNumberOfPipelines(_TemporalAntiAliasingGraphicsPipelines.Size());
 
-	_TemporalAccumulationGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer1));
+	_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer1));
 
-	_TemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationColorBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAccumulationDescriptionBuffer2));
+	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer2));
 
 
-	for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipelines.Size() }; i < size; ++i)
+	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
 	{
-		AddPipeline(&_TemporalAccumulationGraphicsPipelines[i]);
+		AddPipeline(&pipeline);
 	}
 
 	//Post-initialize all pipelines.
@@ -61,10 +56,6 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 	{
 		pipeline->PostInitialize();
 	}
-	*/
-
-	//Eh. Not enabled for now.
-	SetEnabled(false);
 }
 
 /*
@@ -72,7 +63,6 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 */
 void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 {
-	/*
 	//Toggle enabled.
 	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadUp == ButtonState::Pressed)
 	{
@@ -80,20 +70,19 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute the current buffer, don't include the rest.
-	for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipelines.Size() }; i < size; ++i)
+	for (uint64 i{ 0 }, size{ _TemporalAntiAliasingGraphicsPipelines.Size() }; i < size; ++i)
 	{
 		if (i == _CurrentBufferIndex)
 		{
-			_TemporalAccumulationGraphicsPipelines[i].Execute();
+			_TemporalAntiAliasingGraphicsPipelines[i].Execute();
 		}
 
 		else
 		{
-			_TemporalAccumulationGraphicsPipelines[i].SetIncludeInRender(false);
+			_TemporalAntiAliasingGraphicsPipelines[i].SetIncludeInRender(false);
 		}
 	}
 
 	//Update the current buffer index.
-	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAccumulationGraphicsPipelines.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
-	*/
+	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAntiAliasingGraphicsPipelines.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
 }

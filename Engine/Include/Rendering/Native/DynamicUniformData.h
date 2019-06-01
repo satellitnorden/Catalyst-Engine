@@ -26,6 +26,11 @@ public:
 	Vector4<float> _PerceiverVelocity;
 	Vector4<float> _PerceiverWorldPosition;
 
+	Vector2<float> _ScaledResolution;
+	Vector2<float> _InverseScaledResolution;
+	Vector2<float> _PreviousFrameJitter;
+	Vector2<float> _CurrentFrameJitter;
+
 	float _DeltaTime;
 	float _DirectionalLightIntensity;
 	float _GlobalRandomSeed1;
@@ -36,4 +41,4 @@ public:
 	float _WindSpeed;
 };
 
-static_assert(sizeof(DynamicUniformData) == 560, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 592, "Size of dynamic uniform data is wrong!");

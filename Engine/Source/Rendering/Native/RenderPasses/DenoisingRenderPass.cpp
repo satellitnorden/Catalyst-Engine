@@ -69,6 +69,16 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
+	_DenoisingGraphicsPipelines[6].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
+												8.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_DenoisingGraphicsPipelines[7].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
+												8.0f,
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+												RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+
 	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),

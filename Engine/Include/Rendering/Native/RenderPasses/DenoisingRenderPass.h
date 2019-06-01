@@ -25,7 +25,7 @@ public:
 private:
 
 	//The denoising graphics pipelines.
-	StaticArray<DenoisingGraphicsPipeline, 6> _DenoisingGraphicsPipelines;
+	StaticArray<DenoisingGraphicsPipeline, 8> _DenoisingGraphicsPipelines;
 
 	//Thevolumetric lighting denoising graphics pipelines.
 	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 6> _VolumetricLightingDenoisingGraphicsPipelines;
