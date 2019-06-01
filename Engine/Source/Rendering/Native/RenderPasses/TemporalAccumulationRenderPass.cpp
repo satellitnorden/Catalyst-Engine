@@ -68,9 +68,18 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 void TemporalAccumulationRenderPass::Execute() NOEXCEPT
 {
 	//Toggle enabled.
+	/*
 	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadUp == ButtonState::Pressed)
 	{
 		SetEnabled(!IsEnabled());
+	}
+	*/
+
+	if (true)
+	{
+		SetEnabled(false);
+
+		return;
 	}
 
 	//Execute the current buffer, don't include the rest.
