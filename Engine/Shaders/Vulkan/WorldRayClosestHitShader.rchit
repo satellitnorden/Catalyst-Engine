@@ -161,7 +161,7 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
+		vec3 randomLightPosition = light.position + randomDirection * rayPayload.randomVector.w * light.size;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
@@ -200,7 +200,7 @@ void main()
 	{
 		Light light = UnpackLight(int(float(numberOfLights) * rayPayload.randomVector.z));
 
-		vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
+		vec3 randomLightPosition = light.position + randomDirection * rayPayload.randomVector.w * light.size;
 
 		vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector.w);
 
