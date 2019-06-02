@@ -7,10 +7,11 @@
 #define MATERIAL_TRANSLUCENT_BIT (1 << 1)
 
 /*
-*	Calculates the highlight of an object.
+*	Calculates the highlight weight of a material.
 */
-vec3 CalculateHighlight(vec3 viewDirection, vec3 shadingNormal, int materialProperties)
+float CalculateHighlightWeight(vec3 viewDirection, vec3 shadingNormal, int materialProperties)
 {
-	return HIGHLIGHT_COLOR * (0.125f + pow(max(((dot(viewDirection, shadingNormal) + 1.0f) * 0.5f) * ((sin(totalTime * 2.0f) + 1.0f) * 0.5f), 0.0f), 2.0f)) * float(bool(materialProperties & MATERIAL_HIGHLIGHT_BIT));
+	//Calculate the highlight weight.
+	return clamp((0.125f + (dot(viewDirection, shadingNormal) + 1.0f) * (sin(totalTime * 2.0f) + 1.0f)) * float(bool(materialProperties & MATERIAL_HIGHLIGHT_BIT)), 0.0f, 1.0f);
 }
 #endif

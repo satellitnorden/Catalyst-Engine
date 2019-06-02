@@ -70,13 +70,19 @@ void main()
 	float roughness = materialProperties.x;
 	float metallic = materialProperties.y;
 	float ambientOcclusion = materialProperties.z;
-	float luminance = materialProperties.w;
+	float luminance = materialProperties.w * modelMaterials[gl_InstanceCustomIndexNV].luminanceMultiplier;
 
 	//Calculate the tangent space matrix.
 	mat3 tangentSpaceMatrix = mat3(finalVertex.tangent, cross(finalVertex.tangent, finalVertex.normal), finalVertex.normal);
 
 	//Calculate the final normal.
 	vec3 finalNormal = tangentSpaceMatrix * normalMap;
+
+	//Calculate the highlight weight of this material and modify the material properties based on that.
+	float highlightWeight = max(CalculateHighlightWeight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties), 0.0f);
+
+	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
+	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
 
 	//If this is a "translucent" material, modify some properties to make it appear that way.
 	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
@@ -85,17 +91,14 @@ void main()
 		roughness = 0.0f;
 		metallic = 1.0f;
 		ambientOcclusion = 1.0f;
-		luminance = 1.0f;
+		luminance = luminance + 1.0f;
 	}
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
 	//Add the luminance lighting.
-	directLighting += albedo * luminance * modelMaterials[gl_InstanceCustomIndexNV].luminanceMultiplier;
-
-	//Add the highlight.
-	directLighting += CalculateHighlight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties);
+	directLighting += albedo * luminance;
 
 	//Calculate the random direction.
 	vec3 randomDirection = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
