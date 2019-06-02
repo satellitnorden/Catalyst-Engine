@@ -15,7 +15,7 @@
 
 //Constants.
 #define VOLUMETRIC_SAMPLES (1)
-#define VOLUMETRIC_DENSITY (0.00125f)
+#define VOLUMETRIC_DENSITY (0.001f)
 
 //Descriptor set data.
 layout (set = 1, binding = 9) uniform accelerationStructureNV topLevelAccelerationStructure;
@@ -107,7 +107,7 @@ void main()
 	{
 		if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
 		{
-			diffuseIrradiance = vec3(0.01f);
+			diffuseIrradiance = vec3(0.025f);
 		}
 
 		else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
