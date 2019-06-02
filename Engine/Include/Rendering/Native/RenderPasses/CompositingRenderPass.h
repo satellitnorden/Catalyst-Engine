@@ -4,26 +4,26 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AntiAliasingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/CompositingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class AntiAliasingRenderPass final : public RenderPass
+class CompositingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(AntiAliasingRenderPass);
+	DECLARE_SINGLETON(CompositingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	AntiAliasingRenderPass() NOEXCEPT;
+	CompositingRenderPass() NOEXCEPT;
 
 private:
 
-	//The anti-aliasing graphics pipeline.
-	AntiAliasingGraphicsPipeline _AntiAliasingGraphicsPipeline;
+	//The compositing graphics pipeline.
+	CompositingGraphicsPipeline _CompositingGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

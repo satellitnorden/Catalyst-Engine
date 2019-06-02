@@ -56,16 +56,14 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
-	TemporalAccumulationWeightCalculation,
 	FireflyReduction,
 	Denoising,
-	TemporalAccumulation,
-	AttachDetail,
+	Compositing,
 	RadianceIntegration,
 	MotionBlur,
 	PostProcessing,
 	ToneMapping,
-	AntiAliasing,
+	FastApproximateAntiAliasing,
 	TemporalAntiAliasing,
 	UserInterface,
 	Screen,
@@ -212,26 +210,6 @@ enum class RenderTarget : uint8
 	SceneFeatures4,
 
 	/*
-	*	The first temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationColorBuffer1,
-
-	/*
-	*	The first temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationDescriptionBuffer1,
-
-	/*
-	*	The second temporal accumulation color buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationColorBuffer2,
-
-	/*
-	*	The second temporal accumulation description buffer - The temporal accumulation render pass will ping-pong between the different buffers.
-	*/
-	TemporalAccumulationDescriptionBuffer2,
-
-	/*
 	*	Contains an accumulated buffer of all previous color values in the scene.
 	*/
 	PreviousRadiance,
@@ -281,20 +259,18 @@ enum class Sampler : uint8
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
-	AntiAliasingFragment,
-	AttachDetailFragment,
+	CompositingFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 	DenoisingFragment,
+	FastApproximateAntiAliasingFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
-	TemporalAccumulationFragment,
-	TemporalAccumulationWeightCalculationFragment,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,

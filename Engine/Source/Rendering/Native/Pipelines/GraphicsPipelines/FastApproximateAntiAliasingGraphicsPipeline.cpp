@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAccumulationGraphicsPipeline.h>
-
-//Core.
-#include <Core/General/Perceiver.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/FastApproximateAntiAliasingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -13,29 +10,24 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle source1,
-														const RenderTargetHandle source2,
-														const RenderTargetHandle target1,
-														const RenderTargetHandle target2) NOEXCEPT
+void FastApproximateAntiAliasingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(source1, source2);
+	CreateRenderDataTable();
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::TemporalAccumulationFragment);
+	SetFragmentShader(Shader::FastApproximateAntiAliasingFragment);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(target1);
-	AddRenderTarget(target2);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+	SetNumberOfRenderTargets(1);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -69,7 +61,7 @@ void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle 
 /*
 *	Executes this graphics pipeline.
 */
-void TemporalAccumulationGraphicsPipeline::Execute() NOEXCEPT
+void FastApproximateAntiAliasingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -94,14 +86,11 @@ void TemporalAccumulationGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void TemporalAccumulationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void FastApproximateAntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -110,13 +99,9 @@ void TemporalAccumulationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEP
 /*
 *	Creates the render data table.
 */
-void TemporalAccumulationGraphicsPipeline::CreateRenderDataTable(	const RenderTargetHandle source1,
-																	const RenderTargetHandle source2) NOEXCEPT
+void FastApproximateAntiAliasingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source1, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source2, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

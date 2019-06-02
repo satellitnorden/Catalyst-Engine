@@ -8,53 +8,81 @@ class RenderingConfigurationManager final
 
 public:
 
+	//Enumeration covering all anti aliasing modes.
+	enum class AntiAliasingMode : uint8
+	{
+		None,
+		FastApproximate,
+		Temporal,
+		FastApproximateAndTemporal
+	};
+
+	//Enumeration covering all diffuse irradiance modes.
+	enum class DiffuseIrradianceMode : uint8
+	{
+		Simple,
+		RayTraced
+	};
+
+	//Enumeration covering all volumetric lighting modes.
+	enum class VolumetricLightingMode : uint8
+	{
+		None,
+		RayTraced
+	};
+
 	//Singleton declaration.
 	DECLARE_SINGLETON(RenderingConfigurationManager);
 
 	/*
 	*	Default constructor.
 	*/
-	RenderingConfigurationManager() NOEXCEPT { }
+	RenderingConfigurationManager() NOEXCEPT
+	{
+	
+	}
 
 	/*
-	*	Returns the depth of field distance.
+	*	Returns the anti aliasing mode.
 	*/
-	float GetDepthOfFieldDistance() const NOEXCEPT { return _DepthOfFieldDistance; }
+	AntiAliasingMode GetAntiAliasingMode() const NOEXCEPT
+	{
+		return _AntiAliasingMode;
+	}
 
 	/*
-	*	Sets the depth of field distance.
+	*	Sets the anti aliasing mode.
 	*/
-	void SetDepthOfFieldDistanceh(const float newDepthOfFieldDistance) NOEXCEPT { _DepthOfFieldDistance = newDepthOfFieldDistance; }
+	void SetAntiAliasingMode(const AntiAliasingMode newMode) NOEXCEPT
+	{
+		_AntiAliasingMode = newMode;
+	}
 
 	/*
-	*	Returns the saturation strength.
+	*	Returns the diffuse irradiance mode.
 	*/
-	float GetSaturationStrength() const NOEXCEPT { return _SaturationStrength; }
+	DiffuseIrradianceMode GetDiffuseIrradianceMode() const NOEXCEPT
+	{
+		return _DiffuseIrradianceMode;
+	}
 
 	/*
-	*	Sets the saturation strength.
+	*	Returns the volumetric lighting mode.
 	*/
-	void SetSaturationStrength(const float newSaturationStrength) NOEXCEPT { _SaturationStrength = newSaturationStrength; }
-
-	/*
-	*	Returns the volumetric fog density.
-	*/
-	float GetVolumetricFogDensity() const NOEXCEPT { return _VolumetricFogDensity; }
-
-	/*
-	*	Sets the volumetric fog density.
-	*/
-	void SetVolumetricFogDensity(const float newVolumetricFogDensity) NOEXCEPT { _VolumetricFogDensity = newVolumetricFogDensity; }
+	VolumetricLightingMode GetVolumetricLightingMode() const NOEXCEPT
+	{
+		return _VolumetricLightingMode;
+	}
 
 private:
 
-	//The depth of field distance.
-	float _DepthOfFieldDistance{ 1'000.0f };
+	//The anti aliasing mode.
+	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
 
-	//The saturation strength.
-	float _SaturationStrength{ 1.0f };
+	//The diffuse irradiance mode.
+	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
-	//The volumetric fog density.
-	float _VolumetricFogDensity{ 0.0f };
+	//The volumetric lighting mode.
+	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
 
 };

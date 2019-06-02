@@ -9,18 +9,15 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class TemporalAccumulationGraphicsPipeline final : public GraphicsPipeline
+class CompositingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
-	
+
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source1,
-					const RenderTargetHandle source2,
-					const RenderTargetHandle target1,
-					const RenderTargetHandle target2) NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -43,7 +40,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(	const RenderTargetHandle source1,
-								const RenderTargetHandle source2) NOEXCEPT;
+	void CreateRenderDataTable() NOEXCEPT;
 
 };

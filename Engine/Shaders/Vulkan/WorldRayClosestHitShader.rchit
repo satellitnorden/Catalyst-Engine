@@ -100,14 +100,18 @@ void main()
 	//Calculate the random direction.
 	vec3 randomDirection = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
 
-	//Calculate the irradiance.
+	//Calculate the diffuse irradiance.
 	vec3 diffuseIrradiance = vec3(0.0f);
-	vec3 specularIrradiance = vec3(0.0f);
-
+	
 	if (currentRecursionDepth == 0)
 	{
+		if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
 		{
-			//Add the diffuse irradiance.
+			diffuseIrradiance = vec3(0.01f);
+		}
+
+		else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
+		{
 			vec3 randomDiffuseIrradianceDirection = dot(randomDirection, finalVertex.normal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
 
 			rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
@@ -128,40 +132,40 @@ void main()
 
 			diffuseIrradiance = rayPayload.directLighting;
 		}
-
-		{
-			//Add the specular irradiance.
-			vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
-
-			rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
-
-			traceNV(
-					topLevelAccelerationStructure, 		//topLevel
-					gl_RayFlagsOpaqueNV, 				//rayFlags
-					0xff, 								//cullMask
-					0, 									//sbtRecordOffset
-					0, 									//sbtRecordStride
-					0, 									//missIndex
-					hitPosition, 						//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-					specularIrradianceDirection, 	//direction
-					CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-					0 									//payload
-					);
-
-			specularIrradiance = rayPayload.directLighting;
-		}
 	}
 
-	//Calculate volumetric lighting.
-	vec3 volumetricLighting = vec3(0.0f);
+	//Calculate the specular irradiance.
+	vec3 specularIrradiance = vec3(0.0f);
 
-	//Calculate a randomly chosen light.
+	if (currentRecursionDepth == 0)
+	{
+		vec3 specularIrradianceDirection = reflect(gl_WorldRayDirectionNV, finalNormal);
+
+		rayPayload.currentRecursionDepth = currentRecursionDepth + 1;
+
+		traceNV(
+				topLevelAccelerationStructure, 		//topLevel
+				gl_RayFlagsOpaqueNV, 				//rayFlags
+				0xff, 								//cullMask
+				0, 									//sbtRecordOffset
+				0, 									//sbtRecordStride
+				0, 									//missIndex
+				hitPosition, 						//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+				specularIrradianceDirection, 	//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				0 									//payload
+				);
+
+		specularIrradiance = rayPayload.directLighting;
+	}
+
+	//Calculate all lights.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
 
-		vec3 randomLightPosition = light.position + randomDirection * rayPayload.randomVector.w * light.size;
+		vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
@@ -195,35 +199,46 @@ void main()
 												light.color * light.strength) * attenuation * visibility;
 	}
 
+	//Calculate volumetric lighting.
+	vec3 volumetricLighting = vec3(0.0f);
+
 	//Also calculate some volumetric lighting for a randomly chosen light.
 	if (currentRecursionDepth == 0)
 	{
-		Light light = UnpackLight(int(float(numberOfLights) * rayPayload.randomVector.z));
+		if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_NONE)
+		{
+			//Nothing to do here... (:
+		}
 
-		vec3 randomLightPosition = light.position + randomDirection * rayPayload.randomVector.w * light.size;
+		else if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
+		{
+			Light light = UnpackLight(int(float(numberOfLights) * rayPayload.randomVector.z));
 
-		vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector.w);
+			vec3 randomLightPosition = light.position/* + randomDirection * rayPayload.randomVector.w * light.size*/;
 
-		float lengthToLight = length(randomLightPosition - randomPositionAlongRay);
-		vec3 lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
+			vec3 randomPositionAlongRay = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV * fract(rayPayload.randomVector.w);
 
-		visibility = 0.0f;
+			float lengthToLight = length(randomLightPosition - randomPositionAlongRay);
+			vec3 lightDirection = vec3(randomLightPosition - randomPositionAlongRay) / lengthToLight;
 
-		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				1, 																							//missIndex
-				randomPositionAlongRay, 																	//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				lightDirection,																				//direction
-				lengthToLight,																				//Tmax
-				1 																							//payload
-				);
+			visibility = 0.0f;
 
-		volumetricLighting = light.color * light.strength * float(numberOfLights) * VOLUMETRIC_DENSITY * visibility;
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					randomPositionAlongRay, 																	//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			volumetricLighting = light.color * light.strength * float(numberOfLights) * VOLUMETRIC_DENSITY * visibility;
+		}
 	}
 
 	//Write to the ray payload.

@@ -28,7 +28,7 @@ private:
 	StaticArray<DenoisingGraphicsPipeline, 10> _DenoisingGraphicsPipelines;
 
 	//Thevolumetric lighting denoising graphics pipelines.
-	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 4> _VolumetricLightingDenoisingGraphicsPipelines;
+	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 6> _VolumetricLightingDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.

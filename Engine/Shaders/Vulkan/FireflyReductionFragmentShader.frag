@@ -39,7 +39,6 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D diffuseIrradianceTexture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 2) uniform sampler2D temporalAccumulationDescriptionBufferTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 diffuseIrradiance;

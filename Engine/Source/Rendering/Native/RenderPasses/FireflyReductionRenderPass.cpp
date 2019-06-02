@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -69,8 +72,19 @@ void FireflyReductionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	for (FireflyReductionGraphicsPipeline &pipeline : _FireflyReductionGraphicsPipelines)
+	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
 	{
-		pipeline.Execute();
+		for (FireflyReductionGraphicsPipeline &pipeline : _FireflyReductionGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
+	}
+
+	else
+	{
+		for (FireflyReductionGraphicsPipeline &pipeline : _FireflyReductionGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
 	}
 }

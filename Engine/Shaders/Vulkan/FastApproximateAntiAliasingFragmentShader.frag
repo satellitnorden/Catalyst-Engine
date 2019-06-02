@@ -33,7 +33,7 @@ bool ValidCoordinate(vec2 coordinate)
 /*
 *	Applies FXAA.
 */
-vec3 ApplyFXAA(vec3 fragment)
+vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
 {
     //Calculate the anti aliased fragment.
     vec3 antiAliasedFragment = fragment;
@@ -57,7 +57,7 @@ vec3 ApplyFXAA(vec3 fragment)
         float sampleAverage = CalculateAverage(indirectSamples[i]);
 
         //Calculate the weight.
-        float weight = abs(average - sampleAverage) * 0.125f;
+        float weight = abs(average - sampleAverage) * 0.25f;
 
         //Blend in the sample based on the weight.
         antiAliasedFragment += indirectSamples[i] * weight;
@@ -78,7 +78,7 @@ vec3 ApplyFXAA(vec3 fragment)
         float sampleAverage = CalculateAverage(straightSamples[i]);
 
         //Calculate the weight.
-        float weight = abs(average - sampleAverage) * 0.25f;
+        float weight = abs(average - sampleAverage) * 0.5f;
 
         //Blend in the sample based on the weight.
         antiAliasedFragment += straightSamples[i] * weight;
@@ -97,8 +97,12 @@ void main()
     //Sample the scene color.
     vec3 sceneColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
-    //Apply FXAA.
-    sceneColor = ApplyFXAA(sceneColor);
+    //Apply fast approximate anti aliasing.
+    if (antiAliasingMode == ANTI_ALIASING_MODE_FAST_APPROXIMATE
+        || antiAliasingMode == ANTI_ALIASING_MODE_FAST_APPROXIMATE_AND_TEMPORAL)
+    {
+        sceneColor = ApplyFastApproximateAntiAliasing(sceneColor);
+    }
 
     //Write the fragment.
     fragment = vec4(sceneColor, 1.0f);

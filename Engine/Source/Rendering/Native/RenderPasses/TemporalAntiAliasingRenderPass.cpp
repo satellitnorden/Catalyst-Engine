@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/TemporalAntiAliasingRenderPass.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -63,12 +60,6 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 */
 void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 {
-	//Toggle enabled.
-	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadUp == ButtonState::Pressed)
-	{
-		SetEnabled(!IsEnabled());
-	}
-
 	//Execute the current buffer, don't include the rest.
 	for (uint64 i{ 0 }, size{ _TemporalAntiAliasingGraphicsPipelines.Size() }; i < size; ++i)
 	{

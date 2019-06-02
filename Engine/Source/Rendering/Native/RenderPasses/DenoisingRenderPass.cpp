@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -110,6 +113,16 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
+	_VolumetricLightingDenoisingGraphicsPipelines[4].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[5].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
 	//Add all pipelines.
 	for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
 	{
@@ -139,14 +152,36 @@ void DenoisingRenderPass::Execute() NOEXCEPT
 		SetEnabled(!IsEnabled());
 	}
 
-	//Execute all pipelines.
-	for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+	//Execute all diffuse irradiance denoising pipelines.
+	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
 	{
-		pipeline.Execute();
+		for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
 	}
 
-	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
+	else
 	{
-		pipeline.Execute();
+		for (DenoisingGraphicsPipeline &pipeline : _DenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+	}
+
+	if (RenderingConfigurationManager::Instance->GetVolumetricLightingMode() == RenderingConfigurationManager::VolumetricLightingMode::RayTraced)
+	{
+		for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
+	}
+
+	else
+	{
+		for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
 	}
 }

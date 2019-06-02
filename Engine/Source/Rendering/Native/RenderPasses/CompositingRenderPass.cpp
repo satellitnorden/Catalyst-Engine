@@ -1,44 +1,44 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/AntiAliasingRenderPass.h>
+#include <Rendering/Native/RenderPasses/CompositingRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AntiAliasingRenderPass);
+DEFINE_SINGLETON(CompositingRenderPass);
 
 /*
 *	Default constructor.
 */
-AntiAliasingRenderPass::AntiAliasingRenderPass() NOEXCEPT
+CompositingRenderPass::CompositingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::AntiAliasing);
+	SetStage(RenderPassStage::Compositing);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		AntiAliasingRenderPass::Instance->Initialize();
+		CompositingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		AntiAliasingRenderPass::Instance->Execute();
+		CompositingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void AntiAliasingRenderPass::Initialize() NOEXCEPT
+void CompositingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_AntiAliasingGraphicsPipeline);
+	AddPipeline(&_CompositingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_AntiAliasingGraphicsPipeline.Initialize();
+	_CompositingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -50,8 +50,8 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void AntiAliasingRenderPass::Execute() NOEXCEPT
-{
+void CompositingRenderPass::Execute() NOEXCEPT
+{	
 	//Execute all pipelines.
-	_AntiAliasingGraphicsPipeline.Execute();
+	_CompositingGraphicsPipeline.Execute();
 }

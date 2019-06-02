@@ -9,6 +9,7 @@
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
+#include <Managers/RenderingConfigurationManager.h>
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
@@ -279,10 +280,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures3)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneFeatures4)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationColorBuffer1)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationDescriptionBuffer1)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationColorBuffer2)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAccumulationDescriptionBuffer2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::PreviousRadiance)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAntiAliasingBuffer1)]);
@@ -549,7 +546,17 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._ScaledResolution = Vector2<float>(static_cast<float>(GetScaledResolution()._Width), static_cast<float>(GetScaledResolution()._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / _DynamicUniformData._ScaledResolution;
 	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;
-	_DynamicUniformData._CurrentFrameJitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
+
+	if (RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::Temporal
+		|| RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::FastApproximateAndTemporal)
+	{
+		_DynamicUniformData._CurrentFrameJitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
+	}
+
+	else
+	{
+		_DynamicUniformData._CurrentFrameJitter = Vector2<float>(0.0f, 0.0f);
+	}
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
@@ -560,6 +567,10 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._PerceiverRotationVelocity = Vector3<float>::DotProduct(previousPerceiverForwardVector, Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z));
 	_DynamicUniformData._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
 	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
+
+	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());
+	_DynamicUniformData._DiffuseIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode());
+	_DynamicUniformData._VolumetricLightingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetVolumetricLightingMode());
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };

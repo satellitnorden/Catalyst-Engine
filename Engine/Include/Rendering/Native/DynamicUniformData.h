@@ -39,6 +39,11 @@ public:
 	float _PerceiverRotationVelocity;
 	float _TotalTime;
 	float _WindSpeed;
+
+	int32 _AntiAliasingMode;
+	int32 _DiffuseIrradianceMode;
+	int32 _VolumetricLightingMode;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 592, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 604, "Size of dynamic uniform data is wrong!");

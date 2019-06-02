@@ -3,22 +3,18 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class TemporalAccumulationWeightCalculationGraphicsPipeline final : public GraphicsPipeline
+class FastApproximateAntiAliasingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
-	
+
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source,
-					const RenderTargetHandle target) NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -41,6 +37,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(	const RenderTargetHandle source) NOEXCEPT;
+	void CreateRenderDataTable() NOEXCEPT;
 
 };

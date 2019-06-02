@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AttachDetailGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/CompositingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -10,7 +10,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void AttachDetailGraphicsPipeline::Initialize() NOEXCEPT
+void CompositingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -23,7 +23,7 @@ void AttachDetailGraphicsPipeline::Initialize() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AttachDetailFragment);
+	SetFragmentShader(Shader::CompositingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -61,7 +61,7 @@ void AttachDetailGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void AttachDetailGraphicsPipeline::Execute() NOEXCEPT
+void CompositingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -86,7 +86,7 @@ void AttachDetailGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void AttachDetailGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void CompositingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 8> bindings
 	{
@@ -106,7 +106,7 @@ void AttachDetailGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AttachDetailGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void CompositingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 

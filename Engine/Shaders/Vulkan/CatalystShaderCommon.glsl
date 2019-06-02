@@ -7,6 +7,17 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
+#define ANTI_ALIASING_MODE_NONE (0)
+#define ANTI_ALIASING_MODE_FAST_APPROXIMATE (1)
+#define ANTI_ALIASING_MODE_TEMPORAL (2)
+#define ANTI_ALIASING_MODE_FAST_APPROXIMATE_AND_TEMPORAL (3)
+
+#define DIFFUSE_IRRADIANCE_MODE_SIMPLE (0)
+#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+
+#define VOLUMETRIC_LIGHTING_MODE_NONE (0)
+#define VOLUMETRIC_LIGHTING_MODE_RAY_TRACED (1)
+
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (256)
 
 #define EULERS_NUMBER (2.718281f)
@@ -49,7 +60,11 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 584) float totalTime;
     layout (offset = 588) float windSpeed;
 
-    //Total size; 592
+    layout (offset = 592) int antiAliasingMode;
+    layout (offset = 596) int diffuseIrradianceMode;
+    layout (offset = 600) int volumetricLightingMode;
+
+    //Total size; 604
 };
 
 //The global textures.
