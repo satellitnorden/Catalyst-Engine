@@ -2,7 +2,7 @@
 #define CATALYST_LIGHTING_DATA
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_LIGHTS (4)
+#define MAXIMUM_NUMBER_OF_LIGHTS (8)
 
 //Light struct definition.
 struct Light
