@@ -57,7 +57,7 @@ layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
 void main() 
 {
 	//Calculate the screen coordinate.
-	vec2 screenCoordinate = vec2(gl_LaunchIDNV.xy) / vec2(gl_LaunchSizeNV.xy);
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
 	//Accumulate results.
 	vec3 diffuseIrradiance = vec3(0.0f);
