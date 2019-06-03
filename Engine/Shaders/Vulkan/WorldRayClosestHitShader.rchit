@@ -15,7 +15,7 @@
 
 //Constants.
 #define VOLUMETRIC_SAMPLES (1)
-#define VOLUMETRIC_DENSITY (0.001f)
+#define VOLUMETRIC_DENSITY (0.00025f)
 
 //Descriptor set data.
 layout (set = 1, binding = 9) uniform accelerationStructureNV topLevelAccelerationStructure;
