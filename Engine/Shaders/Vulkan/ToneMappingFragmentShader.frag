@@ -6,7 +6,6 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystToneMappingUtilities.glsl"
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -21,19 +20,13 @@ layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 layout (location = 0) out vec4 fragment;
 
 /*
-*   Applies HDR .
+*   Applies tone mapping.
 */
-vec3 ApplyHDR(vec3 fragment)
+vec3 ApplyToneMapping(vec3 fragment)
 {
-    return ToneMap(fragment);
-}
+    vec3 x = max(vec3(0.0f), fragment - 0.004f);
 
-/*
-*   Applies gamma correction.
-*/
-vec3 ApplyGammaCorrection(vec3 fragment)
-{
-    return pow(fragment, vec3(1.0f / 2.2f));
+    return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
 }
 
 void main()
@@ -41,11 +34,8 @@ void main()
     //Sample the scene texture.
     vec3 sceneTextureColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
-    //Apply HDR.
-    sceneTextureColor = ApplyHDR(sceneTextureColor);
-
-    //Apply gamma correction.
-    sceneTextureColor = ApplyGammaCorrection(sceneTextureColor);
+    //Apply tone mapping.
+    sceneTextureColor = ApplyToneMapping(sceneTextureColor);
 
     //Write the fragment
     fragment = vec4(sceneTextureColor, 1.0f);

@@ -9,30 +9,6 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
-//Constants.
-#define SAMPLES (1)
-ivec2 SAMPLE_OFFSETS[16] = ivec2[]
-(
-	ivec2(0, 0),
-	ivec2(1, 0),
-	ivec2(1, 1),
-	ivec2(0, 1),
-
-	ivec2(2, 0),
-	ivec2(2, 1),
-	ivec2(2, 2),
-	ivec2(1, 2),
-	ivec2(0, 2),
-
-	ivec2(3, 0),
-	ivec2(3, 1),
-	ivec2(3, 2),
-	ivec2(3, 3),
-	ivec2(2, 3),
-	ivec2(1, 3),
-	ivec2(0, 3)
-);
-
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
 layout (set = 1, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
@@ -59,72 +35,39 @@ void main()
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
-	//Accumulate results.
-	vec3 diffuseIrradiance = vec3(0.0f);
-	vec3 specularIrradiance = vec3(0.0f);
-	vec3 directLighting = vec3(0.0f);
-	vec3 volumetricLighting = vec3(0.0f);
-	vec3 albedo = vec3(0.0f);
-	vec3 geometryNormal = vec3(0.0f);
-	vec3 shadingNormal = vec3(0.0f);
-	float depth = 0.0f;
-	int materialProperties = 0;
-	float roughness = 0.0f;
-	float metallic = 0.0f;
-	float ambientOcclusion = 0.0f;
-	float luminance = 0.0f;
+	//Retrieve the random vector.
+	rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
 
-	for (int i = 0; i < SAMPLES; ++i)
-	{
-		//Retrieve the random vector.
-		rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x + SAMPLE_OFFSETS[i].x) & 63, (gl_LaunchIDNV.y + noiseOffset.y + SAMPLE_OFFSETS[i].y) & 63) / vec2(64.0f, 64.0f));
+	//Jitter the screen coordinate a bit to get some anti-aliasing.
+	vec2 jitteredScreenCoordinate = screenCoordinate + currentFrameJitter;
 
-		//Jitter the screen coordinate a bit to get some anti-aliasing.
-		vec2 jitteredScreenCoordinate = screenCoordinate + currentFrameJitter;
+	//Inidicate that this is the top recursion level.
+	rayPayload.currentRecursionDepth = 0;
 
-		//Inidicate that this is the top recursion level.
-		rayPayload.currentRecursionDepth = 0;
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection(jitteredScreenCoordinate);
 
-		//Generate the ray direction.
-		vec3 rayDirection = CalculateRayDirection(jitteredScreenCoordinate);
-
-		traceNV(
-				topLevelAccelerationStructure, 	//topLevel
-				gl_RayFlagsOpaqueNV, 			//rayFlags
-				0xff, 							//cullMask
-				0, 								//sbtRecordOffset
-				0, 								//sbtRecordStride
-				0, 								//missIndex
-				perceiverWorldPosition, 		//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-				rayDirection, 					//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-				0 								//payload
-				);
-
-		//Accumulate the results.
-		diffuseIrradiance += rayPayload.diffuseIrradiance / SAMPLES;
-		specularIrradiance += rayPayload.specularIrradiance / SAMPLES;
-		directLighting += rayPayload.directLighting / SAMPLES;
-		volumetricLighting += rayPayload.volumetricLighting / SAMPLES;
-		albedo += rayPayload.albedo / SAMPLES;
-		geometryNormal += rayPayload.geometryNormal / SAMPLES;
-		shadingNormal += rayPayload.shadingNormal / SAMPLES;
-		depth += rayPayload.depth / SAMPLES;
-		materialProperties += rayPayload.materialProperties / SAMPLES;
-		roughness += rayPayload.roughness / SAMPLES;
-		metallic += rayPayload.metallic / SAMPLES;
-		ambientOcclusion += rayPayload.ambientOcclusion / SAMPLES;
-		luminance += rayPayload.luminance / SAMPLES;
-	}
+	traceNV(
+			topLevelAccelerationStructure, 	//topLevel
+			gl_RayFlagsOpaqueNV, 			//rayFlags
+			0xff, 							//cullMask
+			0, 								//sbtRecordOffset
+			0, 								//sbtRecordStride
+			0, 								//missIndex
+			perceiverWorldPosition, 		//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
+			rayDirection, 					//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
+			0 								//payload
+			);
 
 	//Write to the images.
-	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
-	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
-	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
-	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
-    imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
-    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(geometryNormal, depth));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(shadingNormal, intBitsToFloat(materialProperties)));
-    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
+	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.diffuseIrradiance, 1.0f));
+	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.specularIrradiance, 1.0f));
+	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.directLighting, 1.0f));
+	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.volumetricLighting, 1.0f));
+    imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
+    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.geometryNormal, rayPayload.depth));
+    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.shadingNormal, intBitsToFloat(rayPayload.materialProperties)));
+    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.luminance));
 }
