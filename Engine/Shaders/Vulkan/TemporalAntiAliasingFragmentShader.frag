@@ -108,7 +108,7 @@ void main()
 		float previousSampleWeight = 1.0f;
 
 		previousSampleWeight *= float(ValidCoordinate(previousScreenCoordinate));
-		previousSampleWeight *= pow(1.0f - min(max(max(minimumLuminance - previousFrameLuminance, 0.0f), max(previousFrameLuminance - maximumLuminance, 0.0f)), 1.0f), 4.0f);
+		previousSampleWeight *= pow(1.0f - min(max(max(minimumLuminance - previousFrameLuminance, 0.0f), max(previousFrameLuminance - maximumLuminance, 0.0f)), 1.0f), 8.0f);
 
 	    //Blend the previous and the current frame.
 	    vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, constrainedPreviousFrameSample, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previousSampleWeight);

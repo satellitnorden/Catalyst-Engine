@@ -212,6 +212,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderOverrideRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPassManager.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h" />
@@ -384,6 +386,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderOverrideGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
@@ -401,6 +404,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RadianceIntegrationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderOverrideRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />

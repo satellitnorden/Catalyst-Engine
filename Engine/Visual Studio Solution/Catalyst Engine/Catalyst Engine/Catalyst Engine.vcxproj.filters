@@ -1179,6 +1179,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1485,6 +1491,12 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>

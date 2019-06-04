@@ -54,6 +54,9 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffer);
 	}
 
+	//Write the index count.
+	model->_IndexCount = static_cast<uint32>(data->_Indices.Size());
+
 	//Create the bottom level acceleration structure.
 	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_VertexBuffer,
 																		static_cast<uint32>(data->_Vertices.Size()),

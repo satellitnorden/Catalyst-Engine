@@ -52,6 +52,7 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class RenderPassStage : uint8
 {
+	SceneFeatures,
 	WorldRayTracing,
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
@@ -271,6 +272,8 @@ enum class Shader : uint8
 	PassthroughFragment,
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
+	SceneFeaturesFragment,
+	SceneFeaturesVertex,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,

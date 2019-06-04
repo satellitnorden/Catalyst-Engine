@@ -460,7 +460,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		//Initialize the dynamic uniform data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit)
 		};
 

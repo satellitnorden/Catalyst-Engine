@@ -23,6 +23,9 @@ public:
 	//The framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
 
+	//Denotes if this pipeline should clear.
+	bool _ShouldClear;
+
 	//The extent.
 	VkExtent2D _Extent;
 

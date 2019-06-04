@@ -126,10 +126,23 @@ namespace VulkanRenderingSystemLogic
 					//Cache the Vulkan graphics pipeline data.
 					const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
-					currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelineData->_RenderPass->Get(),
-																		pipelineData->_FrameBuffers[pipelineData->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-																		pipelineData->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipelineData->_Extent,
-																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+					if (pipelineData->_ShouldClear)
+					{
+						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(1.0f, 0.0f, 0.0f, 1.0f),
+																					0.0f,
+																					pipelineData->_RenderPass->Get(),
+																					pipelineData->_FrameBuffers[pipelineData->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+																					pipelineData->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipelineData->_Extent,
+																					VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, pipelineData->_NumberOfAttachments);
+					}
+
+					else
+					{
+						currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelineData->_RenderPass->Get(),
+																			pipelineData->_FrameBuffers[pipelineData->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+																			pipelineData->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipelineData->_Extent,
+																			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+					}
 				}
 
 				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
@@ -217,37 +230,55 @@ namespace VulkanRenderingSystemLogic
 				}
 			}
 
+			//Cache the depth buffer.
+			VulkanDepthBuffer *const RESTRICT depthBuffer{ static_cast<VulkanDepthBuffer *const RESTRICT>(pipeline->GetDepthBuffer()) };
+
 			//Create the attachment descriptions.
 			DynamicArray<VkAttachmentDescription> attachmentDescriptions;
-			attachmentDescriptions.Reserve(uniqueAttachments.Size());
+			attachmentDescriptions.Reserve(uniqueAttachments.Size() + (depthBuffer ? 1 : 0));
 
-			DynamicArray<VkAttachmentReference> attachmentReferences;
-			attachmentReferences.Reserve(uniqueAttachments.Size());
+			DynamicArray<VkAttachmentReference> colorAttachmentReferences;
+			colorAttachmentReferences.Reserve(uniqueAttachments.Size());
+
+			VkAttachmentReference depthStencilAttachmentReference;
 
 			uint32 counter{ 0 };
+
+			if (depthBuffer)
+			{
+				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
+																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																								VK_ATTACHMENT_LOAD_OP_CLEAR,
+																								VK_ATTACHMENT_STORE_OP_STORE,
+																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+
+				depthStencilAttachmentReference = VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+			}
 
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
 				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
-																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								depthBuffer ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
 																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
 																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
 
-				attachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
+				colorAttachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
 			}
 
 			parameters._AttachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
 			parameters._AttachmentDescriptions = attachmentDescriptions.Data();
 
 			//Create the subpass descriptions.
-			VkSubpassDescription subpassDescription{ VulkanUtilities::CreateSubpassDescription(0,
+			VkSubpassDescription subpassDescription{ VulkanUtilities::CreateSubpassDescription(	0,
 																								nullptr,
-																								static_cast<uint32>(attachmentReferences.Size()),
-																								attachmentReferences.Data(),
-																								nullptr,
+																								static_cast<uint32>(colorAttachmentReferences.Size()),
+																								colorAttachmentReferences.Data(),
+																								depthBuffer ? &depthStencilAttachmentReference : nullptr,
 																								0,
 																								nullptr) };
 
@@ -280,8 +311,9 @@ namespace VulkanRenderingSystemLogic
 					data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				}
 
+				data->_ShouldClear = false;
 				data->_Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-				data->_NumberOfAttachments = 1;
+				data->_NumberOfAttachments = static_cast<uint32>(1);
 				data->_RenderToScreeen = true;
 			}
 
@@ -292,7 +324,12 @@ namespace VulkanRenderingSystemLogic
 				framebufferParameters._RenderPass = data->_RenderPass->Get();
 
 				DynamicArray<VkImageView> attachments;
-				attachments.Reserve(uniqueAttachments.Size());
+				attachments.Reserve(uniqueAttachments.Size() + (depthBuffer ? 1 : 0));
+
+				if (depthBuffer)
+				{
+					attachments.EmplaceFast(depthBuffer->GetImageView());
+				}
 
 				for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 				{
@@ -305,8 +342,9 @@ namespace VulkanRenderingSystemLogic
 
 				data->_FrameBuffers.Reserve(1);
 				data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+				data->_ShouldClear = depthBuffer ? true : false;
 				data->_Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
-				data->_NumberOfAttachments = 1;
+				data->_NumberOfAttachments = static_cast<uint32>(attachments.Size());
 				data->_RenderToScreeen = false;
 			}
 		}
@@ -609,6 +647,26 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::RadianceIntegrationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the fragment shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the vertex shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
 
 		{
