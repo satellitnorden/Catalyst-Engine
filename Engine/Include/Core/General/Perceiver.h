@@ -163,6 +163,16 @@ public:
 	}
 
 	/*
+	*	Sets the jitter of the projection matrix.
+	*/
+	void SetProjectionMatrixJitter(const Vector2<float> &newProjectionMatrixJitter) NOEXCEPT
+	{
+		_ProjectionMatrixJitter = newProjectionMatrixJitter;
+
+		_ProjectionMatrixDirty = true;
+	}
+
+	/*
 	*	Returns the projection matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
@@ -253,6 +263,9 @@ private:
 
 	//The far plane.
 	float _FarPlane{ 196'608.0f };
+
+	//The projection matrix jitter.
+	Vector2<float> _ProjectionMatrixJitter{ 0.0f, 0.0f };
 
 	//Denotes whether or not the projection matrix is dirty.
 	bool _ProjectionMatrixDirty{ true };

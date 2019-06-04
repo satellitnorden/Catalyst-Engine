@@ -528,6 +528,22 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	//Store the previous perceiver forward vector.
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
 
+	//Jitter the projection matrix a bit.
+	Vector2<float> currentFrameJitter;
+
+	if (RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::Temporal
+		|| RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::FastApproximateAndTemporal)
+	{
+		currentFrameJitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
+	}
+
+	else
+	{
+		currentFrameJitter = Vector2<float>(0.0f, 0.0f);
+	}
+
+	Perceiver::Instance->SetProjectionMatrixJitter(currentFrameJitter);
+
 	//Update matrices.
 	_DynamicUniformData._ViewMatrixMinusOne = _DynamicUniformData._ViewMatrix;
 	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
@@ -546,17 +562,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._ScaledResolution = Vector2<float>(static_cast<float>(GetScaledResolution()._Width), static_cast<float>(GetScaledResolution()._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / _DynamicUniformData._ScaledResolution;
 	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;
-
-	if (RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::Temporal
-		|| RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::FastApproximateAndTemporal)
-	{
-		_DynamicUniformData._CurrentFrameJitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
-	}
-
-	else
-	{
-		_DynamicUniformData._CurrentFrameJitter = Vector2<float>(0.0f, 0.0f);
-	}
+	_DynamicUniformData._CurrentFrameJitter = currentFrameJitter;
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;

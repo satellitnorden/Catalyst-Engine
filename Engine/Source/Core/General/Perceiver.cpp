@@ -36,6 +36,10 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 	//Update the projection matrix.
 	_ProjectionMatrix = Matrix4::ReversePerspective(_FieldOfView, static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height), _NearPlane, _FarPlane);
 
+	//Apply the jitter.
+	_ProjectionMatrix._Matrix[2]._X += _ProjectionMatrixJitter._X;
+	_ProjectionMatrix._Matrix[2]._Y += _ProjectionMatrixJitter._Y;
+
 	//Update the inverse projection matrix.
 	_InverseProjectionMatrix = _ProjectionMatrix;
 	_InverseProjectionMatrix.Inverse();
