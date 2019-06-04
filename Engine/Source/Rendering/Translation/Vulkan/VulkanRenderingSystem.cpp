@@ -131,8 +131,8 @@ namespace VulkanRenderingSystemLogic
 						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(1.0f, 0.0f, 0.0f, 1.0f),
 																					0.0f,
 																					pipelineData->_RenderPass->Get(),
-																					pipelineData->_FrameBuffers[pipelineData->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
-																					pipelineData->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipelineData->_Extent,
+																					pipelineData->_FrameBuffers[0]->Get(),
+																					pipelineData->_Extent,
 																					VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, pipelineData->_NumberOfAttachments);
 					}
 
@@ -247,10 +247,10 @@ namespace VulkanRenderingSystemLogic
 			if (depthBuffer)
 			{
 				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
-																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
 																								VK_ATTACHMENT_LOAD_OP_CLEAR,
 																								VK_ATTACHMENT_STORE_OP_STORE,
+																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
 																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 
