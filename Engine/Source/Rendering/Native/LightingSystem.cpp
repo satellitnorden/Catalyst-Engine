@@ -92,7 +92,7 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 	{
 		StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::RayClosestHit)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
 		};
 
 		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

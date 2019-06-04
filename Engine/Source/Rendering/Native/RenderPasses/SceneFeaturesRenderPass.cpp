@@ -52,14 +52,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 */
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
-	//Actually... Don't. (:
-	if (true)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Execute all pipelines.
 	_SceneFeaturesGraphicsPipeline.Execute();
 }

@@ -6,8 +6,13 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystPackingUtilities.glsl"
+#include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
+
+//Constants.
+#define VOLUMETRIC_DENSITY (0.0005f)
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
@@ -20,6 +25,7 @@ layout (set = 1, binding = 6, rgba32f) uniform image2D sceneFeatures3Image;
 layout (set = 1, binding = 7, rgba8) uniform image2D sceneFeatures4Image;
 layout (set = 1, binding = 8) uniform sampler2D noiseImage;
 layout (set = 1, binding = 9) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 10) uniform samplerCube environmentTexture;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -29,42 +35,190 @@ layout (push_constant) uniform PushConstantData
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
+layout(location = 1) rayPayloadNV float visibility;
 
 void main() 
 {
+	//Load the scene features.
+	vec4 sceneFeatures1 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures3 = imageLoad(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures4 = imageLoad(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy));
+
+	//Retrieve all properties.
+	vec3 albedo = sceneFeatures1.rgb;
+	vec3 geometryNormal = sceneFeatures2.xyz;
+	float hitDistance = sceneFeatures2.w;
+	vec3 shadingNormal = sceneFeatures3.xyz;
+	int materialProperties = floatBitsToInt(sceneFeatures3.w);
+	float roughness = sceneFeatures4.x;
+	float metallic = sceneFeatures4.y;
+	float ambientOcclusion = sceneFeatures4.z;
+	float luminance = sceneFeatures4.w;
+
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
-
-	//Retrieve the random vector.
-	rayPayload.randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
-
-	//Inidicate that this is the top recursion level.
-	rayPayload.currentRecursionDepth = 0;
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
 
+	//Calculate the hit position.
+	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.0001f;
+
+	//Retrieve the random vector.
+	vec4 randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
+
+	//Calculate the random direction.
+	vec3 randomDirection = normalize(randomVector.xyz * 2.0f - 1.0f);
+
+	//Calculate the diffuse irradiance.
+	vec3 diffuseIrradiance = vec3(0.0f);
+
+	if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
+	{
+		diffuseIrradiance = vec3(0.025f);
+	}
+
+	else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
+	{
+		vec3 randomDiffuseIrradianceDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 		//topLevel
+				gl_RayFlagsOpaqueNV, 				//rayFlags
+				0xff, 								//cullMask
+				0, 									//sbtRecordOffset
+				0, 									//sbtRecordStride
+				0, 									//missIndex
+				hitPosition, 						//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+				randomDiffuseIrradianceDirection, 	//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				0 									//payload
+				);
+
+		diffuseIrradiance = rayPayload.directLighting;
+	}
+
+	//Calculate the speculare irradiance.
+	vec3 specularIrradiance = vec3(0.0f);
+
+	vec3 specularIrradianceDirection = reflect(rayDirection, shadingNormal);
+
 	traceNV(
-			topLevelAccelerationStructure, 	//topLevel
-			gl_RayFlagsOpaqueNV, 			//rayFlags
-			0xff, 							//cullMask
-			0, 								//sbtRecordOffset
-			0, 								//sbtRecordStride
-			0, 								//missIndex
-			perceiverWorldPosition, 		//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, //Tmin
-			rayDirection, 					//direction
-			CATALYST_RAY_TRACING_T_MAXIMUM, //Tmax
-			0 								//payload
+			topLevelAccelerationStructure, 		//topLevel
+			gl_RayFlagsOpaqueNV, 				//rayFlags
+			0xff, 								//cullMask
+			0, 									//sbtRecordOffset
+			0, 									//sbtRecordStride
+			0, 									//missIndex
+			hitPosition, 						//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+			specularIrradianceDirection, 	//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+			0 									//payload
 			);
 
+	specularIrradiance = rayPayload.directLighting;
+
+	//Calculate the highlight weight of this material and modify the material properties based on that.
+	float highlightWeight = max(CalculateHighlightWeight(rayDirection, shadingNormal, materialProperties), 0.0f);
+
+	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
+	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
+
+	//If this is a "translucent" material, modify some properties to make it appear that way.
+	if ((materialProperties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
+	{
+		albedo = texture(environmentTexture, refract(rayDirection, shadingNormal, 0.5f)).rgb;
+		roughness = 0.0f;
+		metallic = 1.0f;
+		ambientOcclusion = 1.0f;
+		luminance = luminance + 1.0f;
+	}
+
+	//Calculate the direct lighting.
+	vec3 directLighting = vec3(0.0f);
+
+	//Add the luminance lighting.
+	directLighting += albedo * luminance;
+
+	//Calculate all lights.
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		float lengthToLight = length(light.position - hitPosition);
+		vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
+
+		//Calculate the attenuation.
+		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+		//Determine the visibility.
+		visibility = 0.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				1, 																							//missIndex
+				hitPosition, 																				//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
+
+		directLighting += CalculateDirectLight(	-rayDirection,
+												lightDirection,
+												albedo,
+												shadingNormal,
+												roughness,
+												metallic,
+												light.color * light.strength) * attenuation * visibility;
+	}
+
+	//Calculate the volumetric lighting.
+	vec3 volumetricLighting = vec3(0.0f);
+
+	if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_NONE)
+	{
+		//Nothing to do here... (:
+	}
+
+	else if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
+	{
+		Light light = UnpackLight(int(float(numberOfLights) * randomVector.z));
+
+		vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.w);
+
+		float lengthToLight = length(light.position - randomPositionAlongRay);
+		vec3 lightDirection = vec3(light.position - randomPositionAlongRay) / lengthToLight;
+
+		visibility = 0.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				1, 																							//missIndex
+				randomPositionAlongRay, 																	//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
+
+		volumetricLighting = light.color * light.strength * float(numberOfLights) * VOLUMETRIC_DENSITY * visibility;
+	}
+
 	//Write to the images.
-	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.diffuseIrradiance, 1.0f));
-	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.specularIrradiance, 1.0f));
-	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.directLighting, 1.0f));
-	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.volumetricLighting, 1.0f));
-    imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
-    imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.geometryNormal, rayPayload.depth));
-    imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.shadingNormal, intBitsToFloat(rayPayload.materialProperties)));
-    imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.luminance));
+	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
+	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
+	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
+	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
 }

@@ -10,22 +10,7 @@
 */
 struct PrimaryRayPayload
 {
-	vec4 randomVector;
-	int currentRecursionDepth;
-
-	vec3 diffuseIrradiance;
-	vec3 specularIrradiance;
 	vec3 directLighting;
-	vec3 volumetricLighting;
-	vec3 albedo;
-	vec3 geometryNormal;
-	vec3 shadingNormal;
-	float depth;
-	int materialProperties;
-	float roughness;
-	float metallic;
-	float ambientOcclusion;
-	float luminance;
 };
 
 /*

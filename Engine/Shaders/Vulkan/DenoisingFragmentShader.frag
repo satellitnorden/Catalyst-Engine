@@ -6,7 +6,6 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 

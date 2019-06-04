@@ -32,7 +32,7 @@ layout (location = 3) out vec4 sceneFeatures4;
 void main()
 {
     //Sample the albedo.
-   vec3  albedo = texture(globalTextures[albedoTextureIndex], fragmentTextureCoordinate).rgb;
+   vec3 albedo = texture(globalTextures[albedoTextureIndex], fragmentTextureCoordinate).rgb;
 
    //Sample the normal map.
    vec3 normalMap = texture(globalTextures[normalMapTextureIndex], fragmentTextureCoordinate).xyz;
@@ -48,8 +48,8 @@ void main()
     shadingNormal = normalize(shadingNormal);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(albedo, 1.0f);
+    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 1.0f);
     sceneFeatures2 = vec4(fragmentTangentSpaceMatrix[2], length(fragmentWorldPosition - perceiverWorldPosition));
-    sceneFeatures3 = vec4(shadingNormal, materialPropertyFlags);
+    sceneFeatures3 = vec4(shadingNormal, intBitsToFloat(materialPropertyFlags));
     sceneFeatures4 = materialProperties;
 }
