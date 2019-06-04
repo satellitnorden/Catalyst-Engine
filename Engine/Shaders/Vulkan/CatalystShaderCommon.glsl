@@ -15,6 +15,12 @@
 #define DIFFUSE_IRRADIANCE_MODE_SIMPLE (0)
 #define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
 
+#define SPECULAR_IRRADIANCE_MODE_NONE (0)
+#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (1)
+
+#define SHADOWS_MODE_NONE (0)
+#define SHADOWS_MODE_RAY_TRACED (1)
+
 #define VOLUMETRIC_LIGHTING_MODE_NONE (0)
 #define VOLUMETRIC_LIGHTING_MODE_RAY_TRACED (1)
 
@@ -62,9 +68,11 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 
     layout (offset = 592) int antiAliasingMode;
     layout (offset = 596) int diffuseIrradianceMode;
-    layout (offset = 600) int volumetricLightingMode;
+    layout (offset = 600) int specularIrradianceMode;
+    layout (offset = 604) int shadowsMode;
+    layout (offset = 608) int volumetricLightingMode;
 
-    //Total size; 604
+    //Total size; 612
 };
 
 //The global textures.

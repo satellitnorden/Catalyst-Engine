@@ -24,6 +24,20 @@ public:
 		RayTraced
 	};
 
+	//Enumeration covering all specular irradiance modes.
+	enum class SpecularIrradianceMode : uint8
+	{
+		None,
+		RayTraced
+	};
+
+	//Enumeration covering all shadows modes.
+	enum class ShadowsMode : uint8
+	{
+		None,
+		RayTraced
+	};
+
 	//Enumeration covering all volumetric lighting modes.
 	enum class VolumetricLightingMode : uint8
 	{
@@ -67,6 +81,22 @@ public:
 	}
 
 	/*
+	*	Returns the specular irradiance mode.
+	*/
+	SpecularIrradianceMode GetSpecularIrradianceMode() const NOEXCEPT
+	{
+		return _SpecularIrradianceMode;
+	}
+
+	/*
+	*	Returns the shadows mode.
+	*/
+	ShadowsMode GetShadowsMode() const NOEXCEPT
+	{
+		return _ShadowsMode;
+	}
+
+	/*
 	*	Returns the volumetric lighting mode.
 	*/
 	VolumetricLightingMode GetVolumetricLightingMode() const NOEXCEPT
@@ -81,6 +111,12 @@ private:
 
 	//The diffuse irradiance mode.
 	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
+
+	//The specular irradiance mode.
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };
+
+	//The shadows mode.
+	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The volumetric lighting mode.
 	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };

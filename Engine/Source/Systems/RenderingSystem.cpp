@@ -576,6 +576,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 
 	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());
 	_DynamicUniformData._DiffuseIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode());
+	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
+	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
 	_DynamicUniformData._VolumetricLightingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetVolumetricLightingMode());
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };

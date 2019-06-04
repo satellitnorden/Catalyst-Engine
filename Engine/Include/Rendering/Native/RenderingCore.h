@@ -263,8 +263,6 @@ enum class Shader : uint8
 	CompositingFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
-	DebugScreenBoxFragment,
-	DebugScreenBoxVertex,
 	DenoisingFragment,
 	FastApproximateAntiAliasingFragment,
 	FireflyReductionFragment,

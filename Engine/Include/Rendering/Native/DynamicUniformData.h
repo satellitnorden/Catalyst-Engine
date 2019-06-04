@@ -42,8 +42,10 @@ public:
 
 	int32 _AntiAliasingMode;
 	int32 _DiffuseIrradianceMode;
+	int32 _SpecularIrradianceMode;
+	int32 _ShadowsMode;
 	int32 _VolumetricLightingMode;
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 604, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 612, "Size of dynamic uniform data is wrong!");
