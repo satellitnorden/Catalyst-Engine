@@ -20,17 +20,6 @@ layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 layout (location = 0) out vec4 fragment;
 
 /*
-*   Returns if a coordinate is valid.
-*/
-bool ValidCoordinate(vec2 coordinate)
-{
-    return  coordinate.x >= 0.0f
-            && coordinate.x < 1.0f
-            && coordinate.y >= 0.0f
-            && coordinate.y < 1.0f;
-}
-
-/*
 *	Applies FXAA.
 */
 vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)

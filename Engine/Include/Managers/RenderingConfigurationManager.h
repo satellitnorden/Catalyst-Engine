@@ -28,6 +28,7 @@ public:
 	enum class SpecularIrradianceMode : uint8
 	{
 		None,
+		ScreenSpace,
 		RayTraced
 	};
 

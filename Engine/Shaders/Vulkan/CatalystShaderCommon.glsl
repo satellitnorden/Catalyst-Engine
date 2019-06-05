@@ -16,7 +16,8 @@
 #define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
 
 #define SPECULAR_IRRADIANCE_MODE_NONE (0)
-#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (1)
+#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
+#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (2)
 
 #define SHADOWS_MODE_NONE (0)
 #define SHADOWS_MODE_RAY_TRACED (1)
@@ -202,6 +203,17 @@ float SmootherStep(float number)
 vec3 SmootherStep(vec3 vector)
 {
     return vec3(SmootherStep(vector.x), SmootherStep(vector.y), SmootherStep(vector.z));
+}
+
+/*
+*   Returns if a coordinate is valid.
+*/
+bool ValidCoordinate(vec2 coordinate)
+{
+    return  coordinate.x >= 0.0f
+            && coordinate.x < 1.0f
+            && coordinate.y >= 0.0f
+            && coordinate.y < 1.0f;
 }
 
 #endif

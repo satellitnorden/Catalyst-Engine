@@ -37,17 +37,6 @@ vec3 Constrain(vec3 history, vec3 minimum, vec3 maximum)
 	return history;
 }
 
-/*
-*	Returns if a coordinate is valid.
-*/
-bool ValidCoordinate(vec2 coordinate)
-{
-	return 	coordinate.x >= 0.0f
-			&& coordinate.x < 1.0f
-			&& coordinate.y >= 0.0f
-			&& coordinate.y < 1.0f;
-}
-
 void main()
 {
 	if (antiAliasingMode == ANTI_ALIASING_MODE_TEMPORAL

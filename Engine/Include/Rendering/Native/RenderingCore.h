@@ -57,6 +57,7 @@ enum class RenderPassStage : uint8
 #if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
 	RenderOverride,
 #endif
+	ScreenSpaceSpecularIrradiance,
 	FireflyReduction,
 	Denoising,
 	Compositing,
@@ -272,6 +273,7 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	SceneFeaturesFragment,
 	SceneFeaturesVertex,
+	ScreenSpaceSpecularIrradianceFragment,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,

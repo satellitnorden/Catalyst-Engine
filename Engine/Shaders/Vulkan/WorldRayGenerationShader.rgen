@@ -103,12 +103,7 @@ void main()
 	//Calculate the speculare irradiance.
 	vec3 specularIrradiance = vec3(0.0f);
 
-	if (specularIrradianceMode == SPECULAR_IRRADIANCE_MODE_NONE)
-	{
-		//Nothing to do. :c
-	}
-
-	else if (specularIrradianceMode == SPECULAR_IRRADIANCE_MODE_RAY_TRACED)
+	if (specularIrradianceMode == SPECULAR_IRRADIANCE_MODE_RAY_TRACED)
 	{
 		vec3 specularIrradianceDirection = reflect(rayDirection, shadingNormal);
 
@@ -199,12 +194,7 @@ void main()
 	//Calculate the volumetric lighting.
 	vec3 volumetricLighting = vec3(0.0f);
 
-	if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_NONE)
-	{
-		//Nothing to do here... (:
-	}
-
-	else if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
+	if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
 	{
 		Light light = UnpackLight(int(float(numberOfLights) * randomVector.z));
 
