@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES (32)
+#define SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES (64)
 #define SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH (0.1f)
 
 //Layout specification.
@@ -19,9 +19,10 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeatures3Texture;
-layout (set = 1, binding = 2) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 0) uniform sampler2D noiseTexture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 3) uniform sampler2D directLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -34,35 +35,33 @@ void main()
 	//Calculate the reflection direction.
 	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), texture(sceneFeatures3Texture, fragmentTextureCoordinate).xyz);
 
-	//Calculate the screen coordinate delta.
-	vec4 nextViewSpacePosition = viewMatrix * vec4(worldPosition + reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH, 1.0f);
-	vec2 nextScreenCoordinate = 0.5f * (nextViewSpacePosition.xy / nextViewSpacePosition.w) + 0.5f;
-
-	vec2 screenCoordinateDelta = nextScreenCoordinate - fragmentTextureCoordinate;
+	//Modify the original world position a bit.
+	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * texture(noiseTexture, gl_FragCoord.xy / 64.0f).x;
 
 	//Calculate the screen space specular irradiance.
 	vec3 screenSpaceSpecularIrradiance = vec3(0.0f);
 
 	for (int i = 0; i < SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES; ++i)
 	{
-		//Calculate the sample coordinate.
-		vec2 sampleCoordinate = fragmentTextureCoordinate + screenCoordinateDelta * (i + 1);
+		//Calculate the expected sample world position.
+		vec3 expectedSampleWorldPosition = worldPosition + reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * (i + 1);
 
-		//Break if the sample coordinate isn't valid.
-		if (!ValidCoordinate(sampleCoordinate))
+		//Calculate the sample screen coordinate.
+		vec4 sampleViewSpacePosition = viewMatrix * vec4(expectedSampleWorldPosition, 1.0f);
+		vec2 sampleScreenCoordinate = 0.5f * (sampleViewSpacePosition.xy / sampleViewSpacePosition.w) + 0.5f;
+
+		//If the sample screen coordinate is outside the screen, just quit, won't find anything after this point.
+		if (!ValidCoordinate(sampleScreenCoordinate))
 		{
 			break;
 		}
 
 		//Sample the scene features at the sample coordinate.
-		vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleCoordinate);
+		vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleScreenCoordinate);
 
 		//Retrieve the sample geometry normal/hit distance.
 		vec3 sampleGeometryNormal = sampleSceneFeatures.xyz;
 		float sampleHitDistance = sampleSceneFeatures.w;
-
-		//Calculate the expected sample world position.
-		vec3 expectedSampleWorldPosition = worldPosition + reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * (i + 1);
 
 		//Calculate the expected sample hit distance.
 		float expectedSampleHitDistance = length(expectedSampleWorldPosition - perceiverWorldPosition);
@@ -70,16 +69,17 @@ void main()
 		//If the sample hit distance is lower than the expected sample hit distance, it's a hit. (:
 		if (sampleHitDistance < expectedSampleHitDistance)
 		{
-			//Test the normal.
-			if (dot(reflectionDirection, sampleGeometryNormal) < 0.0f)
-			{
-				//Calculate the edge fade factor.
-				float edgeFadeFactor = (1.0f - (abs(0.5f - sampleCoordinate.x) * 2.0f)) * (1.0f - (abs(0.5f - sampleCoordinate.y) * 2.0f));
-				edgeFadeFactor = 1.0f - pow(1.0f - edgeFadeFactor, 4.0f);
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. Are the normals aligned?
+			*/
+			float sampleWeight = 1.0f;
 
-				//The specular irradiance at this point is the direct lighting texture at the sample coordinate. (:
-				screenSpaceSpecularIrradiance = texture(directLightingTexture, sampleCoordinate).rgb * edgeFadeFactor;
-			}
+			sampleWeight = float(dot(reflectionDirection, sampleGeometryNormal) < 0.0f);
+
+			//The specular irradiance at this point is the direct lighting texture at the sample screen coordinate. (:
+			screenSpaceSpecularIrradiance = texture(directLightingTexture, sampleScreenCoordinate).rgb * sampleWeight;
 
 			break;
 		}

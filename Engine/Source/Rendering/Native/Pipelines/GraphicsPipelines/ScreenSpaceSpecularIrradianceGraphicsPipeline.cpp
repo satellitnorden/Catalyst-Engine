@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceSpecularIrradianceGraphicsPipeline.h>
 
+//Math.
+#include <Math/Noise/HaltonSequence.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -12,6 +15,9 @@
 */
 void ScreenSpaceSpecularIrradianceGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Create the noise texture.
+	CreateNoiseTexture();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -84,15 +90,39 @@ void ScreenSpaceSpecularIrradianceGraphicsPipeline::Execute() NOEXCEPT
 }
 
 /*
+*	Creates the noise texture.
+*/
+void ScreenSpaceSpecularIrradianceGraphicsPipeline::CreateNoiseTexture() NOEXCEPT
+{
+	//Define constants.
+	constexpr uint8 RESOLUTION{ 64 };
+
+	//Just create it using a Halton sequence. (:
+	Texture2D<byte> texture{ RESOLUTION };
+	uint32 currentIndex{ 0 };
+
+	for (uint8 x{ 0 }; x < RESOLUTION; ++x)
+	{
+		for (uint8 y{ 0 }; y < RESOLUTION; ++y)
+		{
+			texture.At(x, y) = static_cast<byte>(HaltonSequence::Generate(currentIndex++, 3) * 255.0f);
+		}
+	}
+
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(texture), TextureFormat::R8_Byte), &_NoiseTexture);
+}
+
+/*
 *	Creates the render data table layout.
 */
 void ScreenSpaceSpecularIrradianceGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 3> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -104,8 +134,9 @@ void ScreenSpaceSpecularIrradianceGraphicsPipeline::CreateRenderDataTableLayout(
 void ScreenSpaceSpecularIrradianceGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectLighting), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _NoiseTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectLighting), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

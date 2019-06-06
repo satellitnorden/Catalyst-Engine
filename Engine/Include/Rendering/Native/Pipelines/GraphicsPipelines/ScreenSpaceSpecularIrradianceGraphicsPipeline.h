@@ -26,11 +26,19 @@ public:
 
 private:
 
+	//The noise texture.
+	Texture2DHandle _NoiseTexture;
+
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
+
+	/*
+	*	Creates the noise texture.
+	*/
+	void CreateNoiseTexture() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.
