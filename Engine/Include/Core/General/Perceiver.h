@@ -143,6 +143,20 @@ public:
 	}
 
 	/*
+	*	Sets the field of view in radians.
+	*/
+	void SetFieldOfView(const float fieldOfView) NOEXCEPT
+	{
+		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+
+		_FieldOfView = fieldOfView;
+
+		_ProjectionMatrixDirty = true;
+		_PerceiverMatrixDirty = true;
+		_FrustumPlanesDirty = true;
+	}
+
+	/*
 	*	Returns the near plane.
 	*/
 	float GetNearPlane() const NOEXCEPT
@@ -262,7 +276,7 @@ private:
 	float _NearPlane{ 0.1f };
 
 	//The far plane.
-	float _FarPlane{ 196'608.0f };
+	float _FarPlane{ 100.0f };
 
 	//The projection matrix jitter.
 	Vector2<float> _ProjectionMatrixJitter{ 0.0f, 0.0f };
