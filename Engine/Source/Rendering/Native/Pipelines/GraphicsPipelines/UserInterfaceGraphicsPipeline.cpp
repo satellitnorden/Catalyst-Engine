@@ -15,9 +15,9 @@
 #include <UserInterface/TextUserInterfaceElement.h>
 
 /*
-*	Vertex push constant data definition.
+*	User interface vertex push constant data definition.
 */
-class VertexPushConstantData final
+class UserInterfaceVertexPushConstantData final
 {
 
 public:
@@ -31,9 +31,9 @@ public:
 };
 
 /*
-*	Fragment push constant data definition.
+*	User interface fragment push constant data definition.
 */
-class FragmentPushConstantData final
+class UserInterfaceFragmentPushConstantData final
 {
 
 public:
@@ -68,8 +68,8 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -131,19 +131,19 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				const ImageUserInterfaceElement *const RESTRICT typeElement{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
 
 				//Push constants.
-				VertexPushConstantData vertexData;
+				UserInterfaceVertexPushConstantData vertexData;
 
 				vertexData._Minimum = typeElement->_Minimum;
 				vertexData._Maximum = typeElement->_Maximum;
 
-				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
-				FragmentPushConstantData fragmentData;
+				UserInterfaceFragmentPushConstantData fragmentData;
 
 				fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Image);
 				fragmentData._TextureIndex = typeElement->_TextureIndex;
 
-				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
 
 				//Draw!
 				commandBuffer->Draw(this, 4, 1);
@@ -167,7 +167,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					const char character{ typeElement->_Text[i] };
 
 					//Push constants.
-					VertexPushConstantData vertexData;
+					UserInterfaceVertexPushConstantData vertexData;
 
 					vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * SCALE;
 					vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * SCALE;
@@ -175,14 +175,14 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * SCALE;
 					vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * SCALE;
 
-					commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+					commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
-					FragmentPushConstantData fragmentData;
+					UserInterfaceFragmentPushConstantData fragmentData;
 
 					fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Text);
 					fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
 
-					commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+					commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
 
 					//Draw!
 					commandBuffer->Draw(this, 4, 1);
