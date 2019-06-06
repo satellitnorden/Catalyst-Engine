@@ -72,7 +72,7 @@ void main()
 	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current specular irradiance lighting.
-	vec3 currentSpecularIrradiance = mix(currentDiffuseIrradiance, texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 2.0f));
+	vec3 currentSpecularIrradiance = mix(currentDiffuseIrradiance, texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 4.0f));
 
 	//Sample the current direct lighting.
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
