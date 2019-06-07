@@ -60,6 +60,7 @@ enum class RenderPassStage : uint8
 	ScreenSpaceSpecularIrradiance,
 	FireflyReduction,
 	Denoising,
+	TemporalAccumulation,
 	Compositing,
 	RadianceIntegration,
 	MotionBlur,
@@ -212,6 +213,16 @@ enum class RenderTarget : uint8
 	SceneFeatures4,
 
 	/*
+	*	The first diffuse irradiance temporal accumulation buffer.
+	*/
+	DiffuseIrradianceTemporalAccumulationBuffer1,
+
+	/*
+	*	The second diffuse irradiance temporal accumulation buffer.
+	*/
+	DiffuseIrradianceTemporalAccumulationBuffer2,
+
+	/*
 	*	Contains an accumulated buffer of all previous color values in the scene.
 	*/
 	PreviousRadiance,
@@ -272,6 +283,7 @@ enum class Shader : uint8
 	SceneFeaturesFragment,
 	SceneFeaturesVertex,
 	ScreenSpaceSpecularIrradianceFragment,
+	TemporalAccumulationFragment,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,
