@@ -47,6 +47,9 @@ void main()
 	//Sample the previous frame texture.
 	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previousScreenCoordinate);
 
+	//Calculate the expected hit distance.
+	float expectedHitDistance = length(currentWorldPosition - perceiverWorldPositionMinusOne);
+
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
@@ -56,7 +59,7 @@ void main()
 	float previousSampleWeight = 1.0f;
 
 	previousSampleWeight *= float(ValidCoordinate(previousScreenCoordinate));
-	previousSampleWeight *= 1.0f - min(abs(sceneFeatures2TextureSampler.w - previousFrameTextureSampler.w), 1.0f);
+	previousSampleWeight *= pow(1.0f - min(abs(expectedHitDistance - previousFrameTextureSampler.w), 1.0f), 4.0f);
 
 	//Blend the previous and the current frame.
 	vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ACCUMULATION_FEEDBACK_FACTOR * previousSampleWeight);
