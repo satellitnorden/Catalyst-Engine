@@ -42,7 +42,6 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer1),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer2));
 
-
 	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
