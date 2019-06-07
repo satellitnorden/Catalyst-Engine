@@ -196,9 +196,9 @@ void main()
 
 	if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
 	{
-		Light light = UnpackLight(int(float(numberOfLights) * randomVector.z));
+		Light light = UnpackLight(int(float(numberOfLights) * randomVector.x));
 
-		vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.w);
+		vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.y);
 
 		float lengthToLight = length(light.position - randomPositionAlongRay);
 		vec3 lightDirection = vec3(light.position - randomPositionAlongRay) / lengthToLight;
