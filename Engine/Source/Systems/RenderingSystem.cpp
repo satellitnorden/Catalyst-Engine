@@ -295,8 +295,6 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)]);
 	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
 	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
-	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
 	CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat)]);
 }
@@ -458,10 +456,11 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit)
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -478,7 +477,16 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 	{
 		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D, _Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
+			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
+		}
+	}
+
+	//Bind all the samplers to the render data table.
+	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
+	{
+		for (uint32 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
+		{
+			BindSamplerToRenderDataTable(2, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 	}
 }
@@ -601,7 +609,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
 	{
-		BindCombinedImageSamplerToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, _Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
+		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();

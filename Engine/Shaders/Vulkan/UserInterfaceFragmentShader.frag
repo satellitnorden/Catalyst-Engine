@@ -34,7 +34,7 @@ void main()
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			   fragment = texture(globalTextures[textureIndex], fragmentTextureCoordinate);
+			fragment = texture(sampler2D(globalTextures[textureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate);
 
 			break;
 		}
@@ -42,7 +42,7 @@ void main()
 		case USER_INTERFACE_ELEMENT_TYPE_TEXT:
 		{
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), texture(globalTextures[textureIndex], fragmentTextureCoordinate).r);
+			fragment = vec4(vec3(1.0f), texture(sampler2D(globalTextures[textureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).r);
 
 			break;
 		}
@@ -50,7 +50,7 @@ void main()
 		default:
 		{
 			//Write the fragment.
-			fragment = texture(globalTextures[textureIndex], fragmentTextureCoordinate);
+			fragment = texture(sampler2D(globalTextures[textureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate);
 
 			break;
 		}

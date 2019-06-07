@@ -27,6 +27,14 @@
 
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (256)
 
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (0)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX (1)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (2)
+#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (3)
+#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX (4)
+
+#define NUMBER_OF_GLOBAL_SAMPLERS (5)
+
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)
@@ -77,7 +85,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 };
 
 //The global textures.
-layout (set = 0, binding = 1) uniform sampler2D globalTextures[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+layout (set = 0, binding = 1) uniform texture2D globalTextures[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+
+//The global samplers.
+layout (set = 0, binding = 2) uniform sampler globalSamplers[NUMBER_OF_GLOBAL_SAMPLERS];
 
 /*
 *   Defines the bit at the specified index.

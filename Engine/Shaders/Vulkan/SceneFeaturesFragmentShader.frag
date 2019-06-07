@@ -32,13 +32,13 @@ layout (location = 3) out vec4 sceneFeatures4;
 void main()
 {
     //Sample the albedo.
-   vec3 albedo = texture(globalTextures[albedoTextureIndex], fragmentTextureCoordinate).rgb;
+   vec3 albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
 
    //Sample the normal map.
-   vec3 normalMap = texture(globalTextures[normalMapTextureIndex], fragmentTextureCoordinate).xyz;
+   vec3 normalMap = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
 
    //Sample the material properties.
-   vec4 materialProperties = texture(globalTextures[materialPropertiesIndex], fragmentTextureCoordinate);
+   vec4 materialProperties = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
 
    //Calculate the shading normal.
 
