@@ -4,6 +4,9 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
+//Resources.
+#include <Resources/Loading/ResourceLoader.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -93,9 +96,10 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 */
 void ToneMappingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -109,4 +113,5 @@ void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, ResourceLoader::GetTexture2D(HashString("Color_Grading_Lookup_Texture2D"))._Texture2D, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

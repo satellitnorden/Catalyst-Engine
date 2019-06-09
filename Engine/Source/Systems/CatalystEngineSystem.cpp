@@ -8,6 +8,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Resources.
+#include <Resources/Loading/ResourceLoader.h>
+
 //Systems.
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 #include <Systems/DebugRenderingSystem.h>

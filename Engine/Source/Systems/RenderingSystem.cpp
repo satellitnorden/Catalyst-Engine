@@ -25,6 +25,7 @@
 
 //Resources.
 #include <Resources/Creation/ResourceCreator.h>
+#include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
 #include <Systems/PhysicsSystem.h>
@@ -87,6 +88,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
+
+	//Load the engine resource collection. Shouldn't really be here, but works for now.
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\CatalystEngineResourceCollection.crc");
 
 	//Post-initialize the rendering system.
 	PostInitialize();

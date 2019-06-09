@@ -198,8 +198,6 @@ void WorldRayTracingPipeline::CreateNoiseTextures() NOEXCEPT
 #define USE_BLUE_NOISE_TEXTURES true
 
 #if USE_BLUE_NOISE_TEXTURES
-	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\BlueNoiseResourceCollection.crc");
-
 	_NoiseTextures[0] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_0_Texture2D"))._Texture2D;
 	_NoiseTextures[1] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_1_Texture2D"))._Texture2D;
 	_NoiseTextures[2] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_2_Texture2D"))._Texture2D;
