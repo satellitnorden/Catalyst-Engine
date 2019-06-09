@@ -61,12 +61,13 @@ enum class RenderPassStage : uint8
 	Compositing,
 	RadianceIntegration,
 	MotionBlur,
-	PostProcessing,
 	ToneMapping,
 	FastApproximateAntiAliasing,
 	TemporalAntiAliasing,
+	PostProcessing,
 	UserInterface,
 	Screen,
+	
 
 	NumberOfRenderPassStages
 };
