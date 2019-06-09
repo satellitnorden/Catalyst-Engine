@@ -54,9 +54,6 @@ enum class RenderPassStage : uint8
 {
 	SceneFeatures,
 	WorldRayTracing,
-#if defined(CATALYST_ENABLE_RENDER_OVERRIDE)
-	RenderOverride,
-#endif
 	ScreenSpaceSpecularIrradiance,
 	FireflyReduction,
 	Denoising,
