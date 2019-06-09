@@ -12,7 +12,7 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_DENSITY (0.0005f)
+#define VOLUMETRIC_DENSITY (0.00025f)
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;

@@ -9,8 +9,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define POST_PROCESSING_CHROMATIC_ABERRATION_SCALE (0.0015f) //0.00025f step.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.001f) //0.00025f step.
+#define POST_PROCESSING_CHROMATIC_ABERRATION_SCALE (0.00175f) //0.00025f step.
+#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.15f) //0.025f step.
 #define POST_PROCESSING_VIGNETTE_STRENGTH (2.0f)
 
 //Layout specification.
@@ -42,7 +42,7 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
 */
 vec3 ApplyFilmGrain(vec3 fragment)
 {
-	return fragment * mix(vec3(1.0f), vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), 0.125f);
+	return fragment * mix(vec3(1.0f), vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
 }
 
 /*
@@ -51,6 +51,14 @@ vec3 ApplyFilmGrain(vec3 fragment)
 vec3 ApplyVignette(vec3 fragment, float edgeFactor)
 {
 	return mix(vec3(0.0f), fragment, pow(edgeFactor, POST_PROCESSING_VIGNETTE_STRENGTH));
+}
+
+/*
+*	Applies horizontal borders.
+*/
+vec3 ApplyHorizontalBorders(vec3 fragment)
+{
+	return fragment * float(fragmentTextureCoordinate.y >= 0.05f && fragmentTextureCoordinate.y <= 0.95f);
 }
 
 void main()
@@ -68,10 +76,13 @@ void main()
 	postProcessedFragment = ApplyChromaticAberration(postProcessedFragment, edgeFactor);
 
 	//Apply film grain.
-	//postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
+	postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
 
 	//Apply vignette.
 	postProcessedFragment = ApplyVignette(postProcessedFragment, edgeFactor);
+
+	//Apply horizontal borders.
+	postProcessedFragment = ApplyHorizontalBorders(postProcessedFragment);
 
     //Write the fragment.
     fragment = vec4(postProcessedFragment, 1.0f);
