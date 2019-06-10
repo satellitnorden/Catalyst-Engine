@@ -32,29 +32,31 @@
 #endif
 
 /*
-*	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
-*	Allows for a personalized message.
+*	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function)																							\
+	#define CATALYST_BENCHMARK_SECTION_START()																													\
 	{																																							\
 		static uint64 iterations{ 0 };																															\
 		static uint64 averageDuration{ 0 };																														\
-		std::chrono::time_point<std::chrono::steady_clock> timeBeforeFunction{ std::chrono::high_resolution_clock::now() };										\
-		function;																																				\
-		averageDuration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
-		++iterations;																																			\
-		float duration{ static_cast<float>(averageDuration / iterations) / 1'000'000.0f };																		\
-		PRINT_TO_OUTPUT(message << " - " << duration << " milliseconds.");																						\
-	}
+		std::chrono::time_point<std::chrono::steady_clock> timeBeforeFunction{ std::chrono::high_resolution_clock::now() };
 #else
-	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function) function;
+	#define CATALYST_BENCHMARK_SECTION_START()
 #endif
 
 /*
-*	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
+*	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
-#define CATALYST_BENCHMARK_SECTION_AVERAGE(function) CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(#function, function);
+#if defined(CATALYST_CONFIGURATION_DEBUG)
+#define CATALYST_BENCHMARK_SECTION_END(NAME)																													\
+		averageDuration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
+		++iterations;																																			\
+		float duration{ static_cast<float>(averageDuration / iterations) / 1'000'000.0f };																		\
+		PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");																							\
+	}
+#else
+#define CATALYST_BENCHMARK_SECTION_END(NAME)
+#endif
 
 /*
 *	Clears the bit at the specified index.
