@@ -111,15 +111,15 @@ private:
 	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
 
 	//The diffuse irradiance mode.
-	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::RayTraced };
+	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The volumetric lighting mode.
-	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
+	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::None };
 
 };

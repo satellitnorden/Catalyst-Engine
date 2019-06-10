@@ -76,7 +76,7 @@ void main()
 
 	if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
 	{
-		diffuseIrradiance = vec3(0.025f);
+		diffuseIrradiance = vec3(0.05f);
 	}
 
 	else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
