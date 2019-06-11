@@ -153,7 +153,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfaceElementType::Text:
 			{
-				constexpr float SCALE{ 0.0325f };
+				constexpr float SCALE{ 0.03f };
 
 				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
 
