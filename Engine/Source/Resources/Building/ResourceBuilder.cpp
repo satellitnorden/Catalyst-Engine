@@ -152,10 +152,14 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 			//Else, the image data should be resized.
 			else
 			{
-				byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory((freeTypeFace->glyph->bitmap.width >> i) * (freeTypeFace->glyph->bitmap.rows >> i))) };
-				stbir_resize_uint8(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width, freeTypeFace->glyph->bitmap.rows, 0, downsampledData, freeTypeFace->glyph->bitmap.width >> i, freeTypeFace->glyph->bitmap.rows >> i, 0, 4);
+				const uint32 downsampledWidth{ characterDimensions._X / (1 << i) };
+				const uint32 downsampledHeight{ characterDimensions._Y / (1 << i) };
+				const uint64 downsampledSize{ downsampledWidth * downsampledHeight };
 
-				file.Write(downsampledData, (freeTypeFace->glyph->bitmap.width >> i) * (freeTypeFace->glyph->bitmap.rows >> i));
+				byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory(downsampledSize)) };
+				stbir_resize_uint8(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width, freeTypeFace->glyph->bitmap.rows, 0, downsampledData, downsampledWidth, downsampledWidth, 0, 1);
+
+				file.Write(downsampledData, downsampledSize);
 
 				Memory::FreeMemory(downsampledData);
 			}
