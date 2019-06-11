@@ -92,6 +92,25 @@ public:
 	}
 
 	/*
+	*	Constructor taking a dynamic array of Texture2D with 1 channel.
+	*/
+	template <typename Type>
+	TextureDataContainer(const DynamicArray<Texture2D<Type>> &texture) NOEXCEPT
+	{
+		_TextureData.Reserve(texture.Size());
+
+		for (const Texture2D<byte> &mip : texture)
+		{
+			_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(mip.Data()));
+		}
+
+		_TextureWidth = static_cast<uint32>(texture[0].GetWidth());
+		_TextureHeight = static_cast<uint32>(texture[0].GetHeight());
+		_TextureChannels = 1;
+		_TextureTexelSize = sizeof(Type);
+	}
+
+	/*
 	*	Constructor taking a Texture2D with 4 channels.
 	*/
 	template <typename Type>

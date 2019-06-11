@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
@@ -13,6 +14,9 @@ class FontData final
 
 public:
 
+	//The number of mipmap levels.
+	uint8 _MipmapLevels{ 1 };
+
 	//The character descriptions.
 	StaticArray<Font::CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
 
@@ -20,6 +24,6 @@ public:
 	StaticArray<Vector2<uint32>, INT8_MAXIMUM> _CharacterDimensions;
 
 	//The texture data.
-	StaticArray<Texture2D<byte>, INT8_MAXIMUM> _TextureData;
+	StaticArray<DynamicArray<Texture2D<byte>>, INT8_MAXIMUM> _TextureData;
 
 };

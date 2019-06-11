@@ -89,6 +89,9 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 	const HashString resourceID{ parameters._ID };
 	file.Write(&resourceID, sizeof(HashString));
 
+	//Write the number of mipmap levels to the file.
+	file.Write(&parameters._MipmapLevels, sizeof(uint8));
+
 	//Initialize the FreeType library.
 	FT_Library freeTypeLibrary;
 
@@ -107,35 +110,6 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 
 	//Set the maximum font size.
 	FT_Set_Pixel_Sizes(freeTypeFace, 0, parameters._MaximumFontResolution);
-
-	//Determine the minimum and maximum dimensions of all the characters.
-	/*
-	Vector2<uint32> minimum;
-	Vector2<uint32> maximum;
-
-	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
-	{
-		if (FT_Load_Char(freeTypeFace, i, FT_LOAD_RENDER))
-		{
-			ASSERT(false, "Failed to load the FreeType character!");
-		}
-
-		//Write the character description to the file.
-		Font::CharacterDescription characterDescription;
-
-		characterDescription._TextureIndex = UINT32_MAXIMUM;
-		characterDescription._Size._X = freeTypeFace->glyph->bitmap.width;
-		characterDescription._Size._Y = freeTypeFace->glyph->bitmap.rows;
-		characterDescription._Bearing._X = freeTypeFace->glyph->bitmap_left;
-		characterDescription._Bearing._Y = freeTypeFace->glyph->bitmap_top;
-		characterDescription._Advance = freeTypeFace->glyph->advance.x;
-
-		file.Write(&characterDescription, sizeof(Font::CharacterDescription));
-
-		//Write the texture data for this character to the file.
-		file.Write(freeTypeFace->glyph->bitmap.buffer, characterDescription._Size._X * characterDescription._Size._Y);
-	}
-	*/
 
 	//Load all characters.
 	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
@@ -162,7 +136,30 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 		file.Write(&characterDimensions, sizeof(Vector2<float>));
 
 		//Write the texture data for this character to the file.
-		file.Write(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width * freeTypeFace->glyph->bitmap.rows);
+		if (characterDimensions._X == 0 || characterDimensions._Y == 0)
+		{
+			continue;
+		}
+
+		for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
+		{
+			//If this is the first mip level, just copy the data.
+			if (i == 0)
+			{
+				file.Write(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width * freeTypeFace->glyph->bitmap.rows);
+			}
+
+			//Else, the image data should be resized.
+			else
+			{
+				byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory((freeTypeFace->glyph->bitmap.width >> i) * (freeTypeFace->glyph->bitmap.rows >> i))) };
+				stbir_resize_uint8(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width, freeTypeFace->glyph->bitmap.rows, 0, downsampledData, freeTypeFace->glyph->bitmap.width >> i, freeTypeFace->glyph->bitmap.rows >> i, 0, 4);
+
+				file.Write(downsampledData, (freeTypeFace->glyph->bitmap.width >> i) * (freeTypeFace->glyph->bitmap.rows >> i));
+
+				Memory::FreeMemory(downsampledData);
+			}
+		}
 	}
 
 	//Free FreeType's resources.

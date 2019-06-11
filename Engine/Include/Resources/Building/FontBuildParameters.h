@@ -23,4 +23,7 @@ public:
 	//The maximum font resolution.
 	uint32 _MaximumFontResolution{ 0 };
 
+	//The number of mipmap levels.
+	uint8 _MipmapLevels{ 1 };
+
 };

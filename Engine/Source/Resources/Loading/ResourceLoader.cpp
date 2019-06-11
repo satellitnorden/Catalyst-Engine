@@ -106,6 +106,9 @@ void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
+	//Read the number of mipmap levels.
+	file.Read(&data._MipmapLevels, sizeof(uint8));
+
 	//Read all characters.
 	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
 	{
@@ -116,8 +119,13 @@ void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
 		file.Read(&data._CharacterDimensions[i], sizeof(Vector2<float>));
 
 		//Read the texture data.
-		data._TextureData[i].Initialize(data._CharacterDimensions[i]._X, data._CharacterDimensions[i]._Y);
-		file.Read(data._TextureData[i].Data(), data._CharacterDimensions[i]._X * data._CharacterDimensions[i]._Y);
+		data._TextureData[i].UpsizeSlow(data._MipmapLevels);
+
+		for (uint8 j{ 0 }; j < data._MipmapLevels; ++j)
+		{
+			data._TextureData[i][j].Initialize(data._CharacterDimensions[i]._X >> j, data._CharacterDimensions[i]._Y >> j);
+			file.Read(data._TextureData[i][j].Data(), (data._CharacterDimensions[i]._X >> j) * (data._CharacterDimensions[i]._Y >> j));
+		}
 	}
 
 	//Create the font.
