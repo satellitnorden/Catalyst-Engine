@@ -33,22 +33,6 @@ public:
 	}
 
 	/*
-	*	Adds a top level acceleration structure instance.
-	*/
-	void AddTopLevelAccelerationStructureInstance(const Matrix4 &transform, const AccelerationStructureHandle &bottomLevelAccelerationStructure) NOEXCEPT
-	{
-		_TopLevelAccelerationStructureInstances.EmplaceSlow(transform, bottomLevelAccelerationStructure, _TopLevelAccelerationStructureInstances.Size());
-	}
-
-	/*
-	*	Removes a top level acceleration structure instance.
-	*/
-	void RemoveTopLevelAccelerationStructureInstance(const Matrix4 &transform, const AccelerationStructureHandle &bottomLevelAccelerationStructure) NOEXCEPT
-	{
-		_TopLevelAccelerationStructureInstances.EmplaceSlow(transform, bottomLevelAccelerationStructure, _TopLevelAccelerationStructureInstances.Size());
-	}
-
-	/*
 	*	Returns the model data render data table layout.
 	*/
 	FORCE_INLINE RenderDataTableLayoutHandle GetModelDataRenderDataTableLayout() const NOEXCEPT

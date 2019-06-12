@@ -32,13 +32,17 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 
 	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
 	const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
 
 	ASSERT(numberOfStaticModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
 
+	_TopLevelAccelerationStructureInstances.ClearFast();
 	StaticArray<Material, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS> materials;
 
-	for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent)
+	for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent, ++transformComponent)
 	{
+		_TopLevelAccelerationStructureInstances.EmplaceSlow(transformComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
+
 		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
 		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
 
