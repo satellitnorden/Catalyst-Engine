@@ -75,36 +75,23 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::Execute() NOEXCEPT
 {
-	static bool once{ false };
+	//No need to fire rays if there's nothing to fire against.
+	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
 
-	if (!once)
+	if (numberOfStaticModelComponents == 0)
 	{
-		//Create the top level acceleration structure. (:
-		const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
-		const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
+		SetIncludeInRender(false);
 
-		ASSERT(numberOfStaticModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
-
-		if (numberOfStaticModelComponents == 0)
-		{
-			SetIncludeInRender(false);
-
-			return;
-		}
-
-		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
-		instances.Reserve(numberOfStaticModelComponents);
-
-		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent, ++transformComponent)
-		{
-			instances.EmplaceFast(transformComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
-		}
-
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_TopLevelAccelerationStructure);
-
-		once = true;
+		return;
 	}
+
+	//Re-create the top level acceleration structure.
+	if (_TopLevelAccelerationStructure)
+	{
+		RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
+	}
+
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), &_TopLevelAccelerationStructure);
 
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };

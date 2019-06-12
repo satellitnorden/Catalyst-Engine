@@ -37,7 +37,7 @@ private:
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 	//The top level acceleration structure.
-	AccelerationStructureHandle _TopLevelAccelerationStructure;
+	AccelerationStructureHandle _TopLevelAccelerationStructure{ EMPTY_HANDLE };
 
 	//The noise textures.
 	StaticArray<Texture2DHandle, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;

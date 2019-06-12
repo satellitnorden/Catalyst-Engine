@@ -7,6 +7,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 
 class ModelSystem final
 {
@@ -24,9 +25,33 @@ public:
 	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Returns the top level acceleration structure instances.
+	*/
+	FORCE_INLINE const DynamicArray<TopLevelAccelerationStructureInstanceData>& GetTopLevelAccelerationStructureInstances() NOEXCEPT
+	{
+		return _TopLevelAccelerationStructureInstances;
+	}
+
+	/*
+	*	Adds a top level acceleration structure instance.
+	*/
+	void AddTopLevelAccelerationStructureInstance(const Matrix4 &transform, const AccelerationStructureHandle &bottomLevelAccelerationStructure) NOEXCEPT
+	{
+		_TopLevelAccelerationStructureInstances.EmplaceSlow(transform, bottomLevelAccelerationStructure, _TopLevelAccelerationStructureInstances.Size());
+	}
+
+	/*
+	*	Removes a top level acceleration structure instance.
+	*/
+	void RemoveTopLevelAccelerationStructureInstance(const Matrix4 &transform, const AccelerationStructureHandle &bottomLevelAccelerationStructure) NOEXCEPT
+	{
+		_TopLevelAccelerationStructureInstances.EmplaceSlow(transform, bottomLevelAccelerationStructure, _TopLevelAccelerationStructureInstances.Size());
+	}
+
+	/*
 	*	Returns the model data render data table layout.
 	*/
-	RenderDataTableLayoutHandle GetModelDataRenderDataTableLayout() const NOEXCEPT
+	FORCE_INLINE RenderDataTableLayoutHandle GetModelDataRenderDataTableLayout() const NOEXCEPT
 	{
 		return _ModelDataRenderDataTableLayout;
 	}
@@ -36,8 +61,10 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentModelDataRenderDataTable() const NOEXCEPT;
 
-
 private:
+
+	//The top level acceleration structure instances.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> _TopLevelAccelerationStructureInstances;
 
 	//The model data render data table layout.
 	RenderDataTableLayoutHandle _ModelDataRenderDataTableLayout;

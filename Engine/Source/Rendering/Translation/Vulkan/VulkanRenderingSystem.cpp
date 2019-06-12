@@ -56,6 +56,7 @@ namespace VulkanRenderingSystemData
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
+			AccelerationStructure,
 			Buffer,
 			RenderDataTable,
 			Texture2D
@@ -785,6 +786,13 @@ namespace VulkanRenderingSystemLogic
 			{
 				switch (VulkanRenderingSystemData::_DestructionQueue[i]._Type)
 				{
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure:
+					{
+						VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+
+						break;
+					}
+
 					case VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer:
 					{
 						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
@@ -895,6 +903,15 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 																		static_cast<uint32>(instanceData.Size()),
 																		ArrayProxy<VkGeometryNV>(),
 																		static_cast<VulkanBuffer *const RESTRICT>(instancesBuffer)->Get());
+}
+
+/*
+*	Destroys a top level acceleration structure.
+*/
+void RenderingSystem::DestroyTopLevelAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure, *handle);
 }
 
 /*

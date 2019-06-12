@@ -273,6 +273,16 @@ RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAc
 }
 
 /*
+*	Destroys an acceleration structure
+*/
+void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT accelerationStructure) NOEXCEPT
+{
+	accelerationStructure->Release();
+	_VulkanAccelerationStructures.Erase(accelerationStructure);
+	Memory::GlobalPoolDeAllocate<sizeof(VulkanAccelerationStructure)>(accelerationStructure);
+}
+
+/*
 *	Creates and returns a  buffer.
 */
 RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT

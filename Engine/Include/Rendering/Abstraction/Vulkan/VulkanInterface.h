@@ -154,6 +154,11 @@ public:
 	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT;
 
 	/*
+	*	Destroys an acceleration structure
+	*/
+	void DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT accelerationStructure) NOEXCEPT;
+
+	/*
 	*	Creates and returns a buffer.
 	*/
 	RESTRICTED VulkanBuffer *const RESTRICT CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT;

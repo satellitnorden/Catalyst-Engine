@@ -40,6 +40,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	staticModelComponent._Material = staticModelInitializationData->_Material;
 	transformComponent._WorldTransform = staticModelInitializationData->_Transform;
 
+	//Add the top level acceleration structure instance.
+	RenderingSystem::Instance->GetModelSystem()->AddTopLevelAccelerationStructureInstance(transformComponent._WorldTransform, staticModelComponent._Model->_BottomLevelAccelerationStructure);
+
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
 }
