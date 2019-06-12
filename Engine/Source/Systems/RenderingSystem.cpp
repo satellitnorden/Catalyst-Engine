@@ -8,7 +8,6 @@
 #include <Entities/Types/Entity.h>
 
 //Managers.
-#include <Managers/EnvironmentManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Math.
@@ -586,7 +585,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._PerceiverRotationVelocity = Vector3<float>::DotProduct(previousPerceiverForwardVector, Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z));
 	_DynamicUniformData._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
-	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
+	_DynamicUniformData._WindSpeed = 0.0f;
 
 	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());
 	_DynamicUniformData._DiffuseIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode());

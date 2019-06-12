@@ -160,9 +160,6 @@
     <Filter Include="Core\Source">
       <UniqueIdentifier>{e8372456-0728-4226-8cae-31fada280c3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Source\Utilities">
-      <UniqueIdentifier>{502cb0a0-7824-4562-ae84-fb40af103dee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lighting">
       <UniqueIdentifier>{36aee9da-b00c-4011-9440-e38334f7ad77}</UniqueIdentifier>
     </Filter>
@@ -171,9 +168,6 @@
     </Filter>
     <Filter Include="Lighting\Source">
       <UniqueIdentifier>{0dc7d249-4daf-4231-bb24-8a295b5c1675}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entities\Include\Placement">
-      <UniqueIdentifier>{3a3a3283-6f7c-4153-86a6-b8a6bd69fc84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Entities\Include\Types">
       <UniqueIdentifier>{a68292aa-8de6-444c-a00c-bc9f8f1ac8e0}</UniqueIdentifier>
@@ -186,24 +180,6 @@
     </Filter>
     <Filter Include="Physics\Include">
       <UniqueIdentifier>{a4e0f938-dc3a-443c-84a5-80dbe4da459d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Include\Abstraction">
-      <UniqueIdentifier>{54854aa8-e9d4-4bb3-bb3d-e795b4ef870d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Source">
-      <UniqueIdentifier>{cb9815fa-6eb0-406a-8d8e-0619d2c273e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Source\Abstraction">
-      <UniqueIdentifier>{3a0b548e-34ba-4485-a7a1-87c7840561fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Include\Abstraction\PhysX">
-      <UniqueIdentifier>{3b34ac0c-8764-434b-b375-a10d08c5bf32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Source\Abstraction\PhysX">
-      <UniqueIdentifier>{f1053b36-8c18-4466-bdb8-7c014bfe0224}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Source\Abstraction\Catalyst">
-      <UniqueIdentifier>{8b3d4183-0f9d-47a4-bcef-425a9ff3f0d4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sound\Source">
       <UniqueIdentifier>{a04f12c5-50e3-4721-806d-ba8d17d1de65}</UniqueIdentifier>
@@ -231,9 +207,6 @@
     </Filter>
     <Filter Include="Core\Source\General">
       <UniqueIdentifier>{617ce450-365f-45fd-bac0-b6a56d03f2a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Include\Native">
-      <UniqueIdentifier>{c08ad5a0-5e3a-46eb-a3cf-be7f7d9cfa6d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Entities\Include\Core">
       <UniqueIdentifier>{85c37808-4dbc-4823-96e8-65561e01613d}</UniqueIdentifier>
@@ -375,9 +348,6 @@
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h">
-      <Filter>Managers\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
@@ -471,9 +441,6 @@
     <ClInclude Include="..\..\..\Include\Core\Containers\Collection.h">
       <Filter>Core\Include\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
@@ -519,9 +486,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
-      <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -552,21 +516,6 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h">
-      <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalGridPoint.h">
-      <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalPlacementData.h">
-      <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalGridPoint.h">
-      <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalPlacementData.h">
-      <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
@@ -584,24 +533,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXCPUDispatcher.h">
-      <Filter>Physics\Include\Abstraction\PhysX</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h">
       <Filter>Core\Include\General</Filter>
@@ -689,18 +620,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
-      <Filter>Physics\Include\Native</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h">
       <Filter>Entities\Include\Core</Filter>
@@ -809,9 +728,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
       <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h">
-      <Filter>Components\Include\Transient</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
       <Filter>Components\Include\Transient</Filter>
@@ -1188,13 +1104,16 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
       <Filter>Components\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
-      <Filter>Managers\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp">
       <Filter>Systems\Source</Filter>
@@ -1223,22 +1142,13 @@
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
-      <Filter>Core\Source\Utilities</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp">
@@ -1246,12 +1156,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp">
-      <Filter>Physics\Source\Abstraction\PhysX</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp">
-      <Filter>Physics\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
       <Filter>Systems\Source</Filter>
@@ -1264,9 +1168,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
       <Filter>Core\Source\General</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp">
-      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
       <Filter>Core\Source\Essential</Filter>

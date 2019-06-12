@@ -22,8 +22,14 @@ public:
 	//The pre update function.
 	void(*_PreUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The update function.
-	void(*_UpdateFunction)(const UpdateContext *const RESTRICT);
+	//The logic update function.
+	void(*_LogicUpdateFunction)(const UpdateContext *const RESTRICT);
+
+	//The physics update function.
+	void(*_PhysicsUpdateFunction)(const UpdateContext *const RESTRICT);
+
+	//The render update function.
+	void(*_RenderUpdateFunction)(const UpdateContext *const RESTRICT);
 
 	//The post update function.
 	void(*_PostUpdateFunction)(const UpdateContext *const RESTRICT);

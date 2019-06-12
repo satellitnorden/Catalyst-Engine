@@ -30,54 +30,10 @@
 enum class UpdatePhase : uint8
 {
 	Pre = BIT(0),
-	Main = BIT(1),
-	Post = BIT(2)
+	Logic = BIT(1),
+	Physics = BIT(2),
+	Render = BIT(3),
+	Post = BIT(4)
 };
 
 ENUMERATION_BIT_OPERATIONS(UpdatePhase);
-
-/*
-*	Returns the current update phase.
-*/
-RESTRICTED static NO_DISCARD UpdatePhase *const RESTRICT CurrentUpdatePhase() NOEXCEPT
-{
-	extern UpdatePhase CURRENT_UPDATE_PHASE;
-
-	return &CURRENT_UPDATE_PHASE;
-}
-
-/*
-*	Function for specifying during which update phase(s) read access is allowed to a specific type. Needs to be specialized on a per type basis.
-*/
-template <typename TYPE>
-static NO_DISCARD UpdatePhase AllowedReadAccess() NOEXCEPT
-{
-	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
-}
-
-/*
-*	Function for specifying during which update phase(s) write access is allowed to a specific type. Needs to be specialized on a per type basis.
-*/
-template <typename TYPE>
-static NO_DISCARD UpdatePhase AllowedWriteAccess() NOEXCEPT
-{
-	return UpdatePhase::Pre | UpdatePhase::Main | UpdatePhase::Post;
-}
-
-/*
-*	Verifies read access for a given type during the current update phase.
-*/
-template <typename TYPE>
-void VerifyReadAccess() NOEXCEPT
-{
-	ASSERT(TEST_BIT(AllowedReadAccess<TYPE>(), *CurrentUpdatePhase()), "Read access is not allowed for this type during this update phase!");
-}
-
-/*
-*	Verifies write access for a given type during the current update phase.
-*/
-template <typename TYPE>
-void VerifyWriteAccess() NOEXCEPT
-{
-	ASSERT(TEST_BIT(AllowedWriteAccess<TYPE>(), *CurrentUpdatePhase()), "Write access is not allowed for this type during this update phase!");
-}

@@ -11,9 +11,6 @@
 //Lighting.
 #include <Lighting/LightingCore.h>
 
-//Managers.
-#include <Managers/EnvironmentManager.h>
-
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 

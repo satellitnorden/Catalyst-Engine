@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_ENABLE_RENDER_OVERRIDE;CATALYST_PHYSICS_CATALYST;CATALYST_PHYSICS_PHYSX;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_ENABLE_RENDER_OVERRIDE;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -51,7 +51,6 @@
     <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\PhysicsComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h" />
@@ -81,21 +80,13 @@
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Creation\PhysicsInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalGridPoint.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalPlacementData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalGridPoint.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Types\PhysicsEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
@@ -106,7 +97,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
-    <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
@@ -138,14 +128,8 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXAbstractionUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxAllocatorCallback.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXCPUDispatcher.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysxErrorCallback.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysX\PhysXPhysicsSystem.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h" />
+    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
@@ -272,7 +256,6 @@
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
-    <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
@@ -329,17 +312,12 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
-    <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Types\PhysicsEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
-    <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\Catalyst\CatalystPhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysX\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
@@ -420,9 +398,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />

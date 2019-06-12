@@ -6,7 +6,6 @@
 
 //Entities.
 #include <Entities/Types/LightEntity.h>
-#include <Entities/Types/PhysicsEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
 

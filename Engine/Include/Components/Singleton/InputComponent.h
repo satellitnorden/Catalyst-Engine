@@ -28,21 +28,3 @@ public:
 	TouchState _TouchState;
 
 };
-
-/*
-*	Function for specifying during which update phase(s) read access is allowed to a specific type.
-*/
-template <>
-static NO_DISCARD UpdatePhase AllowedReadAccess<InputComponent>() NOEXCEPT
-{
-	return UpdatePhase::Main | UpdatePhase::Post;
-}
-
-/*
-*	Function for specifying during which update phase(s) write access is allowed to a specific type.
-*/
-template <>
-static NO_DISCARD UpdatePhase AllowedWriteAccess<InputComponent>() NOEXCEPT
-{
-	return UpdatePhase::Pre;
-}

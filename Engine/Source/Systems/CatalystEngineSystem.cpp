@@ -12,11 +12,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-#include <Systems/DebugRenderingSystem.h>
-#endif
 #include <Systems/EntityCreationSystem.h>
-#include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -31,7 +27,6 @@ namespace CatalystEngineSystemInternalData
 	//Enumeration covering all sequential updates.
 	enum class SequentialUpdate : uint8
 	{
-		EntityPlacementSystem,
 		TerrainSystem,
 		VegetationSystem,
 
@@ -61,13 +56,6 @@ namespace CatalystEngineSystemInternalLogic
 		//Execute the sequential update.
 		switch (CatalystEngineSystemInternalData::_CurrentSequentialUpdate)
 		{
-			case CatalystEngineSystemInternalData::SequentialUpdate::EntityPlacementSystem:
-			{
-				EntityPlacementSystem::Instance->SequentialUpdateSystemSynchronous();
-
-				break;
-			}
-
 			case CatalystEngineSystemInternalData::SequentialUpdate::TerrainSystem:
 			{
 				TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
@@ -97,8 +85,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	EntityPlacementSystem::Instance->InitializeSystem();
-	PhysicsSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->InitializeSystem();
@@ -137,38 +123,40 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	context._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 
 	/*
-	*	Pre-update phase.
+	*	Pre update phase.
 	*/
-	*CurrentUpdatePhase() = UpdatePhase::Pre;
-
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
+
 	CatalystPlatform::PreUpdate(&context);
+
 	InputSystem::Update(&context);
 
 	/*
-	*	Main update phase.
+	*	Logic update phase.
 	*/
-	*CurrentUpdatePhase() = UpdatePhase::Main;
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
 
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._UpdateFunction(&context);
-	PhysicsSystem::Instance->Update(&context);
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	DebugRenderingSystem::Instance->UpdateSystemSynchronous(&context);
-#endif
+	/*
+	*	Physics update phase.
+	*/
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
+
+	/*
+	*	Render update phase.
+	*/
+	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
+
 	RenderingSystem::Instance->UpdateSystem(&context);
-	SoundSystem::Instance->Update(&context);
 
 	/*
 	*	Post-update phase.
 	*/
-	*CurrentUpdatePhase() = UpdatePhase::Post;
-
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
-#endif
-	EntityCreationSystem::Instance->PostUpdateSystemSynchronous(&context);
+
 	CatalystPlatform::PostUpdate(&context);
+
+	EntityCreationSystem::Instance->PostUpdateSystemSynchronous(&context);
+	SoundSystem::Instance->Update(&context);
 
 	/*
 	*	Sequential update phase.
@@ -197,7 +185,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystPlatform::Release();
 
 	//Release all systems.
-	PhysicsSystem::Instance->Terminate();
 	RenderingSystem::Instance->Release();
 	SoundSystem::Instance->Terminate();
 	UserInterfaceSystem::Terminate();

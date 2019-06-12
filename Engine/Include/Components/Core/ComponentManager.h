@@ -9,7 +9,6 @@
 #include <Components/Singleton/InputComponent.h>
 #include <Components/Singleton/UserInterfaceComponent.h>
 #include <Components/Transient/LightComponent.h>
-#include <Components/Transient/PhysicsComponent.h>
 #include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/StaticModelComponent.h>
 #include <Components/Transient/TransformComponent.h>
@@ -64,8 +63,6 @@ public:
 	template <typename TYPE>
 	RESTRICTED static NO_DISCARD const TYPE *const RESTRICT ReadSingletonComponent() NOEXCEPT
 	{
-		VerifyReadAccess<TYPE>();
-
 		return RetrieveSingletonComponent<TYPE>();
 	}
 
@@ -75,13 +72,10 @@ public:
 	template <typename TYPE>
 	RESTRICTED static NO_DISCARD TYPE *const RESTRICT WriteSingletonComponent() NOEXCEPT
 	{
-		VerifyWriteAccess<TYPE>();
-
 		return RetrieveSingletonComponent<TYPE>();
 	}
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Physics, PhysicsComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
 
