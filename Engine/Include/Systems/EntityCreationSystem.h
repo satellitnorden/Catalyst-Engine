@@ -28,9 +28,9 @@ public:
 	}
 
 	/*
-	*	Post-updates the entity creation system synchronously.
+	*	Updates the entity creation system during the post update phase.
 	*/
-	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Creates a new entity.

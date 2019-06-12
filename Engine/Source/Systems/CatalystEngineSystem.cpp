@@ -18,59 +18,12 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
-#include <Systems/VegetationSystem.h>
 
 namespace CatalystEngineSystemInternalData
 {
-	//Enumeration covering all sequential updates.
-	enum class SequentialUpdate : uint8
-	{
-		TerrainSystem,
-		VegetationSystem,
-
-		NumberOfSequentialUpdates
-	};
-
-
 	//The delta timer.
 	DeltaTimer _DeltaTimer;
-
-	//The current sequential update.
-	SequentialUpdate _CurrentSequentialUpdate{ SequentialUpdate::NumberOfSequentialUpdates };
-}
-
-namespace CatalystEngineSystemInternalLogic
-{
-	/*
-	*	Executes the sequential update.
-	*/
-	void ExecuteSequentialUpdate() NOEXCEPT
-	{
-		//Update the current sequential update.
-		CatalystEngineSystemInternalData::_CurrentSequentialUpdate =	static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1) < CatalystEngineSystemInternalData::SequentialUpdate::NumberOfSequentialUpdates
-																		? static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemInternalData::_CurrentSequentialUpdate) + 1)
-																		: static_cast<CatalystEngineSystemInternalData::SequentialUpdate>(0);
-
-		//Execute the sequential update.
-		switch (CatalystEngineSystemInternalData::_CurrentSequentialUpdate)
-		{
-			case CatalystEngineSystemInternalData::SequentialUpdate::TerrainSystem:
-			{
-				TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
-
-				break;
-			}
-
-			case CatalystEngineSystemInternalData::SequentialUpdate::VegetationSystem:
-			{
-				VegetationSystem::Instance->SequentialUpdateSystemSynchronous();
-
-				break;
-			}
-		}
-	}
 }
 
 /*
@@ -87,9 +40,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize all systems.
 	RenderingSystem::Instance->Initialize(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
-	TaskSystem::Instance->InitializeSystem();
-	TerrainSystem::Instance->InitializeSystem();
-	VegetationSystem::Instance->InitializeSystem();
+	TaskSystem::Instance->Initialize();
 
 	//Post-initialize all systems.
 	RenderingSystem::Instance->PostInitializeSystem();
@@ -129,7 +80,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	CatalystPlatform::PreUpdate(&context);
 
-	InputSystem::Update(&context);
+	InputSystem::PreUpdate(&context);
 
 	/*
 	*	Logic update phase.
@@ -146,7 +97,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
-	RenderingSystem::Instance->UpdateSystem(&context);
+	RenderingSystem::Instance->RenderUpdate(&context);
 
 	/*
 	*	Post-update phase.
@@ -155,13 +106,8 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	CatalystPlatform::PostUpdate(&context);
 
-	EntityCreationSystem::Instance->PostUpdateSystemSynchronous(&context);
-	SoundSystem::Instance->Update(&context);
-
-	/*
-	*	Sequential update phase.
-	*/
-	CatalystEngineSystemInternalLogic::ExecuteSequentialUpdate();
+	EntityCreationSystem::Instance->PostUpdate(&context);
+	SoundSystem::Instance->PostUpdate(&context);
 
 	//Return if the game should be terminated.
 	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;
@@ -178,8 +124,8 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Terminate the game system.
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
 
-	//Release the task system first so that all asynchronous tasks are finished before releasing anything else.
-	TaskSystem::Instance->ReleaseSystem();
+	//Terminate the task system first so that all asynchronous tasks are finished before releasing anything else.
+	TaskSystem::Instance->Terminate();
 
 	//Release the platform.
 	CatalystPlatform::Release();

@@ -117,9 +117,9 @@ void RenderingSystem::PostInitializeSystem()
 }
 
 /*
-*	Updates the rendering system.
+*	Updates the input system during the render update phase.
 */
-void RenderingSystem::UpdateSystem(const UpdateContext *const RESTRICT context) NOEXCEPT
+void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Begin the frame.
 	BeginFrame();

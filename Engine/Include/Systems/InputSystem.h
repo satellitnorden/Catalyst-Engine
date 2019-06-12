@@ -19,8 +19,8 @@ class InputSystem final
 public:
 
 	/*
-	*	Updates the input system.
+	*	Updates the input system during the pre update phase.
 	*/
-	static void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	static void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 };

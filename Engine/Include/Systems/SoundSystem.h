@@ -35,9 +35,9 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the sound system.
+	*	Updates the sound system during the post update phase.
 	*/
-	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Terminates the sound system.

@@ -10,7 +10,7 @@ DEFINE_SINGLETON(TaskSystem);
 /*
 *	Initializes the task system.
 */
-void TaskSystem::InitializeSystem() NOEXCEPT
+void TaskSystem::Initialize() NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint32 numberOfHardwareThreads = std::thread::hardware_concurrency();
@@ -37,9 +37,9 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Releases the task system.
+*	Terminates the task system.
 */
-void TaskSystem::ReleaseSystem() NOEXCEPT
+void TaskSystem::Terminate() NOEXCEPT
 {
 	//Stop executing tasks.
 	_ExecuteTasks = false;

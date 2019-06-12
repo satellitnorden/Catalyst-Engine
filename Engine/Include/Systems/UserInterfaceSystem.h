@@ -13,11 +13,6 @@ class UserInterfaceSystem final
 public:
 
 	/*
-	*	Updates the user interface system.
-	*/
-	static void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
 	*	Terminates the user interface system.
 	*/
 	static void Terminate() NOEXCEPT;

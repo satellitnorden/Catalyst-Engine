@@ -77,9 +77,9 @@ void SoundSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Updates the sound system.
+*	Updates the sound system during the post update phase.
 */
-void SoundSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
+void SoundSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the listener position.
 	FMODSoundSystemLogic::UpdateListenerPosition();

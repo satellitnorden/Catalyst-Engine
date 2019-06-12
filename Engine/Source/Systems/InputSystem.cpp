@@ -11,9 +11,9 @@
 #include <Systems/TaskSystem.h>
 
 /*
-*	Updates the input system.
-*/
-void InputSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
+	*	Updates the input system during the pre update phase.
+	*/
+void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Retrieve the current gamepad states.
 	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)

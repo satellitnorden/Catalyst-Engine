@@ -21,17 +21,19 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	TaskSystem() NOEXCEPT { }
+	TaskSystem() NOEXCEPT
+	{
+	}
 
 	/*
 	*	Initializes the task system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Releases the task system.
+	*	Terminates the task system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns the number of task executors.

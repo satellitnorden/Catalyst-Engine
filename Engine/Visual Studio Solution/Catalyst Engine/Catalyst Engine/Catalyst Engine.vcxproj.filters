@@ -145,18 +145,6 @@
     <Filter Include="Memory\Include">
       <UniqueIdentifier>{83913965-7fc3-492b-8c0c-e7272dff93c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Terrain">
-      <UniqueIdentifier>{265ae806-d621-48f2-9929-0835c838c0db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Terrain\Include">
-      <UniqueIdentifier>{2f1ccf80-b81e-4b58-afb9-a213e7cc799f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vegetation">
-      <UniqueIdentifier>{a9ed2bc1-50ef-4e88-a850-29674f23c66c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vegetation\Include">
-      <UniqueIdentifier>{f33b6b1f-eef8-40f5-ac6b-91693a12913f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Source">
       <UniqueIdentifier>{e8372456-0728-4226-8cae-31fada280c3e}</UniqueIdentifier>
     </Filter>
@@ -444,77 +432,14 @@
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationUtilities.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h">
       <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTree.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeNode.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h">
-      <Filter>Terrain\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h">
       <Filter>Entities\Include\Types</Filter>
@@ -522,62 +447,14 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationPatchRenderInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationPatchRenderInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Quadruple.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationPatchRenderInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\DebrisVegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationModel.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h">
       <Filter>Core\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchRenderInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationMaterial.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\TreeVegetationPatchInformation.h">
-      <Filter>Vegetation\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
       <Filter>Systems\Include</Filter>

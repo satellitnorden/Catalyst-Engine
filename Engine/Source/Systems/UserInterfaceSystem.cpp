@@ -11,14 +11,6 @@
 #include <UserInterface/TextUserInterfaceElementDescription.h>
 
 /*
-*	Updates the user interface system.
-*/
-void UserInterfaceSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-
-}
-
-/*
 *	Terminates the user interface system.
 */
 void UserInterfaceSystem::Terminate() NOEXCEPT
