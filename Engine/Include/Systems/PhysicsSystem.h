@@ -8,6 +8,7 @@
 #include <Math/Geometry/Ray.h>
 
 //Physics.
+#include <Physics/CharacterMovement.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RayCastResult.h>
 
@@ -16,15 +17,14 @@ class PhysicsSystem final
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(PhysicsSystem);
+	/*
+	*	Updates the physics system during the physics update phase.
+	*/
+	static void PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Default constructor.
+	*	Registers a character movement.
 	*/
-	PhysicsSystem() NOEXCEPT
-	{
-	
-	}
+	static void RegisterCharacterMovement(CharacterMovement *const RESTRICT movement) NOEXCEPT;
 
 };

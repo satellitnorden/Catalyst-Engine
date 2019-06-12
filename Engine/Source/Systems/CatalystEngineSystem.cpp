@@ -91,6 +91,8 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Physics update phase.
 	*/
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
+	
+	PhysicsSystem::PhysicsUpdate(&context);
 
 	/*
 	*	Render update phase.

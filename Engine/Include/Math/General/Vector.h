@@ -845,6 +845,48 @@ public:
 	}
 
 	/*
+	*	Normalize the vector to a unit vector, ignoring the Z axis.
+	*/
+	FORCE_INLINE constexpr void NormalizeXY() NOEXCEPT
+	{
+		_Z = 0.0f;
+
+		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		_X *= inverseLength;
+		_Y *= inverseLength;
+	}
+
+	/*
+	*	Normalize the vector to a unit vector, ignoring the Y axis.
+	*/
+	FORCE_INLINE constexpr void NormalizeXZ() NOEXCEPT
+	{
+		_Y = 0.0f;
+
+		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		_X *= inverseLength;
+		_Z *= inverseLength;
+	}
+
+	/*
+	*	Normalize the vector to a unit vector, ignoring the X axis.
+	*/
+	FORCE_INLINE constexpr void NormalizeYZ() NOEXCEPT
+	{
+		_X = 0.0f;
+
+		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		_Y *= inverseLength;
+		_Z *= inverseLength;
+	}
+
+	/*
 	*	Returns a normalized version of this vector.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3 Normalized() const NOEXCEPT

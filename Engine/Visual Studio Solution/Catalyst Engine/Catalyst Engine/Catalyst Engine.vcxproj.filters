@@ -987,6 +987,12 @@
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Singleton\PhysicsSingletonComponent.h">
+      <Filter>Components\Include\Singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

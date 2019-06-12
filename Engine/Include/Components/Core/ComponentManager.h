@@ -7,6 +7,7 @@
 //Components.
 #include <Components/Singleton/CatalystEngineComponent.h>
 #include <Components/Singleton/InputComponent.h>
+#include <Components/Singleton/PhysicsSingletonComponent.h>
 #include <Components/Singleton/UserInterfaceComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/SoundComponent.h>
