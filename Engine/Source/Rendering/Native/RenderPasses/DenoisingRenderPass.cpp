@@ -62,17 +62,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[4].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[5].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
-
 	_DiffuseIrradianceDenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),

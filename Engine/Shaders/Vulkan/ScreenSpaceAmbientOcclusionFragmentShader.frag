@@ -33,29 +33,74 @@ void main()
 	//Sample the active noise texture.
 	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
-	//Calculate the sample position.
-	vec3 randomDirection = normalize(activeNoiseTexture.xyz * 2.0f - 1.0f);
-	randomDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
-	vec3 samplePosition = worldPosition + randomDirection * activeNoiseTexture.w;
+	//Calculate the occlusion.
+	float occlusion = 0.0f;
 
-	//Calculate the expected hit distance.
-	float expectedHitDistance = length(samplePosition - perceiverWorldPosition);
+	for (int i = 0; i < 4; ++i)
+	{
+		//Calculate the sample position.
+		vec3 randomDirection;
+		float randomLength;
 
-	//Calculate the sample screen coordinate.
-	vec4 sampleViewSpacePosition = viewMatrix * vec4(samplePosition, 1.0f);
-	vec2 sampleScreenCoordinate = 0.5f * (sampleViewSpacePosition.xy / sampleViewSpacePosition.w) + 0.5f;
+		switch(i)
+		{
+			case 0:
+			{
+				randomDirection = normalize(activeNoiseTexture.xyz * 2.0f - 1.0f);
+				randomLength = activeNoiseTexture.w;
 
-	//Sample the samplescene features.
-	vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleScreenCoordinate);
-	float sampleHitDistance = sampleSceneFeatures.w;
+				break;
+			}
 
-	//If the expected hit distance is greater then the sample hit distance, there is occlusion.
-	float ambientOcclusion = 1.0f - float(expectedHitDistance > sampleHitDistance);
+			case 1:
+			{
+				randomDirection = normalize(activeNoiseTexture.xyw * 2.0f - 1.0f);
+				randomLength = activeNoiseTexture.z;
 
-	//Apply the distance falloff.
-	float distanceFalloff = SmoothStep(min(abs(hitDistance - sampleHitDistance), 1.0f));
-	ambientOcclusion = mix(ambientOcclusion, 1.0f, distanceFalloff);
+				break;
+			}
+
+			case 2:
+			{
+				randomDirection = normalize(activeNoiseTexture.xzw * 2.0f - 1.0f);
+				randomLength = activeNoiseTexture.y;
+
+				break;
+			}
+
+			case 3:
+			{
+				randomDirection = normalize(activeNoiseTexture.yzw * 2.0f - 1.0f);
+				randomLength = activeNoiseTexture.x;
+
+				break;
+			}
+		}
+
+		randomDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
+		vec3 samplePosition = worldPosition + randomDirection * randomLength;
+
+		//Calculate the expected hit distance.
+		float expectedHitDistance = length(samplePosition - perceiverWorldPosition);
+
+		//Calculate the sample screen coordinate.
+		vec4 sampleViewSpacePosition = viewMatrix * vec4(samplePosition, 1.0f);
+		vec2 sampleScreenCoordinate = 0.5f * (sampleViewSpacePosition.xy / sampleViewSpacePosition.w) + 0.5f;
+
+		//Sample the samplescene features.
+		vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleScreenCoordinate);
+		float sampleHitDistance = sampleSceneFeatures.w;
+
+		//Calculate the distance falloff.
+		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance), 1.0f));
+
+		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
+		occlusion += float(expectedHitDistance > sampleHitDistance) * distanceFalloff;
+	}
+
+	//Normalize the ambient occlusion.
+	occlusion = 1.0f - (occlusion * 0.25f);
 
     //Write the fragment
-    fragment = vec4(vec3(ambientOcclusion), 1.0f);
+    fragment = vec4(vec3(occlusion), 1.0f);
 }
