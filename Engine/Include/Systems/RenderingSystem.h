@@ -147,7 +147,7 @@ public:
 	/*
 	*	Creates a top level acceleration structure.
 	*/
-	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, CommandBuffer *const RESTRICT commandBuffer, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Destroys a top level acceleration structure.
@@ -162,7 +162,7 @@ public:
 	/*
 	*	Uploads data to a buffer.
 	*/
-	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle, CommandBuffer *const RESTRICT commandBuffer) const NOEXCEPT;
 
 	/*
 	*	Destroys a buffer.

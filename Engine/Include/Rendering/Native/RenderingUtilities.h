@@ -96,7 +96,7 @@ namespace RenderingUtilities
 		const void *RESTRICT data[]{ transformations.Data() };
 		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
 		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, buffer);
-		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, buffer);
+		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, buffer, nullptr);
 	}
 
 	/*

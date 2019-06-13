@@ -54,7 +54,7 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 	const void *const RESTRICT dataChunks[]{ materials.Data() };
 	const uint64 dataSizes[]{ sizeof(Material) * RenderingConstants::MAXIMUM_NUMBER_OF_MODELS };
 
-	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentMaterialsUniformBuffer);
+	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentMaterialsUniformBuffer, nullptr);
 
 	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(2, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
 }

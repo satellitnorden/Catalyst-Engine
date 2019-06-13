@@ -40,7 +40,7 @@ void VulkanBuffer::Release() NOEXCEPT
 *	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
 *	dataChunks - The number of data chunks that should be copied into the buffer.
 */
-void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT
+void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *const RESTRICT dataSizes, const uint32 dataChunks, VulkanCommandBuffer *const RESTRICT commandBuffer) NOEXCEPT
 {
 	//If this buffer was created with the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, the memory can be mapped directly and copied over, otherwise a staging buffer needs to be created.
 	if (TEST_BIT(_MemoryProperties, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
@@ -94,7 +94,7 @@ void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, c
 		vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
 
 		//Copy the staging buffer data to the buffer.
-		VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, _VulkanBuffer);
+		VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, _VulkanBuffer, commandBuffer);
 
 		//Destroy the staging buffer.
 		vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);

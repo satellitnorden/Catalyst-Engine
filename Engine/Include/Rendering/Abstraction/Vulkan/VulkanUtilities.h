@@ -20,17 +20,21 @@ public:
 	/*
 	*	Builds an acceleration structure.
 	*/
-	static void BuildAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, const VkAccelerationStructureNV accelerationStructure, const VkBuffer scratchBuffer) NOEXCEPT
+	static void BuildAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, const VkAccelerationStructureNV accelerationStructure, const VkBuffer scratchBuffer, VulkanCommandBuffer *RESTRICT commandBuffer) NOEXCEPT
 	{
 		//Create the command pool.
 		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create a command buffer.
-		VulkanCommandBuffer commandBuffer;
-		commandPool->AllocatePrimaryCommandBuffer(commandBuffer);
+		VulkanCommandBuffer fallbackCommandBuffer;
 
-		//Begin the command buffer.
-		commandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		if (!commandBuffer)
+		{
+			commandPool->AllocatePrimaryCommandBuffer(fallbackCommandBuffer);
+
+			//Begin the command buffer.
+			fallbackCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		}
 
 		//Issue the build command!
 		VkAccelerationStructureInfoNV accelerationStructureInfo;
@@ -43,7 +47,7 @@ public:
 		accelerationStructureInfo.geometryCount = static_cast<uint32>(geometry.Size());
 		accelerationStructureInfo.pGeometries = geometry.Data();
 
-		vkCmdBuildAccelerationStructureNV(	commandBuffer.Get(),
+		vkCmdBuildAccelerationStructureNV(	commandBuffer ? commandBuffer->Get() : fallbackCommandBuffer.Get(),
 											&accelerationStructureInfo,
 											instanceData,
 											0,
@@ -54,37 +58,46 @@ public:
 											0);
 
 		//End the command buffer.
-		commandBuffer.End();
+		if (!commandBuffer)
+		{
+			fallbackCommandBuffer.End();
 
-		//Submit the command buffer to the transfer queue.
-		VulkanFence fence;
-		fence.Initialize(0);
-		VulkanInterface::Instance->GetComputeQueue()->Submit(commandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the command to finish.
-		fence.WaitFor();
+			//Submit the command buffer to the transfer queue.
+			VulkanFence fence;
+			fence.Initialize(0);
+			VulkanInterface::Instance->GetComputeQueue()->Submit(fallbackCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Release the fence.
-		fence.Release();
+			//Wait for the command to finish.
+			fence.WaitFor();
 
-		//Free the copy command buffer.
-		commandPool->FreeCommandBuffer(commandBuffer);
+			//Release the fence.
+			fence.Release();
+
+			//Free the copy command buffer.
+			commandPool->FreeCommandBuffer(fallbackCommandBuffer);
+		}
 	}
 
 	/*
 	*	Copies a Vulkan buffer to another Vulkan buffer.
 	*/
-	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) NOEXCEPT
+	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer, VulkanCommandBuffer *const RESTRICT commandBuffer) NOEXCEPT
 	{
 		//Create the command pool.
 		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create a command buffer for the copy operation.
-		VulkanCommandBuffer copyCommandBuffer;
-		commandPool->AllocatePrimaryCommandBuffer(copyCommandBuffer);
+		VulkanCommandBuffer fallbackCommandBuffer;
 
-		//Begin the command buffer.
-		copyCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		if (!commandBuffer)
+		{
+			commandPool->AllocatePrimaryCommandBuffer(fallbackCommandBuffer);
+
+			//Begin the command buffer.
+			fallbackCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		}
+		
 
 		//Create the buffer copy.
 		VkBufferCopy bufferCopy;
@@ -94,24 +107,27 @@ public:
 		bufferCopy.size = size;
 
 		//Copy the buffer.
-		vkCmdCopyBuffer(copyCommandBuffer.Get(), sourceBuffer, destinationBuffer, 1, &bufferCopy);
+		vkCmdCopyBuffer(commandBuffer ? commandBuffer->Get() : fallbackCommandBuffer.Get(), sourceBuffer, destinationBuffer, 1, &bufferCopy);
 
-		//End the copy command buffer.
-		copyCommandBuffer.End();
+		if (!commandBuffer)
+		{
+			//End the copy command buffer.
+			fallbackCommandBuffer.End();
 
-		//Submit the command buffer to the transfer queue.
-		VulkanFence fence;
-		fence.Initialize(0);
-		VulkanInterface::Instance->GetTransferQueue()->Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+			//Submit the command buffer to the transfer queue.
+			VulkanFence fence;
+			fence.Initialize(0);
+			VulkanInterface::Instance->GetTransferQueue()->Submit(fallbackCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the command to finish.
-		fence.WaitFor();
+			//Wait for the command to finish.
+			fence.WaitFor();
 
-		//Release the fence.
-		fence.Release();
+			//Release the fence.
+			fence.Release();
 
-		//Free the copy command buffer.
-		commandPool->FreeCommandBuffer(copyCommandBuffer);
+			//Free the copy command buffer.
+			commandPool->FreeCommandBuffer(fallbackCommandBuffer);
+		}
 	}
 
 	/*
