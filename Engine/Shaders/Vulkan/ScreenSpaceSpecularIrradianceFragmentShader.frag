@@ -19,10 +19,9 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D noiseTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
-layout (set = 1, binding = 3) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 1) uniform sampler2D sceneFeatures3Texture;
+layout (set = 1, binding = 2) uniform sampler2D directLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -35,8 +34,11 @@ void main()
 	//Calculate the reflection direction.
 	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), texture(sceneFeatures3Texture, fragmentTextureCoordinate).xyz);
 
+	//Sample the active noise texture.
+	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
 	//Modify the original world position a bit.
-	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * texture(noiseTexture, gl_FragCoord.xy / 64.0f).x;
+	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * activeNoiseTexture.x;
 
 	//Calculate the screen space specular irradiance.
 	vec3 screenSpaceSpecularIrradiance = vec3(0.0f);

@@ -7,9 +7,6 @@
 //Lighting.
 #include <Lighting/LightingCore.h>
 
-//Math.
-#include <Math/Core/CatalystRandomMath.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
