@@ -46,6 +46,10 @@ public:
 	int32 _ShadowsMode;
 	int32 _VolumetricLightingMode;
 
+	int32 _ActiveBlueNoiseTextureIndex;
+	float _ActiveBlueNoiseTextureOffsetX;
+	float _ActiveBlueNoiseTextureOffsetY;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 612, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 624, "Size of dynamic uniform data is wrong!");

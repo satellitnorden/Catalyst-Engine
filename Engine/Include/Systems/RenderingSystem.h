@@ -14,6 +14,7 @@
 //Rendering.
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
+#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/ModelSystem.h>
@@ -283,6 +284,12 @@ public:
 
 private:
 
+	//The number of noise textures.
+	static constexpr uint8 NUMBER_OF_NOISE_TEXTURES{ 64 };
+
+	//The noise texture size.
+	static constexpr uint8 NOISE_TEXTURE_SIZE{ 64 };
+
 	//The resolution.
 	Resolution _Resolution;
 
@@ -318,6 +325,12 @@ private:
 
 	//The default texture 2D.
 	Texture2DHandle _DefaultTexture2D;
+
+	//The noise textures.
+	StaticArray<GlobalTexture2D, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
+
+	//The active noise texture index.
+	uint8 _ActiveNoiseTextureIndex{ 0 };
 
 	/*
 	*	Pre-initializes the rendering system.
@@ -368,6 +381,11 @@ private:
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
+
+	/*
+	*	Initializes the noise textures.
+	*/
+	void InitializeNoiseTextures() NOEXCEPT;
 
 	/*
 	*	Post-initializes the global render data.

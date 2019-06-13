@@ -23,15 +23,8 @@ layout (set = 1, binding = 4, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 1, binding = 5, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 1, binding = 6, rgba32f) uniform image2D sceneFeatures3Image;
 layout (set = 1, binding = 7, rgba8) uniform image2D sceneFeatures4Image;
-layout (set = 1, binding = 8) uniform sampler2D noiseImage;
-layout (set = 1, binding = 9) uniform accelerationStructureNV topLevelAccelerationStructure;
-layout (set = 1, binding = 10) uniform samplerCube environmentTexture;
-
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) ivec2 noiseOffset;
-};
+layout (set = 1, binding = 8) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 9) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
@@ -66,7 +59,7 @@ void main()
 	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.001f;
 
 	//Retrieve the random vector.
-	vec4 randomVector = texture(noiseImage, vec2((gl_LaunchIDNV.x + noiseOffset.x) & 63, (gl_LaunchIDNV.y + noiseOffset.y) & 63) / vec2(64.0f, 64.0f));
+	vec4 randomVector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 	//Calculate the random direction.
 	vec3 randomDirection = normalize(randomVector.xyz * 2.0f - 1.0f);
