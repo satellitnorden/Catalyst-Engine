@@ -46,7 +46,7 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
         float sampleAverage = CalculateAverage(indirectSamples[i]);
 
         //Calculate the weight.
-        float weight = abs(average - sampleAverage) * 0.25f;
+        float weight = abs(average - sampleAverage) * 0.125f;
 
         //Blend in the sample based on the weight.
         antiAliasedFragment += indirectSamples[i] * weight;
@@ -67,7 +67,7 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
         float sampleAverage = CalculateAverage(straightSamples[i]);
 
         //Calculate the weight.
-        float weight = abs(average - sampleAverage) * 0.5f;
+        float weight = abs(average - sampleAverage) * 0.25f;
 
         //Blend in the sample based on the weight.
         antiAliasedFragment += straightSamples[i] * weight;

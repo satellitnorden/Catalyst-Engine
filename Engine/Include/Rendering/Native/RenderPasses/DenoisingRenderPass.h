@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -24,8 +25,11 @@ public:
 
 private:
 
-	//The denoising graphics pipelines.
-	StaticArray<DenoisingGraphicsPipeline, 6> _DenoisingGraphicsPipelines;
+	//The ambient occlusion denoising graphics pipelines.
+	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 6> _AmbientOcclusionDenoisingGraphicsPipelines;
+
+	//The diffuse irradiance denoising graphics pipelines.
+	StaticArray<DenoisingGraphicsPipeline, 6> _DiffuseIrradianceDenoisingGraphicsPipelines;
 
 	//Thevolumetric lighting denoising graphics pipelines.
 	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 6> _VolumetricLightingDenoisingGraphicsPipelines;

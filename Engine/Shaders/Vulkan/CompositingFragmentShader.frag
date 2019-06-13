@@ -33,10 +33,11 @@ layout (set = 1, binding = 0) uniform sampler2D sceneFeatures1Texture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
 layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
-layout (set = 1, binding = 4) uniform sampler2D diffuseIrradianceTexture;
-layout (set = 1, binding = 5) uniform sampler2D specularIrradianceTexture;
-layout (set = 1, binding = 6) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 7) uniform sampler2D volumetricLightingTexture;
+layout (set = 1, binding = 4) uniform sampler2D ambientOcclusionTexture;
+layout (set = 1, binding = 5) uniform sampler2D diffuseIrradianceTexture;
+layout (set = 1, binding = 6) uniform sampler2D specularIrradianceTexture;
+layout (set = 1, binding = 7) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 8) uniform sampler2D volumetricLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -50,6 +51,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
 	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
 	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
+	vec4 ambientOcclusion = texture(ambientOcclusionTexture, coordinate);
 
 	SceneFeatures features;
 
@@ -58,7 +60,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
-	features.ambientOcclusion = sceneFeatures4.z;
+	features.ambientOcclusion = sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f);
 
 	return features;
 }

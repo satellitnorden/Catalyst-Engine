@@ -188,6 +188,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\CompositingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\FastApproximateAntiAliasingGraphicsPipeline.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceSpecularIrradianceGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.h" />
@@ -220,6 +222,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPassManager.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenSpaceSpecularIrradianceRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.h" />
@@ -321,6 +324,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\CompositingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\FastApproximateAntiAliasingGraphicsPipeline.cpp" />
@@ -331,6 +335,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RadianceIntegrationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceSpecularIrradianceGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAccumulationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.cpp" />
@@ -350,6 +355,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenSpaceSpecularIrradianceRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.cpp" />

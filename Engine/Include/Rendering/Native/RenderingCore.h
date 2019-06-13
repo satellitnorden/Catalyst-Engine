@@ -54,6 +54,7 @@ enum class RenderPassStage : uint8
 {
 	SceneFeatures,
 	WorldRayTracing,
+	ScreenSpaceAmbientOcclusion,
 	ScreenSpaceSpecularIrradiance,
 	FireflyReduction,
 	Denoising,
@@ -211,6 +212,11 @@ enum class RenderTarget : uint8
 	SceneFeatures4,
 
 	/*
+	*	Contains the ambient occlusion.
+	*/
+	AmbientOcclusion,
+
+	/*
 	*	The first diffuse irradiance temporal accumulation buffer.
 	*/
 	DiffuseIrradianceTemporalAccumulationBuffer1,
@@ -268,6 +274,7 @@ enum class Sampler : uint8
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
+	AmbientOcclusionDenoisingFragment,
 	CompositingFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
@@ -280,6 +287,7 @@ enum class Shader : uint8
 	RadianceIntegrationFragment,
 	SceneFeaturesFragment,
 	SceneFeaturesVertex,
+	ScreenSpaceAmbientOcclusionFragment,
 	ScreenSpaceSpecularIrradianceFragment,
 	TemporalAccumulationFragment,
 	TemporalAntiAliasingFragment,

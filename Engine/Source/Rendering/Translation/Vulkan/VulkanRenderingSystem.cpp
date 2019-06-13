@@ -534,6 +534,16 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AmbientOcclusionDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the fragment shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::CompositingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
@@ -558,7 +568,7 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
-			//Initialize the denoising fragment shader module.
+			//Initialize the fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
@@ -645,6 +655,16 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		}
+
+		{
+			//Initialize the fragment shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
