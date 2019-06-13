@@ -44,14 +44,14 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 		const void *const RESTRICT dataChunks[]{ data->_Vertices.Data() };
 		const uint64 dataSizes[]{ sizeof(Vertex) * data->_Vertices.Size() };
 		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_VertexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_VertexBuffer, nullptr);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_VertexBuffer);
 	}
 
 	{
 		const void *const RESTRICT dataChunks[]{ data->_Indices.Data() };
 		const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices.Size() };
 		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &model->_IndexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffer, nullptr);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffer);
 	}
 
 	//Write the index count.

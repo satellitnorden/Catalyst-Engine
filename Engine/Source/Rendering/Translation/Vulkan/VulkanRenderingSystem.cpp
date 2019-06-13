@@ -514,7 +514,7 @@ namespace VulkanRenderingSystemLogic
 		void *const RESTRICT dataChunks[]{ shaderHandleStorage };
 		const uint64 dataSizes[]{ shaderHandleStorageSize };
 
-		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1, nullptr);
+		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1);
 
 		Memory::FreeMemory(shaderHandleStorage);
 	}
@@ -870,14 +870,13 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
 																		0,
 																		ArrayProxy<VkGeometryNV>(geometry),
-																		VK_NULL_HANDLE,
-																		nullptr);
+																		VK_NULL_HANDLE);
 }
 
 /*
 *	Creates a top level acceleration structure.
 */
-void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, CommandBuffer *const RESTRICT commandBuffer, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Create the Vulkan geometry instance structres.
 	DynamicArray<VulkanGeometryInstance> geometryInstances;
@@ -895,13 +894,12 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 	const void *const RESTRICT dataChunks[]{ geometryInstances.Data() };
 	const uint64 dataSizes[]{ sizeof(VulkanGeometryInstance) * geometryInstances.Size() };
 
-	UploadDataToBuffer(dataChunks, dataSizes, 1, &instancesBuffer, /*commandBuffer*/ nullptr);
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &instancesBuffer);
 
 	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
 																		static_cast<uint32>(instanceData.Size()),
 																		ArrayProxy<VkGeometryNV>(),
-																		static_cast<VulkanBuffer *const RESTRICT>(instancesBuffer)->Get(),
-																		/*static_cast<VulkanCommandBuffer *const RESTRICT>(commandBuffer->GetCommandBufferData())*/ nullptr);
+																		static_cast<VulkanBuffer *const RESTRICT>(instancesBuffer)->Get());
 }
 
 /*
@@ -925,10 +923,10 @@ void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, c
 /*
 *	Uploads data to a buffer.
 */
-void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle, CommandBuffer *const RESTRICT commandBuffer) const NOEXCEPT
+void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Upload data to the buffer.
-	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks, commandBuffer ? static_cast<VulkanCommandBuffer *const RESTRICT>(commandBuffer->GetCommandBufferData()) : nullptr);
+	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks);
 }
 
 /*

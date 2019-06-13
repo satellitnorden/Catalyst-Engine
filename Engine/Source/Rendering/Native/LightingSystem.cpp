@@ -68,7 +68,7 @@ void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEP
 		const void *const RESTRICT dataChunks[]{ &lightUniformData };
 		const uint64 dataSizes[]{ sizeof(LightUniformData) };
 
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer, nullptr);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
 
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
 	}

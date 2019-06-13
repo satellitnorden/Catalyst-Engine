@@ -75,9 +75,6 @@ void WorldRayTracingPipeline::Initialize() NOEXCEPT
 */
 void WorldRayTracingPipeline::Execute() NOEXCEPT
 {
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-
 	//No need to fire rays if there's nothing to fire against.
 	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
 
@@ -88,18 +85,13 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		return;
 	}
 
-	//Begin the command buffer.
-	commandBuffer->Begin(this);
-
 	//Re-create the top level acceleration structure.
 	if (_TopLevelAccelerationStructure)
 	{
 		RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
 	}
 
-	CATALYST_BENCHMARK_SECTION_START();
-	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), commandBuffer, &_TopLevelAccelerationStructure);
-	CATALYST_BENCHMARK_SECTION_END("Top level acceleration structure re-creation");
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), &_TopLevelAccelerationStructure);
 
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
@@ -115,6 +107,12 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(8, 0, &currentRenderDataTable, _NoiseTextures[_CurrentNoiseTextureIndex], RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
 	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(9, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(10, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+
+	//Cache data the will be used.
+	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(this);
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());

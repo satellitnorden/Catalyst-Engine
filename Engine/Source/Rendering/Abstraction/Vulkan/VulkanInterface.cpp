@@ -259,10 +259,10 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 /*
 *	Creates an acceleration structure.
 */
-RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, VulkanCommandBuffer *const RESTRICT commandBuffer) NOEXCEPT
+RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT
 {
 	VulkanAccelerationStructure *const RESTRICT newAccelerationStructure = static_cast<VulkanAccelerationStructure *const RESTRICT>(Memory::GlobalPoolAllocate<sizeof(VulkanAccelerationStructure)>());
-	newAccelerationStructure->Initialize(type, instanceCount, geometry, instanceData, commandBuffer);
+	newAccelerationStructure->Initialize(type, instanceCount, geometry, instanceData);
 
 	static Spinlock lock;
 	ScopedWriteLock<Spinlock> scopedLock{ lock };

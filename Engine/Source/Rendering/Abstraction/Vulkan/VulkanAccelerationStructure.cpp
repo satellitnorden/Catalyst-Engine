@@ -51,7 +51,7 @@ namespace VulkanAccelerationStructureLogic
 /*
 *	Initializes this Vulkan acceleration structure.
 */
-void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, VulkanCommandBuffer *const RESTRICT commandBuffer) NOEXCEPT
+void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT
 {
 	//Create the acceleration structure create info.
 	VkAccelerationStructureCreateInfoNV accelerationStructureCreateInfo;
@@ -72,7 +72,10 @@ void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV
 	VulkanUtilities::CreateAccelerationStructureScratchBuffer(_VulkanAccelerationStructure, false, &scratchBuffer, &scratchMemory);
 
 	//Build the acceleration structure.
-	VulkanUtilities::BuildAccelerationStructure(type, instanceCount, geometry, instanceData, _VulkanAccelerationStructure, scratchBuffer, commandBuffer);
+	//if (type == VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV)
+	{
+		VulkanUtilities::BuildAccelerationStructure(type, instanceCount, geometry, instanceData, _VulkanAccelerationStructure, scratchBuffer);
+	}
 
 	//Destroy the scratch buffer.
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), scratchBuffer, nullptr);

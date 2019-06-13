@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 
 class VulkanAccelerationStructure final
 {
@@ -16,7 +15,7 @@ public:
 	/*
 	*	Initializes this Vulkan acceleration structure.
 	*/
-	void Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, VulkanCommandBuffer *const RESTRICT commandBuffer) NOEXCEPT;
+	void Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan acceleration structure.
