@@ -60,7 +60,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
-	features.ambientOcclusion = sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f);
+	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
 
 	return features;
 }

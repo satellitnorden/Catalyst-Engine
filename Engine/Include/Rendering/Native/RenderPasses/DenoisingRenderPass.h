@@ -26,7 +26,7 @@ public:
 private:
 
 	//The ambient occlusion denoising graphics pipelines.
-	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 4> _AmbientOcclusionDenoisingGraphicsPipelines;
+	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 6> _AmbientOcclusionDenoisingGraphicsPipelines;
 
 	//The diffuse irradiance denoising graphics pipelines.
 	StaticArray<DenoisingGraphicsPipeline, 6> _DiffuseIrradianceDenoisingGraphicsPipelines;

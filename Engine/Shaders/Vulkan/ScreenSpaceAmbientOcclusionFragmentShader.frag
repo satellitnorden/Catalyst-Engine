@@ -6,7 +6,13 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRandomUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
+
+//Constants.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (2.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -30,52 +36,16 @@ void main()
 	//Calculate the world position at this fragment the current frame.
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * hitDistance;
 
-	//Sample the active noise texture.
-	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
 	//Calculate the occlusion.
 	float occlusion = 0.0f;
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
-		vec3 randomDirection;
-		float randomLength;
-
-		switch(i)
-		{
-			case 0:
-			{
-				randomDirection = normalize(activeNoiseTexture.xyz * 2.0f - 1.0f);
-				randomLength = activeNoiseTexture.w;
-
-				break;
-			}
-
-			case 1:
-			{
-				randomDirection = normalize(activeNoiseTexture.xyw * 2.0f - 1.0f);
-				randomLength = activeNoiseTexture.z;
-
-				break;
-			}
-
-			case 2:
-			{
-				randomDirection = normalize(activeNoiseTexture.xzw * 2.0f - 1.0f);
-				randomLength = activeNoiseTexture.y;
-
-				break;
-			}
-
-			case 3:
-			{
-				randomDirection = normalize(activeNoiseTexture.yzw * 2.0f - 1.0f);
-				randomLength = activeNoiseTexture.x;
-
-				break;
-			}
-		}
+		vec2 randomTextureCoordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY) + GetRandomNoiseTextureOffset(i);
+		vec4 randomSample = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), randomTextureCoordinate);
+		vec3 randomDirection = normalize(randomSample.xyz * 2.0f - 1.0f);
+		float randomLength = SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * pow(randomSample.w, SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS);
 
 		randomDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
 		vec3 samplePosition = worldPosition + randomDirection * randomLength;
@@ -92,14 +62,14 @@ void main()
 		float sampleHitDistance = sampleSceneFeatures.w;
 
 		//Calculate the distance falloff.
-		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance), 1.0f));
+		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance) / SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS, 1.0f));
 
 		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
 		occlusion += float(expectedHitDistance > sampleHitDistance) * distanceFalloff;
 	}
 
 	//Normalize the ambient occlusion.
-	occlusion = 1.0f - (occlusion * 0.25f);
+	occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);
 
     //Write the fragment
     fragment = vec4(vec3(occlusion), 1.0f);
