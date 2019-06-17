@@ -43,8 +43,8 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
 		_TopLevelAccelerationStructureInstances.EmplaceSlow(transformComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
 
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
 
 		materials[i] = staticModelComponent->_Material;
 	}
@@ -56,7 +56,7 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 
 	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentMaterialsUniformBuffer);
 
-	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(2, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
+	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(3, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
 
 	//Re-create the top level acceleration structure.
 	if (_TopLevelAccelerationStructure)
@@ -66,7 +66,9 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 
 	if (!_TopLevelAccelerationStructureInstances.Empty())
 	{
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), &_TopLevelAccelerationStructure);
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_TopLevelAccelerationStructureInstances), &_TopLevelAccelerationStructure);
+	
+		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &currentModelDataRenderDataTable, _TopLevelAccelerationStructure);
 	}
 }
 
@@ -85,11 +87,12 @@ RenderDataTableHandle ModelSystem::GetCurrentModelDataRenderDataTable() const NO
 void ModelSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the model data render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 3> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_ModelDataRenderDataTableLayout);

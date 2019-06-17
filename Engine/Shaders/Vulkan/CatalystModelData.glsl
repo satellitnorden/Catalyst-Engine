@@ -28,9 +28,10 @@ struct Vertex
 };
 
 //Model uniform data.
-layout (set = 3, binding = 0) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (set = 3, binding = 1) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
-layout (std140, set = 3, binding = 2) uniform ModelUniformData
+layout (set = 1, binding = 0) uniform accelerationStructureNV topLevelAccelerationStructure;
+layout (set = 1, binding = 1) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (set = 1, binding = 2) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
+layout (std140, set = 1, binding = 3) uniform ModelUniformData
 {
     layout (offset = 0) Material[MAXIMUM_NUMBER_OF_MODELS] modelMaterials;
 };
