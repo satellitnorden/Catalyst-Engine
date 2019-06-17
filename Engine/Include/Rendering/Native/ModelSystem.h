@@ -33,6 +33,14 @@ public:
 	}
 
 	/*
+	*	Returns the top level acceleration structure.
+	*/
+	FORCE_INLINE AccelerationStructureHandle GetTopLevelAccelerationStructure() NOEXCEPT
+	{
+		return _TopLevelAccelerationStructure;
+	}
+
+	/*
 	*	Returns the model data render data table layout.
 	*/
 	FORCE_INLINE RenderDataTableLayoutHandle GetModelDataRenderDataTableLayout() const NOEXCEPT
@@ -49,6 +57,9 @@ private:
 
 	//The top level acceleration structure instances.
 	DynamicArray<TopLevelAccelerationStructureInstanceData> _TopLevelAccelerationStructureInstances;
+
+	//The top level acceleration structure.
+	AccelerationStructureHandle _TopLevelAccelerationStructure{ EMPTY_HANDLE };
 
 	//The model data render data table layout.
 	RenderDataTableLayoutHandle _ModelDataRenderDataTableLayout;

@@ -61,14 +61,6 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 		return;
 	}
 
-	//Re-create the top level acceleration structure.
-	if (_TopLevelAccelerationStructure)
-	{
-		RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
-	}
-
-	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), &_TopLevelAccelerationStructure);
-
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
@@ -80,7 +72,7 @@ void WorldRayTracingPipeline::Execute() NOEXCEPT
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(5, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(6, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(7, 0, &currentRenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(8, 0, &currentRenderDataTable, _TopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(8, 0, &currentRenderDataTable, RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructure());
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(9, 0, &currentRenderDataTable, ResourceLoader::GetTextureCube(HashString("Environment_TextureCube")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 
 	//Cache data the will be used.

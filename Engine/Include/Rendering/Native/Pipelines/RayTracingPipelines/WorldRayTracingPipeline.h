@@ -30,9 +30,6 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
-	//The top level acceleration structure.
-	AccelerationStructureHandle _TopLevelAccelerationStructure{ EMPTY_HANDLE };
-
 	/*
 	*	Creates the render data table layout.
 	*/

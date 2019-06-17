@@ -57,6 +57,17 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentMaterialsUniformBuffer);
 
 	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(2, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
+
+	//Re-create the top level acceleration structure.
+	if (_TopLevelAccelerationStructure)
+	{
+		RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
+	}
+
+	if (!_TopLevelAccelerationStructureInstances.Empty())
+	{
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(RenderingSystem::Instance->GetModelSystem()->GetTopLevelAccelerationStructureInstances()), &_TopLevelAccelerationStructure);
+	}
 }
 
 /*
