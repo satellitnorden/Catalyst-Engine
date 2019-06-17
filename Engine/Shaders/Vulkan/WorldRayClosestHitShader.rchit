@@ -13,7 +13,7 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
-layout (set = 3, binding = 8) uniform samplerCube environmentTexture;
+layout (set = 3, binding = 7) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;

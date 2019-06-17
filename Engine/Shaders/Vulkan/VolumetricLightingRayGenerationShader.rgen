@@ -1,0 +1,112 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
+#include "CatalystModelData.glsl"
+#include "CatalystRayTracingCore.glsl"
+
+//Constants.
+#define VOLUMETRIC_LIGHTING_SAMPLES (4)
+#define VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define VOLUMETRIC_LIGHTING_DENSITY (0.0005f)
+
+//Descriptor set data.
+layout (set = 3, binding = 0, rgba32f) uniform image2D volumetricLightingImage;
+layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures2Image;
+
+//In parameters.
+layout(location = 1) rayPayloadNV float visibility;
+
+void main() 
+{
+	//Load the scene features.
+	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
+
+	//Retrieve all properties.
+	float hitDistance = sceneFeatures2.w;
+
+	//Calculate the screen coordinate.
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+
+	//Calculate the hit position.
+	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance;
+
+	//Calculate the volumetric lighting.
+	vec3 volumetricLighting = vec3(0.0f);
+
+	//Add the ambient lighting.
+	volumetricLighting += VOLUMETRIC_LIGHTING_BASE_COLOR * VOLUMETRIC_LIGHTING_DENSITY * min(hitDistance / 100.0f, 1.0f);
+
+	for (int i = 0; i < VOLUMETRIC_LIGHTING_SAMPLES; i += 2)
+	{
+		//Retrieve the random vector.
+		vec4 randomVector = texture(sampler2D(globalTextures[i], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+		{
+
+			Light light = UnpackLight(int(float(numberOfLights) * randomVector.x));
+
+			vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.y);
+
+			float lengthToLight = length(light.position - randomPositionAlongRay);
+			vec3 lightDirection = vec3(light.position - randomPositionAlongRay) / lengthToLight;
+
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					0, 																							//missIndex
+					randomPositionAlongRay, 																	//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			volumetricLighting += (VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.strength * float(numberOfLights) * VOLUMETRIC_LIGHTING_DENSITY * visibility) / VOLUMETRIC_LIGHTING_SAMPLES;
+		}
+
+		{
+
+			Light light = UnpackLight(int(float(numberOfLights) * randomVector.z));
+
+			vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.w);
+
+			float lengthToLight = length(light.position - randomPositionAlongRay);
+			vec3 lightDirection = vec3(light.position - randomPositionAlongRay) / lengthToLight;
+
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					0, 																							//missIndex
+					randomPositionAlongRay, 																	//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			volumetricLighting += (light.color * light.strength * float(numberOfLights) * VOLUMETRIC_LIGHTING_DENSITY * visibility) / VOLUMETRIC_LIGHTING_SAMPLES;
+		}
+	}
+
+	//Write to the images.
+	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
+}

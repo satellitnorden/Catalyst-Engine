@@ -12,19 +12,15 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
-//Constants.
-#define VOLUMETRIC_DENSITY (0.0005f)
-
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
 layout (set = 3, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
 layout (set = 3, binding = 2, rgba32f) uniform image2D directLightingImage;
-layout (set = 3, binding = 3, rgba32f) uniform image2D volumetricLightingImage;
-layout (set = 3, binding = 4, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 3, binding = 5, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 3, binding = 6, rgba32f) uniform image2D sceneFeatures3Image;
-layout (set = 3, binding = 7, rgba8) uniform image2D sceneFeatures4Image;
-layout (set = 3, binding = 8) uniform samplerCube environmentTexture;
+layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 3, binding = 4, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 3, binding = 5, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 3, binding = 6, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 3, binding = 7) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
@@ -184,40 +180,8 @@ void main()
 												light.color * light.strength) * attenuation * visibility;
 	}
 
-	//Calculate the volumetric lighting.
-	vec3 volumetricLighting = vec3(0.0f);
-
-	if (volumetricLightingMode == VOLUMETRIC_LIGHTING_MODE_RAY_TRACED)
-	{
-		Light light = UnpackLight(int(float(numberOfLights) * randomVector.x));
-
-		vec3 randomPositionAlongRay = perceiverWorldPosition + rayDirection * sceneFeatures2.w * fract(randomVector.y);
-
-		float lengthToLight = length(light.position - randomPositionAlongRay);
-		vec3 lightDirection = vec3(light.position - randomPositionAlongRay) / lengthToLight;
-
-		visibility = 0.0f;
-
-		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				1, 																							//missIndex
-				randomPositionAlongRay, 																	//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				lightDirection,																				//direction
-				lengthToLight,																				//Tmax
-				1 																							//payload
-				);
-
-		volumetricLighting = light.color * light.strength * float(numberOfLights) * VOLUMETRIC_DENSITY * visibility;
-	}
-
 	//Write to the images.
 	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
 	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
-	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
 }
