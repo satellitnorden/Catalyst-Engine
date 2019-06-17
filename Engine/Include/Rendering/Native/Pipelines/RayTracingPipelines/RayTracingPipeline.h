@@ -25,27 +25,19 @@ public:
 	}
 
 	/*
-	*	Returns the miss shader.
-	*/
-	FORCE_INLINE NO_DISCARD Shader GetMissShader() const NOEXCEPT
-	{
-		return _MissShader;
-	}
-
-	/*
-	*	Returns the visiblity miss shader.
-	*/
-	FORCE_INLINE NO_DISCARD Shader GetVisiblityMissShader() const NOEXCEPT
-	{
-		return _VisibilityMissShader;
-	}
-
-	/*
 	*	Returns the closest shader.
 	*/
 	FORCE_INLINE NO_DISCARD Shader GetClosestHitShader() const NOEXCEPT
 	{
 		return _ClosestHitShader;
+	}
+
+	/*
+	*	Returns the miss shaders.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<Shader>& GetMissShaders() const NOEXCEPT
+	{
+		return _MissShaders;
 	}
 
 protected:
@@ -59,22 +51,6 @@ protected:
 	}
 
 	/*
-	*	Sets the miss shader.
-	*/
-	FORCE_INLINE void SetMissShader(const Shader shader) NOEXCEPT
-	{
-		_MissShader = shader;
-	}
-
-	/*
-	*	Sets the visibility miss shader.
-	*/
-	FORCE_INLINE void SetVisiblityMissShader(const Shader shader) NOEXCEPT
-	{
-		_VisibilityMissShader = shader;
-	}
-
-	/*
 	*	Sets the closest shader.
 	*/
 	FORCE_INLINE void SetClosestHitShader(const Shader shader) NOEXCEPT
@@ -82,18 +58,31 @@ protected:
 		_ClosestHitShader = shader;
 	}
 
+	/*
+	*	Sets the number of miss shaders.
+	*/
+	FORCE_INLINE void SetNumberOfMissShaders(const uint64 numberOfMissShaders) NOEXCEPT
+	{
+		_MissShaders.Reserve(numberOfMissShaders);
+	}
+
+	/*
+	*	Adds a miss shader.
+	*/
+	FORCE_INLINE void AddMissShader(const Shader shader) NOEXCEPT
+	{
+		_MissShaders.EmplaceFast(shader);
+	}
+
 private:
 
 	//The ray generation shader.
 	Shader _RayGenerationShader;
 
-	//The miss shader.
-	Shader _MissShader;
-
-	//The visibility miss shader.
-	Shader _VisibilityMissShader;
-
 	//The closest hit shader.
 	Shader _ClosestHitShader;
+
+	//The miss shaders.
+	DynamicArray<Shader> _MissShaders;
 
 };

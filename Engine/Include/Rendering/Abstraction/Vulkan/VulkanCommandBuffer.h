@@ -126,7 +126,7 @@ public:
 	/*
 	*	Records a trace rays command.
 	*/
-	void CommandTraceRays(const VkBuffer shaderBindingTableBuffer, const uint32 width, const uint32 height) NOEXCEPT;
+	void CommandTraceRays(const VkBuffer shaderBindingTableBuffer, const uint32 missShaderBindingOffset, const uint32 hitShaderBindingOffset, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
 	*	Records a wait events command.

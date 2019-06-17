@@ -261,17 +261,19 @@ void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineS
 /*
 *	Records a trace rays command.
 */
-void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuffer, const uint32 width, const uint32 height) NOEXCEPT
+void VulkanCommandBuffer::CommandTraceRays(const VkBuffer shaderBindingTableBuffer, const uint32 missShaderBindingOffset, const uint32 hitShaderBindingOffset, const uint32 width, const uint32 height) NOEXCEPT
 {
+	const uint32 stride{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
+
 	vkCmdTraceRaysNV(	_VulkanCommandBuffer,
 						shaderBindingTableBuffer,
 						0,
 						shaderBindingTableBuffer,
-						16,
-						16,
+						missShaderBindingOffset,
+						stride,
 						shaderBindingTableBuffer,
-						48,
-						16,
+						hitShaderBindingOffset,
+						stride,
 						VK_NULL_HANDLE,
 						0,
 						0,

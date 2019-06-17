@@ -482,11 +482,17 @@ namespace VulkanRenderingSystemLogic
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._ShaderModules.Reserve(4);
-		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
-		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetMissShader())]);
-		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVisiblityMissShader())]);
-		parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
+		parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
+
+		if (pipeline->GetClosestHitShader() != Shader::None)
+		{
+			parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
+		}
+		
+		for (const Shader shader : pipeline->GetMissShaders())
+		{
+			parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(shader)]);
+		}
 
 		//Create the pipeline sub stage data.
 		VulkanRayTracingPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanRayTracingPipelineData))) VulkanRayTracingPipelineData() };
@@ -497,7 +503,7 @@ namespace VulkanRenderingSystemLogic
 
 		//Create the shader binding table buffer.
 		const uint32 shaderGroupHandleSize{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
-		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * 4 };
+		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * parameters._ShaderModules.Size() };
 
 		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
@@ -507,7 +513,7 @@ namespace VulkanRenderingSystemLogic
 		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
 																data->_Pipeline->GetPipeline(),
 																0,
-																4,
+																static_cast<uint32>(parameters._ShaderModules.Size()),
 																shaderHandleStorageSize,
 																shaderHandleStorage));
 

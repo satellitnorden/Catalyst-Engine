@@ -6,6 +6,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanRayTracingPipelineData.h>
@@ -174,7 +175,12 @@ void CommandBuffer::TraceRays(const Pipeline *const RESTRICT pipeline, const uin
 {
 	const VulkanRayTracingPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
 
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays(pipelineData->_ShaderBindingTableBuffer->Get(), width, height);
+	const uint32 stride{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
+
+	const uint32 missShaderBindingOffset{ static_cast<const RayTracingPipeline *const RESTRICT>(pipeline)->GetClosestHitShader() != Shader::None ? stride * 2 : stride };
+	const uint32 hitShaderBindingOffset{ stride };
+
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays(pipelineData->_ShaderBindingTableBuffer->Get(), missShaderBindingOffset, hitShaderBindingOffset, width, height);
 }
 
 /*

@@ -75,47 +75,22 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 */
 void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreationParameters &parameters, DynamicArray<VkRayTracingShaderGroupCreateInfoNV> *const RESTRICT groups) const NOEXCEPT
 {
-	groups->Reserve(4);
+	groups->Reserve(parameters._ShaderModules.Size());
 
-	groups->EmplaceFast();
+	uint32 counter{ 0 };
 
-	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
-	groups->Back().pNext = nullptr;
-	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
-	groups->Back().generalShader = 0;
-	groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
+	for (const VulkanShaderModule* const shaderModule : parameters._ShaderModules)
+	{
+		groups->EmplaceFast();
 
-	groups->EmplaceFast();
-
-	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
-	groups->Back().pNext = nullptr;
-	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
-	groups->Back().generalShader = 1;
-	groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
-
-	groups->EmplaceFast();
-
-	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
-	groups->Back().pNext = nullptr;
-	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
-	groups->Back().generalShader = 2;
-	groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
-
-	groups->EmplaceFast();
-
-	groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
-	groups->Back().pNext = nullptr;
-	groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;
-	groups->Back().generalShader = VK_SHADER_UNUSED_NV;
-	groups->Back().closestHitShader = 3;
-	groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
-	groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
+		groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+		groups->Back().pNext = nullptr;
+		groups->Back().type = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV :  VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+		groups->Back().generalShader = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? VK_SHADER_UNUSED_NV : counter++;
+		groups->Back().closestHitShader = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? counter++ : VK_SHADER_UNUSED_NV;
+		groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
+		groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
+	}
 }
 
 /*
