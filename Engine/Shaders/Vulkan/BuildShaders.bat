@@ -3,6 +3,9 @@ glslangValidator.exe -V CompositingFragmentShader.frag -o 				CompositingFragmen
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxFragmentShader.frag -o 		DebugAxisAlignedBoundingBoxFragmentShader.spv
 glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugAxisAlignedBoundingBoxVertexShader.spv
 glslangValidator.exe -V DenoisingFragmentShader.frag -o 				DenoisingFragmentShader.spv
+glslangValidator.exe -V DiffuseIrradianceRayClosestHitShader.rchit -o 			DiffuseIrradianceRayClosestHitShader.spv
+glslangValidator.exe -V DiffuseIrradianceRayGenerationShader.rgen -o 			DiffuseIrradianceRayGenerationShader.spv
+glslangValidator.exe -V DiffuseIrradianceRayMissShader.rmiss -o 			DiffuseIrradianceRayMissShader.spv
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 				FireflyReductionFragmentShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv

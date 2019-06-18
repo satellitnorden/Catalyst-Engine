@@ -13,14 +13,13 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba32f) uniform image2D diffuseIrradianceImage;
-layout (set = 3, binding = 1, rgba32f) uniform image2D specularIrradianceImage;
-layout (set = 3, binding = 2, rgba32f) uniform image2D directLightingImage;
-layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 3, binding = 4, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 3, binding = 5, rgba32f) uniform image2D sceneFeatures3Image;
-layout (set = 3, binding = 6, rgba8) uniform image2D sceneFeatures4Image;
-layout (set = 3, binding = 7) uniform samplerCube environmentTexture;
+layout (set = 3, binding = 0, rgba32f) uniform image2D specularIrradianceImage;
+layout (set = 3, binding = 1, rgba32f) uniform image2D directLightingImage;
+layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 3, binding = 4, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 3, binding = 5, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 3, binding = 6) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
@@ -53,41 +52,6 @@ void main()
 
 	//Calculate the hit position.
 	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.001f;
-
-	//Retrieve the random vector.
-	vec4 randomVector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-	//Calculate the random direction.
-	vec3 randomDirection = normalize(randomVector.xyz * 2.0f - 1.0f);
-
-	//Calculate the diffuse irradiance.
-	vec3 diffuseIrradiance = vec3(0.0f);
-
-	if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
-	{
-		diffuseIrradiance = vec3(0.1f);
-	}
-
-	else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
-	{
-		vec3 randomDiffuseIrradianceDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
-
-		traceNV(
-				topLevelAccelerationStructure, 		//topLevel
-				gl_RayFlagsOpaqueNV, 				//rayFlags
-				0xff, 								//cullMask
-				0, 									//sbtRecordOffset
-				0, 									//sbtRecordStride
-				0, 									//missIndex
-				hitPosition, 						//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-				randomDiffuseIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-				0 									//payload
-				);
-
-		diffuseIrradiance = rayPayload.directLighting;
-	}
 
 	//Calculate the speculare irradiance.
 	vec3 specularIrradiance = vec3(0.0f);
@@ -181,7 +145,6 @@ void main()
 	}
 
 	//Write to the images.
-	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));
 	imageStore(directLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(directLighting, 1.0f));
 }

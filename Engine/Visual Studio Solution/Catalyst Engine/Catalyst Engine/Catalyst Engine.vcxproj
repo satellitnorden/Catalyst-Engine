@@ -207,6 +207,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DiffuseIrradianceRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\CompositingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DenoisingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DiffuseIrradianceRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FireflyReductionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LightingRenderPass.h" />
@@ -348,12 +350,14 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\DiffuseIrradianceRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\CompositingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DenoisingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DiffuseIrradianceRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\FireflyReductionRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.cpp" />

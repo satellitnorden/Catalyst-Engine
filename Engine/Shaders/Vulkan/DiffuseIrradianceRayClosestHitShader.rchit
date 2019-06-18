@@ -13,10 +13,10 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
-layout (set = 3, binding = 6) uniform samplerCube environmentTexture;
+layout (set = 3, binding = 2) uniform samplerCube environmentTexture;
 
 //In parameters.
-layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
+layout(location = 0) rayPayloadInNV DiffuseIrradianceRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
 
@@ -88,50 +88,39 @@ void main()
 	//Add the luminance lighting.
 	directLighting += albedo * luminance;
 
-	//Calculate all lights.
-	for (int i = 0; i < numberOfLights; ++i)
-	{
-		Light light = UnpackLight(i);
+	//Calculate a randomly chosen light.
+	Light light = UnpackLight(int(rayPayload.randomVector.w * float(numberOfLights)));
 
-		float lengthToLight = length(light.position - hitPosition);
-		vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
+	float lengthToLight = length(light.position - hitPosition);
+	vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
 
-		//Calculate the attenuation.
-		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+	//Calculate the attenuation.
+	float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-		//Determine the visibility.
-		if (shadowsMode == SHADOWS_MODE_NONE)
-		{
-			visibility = 1.0f;
-		}
+	//Determine the visibility.
+	visibility = 0.0f;
 
-		else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
-		{
-			visibility = 0.0f;
+	traceNV(
+			topLevelAccelerationStructure, 																//topLevel
+			gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+			0xff, 																						//cullMask
+			0, 																							//sbtRecordOffset
+			0, 																							//sbtRecordStride
+			1, 																							//missIndex
+			hitPosition, 																				//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+			lightDirection,																				//direction
+			lengthToLight,																				//Tmax
+			1 																							//payload
+			);
 
-			traceNV(
-					topLevelAccelerationStructure, 																//topLevel
-					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-					0xff, 																						//cullMask
-					0, 																							//sbtRecordOffset
-					0, 																							//sbtRecordStride
-					1, 																							//missIndex
-					hitPosition, 																				//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-					lightDirection,																				//direction
-					lengthToLight,																				//Tmax
-					1 																							//payload
-					);
-		}
-
-		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
-												lightDirection,
-												albedo,
-												finalNormal,
-												roughness,
-												metallic,
-												light.color * light.strength) * attenuation * visibility;
-	}
+	directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+											lightDirection,
+											albedo,
+											finalNormal,
+											roughness,
+											metallic,
+											light.color * light.strength * float(numberOfLights)) * attenuation * visibility;
 
 	//Write to the ray payload.
 	rayPayload.directLighting = directLighting;

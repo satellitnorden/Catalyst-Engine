@@ -86,7 +86,7 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Sample the current diffuse irradiance lighting.
-	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentDiffuseIrradiance = Upsample(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current specular irradiance lighting.
 	vec3 currentSpecularIrradiance = mix(currentDiffuseIrradiance, texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 4.0f));
@@ -109,5 +109,5 @@ void main()
 
 	//Write the fragment.
 	scene = vec4(indirectLighting + currentDirectLighting + currentVolumetricLighting, 1.0f);
-	//scene = vec4(vec3(pow(Upsample(ambientOcclusionTexture, fragmentTextureCoordinate).r, 4.0f)), 1.0f);
+	//scene = vec4(currentDiffuseIrradiance, 1.0f);
 }

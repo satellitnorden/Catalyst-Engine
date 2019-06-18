@@ -14,6 +14,15 @@ struct PrimaryRayPayload
 };
 
 /*
+*	Diffuse irradiance payload struct definition.
+*/
+struct DiffuseIrradianceRayPayload
+{
+	vec4 randomVector;
+	vec3 directLighting;
+};
+
+/*
 *	Path tracing ray payload struct definition.
 */
 struct PathTracingRayPayload

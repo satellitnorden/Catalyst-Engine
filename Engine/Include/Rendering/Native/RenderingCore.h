@@ -55,6 +55,7 @@ enum class RenderPassStage : uint8
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SceneFeatures,
 	WorldRayTracing,
+	DiffuseIrradiance,
 	ScreenSpaceAmbientOcclusion,
 	ScreenSpaceSpecularIrradiance,
 	VolumetricLighting,
@@ -294,6 +295,9 @@ enum class Shader : uint8
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
 	DenoisingFragment,
+	DiffuseIrradianceRayClosestHit,
+	DiffuseIrradianceRayGeneration,
+	DiffuseIrradianceRayMiss,
 	FastApproximateAntiAliasingFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,

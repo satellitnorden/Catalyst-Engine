@@ -584,6 +584,36 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DiffuseIrradianceRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DiffuseIrradianceRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DiffuseIrradianceRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+		}
+
+		{
 			//Initialize the fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));

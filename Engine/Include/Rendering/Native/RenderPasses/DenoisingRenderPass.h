@@ -29,7 +29,7 @@ private:
 	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 4> _AmbientOcclusionDenoisingGraphicsPipelines;
 
 	//The diffuse irradiance denoising graphics pipelines.
-	StaticArray<DenoisingGraphicsPipeline, 6> _DiffuseIrradianceDenoisingGraphicsPipelines;
+	StaticArray<DenoisingGraphicsPipeline, 4> _DiffuseIrradianceDenoisingGraphicsPipelines;
 
 	//Thevolumetric lighting denoising graphics pipelines.
 	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 4> _VolumetricLightingDenoisingGraphicsPipelines;

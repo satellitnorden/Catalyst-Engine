@@ -1,0 +1,69 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
+#include "CatalystModelData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
+
+//Descriptor set data.
+layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
+layout (set = 3, binding = 1, rgba32f) uniform image2D diffuseIrradianceImage;
+
+//In parameters.
+layout(location = 0) rayPayloadNV DiffuseIrradianceRayPayload rayPayload;
+
+void main() 
+{
+	//Calculate the screen coordinate.
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Load the scene features.
+	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, screenCoordinate);
+
+	//Retrieve all properties.
+	vec3 geometryNormal = sceneFeatures2.xyz;
+	float hitDistance = sceneFeatures2.w;
+
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+
+	//Calculate the hit position.
+	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.001f;
+
+	//Retrieve the random vector.
+	rayPayload.randomVector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+	//Calculate the random direction.
+	vec3 randomDirection = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
+
+	//Calculate the diffuse irradiance.
+	vec3 diffuseIrradiance = vec3(0.0f);
+
+	vec3 randomDiffuseIrradianceDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
+
+	traceNV(
+			topLevelAccelerationStructure, 		//topLevel
+			gl_RayFlagsOpaqueNV, 				//rayFlags
+			0xff, 								//cullMask
+			0, 									//sbtRecordOffset
+			0, 									//sbtRecordStride
+			0, 									//missIndex
+			hitPosition, 						//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+			randomDiffuseIrradianceDirection, 	//direction
+			CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+			0 									//payload
+			);
+		
+	diffuseIrradiance = rayPayload.directLighting;
+
+	//Write to the images.
+	imageStore(diffuseIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(diffuseIrradiance, 1.0f));
+}
