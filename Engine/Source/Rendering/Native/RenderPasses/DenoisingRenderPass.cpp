@@ -45,81 +45,81 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[2].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[3].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[4].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																4.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[5].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[1].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[2].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[3].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
 																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[4].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 																4.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[5].Initialize(	DenoisingGraphicsPipeline::Direction::Vertical,
 																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[1].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[2].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[3].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
 	//Add all pipelines.

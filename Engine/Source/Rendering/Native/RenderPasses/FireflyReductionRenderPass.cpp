@@ -44,11 +44,11 @@ void FireflyReductionRenderPass::Initialize() NOEXCEPT
 
 	_FireflyReductionGraphicsPipelines[0].Initialize(	FireflyReductionGraphicsPipeline::Direction::Horizontal,
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float));
 	AddPipeline(&_FireflyReductionGraphicsPipelines[0]);
 
 	_FireflyReductionGraphicsPipelines[1].Initialize(	FireflyReductionGraphicsPipeline::Direction::Vertical,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 	AddPipeline(&_FireflyReductionGraphicsPipelines[1]);
 
