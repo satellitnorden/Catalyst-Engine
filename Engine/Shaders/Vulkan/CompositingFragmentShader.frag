@@ -43,29 +43,6 @@ layout (set = 1, binding = 8) uniform sampler2D volumetricLightingTexture;
 layout (location = 0) out vec4 scene;
 
 /*
-*	Samples the scene features at the specified coordinates.
-*/
-SceneFeatures SampleSceneFeatures(vec2 coordinate)
-{
-	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
-	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
-	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
-	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
-	vec4 ambientOcclusion = texture(ambientOcclusionTexture, coordinate);
-
-	SceneFeatures features;
-
-	features.albedo = sceneFeatures1.rgb;
-	features.normal = sceneFeatures3.xyz;
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
-	features.roughness = sceneFeatures4.x;
-	features.metallic = sceneFeatures4.y;
-	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
-
-	return features;
-}
-
-/*
 *	Upsamples a texture.
 */
 vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
@@ -78,6 +55,29 @@ vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
 	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.25f;
 
 	return result;
+}
+
+/*
+*	Samples the scene features at the specified coordinates.
+*/
+SceneFeatures SampleSceneFeatures(vec2 coordinate)
+{
+	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
+	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
+	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
+	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
+	vec4 ambientOcclusion = Upsample(ambientOcclusionTexture, coordinate);
+
+	SceneFeatures features;
+
+	features.albedo = sceneFeatures1.rgb;
+	features.normal = sceneFeatures3.xyz;
+	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.roughness = sceneFeatures4.x;
+	features.metallic = sceneFeatures4.y;
+	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
+
+	return features;
 }
 
 void main()
