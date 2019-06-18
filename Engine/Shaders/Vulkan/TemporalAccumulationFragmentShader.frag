@@ -8,11 +8,14 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
 
-//Constants.
-#define TEMPORAL_ACCUMULATION_FEEDBACK_FACTOR (0.9f)
-
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float feedbackFactor;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -62,7 +65,7 @@ void main()
 	previousSampleWeight *= pow(1.0f - min(abs(expectedHitDistance - previousFrameTextureSampler.w), 1.0f), 8.0f);
 
 	//Blend the previous and the current frame.
-	vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ACCUMULATION_FEEDBACK_FACTOR * previousSampleWeight);
+	vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, feedbackFactor * previousSampleWeight);
 
 	//Write the fragments.
 	currentFrame = vec4(blendedFrame, sceneFeatures2TextureSampler.w);

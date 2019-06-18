@@ -12,6 +12,9 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Constants.
+#define PATH_TRACING_SAMPLES (1)
+
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) uniform image2D sceneImage;
 layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
@@ -30,28 +33,62 @@ void main()
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
 
-	//Denote that this is the first recursion depth.
-	rayPayload.currentRecursionDepth = 0;
+	//Accumulate values.
+	vec3 radiance = vec3(0.0f);
+	vec3 albedo = vec3(0.0f);
+	vec3 geometryNormal = vec3(0.0f);
+	float hitDistance = 0.0f;
+	vec3 shadingNormal = vec3(0.0f);
+	int materialProperties = 0;
+	float roughness = 0.0f;
+	float metallic = 0.0f;
+	float ambientOcclusion = 0.0f;
+	float luminance = 0.0f;
 
-	//Fire the ray!
-	traceNV(
-				topLevelAccelerationStructure, 		//topLevel
-				gl_RayFlagsOpaqueNV, 				//rayFlags
-				0xff, 								//cullMask
-				0, 									//sbtRecordOffset
-				0, 									//sbtRecordStride
-				0, 									//missIndex
-				perceiverWorldPosition, 			//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-				rayDirection, 						//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-				0 									//payload
-				);
+	for (int i = 0; i < PATH_TRACING_SAMPLES; ++i)
+	{
+		//Denote that this is the first recursion depth.
+		rayPayload.currentRecursionDepth = 0;
+
+		//Sample the noise texture.
+		vec2 noiseCoordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
+		vec4 noiseSample = texture(sampler2D(globalTextures[i], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noiseCoordinate);
+
+		//Write the random vector.
+		rayPayload.randomVector = noiseSample;
+
+		//Fire the ray!
+		traceNV(
+					topLevelAccelerationStructure, 		//topLevel
+					gl_RayFlagsOpaqueNV, 				//rayFlags
+					0xff, 								//cullMask
+					0, 									//sbtRecordOffset
+					0, 									//sbtRecordStride
+					0, 									//missIndex
+					perceiverWorldPosition, 			//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+					rayDirection, 						//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+					0 									//payload
+					);
+
+		//Accumulate values.
+		radiance += rayPayload.radiance / PATH_TRACING_SAMPLES;
+		albedo += rayPayload.albedo / PATH_TRACING_SAMPLES;
+		geometryNormal += rayPayload.geometryNormal / PATH_TRACING_SAMPLES;
+		hitDistance += rayPayload.hitDistance / PATH_TRACING_SAMPLES;
+		shadingNormal += rayPayload.shadingNormal / PATH_TRACING_SAMPLES;
+		materialProperties += rayPayload.materialProperties / PATH_TRACING_SAMPLES;
+		roughness += rayPayload.roughness / PATH_TRACING_SAMPLES;
+		metallic += rayPayload.metallic / PATH_TRACING_SAMPLES;
+		ambientOcclusion += rayPayload.ambientOcclusion / PATH_TRACING_SAMPLES;
+		luminance += rayPayload.luminance / PATH_TRACING_SAMPLES;
+	}
 
 	//Write to the images.
-	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f));
-	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
-	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.geometryNormal, rayPayload.hitDistance));
-	imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.shadingNormal, intBitsToFloat(rayPayload.materialProperties)));
-	imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.luminance));
+	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
+	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
+	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(geometryNormal, hitDistance));
+	imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(shadingNormal, intBitsToFloat(materialProperties)));
+	imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
 }

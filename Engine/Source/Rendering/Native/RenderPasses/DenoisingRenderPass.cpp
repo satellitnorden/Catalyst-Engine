@@ -19,7 +19,9 @@ DEFINE_SINGLETON(DenoisingRenderPass);
 DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::Denoising);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

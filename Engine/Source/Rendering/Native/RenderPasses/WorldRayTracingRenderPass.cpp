@@ -13,7 +13,9 @@ DEFINE_SINGLETON(WorldRayTracingRenderPass);
 WorldRayTracingRenderPass::WorldRayTracingRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::WorldRayTracing);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

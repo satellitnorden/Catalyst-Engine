@@ -13,7 +13,9 @@ DEFINE_SINGLETON(VolumetricLightingRenderPass);
 VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::VolumetricLighting);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

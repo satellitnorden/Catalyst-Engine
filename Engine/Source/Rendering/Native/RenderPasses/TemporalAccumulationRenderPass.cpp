@@ -16,7 +16,9 @@ DEFINE_SINGLETON(TemporalAccumulationRenderPass);
 TemporalAccumulationRenderPass::TemporalAccumulationRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::TemporalAccumulation);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -40,10 +42,16 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(_DiffuseIrradianceTemporalAccumulationGraphicsPipelines.Size());
 
 	_DiffuseIrradianceTemporalAccumulationGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
-																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1));
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+																			0.9f);
 
 	_DiffuseIrradianceTemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
-																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2));
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
+																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
+																			0.9f);
 
 	for (TemporalAccumulationGraphicsPipeline &pipeline : _DiffuseIrradianceTemporalAccumulationGraphicsPipelines)
 	{

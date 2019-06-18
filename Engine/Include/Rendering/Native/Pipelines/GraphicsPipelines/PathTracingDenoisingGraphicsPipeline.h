@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/General/Matrix.h>
@@ -10,19 +9,22 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class TemporalAccumulationGraphicsPipeline final : public GraphicsPipeline
+class PathTracingDenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
-	
+
+	//Enumeration covering all direction.
+	enum class Direction : uint8
+	{
+		Horizontal,
+		Vertical
+	};
+
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source1,
-					const RenderTargetHandle source2,
-					const RenderTargetHandle target1,
-					const RenderTargetHandle target2,
-					const float feedbackFactor) NOEXCEPT;
+	void Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -37,8 +39,8 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	//The feedback factor.
-	float _FeedbackFactor;
+	//The direction.
+	Direction _Direction;
 
 	/*
 	*	Creates the render data table layout.
@@ -48,6 +50,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle source1, const RenderTargetHandle source2) NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
 
 };

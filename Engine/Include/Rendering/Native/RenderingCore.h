@@ -52,6 +52,7 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class RenderPassStage : uint8
 {
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SceneFeatures,
 	WorldRayTracing,
 	ScreenSpaceAmbientOcclusion,
@@ -61,6 +62,9 @@ enum class RenderPassStage : uint8
 	Denoising,
 	TemporalAccumulation,
 	Compositing,
+#else
+	PathTracing,
+#endif
 	RadianceIntegration,
 	MotionBlur,
 	ToneMapping,
@@ -294,6 +298,10 @@ enum class Shader : uint8
 	FireflyReductionFragment,
 	MotionBlurFragment,
 	PassthroughFragment,
+	PathTracingDenoisingFragment,
+	PathTracingRayClosestHit,
+	PathTracingRayGeneration,
+	PathTracingRayMiss,
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
 	SceneFeaturesFragment,

@@ -19,7 +19,9 @@ DEFINE_SINGLETON(FireflyReductionRenderPass);
 FireflyReductionRenderPass::FireflyReductionRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::FireflyReduction);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

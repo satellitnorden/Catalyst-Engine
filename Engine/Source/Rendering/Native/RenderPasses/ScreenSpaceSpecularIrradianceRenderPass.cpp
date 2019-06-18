@@ -16,7 +16,9 @@ DEFINE_SINGLETON(ScreenSpaceSpecularIrradianceRenderPass);
 ScreenSpaceSpecularIrradianceRenderPass::ScreenSpaceSpecularIrradianceRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::ScreenSpaceSpecularIrradiance);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

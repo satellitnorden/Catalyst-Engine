@@ -13,7 +13,9 @@ DEFINE_SINGLETON(CompositingRenderPass);
 CompositingRenderPass::CompositingRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::Compositing);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

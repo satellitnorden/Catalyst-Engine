@@ -19,6 +19,7 @@ struct PrimaryRayPayload
 struct PathTracingRayPayload
 {
 	int currentRecursionDepth;
+	vec4 randomVector;
 	vec3 radiance;
 	vec3 albedo;
 	vec3 geometryNormal;
@@ -29,7 +30,7 @@ struct PathTracingRayPayload
 	float metallic;
 	float ambientOcclusion;
 	float luminance;
-}
+};
 
 /*
 *	Calculates the ray direction.

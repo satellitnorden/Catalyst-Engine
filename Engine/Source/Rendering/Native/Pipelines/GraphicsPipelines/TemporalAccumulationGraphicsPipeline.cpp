@@ -11,16 +11,35 @@
 #include <Systems/RenderingSystem.h>
 
 /*
+*	Temporal accumulation push constant data definition.
+*/
+class TemporalAccumulationPushConstantData final
+{
+
+public:
+
+	//The feedback factor.
+	float _FeedbackFactor;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
-void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle source,
-														const RenderTargetHandle target) NOEXCEPT
+void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle source1,
+														const RenderTargetHandle source2,
+														const RenderTargetHandle target1,
+														const RenderTargetHandle target2,
+														const float feedbackFactor) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(source);
+	CreateRenderDataTable(source1, source2);
+
+	//Store the feedback factor.
+	_FeedbackFactor = feedbackFactor;
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -31,13 +50,17 @@ void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle 
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(2);
-	AddRenderTarget(target);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
+	AddRenderTarget(target1);
+	AddRenderTarget(target2);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(TemporalAccumulationPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -78,6 +101,13 @@ void TemporalAccumulationGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
+	//Push constants.
+	TemporalAccumulationPushConstantData data;
+
+	data._FeedbackFactor = _FeedbackFactor;
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(TemporalAccumulationPushConstantData), &data);
+
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
 
@@ -106,11 +136,11 @@ void TemporalAccumulationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEP
 /*
 *	Creates the render data table.
 */
-void TemporalAccumulationGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void TemporalAccumulationGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source1, const RenderTargetHandle source2) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source1, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, source2, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

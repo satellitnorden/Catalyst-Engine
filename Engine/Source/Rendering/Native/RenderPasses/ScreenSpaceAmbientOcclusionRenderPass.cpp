@@ -13,7 +13,9 @@ DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the stage.
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::ScreenSpaceAmbientOcclusion);
+#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
