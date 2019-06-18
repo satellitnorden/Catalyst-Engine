@@ -65,6 +65,22 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
+/*
+*	Upsamples a texture.
+*/
+vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
+{
+	vec4 result = vec4(0.0f);
+
+	result += texture(lowresTexture, coordinate) * 0.2f;
+	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.2f;
+	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.2f;
+	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.2f;
+	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.2f;
+
+	return result;
+}
+
 void main()
 {
 	//Sample the current features.
@@ -80,7 +96,7 @@ void main()
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current volumetric lighting.
-	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
 
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),

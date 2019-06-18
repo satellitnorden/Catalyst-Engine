@@ -105,21 +105,21 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[1].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[2].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf));
 
 	_VolumetricLightingDenoisingGraphicsPipelines[3].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
 																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::IntermediateHalf),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
 	//Add all pipelines.

@@ -11,27 +11,27 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_SAMPLES (4)
+#define VOLUMETRIC_LIGHTING_SAMPLES (2)
 #define VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 #define VOLUMETRIC_LIGHTING_DENSITY (0.0005f)
 
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba32f) uniform image2D volumetricLightingImage;
-layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
+layout (set = 3, binding = 1, rgba32f) uniform image2D volumetricLightingImage;
 
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
 
 void main() 
 {
+	//Calculate the screen coordinate.
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
 	//Load the scene features.
-	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, screenCoordinate);
 
 	//Retrieve all properties.
 	float hitDistance = sceneFeatures2.w;
-
-	//Calculate the screen coordinate.
-	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);

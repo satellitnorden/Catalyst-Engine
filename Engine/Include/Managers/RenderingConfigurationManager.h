@@ -114,7 +114,7 @@ private:
 	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };

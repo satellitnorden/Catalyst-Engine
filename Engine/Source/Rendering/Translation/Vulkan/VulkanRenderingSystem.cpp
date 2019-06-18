@@ -336,12 +336,12 @@ namespace VulkanRenderingSystemLogic
 
 				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 				framebufferParameters._Attachments = attachments.Data();
-				framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+				framebufferParameters._Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
 				data->_FrameBuffers.Reserve(1);
 				data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				data->_ShouldClear = depthBuffer ? true : false;
-				data->_Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+				data->_Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 				data->_NumberOfAttachments = static_cast<uint32>(attachments.Size());
 				data->_RenderToScreeen = false;
 			}
