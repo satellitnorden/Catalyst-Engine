@@ -1,0 +1,57 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
+#include "CatalystModelData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
+
+//Descriptor set data.
+layout (set = 3, binding = 0, rgba32f) uniform image2D sceneImage;
+layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 3, binding = 4, rgba8) uniform image2D sceneFeatures4Image;
+
+//In parameters.
+layout(location = 0) rayPayloadNV PathTracingRayPayload rayPayload;
+
+void main() 
+{
+	//Calculate the screen coordinate.
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+
+	//Denote that this is the first recursion depth.
+	rayPayload.currentRecursionDepth = 0;
+
+	//Fire the ray!
+	traceNV(
+				topLevelAccelerationStructure, 		//topLevel
+				gl_RayFlagsOpaqueNV, 				//rayFlags
+				0xff, 								//cullMask
+				0, 									//sbtRecordOffset
+				0, 									//sbtRecordStride
+				0, 									//missIndex
+				perceiverWorldPosition, 			//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
+				rayDirection, 						//direction
+				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				0 									//payload
+				);
+
+	//Write to the images.
+	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.radiance, 1.0f));
+	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.albedo, 1.0f));
+	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.geometryNormal, rayPayload.hitDistance));
+	imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.shadingNormal, intBitsToFloat(rayPayload.materialProperties)));
+	imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(rayPayload.roughness, rayPayload.metallic, rayPayload.ambientOcclusion, rayPayload.luminance));
+}

@@ -6,12 +6,30 @@
 #define CATALYST_RAY_TRACING_T_MAXIMUM (100.0f)
 
 /*
-*	Ray payload struct definition.
+*	Primary ray payload struct definition.
 */
 struct PrimaryRayPayload
 {
 	vec3 directLighting;
 };
+
+/*
+*	Path tracing ray payload struct definition.
+*/
+struct PathTracingRayPayload
+{
+	int currentRecursionDepth;
+	vec3 radiance;
+	vec3 albedo;
+	vec3 geometryNormal;
+	float hitDistance;
+	vec3 shadingNormal;
+	int materialProperties;
+	float roughness;
+	float metallic;
+	float ambientOcclusion;
+	float luminance;
+}
 
 /*
 *	Calculates the ray direction.
