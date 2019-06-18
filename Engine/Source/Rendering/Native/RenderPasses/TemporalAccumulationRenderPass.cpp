@@ -38,6 +38,9 @@ TemporalAccumulationRenderPass::TemporalAccumulationRenderPass() NOEXCEPT
 */
 void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 {
+	//Define constants.
+	constexpr float DIFFUSE_IRRADIANCE_FEEDBACK_FACTOR{ 0.9f }; //0.025f step.
+
 	//Initialize and add the pipelines.
 	SetNumberOfPipelines(_DiffuseIrradianceTemporalAccumulationGraphicsPipelines.Size());
 
@@ -45,13 +48,13 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-																			0.9f);
+																			DIFFUSE_IRRADIANCE_FEEDBACK_FACTOR);
 
 	_DiffuseIrradianceTemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
-																			0.9f);
+																			DIFFUSE_IRRADIANCE_FEEDBACK_FACTOR);
 
 	for (TemporalAccumulationGraphicsPipeline &pipeline : _DiffuseIrradianceTemporalAccumulationGraphicsPipelines)
 	{
