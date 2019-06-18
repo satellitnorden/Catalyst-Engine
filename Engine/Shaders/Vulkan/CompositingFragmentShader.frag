@@ -72,11 +72,10 @@ vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
 {
 	vec4 result = vec4(0.0f);
 
-	result += texture(lowresTexture, coordinate) * 0.2f;
-	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.2f;
-	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.2f;
-	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.2f;
-	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.2f;
+	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.25f;
+	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.25f;
+	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.25f;
+	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.25f;
 
 	return result;
 }
@@ -110,4 +109,5 @@ void main()
 
 	//Write the fragment.
 	scene = vec4(indirectLighting + currentDirectLighting + currentVolumetricLighting, 1.0f);
+	//scene = vec4(vec3(pow(Upsample(ambientOcclusionTexture, fragmentTextureCoordinate).r, 4.0f)), 1.0f);
 }

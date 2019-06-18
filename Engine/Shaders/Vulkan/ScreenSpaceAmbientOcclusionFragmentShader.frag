@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (24)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (2.0f)
 
@@ -39,11 +39,12 @@ void main()
 	//Calculate the occlusion.
 	float occlusion = 0.0f;
 
+	vec2 randomTextureCoordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
+
 	for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
-		vec2 randomTextureCoordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY) + GetRandomNoiseTextureOffset(i);
-		vec4 randomSample = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), randomTextureCoordinate);
+		vec4 randomSample = texture(sampler2D(globalTextures[i], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), randomTextureCoordinate);
 		vec3 randomDirection = normalize(randomSample.xyz * 2.0f - 1.0f);
 		float randomLength = SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * pow(randomSample.w, SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS);
 

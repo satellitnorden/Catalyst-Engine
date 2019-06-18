@@ -45,31 +45,21 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[2].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[3].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[4].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[5].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																4.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
