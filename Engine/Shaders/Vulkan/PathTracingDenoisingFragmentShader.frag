@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (2.0f)
+#define DENOISING_SIZE (32.0f)
 #define DENOISING_START_END (DENOISING_SIZE * 0.5f)
 
 /*
