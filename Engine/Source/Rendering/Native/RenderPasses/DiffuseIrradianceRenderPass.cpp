@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/DiffuseIrradianceRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -36,10 +39,12 @@ DiffuseIrradianceRenderPass::DiffuseIrradianceRenderPass() NOEXCEPT
 void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_SimpleDiffuseIrradianceGraphicsPipeline);
 	AddPipeline(&_DiffuseIrradianceRayTracingPipeline);
 
 	//Initialize all pipelines.
+	_SimpleDiffuseIrradianceGraphicsPipeline.Initialize();
 	_DiffuseIrradianceRayTracingPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -55,5 +60,15 @@ void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
 void DiffuseIrradianceRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_DiffuseIrradianceRayTracingPipeline.Execute();
+	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::Simple)
+	{
+		_SimpleDiffuseIrradianceGraphicsPipeline.Execute();
+		_DiffuseIrradianceRayTracingPipeline.SetIncludeInRender(false);
+	}
+	
+	else if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
+	{
+		_DiffuseIrradianceRayTracingPipeline.Execute();
+		_SimpleDiffuseIrradianceGraphicsPipeline.SetIncludeInRender(false);
+	}
 }

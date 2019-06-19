@@ -155,9 +155,20 @@ void DenoisingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all diffuse irradiance denoising pipelines.
-	for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
+	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
 	{
-		pipeline.Execute();
+		for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
+	}
+
+	else
+	{
+		for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
 	}
 
 	//Execute all the volumetric lighting denoising pipelines.

@@ -312,6 +312,7 @@ enum class Shader : uint8
 	SceneFeaturesVertex,
 	ScreenSpaceAmbientOcclusionFragment,
 	ScreenSpaceSpecularIrradianceFragment,
+	SimpleDiffuseIrradianceFragment,
 	TemporalAccumulationFragment,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
