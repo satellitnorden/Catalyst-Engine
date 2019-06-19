@@ -35,6 +35,13 @@ PathTracingRayTracingRenderPass::PathTracingRayTracingRenderPass() NOEXCEPT
 */
 void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
 {
+	//Define constants.
+	constexpr float PATH_TRACING_FEEDBACK_FACTOR{ 0.99f }; //0.0025f step.
+
+	//Create the temporal accumulation render targets.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_TemporalAccumulationRenderTargets[0]);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_TemporalAccumulationRenderTargets[1]);
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + _PathTracingDenoisingGraphicsPipelines.Size() + _TemporalAccumulationGraphicsPipeline.Size());
 
@@ -46,16 +53,18 @@ void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
 	_PathTracingDenoisingGraphicsPipelines[1].Initialize(	PathTracingDenoisingGraphicsPipeline::Direction::Vertical,
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
-	_TemporalAccumulationGraphicsPipeline[0].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
+	_TemporalAccumulationGraphicsPipeline[0].Initialize(_TemporalAccumulationRenderTargets[1],
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
+														_TemporalAccumulationRenderTargets[0],
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														0.99f);
-	_TemporalAccumulationGraphicsPipeline[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
+														PATH_TRACING_FEEDBACK_FACTOR,
+														RenderingSystem::Instance->GetScaledResolution());
+	_TemporalAccumulationGraphicsPipeline[1].Initialize(_TemporalAccumulationRenderTargets[0],
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
+														_TemporalAccumulationRenderTargets[1],
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														0.99f);
+														PATH_TRACING_FEEDBACK_FACTOR,
+														RenderingSystem::Instance->GetScaledResolution());
 
 	AddPipeline(&_PathTracingRayTracingPipeline);
 	AddPipeline(&_PathTracingDenoisingGraphicsPipelines[0]);
@@ -79,8 +88,17 @@ void PathTracingRayTracingRenderPass::Execute() NOEXCEPT
 	_PathTracingRayTracingPipeline.Execute();
 
 	/*
-	_PathTracingDenoisingGraphicsPipelines[0].Execute();
-	_PathTracingDenoisingGraphicsPipelines[1].Execute();
+	if (false)
+	{
+		_PathTracingDenoisingGraphicsPipelines[0].Execute();
+		_PathTracingDenoisingGraphicsPipelines[1].Execute();
+	}
+	
+	else
+	{
+		_PathTracingDenoisingGraphicsPipelines[0].SetIncludeInRender(false);
+		_PathTracingDenoisingGraphicsPipelines[1].SetIncludeInRender(false);
+	}
 
 	//Execute the current buffer, don't include the rest.
 	for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipeline.Size() }; i < size; ++i)

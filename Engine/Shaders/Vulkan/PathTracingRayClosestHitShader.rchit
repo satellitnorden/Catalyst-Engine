@@ -12,6 +12,9 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_DENSITY (0.0f)
+
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
@@ -75,6 +78,22 @@ void main()
 
 	//Calculate the shading normal.
 	vec3 shadingNormal = tangentSpaceMatrix * normalMap;
+
+	//Determine if this ray hit a volumetric particle instead, and if so, alter the material properties so that that particle is lit instead.
+	float volumetricHitDistance = mix(CATALYST_RAY_TRACING_T_MAXIMUM, 0.0f, VOLUMETRIC_LIGHTING_DENSITY) * RandomFloat(vec2(gl_LaunchIDNV.xy), globalRandomSeed1);
+
+	if (gl_HitTNV > volumetricHitDistance)
+	{
+		hitPosition = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * volumetricHitDistance;
+
+		albedo = vec3(0.8f, 0.9f, 1.0f);
+		geometryNormal = randomDirection;
+		shadingNormal = randomDirection;
+		roughness = 1.0f;
+		metallic = 0.0f;
+		ambientOcclusion = 1.0f;
+		luminance = 0.0f;
+	}
 
 	//Calculate the highlight weight of this material and modify the material properties based on that.
 	float highlightWeight = max(CalculateHighlightWeight(gl_WorldRayDirectionNV, shadingNormal, modelMaterials[gl_InstanceCustomIndexNV].properties), 0.0f);

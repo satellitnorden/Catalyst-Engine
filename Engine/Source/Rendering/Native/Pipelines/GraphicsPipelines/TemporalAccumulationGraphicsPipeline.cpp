@@ -30,7 +30,8 @@ void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle 
 														const RenderTargetHandle source2,
 														const RenderTargetHandle target1,
 														const RenderTargetHandle target2,
-														const float feedbackFactor) NOEXCEPT
+														const float feedbackFactor,
+														const Resolution resolution) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -63,7 +64,7 @@ void TemporalAccumulationGraphicsPipeline::Initialize(	const RenderTargetHandle 
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(TemporalAccumulationPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(resolution);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

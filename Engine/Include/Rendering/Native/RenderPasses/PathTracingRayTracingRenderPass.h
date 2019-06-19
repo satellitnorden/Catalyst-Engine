@@ -25,6 +25,9 @@ public:
 
 private:
 
+	//The temporacl accumulation render targets.
+	StaticArray<RenderTargetHandle, 2> _TemporalAccumulationRenderTargets;
+
 	//The path tracing ray tracing pipeline.
 	PathTracingRayTracingPipeline _PathTracingRayTracingPipeline;
 

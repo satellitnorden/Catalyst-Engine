@@ -22,7 +22,8 @@ public:
 					const RenderTargetHandle source2,
 					const RenderTargetHandle target1,
 					const RenderTargetHandle target2,
-					const float feedbackFactor) NOEXCEPT;
+					const float feedbackFactor,
+					const Resolution resolution) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
