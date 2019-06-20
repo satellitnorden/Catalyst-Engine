@@ -29,7 +29,9 @@ glslangValidator.exe -V UserInterfaceVertexShader.vert -o 				UserInterfaceVerte
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv
 glslangValidator.exe -V VolumetricLightingDenoisingFragmentShader.frag -o 		VolumetricLightingDenoisingFragmentShader.spv
+glslangValidator.exe -V VolumetricLightingRayClosestHitShader.rchit -o 			VolumetricLightingRayClosestHitShader.spv
 glslangValidator.exe -V VolumetricLightingRayGenerationShader.rgen -o 			VolumetricLightingRayGenerationShader.spv
+glslangValidator.exe -V VolumetricLightingRayMissShader.rmiss -o 			VolumetricLightingRayMissShader.spv
 glslangValidator.exe -V WorldRayClosestHitShader.rchit -o 				WorldRayClosestHitShader.spv
 glslangValidator.exe -V WorldRayGenerationShader.rgen -o 				WorldRayGenerationShader.spv
 glslangValidator.exe -V WorldRayMissShader.rmiss -o 					WorldRayMissShader.spv

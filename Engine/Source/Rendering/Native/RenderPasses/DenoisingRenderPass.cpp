@@ -114,6 +114,16 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
 
+	_VolumetricLightingDenoisingGraphicsPipelines[4].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float));
+
+	_VolumetricLightingDenoisingGraphicsPipelines[5].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																4.0f,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+
 	//Add all pipelines.
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{

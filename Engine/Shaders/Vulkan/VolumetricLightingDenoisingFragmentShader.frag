@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (12.0f)
+#define DENOISING_SIZE (32.0f)
 #define DENOISING_START_END (DENOISING_SIZE * 0.5f)
 
 //Layout specification.
@@ -35,20 +35,20 @@ layout (location = 0) out vec4 diffuseIrradiance;
 void main()
 {
 	//Sample the volumetric lighting at the current fragment.
-	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
+	vec4 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate);
 
 	//Calculate the start/end.
 	float startAndEnd = DENOISING_START_END * stride;
 
 	//Sample neighboring fragments.
-	vec3 denoisedVolumetricLighting = vec3(0.0f);
+	vec4 denoisedVolumetricLighting = vec4(0.0f);
 	float volumetricLightingWeightSum = 0.0f;
 
 	for (float x = -startAndEnd; x <= startAndEnd; x += stride)
 	{
 		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
 
-		vec3 sampleVolumetricLighting = texture(volumetricLightingTexture, sampleCoordinate).rgb;
+		vec4 sampleVolumetricLighting = texture(volumetricLightingTexture, sampleCoordinate);
 
 		/*
 		*	Calculate the sample weight based on certain criteria;
@@ -67,5 +67,5 @@ void main()
 	denoisedVolumetricLighting = volumetricLightingWeightSum == 0.0f ? currentVolumetricLighting : denoisedVolumetricLighting / volumetricLightingWeightSum;
 
 	//Write the fragment.
-	diffuseIrradiance = vec4(denoisedVolumetricLighting, 1.0f);
+	diffuseIrradiance = denoisedVolumetricLighting;
 }

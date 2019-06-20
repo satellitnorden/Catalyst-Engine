@@ -95,7 +95,7 @@ void main()
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
 
 	//Sample the current volumetric lighting.
-	vec3 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
+	vec4 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate);
 
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
@@ -108,6 +108,6 @@ void main()
 														currentSpecularIrradiance);
 
 	//Write the fragment.
-	scene = vec4(indirectLighting + currentDirectLighting + currentVolumetricLighting, 1.0f);
+	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, currentVolumetricLighting.a), 1.0f);
 	//scene = vec4(currentDiffuseIrradiance, 1.0f);
 }
