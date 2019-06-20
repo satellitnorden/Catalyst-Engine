@@ -268,6 +268,16 @@ enum class RenderTarget : uint8
 	Intermediate_Half_R32G32B32A32_Float,
 
 	/*
+	*	Intermediate render target at quarter resolution, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate_Quarter_R32G32B32A32_Float,
+
+	/*
+	*	Intermediate render target at eighth resolution, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate_Eighth_R32G32B32A32_Float,
+
+	/*
 	*	For rendering directly to the screen.
 	*/
 	Screen,
@@ -308,6 +318,7 @@ enum class Shader : uint8
 	PathTracingRayMiss,
 	PostProcessingFragment,
 	RadianceIntegrationFragment,
+	ResampleFragment,
 	SceneFeaturesFragment,
 	SceneFeaturesVertex,
 	ScreenSpaceAmbientOcclusionFragment,

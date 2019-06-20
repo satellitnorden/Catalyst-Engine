@@ -31,7 +31,7 @@ private:
 	//The diffuse irradiance denoising graphics pipelines.
 	StaticArray<DenoisingGraphicsPipeline, 6> _DiffuseIrradianceDenoisingGraphicsPipelines;
 
-	//Thevolumetric lighting denoising graphics pipelines.
+	//The volumetric lighting denoising graphics pipelines.
 	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 6> _VolumetricLightingDenoisingGraphicsPipelines;
 
 	/*

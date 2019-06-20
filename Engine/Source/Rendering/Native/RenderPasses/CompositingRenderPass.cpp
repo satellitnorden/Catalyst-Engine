@@ -36,10 +36,15 @@ CompositingRenderPass::CompositingRenderPass() NOEXCEPT
 void CompositingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_VolumetricLightingResampleGraphicsPipeline);
 	AddPipeline(&_CompositingGraphicsPipeline);
 
 	//Initialize all pipelines.
+	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
+															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
+															RenderingSystem::Instance->GetScaledResolution() / 2);
 	_CompositingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -55,5 +60,6 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 void CompositingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
+	_VolumetricLightingResampleGraphicsPipeline.Execute();
 	_CompositingGraphicsPipeline.Execute();
 }

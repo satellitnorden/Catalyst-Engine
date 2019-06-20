@@ -11,6 +11,10 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES (8)
+#define VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES (16)
+
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
 layout (set = 3, binding = 1, rgba32f) uniform image2D volumetricLightingImage;
@@ -30,17 +34,8 @@ void main()
 	//Retrieve all properties.
 	float hitDistance = sceneFeatures2.w;
 
-	//Retrieve the random vectors.
-	vec4 randomVector1 = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-	vec4 randomVector2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-	vec4 randomVector3 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-	//Calculate the random directions.
-	vec3 randomDirection1 = normalize(randomVector1.xyz * 2.0f - 1.0f);
-	vec3 randomDirection2 = normalize(randomVector2.xyz * 2.0f - 1.0f);
-
 	//Calculate the volumetric particle hit distance.
-	float volumetricParticleHitDistance = hitDistance * randomVector1.w;
+	float volumetricParticleHitDistance = hitDistance * texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY)).w;
 
 	//Calculate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
@@ -52,10 +47,16 @@ void main()
 	vec3 volumetricLighting = vec3(0.0f);
 
 	//Calculate the indirect lighting.
-	if (false)
+	for (int i = 0; i < VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES; ++i)
 	{
+		//Retrieve the random vector.
+		vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1 + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+		//Calculate the random direction.
+		vec3 randomDirection = normalize(randomVector.xyz * 2.0f - 1.0f);
+
 		//Set the random vector.
-		rayPayload.randomVector = randomVector3;
+		rayPayload.randomVector = randomVector;
 
 		//Fire the ray!
 		traceNV(
@@ -67,7 +68,7 @@ void main()
 			0, 									//missIndex
 			hitPosition, 						//origin
 			CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-			randomDirection1, 					//direction
+			randomDirection, 					//direction
 			CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
 			0 									//payload
 			);
@@ -75,20 +76,22 @@ void main()
 		//Add the indirect lighting to the radiance.
 		volumetricLighting += CalculateIndirectLighting(rayDirection,
 														CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR,
-														randomDirection1,
+														randomDirection,
 														1.0f,
 														0.0f,
 														1.0f,
 														rayPayload.directLighting,
-														rayPayload.directLighting);
+														rayPayload.directLighting) / VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES;
 	}
 
-	//Calculate the direct lighting.
+	//Calculate the direct lighting using some randomly chosen lights.
+	for (int i = 0; i < VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES; ++i)
 	{
-		//Calculate a random chosen light.
-		Light light = UnpackLight(int(randomVector2.w * float(numberOfLights)));
+		vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + (VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + 1) + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
-		vec3 randomLightPosition = light.position + randomDirection2 * light.size;
+		Light light = UnpackLight(int(randomVector.w * float(numberOfLights)));
+
+		vec3 randomLightPosition = light.position + normalize(randomVector.xyz * 2.0f - 1.0f) * light.size;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
@@ -115,12 +118,13 @@ void main()
 
 		volumetricLighting += CalculateDirectLight(	-rayDirection,
 													lightDirection,
-														CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR,
+													CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR,
 													lightDirection,
 													1.0f,
 													0.0f,
-													light.color * light.strength * float(numberOfLights)) * attenuation * visibility;
+													light.color * light.strength * float(numberOfLights)) * attenuation * visibility / VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES;
 	}
+		
 
 	//Calculate the volumetric lighting weight.
 	float volumetricLightingWeight = min(hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
