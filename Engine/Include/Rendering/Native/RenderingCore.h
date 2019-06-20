@@ -68,6 +68,7 @@ enum class RenderPassStage : uint8
 #endif
 	RadianceIntegration,
 	MotionBlur,
+	Bloom,
 	ToneMapping,
 	FastApproximateAntiAliasing,
 	TemporalAntiAliasing,
@@ -301,6 +302,7 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AmbientOcclusionDenoisingFragment,
+	BloomIsolationFragment,
 	CompositingFragment,
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
