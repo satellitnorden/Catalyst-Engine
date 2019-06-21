@@ -17,7 +17,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution) NOEXCEPT;
+	void Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const int32 passes, const Resolution resolution, const bool blendEnabled) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -34,6 +34,9 @@ private:
 
 	//The delta.
 	Vector2<float> _Delta;
+
+	//The passes.
+	int32 _Passes;
 
 	/*
 	*	Creates the render data table layout.

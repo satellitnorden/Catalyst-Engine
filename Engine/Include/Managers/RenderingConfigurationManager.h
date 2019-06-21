@@ -105,13 +105,45 @@ public:
 		return _VolumetricLightingMode;
 	}
 
+	/*
+	*	Returns the bloom intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetBloomIntensity() const NOEXCEPT
+	{
+		return _BloomIntensity;
+	}
+
+	/*
+	*	Sets the bloom intensity.
+	*/
+	FORCE_INLINE void SetBloomIntensity(const float intensity) NOEXCEPT
+	{
+		_BloomIntensity = intensity;
+	}
+
+	/*
+	*	Returns the chromatic aberration intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetChromaticAberrationIntensity() const NOEXCEPT
+	{
+		return _ChromaticAberrationIntensity;
+	}
+
+	/*
+	*	Sets the chromatic aberration intensity.
+	*/
+	FORCE_INLINE void SetChromaticAberrationIntensity(const float intensity) NOEXCEPT
+	{
+		_ChromaticAberrationIntensity = intensity;
+	}
+
 private:
 
 	//The anti aliasing mode.
 	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
 
 	//The diffuse irradiance mode.
-	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
+	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::RayTraced };
 
 	//The specular irradiance mode.
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };
@@ -121,5 +153,11 @@ private:
 
 	//The volumetric lighting mode.
 	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
+
+	//The bloom intensity.
+	float _BloomIntensity{ 1.0f };
+
+	//The chromatic aberration intensity.
+	float _ChromaticAberrationIntensity{ 0.001f };
 
 };

@@ -9,12 +9,17 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define POST_PROCESSING_CHROMATIC_ABERRATION_SCALE (0.0025f) //0.00025f step.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0325f) //0.0025f step.
+#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0375f) //0.0025f step.
 #define POST_PROCESSING_VIGNETTE_STRENGTH (2.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float chromaticAberrationIntensity;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -34,7 +39,7 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
 	float offsetWeight = 1.0f - edgeFactor;
 
 	//Calculate the chromatic aberration.
-	return vec3(texture(sourceTexture, fragmentTextureCoordinate - vec2(POST_PROCESSING_CHROMATIC_ABERRATION_SCALE, POST_PROCESSING_CHROMATIC_ABERRATION_SCALE) * offsetWeight).r, texture(sourceTexture, fragmentTextureCoordinate + vec2(POST_PROCESSING_CHROMATIC_ABERRATION_SCALE, POST_PROCESSING_CHROMATIC_ABERRATION_SCALE) * offsetWeight).gb);
+	return vec3(texture(sourceTexture, fragmentTextureCoordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offsetWeight).r, texture(sourceTexture, fragmentTextureCoordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offsetWeight).gb);
 }
 
 /*

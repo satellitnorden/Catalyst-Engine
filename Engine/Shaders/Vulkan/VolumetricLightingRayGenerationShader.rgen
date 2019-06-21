@@ -12,8 +12,8 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES (8)
-#define VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES (16)
+#define VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES (4)
+#define VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES (8)
 
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;

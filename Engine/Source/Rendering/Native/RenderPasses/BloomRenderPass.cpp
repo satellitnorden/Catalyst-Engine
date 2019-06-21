@@ -7,6 +7,12 @@
 //Singleton definition.
 DEFINE_SINGLETON(BloomRenderPass);
 
+//Bloom render pass constants.
+namespace BloomRenderPassConstants
+{
+	constexpr int32 BLOOM_PASSES{ 3 };
+}
+
 /*
 *	Default constructor.
 */
@@ -52,22 +58,30 @@ void BloomRenderPass::Initialize() NOEXCEPT
 	_BloomResampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height)),
-													RenderingSystem::Instance->GetScaledResolution() / 2);
+													BloomRenderPassConstants::BLOOM_PASSES,
+													RenderingSystem::Instance->GetScaledResolution() / 2,
+													false);
 
 	_BloomResampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)),
-													RenderingSystem::Instance->GetScaledResolution() / 4);
+													BloomRenderPassConstants::BLOOM_PASSES,
+													RenderingSystem::Instance->GetScaledResolution() / 4,
+													false);
 
 	_BloomResampleGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution() / 2);
+													BloomRenderPassConstants::BLOOM_PASSES,
+													RenderingSystem::Instance->GetScaledResolution() / 2,
+													true);
 
 	_BloomResampleGraphicsPipelines[3].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution());
+													BloomRenderPassConstants::BLOOM_PASSES,
+													RenderingSystem::Instance->GetScaledResolution(),
+													false);
 
 	_BloomApplicationGraphicsPipeline.Initialize();
 

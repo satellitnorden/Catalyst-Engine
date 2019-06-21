@@ -50,6 +50,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Initialize the game system.
 	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+
+	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
+	CatalystEngineSystemInternalData::_DeltaTimer.Reset();
 }
 
 /*
