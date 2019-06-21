@@ -101,16 +101,6 @@ void main()
 	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
 
-	//If this is a "translucent" material, modify some properties to make it appear that way.
-	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
-	{
-		albedo = vec3(1.0f);
-		roughness = 0.0f;
-		metallic = 1.0f;
-		ambientOcclusion = 1.0f;
-		luminance = luminance + 1.0f;
-	}
-
 	//Calculate the radiance.
 	vec3 radiance = vec3(0.0f);
 

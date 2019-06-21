@@ -34,14 +34,8 @@ void main()
 	//Retrieve all properties.
 	float hitDistance = sceneFeatures2.w;
 
-	//Calculate the volumetric particle hit distance.
-	float volumetricParticleHitDistance = hitDistance * texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY)).w;
-
 	//Calculate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
-
-	//Calculate the hit position.
-	vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
 
 	//Calculate the volumetric lighting.
 	vec3 volumetricLighting = vec3(0.0f);
@@ -49,14 +43,21 @@ void main()
 	//Calculate the indirect lighting.
 	for (int i = 0; i < VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES; ++i)
 	{
-		//Retrieve the random vector.
-		vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1 + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		//Retrieve the random vectors.
+		vec4 randomVector1 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		vec4 randomVector2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1 + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 		//Calculate the random direction.
-		vec3 randomDirection = normalize(randomVector.xyz * 2.0f - 1.0f);
+		vec3 randomDirection = normalize(randomVector1.xyz * 2.0f - 1.0f);
+
+		//Calculate the volumetric particle hit distance.
+		float volumetricParticleHitDistance = hitDistance * randomVector1.w;
+
+		//Calculate the hit position.
+		vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
 
 		//Set the random vector.
-		rayPayload.randomVector = randomVector;
+		rayPayload.randomVector = randomVector2;
 
 		//Fire the ray!
 		traceNV(
@@ -87,11 +88,22 @@ void main()
 	//Calculate the direct lighting using some randomly chosen lights.
 	for (int i = 0; i < VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES; ++i)
 	{
-		vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + (VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + 1) + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		//Retrieve the random vectors.
+		vec4 randomVector1 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		vec4 randomVector2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + 1 + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
-		Light light = UnpackLight(int(randomVector.w * float(numberOfLights)));
+		//Calculate the random direction.
+		vec3 randomDirection = normalize(randomVector1.xyz * 2.0f - 1.0f);
 
-		vec3 randomLightPosition = light.position + normalize(randomVector.xyz * 2.0f - 1.0f) * light.size;
+		//Calculate the volumetric particle hit distance.
+		float volumetricParticleHitDistance = hitDistance * randomVector1.w;
+
+		//Calculate the hit position.
+		vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
+
+		Light light = UnpackLight(int(randomVector2.w * float(numberOfLights)));
+
+		vec3 randomLightPosition = light.position + randomDirection * light.size;
 
 		float lengthToLight = length(randomLightPosition - hitPosition);
 		vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;

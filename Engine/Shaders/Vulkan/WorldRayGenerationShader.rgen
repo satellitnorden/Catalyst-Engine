@@ -19,7 +19,6 @@ layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures1Image;
 layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures2Image;
 layout (set = 3, binding = 4, rgba32f) uniform image2D sceneFeatures3Image;
 layout (set = 3, binding = 5, rgba8) uniform image2D sceneFeatures4Image;
-layout (set = 3, binding = 6) uniform samplerCube environmentTexture;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PrimaryRayPayload rayPayload;
@@ -82,16 +81,6 @@ void main()
 
 	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
-
-	//If this is a "translucent" material, modify some properties to make it appear that way.
-	if ((materialProperties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
-	{
-		albedo = texture(environmentTexture, refract(rayDirection, shadingNormal, 0.5f)).rgb;
-		roughness = 0.0f;
-		metallic = 1.0f;
-		ambientOcclusion = 1.0f;
-		luminance = luminance + 1.0f;
-	}
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);

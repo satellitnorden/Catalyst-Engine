@@ -12,9 +12,6 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
-//Descriptor set data.
-layout (set = 3, binding = 6) uniform samplerCube environmentTexture;
-
 //In parameters.
 layout(location = 0) rayPayloadInNV PrimaryRayPayload rayPayload;
 layout(location = 1) rayPayloadInNV float visibility;
@@ -71,16 +68,6 @@ void main()
 
 	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
-
-	//If this is a "translucent" material, modify some properties to make it appear that way.
-	if ((modelMaterials[gl_InstanceCustomIndexNV].properties & MATERIAL_TRANSLUCENT_BIT) == MATERIAL_TRANSLUCENT_BIT)
-	{
-		albedo = texture(environmentTexture, refract(gl_WorldRayDirectionNV, finalNormal, 0.5f)).rgb;
-		roughness = 0.0f;
-		metallic = 1.0f;
-		ambientOcclusion = 1.0f;
-		luminance = luminance + 1.0f;
-	}
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);

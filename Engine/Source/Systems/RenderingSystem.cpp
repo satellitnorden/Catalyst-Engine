@@ -390,6 +390,78 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 	}
 
 	{
+		//Initialize the glass blue common material.
+		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::GlassBlue)] };
+
+		material._Properties = Material::Property::None;
+
+		{
+			Texture2DData data;
+
+			data._MipmapLevels = 1;
+			data._Width = 1;
+			data._Height = 1;
+			data._Data.UpsizeSlow(1);
+			data._Data[0].Reserve(4);
+			data._Data[0].EmplaceFast(204);
+			data._Data[0].EmplaceFast(230);
+			data._Data[0].EmplaceFast(255);
+			data._Data[0].EmplaceFast(255);
+
+			GlobalTexture2D texture;
+
+			ResourceCreator::CreateTexture2D(&data, &texture);
+
+			material._FirstTextureIndex = texture._Index;
+
+			//Make the albedo texture the default texture 2D.
+			_DefaultTexture2D = texture._Texture2D;
+		}
+
+		{
+			Texture2DData data;
+
+			data._MipmapLevels = 1;
+			data._Width = 1;
+			data._Height = 1;
+			data._Data.UpsizeSlow(1);
+			data._Data[0].Reserve(4);
+			data._Data[0].EmplaceFast(127);
+			data._Data[0].EmplaceFast(127);
+			data._Data[0].EmplaceFast(255);
+			data._Data[0].EmplaceFast(255);
+
+			GlobalTexture2D texture;
+
+			ResourceCreator::CreateTexture2D(&data, &texture);
+
+			material._SecondTextureIndex = texture._Index;
+		}
+
+		{
+			Texture2DData data;
+
+			data._MipmapLevels = 1;
+			data._Width = 1;
+			data._Height = 1;
+			data._Data.UpsizeSlow(1);
+			data._Data[0].Reserve(4);
+			data._Data[0].EmplaceFast(0);
+			data._Data[0].EmplaceFast(255);
+			data._Data[0].EmplaceFast(255);
+			data._Data[0].EmplaceFast(255);
+
+			GlobalTexture2D texture;
+
+			ResourceCreator::CreateTexture2D(&data, &texture);
+
+			material._ThirdTextureIndex = texture._Index;
+		}
+
+		material._LuminanceMultiplier = 0.0f;
+	}
+
+	{
 		//Initialize the white common material.
 		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::White)] };
 

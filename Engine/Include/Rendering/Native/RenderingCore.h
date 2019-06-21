@@ -120,6 +120,7 @@ ENUMERATION_BIT_OPERATIONS(BufferUsage);
 enum class CommonMaterial : uint8
 {
 	Black,
+	GlassBlue,
 	White,
 
 	NumberOfCommonMaterials
