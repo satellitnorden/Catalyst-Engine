@@ -9,8 +9,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define POST_PROCESSING_CHROMATIC_ABERRATION_SCALE (0.00225f) //0.00025f step.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.035f) //0.0025f step.
+#define POST_PROCESSING_CHROMATIC_ABERRATION_SCALE (0.0025f) //0.00025f step.
+#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0325f) //0.0025f step.
 #define POST_PROCESSING_VIGNETTE_STRENGTH (2.0f)
 
 //Layout specification.
@@ -42,7 +42,7 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
 */
 vec3 ApplyFilmGrain(vec3 fragment)
 {
-	return fragment * mix(vec3(1.0f), vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
+	return mix(fragment, vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
 }
 
 /*
