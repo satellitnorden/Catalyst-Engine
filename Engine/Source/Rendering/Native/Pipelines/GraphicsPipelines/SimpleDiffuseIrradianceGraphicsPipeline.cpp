@@ -28,7 +28,7 @@ void SimpleDiffuseIrradianceGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

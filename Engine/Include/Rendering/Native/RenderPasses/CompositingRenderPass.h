@@ -23,6 +23,9 @@ public:
 
 private:
 
+	//The diffuse irradiance resample graphics pipeline.
+	ResampleGraphicsPipeline _DiffuseIrradianceResampleGraphicsPipeline;
+
 	//The volumetric lighting resample graphics pipeline.
 	ResampleGraphicsPipeline _VolumetricLightingResampleGraphicsPipeline;
 

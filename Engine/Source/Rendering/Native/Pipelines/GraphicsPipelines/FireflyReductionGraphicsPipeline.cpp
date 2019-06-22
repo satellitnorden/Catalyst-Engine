@@ -58,7 +58,7 @@ void FireflyReductionGraphicsPipeline::Initialize(const Direction direction, con
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -134,12 +134,12 @@ void FireflyReductionGraphicsPipeline::Execute() NOEXCEPT
 
 	if (_Direction == Direction::Horizontal)
 	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), 0.0f);
+		data._Direction = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width), 0.0f);
 	}
 
 	else
 	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
+		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(GetRenderResolution()._Height));
 	}
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);

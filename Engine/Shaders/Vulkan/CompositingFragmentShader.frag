@@ -109,5 +109,5 @@ void main()
 
 	//Write the fragment.
 	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, currentVolumetricLighting.a), 1.0f);
-	//scene = vec4(currentVolumetricLighting.rgb, 1.0f);
+	//scene = vec4(currentDiffuseIrradiance, 1.0f);
 }

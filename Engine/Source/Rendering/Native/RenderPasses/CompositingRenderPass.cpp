@@ -36,13 +36,19 @@ CompositingRenderPass::CompositingRenderPass() NOEXCEPT
 void CompositingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
+	SetNumberOfPipelines(3);
+	AddPipeline(&_DiffuseIrradianceResampleGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingResampleGraphicsPipeline);
 	AddPipeline(&_CompositingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+	_DiffuseIrradianceResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
+															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
+															RenderingSystem::Instance->GetScaledResolution() / 2,
+															false);
+	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
 															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
 															RenderingSystem::Instance->GetScaledResolution() / 2,
 															false);
@@ -61,6 +67,7 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 void CompositingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
+	_DiffuseIrradianceResampleGraphicsPipeline.Execute();
 	_VolumetricLightingResampleGraphicsPipeline.Execute();
 	_CompositingGraphicsPipeline.Execute();
 }
