@@ -30,7 +30,7 @@ void main()
 	vec3 depthOfField = Upsample(depthOfFieldTexture, fragmentTextureCoordinate).rgb;
 
 	//Calculate the depth of field weight.
-	float depthOfFieldWeight = 1.0f - pow(1.0f - min(hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), 2.0f);
+	float depthOfFieldWeight = 1.0f - pow(1.0f - min(hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), 4.0f);
 
     //Write the fragment.
     fragment = vec4(depthOfField, depthOfFieldWeight);
