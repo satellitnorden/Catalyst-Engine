@@ -34,14 +34,28 @@ void main()
 
 	//Sample neighboring fragments.
 	vec4 blurredFragment = vec4(0.0f);
+	float blurredFragmentWeightSum = 0.0f;
 
 	for (float x = -startAndEnd; x <= startAndEnd; x += stride)
 	{
-		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
+		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * vec2(SQUARE_ROOT_OF_TWO, SQUARE_ROOT_OF_TWO) * direction;
 
-		blurredFragment += texture(inputTexture, sampleCoordinate);
+		/*
+		*	Calculate the sample weight based on certain criteria;
+		*	
+		*	1. Is the sample coordinate valid?
+		*/
+		float sampleWeight = 1.0f;
+
+		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
+
+		blurredFragment += texture(inputTexture, sampleCoordinate) * sampleWeight;
+		blurredFragmentWeightSum += sampleWeight;
 	}
 
+	//Normalize the blurred fragment.
+	blurredFragment /= blurredFragmentWeightSum;
+
 	//Write the fragment.
-	fragment = blurredFragment / (size + 1.0f);
+	fragment = blurredFragment;
 }

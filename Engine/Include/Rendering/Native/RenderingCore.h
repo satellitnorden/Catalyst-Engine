@@ -338,7 +338,6 @@ enum class Shader : uint8
 	UserInterfaceVertex,
 	ViewportVertex,
 	VisibilityRayMiss,
-	VolumetricLightingDenoisingFragment,
 	VolumetricLightingRayClosestHit,
 	VolumetricLightingRayGeneration,
 	VolumetricLightingRayMiss,

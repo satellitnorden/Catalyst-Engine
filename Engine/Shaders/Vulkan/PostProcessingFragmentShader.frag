@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0375f) //0.0025f step.
+#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.035f) //0.0025f step.
 #define POST_PROCESSING_VIGNETTE_STRENGTH (2.0f)
 
 //Layout specification.

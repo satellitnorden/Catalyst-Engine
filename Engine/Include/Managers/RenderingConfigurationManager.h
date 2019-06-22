@@ -143,7 +143,7 @@ private:
 	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
 
 	//The diffuse irradiance mode.
-	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::RayTraced };
+	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
 	//The specular irradiance mode.
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };

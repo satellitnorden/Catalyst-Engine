@@ -7,7 +7,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DenoisingRenderPass final : public RenderPass
@@ -31,8 +31,8 @@ private:
 	//The diffuse irradiance denoising graphics pipelines.
 	StaticArray<DenoisingGraphicsPipeline, 4> _DiffuseIrradianceDenoisingGraphicsPipelines;
 
-	//The volumetric lighting denoising graphics pipelines.
-	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 6> _VolumetricLightingDenoisingGraphicsPipelines;
+	//The volumetric lighting separable blur graphics pipelines.
+	StaticArray<SeparableBlurGraphicsPipeline, 4> _VolumetricLightingSeparableGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.
