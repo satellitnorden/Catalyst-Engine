@@ -126,7 +126,7 @@ namespace VulkanRenderingSystemLogic
 
 					if (pipelineData->_ShouldClear)
 					{
-						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(1.0f, 0.0f, 0.0f, 1.0f),
+						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 100.0f),
 																					0.0f,
 																					pipelineData->_RenderPass->Get(),
 																					pipelineData->_FrameBuffers[0]->Get(),
@@ -573,6 +573,16 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DepthOfFieldApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{

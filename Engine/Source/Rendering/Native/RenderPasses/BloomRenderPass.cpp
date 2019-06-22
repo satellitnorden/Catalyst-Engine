@@ -10,7 +10,7 @@ DEFINE_SINGLETON(BloomRenderPass);
 //Bloom render pass constants.
 namespace BloomRenderPassConstants
 {
-	constexpr float BLOOM_BLUR_SIZE{ 6.0f };
+	constexpr float BLOOM_BLUR_SIZE{ 4.0f };
 }
 
 /*

@@ -67,6 +67,7 @@ enum class RenderPassStage : uint8
 	PathTracing,
 #endif
 	RadianceIntegration,
+	DepthOfField,
 	MotionBlur,
 	Bloom,
 	ToneMapping,
@@ -311,6 +312,7 @@ enum class Shader : uint8
 	BloomIsolationFragment,
 	CompositingFragment,
 	DenoisingFragment,
+	DepthOfFieldApplicationFragment,
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
 	DiffuseIrradianceRayMiss,

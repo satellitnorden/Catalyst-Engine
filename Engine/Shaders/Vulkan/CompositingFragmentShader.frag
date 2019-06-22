@@ -43,21 +43,6 @@ layout (set = 1, binding = 8) uniform sampler2D volumetricLightingTexture;
 layout (location = 0) out vec4 scene;
 
 /*
-*	Upsamples a texture.
-*/
-vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
-{
-	vec4 result = vec4(0.0f);
-
-	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.25f;
-	result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.25f;
-	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y) * 0.5f) * 0.25f;
-	result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.5f) * 0.25f;
-
-	return result;
-}
-
-/*
 *	Samples the scene features at the specified coordinates.
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)

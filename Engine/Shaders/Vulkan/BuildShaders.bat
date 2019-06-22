@@ -2,6 +2,7 @@ glslangValidator.exe -V AmbientOcclusionDenoisingFragmentShader.frag -o 		Ambien
 glslangValidator.exe -V BloomIsolationFragmentShader.frag -o 				BloomIsolationFragmentShader.spv
 glslangValidator.exe -V CompositingFragmentShader.frag -o 				CompositingFragmentShader.spv
 glslangValidator.exe -V DenoisingFragmentShader.frag -o 				DenoisingFragmentShader.spv
+glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOfFieldApplicationFragmentShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayClosestHitShader.rchit -o 			DiffuseIrradianceRayClosestHitShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayGenerationShader.rgen -o 			DiffuseIrradianceRayGenerationShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayMissShader.rmiss -o 			DiffuseIrradianceRayMissShader.spv
