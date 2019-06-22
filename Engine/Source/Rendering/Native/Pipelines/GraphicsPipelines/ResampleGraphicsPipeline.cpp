@@ -18,21 +18,15 @@ public:
 	//The delta.
 	Vector2<float> _Delta;
 
-	//The passes.
-	int32 _Passes;
-
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const int32 passes, const Resolution resolution, const bool blendEnabled) NOEXCEPT
+void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blendEnabled) NOEXCEPT
 {
 	//Store the delta.
 	_Delta = delta;
-
-	//Store the passes.
-	_Passes = passes;
 
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -103,7 +97,6 @@ void ResampleGraphicsPipeline::Execute() NOEXCEPT
 	PushConstantData data;
 
 	data._Delta = _Delta;
-	data._Passes = _Passes;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

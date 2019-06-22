@@ -8,6 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/BloomApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/BloomIsolationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class BloomRenderPass final : public RenderPass
@@ -28,8 +29,14 @@ private:
 	//The bloom isolation graphics pipeline.
 	BloomIsolationGraphicsPipeline _BloomIsolationGraphicsPipeline;
 
-	//The bloom resample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 4> _BloomResampleGraphicsPipelines;
+	//The bloom downsample graphics pipelines.
+	StaticArray<ResampleGraphicsPipeline, 2> _BloomDownsampleGraphicsPipelines;
+
+	//The bloom separable blur graphics pipelines.
+	StaticArray<SeparableBlurGraphicsPipeline, 4> _BloomSeparableBlurGraphicsPipelines;
+
+	//The bloom upsample graphics pipelines.
+	StaticArray<ResampleGraphicsPipeline, 2> _BloomUpsampleGraphicsPipelines;
 
 	//The bloom application graphics pipeline.
 	BloomApplicationGraphicsPipeline _BloomApplicationGraphicsPipeline;

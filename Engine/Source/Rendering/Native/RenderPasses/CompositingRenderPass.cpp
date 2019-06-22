@@ -42,9 +42,8 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
-															1,						
 															RenderingSystem::Instance->GetScaledResolution() / 2,
 															false);
 	_CompositingGraphicsPipeline.Initialize();

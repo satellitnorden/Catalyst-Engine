@@ -9,15 +9,22 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class ResampleGraphicsPipeline final : public GraphicsPipeline
+class SeparableBlurGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
 
+	//Enumeration covering all direction.
+	enum class Direction : uint8
+	{
+		Horizontal,
+		Vertical
+	};
+
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blendEnabled) NOEXCEPT;
+	void Initialize(const Direction direction, const float size, const float stride, const RenderTargetHandle source, const RenderTargetHandle target, const Resolution resolution) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -32,11 +39,14 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	//The delta.
-	Vector2<float> _Delta;
+	//The direction.
+	Direction _Direction;
 
-	//The passes.
-	int32 _Passes;
+	//The size.
+	float _Size;
+
+	//The stride.
+	float _Stride;
 
 	/*
 	*	Creates the render data table layout.

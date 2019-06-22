@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
-
-//Components.
-#include <Components/Core/ComponentManager.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -21,6 +18,9 @@ public:
 	//The direction.
 	Vector2<float> _Direction;
 
+	//The size.
+	float _Size;
+
 	//The stride.
 	float _Stride;
 
@@ -29,7 +29,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void SeparableBlurGraphicsPipeline::Initialize(const Direction direction, const float size, const float stride, const RenderTargetHandle source, const RenderTargetHandle target, const Resolution resolution) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -40,6 +40,9 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 	//Set the direction.
 	_Direction = direction;
 
+	//Set the size.
+	_Size = size;
+
 	//Set the stride.
 	_Stride = stride;
 
@@ -48,7 +51,7 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VolumetricLightingDenoisingFragment);
+	SetFragmentShader(Shader::SeparableBlurFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -64,7 +67,7 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
+	SetRenderResolution(resolution);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -88,32 +91,9 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 }
 
 /*
-*	Creates the render data table layout.
-*/
-void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
 *	Executes this graphics pipeline.
 */
-void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
+void SeparableBlurGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -138,6 +118,7 @@ void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(GetRenderResolution()._Height));
 	}
 
+	data._Size = _Size;
 	data._Stride = _Stride;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
@@ -150,4 +131,27 @@ void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void SeparableBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void SeparableBlurGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
