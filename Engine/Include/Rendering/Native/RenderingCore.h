@@ -305,8 +305,6 @@ enum class Shader : uint8
 	AmbientOcclusionDenoisingFragment,
 	BloomIsolationFragment,
 	CompositingFragment,
-	DebugAxisAlignedBoundingBoxFragment,
-	DebugAxisAlignedBoundingBoxVertex,
 	DenoisingFragment,
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
