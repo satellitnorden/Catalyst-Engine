@@ -36,7 +36,7 @@ PathTracingRayTracingRenderPass::PathTracingRayTracingRenderPass() NOEXCEPT
 void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
 {
 	//Define constants.
-	constexpr float PATH_TRACING_FEEDBACK_FACTOR{ 0.9f }; //0.0025f step.
+	constexpr float PATH_TRACING_FEEDBACK_FACTOR{ 0.99f }; //0.0025f step.
 
 	//Create the temporal accumulation render targets.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_TemporalAccumulationRenderTargets[0]);
@@ -87,7 +87,6 @@ void PathTracingRayTracingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
 
-	/*
 	if (false)
 	{
 		_PathTracingDenoisingGraphicsPipelines[0].Execute();
@@ -101,20 +100,28 @@ void PathTracingRayTracingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute the current buffer, don't include the rest.
-	for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipeline.Size() }; i < size; ++i)
+	if (false)
 	{
-		if (i == _CurrentBufferIndex)
+		for (uint64 i{ 0 }, size{ _TemporalAccumulationGraphicsPipeline.Size() }; i < size; ++i)
 		{
-			_TemporalAccumulationGraphicsPipeline[i].Execute();
-		}
+			if (i == _CurrentBufferIndex)
+			{
+				_TemporalAccumulationGraphicsPipeline[i].Execute();
+			}
 
-		else
-		{
-			_TemporalAccumulationGraphicsPipeline[i].SetIncludeInRender(false);
+			else
+			{
+				_TemporalAccumulationGraphicsPipeline[i].SetIncludeInRender(false);
+			}
 		}
+	}
+
+	else
+	{
+		_TemporalAccumulationGraphicsPipeline[0].SetIncludeInRender(false);
+		_TemporalAccumulationGraphicsPipeline[1].SetIncludeInRender(false);
 	}
 
 	//Update the current buffer index.
 	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAccumulationGraphicsPipeline.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
-	*/
 }

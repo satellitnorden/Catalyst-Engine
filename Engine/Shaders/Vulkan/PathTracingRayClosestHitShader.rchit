@@ -26,11 +26,8 @@ void main()
 	int currentRecursionDepth = rayPayload.currentRecursionDepth;
 
 	//Sample the noise texture.
-	vec2 noiseCoordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-	vec4 noiseSample = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noiseCoordinate);
-
-	vec3 randomDirection = normalize(noiseSample.xyz * 2.0f - 1.0f);
-	float randomValue = noiseSample.w;
+	vec3 randomDirection = normalize(rayPayload.randomVector.xyz * 2.0f - 1.0f);
+	float randomValue = rayPayload.randomVector.w;
 
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
@@ -108,7 +105,7 @@ void main()
 	radiance += albedo * luminance;
 
 	//Calculate the indirect lighting.
-	if (currentRecursionDepth < 2)
+	if (currentRecursionDepth < 1)
 	{
 		//Calculate the random irradiance direction.
 		vec3 randomIrradianceDirection = normalize(mix(reflect(gl_WorldRayDirectionNV, shadingNormal), dot(geometryNormal, randomDirection) >= 0.0f ? randomDirection : randomDirection * -1.0f, CalculateDiffuseComponent(roughness, metallic)));

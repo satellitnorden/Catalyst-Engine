@@ -695,8 +695,9 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
 
 	//Jitter the projection matrix a bit.
-	Vector2<float> currentFrameJitter;
+	Vector2<float> currentFrameJitter{ 0.0f, 0.0f };
 
+#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	if (RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::Temporal
 		|| RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::FastApproximateAndTemporal)
 	{
@@ -709,6 +710,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	}
 
 	Perceiver::Instance->SetProjectionMatrixJitter(currentFrameJitter);
+#endif
 
 	//Update matrices.
 	_DynamicUniformData._ViewMatrixMinusOne = _DynamicUniformData._ViewMatrix;

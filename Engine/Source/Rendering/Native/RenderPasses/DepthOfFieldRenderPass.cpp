@@ -19,9 +19,7 @@ namespace DepthOfFieldRenderPassConstants
 DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::DepthOfField);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

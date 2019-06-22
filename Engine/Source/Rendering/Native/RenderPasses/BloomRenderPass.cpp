@@ -19,9 +19,7 @@ namespace BloomRenderPassConstants
 BloomRenderPass::BloomRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::Bloom);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
