@@ -64,7 +64,7 @@ void DenoisingGraphicsPipeline::Initialize(const Direction direction, const floa
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -132,12 +132,12 @@ void DenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	if (_Direction == Direction::Horizontal)
 	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(GetRenderResolution()._Width), 0.0f);
+		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 0.0f);
 	}
 
 	else
 	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(GetRenderResolution()._Height));
+		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
 	}
 
 	data._Stride = _Stride;

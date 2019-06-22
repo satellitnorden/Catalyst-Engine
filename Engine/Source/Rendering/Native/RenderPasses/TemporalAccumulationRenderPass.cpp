@@ -49,14 +49,14 @@ void TemporalAccumulationRenderPass::Initialize() NOEXCEPT
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																			DIFFUSE_IRRADIANCE_FEEDBACK_FACTOR,
-																			RenderingSystem::Instance->GetScaledResolution() / 4);
+																			RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	_DiffuseIrradianceTemporalAccumulationGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer1),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradianceTemporalAccumulationBuffer2),
 																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance),
 																			DIFFUSE_IRRADIANCE_FEEDBACK_FACTOR,
-																			RenderingSystem::Instance->GetScaledResolution() / 4);
+																			RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	for (TemporalAccumulationGraphicsPipeline &pipeline : _DiffuseIrradianceTemporalAccumulationGraphicsPipelines)
 	{

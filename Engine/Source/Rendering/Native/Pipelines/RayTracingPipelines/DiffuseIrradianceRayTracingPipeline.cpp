@@ -72,7 +72,7 @@ void DiffuseIrradianceRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width / 4, RenderingSystem::Instance->GetScaledResolution()._Height / 4);
+	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width / 2, RenderingSystem::Instance->GetScaledResolution()._Height / 2);
 
 	//End the command buffer.
 	commandBuffer->End(this);
