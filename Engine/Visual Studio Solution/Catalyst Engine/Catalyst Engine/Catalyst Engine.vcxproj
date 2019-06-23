@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_ENABLE_PATH_TRACING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -278,6 +278,7 @@
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\ProfilingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
@@ -401,6 +402,7 @@
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
