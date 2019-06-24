@@ -313,6 +313,12 @@
     <Filter Include="Rendering\Source\Native\Pipelines\Compute Pipelines">
       <UniqueIdentifier>{877dd111-b348-49c9-bdd9-711ea81507ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Profiling">
+      <UniqueIdentifier>{d4a64dc5-8e58-45df-b01a-01e5f663c567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Profiling\Include">
+      <UniqueIdentifier>{1601ffc3-afa6-42aa-bf73-100e080e2f6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1046,6 +1052,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\ProfilingSystem.h">
       <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Profiling\ProfilingCore.h">
+      <Filter>Profiling\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
