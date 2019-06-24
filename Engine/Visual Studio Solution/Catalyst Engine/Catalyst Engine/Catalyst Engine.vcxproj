@@ -136,6 +136,7 @@
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingCore.h" />
+    <ClInclude Include="..\..\..\Include\Profiling\ProfilingTimer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocation.h" />

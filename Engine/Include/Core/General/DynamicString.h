@@ -120,6 +120,9 @@ public:
 		//Copy the new string to the memory.
 		Memory::CopyMemory(static_cast<void *RESTRICT>(newDynamicString._String + this->_Length), static_cast<const void *const RESTRICT>(newString), newStringLength + 1);
 
+		//Write the length to the new dynamic string.
+		newDynamicString._Length = newLength;
+
 		//Return the newly constructed dynamic string.
 		return newDynamicString;
 	}

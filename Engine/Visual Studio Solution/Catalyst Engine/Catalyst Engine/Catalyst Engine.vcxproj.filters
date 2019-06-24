@@ -1056,6 +1056,9 @@
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingCore.h">
       <Filter>Profiling\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Profiling\ProfilingTimer.h">
+      <Filter>Profiling\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

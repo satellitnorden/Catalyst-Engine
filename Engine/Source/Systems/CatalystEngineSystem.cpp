@@ -8,6 +8,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/ProfilingCore.h>
+
 //Resources.
 #include <Resources/Loading/ResourceLoader.h>
 
@@ -15,6 +18,9 @@
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
+#if defined(PROFILING_ENABLED)
+#include <Systems/ProfilingSystem.h>
+#endif
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
@@ -60,6 +66,8 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
+	PROFILING_SCOPE("CatalystEngineSystem::Update");
+
 	//Update the total frames.
 	++ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
 
@@ -95,6 +103,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
+#if defined(PROFILING_ENABLED)
+	ProfilingSystem::PhysicsUpdate(&context);
+#endif
 	PhysicsSystem::PhysicsUpdate(&context);
 
 	/*
@@ -113,6 +124,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	EntityCreationSystem::Instance->PostUpdate(&context);
 	SoundSystem::Instance->PostUpdate(&context);
+#if defined(PROFILING_ENABLED)
+	ProfilingSystem::PostUpdate(&context);
+#endif
 
 	//Return if the game should be terminated.
 	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;

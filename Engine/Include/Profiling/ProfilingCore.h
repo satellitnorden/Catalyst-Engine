@@ -3,20 +3,23 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Profiling.
+#if !defined(INCLUDED_FROM_PROFILING_SYSTEM)
+#include <Profiling/ProfilingTimer.h>
+#endif
+
 /*
 *	Turns profiling on off.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG) || defined(CATALYST_CONFIGURATION_PROFILE)
-	#define PROFILINGE_ENABLED true
-#else
-	#define PROFILINGE_ENABLED false
+#if /*defined(CATALYST_CONFIGURATION_DEBUG) || */defined(CATALYST_CONFIGURATION_PROFILE)
+	#define PROFILING_ENABLED
 #endif
 
 /*
 *	Defines a profiling scope.
 */
-#if PROFILING_ENABLED
-	#define PROFILING_SCOPE(ENTRY_NAME)
+#if defined(PROFILING_ENABLED)
+	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingTimer profilingTimer{ ENTRY_NAME };
 #else
 	#define PROFILING_SCOPE(ENTRY_NAME)
 #endif
