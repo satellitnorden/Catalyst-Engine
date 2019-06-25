@@ -1,3 +1,4 @@
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 #pragma once
 
 //Core.
@@ -47,3 +48,4 @@ public:
 	static void BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT;
 
 };
+#endif

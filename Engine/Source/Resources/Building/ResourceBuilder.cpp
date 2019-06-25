@@ -1,3 +1,4 @@
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
 #include <Resources/Building/ResourceBuilder.h>
 
@@ -526,3 +527,4 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 		}
 	}
 }
+#endif

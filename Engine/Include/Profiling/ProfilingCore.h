@@ -9,16 +9,9 @@
 #endif
 
 /*
-*	Turns profiling on off.
-*/
-#if /*defined(CATALYST_CONFIGURATION_DEBUG) || */defined(CATALYST_CONFIGURATION_PROFILE)
-	#define PROFILING_ENABLED
-#endif
-
-/*
 *	Defines a profiling scope.
 */
-#if defined(PROFILING_ENABLED)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingTimer profilingTimer{ ENTRY_NAME };
 #else
 	#define PROFILING_SCOPE(ENTRY_NAME)

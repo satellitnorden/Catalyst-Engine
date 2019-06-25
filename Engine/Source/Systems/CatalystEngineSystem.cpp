@@ -18,7 +18,7 @@
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
-#if defined(PROFILING_ENABLED)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 #include <Systems/ProfilingSystem.h>
 #endif
 #include <Systems/RenderingSystem.h>
@@ -103,7 +103,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
-#if defined(PROFILING_ENABLED)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PhysicsUpdate(&context);
 #endif
 	PhysicsSystem::PhysicsUpdate(&context);
@@ -124,7 +124,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	EntityCreationSystem::Instance->PostUpdate(&context);
 	SoundSystem::Instance->PostUpdate(&context);
-#if defined(PROFILING_ENABLED)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);
 #endif
 
