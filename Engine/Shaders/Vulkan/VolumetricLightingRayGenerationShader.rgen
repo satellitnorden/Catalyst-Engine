@@ -137,11 +137,7 @@ void main()
 													light.color * light.strength * float(numberOfLights)) * attenuation * visibility / VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES;
 	}
 		
-
-	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = min(hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
-
 	//Write to the image.
-	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, volumetricLightingWeight));
+	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
 	
 }

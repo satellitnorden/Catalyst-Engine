@@ -17,6 +17,7 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 hitPosition;
+	float hitDistance;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
@@ -58,6 +59,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = sceneFeatures3.xyz;
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.hitDistance = sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
 	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
@@ -92,7 +94,10 @@ void main()
 														currentDiffuseIrradiance,
 														currentSpecularIrradiance);
 
+	//Calculate the volumetric lighting weight.
+	float volumetricLightingWeight = min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
+
 	//Write the fragment.
-	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, currentVolumetricLighting.a), 1.0f);
+	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, volumetricLightingWeight), 1.0f);
 	//scene = vec4(currentVolumetricLighting.rgb, 1.0f);
 }
