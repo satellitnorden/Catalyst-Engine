@@ -7,12 +7,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(BloomRenderPass);
 
-//Bloom render pass constants.
-namespace BloomRenderPassConstants
-{
-	constexpr float BLOOM_BLUR_SIZE{ 4.0f };
-}
-
 /*
 *	Default constructor.
 */
@@ -40,15 +34,10 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 void BloomRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _BloomDownsampleGraphicsPipelines.Size() + _BloomSeparableBlurGraphicsPipelines.Size() + _BloomUpsampleGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + _BloomDownsampleGraphicsPipelines.Size() + _BloomUpsampleGraphicsPipelines.Size() + 1);
 	AddPipeline(&_BloomIsolationGraphicsPipeline);
 
 	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	for (SeparableBlurGraphicsPipeline &pipeline : _BloomSeparableBlurGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -74,34 +63,6 @@ void BloomRenderPass::Initialize() NOEXCEPT
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)),
 													RenderingSystem::Instance->GetScaledResolution() / 4,
 													false);
-
-	_BloomSeparableBlurGraphicsPipelines[0].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,
-														BloomRenderPassConstants::BLOOM_BLUR_SIZE,
-														1.0f,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
-														RenderingSystem::Instance->GetScaledResolution() / 2);
-
-	_BloomSeparableBlurGraphicsPipelines[1].Initialize(	SeparableBlurGraphicsPipeline::Direction::Vertical,
-														BloomRenderPassConstants::BLOOM_BLUR_SIZE,
-														1.0f,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
-														RenderingSystem::Instance->GetScaledResolution() / 2);
-
-	_BloomSeparableBlurGraphicsPipelines[2].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,
-														BloomRenderPassConstants::BLOOM_BLUR_SIZE,
-														1.0f,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_2),
-														RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_BloomSeparableBlurGraphicsPipelines[3].Initialize(	SeparableBlurGraphicsPipeline::Direction::Vertical,
-														BloomRenderPassConstants::BLOOM_BLUR_SIZE,
-														1.0f,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_2),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-														RenderingSystem::Instance->GetScaledResolution() / 4);
 
 	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
@@ -132,15 +93,10 @@ void BloomRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_BloomIsolationGraphicsPipeline.Execute();
 
-	_BloomDownsampleGraphicsPipelines[0].Execute();
-
-	_BloomSeparableBlurGraphicsPipelines[0].Execute();
-	_BloomSeparableBlurGraphicsPipelines[1].Execute();
-
-	_BloomDownsampleGraphicsPipelines[1].Execute();
-
-	_BloomSeparableBlurGraphicsPipelines[2].Execute();
-	_BloomSeparableBlurGraphicsPipelines[3].Execute();
+	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
 
 	for (ResampleGraphicsPipeline &pipeline : _BloomUpsampleGraphicsPipelines)
 	{
