@@ -7,12 +7,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(DepthOfFieldRenderPass);
 
-//Depth of field render pass constants.
-namespace DepthOfFieldRenderPassConstants
-{
-	constexpr float DEPTH_OF_FIELD_BLUR_SIZE{ 8.0f };
-}
-
 /*
 *	Default constructor.
 */
@@ -40,14 +34,9 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(_DepthOfFieldDownsampleGraphicsPipelines.Size() + _DepthOfFieldSeparableBlurGraphicsPipelines.Size() + 1 + 1);
+	SetNumberOfPipelines(_DepthOfFieldDownsampleGraphicsPipelines.Size() + 1 + 1);
 
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	for (SeparableBlurGraphicsPipeline &pipeline : _DepthOfFieldSeparableBlurGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -67,20 +56,6 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)),
 															RenderingSystem::Instance->GetScaledResolution() / 4,
 															false);
-
-	_DepthOfFieldSeparableBlurGraphicsPipelines[0].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,
-																DepthOfFieldRenderPassConstants::DEPTH_OF_FIELD_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_2),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_DepthOfFieldSeparableBlurGraphicsPipelines[1].Initialize(	SeparableBlurGraphicsPipeline::Direction::Vertical,
-																DepthOfFieldRenderPassConstants::DEPTH_OF_FIELD_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_2),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
 
 	_DepthOfFieldUpsampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
@@ -103,7 +78,7 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {	
 	//Disable, for now.
-	if (true)
+	if (false)
 	{
 		SetEnabled(false);
 
@@ -112,11 +87,6 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 
 	//Execute all pipelines.
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	for (SeparableBlurGraphicsPipeline &pipeline : _DepthOfFieldSeparableBlurGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}

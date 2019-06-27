@@ -7,7 +7,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DepthOfFieldRenderPass final : public RenderPass
@@ -27,9 +26,6 @@ private:
 
 	//The depth of field downsample graphics pipelines.
 	StaticArray<ResampleGraphicsPipeline, 2> _DepthOfFieldDownsampleGraphicsPipelines;
-
-	//The depth of field separable blur graphics pipelines.
-	StaticArray<SeparableBlurGraphicsPipeline, 2> _DepthOfFieldSeparableBlurGraphicsPipelines;
 
 	//The depth of field upsample graphics pipeline.
 	ResampleGraphicsPipeline _DepthOfFieldUpsampleGraphicsPipeline;
