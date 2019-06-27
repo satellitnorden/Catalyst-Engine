@@ -16,7 +16,7 @@ DEFINE_SINGLETON(DenoisingRenderPass);
 //Denoising render pass constants.
 namespace DenoisingRenderPassConstants
 {
-	constexpr float VOLUMETRIC_LIGHTING_BLUR_SIZE{ 22.0f };
+	constexpr float VOLUMETRIC_LIGHTING_BLUR_SIZE{ 20.0f };
 }
 
 /*
@@ -57,16 +57,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[2].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[3].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
