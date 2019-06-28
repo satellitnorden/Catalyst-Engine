@@ -39,11 +39,13 @@ ScreenSpaceSpecularIrradianceRenderPass::ScreenSpaceSpecularIrradianceRenderPass
 void ScreenSpaceSpecularIrradianceRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 	AddPipeline(&_ScreenSpaceSpecularIrradianceGraphicsPipeline);
+	AddPipeline(&_SpecularIrradianceApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ScreenSpaceSpecularIrradianceGraphicsPipeline.Initialize();
+	_SpecularIrradianceApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -67,4 +69,6 @@ void ScreenSpaceSpecularIrradianceRenderPass::Execute() NOEXCEPT
 	{
 		_ScreenSpaceSpecularIrradianceGraphicsPipeline.SetIncludeInRender(false);
 	}
+
+	_SpecularIrradianceApplicationGraphicsPipeline.Execute();
 }

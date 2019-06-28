@@ -39,12 +39,10 @@ DiffuseIrradianceRenderPass::DiffuseIrradianceRenderPass() NOEXCEPT
 void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
-	AddPipeline(&_SimpleDiffuseIrradianceGraphicsPipeline);
+	SetNumberOfPipelines(1);
 	AddPipeline(&_DiffuseIrradianceRayTracingPipeline);
 
 	//Initialize all pipelines.
-	_SimpleDiffuseIrradianceGraphicsPipeline.Initialize();
 	_DiffuseIrradianceRayTracingPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -60,15 +58,13 @@ void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
 void DiffuseIrradianceRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::Simple)
-	{
-		_SimpleDiffuseIrradianceGraphicsPipeline.Execute();
-		_DiffuseIrradianceRayTracingPipeline.SetIncludeInRender(false);
-	}
-	
-	else if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
+	if (RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode() == RenderingConfigurationManager::DiffuseIrradianceMode::RayTraced)
 	{
 		_DiffuseIrradianceRayTracingPipeline.Execute();
-		_SimpleDiffuseIrradianceGraphicsPipeline.SetIncludeInRender(false);
+	}
+
+	else
+	{
+		_DiffuseIrradianceRayTracingPipeline.SetIncludeInRender(false);
 	}
 }

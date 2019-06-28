@@ -17,7 +17,6 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 hitPosition;
-	float hitDistance;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
@@ -35,10 +34,7 @@ layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
 layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
 layout (set = 1, binding = 4) uniform sampler2D ambientOcclusionTexture;
-layout (set = 1, binding = 5) uniform sampler2D diffuseIrradianceTexture;
-layout (set = 1, binding = 6) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 7) uniform sampler2D volumetricLightingTexture;
-
+layout (set = 1, binding = 5) uniform sampler2D specularIrradianceTexture;
 //Out parameters.
 layout (location = 0) out vec4 scene;
 
@@ -58,7 +54,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = sceneFeatures3.xyz;
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
-	features.hitDistance = sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
 	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
@@ -71,24 +66,8 @@ void main()
 	//Sample the current features.
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
-	//Sample the current diffuse irradiance lighting.
-	vec3 currentDiffuseIrradiance;
-
-	if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
-	{
-		currentDiffuseIrradiance = vec3(ambientIlluminationIntensity);
-	}
-
-	else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
-	{
-		currentDiffuseIrradiance = Upsample(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
-	}
-
-	//Sample the current direct lighting.
-	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
-
-	//Sample the current volumetric lighting.
-	vec4 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate);
+	//Sample the current specular irradiance lighting.
+	vec3 currentSpecularIrradiance = mix(vec3(0.0f), texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 2.0f));
 
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
@@ -97,13 +76,9 @@ void main()
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														currentDiffuseIrradiance,
-														vec3(0.0f));
-
-	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), 0.5f);
+														vec3(0.0f),
+														currentSpecularIrradiance);
 
 	//Write the fragment.
-	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, volumetricLightingWeight), 1.0f);
-	//scene = vec4(currentVolumetricLighting.rgb, 1.0f);
+	scene = vec4(indirectLighting, 1.0f);
 }

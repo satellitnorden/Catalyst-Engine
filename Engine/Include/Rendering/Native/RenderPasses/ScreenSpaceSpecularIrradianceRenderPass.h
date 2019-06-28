@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceSpecularIrradianceGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SpecularIrradianceApplicationGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ScreenSpaceSpecularIrradianceRenderPass final : public RenderPass
@@ -24,6 +25,9 @@ private:
 
 	//The screen space specular irradiance graphics pipeline.
 	ScreenSpaceSpecularIrradianceGraphicsPipeline _ScreenSpaceSpecularIrradianceGraphicsPipeline;
+
+	//The specular irradiance application graphics pipeline.
+	SpecularIrradianceApplicationGraphicsPipeline _SpecularIrradianceApplicationGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.
