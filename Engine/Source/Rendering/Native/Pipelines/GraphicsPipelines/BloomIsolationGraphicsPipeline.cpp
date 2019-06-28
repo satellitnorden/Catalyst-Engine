@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/BloomIsolationGraphicsPipeline.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
