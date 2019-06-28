@@ -95,7 +95,7 @@ void main()
 														currentSpecularIrradiance);
 
 	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
+	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), 0.5f);
 
 	//Write the fragment.
 	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, volumetricLightingWeight), 1.0f);

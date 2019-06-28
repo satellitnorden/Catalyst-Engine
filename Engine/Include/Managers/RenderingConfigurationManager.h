@@ -106,6 +106,22 @@ public:
 	}
 
 	/*
+	*	Returns the ambient illumination intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetAmbientIlluminationIntensity() const NOEXCEPT
+	{
+		return _AmbientIlluminationIntensity;
+	}
+
+	/*
+	*	Sets the ambient illumination intensity.
+	*/
+	FORCE_INLINE void SetAmbientIlluminationIntensity(const float intensity) NOEXCEPT
+	{
+		_AmbientIlluminationIntensity = intensity;
+	}
+
+	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float GetBloomIntensity() const NOEXCEPT
@@ -146,13 +162,16 @@ private:
 	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::RayTraced };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The volumetric lighting mode.
 	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
+
+	//The ambient illumination intensity.
+	float _AmbientIlluminationIntensity{ 0.075f };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 1.0f };

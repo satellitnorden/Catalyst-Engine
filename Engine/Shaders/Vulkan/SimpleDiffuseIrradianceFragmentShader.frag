@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -17,7 +18,6 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-
-    //Super-easy indeed. (:
-    fragment = vec4(vec3(0.1f), 1.0f);
+    //Super-simple indeed. (:
+    fragment = vec4(vec3(ambientIlluminationIntensity), 1.0f);
 }

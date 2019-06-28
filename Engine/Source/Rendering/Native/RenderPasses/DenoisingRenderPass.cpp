@@ -16,7 +16,7 @@ DEFINE_SINGLETON(DenoisingRenderPass);
 //Denoising render pass constants.
 namespace DenoisingRenderPassConstants
 {
-	constexpr float VOLUMETRIC_LIGHTING_BLUR_SIZE{ 20.0f };
+	constexpr float VOLUMETRIC_LIGHTING_BLUR_SIZE{ 18.0f };
 }
 
 /*

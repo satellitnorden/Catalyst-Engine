@@ -11,19 +11,6 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Push constant data definition.
-*/
-class PushConstantData final
-{
-
-public:
-
-	//The intensity.
-	float _Intensity;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
 void BloomIsolationGraphicsPipeline::Initialize() NOEXCEPT
@@ -49,10 +36,6 @@ void BloomIsolationGraphicsPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -92,13 +75,6 @@ void BloomIsolationGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-
-	//Push constants.
-	PushConstantData data;
-
-	data._Intensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
-
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

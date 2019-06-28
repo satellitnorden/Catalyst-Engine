@@ -15,12 +15,6 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) float chromaticAberrationIntensity;
-};
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
