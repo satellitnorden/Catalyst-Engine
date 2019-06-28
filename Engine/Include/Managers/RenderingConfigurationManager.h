@@ -187,7 +187,7 @@ private:
 	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
 
 	//The ambient illumination intensity.
-	float _AmbientIlluminationIntensity{ 0.075f };
+	float _AmbientIlluminationIntensity{ 0.1f };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 1.0f };
