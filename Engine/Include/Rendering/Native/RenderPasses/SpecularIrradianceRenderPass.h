@@ -8,18 +8,18 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SpecularIrradianceApplicationGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ScreenSpaceSpecularIrradianceRenderPass final : public RenderPass
+class SpecularIrradianceRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ScreenSpaceSpecularIrradianceRenderPass);
+	DECLARE_SINGLETON(SpecularIrradianceRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	ScreenSpaceSpecularIrradianceRenderPass() NOEXCEPT;
+	SpecularIrradianceRenderPass() NOEXCEPT;
 
 private:
 

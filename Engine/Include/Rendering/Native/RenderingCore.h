@@ -57,12 +57,12 @@ enum class RenderPassStage : uint8
 	WorldRayTracing,
 	DiffuseIrradiance,
 	ScreenSpaceAmbientOcclusion,
-	VolumetricLighting,
 	FireflyReduction,
 	Denoising,
 	TemporalAccumulation,
 	Compositing,
-	ScreenSpaceSpecularIrradiance,
+	SpecularIrradiance,
+	VolumetricLighting,
 #else
 	PathTracing,
 #endif
@@ -340,6 +340,7 @@ enum class Shader : uint8
 	UserInterfaceVertex,
 	ViewportVertex,
 	VisibilityRayMiss,
+	VolumetricLightingApplicationFragment,
 	VolumetricLightingRayClosestHit,
 	VolumetricLightingRayGeneration,
 	VolumetricLightingRayMiss,

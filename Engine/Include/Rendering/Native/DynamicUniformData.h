@@ -49,6 +49,7 @@ public:
 	float _AmbientIllumionationIntensity;
 	float _BloomIntensity;
 	float _ChromaticAberrationIntensity;
+	float _VolumetricLightingIntensity;
 
 	int32 _ActiveBlueNoiseTextureIndex;
 	float _ActiveBlueNoiseTextureOffsetX;
@@ -56,4 +57,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 636, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 640, "Size of dynamic uniform data is wrong!");

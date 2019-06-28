@@ -12,15 +12,13 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES (4)
-#define VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES (8)
+#define VOLUMETRIC_LIGHTING_SAMPLES (8)
 
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
 layout (set = 3, binding = 1, rgba32f) uniform image2D volumetricLightingImage;
 
 //In parameters.
-layout(location = 0) rayPayloadNV DiffuseIrradianceRayPayload rayPayload;
 layout(location = 1) rayPayloadNV float visibility;
 
 void main() 
@@ -40,57 +38,12 @@ void main()
 	//Calculate the volumetric lighting.
 	vec3 volumetricLighting = vec3(0.0f);
 
-	//Calculate the indirect lighting.
-	for (int i = 0; i < VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES; ++i)
+	//Calculate the direct lighting using some randomly chosen lights.
+	for (int i = 0; i < VOLUMETRIC_LIGHTING_SAMPLES; ++i)
 	{
 		//Retrieve the random vectors.
 		vec4 randomVector1 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 		vec4 randomVector2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1 + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-		//Calculate the random direction.
-		vec3 randomDirection = normalize(randomVector1.xyz * 2.0f - 1.0f);
-
-		//Calculate the volumetric particle hit distance.
-		float volumetricParticleHitDistance = hitDistance * randomVector1.w;
-
-		//Calculate the hit position.
-		vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
-
-		//Set the random vector.
-		rayPayload.randomVector = randomVector2;
-
-		//Fire the ray!
-		traceNV(
-			topLevelAccelerationStructure, 		//topLevel
-			gl_RayFlagsOpaqueNV, 				//rayFlags
-			0xff, 								//cullMask
-			0, 									//sbtRecordOffset
-			0, 									//sbtRecordStride
-			0, 									//missIndex
-			hitPosition, 						//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-			randomDirection, 					//direction
-			CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
-			0 									//payload
-			);
-
-		//Add the indirect lighting to the radiance.
-		volumetricLighting += CalculateIndirectLighting(rayDirection,
-														CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR,
-														randomDirection,
-														1.0f,
-														0.0f,
-														1.0f,
-														rayPayload.directLighting,
-														rayPayload.directLighting) / VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES;
-	}
-
-	//Calculate the direct lighting using some randomly chosen lights.
-	for (int i = 0; i < VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES; ++i)
-	{
-		//Retrieve the random vectors.
-		vec4 randomVector1 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-		vec4 randomVector2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + VOLUMETRIC_LIGHTING_INDIRECT_LIGHTING_SAMPLES + 1 + i * 2) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 		//Calculate the random direction.
 		vec3 randomDirection = normalize(randomVector1.xyz * 2.0f - 1.0f);
@@ -128,13 +81,17 @@ void main()
 				1 																							//payload
 				);
 
+		//Add the ambient lighting.
+		volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * vec3(ambientIlluminationIntensity) / VOLUMETRIC_LIGHTING_SAMPLES;
+
+		//Add the direct lighting.
 		volumetricLighting += CalculateDirectLight(	-rayDirection,
 													lightDirection,
 													CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR,
 													lightDirection,
 													1.0f,
 													0.0f,
-													light.color * light.strength * float(numberOfLights)) * attenuation * visibility / VOLUMETRIC_LIGHTING_DIRECT_LIGHTING_SAMPLES;
+													light.color * light.strength * float(numberOfLights)) * attenuation * visibility / VOLUMETRIC_LIGHTING_SAMPLES;
 	}
 		
 	//Write to the image.

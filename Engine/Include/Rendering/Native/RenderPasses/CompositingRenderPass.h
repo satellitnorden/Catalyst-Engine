@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/CompositingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class CompositingRenderPass final : public RenderPass
@@ -22,9 +21,6 @@ public:
 	CompositingRenderPass() NOEXCEPT;
 
 private:
-
-	//The volumetric lighting resample graphics pipeline.
-	ResampleGraphicsPipeline _VolumetricLightingResampleGraphicsPipeline;
 
 	//The compositing graphics pipeline.
 	CompositingGraphicsPipeline _CompositingGraphicsPipeline;

@@ -153,6 +153,22 @@ public:
 		_ChromaticAberrationIntensity = intensity;
 	}
 
+	/*
+	*	Returns the volumetric lighting intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetVolumetricLightingIntensity() const NOEXCEPT
+	{
+		return _VolumetricLightingIntensity;
+	}
+
+	/*
+	*	Sets the volumetric lighting intensity.
+	*/
+	FORCE_INLINE void SetVolumetricLightingIntensity(const float intensity) NOEXCEPT
+	{
+		_VolumetricLightingIntensity = intensity;
+	}
+
 private:
 
 	//The anti aliasing mode.
@@ -178,5 +194,8 @@ private:
 
 	//The chromatic aberration intensity.
 	float _ChromaticAberrationIntensity{ 0.001f };
+
+	//The volumetric lighting intensity.
+	float _VolumetricLightingIntensity{ 1.0f };
 
 };

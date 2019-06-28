@@ -37,7 +37,6 @@ layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
 layout (set = 1, binding = 4) uniform sampler2D ambientOcclusionTexture;
 layout (set = 1, binding = 5) uniform sampler2D diffuseIrradianceTexture;
 layout (set = 1, binding = 6) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 7) uniform sampler2D volumetricLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -87,9 +86,6 @@ void main()
 	//Sample the current direct lighting.
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
 
-	//Sample the current volumetric lighting.
-	vec4 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate);
-
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
 														currentFeatures.albedo,
@@ -100,10 +96,6 @@ void main()
 														currentDiffuseIrradiance,
 														vec3(0.0f));
 
-	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), 0.5f);
-
 	//Write the fragment.
-	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, volumetricLightingWeight), 1.0f);
-	//scene = vec4(currentVolumetricLighting.rgb, 1.0f);
+	scene = vec4(indirectLighting + currentDirectLighting, 1.0f);
 }
