@@ -34,6 +34,7 @@ void main()
 
 	//Retrieve all properties.
 	vec3 albedo = sceneFeatures1.rgb;
+	float luminanceMultiplier = sceneFeatures1.w;
 	vec3 geometryNormal = sceneFeatures2.xyz;
 	float hitDistance = sceneFeatures2.w;
 	vec3 shadingNormal = sceneFeatures3.xyz;
@@ -41,7 +42,7 @@ void main()
 	float roughness = sceneFeatures4.x;
 	float metallic = sceneFeatures4.y;
 	float ambientOcclusion = sceneFeatures4.z;
-	float luminance = sceneFeatures4.w;
+	float luminance = sceneFeatures4.w * luminanceMultiplier;
 
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);

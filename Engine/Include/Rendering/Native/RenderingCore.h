@@ -201,7 +201,7 @@ enum class RenderTarget : uint8
 	VolumetricLighting,
 
 	/*
-	*	Contains the albedo.
+	*	Contains the albedo and the luminance multiplier.
 	*/
 	SceneFeatures1,
 

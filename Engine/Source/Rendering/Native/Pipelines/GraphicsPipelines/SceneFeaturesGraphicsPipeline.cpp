@@ -35,6 +35,7 @@ public:
 	int32 _NormalMapTextureIndex;
 	int32 _MaterialPropertiesTextureIndex;
 	int32 _MaterialProperties;
+	float _LuminanceMultiplier;
 
 };
 
@@ -164,6 +165,7 @@ void SceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		fragmentData._NormalMapTextureIndex = renderComponent->_Material._SecondTextureIndex;
 		fragmentData._MaterialPropertiesTextureIndex = renderComponent->_Material._ThirdTextureIndex;
 		fragmentData._MaterialProperties = static_cast<int32>(renderComponent->_Material._Properties);
+		fragmentData._LuminanceMultiplier = renderComponent->_Material._LuminanceMultiplier;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
