@@ -122,7 +122,7 @@ enum class CommonMaterial : uint8
 {
 	Black,
 	GlassBlue,
-	White,
+	WhitePorcelain,
 
 	NumberOfCommonMaterials
 };

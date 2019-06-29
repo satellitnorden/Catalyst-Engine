@@ -463,8 +463,8 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 	}
 
 	{
-		//Initialize the white common material.
-		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::White)] };
+		//Initialize the white porcelain common material.
+		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::WhitePorcelain)] };
 
 		material._Properties = Material::Property::None;
 
@@ -519,8 +519,8 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 			data._Height = 1;
 			data._Data.UpsizeSlow(1);
 			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(0);
+			data._Data[0].EmplaceFast(127);
+			data._Data[0].EmplaceFast(127);
 			data._Data[0].EmplaceFast(255);
 			data._Data[0].EmplaceFast(255);
 
