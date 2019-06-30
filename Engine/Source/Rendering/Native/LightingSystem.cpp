@@ -71,6 +71,9 @@ void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEP
 		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
 
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
+
+		//Store the number of active lights.
+		_NumberOfActiveLights = lightUniformData._NumberOfLights;
 	}
 }
 
@@ -92,7 +95,7 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 	{
 		StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
 		};
 
 		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

@@ -6,6 +6,7 @@ glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOf
 glslangValidator.exe -V DiffuseIrradianceRayClosestHitShader.rchit -o 			DiffuseIrradianceRayClosestHitShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayGenerationShader.rgen -o 			DiffuseIrradianceRayGenerationShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayMissShader.rmiss -o 			DiffuseIrradianceRayMissShader.spv
+glslangValidator.exe -V DirectLightingApplicationFragmentShader.frag -o 		DirectLightingApplicationFragmentShader.spv
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 				FireflyReductionFragmentShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
@@ -29,6 +30,8 @@ glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmen
 glslangValidator.exe -V UserInterfaceFragmentShader.frag -o 				UserInterfaceFragmentShader.spv
 glslangValidator.exe -V UserInterfaceVertexShader.vert -o 				UserInterfaceVertexShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
+glslangValidator.exe -V VisibilityDenoisingFragmentShader.frag -o 			VisibilityDenoisingFragmentShader.spv
+glslangValidator.exe -V VisibilityRayGenerationShader.rgen -o 				VisibilityRayGenerationShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv
 glslangValidator.exe -V VolumetricLightingApplicationFragmentShader.frag -o 		VolumetricLightingApplicationFragmentShader.spv
 glslangValidator.exe -V VolumetricLightingRayClosestHitShader.rchit -o 			VolumetricLightingRayClosestHitShader.spv

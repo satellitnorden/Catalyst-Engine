@@ -6,6 +6,8 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 layout (early_fragment_tests) in;
 
@@ -45,6 +47,10 @@ void main()
     vec3 shadingNormal = normalMap * 2.0f - 1.0f;
     shadingNormal = fragmentTangentSpaceMatrix * shadingNormal;
     shadingNormal = normalize(shadingNormal);
+
+    float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), shadingNormal, materialPropertyFlags), 0.0f);
+
+    albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), luminanceMultiplier);

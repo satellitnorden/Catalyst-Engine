@@ -8,6 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 /*
 *	Scene features struct definition.
@@ -17,9 +18,11 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 hitPosition;
+	int materialProperties;
 	float hitDistance;
 	float roughness;
 	float metallic;
+	float luminance;
 	float ambientOcclusion;
 };
 
@@ -57,9 +60,11 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = sceneFeatures3.xyz;
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.materialProperties = floatBitsToInt(sceneFeatures3.w);
 	features.hitDistance = sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
+	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
 	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
 
 	return features;
@@ -96,6 +101,13 @@ void main()
 														currentDiffuseIrradiance,
 														vec3(0.0f));
 
+	//Calculate the luminance lighting.
+	float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), currentFeatures.normal, currentFeatures.materialProperties), 0.0f);
+
+	currentFeatures.luminance = mix(currentFeatures.luminance, currentFeatures.luminance + 1.0f, highlightWeight);
+
+	vec3 luminanceLighting = currentFeatures.albedo * currentFeatures.luminance;
+
 	//Write the fragment.
-	scene = vec4(indirectLighting + currentDirectLighting, 1.0f);
+	scene = vec4(indirectLighting + currentDirectLighting + luminanceLighting, 1.0f);
 }

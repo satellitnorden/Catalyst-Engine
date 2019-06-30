@@ -48,6 +48,14 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentLightingDataRenderDataTable() const NOEXCEPT;
 
+	/*
+	*	Returns the number of active lights.
+	*/
+	FORCE_INLINE NO_DISCARD int32 GetNumberOfActiveLights() const NOEXCEPT
+	{
+		return _NumberOfActiveLights;
+	}
+
 private:
 
 	//The directional light.
@@ -61,6 +69,9 @@ private:
 
 	//The uniform buffers.
 	DynamicArray<BufferHandle> _UniformBuffers;
+
+	//The number of active lights.
+	int32 _NumberOfActiveLights;
 
 	/*
 	*	Creates the render data table layout.

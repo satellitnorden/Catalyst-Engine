@@ -60,17 +60,27 @@ void main()
 	//Calculate the tangent space matrix.
 	mat3 tangentSpaceMatrix = mat3(finalVertex.tangent, cross(finalVertex.tangent, finalVertex.normal), finalVertex.normal);
 
-	//Calculate the final normal.
-	vec3 finalNormal = tangentSpaceMatrix * normalMap;
+	//Calculate the shading normal.
+	vec3 shadingNormal = tangentSpaceMatrix * normalMap;
 
 	//Calculate the highlight weight of this material and modify the material properties based on that.
-	float highlightWeight = max(CalculateHighlightWeight(gl_WorldRayDirectionNV, finalNormal, modelMaterials[gl_InstanceCustomIndexNV].properties), 0.0f);
+	float highlightWeight = max(CalculateHighlightWeight(gl_WorldRayDirectionNV, shadingNormal, modelMaterials[gl_InstanceCustomIndexNV].properties), 0.0f);
 
 	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
+
+	//Add some ambient lighting.
+	directLighting += CalculateIndirectLighting(-gl_WorldRayDirectionNV,
+												albedo,
+												shadingNormal,
+												roughness,
+												metallic,
+												ambientOcclusion,
+												vec3(ambientIlluminationIntensity) * albedo,
+												vec3(0.0f));;
 
 	//Add the luminance lighting.
 	directLighting += albedo * luminance;
@@ -114,7 +124,7 @@ void main()
 		directLighting += CalculateDirectLight(	-gl_WorldRayDirectionNV,
 												lightDirection,
 												albedo,
-												finalNormal,
+												shadingNormal,
 												roughness,
 												metallic,
 												light.color * light.strength) * attenuation * visibility;

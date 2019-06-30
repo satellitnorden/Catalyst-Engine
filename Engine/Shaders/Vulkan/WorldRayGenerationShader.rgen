@@ -86,10 +86,10 @@ void main()
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
 
+	/*
 	//Add the luminance lighting.
 	directLighting += albedo * luminance;
 
-	//Calculate all lights.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
@@ -133,6 +133,7 @@ void main()
 												metallic,
 												light.color * light.strength) * attenuation * visibility;
 	}
+	*/
 
 	//Write to the images.
 	imageStore(specularIrradianceImage, ivec2(gl_LaunchIDNV.xy), vec4(specularIrradiance, 1.0f));

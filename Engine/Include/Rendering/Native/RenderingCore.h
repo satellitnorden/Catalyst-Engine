@@ -60,6 +60,7 @@ enum class RenderPassStage : uint8
 	FireflyReduction,
 	Denoising,
 	TemporalAccumulation,
+	DirectLighting,
 	Compositing,
 	SpecularIrradiance,
 	VolumetricLighting,
@@ -263,7 +264,12 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate_Half_R8_Byte,
+	Intermediate_Half_R8_Byte_1,
+
+	/*
+	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate_Half_R8_Byte_2,
 
 	/*
 	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
@@ -316,6 +322,7 @@ enum class Shader : uint8
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
 	DiffuseIrradianceRayMiss,
+	DirectLightingApplicationFragment,
 	FastApproximateAntiAliasingFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,
@@ -339,6 +346,8 @@ enum class Shader : uint8
 	UserInterfaceFragment,
 	UserInterfaceVertex,
 	ViewportVertex,
+	VisibilityDenoisingFragment,
+	VisibilityRayGeneration,
 	VisibilityRayMiss,
 	VolumetricLightingApplicationFragment,
 	VolumetricLightingRayClosestHit,
