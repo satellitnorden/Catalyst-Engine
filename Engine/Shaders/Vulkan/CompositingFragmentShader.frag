@@ -110,4 +110,5 @@ void main()
 
 	//Write the fragment.
 	scene = vec4(indirectLighting + currentDirectLighting + luminanceLighting, 1.0f);
+	//scene = vec4(vec3(currentFeatures.ambientOcclusion), 1.0f);
 }
