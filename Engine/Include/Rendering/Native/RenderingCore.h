@@ -319,6 +319,7 @@ enum class Shader : uint8
 	CompositingFragment,
 	DenoisingFragment,
 	DepthOfFieldApplicationFragment,
+	DepthOfFieldBokehFragment,
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
 	DiffuseIrradianceRayMiss,

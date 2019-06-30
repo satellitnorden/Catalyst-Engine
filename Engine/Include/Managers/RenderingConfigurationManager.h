@@ -169,6 +169,22 @@ public:
 		_VolumetricLightingIntensity = intensity;
 	}
 
+	/*
+	*	Returns the depth of field focus distance.
+	*/
+	FORCE_INLINE NO_DISCARD float GetDepthOfFieldFocusDistance() const NOEXCEPT
+	{
+		return _DepthOfFieldFocusDistance;
+	}
+
+	/*
+	*	Sets the depth of field focus distance.
+	*/
+	FORCE_INLINE void SetDepthOfFieldFocusDistance(const float distance) NOEXCEPT
+	{
+		_DepthOfFieldFocusDistance = distance;
+	}
+
 private:
 
 	//The anti aliasing mode.
@@ -197,5 +213,8 @@ private:
 
 	//The volumetric lighting intensity.
 	float _VolumetricLightingIntensity{ 1.0f };
+
+	//The depth of field focus distance.
+	float _DepthOfFieldFocusDistance{ 0.0f };
 
 };

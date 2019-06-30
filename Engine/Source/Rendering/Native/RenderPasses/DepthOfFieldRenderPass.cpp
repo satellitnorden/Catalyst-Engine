@@ -34,13 +34,14 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(_DepthOfFieldDownsampleGraphicsPipelines.Size() + 1 + 1);
+	SetNumberOfPipelines(_DepthOfFieldDownsampleGraphicsPipelines.Size() + 1 + 1 + 1);
 
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
+	AddPipeline(&_DepthOfFieldBokehGraphicsPipeline);
 	AddPipeline(&_DepthOfFieldUpsampleGraphicsPipeline);
 	AddPipeline(&_DepthOfFieldApplicationGraphicsPipeline);
 
@@ -57,7 +58,9 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 															RenderingSystem::Instance->GetScaledResolution() / 4,
 															false);
 
-	_DepthOfFieldUpsampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
+	_DepthOfFieldBokehGraphicsPipeline.Initialize();
+
+	_DepthOfFieldUpsampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_2),
 														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 														1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
 														RenderingSystem::Instance->GetScaledResolution() / 2,
@@ -77,20 +80,13 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 */
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {	
-	//Disable, for now.
-	if (false)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Execute all pipelines.
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}
 
+	_DepthOfFieldBokehGraphicsPipeline.Execute();
 	_DepthOfFieldUpsampleGraphicsPipeline.Execute();
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
 }
