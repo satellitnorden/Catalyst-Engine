@@ -10,12 +10,6 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) float intensity;
-};
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -34,5 +28,5 @@ void main()
 	float luminance = CalculateAverage(scene);
 
     //Write the fragment.
-    fragment = vec4(scene * luminance * intensity, 1.0f);
+    fragment = vec4(scene * luminance * bloomIntensity, 1.0f);
 }

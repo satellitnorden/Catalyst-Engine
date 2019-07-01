@@ -21,7 +21,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures3Texture;
-layout (set = 1, binding = 2) uniform sampler2D directLightingTexture;
+layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -69,19 +69,10 @@ void main()
 		float expectedSampleHitDistance = length(expectedSampleWorldPosition - perceiverWorldPosition);
 
 		//If the sample hit distance is lower than the expected sample hit distance, it's a hit. (:
-		if (sampleHitDistance < expectedSampleHitDistance)
+		if (sampleHitDistance < expectedSampleHitDistance && dot(reflectionDirection, sampleGeometryNormal) < 0.0f)
 		{
-			/*
-			*	Calculate the sample weight based on certain criteria;
-			*	
-			*	1. Are the normals aligned?
-			*/
-			float sampleWeight = 1.0f;
-
-			sampleWeight = float(dot(reflectionDirection, sampleGeometryNormal) < 0.0f);
-
 			//The specular irradiance at this point is the direct lighting texture at the sample screen coordinate. (:
-			screenSpaceSpecularIrradiance = texture(directLightingTexture, sampleScreenCoordinate).rgb * sampleWeight;
+			screenSpaceSpecularIrradiance = texture(sceneTexture, sampleScreenCoordinate).rgb;
 
 			break;
 		}

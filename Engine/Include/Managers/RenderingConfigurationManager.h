@@ -106,6 +106,22 @@ public:
 	}
 
 	/*
+	*	Returns the ambient illumination intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetAmbientIlluminationIntensity() const NOEXCEPT
+	{
+		return _AmbientIlluminationIntensity;
+	}
+
+	/*
+	*	Sets the ambient illumination intensity.
+	*/
+	FORCE_INLINE void SetAmbientIlluminationIntensity(const float intensity) NOEXCEPT
+	{
+		_AmbientIlluminationIntensity = intensity;
+	}
+
+	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float GetBloomIntensity() const NOEXCEPT
@@ -137,6 +153,38 @@ public:
 		_ChromaticAberrationIntensity = intensity;
 	}
 
+	/*
+	*	Returns the volumetric lighting intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float GetVolumetricLightingIntensity() const NOEXCEPT
+	{
+		return _VolumetricLightingIntensity;
+	}
+
+	/*
+	*	Sets the volumetric lighting intensity.
+	*/
+	FORCE_INLINE void SetVolumetricLightingIntensity(const float intensity) NOEXCEPT
+	{
+		_VolumetricLightingIntensity = intensity;
+	}
+
+	/*
+	*	Returns the depth of field focus distance.
+	*/
+	FORCE_INLINE NO_DISCARD float GetDepthOfFieldFocusDistance() const NOEXCEPT
+	{
+		return _DepthOfFieldFocusDistance;
+	}
+
+	/*
+	*	Sets the depth of field focus distance.
+	*/
+	FORCE_INLINE void SetDepthOfFieldFocusDistance(const float distance) NOEXCEPT
+	{
+		_DepthOfFieldFocusDistance = distance;
+	}
+
 private:
 
 	//The anti aliasing mode.
@@ -154,10 +202,19 @@ private:
 	//The volumetric lighting mode.
 	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
 
+	//The ambient illumination intensity.
+	float _AmbientIlluminationIntensity{ 0.1f };
+
 	//The bloom intensity.
 	float _BloomIntensity{ 1.0f };
 
 	//The chromatic aberration intensity.
 	float _ChromaticAberrationIntensity{ 0.001f };
+
+	//The volumetric lighting intensity.
+	float _VolumetricLightingIntensity{ 1.0f };
+
+	//The depth of field focus distance.
+	float _DepthOfFieldFocusDistance{ 0.0f };
 
 };

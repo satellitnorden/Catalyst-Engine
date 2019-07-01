@@ -10,8 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (24)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (2.0f)
 
 //Layout specification.
@@ -46,7 +45,7 @@ void main()
 		//Calculate the sample position.
 		vec4 randomSample = texture(sampler2D(globalTextures[i], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), randomTextureCoordinate);
 		vec3 randomDirection = normalize(randomSample.xyz * 2.0f - 1.0f);
-		float randomLength = SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * pow(randomSample.w, SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS);
+		float randomLength = pow(randomSample.w, SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS);
 
 		randomDirection = dot(randomDirection, geometryNormal) >= 0.0f ? randomDirection : randomDirection * -1.0f;
 		vec3 samplePosition = worldPosition + randomDirection * randomLength;
@@ -63,7 +62,7 @@ void main()
 		float sampleHitDistance = sampleSceneFeatures.w;
 
 		//Calculate the distance falloff.
-		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance) / SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS, 1.0f));
+		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance), 1.0f));
 
 		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
 		occlusion += float(expectedHitDistance > sampleHitDistance) * distanceFalloff;

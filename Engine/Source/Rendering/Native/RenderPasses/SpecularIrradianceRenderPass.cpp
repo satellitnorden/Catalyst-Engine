@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/ScreenSpaceSpecularIrradianceRenderPass.h>
+#include <Rendering/Native/RenderPasses/SpecularIrradianceRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -8,42 +8,44 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ScreenSpaceSpecularIrradianceRenderPass);
+DEFINE_SINGLETON(SpecularIrradianceRenderPass);
 
 /*
 *	Default constructor.
 */
-ScreenSpaceSpecularIrradianceRenderPass::ScreenSpaceSpecularIrradianceRenderPass() NOEXCEPT
+SpecularIrradianceRenderPass::SpecularIrradianceRenderPass() NOEXCEPT
 {
 	//Set the stage.
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
-	SetStage(RenderPassStage::ScreenSpaceSpecularIrradiance);
+	SetStage(RenderPassStage::SpecularIrradiance);
 #endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		ScreenSpaceSpecularIrradianceRenderPass::Instance->Initialize();
+		SpecularIrradianceRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		ScreenSpaceSpecularIrradianceRenderPass::Instance->Execute();
+		SpecularIrradianceRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void ScreenSpaceSpecularIrradianceRenderPass::Initialize() NOEXCEPT
+void SpecularIrradianceRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 	AddPipeline(&_ScreenSpaceSpecularIrradianceGraphicsPipeline);
+	AddPipeline(&_SpecularIrradianceApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ScreenSpaceSpecularIrradianceGraphicsPipeline.Initialize();
+	_SpecularIrradianceApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -55,7 +57,7 @@ void ScreenSpaceSpecularIrradianceRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void ScreenSpaceSpecularIrradianceRenderPass::Execute() NOEXCEPT
+void SpecularIrradianceRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	if (RenderingConfigurationManager::Instance->GetSpecularIrradianceMode() == RenderingConfigurationManager::SpecularIrradianceMode::ScreenSpace)
@@ -67,4 +69,6 @@ void ScreenSpaceSpecularIrradianceRenderPass::Execute() NOEXCEPT
 	{
 		_ScreenSpaceSpecularIrradianceGraphicsPipeline.SetIncludeInRender(false);
 	}
+
+	_SpecularIrradianceApplicationGraphicsPipeline.Execute();
 }

@@ -294,7 +294,8 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAntiAliasingBuffer1)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::TemporalAntiAliasingBuffer2)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_R32G32B32A32_Float)]);
-	CreateRenderTarget(GetScaledResolution() / 2, TextureFormat::R8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Half_R8_Byte)]);
+	CreateRenderTarget(GetScaledResolution() / 2, TextureFormat::R8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Half_R8_Byte_1)]);
+	CreateRenderTarget(GetScaledResolution() / 2, TextureFormat::R8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Half_R8_Byte_2)]);
 	CreateRenderTarget(GetScaledResolution() / 2, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1)]);
 	CreateRenderTarget(GetScaledResolution() / 2, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2)]);
 	CreateRenderTarget(GetScaledResolution() / 4, TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1)]);
@@ -463,8 +464,8 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 	}
 
 	{
-		//Initialize the white common material.
-		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::White)] };
+		//Initialize the white porcelain common material.
+		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::WhitePorcelain)] };
 
 		material._Properties = Material::Property::None;
 
@@ -519,8 +520,8 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 			data._Height = 1;
 			data._Data.UpsizeSlow(1);
 			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(0);
+			data._Data[0].EmplaceFast(127);
+			data._Data[0].EmplaceFast(127);
 			data._Data[0].EmplaceFast(255);
 			data._Data[0].EmplaceFast(255);
 
@@ -747,6 +748,13 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
 	_DynamicUniformData._VolumetricLightingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetVolumetricLightingMode());
+
+	_DynamicUniformData._AmbientIllumionationIntensity = RenderingConfigurationManager::Instance->GetAmbientIlluminationIntensity();
+	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
+	_DynamicUniformData._ChromaticAberrationIntensity = RenderingConfigurationManager::Instance->GetChromaticAberrationIntensity();
+	_DynamicUniformData._VolumetricLightingIntensity = RenderingConfigurationManager::Instance->GetVolumetricLightingIntensity();
+
+	_DynamicUniformData._DepthOfFieldFocusDistance = RenderingConfigurationManager::Instance->GetDepthOfFieldFocusDistance();
 
 	_DynamicUniformData._ActiveBlueNoiseTextureIndex = _NoiseTextures[_ActiveNoiseTextureIndex]._Index;
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetX = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);

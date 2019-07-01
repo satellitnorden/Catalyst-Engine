@@ -8,6 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 /*
 *	Scene features struct definition.
@@ -17,9 +18,11 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 hitPosition;
+	int materialProperties;
 	float hitDistance;
 	float roughness;
 	float metallic;
+	float luminance;
 	float ambientOcclusion;
 };
 
@@ -36,9 +39,7 @@ layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
 layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
 layout (set = 1, binding = 4) uniform sampler2D ambientOcclusionTexture;
 layout (set = 1, binding = 5) uniform sampler2D diffuseIrradianceTexture;
-layout (set = 1, binding = 6) uniform sampler2D specularIrradianceTexture;
-layout (set = 1, binding = 7) uniform sampler2D directLightingTexture;
-layout (set = 1, binding = 8) uniform sampler2D volumetricLightingTexture;
+layout (set = 1, binding = 6) uniform sampler2D directLightingTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -59,9 +60,11 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = sceneFeatures3.xyz;
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.materialProperties = floatBitsToInt(sceneFeatures3.w);
 	features.hitDistance = sceneFeatures2.w;
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
+	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
 	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
 
 	return features;
@@ -73,16 +76,20 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Sample the current diffuse irradiance lighting.
-	vec3 currentDiffuseIrradiance = Upsample(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentDiffuseIrradiance;
 
-	//Sample the current specular irradiance lighting.
-	vec3 currentSpecularIrradiance = mix(currentDiffuseIrradiance, texture(specularIrradianceTexture, fragmentTextureCoordinate).rgb, pow(1.0f - CalculateDiffuseComponent(currentFeatures.roughness, currentFeatures.metallic), 4.0f));
+	if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_SIMPLE)
+	{
+		currentDiffuseIrradiance = vec3(ambientIlluminationIntensity);
+	}
+
+	else if (diffuseIrradianceMode == DIFFUSE_IRRADIANCE_MODE_RAY_TRACED)
+	{
+		currentDiffuseIrradiance = Upsample(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;
+	}
 
 	//Sample the current direct lighting.
 	vec3 currentDirectLighting = texture(directLightingTexture, fragmentTextureCoordinate).rgb;
-
-	//Sample the current volumetric lighting.
-	vec4 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate);
 
 	//Calculate the indirect lighting.
 	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
@@ -92,12 +99,16 @@ void main()
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
 														currentDiffuseIrradiance,
-														currentSpecularIrradiance);
+														vec3(0.0f));
 
-	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
+	//Calculate the luminance lighting.
+	float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), currentFeatures.normal, currentFeatures.materialProperties), 0.0f);
+
+	currentFeatures.luminance = mix(currentFeatures.luminance, currentFeatures.luminance + 1.0f, highlightWeight);
+
+	vec3 luminanceLighting = currentFeatures.albedo * currentFeatures.luminance;
 
 	//Write the fragment.
-	scene = vec4(mix(indirectLighting + currentDirectLighting, currentVolumetricLighting.rgb, volumetricLightingWeight), 1.0f);
-	//scene = vec4(currentVolumetricLighting.rgb, 1.0f);
+	scene = vec4(indirectLighting + currentDirectLighting + luminanceLighting, 1.0f);
+	//scene = vec4(vec3(currentFeatures.ambientOcclusion), 1.0f);
 }

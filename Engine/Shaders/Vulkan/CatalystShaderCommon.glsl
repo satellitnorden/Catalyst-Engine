@@ -81,11 +81,18 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 604) int shadowsMode;
     layout (offset = 608) int volumetricLightingMode;
 
-    layout (offset = 612) int activeNoiseTextureIndex;
-    layout (offset = 616) float activeNoiseTextureOffsetX;
-    layout (offset = 620) float activeNoiseTextureOffsetY;
+    layout (offset = 612) float ambientIlluminationIntensity;
+    layout (offset = 616) float bloomIntensity;
+    layout (offset = 620) float chromaticAberrationIntensity;
+    layout (offset = 624) float volumetricLightingIntensity;
 
-    //Total size; 624
+    layout (offset = 628) float depthOfFieldFocusDistance;
+
+    layout (offset = 632) int activeNoiseTextureIndex;
+    layout (offset = 636) float activeNoiseTextureOffsetX;
+    layout (offset = 640) float activeNoiseTextureOffsetY;
+
+    //Total size; 644
 };
 
 //The global textures.

@@ -9,17 +9,11 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.03f) //0.0025f step.
+#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.025f) //0.0025f step.
 #define POST_PROCESSING_VIGNETTE_STRENGTH (2.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
-
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) float chromaticAberrationIntensity;
-};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;

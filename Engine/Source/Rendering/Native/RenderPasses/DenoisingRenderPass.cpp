@@ -13,12 +13,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(DenoisingRenderPass);
 
-//Denoising render pass constants.
-namespace DenoisingRenderPassConstants
-{
-	constexpr float VOLUMETRIC_LIGHTING_BLUR_SIZE{ 22.0f };
-}
-
 /*
 *	Default constructor.
 */
@@ -48,26 +42,16 @@ DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
 void DenoisingRenderPass::Initialize() NOEXCEPT
 {
 	//Initialize the pipelines.
-	SetNumberOfPipelines(_AmbientOcclusionDenoisingGraphicsPipelines.Size() + _DiffuseIrradianceDenoisingGraphicsPipelines.Size() + _VolumetricLightingSeparableGraphicsPipelines.Size());
+	SetNumberOfPipelines(_AmbientOcclusionDenoisingGraphicsPipelines.Size() + _DiffuseIrradianceDenoisingGraphicsPipelines.Size());
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
 																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[2].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[3].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
@@ -90,34 +74,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
-	_VolumetricLightingSeparableGraphicsPipelines[0].Initialize(SeparableBlurGraphicsPipeline::Direction::Horizontal,
-																DenoisingRenderPassConstants::VOLUMETRIC_LIGHTING_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_VolumetricLightingSeparableGraphicsPipelines[1].Initialize(SeparableBlurGraphicsPipeline::Direction::Vertical,
-																DenoisingRenderPassConstants::VOLUMETRIC_LIGHTING_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_VolumetricLightingSeparableGraphicsPipelines[2].Initialize(SeparableBlurGraphicsPipeline::Direction::Horizontal,
-																DenoisingRenderPassConstants::VOLUMETRIC_LIGHTING_BLUR_SIZE,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_VolumetricLightingSeparableGraphicsPipelines[3].Initialize(SeparableBlurGraphicsPipeline::Direction::Vertical,
-																DenoisingRenderPassConstants::VOLUMETRIC_LIGHTING_BLUR_SIZE,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-
 	//Add all pipelines.
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
@@ -125,11 +81,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 	}
 
 	for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	for (SeparableBlurGraphicsPipeline &pipeline : _VolumetricLightingSeparableGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -170,23 +121,6 @@ void DenoisingRenderPass::Execute() NOEXCEPT
 	else
 	{
 		for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
-		{
-			pipeline.SetIncludeInRender(false);
-		}
-	}
-
-	//Execute all the volumetric lighting denoising pipelines.
-	if (RenderingConfigurationManager::Instance->GetVolumetricLightingMode() == RenderingConfigurationManager::VolumetricLightingMode::RayTraced)
-	{
-		for (SeparableBlurGraphicsPipeline &pipeline : _VolumetricLightingSeparableGraphicsPipelines)
-		{
-			pipeline.Execute();
-		}
-	}
-
-	else
-	{
-		for (SeparableBlurGraphicsPipeline &pipeline : _VolumetricLightingSeparableGraphicsPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}

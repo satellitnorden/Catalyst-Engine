@@ -6,6 +6,8 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 layout (early_fragment_tests) in;
 
@@ -16,6 +18,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 68) int normalMapTextureIndex;
     layout (offset = 72) int materialPropertiesIndex;
     layout (offset = 76) int materialPropertyFlags;
+    layout (offset = 80) float luminanceMultiplier;
 };
 
 //In parameters.
@@ -41,14 +44,16 @@ void main()
    vec4 materialProperties = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
 
    //Calculate the shading normal.
-
-    //Set the normal.
     vec3 shadingNormal = normalMap * 2.0f - 1.0f;
     shadingNormal = fragmentTangentSpaceMatrix * shadingNormal;
     shadingNormal = normalize(shadingNormal);
 
+    float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), shadingNormal, materialPropertyFlags), 0.0f);
+
+    albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
+
     //Write the fragments.
-    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 1.0f);
+    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), luminanceMultiplier);
     sceneFeatures2 = vec4(fragmentTangentSpaceMatrix[2], length(fragmentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = vec4(shadingNormal, intBitsToFloat(materialPropertyFlags));
     sceneFeatures4 = materialProperties;

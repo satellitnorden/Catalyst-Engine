@@ -57,12 +57,13 @@ enum class RenderPassStage : uint8
 	WorldRayTracing,
 	DiffuseIrradiance,
 	ScreenSpaceAmbientOcclusion,
-	ScreenSpaceSpecularIrradiance,
-	VolumetricLighting,
 	FireflyReduction,
 	Denoising,
 	TemporalAccumulation,
+	DirectLighting,
 	Compositing,
+	SpecularIrradiance,
+	VolumetricLighting,
 #else
 	PathTracing,
 #endif
@@ -122,7 +123,7 @@ enum class CommonMaterial : uint8
 {
 	Black,
 	GlassBlue,
-	White,
+	WhitePorcelain,
 
 	NumberOfCommonMaterials
 };
@@ -201,7 +202,7 @@ enum class RenderTarget : uint8
 	VolumetricLighting,
 
 	/*
-	*	Contains the albedo.
+	*	Contains the albedo and the luminance multiplier.
 	*/
 	SceneFeatures1,
 
@@ -263,7 +264,12 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate_Half_R8_Byte,
+	Intermediate_Half_R8_Byte_1,
+
+	/*
+	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate_Half_R8_Byte_2,
 
 	/*
 	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
@@ -313,9 +319,11 @@ enum class Shader : uint8
 	CompositingFragment,
 	DenoisingFragment,
 	DepthOfFieldApplicationFragment,
+	DepthOfFieldBokehFragment,
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
 	DiffuseIrradianceRayMiss,
+	DirectLightingApplicationFragment,
 	FastApproximateAntiAliasingFragment,
 	FireflyReductionFragment,
 	MotionBlurFragment,
@@ -332,14 +340,17 @@ enum class Shader : uint8
 	ScreenSpaceAmbientOcclusionFragment,
 	ScreenSpaceSpecularIrradianceFragment,
 	SeparableBlurFragment,
-	SimpleDiffuseIrradianceFragment,
+	SpecularIrradianceApplicationFragment,
 	TemporalAccumulationFragment,
 	TemporalAntiAliasingFragment,
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
 	ViewportVertex,
+	VisibilityDenoisingFragment,
+	VisibilityRayGeneration,
 	VisibilityRayMiss,
+	VolumetricLightingApplicationFragment,
 	VolumetricLightingRayClosestHit,
 	VolumetricLightingRayGeneration,
 	VolumetricLightingRayMiss,
