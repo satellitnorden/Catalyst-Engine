@@ -10,7 +10,7 @@ DEFINE_SINGLETON(VolumetricLightingRenderPass);
 //Volumetric lighting render pass constants.
 namespace VolumetricLightingRenderPassConstants
 {
-	constexpr float VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE{ 14.0f };
+	constexpr float VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE{ 8.0f };
 }
 
 /*
@@ -68,19 +68,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
 																RenderingSystem::Instance->GetScaledResolution() / 4);
-	_VolumetricLightingSeparableGraphicsPipelines[2].Initialize(SeparableBlurGraphicsPipeline::Direction::Horizontal,
-		VolumetricLightingRenderPassConstants::VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE,
-		2.0f,
-		RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-		RenderingSystem::Instance->GetScaledResolution() / 4);
-
-	_VolumetricLightingSeparableGraphicsPipelines[3].Initialize(SeparableBlurGraphicsPipeline::Direction::Vertical,
-		VolumetricLightingRenderPassConstants::VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE,
-		2.0f,
-		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-		RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-		RenderingSystem::Instance->GetScaledResolution() / 4);
+	
 	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,

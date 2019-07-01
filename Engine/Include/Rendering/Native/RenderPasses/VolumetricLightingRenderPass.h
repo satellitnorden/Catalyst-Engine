@@ -30,7 +30,7 @@ private:
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
 
 	//The volumetric lighting separable blur graphics pipelines.
-	StaticArray<SeparableBlurGraphicsPipeline, 4> _VolumetricLightingSeparableGraphicsPipelines;
+	StaticArray<SeparableBlurGraphicsPipeline, 2> _VolumetricLightingSeparableGraphicsPipelines;
 
 	//The volumetric lighting resample graphics pipeline.
 	ResampleGraphicsPipeline _VolumetricLightingResampleGraphicsPipeline;
