@@ -402,7 +402,6 @@
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />

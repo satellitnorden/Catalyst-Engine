@@ -1283,9 +1283,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\LightingSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
