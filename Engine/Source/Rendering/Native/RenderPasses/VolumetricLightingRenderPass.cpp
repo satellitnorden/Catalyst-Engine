@@ -10,7 +10,7 @@ DEFINE_SINGLETON(VolumetricLightingRenderPass);
 //Volumetric lighting render pass constants.
 namespace VolumetricLightingRenderPassConstants
 {
-	constexpr float VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE{ 8.0f };
+	constexpr float VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE{ 12.0f };
 }
 
 /*
