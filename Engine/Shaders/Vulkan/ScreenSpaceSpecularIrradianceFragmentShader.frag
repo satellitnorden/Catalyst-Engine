@@ -69,10 +69,13 @@ void main()
 		float expectedSampleHitDistance = length(expectedSampleWorldPosition - perceiverWorldPosition);
 
 		//If the sample hit distance is lower than the expected sample hit distance, it's a hit. (:
-		if (sampleHitDistance < expectedSampleHitDistance && dot(reflectionDirection, sampleGeometryNormal) < 0.0f)
+		if (sampleHitDistance < expectedSampleHitDistance)
 		{
 			//The specular irradiance at this point is the direct lighting texture at the sample screen coordinate. (:
-			screenSpaceSpecularIrradiance = texture(sceneTexture, sampleScreenCoordinate).rgb;
+			if (dot(reflectionDirection, sampleGeometryNormal) < 0.0f)
+			{
+				screenSpaceSpecularIrradiance = texture(sceneTexture, sampleScreenCoordinate).rgb;
+			}
 
 			break;
 		}
