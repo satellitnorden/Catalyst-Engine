@@ -21,12 +21,15 @@ public:
 	//The direction.
 	Vector2<float> _Direction;
 
+	//The stride.
+	float _Stride;
+
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -37,6 +40,8 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 	//Set the direction.
 	_Direction = direction;
 
+	//Set the stride.
+	_Stride = stride;
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -109,6 +114,8 @@ void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	{
 		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
 	}
+
+	data._Stride = _Stride;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

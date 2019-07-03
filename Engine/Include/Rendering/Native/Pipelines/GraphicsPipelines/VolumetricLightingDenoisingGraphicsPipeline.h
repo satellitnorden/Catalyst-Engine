@@ -24,7 +24,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -41,6 +41,9 @@ private:
 
 	//The direction.
 	Direction _Direction;
+
+	//The stride.
+	float _Stride;
 
 	/*
 	*	Creates the render data table layout.

@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_DENOISING_SIZE (16.0f)
+#define VOLUMETRIC_LIGHTING_DENOISING_SIZE (8.0f)
 #define VOLUMETRIC_LIGHTING_DENOISING_START_END (VOLUMETRIC_LIGHTING_DENOISING_SIZE * 0.5f)
 
 /*
@@ -28,6 +28,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 direction;
+	layout (offset = 8) float stride;
 };
 
 //In parameters.
@@ -60,11 +61,14 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
 
+	//Calculate the start/end.
+	float startEnd = VOLUMETRIC_LIGHTING_DENOISING_START_END * stride;
+
 	//Sample neighboring fragments.
 	vec3 denoisedVolumetricLighting = vec3(0.0f);
 	float volumetricLightingWeightSum = 0.0f;
 
-	for (float x = -VOLUMETRIC_LIGHTING_DENOISING_START_END; x <= VOLUMETRIC_LIGHTING_DENOISING_START_END; ++x)
+	for (float x = -startEnd; x <= startEnd; ++x)
 	{
 		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
 

@@ -89,7 +89,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 *	Executes this render pass.
 */
 void BloomRenderPass::Execute() NOEXCEPT
-{	
+{
 	//Execute all pipelines.
 	_BloomIsolationGraphicsPipeline.Execute();
 
