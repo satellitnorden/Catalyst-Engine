@@ -2,25 +2,23 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-
-//Math.
-#include <Math/General/Matrix.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 
-class DirectLightingApplicationGraphicsPipeline  final : public GraphicsPipeline
+class DirectLightingRayTracingPipeline final : public RayTracingPipeline
 {
 
 public:
 
 	/*
-	*	Initializes this graphics pipeline.
+	*	Initializes this ray tracing pipeline.
 	*/
-	void Initialize(const int32 lightIndex) NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
-	*	Executes this graphics pipeline.
+	*	Executes this ray tracing pipeline.
 	*/
 	void Execute() NOEXCEPT;
 
@@ -31,9 +29,6 @@ private:
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	//The light index.
-	int32 _LightIndex;
 
 	/*
 	*	Creates the render data table layout.

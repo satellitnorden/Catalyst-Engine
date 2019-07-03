@@ -36,36 +36,11 @@ DirectLightingRenderPass::DirectLightingRenderPass() NOEXCEPT
 void DirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(_LightsPipelines.Size() * 4);
+	SetNumberOfPipelines(1);
+	AddPipeline(&_DirectLightingRayTracingPipeline);
 
-	for (LightPipelines &pipelines : _LightsPipelines)
-	{
-		AddPipeline(&pipelines._VisibilityRayTracingPipeline);
-
-		for (VisibilityDenoisingGraphicsPipeline &denoisingPipeline : pipelines._VisibilityDenoisingGraphicsPipelines)
-		{
-			AddPipeline(&denoisingPipeline);
-		}
-
-		AddPipeline(&pipelines._DirectLightingApplicationGraphicsPipeline);
-	}
-	
 	//Initialize all pipelines.
-	for (int32 i{ 0 }; i < LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS; ++i)
-	{
-		_LightsPipelines[i]._VisibilityRayTracingPipeline.Initialize(i);
-
-		_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[0].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Horizontal,
-																				1.0f,
-																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1),
-																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_2));
-		_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[1].Initialize(VisibilityDenoisingGraphicsPipeline::Direction::Vertical,
-																				1.0f,
-																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_2),
-																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1));
-
-		_LightsPipelines[i]._DirectLightingApplicationGraphicsPipeline.Initialize(i);
-	}
+	_DirectLightingRayTracingPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -78,26 +53,6 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 *	Executes this render pass.
 */
 void DirectLightingRenderPass::Execute() NOEXCEPT
-{	
-	//Execute all pipelines.
-	int32 numberOfActiveLights{ RenderingSystem::Instance->GetLightingSystem()->GetNumberOfActiveLights() };
-
-	for (int32 i{ 0 }; i < LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS; ++i)
-	{
-		if (i < numberOfActiveLights)
-		{
-			_LightsPipelines[i]._VisibilityRayTracingPipeline.Execute();
-			_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[0].Execute();
-			_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[1].Execute();
-			_LightsPipelines[i]._DirectLightingApplicationGraphicsPipeline.Execute();
-		}
-
-		else
-		{
-			_LightsPipelines[i]._VisibilityRayTracingPipeline.SetIncludeInRender(false);
-			_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[0].SetIncludeInRender(false);
-			_LightsPipelines[i]._VisibilityDenoisingGraphicsPipelines[1].SetIncludeInRender(false);
-			_LightsPipelines[i]._DirectLightingApplicationGraphicsPipeline.SetIncludeInRender(false);
-		}
-	}
+{
+	_DirectLightingRayTracingPipeline.Execute();
 }

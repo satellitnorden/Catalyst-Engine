@@ -1,0 +1,99 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
+#include "CatalystModelData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
+
+//Descriptor set data.
+layout (set = 3, binding = 0, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures2Image;
+layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures3Image;
+layout (set = 3, binding = 3, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 3, binding = 4, rgba32f) uniform image2D sceneImage;
+
+//In parameters.
+layout(location = 1) rayPayloadNV float visibility;
+
+void main() 
+{
+	//Retrieve the scene features.
+	vec4 sceneFeatures1 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures3 = imageLoad(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures4 = imageLoad(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy));
+
+	//Retrieve all properties.
+	vec3 albedo = sceneFeatures1.rgb;
+	float luminanceMultiplier = sceneFeatures1.w;
+	vec3 geometryNormal = sceneFeatures2.xyz;
+	float hitDistance = sceneFeatures2.w;
+	vec3 shadingNormal = sceneFeatures3.xyz;
+	int materialProperties = floatBitsToInt(sceneFeatures3.w);
+	float roughness = sceneFeatures4.x;
+	float metallic = sceneFeatures4.y;
+	float ambientOcclusion = sceneFeatures4.z;
+	float luminance = sceneFeatures4.w * luminanceMultiplier;
+
+	//Retrieve the current scene.
+	vec3 currentScene = imageLoad(sceneImage, ivec2(gl_LaunchIDNV.xy)).rgb;
+
+	//Calculate the screen coordinate.
+	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Generate the ray direction.
+	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+
+	//Calculate the hit position.
+	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.001f;
+
+	//Calculate the direct lighting.
+	vec3 directLighting = vec3(0.0f);
+
+	//Calculate all lights.
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		float lengthToLight = length(light.position - hitPosition);
+		vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
+
+		//Calculate the attenuation.
+		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+		//Determine the visibility.
+		visibility = 0.0f;
+
+		traceNV(
+				topLevelAccelerationStructure, 																//topLevel
+				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+				0xff, 																						//cullMask
+				0, 																							//sbtRecordOffset
+				0, 																							//sbtRecordStride
+				0, 																							//missIndex
+				hitPosition, 																				//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+				lightDirection,																				//direction
+				lengthToLight,																				//Tmax
+				1 																							//payload
+				);
+
+		directLighting += CalculateDirectLight(	-rayDirection,
+												lightDirection,
+												albedo,
+												shadingNormal,
+												roughness,
+												metallic,
+												light.color * light.strength) * attenuation * visibility;
+	}
+
+	//Write to the image.
+	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(currentScene + directLighting, 1.0f));
+}

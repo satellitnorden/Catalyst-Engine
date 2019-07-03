@@ -101,14 +101,7 @@ void main()
 														currentDiffuseIrradiance,
 														vec3(0.0f));
 
-	//Calculate the luminance lighting.
-	float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), currentFeatures.normal, currentFeatures.materialProperties), 0.0f);
-
-	currentFeatures.luminance = mix(currentFeatures.luminance, currentFeatures.luminance + 1.0f, highlightWeight);
-
-	vec3 luminanceLighting = currentFeatures.albedo * currentFeatures.luminance;
-
 	//Write the fragment.
-	scene = vec4(indirectLighting + currentDirectLighting + luminanceLighting, 1.0f);
+	scene = vec4(indirectLighting + currentDirectLighting, 1.0f);
 	//scene = vec4(vec3(currentFeatures.ambientOcclusion), 1.0f);
 }

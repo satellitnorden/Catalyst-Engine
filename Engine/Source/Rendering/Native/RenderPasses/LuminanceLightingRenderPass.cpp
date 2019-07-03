@@ -1,46 +1,46 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/CompositingRenderPass.h>
+#include <Rendering/Native/RenderPasses/LuminanceLightingRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(CompositingRenderPass);
+DEFINE_SINGLETON(LuminanceLightingRenderPass);
 
 /*
 *	Default constructor.
 */
-CompositingRenderPass::CompositingRenderPass() NOEXCEPT
+LuminanceLightingRenderPass::LuminanceLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
-	SetStage(RenderPassStage::Compositing);
+	SetStage(RenderPassStage::LuminanceLighting);
 #endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		CompositingRenderPass::Instance->Initialize();
+		LuminanceLightingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		CompositingRenderPass::Instance->Execute();
+		LuminanceLightingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void CompositingRenderPass::Initialize() NOEXCEPT
+void LuminanceLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_CompositingGraphicsPipeline);
+	AddPipeline(&_LuminanceLightingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_CompositingGraphicsPipeline.Initialize();
+	_LuminanceLightingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -52,10 +52,8 @@ void CompositingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void CompositingRenderPass::Execute() NOEXCEPT
+void LuminanceLightingRenderPass::Execute() NOEXCEPT
 {	
-	SetEnabled(false);
-
 	//Execute all pipelines.
-	_CompositingGraphicsPipeline.Execute();
+	_LuminanceLightingGraphicsPipeline.Execute();
 }
