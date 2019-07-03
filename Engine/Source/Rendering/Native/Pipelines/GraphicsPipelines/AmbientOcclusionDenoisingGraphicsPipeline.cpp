@@ -64,7 +64,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direc
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

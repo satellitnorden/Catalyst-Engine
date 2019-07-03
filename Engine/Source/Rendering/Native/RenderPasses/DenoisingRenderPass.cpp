@@ -42,17 +42,8 @@ DenoisingRenderPass::DenoisingRenderPass() NOEXCEPT
 void DenoisingRenderPass::Initialize() NOEXCEPT
 {
 	//Initialize the pipelines.
-	SetNumberOfPipelines(_AmbientOcclusionDenoisingGraphicsPipelines.Size() + _DiffuseIrradianceDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines( _DiffuseIrradianceDenoisingGraphicsPipelines.Size());
 
-	_AmbientOcclusionDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R8_Byte_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	_DiffuseIrradianceDenoisingGraphicsPipelines[0].Initialize(	DenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
@@ -75,11 +66,6 @@ void DenoisingRenderPass::Initialize() NOEXCEPT
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::DiffuseIrradiance));
 
 	//Add all pipelines.
-	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
 	for (DenoisingGraphicsPipeline &pipeline : _DiffuseIrradianceDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
@@ -101,12 +87,6 @@ void DenoisingRenderPass::Execute() NOEXCEPT
 	if (ComponentManager::ReadSingletonComponent<InputComponent>()->_GamepadStates[0]._DpadLeft == ButtonState::Pressed)
 	{
 		SetEnabled(!IsEnabled());
-	}
-
-	//Execute all the ambient occlusion denoising pipelines.
-	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
-	{
-		pipeline.Execute();
 	}
 
 	//Execute all diffuse irradiance denoising pipelines.

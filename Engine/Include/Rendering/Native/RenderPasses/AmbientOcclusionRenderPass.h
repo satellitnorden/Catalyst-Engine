@@ -2,28 +2,33 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ScreenSpaceAmbientOcclusionRenderPass final : public RenderPass
+class AmbientOcclusionRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
+	DECLARE_SINGLETON(AmbientOcclusionRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT;
+	AmbientOcclusionRenderPass() NOEXCEPT;
 
 private:
 
 	//The screen space ambient occlusion graphics pipeline.
 	ScreenSpaceAmbientOcclusionGraphicsPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline;
+
+	//The ambient occlusion denoising graphics pipelines.
+	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 2> _AmbientOcclusionDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.

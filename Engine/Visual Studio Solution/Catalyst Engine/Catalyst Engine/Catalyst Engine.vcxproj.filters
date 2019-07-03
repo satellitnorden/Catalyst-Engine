@@ -993,9 +993,6 @@
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1076,6 +1073,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1444,6 +1444,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,6 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DenoisingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -23,9 +22,6 @@ public:
 	DenoisingRenderPass() NOEXCEPT;
 
 private:
-
-	//The ambient occlusion denoising graphics pipelines.
-	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 2> _AmbientOcclusionDenoisingGraphicsPipelines;
 
 	//The diffuse irradiance denoising graphics pipelines.
 	StaticArray<DenoisingGraphicsPipeline, 4> _DiffuseIrradianceDenoisingGraphicsPipelines;

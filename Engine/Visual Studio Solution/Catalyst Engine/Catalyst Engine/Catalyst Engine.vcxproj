@@ -226,6 +226,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\BloomRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\CompositingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DenoisingRenderPass.h" />
@@ -243,7 +244,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderPassManager.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenRenderPass.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SpecularIrradianceRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAccumulationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.h" />
@@ -381,6 +381,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\VisibilityRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\BloomRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\CompositingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DenoisingRenderPass.cpp" />
