@@ -10,7 +10,7 @@
 
 //Constants.
 #define DEPTH_OF_FIELD_BOKEH_MAXIMUM_OFFSET (0.0025f)
-#define DEPTH_OF_FIELD_BOKEH_SAMPLES (32)
+#define DEPTH_OF_FIELD_BOKEH_SAMPLES (16)
 
 //Layout specification.
 layout (early_fragment_tests) in;

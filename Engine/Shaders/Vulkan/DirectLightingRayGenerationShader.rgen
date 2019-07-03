@@ -69,21 +69,29 @@ void main()
 		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
 		//Determine the visibility.
-		visibility = 0.0f;
+		if (shadowsMode == SHADOWS_MODE_NONE)
+		{
+			visibility = 1.0f;
+		}
 
-		traceNV(
-				topLevelAccelerationStructure, 																//topLevel
-				gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-				0xff, 																						//cullMask
-				0, 																							//sbtRecordOffset
-				0, 																							//sbtRecordStride
-				0, 																							//missIndex
-				hitPosition, 																				//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-				lightDirection,																				//direction
-				lengthToLight,																				//Tmax
-				1 																							//payload
-				);
+		else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
+		{
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					0, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+		}
 
 		directLighting += CalculateDirectLight(	-rayDirection,
 												lightDirection,

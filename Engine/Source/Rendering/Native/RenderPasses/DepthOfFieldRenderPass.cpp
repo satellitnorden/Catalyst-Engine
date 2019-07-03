@@ -79,7 +79,7 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 *	Executes this render pass.
 */
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
-{	
+{
 	//Execute all pipelines.
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
 	{

@@ -35,11 +35,10 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 	SetRayGenerationShader(Shader::VolumetricLightingRayGeneration);
 
 	//Set the closest hit shader.
-	SetClosestHitShader(Shader::VolumetricLightingRayClosestHit);
+	SetClosestHitShader(Shader::None);
 
 	//Add the miss shaders.
-	SetNumberOfMissShaders(2);
-	AddMissShader(Shader::VolumetricLightingRayMiss);
+	SetNumberOfMissShaders(1);
 	AddMissShader(Shader::VisibilityRayMiss);
 }
 

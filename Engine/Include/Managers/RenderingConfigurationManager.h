@@ -32,13 +32,6 @@ public:
 		RayTraced
 	};
 
-	//Enumeration covering all volumetric lighting modes.
-	enum class VolumetricLightingMode : uint8
-	{
-		None,
-		RayTraced
-	};
-
 	//Singleton declaration.
 	DECLARE_SINGLETON(RenderingConfigurationManager);
 
@@ -80,14 +73,6 @@ public:
 	ShadowsMode GetShadowsMode() const NOEXCEPT
 	{
 		return _ShadowsMode;
-	}
-
-	/*
-	*	Returns the volumetric lighting mode.
-	*/
-	VolumetricLightingMode GetVolumetricLightingMode() const NOEXCEPT
-	{
-		return _VolumetricLightingMode;
 	}
 
 	/*
@@ -180,9 +165,6 @@ private:
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
-
-	//The volumetric lighting mode.
-	VolumetricLightingMode _VolumetricLightingMode{ VolumetricLightingMode::RayTraced };
 
 	//The ambient illumination intensity.
 	float _AmbientIlluminationIntensity{ 0.1f };

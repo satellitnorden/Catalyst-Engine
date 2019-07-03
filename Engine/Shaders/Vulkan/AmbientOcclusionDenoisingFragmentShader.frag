@@ -10,8 +10,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DENOISING_SIZE (12.0f)
-#define DENOISING_START_END (DENOISING_SIZE * 0.5f)
+#define AMBIENT_OCCLUSION_DENOISING_SIZE (8.0f)
+#define AMBIENT_OCCLUSION_DENOISING_START_END (AMBIENT_OCCLUSION_DENOISING_SIZE * 0.5f)
 
 /*
 *	Scene features struct definition.
@@ -64,7 +64,7 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Calculate the start/end.
-	float startAndEnd = DENOISING_START_END * stride;
+	float startAndEnd = AMBIENT_OCCLUSION_DENOISING_START_END * stride;
 
 	//Sample neighboring fragments.
 	vec3 denoisedAmbientOcclusion = vec3(0.0f);

@@ -742,7 +742,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._DiffuseIrradianceMode = 0;
 	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
-	_DynamicUniformData._VolumetricLightingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetVolumetricLightingMode());
+	_DynamicUniformData._VolumetricLightingMode = 0;
 
 	_DynamicUniformData._AmbientIllumionationIntensity = RenderingConfigurationManager::Instance->GetAmbientIlluminationIntensity();
 	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
