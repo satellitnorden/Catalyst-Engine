@@ -745,7 +745,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._WindSpeed = 0.0f;
 
 	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());
-	_DynamicUniformData._DiffuseIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetDiffuseIrradianceMode());
+	_DynamicUniformData._DiffuseIrradianceMode = 0;
 	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
 	_DynamicUniformData._VolumetricLightingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetVolumetricLightingMode());

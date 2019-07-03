@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/RayTracingPipelines/DiffuseIrradianceRayTracingPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DiffuseIrradianceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DiffuseIrradianceRenderPass final : public RenderPass
@@ -22,8 +22,8 @@ public:
 
 private:
 
-	//The diffuse irradiance ray tracing pipeline.
-	DiffuseIrradianceRayTracingPipeline _DiffuseIrradianceRayTracingPipeline;
+	//The diffuse irradiance ray graphics pipeline.
+	DiffuseIrradianceGraphicsPipeline _DiffuseIrradianceGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

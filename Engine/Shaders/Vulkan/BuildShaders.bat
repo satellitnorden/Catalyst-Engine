@@ -4,6 +4,7 @@ glslangValidator.exe -V CompositingFragmentShader.frag -o 				CompositingFragmen
 glslangValidator.exe -V DenoisingFragmentShader.frag -o 				DenoisingFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOfFieldApplicationFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldBokehFragmentShader.frag -o 			DepthOfFieldBokehFragmentShader.spv
+glslangValidator.exe -V DiffuseIrradianceFragmentShader.frag -o 			DiffuseIrradianceFragmentShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayClosestHitShader.rchit -o 			DiffuseIrradianceRayClosestHitShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayGenerationShader.rgen -o 			DiffuseIrradianceRayGenerationShader.spv
 glslangValidator.exe -V DiffuseIrradianceRayMissShader.rmiss -o 			DiffuseIrradianceRayMissShader.spv

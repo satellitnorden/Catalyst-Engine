@@ -17,13 +17,6 @@ public:
 		FastApproximateAndTemporal
 	};
 
-	//Enumeration covering all diffuse irradiance modes.
-	enum class DiffuseIrradianceMode : uint8
-	{
-		Simple,
-		RayTraced
-	};
-
 	//Enumeration covering all specular irradiance modes.
 	enum class SpecularIrradianceMode : uint8
 	{
@@ -71,14 +64,6 @@ public:
 	void SetAntiAliasingMode(const AntiAliasingMode newMode) NOEXCEPT
 	{
 		_AntiAliasingMode = newMode;
-	}
-
-	/*
-	*	Returns the diffuse irradiance mode.
-	*/
-	DiffuseIrradianceMode GetDiffuseIrradianceMode() const NOEXCEPT
-	{
-		return _DiffuseIrradianceMode;
 	}
 
 	/*
@@ -189,9 +174,6 @@ private:
 
 	//The anti aliasing mode.
 	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
-
-	//The diffuse irradiance mode.
-	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::Simple };
 
 	//The specular irradiance mode.
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };

@@ -57,18 +57,13 @@ enum class RenderPassStage : uint8
 	AmbientOcclusion,
 	LuminanceLighting,
 	DirectLighting,
-	WorldRayTracing,
 	DiffuseIrradiance,
-	FireflyReduction,
-	Denoising,
-	TemporalAccumulation,
-	Compositing,
+	WorldRayTracing,
 	SpecularIrradiance,
 	VolumetricLighting,
 #else
 	PathTracing,
 #endif
-	RadianceIntegration,
 	DepthOfField,
 	MotionBlur,
 	Bloom,
@@ -79,7 +74,6 @@ enum class RenderPassStage : uint8
 	UserInterface,
 	Screen,
 	
-
 	NumberOfRenderPassStages
 };
 
@@ -326,6 +320,7 @@ enum class Shader : uint8
 	DenoisingFragment,
 	DepthOfFieldApplicationFragment,
 	DepthOfFieldBokehFragment,
+	DiffuseIrradianceFragment,
 	DiffuseIrradianceRayClosestHit,
 	DiffuseIrradianceRayGeneration,
 	DiffuseIrradianceRayMiss,

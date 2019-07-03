@@ -6,7 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/PathTracingDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAccumulationGraphicsPipeline.h>
+//#include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAccumulationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/PathTracingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -35,7 +35,7 @@ private:
 	StaticArray<PathTracingDenoisingGraphicsPipeline, 2> _PathTracingDenoisingGraphicsPipelines;
 
 	//The temporal accumulation graphics pipelines.
-	StaticArray<TemporalAccumulationGraphicsPipeline, 2> _TemporalAccumulationGraphicsPipeline;
+	//StaticArray<TemporalAccumulationGraphicsPipeline, 2> _TemporalAccumulationGraphicsPipeline;
 
 	//The current buffer index.
 	uint8 _CurrentBufferIndex{ 0 };
