@@ -27,7 +27,7 @@ void ScreenSpaceSpecularIrradianceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SpecularIrradiance));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

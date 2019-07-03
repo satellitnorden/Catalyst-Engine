@@ -7,12 +7,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(VolumetricLightingRenderPass);
 
-//Volumetric lighting render pass constants.
-namespace VolumetricLightingRenderPassConstants
-{
-	constexpr float VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE{ 12.0f };
-}
-
 /*
 *	Default constructor.
 */
@@ -42,38 +36,26 @@ VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _VolumetricLightingSeparableGraphicsPipelines.Size() + 2);
+	SetNumberOfPipelines(1 + _VolumetricLightingDenoisingGraphicsPipelines.Size() + 2);
 	AddPipeline(&_VolumetricLightingRayTracingPipeline);
 
-	for (SeparableBlurGraphicsPipeline &pipeline : _VolumetricLightingSeparableGraphicsPipelines)
+	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_VolumetricLightingResampleGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_VolumetricLightingRayTracingPipeline.Initialize();
-	_VolumetricLightingSeparableGraphicsPipelines[0].Initialize(SeparableBlurGraphicsPipeline::Direction::Horizontal,
-																VolumetricLightingRenderPassConstants::VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
+	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_2));
 
-	_VolumetricLightingSeparableGraphicsPipelines[1].Initialize(SeparableBlurGraphicsPipeline::Direction::Vertical,
-																VolumetricLightingRenderPassConstants::VOLUMETRIC_LIGHTING_SEPARABLE_BLUR_SIZE,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-																RenderingSystem::Instance->GetScaledResolution() / 4);
-	
-	_VolumetricLightingResampleGraphicsPipeline.Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
-															1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
-															RenderingSystem::Instance->GetScaledResolution() / 2,
-															false);
+	_VolumetricLightingDenoisingGraphicsPipelines[1].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_2),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
+
 	_VolumetricLightingApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -89,13 +71,12 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_VolumetricLightingResampleGraphicsPipeline.Execute();
+	_VolumetricLightingRayTracingPipeline.Execute();
 
-	for (SeparableBlurGraphicsPipeline &pipeline : _VolumetricLightingSeparableGraphicsPipelines)
+	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}
 
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
-	_VolumetricLightingRayTracingPipeline.Execute();
 }

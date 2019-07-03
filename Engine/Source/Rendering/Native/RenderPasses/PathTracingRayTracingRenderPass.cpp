@@ -49,9 +49,9 @@ void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
 	_PathTracingRayTracingPipeline.Initialize();
 	_PathTracingDenoisingGraphicsPipelines[0].Initialize(	PathTracingDenoisingGraphicsPipeline::Direction::Horizontal,
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float));
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
 	_PathTracingDenoisingGraphicsPipelines[1].Initialize(	PathTracingDenoisingGraphicsPipeline::Direction::Vertical,
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1),
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 	/*
 	_TemporalAccumulationGraphicsPipeline[0].Initialize(_TemporalAccumulationRenderTargets[1],

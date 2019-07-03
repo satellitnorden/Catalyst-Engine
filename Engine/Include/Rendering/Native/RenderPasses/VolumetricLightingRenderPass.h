@@ -5,9 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingApplicationGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -29,11 +28,8 @@ private:
 	//The volumetric lighting ray tracing pipeline.
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
 
-	//The volumetric lighting separable blur graphics pipelines.
-	StaticArray<SeparableBlurGraphicsPipeline, 2> _VolumetricLightingSeparableGraphicsPipelines;
-
-	//The volumetric lighting resample graphics pipeline.
-	ResampleGraphicsPipeline _VolumetricLightingResampleGraphicsPipeline;
+	//The volumetric lighting denoising graphics pipelines.
+	StaticArray<VolumetricLightingDenoisingGraphicsPipeline, 2> _VolumetricLightingDenoisingGraphicsPipelines;
 
 	//The volumetric lighting application graphics pipeline.
 	VolumetricLightingApplicationGraphicsPipeline _VolumetricLightingApplicationGraphicsPipeline;

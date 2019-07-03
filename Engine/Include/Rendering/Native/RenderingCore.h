@@ -177,26 +177,6 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the diffuse irradiance.
-	*/
-	DiffuseIrradiance,
-
-	/*
-	*	Contains the specular irradiance.
-	*/
-	SpecularIrradiance,
-
-	/*
-	*	Contains the direct lighting.
-	*/
-	DirectLighting,
-
-	/*
-	*	Contains the volumetric lighting.
-	*/
-	VolumetricLighting,
-
-	/*
 	*	Contains the albedo and the luminance multiplier.
 	*/
 	SceneFeatures1,
@@ -222,21 +202,6 @@ enum class RenderTarget : uint8
 	AmbientOcclusion,
 
 	/*
-	*	The first diffuse irradiance temporal accumulation buffer.
-	*/
-	DiffuseIrradianceTemporalAccumulationBuffer1,
-
-	/*
-	*	The second diffuse irradiance temporal accumulation buffer.
-	*/
-	DiffuseIrradianceTemporalAccumulationBuffer2,
-
-	/*
-	*	Contains an accumulated buffer of all previous color values in the scene.
-	*/
-	PreviousRadiance,
-
-	/*
 	*	Contains the final color for the scene.
 	*/
 	Scene,
@@ -254,7 +219,12 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate_R32G32B32A32_Float,
+	Intermediate_R32G32B32A32_Float_1,
+
+	/*
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
+	Intermediate_R32G32B32A32_Float_2,
 
 	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
@@ -353,6 +323,7 @@ enum class Shader : uint8
 	VisibilityRayGeneration,
 	VisibilityRayMiss,
 	VolumetricLightingApplicationFragment,
+	VolumetricLightingDenoisingFragment,
 	VolumetricLightingRayClosestHit,
 	VolumetricLightingRayGeneration,
 	VolumetricLightingRayMiss,

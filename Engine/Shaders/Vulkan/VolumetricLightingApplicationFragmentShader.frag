@@ -49,7 +49,7 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Sample the current volumetric lighting.
-	vec3 currentVolumetricLighting = Upsample(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
 
 	//Calculate the volumetric lighting weight.
 	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), volumetricLightingIntensity);

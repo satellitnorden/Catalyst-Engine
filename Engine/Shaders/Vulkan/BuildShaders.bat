@@ -37,6 +37,7 @@ glslangValidator.exe -V VisibilityDenoisingFragmentShader.frag -o 			VisibilityD
 glslangValidator.exe -V VisibilityRayGenerationShader.rgen -o 				VisibilityRayGenerationShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv
 glslangValidator.exe -V VolumetricLightingApplicationFragmentShader.frag -o 		VolumetricLightingApplicationFragmentShader.spv
+glslangValidator.exe -V VolumetricLightingDenoisingFragmentShader.frag -o 		VolumetricLightingDenoisingFragmentShader.spv
 glslangValidator.exe -V VolumetricLightingRayClosestHitShader.rchit -o 			VolumetricLightingRayClosestHitShader.spv
 glslangValidator.exe -V VolumetricLightingRayGenerationShader.rgen -o 			VolumetricLightingRayGenerationShader.spv
 glslangValidator.exe -V VolumetricLightingRayMissShader.rmiss -o 			VolumetricLightingRayMissShader.spv

@@ -72,7 +72,7 @@ void VolumetricLightingRayTracingPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width / 4, RenderingSystem::Instance->GetScaledResolution()._Height / 4);
+	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
 
 	//End the command buffer.
 	commandBuffer->End(this);
@@ -103,5 +103,5 @@ void VolumetricLightingRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::VolumetricLighting));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
 }
