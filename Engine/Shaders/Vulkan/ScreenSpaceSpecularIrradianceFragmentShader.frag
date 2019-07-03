@@ -9,7 +9,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES (64)
+#define SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES (16)
 #define SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH (0.1f)
 
 //Layout specification.

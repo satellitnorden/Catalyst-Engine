@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (1.0f)
 
 //Layout specification.
