@@ -54,7 +54,7 @@ namespace ProfilingSystemData
 	DynamicArray<ProfilingEntry> _ProfilingEntries;
 
 	//Container for all user interface elements for all profiling entries.
-	DynamicArray< UserInterfaceElement *RESTRICT> _UserInterfaceElements;
+	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
 
 }
 
