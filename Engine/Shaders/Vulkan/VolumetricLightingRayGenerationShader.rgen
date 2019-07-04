@@ -12,7 +12,7 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_SAMPLES (2)
+#define VOLUMETRIC_LIGHTING_SAMPLES (4)
 #define VOLUMETRIC_LIGHTING_NUMBER_OF_RANDOM_VECTORS (VOLUMETRIC_LIGHTING_SAMPLES / 2)
 
 //Descriptor set data.
