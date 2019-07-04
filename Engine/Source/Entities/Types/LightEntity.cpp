@@ -50,6 +50,22 @@ void LightEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the color of this light.
+*/
+Vector3<float> LightEntity::GetColor() NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color;
+}
+
+/*
+*	Sets the color of this light.
+*/
+void LightEntity::SetColor(const Vector3<float> &color) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color = color;
+}
+
+/*
 *	Returns the position of this light.
 */
 Vector3<float> LightEntity::GetPosition() NOEXCEPT

@@ -37,6 +37,16 @@ public:
 	}
 
 	/*
+	*	Returns the color of this light.
+	*/
+	Vector3<float> GetColor() NOEXCEPT;
+
+	/*
+	*	Sets the color of this light.
+	*/
+	void SetColor(const Vector3<float> &color) NOEXCEPT;
+
+	/*
 	*	Returns the position of this light.
 	*/
 	Vector3<float> GetPosition() NOEXCEPT;
