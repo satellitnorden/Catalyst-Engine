@@ -173,7 +173,7 @@ private:
 	float _BloomIntensity{ 1.0f };
 
 	//The chromatic aberration intensity.
-	float _ChromaticAberrationIntensity{ 0.001f };
+	float _ChromaticAberrationIntensity{ 0.0025f };
 
 	//The volumetric lighting intensity.
 	float _VolumetricLightingIntensity{ 1.0f };
