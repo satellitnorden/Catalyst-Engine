@@ -93,6 +93,8 @@ void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 */
 void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data, const bool force) NOEXCEPT
 {
+	ASSERT(!entity->_Initialized, "Don't call EntityCreationSystem::RequestInitialization() on entities that already are initialized!");
+
 	//Lock the queue.
 	ScopedWriteLock<Spinlock> scopedLock{ _InitializationQueueLock };
 
@@ -106,6 +108,8 @@ void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, 
 */
 void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
+	ASSERT(entity->_Initialized, "Don't call EntityCreationSystem::RequestTermination() on entities that are not initialized!");
+
 	//Lock the queue.
 	ScopedWriteLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
