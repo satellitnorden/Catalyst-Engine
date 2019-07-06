@@ -55,7 +55,7 @@ void StaticModelEntity::Terminate() NOEXCEPT
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD Matrix4 *const RESTRICT StaticModelEntity::GetWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD const Matrix4 *const RESTRICT StaticModelEntity::GetWorldTransform() NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
 }

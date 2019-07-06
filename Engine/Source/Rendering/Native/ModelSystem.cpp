@@ -31,21 +31,39 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 	RenderDataTableHandle &currentModelDataRenderDataTable{ _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
-	const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
+	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
 
-	ASSERT(numberOfStaticModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
+	ASSERT(numberOfStaticModelComponents + numberOfDynamicModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
 
 	_TopLevelAccelerationStructureInstances.ClearFast();
 	StaticArray<Material, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS> materials;
 
-	for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent)
 	{
-		_TopLevelAccelerationStructureInstances.EmplaceSlow(staticModelComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
+		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
 
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent)
+		{
+			_TopLevelAccelerationStructureInstances.EmplaceSlow(staticModelComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
 
-		materials[i] = staticModelComponent->_Material;
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+
+			materials[i] = staticModelComponent->_Material;
+		}
+	}
+
+	{
+		const DynamicModelComponent *RESTRICT dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
+		{
+			_TopLevelAccelerationStructureInstances.EmplaceSlow(dynamicModelComponent->_WorldTransform, dynamicModelComponent->_Model->_BottomLevelAccelerationStructure, numberOfStaticModelComponents + i);
+
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_VertexBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_IndexBuffer);
+
+			materials[numberOfStaticModelComponents + i] = dynamicModelComponent->_Material;
+		}
 	}
 
 	BufferHandle &currentMaterialsUniformBuffer{ _MaterialsUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
