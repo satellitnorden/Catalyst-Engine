@@ -626,6 +626,26 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		}
+
+		{
 			//Initialize the motion blur fragment shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
@@ -703,26 +723,6 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ResampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
-			//Initialize the fragment shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
-			//Initialize the vertex shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
 
 		{

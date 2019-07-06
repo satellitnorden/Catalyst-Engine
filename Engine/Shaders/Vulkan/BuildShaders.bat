@@ -7,6 +7,8 @@ glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLight
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 				FireflyReductionFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv
+glslangValidator.exe -V ModelSceneFeaturesFragmentShader.frag -o 			ModelSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V ModelSceneFeaturesVertexShader.vert -o 				ModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PathTracingDenoisingFragmentShader.frag -o 			PathTracingDenoisingFragmentShader.spv
@@ -15,8 +17,6 @@ glslangValidator.exe -V PathTracingRayGenerationShader.rgen -o 				PathTracingRa
 glslangValidator.exe -V PathTracingRayMissShader.rmiss -o 				PathTracingRayMissShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
 glslangValidator.exe -V ResampleFragmentShader.frag -o 					ResampleFragmentShader.spv
-glslangValidator.exe -V SceneFeaturesFragmentShader.frag -o 				SceneFeaturesFragmentShader.spv
-glslangValidator.exe -V SceneFeaturesVertexShader.vert -o 				SceneFeaturesVertexShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceSpecularIrradianceFragmentShader.frag -o 		ScreenSpaceSpecularIrradianceFragmentShader.spv
 glslangValidator.exe -V SeparableBlurFragmentShader.frag -o 				SeparableBlurFragmentShader.spv

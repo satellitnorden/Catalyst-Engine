@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class SceneFeaturesRenderPass final : public RenderPass
@@ -22,8 +22,8 @@ public:
 
 private:
 
-	//The scene features graphics pipeline.
-	SceneFeaturesGraphicsPipeline _SceneFeaturesGraphicsPipeline;
+	//The model scene features graphics pipeline.
+	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

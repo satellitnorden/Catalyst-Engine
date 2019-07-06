@@ -37,10 +37,10 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_SceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_SceneFeaturesGraphicsPipeline.Initialize();
+	_ModelSceneFeaturesGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -55,5 +55,5 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_SceneFeaturesGraphicsPipeline.Execute();
+	_ModelSceneFeaturesGraphicsPipeline.Execute();
 }

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -42,17 +42,17 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void SceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
+void ModelSceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
 
 	//Set the shaders.
-	SetVertexShader(Shader::SceneFeaturesVertex);
+	SetVertexShader(Shader::ModelSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::SceneFeaturesFragment);
+	SetFragmentShader(Shader::ModelSceneFeaturesFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(_SceneDepthBuffer);
@@ -123,7 +123,7 @@ void SceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void SceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Iterate over all static model components and draw them all.
 	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
