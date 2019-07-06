@@ -33,12 +33,11 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	//Copy the data.
 	const StaticModelInitializationData *const RESTRICT staticModelInitializationData{ static_cast<const StaticModelInitializationData *const RESTRICT>(data) };
 	StaticModelComponent& staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex] };
-	TransformComponent& transformComponent{ ComponentManager::GetStaticModelTransformComponents()[_ComponentsIndex] };
 
 	staticModelComponent._Model = staticModelInitializationData->_Model;
+	staticModelComponent._WorldTransform = staticModelInitializationData->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(staticModelComponent._Model->_ModelSpaceAxisAlignedBoundingBox, staticModelInitializationData->_Transform, &staticModelComponent._WorldSpaceAxisAlignedBoundingBox);
 	staticModelComponent._Material = staticModelInitializationData->_Material;
-	transformComponent._WorldTransform = staticModelInitializationData->_Transform;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
@@ -51,6 +50,14 @@ void StaticModelEntity::Terminate() NOEXCEPT
 {
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
+}
+
+/*
+*	Returns the world transform.
+*/
+RESTRICTED NO_DISCARD Matrix4 *const RESTRICT StaticModelEntity::GetWorldTransform() NOEXCEPT
+{
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
 }
 
 /*

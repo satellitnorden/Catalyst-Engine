@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Entity types.
-#define ENTITY_TYPES	ENTITY_TYPE(Light)			\
+#define ENTITY_TYPES	ENTITY_TYPE(DynamicModel)	\
+						ENTITY_TYPE(Light)			\
 						ENTITY_TYPE(Sound)			\
 						ENTITY_TYPE(StaticModel)
 

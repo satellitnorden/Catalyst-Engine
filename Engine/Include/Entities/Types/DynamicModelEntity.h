@@ -9,7 +9,7 @@
 //Rendering.
 #include <Rendering/Native/Material.h>
 
-class StaticModelEntity : public Entity
+class DynamicModelEntity : public Entity
 {
 
 public:
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	StaticModelEntity() NOEXCEPT;
+	DynamicModelEntity() NOEXCEPT;
 
 	/*
 	*	Initializes this entity.

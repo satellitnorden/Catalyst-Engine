@@ -140,7 +140,6 @@ void SceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 	const StaticModelComponent *RESTRICT renderComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticModelTransformComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -148,14 +147,14 @@ void SceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	for (uint64 i = 0; i < numberOfStaticModelComponents; ++i, ++renderComponent, ++transformComponent)
+	for (uint64 i = 0; i < numberOfStaticModelComponents; ++i, ++renderComponent)
 	{
 		constexpr uint64 OFFSET{ 0 };
 
 		//Push constants.
 		VertexPushConstantData vertexData;
 
-		vertexData._ModelMatrix = transformComponent->_WorldTransform;
+		vertexData._ModelMatrix = renderComponent->_WorldTransform;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 

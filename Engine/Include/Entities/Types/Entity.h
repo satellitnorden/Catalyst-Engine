@@ -41,11 +41,6 @@ public:
 	*/
 	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
 
-	/*
-	*	Returns the world transform of this entity.
-	*/
-	Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
-
 private:
 
 	//The default position.

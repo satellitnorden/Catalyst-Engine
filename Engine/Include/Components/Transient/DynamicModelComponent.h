@@ -7,7 +7,7 @@
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/Model.h>
 
-class StaticModelComponent final
+class DynamicModelComponent final
 {
 
 public:

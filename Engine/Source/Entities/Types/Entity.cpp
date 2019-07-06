@@ -5,6 +5,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Entities.
+#include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
@@ -74,24 +75,4 @@ bool Entity::ShouldAutomaticallyTerminate() const NOEXCEPT
 	ASSERT(false, "What happened here?");
 
 	return false;
-}
-
-/*
-*	Returns the world transform of this entity, non-const.
-*/
-Matrix4 *const RESTRICT Entity::GetWorldTransform() NOEXCEPT
-{
-	switch (_Type)
-	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
-		{																										\
-			return &ComponentManager::Get ## VALUE ## TransformComponents()[_ComponentsIndex]._WorldTransform;	\
-		}
-		ENTITY_TYPES
-#undef ENTITY_TYPE
-	}
-
-	ASSERT(false, "What happened here?");
-
-	return nullptr;
 }

@@ -51,10 +51,10 @@
     <ClInclude Include="..\..\..\Include\Components\Singleton\InputComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\PhysicsSingletonComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h" />
@@ -82,10 +82,12 @@
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelinitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
@@ -295,6 +297,7 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />

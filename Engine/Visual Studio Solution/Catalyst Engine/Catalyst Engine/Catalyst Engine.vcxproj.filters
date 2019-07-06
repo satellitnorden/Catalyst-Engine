@@ -615,9 +615,6 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\TransformComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
@@ -1053,6 +1050,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelinitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1396,6 +1402,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
