@@ -8,8 +8,8 @@
 DEFINE_SINGLETON(EntityCreationSystem);
 
 /*
-	*	Updates the entity creation system during the post update phase.
-	*/
+*	Updates the entity creation system during the post update phase.
+*/
 void EntityCreationSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Process the initialization queue.
