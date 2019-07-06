@@ -986,9 +986,8 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 	geometry.flags = 0;
 
 	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
-																		0,
-																		ArrayProxy<VkGeometryNV>(geometry),
-																		VK_NULL_HANDLE);
+																		ArrayProxy<VulkanGeometryInstance>(),
+																		ArrayProxy<VkGeometryNV>(geometry));
 }
 
 /*
@@ -1014,10 +1013,10 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 
 	UploadDataToBuffer(dataChunks, dataSizes, 1, &instancesBuffer);
 
+	//Create the acceleration structure.
 	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
-																		static_cast<uint32>(instanceData.Size()),
-																		ArrayProxy<VkGeometryNV>(),
-																		static_cast<VulkanBuffer *const RESTRICT>(instancesBuffer)->Get());
+																		ArrayProxy<VulkanGeometryInstance>(geometryInstances),
+																		ArrayProxy<VkGeometryNV>());
 }
 
 /*

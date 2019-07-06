@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGeometryInstance.h>
 
 class VulkanAccelerationStructure final
 {
@@ -15,7 +16,7 @@ public:
 	/*
 	*	Initializes this Vulkan acceleration structure.
 	*/
-	void Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT;
+	void Initialize(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan acceleration structure.
@@ -37,5 +38,14 @@ private:
 
 	//The Vulkan device memory.
 	VkDeviceMemory _VulkanDeviceMemory;
+
+	//The instance data buffer.
+	VkBuffer _InstanceDataBuffer;
+
+	//The instance data device memory.
+	VkDeviceMemory _InstanceDataDeviceMemory;
+
+	//Denotes if this acceleration structure has instance data or not.
+	bool _HasInstanceData{ false };
 
 };

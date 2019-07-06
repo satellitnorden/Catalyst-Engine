@@ -21,6 +21,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanEvent.h>
 #include <Rendering/Abstraction/Vulkan/VulkanFence.h>
 #include <Rendering/Abstraction/Vulkan/VulkanFramebuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanGeometryInstance.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGraphicsPipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInstance.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipeline.h>
@@ -151,7 +152,7 @@ public:
 	/*
 	*	Creates an acceleration structure.
 	*/
-	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT;
+	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT;
 
 	/*
 	*	Destroys an acceleration structure

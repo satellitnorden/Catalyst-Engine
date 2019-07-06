@@ -200,6 +200,14 @@ public:
 	}
 
 	/*
+	*	Returns if the array is empty or not.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr bool Empty() const NOEXCEPT
+	{
+		return _Size == 0;
+	}
+
+	/*
 	*	Returns the size of this array.
 	*/
 	FORCE_INLINE NO_DISCARD constexpr uint64 Size() const NOEXCEPT

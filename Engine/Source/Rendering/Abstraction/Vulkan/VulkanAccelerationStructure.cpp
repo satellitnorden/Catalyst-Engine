@@ -51,11 +51,32 @@ namespace VulkanAccelerationStructureLogic
 /*
 *	Initializes this Vulkan acceleration structure.
 */
-void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData) NOEXCEPT
+void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT
 {
+	//Create the instance data, if necessary.
+	if (!instances.Empty())
+	{
+		//Compute the size.
+		VkDeviceSize size{ sizeof(VulkanGeometryInstance) * instances.Size() };
+
+		//Create the buffer.
+		VulkanUtilities::CreateVulkanBuffer(size, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, _InstanceDataBuffer, _InstanceDataDeviceMemory);
+	
+		//Copy the data into the buffer.
+		void *mappedMemory;
+		VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory, 0, VK_WHOLE_SIZE, 0, &mappedMemory));
+
+		Memory::CopyMemory(mappedMemory, instances.Data(), instances.Size());
+
+		vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory);
+
+		//Remember that this acceleration structure has instance data.
+		_HasInstanceData = true;
+	}
+
 	//Create the acceleration structure create info.
 	VkAccelerationStructureCreateInfoNV accelerationStructureCreateInfo;
-	VulkanAccelerationStructureLogic::CreateAccelerationStructureCreateInfo(type, instanceCount, geometry, &accelerationStructureCreateInfo);
+	VulkanAccelerationStructureLogic::CreateAccelerationStructureCreateInfo(type, static_cast<uint32>(instances.Size()), geometry, &accelerationStructureCreateInfo);
 
 	//Create the acceleration structure!
 	VULKAN_ERROR_CHECK(vkCreateAccelerationStructureNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureCreateInfo, nullptr, &_VulkanAccelerationStructure));
@@ -72,10 +93,7 @@ void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV
 	VulkanUtilities::CreateAccelerationStructureScratchBuffer(_VulkanAccelerationStructure, false, &scratchBuffer, &scratchMemory);
 
 	//Build the acceleration structure.
-	//if (type == VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV)
-	{
-		VulkanUtilities::BuildAccelerationStructure(type, instanceCount, geometry, instanceData, _VulkanAccelerationStructure, scratchBuffer);
-	}
+	VulkanUtilities::BuildAccelerationStructure(type, static_cast<uint32>(instances.Size()), geometry, _HasInstanceData ? _InstanceDataBuffer : VK_NULL_HANDLE, _VulkanAccelerationStructure, scratchBuffer);
 
 	//Destroy the scratch buffer.
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), scratchBuffer, nullptr);
@@ -89,6 +107,16 @@ void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV
 */
 void VulkanAccelerationStructure::Release() NOEXCEPT
 {
+	//Free the instance data, if necessary.
+	if (_HasInstanceData)
+	{
+		//Destroy the instance data buffer.
+		vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataBuffer, nullptr);
+
+		//Free the instance data device memory.
+		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory, nullptr);
+	}
+
 	//Free the Vulkan device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
 
