@@ -1004,15 +1004,6 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 		VulkanTranslationUtilities::GetVulkanGeometryInstance(instanceData[i], &geometryInstances[i]);
 	}
 
-	//Create the instance buffer.
-	BufferHandle instancesBuffer;
-	CreateBuffer(sizeof(VulkanGeometryInstance) * geometryInstances.Size(), BufferUsage::RayTracing, MemoryProperty::DeviceLocal, &instancesBuffer);
-
-	const void *const RESTRICT dataChunks[]{ geometryInstances.Data() };
-	const uint64 dataSizes[]{ sizeof(VulkanGeometryInstance) * geometryInstances.Size() };
-
-	UploadDataToBuffer(dataChunks, dataSizes, 1, &instancesBuffer);
-
 	//Create the acceleration structure.
 	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
 																		ArrayProxy<VulkanGeometryInstance>(geometryInstances),

@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGeometryInstance.h>
 
 class VulkanAccelerationStructure final
@@ -40,10 +41,7 @@ private:
 	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The instance data buffer.
-	VkBuffer _InstanceDataBuffer;
-
-	//The instance data device memory.
-	VkDeviceMemory _InstanceDataDeviceMemory;
+	VulkanBuffer _InstanceDataBuffer;
 
 	//Denotes if this acceleration structure has instance data or not.
 	bool _HasInstanceData{ false };

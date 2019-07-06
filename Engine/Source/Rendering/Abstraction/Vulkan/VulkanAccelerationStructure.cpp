@@ -56,19 +56,13 @@ void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV
 	//Create the instance data, if necessary.
 	if (!instances.Empty())
 	{
-		//Compute the size.
-		VkDeviceSize size{ sizeof(VulkanGeometryInstance) * instances.Size() };
+		//Create the instance buffer.
+		_InstanceDataBuffer.Initialize(sizeof(VulkanGeometryInstance) * instances.Size(), VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		//Create the buffer.
-		VulkanUtilities::CreateVulkanBuffer(size, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, _InstanceDataBuffer, _InstanceDataDeviceMemory);
-	
-		//Copy the data into the buffer.
-		void *mappedMemory;
-		VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory, 0, VK_WHOLE_SIZE, 0, &mappedMemory));
+		const void *const RESTRICT dataChunks[]{ instances.Data() };
+		const uint64 dataSizes[]{ sizeof(VulkanGeometryInstance) * instances.Size() };
 
-		Memory::CopyMemory(mappedMemory, instances.Data(), instances.Size());
-
-		vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory);
+		_InstanceDataBuffer.UploadData(dataChunks, dataSizes, 1);
 
 		//Remember that this acceleration structure has instance data.
 		_HasInstanceData = true;
@@ -93,7 +87,7 @@ void VulkanAccelerationStructure::Initialize(const VkAccelerationStructureTypeNV
 	VulkanUtilities::CreateAccelerationStructureScratchBuffer(_VulkanAccelerationStructure, false, &scratchBuffer, &scratchMemory);
 
 	//Build the acceleration structure.
-	VulkanUtilities::BuildAccelerationStructure(type, static_cast<uint32>(instances.Size()), geometry, _HasInstanceData ? _InstanceDataBuffer : VK_NULL_HANDLE, _VulkanAccelerationStructure, scratchBuffer);
+	VulkanUtilities::BuildAccelerationStructure(type, static_cast<uint32>(instances.Size()), geometry, _HasInstanceData ? _InstanceDataBuffer.Get() : VK_NULL_HANDLE, _VulkanAccelerationStructure, scratchBuffer);
 
 	//Destroy the scratch buffer.
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), scratchBuffer, nullptr);
@@ -110,11 +104,8 @@ void VulkanAccelerationStructure::Release() NOEXCEPT
 	//Free the instance data, if necessary.
 	if (_HasInstanceData)
 	{
-		//Destroy the instance data buffer.
-		vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataBuffer, nullptr);
-
-		//Free the instance data device memory.
-		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _InstanceDataDeviceMemory, nullptr);
+		//Release the instance data buffer.
+		_InstanceDataBuffer.Release();
 	}
 
 	//Free the Vulkan device memory.
