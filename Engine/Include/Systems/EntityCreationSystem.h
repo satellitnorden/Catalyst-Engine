@@ -202,4 +202,4 @@ private:
 };
 
 //Templated function definitions.
-#include <Systems/EntitySystem.inl>
+#include <Systems/EntityCreationSystem.inl>

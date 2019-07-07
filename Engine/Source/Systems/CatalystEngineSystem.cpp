@@ -16,6 +16,7 @@
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>
+#include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
 #if defined(CATALYST_CONFIGURATION_PROFILE)
@@ -26,10 +27,57 @@
 #include <Systems/TaskSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
-namespace CatalystEngineSystemInternalData
+//Catalyst engine system data.
+namespace CatalystEngineSystemData
 {
+
+	//Enumeration covering all sequential updates.
+	enum class SequentialUpdate : uint8
+	{
+		EntityPlacementSystem,
+
+		NumberOfSequentialUpdates
+	};
+
 	//The delta timer.
 	DeltaTimer _DeltaTimer;
+
+	//The current sequential update.
+	SequentialUpdate _CurrentSequentialUpdate{ static_cast<SequentialUpdate>(0) };
+
+}
+
+//Catalyst engine system logic.
+namespace CatalystEngineSystemLogic
+{
+
+	/*
+	*	Executes a sequential update.
+	*/
+	FORCE_INLINE void ExecuteSequentialUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		//Execute the sequential update.
+		switch (CatalystEngineSystemData::_CurrentSequentialUpdate)
+		{
+			case CatalystEngineSystemData::SequentialUpdate::EntityPlacementSystem:
+			{
+				EntityPlacementSystem::Instance->SequentialUpdate(context);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Unhandled case!");
+
+				break;
+			}
+		}
+
+		//Update the current sequential update.
+		CatalystEngineSystemData::_CurrentSequentialUpdate = CatalystEngineSystemData::_CurrentSequentialUpdate == static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::SequentialUpdate::NumberOfSequentialUpdates) - 1) ? static_cast<CatalystEngineSystemData::SequentialUpdate>(0) : static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::_CurrentSequentialUpdate) + 1);
+	}
+
 }
 
 /*
@@ -58,7 +106,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
-	CatalystEngineSystemInternalData::_DeltaTimer.Reset();
+	CatalystEngineSystemData::_DeltaTimer.Reset();
 }
 
 /*
@@ -75,7 +123,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalTime += ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
 
 	//Update the delta time.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemInternalData::_DeltaTimer.Update();
+	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update();
 
 	//Construct the update context.
 	UpdateContext context;
@@ -128,6 +176,11 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);
 #endif
+
+	/*
+	*	Sequential update phase.
+	*/
+	CatalystEngineSystemLogic::ExecuteSequentialUpdate(&context);
 
 	//Return if the game should be terminated.
 	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;

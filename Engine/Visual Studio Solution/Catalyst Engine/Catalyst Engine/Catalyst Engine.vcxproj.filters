@@ -1062,6 +1062,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1412,13 +1415,16 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Include\Systems\EntitySystem.inl">
-      <Filter>Systems\Inline</Filter>
-    </None>
     <None Include="..\..\..\Include\Math\General\Vector.inl">
       <Filter>Math\Inline\General</Filter>
+    </None>
+    <None Include="..\..\..\Include\Systems\EntityCreationSystem.inl">
+      <Filter>Systems\Inline</Filter>
     </None>
   </ItemGroup>
 </Project>
