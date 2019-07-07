@@ -5,9 +5,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
@@ -15,6 +12,9 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
 
 //Windows.
 #include <tchar.h>
@@ -37,7 +37,7 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 	{
 		case WM_DESTROY:
 		{
-			ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate = true;
+			CatalystEngineSystem::Instance->SetShouldTerminate(true);
 
 			return DefWindowProc(window, message, wParam, lParam);
 		}
@@ -169,12 +169,12 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Create the window.
 	_Window = CreateWindow(	windowInfo.lpszClassName,
-							_T(ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._ProjectName.Data()),
+							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
 							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
 							CW_USEDEFAULT,
-							ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._Resolution._Width,
-							ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration._Resolution._Height,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
 							nullptr,
 							nullptr,
 							_Instance,

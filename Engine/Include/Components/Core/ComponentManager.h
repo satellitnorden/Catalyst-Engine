@@ -5,7 +5,6 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
-#include <Components/Singleton/CatalystEngineComponent.h>
 #include <Components/Singleton/PhysicsSingletonComponent.h>
 #include <Components/Singleton/UserInterfaceComponent.h>
 #include <Components/Transient/DynamicModelComponent.h>

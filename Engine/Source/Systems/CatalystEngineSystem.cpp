@@ -27,6 +27,9 @@
 #include <Systems/TaskSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
+//Singleton definition.
+DEFINE_SINGLETON(CatalystEngineSystem);
+
 //Catalyst engine system data.
 namespace CatalystEngineSystemData
 {
@@ -86,13 +89,13 @@ namespace CatalystEngineSystemLogic
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
 	//Set the project configuration.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration = initialProjectConfiguration;
+	_ProjectConfiguration = initialProjectConfiguration;
 
 	//Initialize the platform.
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	RenderingSystem::Instance->Initialize(ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._RenderingConfiguration);
+	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();
 
@@ -103,7 +106,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::PostInitialize();
 
 	//Initialize the game system.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
 	CatalystEngineSystemData::_DeltaTimer.Reset();
@@ -117,25 +120,25 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	PROFILING_SCOPE("CatalystEngineSystem::Update");
 
 	//Update the total frames.
-	++ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
+	++_TotalFrames;
 
 	//Update the total time.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_TotalTime += ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+	_TotalTime += _DeltaTime;
 
 	//Update the delta time.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update();
+	_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update();
 
 	//Construct the update context.
 	UpdateContext context;
 
-	context._TotalFrames = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalFrames;
-	context._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
-	context._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+	context._TotalFrames = _TotalFrames;
+	context._TotalTime = _TotalTime;
+	context._DeltaTime = _DeltaTime;
 
 	/*
 	*	Pre update phase.
 	*/
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
+	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 
 	CatalystPlatform::PreUpdate(&context);
 
@@ -145,12 +148,12 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Logic update phase.
 	*/
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
+	_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
 
 	/*
 	*	Physics update phase.
 	*/
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
+	_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PhysicsUpdate(&context);
@@ -160,14 +163,14 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Render update phase.
 	*/
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
+	_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
 	RenderingSystem::Instance->RenderUpdate(&context);
 
 	/*
 	*	Post-update phase.
 	*/
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
+	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 
 	CatalystPlatform::PostUpdate(&context);
 
@@ -183,7 +186,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	CatalystEngineSystemLogic::ExecuteSequentialUpdate(&context);
 
 	//Return if the game should be terminated.
-	return !ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate;
+	return !_ShouldTerminate;
 }
 
 /*
@@ -192,10 +195,10 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
 	//Signal to other systems that the game should terminate.
-	ComponentManager::WriteSingletonComponent<CatalystEngineComponent>()->_ShouldTerminate = true;
+	_ShouldTerminate = true;
 
 	//Terminate the game system.
-	ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
+	_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
 
 	//Terminate the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->Terminate();

@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/General/Perceiver.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 //Entities.
 #include <Entities/Types/Entity.h>
@@ -27,7 +28,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
-#include <Systems/PhysicsSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -736,13 +737,13 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._CurrentFrameJitter = currentFrameJitter;
 
 	//Update floats.
-	_DynamicUniformData._DeltaTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_DeltaTime;
+	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
 	_DynamicUniformData._DirectionalLightIntensity = _LightingSystem.GetDirectionalLight()->GetIntensity();
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._PerceiverRotationVelocity = Vector3<float>::DotProduct(previousPerceiverForwardVector, Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z));
-	_DynamicUniformData._TotalTime = ComponentManager::ReadSingletonComponent<CatalystEngineComponent>()->_TotalTime;
+	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 0.0f;
 
 	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());

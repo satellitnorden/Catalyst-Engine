@@ -47,7 +47,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
-    <ClInclude Include="..\..\..\Include\Components\Singleton\CatalystEngineComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\PhysicsSingletonComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
