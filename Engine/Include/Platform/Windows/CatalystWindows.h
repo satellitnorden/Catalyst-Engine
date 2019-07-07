@@ -98,11 +98,6 @@ public:
 	*/
 	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
 
-	/*
-	*	Retrieves the current touch state.
-	*/
-	static void GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT;
-
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*
 	*	Prints a string to output.

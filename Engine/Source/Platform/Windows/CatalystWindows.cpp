@@ -515,14 +515,6 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 	UpdateWindowsButton(VK_RBUTTON, state->_Right);
 }
 
-/*
-*	Retrieves the current touch state.
-*/
-void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT
-{
-	//Not implemented on Windows.
-}
-
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 /*
 *	Prints a string to output.
