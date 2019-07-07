@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class SceneFeaturesRenderPass final : public RenderPass
@@ -22,8 +23,14 @@ public:
 
 private:
 
+	//The scene depth buffer.
+	DepthBufferHandle _SceneDepthBuffer;
+
 	//The model scene features graphics pipeline.
 	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
+
+	//The velocity graphics pipeline.
+	VelocityGraphicsPipeline _VelocityGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

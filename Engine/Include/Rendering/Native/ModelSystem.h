@@ -20,9 +20,14 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
-	*	Updates the model system.
+	*	Updates the model system during the pre update phase.
 	*/
-	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Updates the model system during the render update phase.
+	*/
+	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the top level acceleration structure instances.

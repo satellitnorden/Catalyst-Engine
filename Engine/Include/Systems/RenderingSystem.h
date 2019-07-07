@@ -69,7 +69,12 @@ public:
 	void PostInitializeSystem();
 
 	/*
-	*	Updates the input system during the render update phase.
+	*	Updates the rendering system during the pre update phase.
+	*/
+	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Updates the rendering system during the render update phase.
 	*/
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 

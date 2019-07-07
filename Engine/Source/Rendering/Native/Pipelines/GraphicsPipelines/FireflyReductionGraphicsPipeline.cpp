@@ -61,6 +61,7 @@ void FireflyReductionGraphicsPipeline::Initialize(const Direction direction, con
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
+	SetShouldClear(false);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

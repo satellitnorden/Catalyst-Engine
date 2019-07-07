@@ -120,7 +120,16 @@ void RenderingSystem::PostInitializeSystem()
 }
 
 /*
-*	Updates the input system during the render update phase.
+*	Updates the rendering system during the pre update phase.
+*/
+void RenderingSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Update the model system.
+	_ModelSystem.PreUpdate(context);
+}
+
+/*
+*	Updates the rendering system during the render update phase.
 */
 void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
@@ -131,10 +140,10 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 	UpdateGlobalRenderData();
 
 	//Update the lighting system.
-	_LightingSystem.Update(context);
+	_LightingSystem.RenderUpdate(context);
 
 	//Update the model system.
-	_ModelSystem.Update(context);
+	_ModelSystem.RenderUpdate(context);
 
 	//Execute all render passes.
 	RenderingSystemLogic::ExecuteRenderPasses();

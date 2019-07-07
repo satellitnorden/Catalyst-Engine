@@ -23,9 +23,9 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
-	*	Updates the lighting system.
+	*	Updates the lighting system during the render update phase.
 	*/
-	void Update(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the directional light.

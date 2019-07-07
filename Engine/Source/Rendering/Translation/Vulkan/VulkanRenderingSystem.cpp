@@ -247,7 +247,7 @@ namespace VulkanRenderingSystemLogic
 			if (depthBuffer)
 			{
 				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
-																								VK_ATTACHMENT_LOAD_OP_CLEAR,
+																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -260,7 +260,7 @@ namespace VulkanRenderingSystemLogic
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
 				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
-																								depthBuffer ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -803,6 +803,16 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::UserInterfaceVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VelocityFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{

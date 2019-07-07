@@ -67,6 +67,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direc
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
+	SetShouldClear(false);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

@@ -45,9 +45,9 @@ void LightingSystem::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the lighting system.
+*	Updates the lighting system during the render update phase.
 */
-void LightingSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
+void LightingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };

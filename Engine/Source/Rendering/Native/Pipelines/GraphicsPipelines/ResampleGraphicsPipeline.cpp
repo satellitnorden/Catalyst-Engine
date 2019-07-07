@@ -58,6 +58,7 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 	SetRenderResolution(resolution);
 
 	//Set the properties of the render pass.
+	SetShouldClear(false);
 	SetBlendEnabled(blendEnabled);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);

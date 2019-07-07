@@ -35,12 +35,17 @@ SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 */
 void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 {
+	//Create the scene depth buffer.
+	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
+
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ModelSceneFeaturesGraphicsPipeline.Initialize();
+	_ModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_VelocityGraphicsPipeline.Initialize(_SceneDepthBuffer);
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -56,4 +61,5 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	_ModelSceneFeaturesGraphicsPipeline.Execute();
+	_VelocityGraphicsPipeline.Execute();
 }

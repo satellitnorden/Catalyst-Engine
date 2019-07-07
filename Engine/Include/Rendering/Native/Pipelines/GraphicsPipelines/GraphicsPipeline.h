@@ -70,6 +70,11 @@ public:
 	Resolution GetRenderResolution() const NOEXCEPT { return _RenderResolution; }
 
 	/*
+	*	Returns whether or not this graphics pipeline should clear.
+	*/
+	bool ShouldClear() const NOEXCEPT { return _ShouldClear; }
+
+	/*
 	*	Returns whether or not blend is enabled.
 	*/
 	bool IsBlendEnabled() const NOEXCEPT { return _BlendEnabled; }
@@ -225,6 +230,11 @@ public:
 	void SetRenderResolution(const Resolution &newRenderResolution) NOEXCEPT { _RenderResolution = newRenderResolution; }
 
 	/*
+	*	Sets whether or not this graphics pipeline should clear.
+	*/
+	void SetShouldClear(const bool shouldClear) NOEXCEPT{ _ShouldClear = shouldClear; }
+
+	/*
 	*	Sets whether or not blend is enabled.
 	*/
 	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { _BlendEnabled = newBlendEnabled; }
@@ -345,6 +355,9 @@ private:
 
 	//The render resolution.
 	Resolution _RenderResolution;
+
+	//Denotes whether or not this graphics pipeline should clear.
+	bool _ShouldClear;
 
 	//Denotes whether or not blend is enabled.
 	bool _BlendEnabled;

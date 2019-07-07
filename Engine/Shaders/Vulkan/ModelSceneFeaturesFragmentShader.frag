@@ -14,16 +14,17 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 64) int albedoTextureIndex;
-    layout (offset = 68) int normalMapTextureIndex;
-    layout (offset = 72) int materialPropertiesIndex;
-    layout (offset = 76) int materialPropertyFlags;
-    layout (offset = 80) float luminanceMultiplier;
+    layout (offset = 128) int albedoTextureIndex;
+    layout (offset = 132) int normalMapTextureIndex;
+    layout (offset = 136) int materialPropertiesIndex;
+    layout (offset = 140) int materialPropertyFlags;
+    layout (offset = 144) float luminanceMultiplier;
 };
 
 //In parameters.
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) in vec3 fragmentWorldPosition;
+layout (location = 3) in vec3 fragmentPreviousWorldPosition;
+layout (location = 4) in vec3 fragmentCurrentWorldPosition;
 layout (location = 5) in vec2 fragmentTextureCoordinate;
 
 //Out parameters.
@@ -31,6 +32,18 @@ layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
 layout (location = 3) out vec4 sceneFeatures4;
+layout (location = 4) out vec4 velocity;
+
+/*
+* Returns the screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+{
+  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  viewSpacePosition.xy /= viewSpacePosition.w;
+
+  return viewSpacePosition.xy * 0.5f + 0.5f;
+}
 
 void main()
 {
@@ -54,7 +67,8 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), luminanceMultiplier);
-    sceneFeatures2 = vec4(fragmentTangentSpaceMatrix[2], length(fragmentWorldPosition - perceiverWorldPosition));
+    sceneFeatures2 = vec4(fragmentTangentSpaceMatrix[2], length(fragmentCurrentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = vec4(shadingNormal, intBitsToFloat(materialPropertyFlags));
     sceneFeatures4 = materialProperties;
+    velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition), 0.0f, 0.0f);
 }

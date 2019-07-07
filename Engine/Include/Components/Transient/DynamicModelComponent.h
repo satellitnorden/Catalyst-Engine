@@ -15,8 +15,11 @@ public:
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
 
-	//The world transform.
-	Matrix4 _WorldTransform;
+	//The previous world transform.
+	Matrix4 _PreviousWorldTransform;
+
+	//The current world transform.
+	Matrix4 _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;

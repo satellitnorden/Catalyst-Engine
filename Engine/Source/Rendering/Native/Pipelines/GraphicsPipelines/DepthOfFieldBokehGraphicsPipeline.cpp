@@ -38,6 +38,7 @@ void DepthOfFieldBokehGraphicsPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 4);
 
 	//Set the properties of the render pass.
+	SetShouldClear(false);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

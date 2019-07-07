@@ -23,9 +23,24 @@ void ModelSystem::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the lighting system.
+*	Updates the model system during the pre update phase.
 */
-void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
+void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Store the previous world transform for all dynamic model entities.
+	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	DynamicModelComponent *RESTRICT dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+	for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
+	{
+		dynamicModelComponent->_PreviousWorldTransform = dynamicModelComponent->_CurrentWorldTransform;
+	}
+}
+
+/*
+*	Updates the model system during the render update phase.
+*/
+void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the current model data render data table.
 	RenderDataTableHandle &currentModelDataRenderDataTable{ _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
@@ -57,7 +72,7 @@ void ModelSystem::Update(const UpdateContext *const RESTRICT context) NOEXCEPT
 
 		for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
 		{
-			_TopLevelAccelerationStructureInstances.EmplaceSlow(dynamicModelComponent->_WorldTransform, dynamicModelComponent->_Model->_BottomLevelAccelerationStructure, numberOfStaticModelComponents + i);
+			_TopLevelAccelerationStructureInstances.EmplaceSlow(dynamicModelComponent->_CurrentWorldTransform, dynamicModelComponent->_Model->_BottomLevelAccelerationStructure, numberOfStaticModelComponents + i);
 
 			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_VertexBuffer);
 			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_IndexBuffer);

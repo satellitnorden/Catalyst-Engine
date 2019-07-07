@@ -38,6 +38,7 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
+	SetShouldClear(false);
 	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

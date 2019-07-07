@@ -19,7 +19,8 @@ class VertexPushConstantData final
 
 public:
 
-	Matrix4 _ModelMatrix;
+	Matrix4 _PreviousModelMatrix;
+	Matrix4 _CurrentModelMatrix;
 
 };
 
@@ -42,11 +43,8 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ModelSceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
+void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
-	//Create the scene depth buffer.
-	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ModelSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
@@ -55,14 +53,15 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
 	SetFragmentShader(Shader::ModelSceneFeaturesFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(_SceneDepthBuffer);
+	SetDepthBuffer(depthBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(4);
+	SetNumberOfRenderTargets(5);
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Velocity));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -100,6 +99,7 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
+	SetShouldClear(true);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
@@ -109,14 +109,14 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(false);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleList);
 }
 
@@ -159,7 +159,7 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Push constants.
 			VertexPushConstantData vertexData;
 
-			vertexData._ModelMatrix = component->_WorldTransform;
+			vertexData._PreviousModelMatrix = vertexData._CurrentModelMatrix = component->_WorldTransform;
 
 			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
@@ -190,7 +190,8 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Push constants.
 			VertexPushConstantData vertexData;
 
-			vertexData._ModelMatrix = component->_WorldTransform;
+			vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
+			vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
 			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 

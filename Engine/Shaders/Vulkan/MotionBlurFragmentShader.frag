@@ -9,7 +9,6 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MOTION_BLUR_SAMPLES (16)
 #define MOTION_BLUR_SCALE (1.0f)
 
 //Layout specification.
@@ -19,41 +18,58 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
+layout (set = 1, binding = 1) uniform sampler2D velocityTexture;
+layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+/*
+*	Returns the velocity.
+*/
+vec2 GetVelocity()
 {
-	//Calculate the world position at this fragment the current frame.
-	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
+	/*
+	vec2 chosenVelocity = vec2(0.0f);
+	float closestHitDistance = CATALYST_RAY_TRACING_T_MAXIMUM;
 
-	//Now calculate it's previous screen position using the previous view matrix.
-	vec4 previousViewSpacePosition = viewMatrixMinusOne * vec4(worldPosition, 1.0f);
-
-	//Perform perspective division.
-	previousViewSpacePosition.xyz /= previousViewSpacePosition.w;
-
-	vec2 previousScreenPosition = (previousViewSpacePosition.xy + 1.0f) * 0.5f;
-
-	//Now calculate the blur direction!.
-	vec2 blurDirection = (fragmentTextureCoordinate - previousScreenPosition) * MOTION_BLUR_SCALE;
-
-	//Calculate the blur step.
-	vec2 blurStep = blurDirection / MOTION_BLUR_SAMPLES;
-
-	//Perform the blur.
-	vec3 blurred = vec3(0.0f);
-
-	for (int i = 0; i < MOTION_BLUR_SAMPLES; ++i)
+	for (float x = -1.0f; x <= 1.0f; ++x)
 	{
-		blurred += texture(sceneTexture, fragmentTextureCoordinate + blurStep * i).rgb;
+		for (float y = -1.0f; y <= 1.0f; ++y)
+		{
+			vec2 sampleCoordinate = vec2(x, y) * inverseScaledResolution;
+
+			float hitDistance = texture(sceneFeatures2Texture, sampleCoordinate).w;
+
+			if (closestHitDistance > hitDistance)
+			{
+				closestHitDistance = hitDistance;
+				chosenVelocity = texture(velocityTexture, sampleCoordinate).xy;
+			}
+		}
 	}
 
-	blurred /= MOTION_BLUR_SAMPLES;
+	return chosenVelocity;
+	*/
+
+	return texture(velocityTexture, fragmentTextureCoordinate).xy;
+}
+
+void main()
+{
+	//Calculate the blur direction.
+	vec2 blurDirection = GetVelocity() * -1.0f * MOTION_BLUR_SCALE;
+
+	//Sample the active noise texture.
+	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+	//Calculate the blurred scene.
+	vec3 blurredScene = (texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.x).rgb +
+						texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.y).rgb +
+						texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.z).rgb +
+						texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.w).rgb) * 0.25f;
 
     //Write the fragment.
-    fragment = vec4(blurred, 1.0f);
+    fragment = vec4(blurredScene, 1.0f);
 }

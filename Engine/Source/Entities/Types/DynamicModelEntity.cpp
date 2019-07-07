@@ -35,7 +35,8 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	DynamicModelComponent& dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex] };
 
 	dynamicModelComponent._Model = dynamicModelInitializationData->_Model;
-	dynamicModelComponent._WorldTransform = dynamicModelInitializationData->_Transform;
+	dynamicModelComponent._PreviousWorldTransform = dynamicModelInitializationData->_Transform;
+	dynamicModelComponent._CurrentWorldTransform = dynamicModelInitializationData->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(dynamicModelComponent._Model->_ModelSpaceAxisAlignedBoundingBox, dynamicModelInitializationData->_Transform, &dynamicModelComponent._WorldSpaceAxisAlignedBoundingBox);
 	dynamicModelComponent._Material = dynamicModelInitializationData->_Material;
 
@@ -57,7 +58,7 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 */
 RESTRICTED NO_DISCARD Matrix4 *const RESTRICT DynamicModelEntity::GetWorldTransform() NOEXCEPT
 {
-	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldTransform;
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
 
 /*

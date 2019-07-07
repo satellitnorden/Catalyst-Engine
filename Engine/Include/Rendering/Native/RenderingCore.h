@@ -21,9 +21,10 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 512 };
+
+	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 }
 
 /*
@@ -301,6 +302,7 @@ enum class Shader : uint8
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
+	VelocityFragment,
 	ViewportVertex,
 	VisibilityRayMiss,
 	VolumetricLightingApplicationFragment,

@@ -10,7 +10,8 @@
 //Push constant data.
 layout (push_constant) uniform ModelData
 {
-    layout (offset = 0) mat4 modelMatrix;
+    layout (offset = 0) mat4 previousModelMatrix;
+    layout (offset = 64) mat4 currentModelMatrix;
 };
 
 //In parameters.
@@ -21,20 +22,20 @@ layout (location = 3) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
 layout (location = 0) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) out vec3 fragmentWorldPosition;
+layout (location = 3) out vec3 fragmentPreviousWorldPosition;
+layout (location = 4) out vec3 fragmentCurrentWorldPosition;
 layout (location = 5) out vec2 fragmentTextureCoordinate;
 
 void main()
 {
-	fragmentWorldPosition = vec3(modelMatrix * vec4(vertexPosition, 1.0));
-    
-	vec3 tangent = normalize(vec3(modelMatrix * vec4(vertexTangent, 0.0f)));
-	vec3 bitangent = normalize(vec3(modelMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-	vec3 normal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0.0f)));
+	vec3 tangent = normalize(vec3(currentModelMatrix * vec4(vertexTangent, 0.0f)));
+	vec3 bitangent = normalize(vec3(currentModelMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
+	vec3 normal = normalize(vec3(currentModelMatrix * vec4(vertexNormal, 0.0f)));
 
 	fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-
+	fragmentPreviousWorldPosition = vec3(previousModelMatrix * vec4(vertexPosition, 1.0));
+	fragmentCurrentWorldPosition = vec3(currentModelMatrix * vec4(vertexPosition, 1.0));
 	fragmentTextureCoordinate = vertexTextureCoordinate;
 
-	gl_Position = viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);
 }
