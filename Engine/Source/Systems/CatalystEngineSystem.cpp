@@ -95,6 +95,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
+	EntityPlacementSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();

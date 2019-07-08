@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />

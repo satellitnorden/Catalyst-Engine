@@ -319,6 +319,9 @@
     <Filter Include="Profiling\Include">
       <UniqueIdentifier>{1601ffc3-afa6-42aa-bf73-100e080e2f6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities\Include\Placement">
+      <UniqueIdentifier>{c5bbea8d-3b3e-46c7-8734-866ae9007972}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1058,6 +1061,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h">
       <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h">
+      <Filter>Entities\Include\Placement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,20 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Forward declarations.
+class AxisAlignedBoundingBox;
+class Entity;
+
+//Type aliases.
+using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);
+
+//Enumeration covering all entity placement types.
+enum class EntityPlacementType : uint8
+{
+	TwoDimensional,
+	ThreeDimensional
+};
+
 //Entity types.
 #define ENTITY_TYPES	ENTITY_TYPE(DynamicModel)	\
 						ENTITY_TYPE(Light)			\
