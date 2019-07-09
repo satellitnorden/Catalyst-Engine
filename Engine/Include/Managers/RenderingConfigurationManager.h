@@ -164,7 +164,7 @@ private:
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::None };
+	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The ambient illumination intensity.
 	float _AmbientIlluminationIntensity{ 0.1f };

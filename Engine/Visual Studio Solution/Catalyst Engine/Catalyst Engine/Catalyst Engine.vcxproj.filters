@@ -1062,6 +1062,9 @@
     <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1414,6 +1417,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Building\CatalystEngineResourceBuilding.cpp">
+      <Filter>Resources\Source\Building</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h" />
@@ -395,6 +396,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\Building\CatalystEngineResourceBuilding.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />

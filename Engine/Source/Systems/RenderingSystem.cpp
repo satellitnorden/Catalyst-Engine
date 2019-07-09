@@ -89,12 +89,15 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
 
-	//Load the engine resource collection. Shouldn't really be here, but works for now.
-	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\CatalystEngineResourceCollection.crc");
-
 	//Post-initialize the rendering system.
 	PostInitialize();
+}
 
+/*
+*	Post-initializes the rendering system.
+*/
+void RenderingSystem::PostInitializeSystem()
+{
 	//Initialize all common materials.
 	InitializeCommonMaterials();
 
@@ -103,13 +106,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Initialize the noise textures.
 	InitializeNoiseTextures();
-}
 
-/*
-*	Post-initializes the rendering system.
-*/
-void RenderingSystem::PostInitializeSystem()
-{
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 

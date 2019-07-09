@@ -12,6 +12,9 @@
 #include <Profiling/ProfilingCore.h>
 
 //Resources.
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#include <Resources/Building/CatalystEngineResourceBuilding.h>
+#endif
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
@@ -88,6 +91,11 @@ namespace CatalystEngineSystemLogic
 */
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+	//Build the Catalyst Engine resources.
+	CatalystEngineResourceBuilding::BuildResources();
+#endif
+
 	//Set the project configuration.
 	_ProjectConfiguration = initialProjectConfiguration;
 
@@ -99,6 +107,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();
+
+	//Load the Catalyst Engine resource collection. 
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
 
 	//Post-initialize all systems.
 	RenderingSystem::Instance->PostInitializeSystem();
