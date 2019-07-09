@@ -6,14 +6,10 @@
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {
-	Ocean = BIT(0),
-	Terrain = BIT(1)
+	Terrain = BIT(0),
+	Model = BIT(1),
+
+	All = Terrain | Model
 };
 
 ENUMERATION_BIT_OPERATIONS(PhysicsChannel);
-
-//Enumeration covering all physics shapes.
-enum class PhysicsShape : uint8
-{
-	Cube
-};

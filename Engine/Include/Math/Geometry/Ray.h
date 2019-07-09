@@ -25,15 +25,7 @@ public:
 		_Origin(initalOrigin),
 		_Direction(initialDirection)
 	{
-
-	}
-
-	/*
-	*	Returns whether or not a ray is valid.
-	*/
-	static NO_DISCARD bool IsValid(const Ray &ray) NOEXCEPT
-	{
-		return ray._Direction.IsNormalized();
+		
 	}
 
 };

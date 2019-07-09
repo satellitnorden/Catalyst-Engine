@@ -159,7 +159,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PhysicsUpdate(&context);
 #endif
-	PhysicsSystem::PhysicsUpdate(&context);
+	PhysicsSystem::Instance->PhysicsUpdate(&context);
 
 	/*
 	*	Render update phase.

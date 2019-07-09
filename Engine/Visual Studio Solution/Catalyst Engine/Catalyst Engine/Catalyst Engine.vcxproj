@@ -47,7 +47,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
-    <ClInclude Include="..\..\..\Include\Components\Singleton\PhysicsSingletonComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
@@ -132,7 +131,7 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
+    <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />

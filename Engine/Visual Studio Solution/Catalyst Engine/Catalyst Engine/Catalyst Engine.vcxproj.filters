@@ -945,12 +945,6 @@
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Singleton\PhysicsSingletonComponent.h">
-      <Filter>Components\Include\Singleton</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
@@ -1064,6 +1058,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h">
       <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h">
+      <Filter>Physics\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

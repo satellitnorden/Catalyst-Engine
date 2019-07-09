@@ -1,8 +1,11 @@
 //Header file.
 #include <Systems/PhysicsSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
+//Math.
+#include <Math/Core/CatalystGeometryMath.h>
+
+//Singleton definition.
+DEFINE_SINGLETON(PhysicsSystem);
 
 /*
 *	Updates the physics system during the physics update phase.
@@ -10,29 +13,8 @@
 void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update all character movements.
-	for (CharacterMovement *const RESTRICT movement : ComponentManager::ReadSingletonComponent<PhysicsSingletonComponent>()->_CharacterMovements)
+	for (CharacterMovement *const RESTRICT movement : _CharacterMovements)
 	{
-		/*
-		//Calculate the expected new position.
-		const Vector3<float> expectedPosition{ movement->_Position + movement->_Velocity * context->_DeltaTime };
-
-		//Consider collision against statid model entities.
-		const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent)
-		{
-			const Vector3<float> closestPoint{ AxisAlignedBoundingBox::GetClosestPoint(staticModelComponent->_WorldSpaceAxisAlignedBoundingBox, expectedPosition + Vector3<float>(0.0f, 1.0f, 0.0)) };
-
-			if (closestPoint._Y > 0.0f && Vector3<float>::LengthSquaredXZ(closestPoint - expectedPosition) < (movement->_Radius * movement->_Radius))
-			{
-				movement->_Velocity = VectorConstants::ZERO;
-
-				break;
-			}
-		}
-		*/
-
 		//Apply the movement.
 		movement->_Position += movement->_Velocity * context->_DeltaTime;
 		movement->_Velocity = VectorConstants::ZERO;
@@ -45,5 +27,48 @@ void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) N
 void PhysicsSystem::RegisterCharacterMovement(CharacterMovement *const RESTRICT movement) NOEXCEPT
 {
 	//Add it to the container.
-	ComponentManager::WriteSingletonComponent<PhysicsSingletonComponent>()->_CharacterMovements.EmplaceSlow(movement);
+	_CharacterMovements.EmplaceSlow(movement);
+}
+
+/*
+*	Casts a ray.
+*/
+void PhysicsSystem::CastRay(const Ray &ray, const PhysicsChannel channels, RaycastResult *const RESTRICT result) NOEXCEPT
+{
+	//Set the default properties of the result.
+	result->_HasHit = false;
+	result->_HitDistance = FLOAT_MAXIMUM;
+	result->_HitEntity = nullptr;
+
+	//Raycast against the terrain.
+	if (TEST_BIT(channels, PhysicsChannel::Terrain))
+	{
+		CastRayTerrain(ray, result);
+	}
+
+	//Raycast against models.
+	if (TEST_BIT(channels, PhysicsChannel::Model))
+	{
+
+	}
+}
+
+/*
+*	Casts a ray against the terrain.
+*/
+void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
+{
+	float intersectionDistance;
+
+	if (CatalystGeometryMath::RayPlaneIntersection(ray,
+													Plane(VectorConstants::ZERO, VectorConstants::UP),
+													&intersectionDistance))
+	{
+		if (intersectionDistance < result->_HitDistance)
+		{
+			result->_HasHit = true;
+			result->_HitDistance = intersectionDistance;
+			result->_HitEntity = nullptr;
+		}
+	}
 }

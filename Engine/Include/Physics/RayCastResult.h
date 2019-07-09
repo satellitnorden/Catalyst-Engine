@@ -6,10 +6,7 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-//Math.
-#include <Math/General/Vector.h>
-
-class RayCastResult final
+class RaycastResult final
 {
 
 public:
@@ -17,8 +14,8 @@ public:
 	//Denotes whether or not there was a hit.
 	bool _HasHit;
 
-	//The hit position.
-	Vector3<float> _HitPosition;
+	//The hit distance.
+	float _HitDistance;
 
 	//The hit entity.
 	Entity *RESTRICT _HitEntity;

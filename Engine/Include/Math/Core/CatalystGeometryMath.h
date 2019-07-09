@@ -132,7 +132,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayPlaneIntersection(	const Ray &ray,
 																		const Plane &plane,
-																		Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+																		float *const RESTRICT intersectionDistance) NOEXCEPT
 	{
 		if (Vector3<float>::DotProduct(ray._Direction, plane._Normal) >= 0.0f)
 		{
@@ -141,9 +141,9 @@ public:
 
 		else
 		{
-			if (intersectionPoint)
+			if (intersectionDistance)
 			{
-				*intersectionPoint = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal) * ray._Direction + ray._Origin;
+				*intersectionDistance = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal);
 			}
 
 			return true;
