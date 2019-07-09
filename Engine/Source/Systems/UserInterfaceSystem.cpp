@@ -10,13 +10,16 @@
 #include <UserInterface/TextUserInterfaceElement.h>
 #include <UserInterface/TextUserInterfaceElementDescription.h>
 
+//Singleton definition.
+DEFINE_SINGLETON(UserInterfaceSystem);
+
 /*
 *	Terminates the user interface system.
 */
 void UserInterfaceSystem::Terminate() NOEXCEPT
 {
 	//Deallocate all user interface elements.
-	for (UserInterfaceElement *const RESTRICT element : ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements)
+	for (UserInterfaceElement *const RESTRICT element : _UserInterfaceElements)
 	{
 		switch (element->_Type)
 		{
@@ -61,7 +64,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Maximum = typeDescription->_Maximum;
 			element->_TextureIndex = typeDescription->_ImageTextureIndex;
 
-			ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.EmplaceSlow(element);
+			_UserInterfaceElements.EmplaceSlow(element);
 
 			return element;
 		}
@@ -77,7 +80,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Font = typeDescription->_Font;
 			element->_Text = std::move(typeDescription->_Text);
 
-			ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.EmplaceSlow(element);
+			_UserInterfaceElements.EmplaceSlow(element);
 
 			return element;
 		}
@@ -96,5 +99,5 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 */
 void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT
 {
-	ComponentManager::WriteSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.Erase(element);
+	_UserInterfaceElements.Erase(element);
 }

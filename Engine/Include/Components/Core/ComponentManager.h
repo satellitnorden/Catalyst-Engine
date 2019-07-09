@@ -5,7 +5,6 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
-#include <Components/Singleton/UserInterfaceComponent.h>
 #include <Components/Transient/DynamicModelComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/SoundComponent.h>
@@ -53,40 +52,9 @@ class ComponentManager final
 
 public:
 
-	/*
-	*	Returns the singleton component of the given type for read access.
-	*/
-	template <typename TYPE>
-	RESTRICTED static NO_DISCARD const TYPE *const RESTRICT ReadSingletonComponent() NOEXCEPT
-	{
-		return RetrieveSingletonComponent<TYPE>();
-	}
-
-	/*
-	*	Returns the singleton component of the given type for write access.
-	*/
-	template <typename TYPE>
-	RESTRICTED static NO_DISCARD TYPE *const RESTRICT WriteSingletonComponent() NOEXCEPT
-	{
-		return RetrieveSingletonComponent<TYPE>();
-	}
-
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DynamicModel, DynamicModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
-
-private:
-
-	/*
-	*	Returns the singleton component of the given type.
-	*/
-	template <typename TYPE>
-	RESTRICTED static NO_DISCARD TYPE *const RESTRICT RetrieveSingletonComponent() NOEXCEPT
-	{
-		static DestructorPointer<TYPE> component{ DestructorPointer<TYPE>(new (Memory::GlobalLinearAllocator()->Allocate(sizeof(TYPE))) TYPE()) };
-
-		return component.Get();
-	}
 
 };

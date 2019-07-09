@@ -78,7 +78,7 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 
 		description._Text = entry._Name + buffer;
 
-		UserInterfaceElement *const RESTRICT element{ UserInterfaceSystem::CreateUserInterfaceElement(&description) };
+		UserInterfaceElement *const RESTRICT element{ UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description) };
 
 		ProfilingSystemData::_UserInterfaceElements.EmplaceSlow(element);
 	}
@@ -94,7 +94,7 @@ void ProfilingSystem::PostUpdate(const UpdateContext *const RESTRICT context) NO
 
 	for (UserInterfaceElement *const RESTRICT element : ProfilingSystemData::_UserInterfaceElements)
 	{
-		UserInterfaceSystem::DestroyUserInterfaceElement(element);
+		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(element);
 	}
 
 	ProfilingSystemData::_UserInterfaceElements.ClearFast();

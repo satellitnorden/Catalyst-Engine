@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //User interface.
 #include <UserInterface/UserInterfaceElement.h>
@@ -12,19 +13,43 @@ class UserInterfaceSystem final
 
 public:
 
+	//Singleton declaration.
+	DECLARE_SINGLETON(UserInterfaceSystem);
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE UserInterfaceSystem() NOEXCEPT
+	{
+
+	}
+
 	/*
 	*	Terminates the user interface system.
 	*/
-	static void Terminate() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Creates a user interface element.
 	*/
-	RESTRICTED static NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
+	RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
 
 	/*
 	*	Destroys a user interface element.
 	*/
-	static void DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT;
+	void DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT;
+
+	/*
+	*	Returns the user interface elements.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<UserInterfaceElement *RESTRICT> *const RESTRICT GetUserInterfaceElements() const NOEXCEPT
+	{
+		return &_UserInterfaceElements;
+	}
+
+private:
+
+	//Container for all user interface elements.
+	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
 
 };

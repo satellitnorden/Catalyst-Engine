@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/UserInterfaceSystem.h>
 
 //User interface.
 #include <UserInterface/ImageUserInterfaceElement.h>
@@ -102,7 +103,7 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Get the number of user interface elements.
-	const uint64 numberOfUserInterfaceElements{ ComponentManager::ReadSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements.Size() };
+	const uint64 numberOfUserInterfaceElements{ UserInterfaceSystem::Instance->GetUserInterfaceElements()->Size() };
 
 	//If there's no to render, then... Don't.
 	if (numberOfUserInterfaceElements == 0)
@@ -122,7 +123,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Render all user interface elements.
-	for (const UserInterfaceElement *const RESTRICT element : ComponentManager::ReadSingletonComponent<UserInterfaceComponent>()->_UserInterfaceElements)
+	for (const UserInterfaceElement *const RESTRICT element : *UserInterfaceSystem::Instance->GetUserInterfaceElements())
 	{
 		//Render differently based on the type.
 		switch (element->_Type)
