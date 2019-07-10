@@ -699,18 +699,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	Vector2<float> currentFrameJitter{ 0.0f, 0.0f };
 
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
-	if (RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::Temporal
-		|| RenderingConfigurationManager::Instance->GetAntiAliasingMode() == RenderingConfigurationManager::AntiAliasingMode::FastApproximateAndTemporal)
-	{
-		currentFrameJitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
-	}
-
-	else
-	{
-		currentFrameJitter = Vector2<float>(0.0f, 0.0f);
-	}
-
-	Perceiver::Instance->SetProjectionMatrixJitter(currentFrameJitter);
+	Perceiver::Instance->SetProjectionMatrixJitter(JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution);
 #endif
 
 	//Update matrices.
@@ -743,7 +732,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 0.0f;
 
-	_DynamicUniformData._AntiAliasingMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAntiAliasingMode());
+	_DynamicUniformData._AntiAliasingMode = 0;
 	_DynamicUniformData._DiffuseIrradianceMode = 0;
 	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());

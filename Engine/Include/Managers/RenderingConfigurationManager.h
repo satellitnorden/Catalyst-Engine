@@ -44,22 +44,6 @@ public:
 	}
 
 	/*
-	*	Returns the anti aliasing mode.
-	*/
-	AntiAliasingMode GetAntiAliasingMode() const NOEXCEPT
-	{
-		return _AntiAliasingMode;
-	}
-
-	/*
-	*	Sets the anti aliasing mode.
-	*/
-	void SetAntiAliasingMode(const AntiAliasingMode newMode) NOEXCEPT
-	{
-		_AntiAliasingMode = newMode;
-	}
-
-	/*
 	*	Returns the specular irradiance mode.
 	*/
 	SpecularIrradianceMode GetSpecularIrradianceMode() const NOEXCEPT
@@ -156,9 +140,6 @@ public:
 	}
 
 private:
-
-	//The anti aliasing mode.
-	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::FastApproximateAndTemporal };
 
 	//The specular irradiance mode.
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
