@@ -14,6 +14,18 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 {
 #if BUILD_ENGINE_RESOURCES
 	{
+		FontBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font";
+		parameters._ID = "Catalyst_Engine_Default_Font";
+		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\Timeless.ttf";
+		parameters._MaximumFontResolution = 128;
+		parameters._MipmapLevels = 1;
+
+		ResourceBuilder::BuildFont(parameters);
+	}
+
+	{
 		Texture2DBuildParameters parameters;
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D";
@@ -992,6 +1004,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 	resourceCollectionBuildParameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
 
+	//It's important that the blue noise textures are added first because of some fairly non-ideal reasons... (:
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D.cr");
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_1_Texture2D.cr");
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_2_Texture2D.cr");
@@ -1056,6 +1069,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_61_Texture2D.cr");
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_62_Texture2D.cr");
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_63_Texture2D.cr");
+	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font.cr");
 	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Color_Grading_Lookup_Texture2D.cr");
 
 	ResourceBuilder::BuildResourceCollection(resourceCollectionBuildParameters);
