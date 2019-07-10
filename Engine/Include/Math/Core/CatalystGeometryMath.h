@@ -141,9 +141,16 @@ public:
 
 		else
 		{
+			const float distance{ Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal) };
+
+			if (distance > ray._MaximumHitDistance)
+			{
+				return false;
+			}
+
 			if (intersectionDistance)
 			{
-				*intersectionDistance = Vector3<float>::DotProduct(plane._Position - ray._Origin, plane._Normal) / Vector3<float>::DotProduct(ray._Direction, plane._Normal);
+				*intersectionDistance = distance;
 			}
 
 			return true;

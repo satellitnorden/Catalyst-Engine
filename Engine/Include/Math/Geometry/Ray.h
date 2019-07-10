@@ -17,13 +17,17 @@ public:
 	//The direction.
 	Vector3<float> _Direction;
 
+	//The maximum hit distance.
+	float _MaximumHitDistance;
+
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection) NOEXCEPT
+	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection, const float initialMaximumHitDistance) NOEXCEPT
 		:
 		_Origin(initalOrigin),
-		_Direction(initialDirection)
+		_Direction(initialDirection),
+		_MaximumHitDistance(initialMaximumHitDistance)
 	{
 		
 	}
