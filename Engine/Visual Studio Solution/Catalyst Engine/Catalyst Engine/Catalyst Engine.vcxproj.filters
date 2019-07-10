@@ -205,9 +205,6 @@
     <Filter Include="Components\Include\Transient">
       <UniqueIdentifier>{2166e02f-9b7f-4669-bd8c-6fc9e889814d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Components\Include\Singleton">
-      <UniqueIdentifier>{bb544a4c-1a1d-4fec-be5a-41bec75e0ad8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Source\Essential">
       <UniqueIdentifier>{d764f9bc-79ba-47a2-8573-c8a1dbad8377}</UniqueIdentifier>
     </Filter>
@@ -840,9 +837,6 @@
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h">
-      <Filter>Components\Include\Singleton</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\MotionBlurGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1061,6 +1055,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h">
       <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\VegetationInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1411,6 +1417,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Building\CatalystEngineResourceBuilding.cpp">
       <Filter>Resources\Source\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

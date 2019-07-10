@@ -24,6 +24,8 @@ glslangValidator.exe -V TemporalAntiAliasingFragmentShader.frag -o 			TemporalAn
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V UserInterfaceFragmentShader.frag -o 				UserInterfaceFragmentShader.spv
 glslangValidator.exe -V UserInterfaceVertexShader.vert -o 				UserInterfaceVertexShader.spv
+glslangValidator.exe -V VegetationSceneFeaturesFragmentShader.frag -o 			VegetationSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V VegetationSceneFeaturesVertexShader.vert -o 			VegetationSceneFeaturesVertexShader.spv
 glslangValidator.exe -V VelocityFragmentShader.frag -o 					VelocityFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv

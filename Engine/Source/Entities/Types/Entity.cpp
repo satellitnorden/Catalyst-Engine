@@ -9,6 +9,7 @@
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
+#include <Entities/Types/VegetationEntity.h>
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>

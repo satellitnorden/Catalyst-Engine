@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -28,6 +29,9 @@ private:
 
 	//The model scene features graphics pipeline.
 	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
+
+	//The vegetation scene features graphics pipeline.
+	VegetationSceneFeaturesGraphicsPipeline _VegetationSceneFeaturesGraphicsPipeline;
 
 	//The velocity graphics pipeline.
 	VelocityGraphicsPipeline _VelocityGraphicsPipeline;

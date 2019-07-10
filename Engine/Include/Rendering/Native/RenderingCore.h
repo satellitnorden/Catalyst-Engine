@@ -300,6 +300,8 @@ enum class Shader : uint8
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
+	VegetationSceneFeaturesFragment,
+	VegetationSceneFeaturesVertex,
 	VelocityFragment,
 	ViewportVertex,
 	VisibilityRayMiss,

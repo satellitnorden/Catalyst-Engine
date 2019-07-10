@@ -47,11 +47,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
-    <ClInclude Include="..\..\..\Include\Components\Singleton\UserInterfaceComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h" />
@@ -84,12 +84,14 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\VegetationInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -212,6 +214,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h" />
@@ -302,6 +305,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
@@ -364,6 +368,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp" />
