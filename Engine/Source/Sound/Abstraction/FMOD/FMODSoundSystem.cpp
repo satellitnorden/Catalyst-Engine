@@ -5,22 +5,31 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
+//Multithreading.
+#include <Multithreading/Task.h>
+
 //Sound.
 #include <Sound/Abstraction/FMOD/FMODAbstractionUtilities.h>
 
+//Systems.
+#include <Systems/TaskSystem.h>
+
 namespace FMODSoundSystemConstants
 {
-	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{	FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_VOL0_BECOMES_VIRTUAL
+	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{ FMOD_INIT_STREAM_FROM_UPDATE | FMOD_INIT_MIX_FROM_UPDATE | FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_VOL0_BECOMES_VIRTUAL
 #if FMOD_DEBUGGING
 													| FMOD_INIT_PROFILE_ENABLE
 #endif
 	};
-	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_NORMAL | FMOD_STUDIO_INIT_LOAD_FROM_UPDATE };
+	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_SYNCHRONOUS_UPDATE | FMOD_STUDIO_INIT_LOAD_FROM_UPDATE };
 	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 512 };
 }
 
 namespace FMODSoundSystemData
 {
+	//The update task.
+	Task _UpdateTask;
+
 	//The studio system.
 	FMOD::Studio::System *RESTRICT _System{ nullptr };
 }
@@ -66,6 +75,14 @@ namespace FMODSoundSystemLogic
 */
 void SoundSystem::Initialize() NOEXCEPT
 {
+	//Set up the update task.
+	FMODSoundSystemData::_UpdateTask._Function = [](void *const RESTRICT)
+	{
+		//Update the studio system.
+		FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
+	};
+	FMODSoundSystemData::_UpdateTask._Arguments = nullptr;
+
 	//Create the studio system.
 	FMOD_ERROR_CHECK(FMOD::Studio::System::create(&FMODSoundSystemData::_System));
 
@@ -81,11 +98,14 @@ void SoundSystem::Initialize() NOEXCEPT
 */
 void SoundSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Wait for the update task to finish.
+	FMODSoundSystemData::_UpdateTask.WaitFor();
+
 	//Update the listener position.
 	FMODSoundSystemLogic::UpdateListenerPosition();
 
-	//Update the studio system.
-	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
+	//Execute the update task.
+	TaskSystem::Instance->ExecuteTask(&FMODSoundSystemData::_UpdateTask);
 }
 
 /*

@@ -11,7 +11,7 @@
 *	Turns FMOD debugging on/off.
 */
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	#define FMOD_DEBUGGING true
+	#define FMOD_DEBUGGING false
 #else
 	#define FMOD_DEBUGGING false
 #endif
