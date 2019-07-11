@@ -65,6 +65,22 @@ public:
 	}
 
 	/*
+	*	Returns the size of this map.
+	*/
+	FORCE_INLINE uint64 Size() const NOEXCEPT
+	{
+		return _Map.Size();
+	}
+
+	/*
+	*	Returns whether or not this map is empty.
+	*/
+	FORCE_INLINE NO_DISCARD bool Empty() const NOEXCEPT
+	{
+		return _Map.Empty();
+	}
+
+	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const OBJECT_TYPE *const RESTRICT Find(const KEY_TYPE key) const NOEXCEPT
@@ -102,14 +118,6 @@ public:
 	FORCE_INLINE void EmplaceSlow(const KEY_TYPE newKey, const OBJECT_TYPE &newObject)
 	{
 		_Map.EmplaceSlow(newKey, newObject);
-	}
-
-	/*
-	*	Returns the size of this map.
-	*/
-	FORCE_INLINE uint64 Size() const NOEXCEPT
-	{
-		return _Map.Size();
 	}
 
 private:

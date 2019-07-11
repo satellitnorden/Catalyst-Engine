@@ -9,13 +9,15 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 
+//Layout specification.
+layout (early_fragment_tests) in;
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) int albedoTextureIndex;
     layout (offset = 4) int normalMapTextureIndex;
     layout (offset = 8) int materialPropertiesIndex;
-    layout (offset = 12) int maskIndex;
 };
 
 //In parameters.
@@ -44,12 +46,6 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 
 void main()
 {
-  //Discard conditionally.
-  if (texture(sampler2D(globalTextures[maskIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).r < 0.5f)
-  {
-    discard;
-  }
-
   //Sample the albedo.
   vec3 albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
 

@@ -124,7 +124,7 @@ namespace VulkanRenderingSystemLogic
 					//Cache the Vulkan graphics pipeline data.
 					const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
-					if (pipelineData->_ShouldClear)
+					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->ShouldClear())
 					{
 						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 100.0f),
 																					0.0f,
@@ -293,7 +293,7 @@ namespace VulkanRenderingSystemLogic
 			data->_RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
 
 			//Create the framebuffer(s).
-			if (uniqueAttachments.begin()->_First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen))
+			if (!uniqueAttachments.Empty() && uniqueAttachments.begin()->_First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen))
 			{
 				//Create the framebuffers.
 				const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
@@ -311,7 +311,6 @@ namespace VulkanRenderingSystemLogic
 					data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				}
 
-				data->_ShouldClear = false;
 				data->_Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 				data->_NumberOfAttachments = static_cast<uint32>(1);
 				data->_RenderToScreeen = true;
@@ -342,7 +341,6 @@ namespace VulkanRenderingSystemLogic
 
 				data->_FrameBuffers.Reserve(1);
 				data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-				data->_ShouldClear = depthBuffer ? true : false;
 				data->_Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 				data->_NumberOfAttachments = static_cast<uint32>(attachments.Size());
 				data->_RenderToScreeen = false;
@@ -802,7 +800,7 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationColorSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
@@ -812,7 +810,27 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationColorSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationDepthSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationDepthSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
 
 		{

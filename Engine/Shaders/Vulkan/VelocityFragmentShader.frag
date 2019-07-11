@@ -8,6 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
 
+//Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.

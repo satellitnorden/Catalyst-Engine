@@ -1065,7 +1065,10 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.h">
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1421,7 +1424,10 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>

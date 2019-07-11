@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class VegetationSceneFeaturesGraphicsPipeline final : public GraphicsPipeline
+class VegetationDepthSceneFeaturesGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

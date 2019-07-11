@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -22,21 +22,20 @@ public:
 	int32 _AlbedoTextureIndex;
 	int32 _NormalMapTextureIndex;
 	int32 _MaterialPropertiesTextureIndex;
-	int32 _MaskTextureIndex;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void VegetationColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationSceneFeaturesVertex);
+	SetVertexShader(Shader::VegetationColorSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VegetationSceneFeaturesFragment);
+	SetFragmentShader(Shader::VegetationColorSceneFeaturesFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);
@@ -108,24 +107,24 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Greater);
+	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(true);
+	SetDepthWriteEnabled(false);
+	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilWriteMask(0);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 }
 
 /*
 *	Executes this graphics pipeline.
 */
-void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -161,7 +160,6 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		fragmentData._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
 		fragmentData._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
 		fragmentData._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
-		fragmentData._MaskTextureIndex = component->_MaskTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VegetationPushConstantData), &fragmentData);
 

@@ -5,7 +5,8 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -27,11 +28,14 @@ private:
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer;
 
+	//The vegetation depth scene features graphics pipeline.
+	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;
+
 	//The model scene features graphics pipeline.
 	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
 
-	//The vegetation scene features graphics pipeline.
-	VegetationSceneFeaturesGraphicsPipeline _VegetationSceneFeaturesGraphicsPipeline;
+	//The vegetation color scene features graphics pipeline.
+	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;
 
 	//The velocity graphics pipeline.
 	VelocityGraphicsPipeline _VelocityGraphicsPipeline;
