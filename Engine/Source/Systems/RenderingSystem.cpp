@@ -163,6 +163,14 @@ void RenderingSystem::Release() NOEXCEPT
 }
 
 /*
+*	Returns whether or not ray tracing is active.
+*/
+NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
+{
+	return RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RayTraced;
+}
+
+/*
 *	Returns the global render data table.
 */
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT

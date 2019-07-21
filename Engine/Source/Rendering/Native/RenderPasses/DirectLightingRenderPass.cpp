@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/DirectLightingRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -36,10 +39,12 @@ DirectLightingRenderPass::DirectLightingRenderPass() NOEXCEPT
 void DirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_DirectLightingGraphicsPipeline);
 	AddPipeline(&_DirectLightingRayTracingPipeline);
 
 	//Initialize all pipelines.
+	_DirectLightingGraphicsPipeline.Initialize();
 	_DirectLightingRayTracingPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -54,5 +59,15 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void DirectLightingRenderPass::Execute() NOEXCEPT
 {
-	_DirectLightingRayTracingPipeline.Execute();
+	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None)
+	{
+		_DirectLightingGraphicsPipeline.Execute();
+		_DirectLightingRayTracingPipeline.SetIncludeInRender(false);
+	}
+	
+	else
+	{
+		_DirectLightingGraphicsPipeline.SetIncludeInRender(false);
+		_DirectLightingRayTracingPipeline.Execute();
+	}
 }

@@ -28,7 +28,9 @@ struct Vertex
 };
 
 //Model uniform data.
+#if defined(RAY_TRACING_SHADER)
 layout (set = 1, binding = 0) uniform accelerationStructureNV topLevelAccelerationStructure;
+#endif
 layout (set = 1, binding = 1) buffer inputData1 { vec4 vertexData[]; } vertexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (set = 1, binding = 2) buffer inputData2 { uint indicesData[]; } indexBuffers[MAXIMUM_NUMBER_OF_MODELS];
 layout (std140, set = 1, binding = 3) uniform ModelUniformData

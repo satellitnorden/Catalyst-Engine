@@ -8,6 +8,7 @@
 #include <Lighting/LightingCore.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/DirectLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -25,6 +26,10 @@ public:
 	DirectLightingRenderPass() NOEXCEPT;
 
 private:
+
+	//The direct lighting graphics pipeline.
+	DirectLightingGraphicsPipeline _DirectLightingGraphicsPipeline;
+
 	//The direct lighting ray tracing pipeline.
 	DirectLightingRayTracingPipeline _DirectLightingRayTracingPipeline;
 

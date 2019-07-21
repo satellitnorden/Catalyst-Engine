@@ -279,6 +279,7 @@ enum class Shader : uint8
 	DepthOfFieldApplicationFragment,
 	DepthOfFieldBokehFragment,
 	DiffuseIrradianceFragment,
+	DirectLightingFragment,
 	DirectLightingRayGeneration,
 	FireflyReductionFragment,
 	LuminanceLightingFragment,

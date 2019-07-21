@@ -84,9 +84,14 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
+	*	Returns whether or not ray tracing is active.
+	*/
+	NO_DISCARD bool IsRayTracingActive() const NOEXCEPT;
+
+	/*
 	*	Returns the resolution.
 	*/
-	Resolution GetResolution() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT
 	{
 		return _Resolution;
 	}
@@ -94,7 +99,7 @@ public:
 	/*
 	*	Returns the scaled resolution.
 	*/
-	Resolution GetScaledResolution() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Resolution GetScaledResolution() const NOEXCEPT
 	{
 		return _ScaledResolution;
 	}
