@@ -310,6 +310,7 @@ enum class Shader : uint8
 	VisibilityRayMiss,
 	VolumetricLightingApplicationFragment,
 	VolumetricLightingDenoisingFragment,
+	VolumetricLightingFragment,
 	VolumetricLightingRayGeneration,
 	WorldRayClosestHit,
 	WorldRayGeneration,

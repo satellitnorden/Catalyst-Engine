@@ -4,7 +4,6 @@
 //Preprocessor defines.
 #define CATALYST_RAY_TRACING_T_MINIMUM (0.0f)
 #define CATALYST_RAY_TRACING_T_MAXIMUM (100.0f)
-#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 
 /*
 *	Primary ray payload struct definition.

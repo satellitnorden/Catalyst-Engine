@@ -7,6 +7,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -24,6 +25,9 @@ public:
 	VolumetricLightingRenderPass() NOEXCEPT;
 
 private:
+
+	//The volumetric lighting graphics pipeline.
+	VolumetricLightingGraphicsPipeline _VolumetricLightingGraphicsPipeline;
 
 	//The volumetric lighting ray tracing pipeline.
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;

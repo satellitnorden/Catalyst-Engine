@@ -13,7 +13,7 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_NUMBER_OF_RANDOM_VECTORS (VOLUMETRIC_LIGHTING_SAMPLES / 2)
+#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
@@ -97,5 +97,4 @@ void main()
 
 	//Write to the image.
 	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
-	
 }

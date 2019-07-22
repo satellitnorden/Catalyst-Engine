@@ -90,16 +90,22 @@ void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEX
 
 	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(3, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
 
-	//Re-create the top level acceleration structure.
+	//Re-create the top level acceleration structure, but only if ray tracing is actually active.
+	if (RenderingSystem::Instance->IsRayTracingActive())
+	{
+		if (_TopLevelAccelerationStructure)
+		{
+			RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
+		}
+
+		if (!_TopLevelAccelerationStructureInstances.Empty())
+		{
+			RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_TopLevelAccelerationStructureInstances), &_TopLevelAccelerationStructure);
+		}
+	}
+	
 	if (_TopLevelAccelerationStructure)
 	{
-		RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
-	}
-
-	if (!_TopLevelAccelerationStructureInstances.Empty())
-	{
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_TopLevelAccelerationStructureInstances), &_TopLevelAccelerationStructure);
-	
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &currentModelDataRenderDataTable, _TopLevelAccelerationStructure);
 	}
 }

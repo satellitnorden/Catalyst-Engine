@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/VolumetricLightingRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -36,7 +39,8 @@ VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _VolumetricLightingDenoisingGraphicsPipelines.Size() + 2);
+	SetNumberOfPipelines(1 + 1 + _VolumetricLightingDenoisingGraphicsPipelines.Size() + 2);
+	AddPipeline(&_VolumetricLightingGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingRayTracingPipeline);
 
 	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
@@ -47,6 +51,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_VolumetricLightingApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
+	_VolumetricLightingGraphicsPipeline.Initialize();
 	_VolumetricLightingRayTracingPipeline.Initialize();
 	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																1.0f,
@@ -73,7 +78,17 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_VolumetricLightingRayTracingPipeline.Execute();
+	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None)
+	{
+		_VolumetricLightingGraphicsPipeline.Execute();
+		_VolumetricLightingRayTracingPipeline.SetIncludeInRender(false);
+	}
+
+	else
+	{
+		_VolumetricLightingGraphicsPipeline.SetIncludeInRender(false);
+		_VolumetricLightingRayTracingPipeline.Execute();
+	}
 
 	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
 	{
