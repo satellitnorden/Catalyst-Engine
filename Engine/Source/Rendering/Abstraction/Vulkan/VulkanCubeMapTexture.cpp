@@ -34,7 +34,7 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, (void**) &mappedData));
 
 	//Copy the data into the staging buffer.
-	Memory::CopyMemory(mappedData, data, static_cast<uint64>(imageSize));
+	Memory::Copy(mappedData, data, static_cast<uint64>(imageSize));
 
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 

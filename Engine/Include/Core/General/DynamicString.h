@@ -28,10 +28,10 @@ public:
 		_Length = otherString.Length();
 
 		//Allocate sufficient memory for the underlying string.
-		_String = static_cast<char *RESTRICT>(Memory::AllocateMemory(_Length + 1));
+		_String = static_cast<char *RESTRICT>(Memory::Allocate(_Length + 1));
 
 		//Copy the contents of the other string.
-		Memory::CopyMemory(_String, otherString._String, _Length + 1);
+		Memory::Copy(_String, otherString._String, _Length + 1);
 	}
 
 	/*
@@ -56,10 +56,10 @@ public:
 		_Length = strlen(newString);
 
 		//Allocate sufficient memory to host the string.
-		_String = static_cast<char *RESTRICT>(Memory::AllocateMemory(_Length + 1));
+		_String = static_cast<char *RESTRICT>(Memory::Allocate(_Length + 1));
 
 		//Copy the string to the memory.
-		Memory::CopyMemory(static_cast<void *RESTRICT>(_String), static_cast<const void *const RESTRICT>(newString), _Length + 1);
+		Memory::Copy(static_cast<void *RESTRICT>(_String), static_cast<const void *const RESTRICT>(newString), _Length + 1);
 	}
 
 	/*
@@ -68,7 +68,7 @@ public:
 	FORCE_INLINE ~DynamicString() NOEXCEPT
 	{
 		//Free the underlying string.
-		Memory::FreeMemory(_String);
+		Memory::Free(_String);
 	}
 
 	/*
@@ -80,10 +80,10 @@ public:
 		_Length = otherString.Length();
 
 		//Reallocate sufficient memory for the underlying string.
-		_String = static_cast<char *RESTRICT>(Memory::ReallocateMemory(static_cast<void *RESTRICT>(_String), _Length + 1));
+		_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), _Length + 1));
 
 		//Copy the contents of the other string.
-		Memory::CopyMemory(_String, otherString._String, _Length + 1);
+		Memory::Copy(_String, otherString._String, _Length + 1);
 	}
 
 	/*
@@ -112,13 +112,13 @@ public:
 		uint64 newLength{ this->_Length + newStringLength };
 
 		//Allocate sufficient memory to host the string.
-		newDynamicString._String = static_cast<char *RESTRICT>(Memory::AllocateMemory(newLength + 1));
+		newDynamicString._String = static_cast<char *RESTRICT>(Memory::Allocate(newLength + 1));
 
 		//Copy the original string to the memory.
-		Memory::CopyMemory(static_cast<void *RESTRICT>(newDynamicString._String), static_cast<const void *const RESTRICT>(this->_String), this->_Length);
+		Memory::Copy(static_cast<void *RESTRICT>(newDynamicString._String), static_cast<const void *const RESTRICT>(this->_String), this->_Length);
 
 		//Copy the new string to the memory.
-		Memory::CopyMemory(static_cast<void *RESTRICT>(newDynamicString._String + this->_Length), static_cast<const void *const RESTRICT>(newString), newStringLength + 1);
+		Memory::Copy(static_cast<void *RESTRICT>(newDynamicString._String + this->_Length), static_cast<const void *const RESTRICT>(newString), newStringLength + 1);
 
 		//Write the length to the new dynamic string.
 		newDynamicString._Length = newLength;
@@ -137,10 +137,10 @@ public:
 		const uint64 newLength = _Length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
-		_String = static_cast<char *RESTRICT>(Memory::ReallocateMemory(static_cast<void *RESTRICT>(_String), newLength + 1));
+		_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), newLength + 1));
 
 		//Copy the new string.
-		Memory::CopyMemory(_String + _Length, newString, newStringLength);
+		Memory::Copy(_String + _Length, newString, newStringLength);
 
 		//Update the length of the string.
 		_Length = newLength;

@@ -5,9 +5,11 @@
 //Core.
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
-#include <Core/General/BinaryFile.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
+
+//File handling.
+#include <FileHandling/BinaryFile.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
@@ -53,14 +55,14 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 		const uint64 resourceFileSize{ resourceFile.Size() };
 
 		//Read the data in the resource file.
-		void *RESTRICT resourceFileData = Memory::AllocateMemory(resourceFileSize);
+		void *RESTRICT resourceFileData = Memory::Allocate(resourceFileSize);
 		resourceFile.Read(resourceFileData, resourceFileSize);
 
 		//Write the resource file data to the resource collection file.
 		file.Write(resourceFileData, resourceFileSize);
 
 		//Free the resource file data.
-		Memory::FreeMemory(resourceFileData);
+		Memory::Free(resourceFileData);
 
 		//Close the resource file.
 		resourceFile.Close();
@@ -157,12 +159,12 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 				const uint32 downsampledHeight{ characterDimensions._Y / (1 << i) };
 				const uint64 downsampledSize{ downsampledWidth * downsampledHeight };
 
-				byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory(downsampledSize)) };
+				byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::Allocate(downsampledSize)) };
 				stbir_resize_uint8(freeTypeFace->glyph->bitmap.buffer, freeTypeFace->glyph->bitmap.width, freeTypeFace->glyph->bitmap.rows, 0, downsampledData, downsampledWidth, downsampledWidth, 0, 1);
 
 				file.Write(downsampledData, downsampledSize);
 
-				Memory::FreeMemory(downsampledData);
+				Memory::Free(downsampledData);
 			}
 		}
 	}
@@ -315,7 +317,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint32>(width), static_cast<uint32>(height) };
 
 	//Copy the data into the cpu texture.
-	Memory::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
+	Memory::Copy(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 	//Create the diffuse output textures.
 	StaticArray<Texture2D<Vector4<float>>, 6> outputTextures
@@ -426,12 +428,12 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 				//Else, the image data should be resized.
 				else
 				{
-					byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize)) };
+					byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::Allocate(textureSize)) };
 					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
 					file.Write(downsampledData, textureSize);
 
-					Memory::FreeMemory(downsampledData);
+					Memory::Free(downsampledData);
 				}
 			}
 
@@ -482,10 +484,10 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 
 				else
 				{
-					byte *RESTRICT downsampledDataR{ dataR ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataG{ dataG ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataB{ dataB ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataA{ dataA ? static_cast<byte *RESTRICT>(Memory::AllocateMemory(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataR{ dataR ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataG{ dataG ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataB{ dataB ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
+					byte *RESTRICT downsampledDataA{ dataA ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
 
 					if (dataR) stbir_resize_uint8(dataR, width, height, 0, downsampledDataR, uWidth >> i, uHeight >> i, 0, 4);
 					if (dataG) stbir_resize_uint8(dataG, width, height, 0, downsampledDataG, uWidth >> i, uHeight >> i, 0, 4);
@@ -500,10 +502,10 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 						file.Write(downsampledDataA ? &downsampledDataA[j * 4] : &DEFAULT_A, sizeof(byte));
 					}
 
-					Memory::FreeMemory(downsampledDataR);
-					Memory::FreeMemory(downsampledDataG);
-					Memory::FreeMemory(downsampledDataB);
-					Memory::FreeMemory(downsampledDataA);
+					Memory::Free(downsampledDataR);
+					Memory::Free(downsampledDataG);
+					Memory::Free(downsampledDataB);
+					Memory::Free(downsampledDataA);
 				}
 			}
 

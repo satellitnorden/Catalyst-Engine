@@ -26,7 +26,7 @@ void VulkanStorageBuffer::Initialize(const VkDeviceSize initialStorageBufferSize
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
 
-	Memory::SetMemory(data, 0, initialStorageBufferSize);
+	Memory::Set(data, 0, initialStorageBufferSize);
 
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 

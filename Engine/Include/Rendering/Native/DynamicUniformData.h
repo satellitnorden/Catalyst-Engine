@@ -57,6 +57,8 @@ public:
 	float _ActiveBlueNoiseTextureOffsetX;
 	float _ActiveBlueNoiseTextureOffsetY;
 
+	float _ViewDistance;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 644, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 648, "Size of dynamic uniform data is wrong!");

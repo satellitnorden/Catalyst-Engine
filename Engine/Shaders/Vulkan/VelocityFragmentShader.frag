@@ -31,7 +31,7 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 void main()
 {
    //Calculate the world position.
-   vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * CATALYST_RAY_TRACING_T_MAXIMUM;
+   vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * viewDistance;
 
     //Write the fragments.
     velocity = vec4(CalculateScreenCoordinate(viewMatrix, worldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, worldPosition), 0.0f, 0.0f);

@@ -71,7 +71,7 @@ void main()
 				hitPosition, 						//origin
 				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
 				specularIrradianceDirection, 	//direction
-				CATALYST_RAY_TRACING_T_MAXIMUM, 	//Tmax
+				viewDistance, 	//Tmax
 				0 									//payload
 				);
 

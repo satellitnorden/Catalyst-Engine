@@ -44,7 +44,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	for (uint8 i{ 0 }; i < textureMipmapLevels; ++i)
 	{
 		const VkDeviceSize mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
-		Memory::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
+		Memory::Copy(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
 
 		currentOffset += mipSize;
 	}

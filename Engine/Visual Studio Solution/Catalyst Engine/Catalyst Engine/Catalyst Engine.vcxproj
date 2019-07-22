@@ -52,6 +52,7 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
+    <ClInclude Include="..\..\..\Include\Core\Algorithms\CompressionAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h" />
@@ -65,7 +66,6 @@
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystMacros.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystPreDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h" />
-    <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DynamicString.h" />
@@ -92,6 +92,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
+    <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />

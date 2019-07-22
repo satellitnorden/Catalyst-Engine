@@ -92,7 +92,9 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 636) float activeNoiseTextureOffsetX;
     layout (offset = 640) float activeNoiseTextureOffsetY;
 
-    //Total size; 644
+    layout (offset = 644) float viewDistance;
+
+    //Total size; 648
 };
 
 //The global textures.

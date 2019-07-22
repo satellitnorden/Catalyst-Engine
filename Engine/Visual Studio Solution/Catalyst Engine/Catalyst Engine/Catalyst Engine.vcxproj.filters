@@ -319,6 +319,12 @@
     <Filter Include="Entities\Include\Placement">
       <UniqueIdentifier>{c5bbea8d-3b3e-46c7-8734-866ae9007972}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FileHandling">
+      <UniqueIdentifier>{8dbaaef8-d5b7-4ddf-a1f2-007053125dbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileHandling\Include">
+      <UniqueIdentifier>{5662c6f5-5045-4e95-a15e-8bc703756368}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -409,9 +415,6 @@
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h">
-      <Filter>Core\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h">
@@ -1076,6 +1079,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Algorithms\CompressionAlgorithms.h">
+      <Filter>Core\Include\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h">
+      <Filter>FileHandling\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

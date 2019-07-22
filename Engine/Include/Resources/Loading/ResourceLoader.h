@@ -3,8 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/Map.h>
-#include <Core/General/BinaryFile.h>
 #include <Core/General/HashString.h>
+
+//File handling.
+#include <FileHandling/BinaryFile.h>
 
 //Rendering.
 #include <Rendering/Native/Font.h>

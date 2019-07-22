@@ -757,6 +757,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetX = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetY = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
 
+	_DynamicUniformData._ViewDistance = 256.0f;
+
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 

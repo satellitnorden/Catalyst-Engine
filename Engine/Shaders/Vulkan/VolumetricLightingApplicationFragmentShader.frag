@@ -52,7 +52,7 @@ void main()
 	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
 
 	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f), volumetricLightingIntensity);
+	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / viewDistance, 1.0f), volumetricLightingIntensity);
 
 	//Write the fragment.
 	fragment = vec4(currentVolumetricLighting, volumetricLightingWeight);

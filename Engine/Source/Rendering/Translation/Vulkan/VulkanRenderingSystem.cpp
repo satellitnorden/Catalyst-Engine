@@ -2,11 +2,11 @@
 //Header file.
 #include <Systems/RenderingSystem.h>
 
-//Core.
-#include <Core/General/BinaryFile.h>
-
 //Components.
 #include <Components/Core/ComponentManager.h>
+
+//File handling.
+#include <FileHandling/BinaryFile.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -508,7 +508,7 @@ namespace VulkanRenderingSystemLogic
 		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		//Upload the data to it.
-		uint8 *const RESTRICT shaderHandleStorage{ static_cast<uint8 *const RESTRICT>(Memory::AllocateMemory(shaderHandleStorageSize)) };
+		uint8 *const RESTRICT shaderHandleStorage{ static_cast<uint8 *const RESTRICT>(Memory::Allocate(shaderHandleStorageSize)) };
 
 		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
 																data->_Pipeline->GetPipeline(),
@@ -522,7 +522,7 @@ namespace VulkanRenderingSystemLogic
 
 		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1);
 
-		Memory::FreeMemory(shaderHandleStorage);
+		Memory::Free(shaderHandleStorage);
 	}
 
 	/*

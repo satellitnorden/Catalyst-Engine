@@ -32,7 +32,7 @@ vec2 GetVelocity()
 {
 	/*
 	vec2 chosenVelocity = vec2(0.0f);
-	float closestHitDistance = CATALYST_RAY_TRACING_T_MAXIMUM;
+	float closestHitDistance = viewDistance;
 
 	for (float x = -1.0f; x <= 1.0f; ++x)
 	{

@@ -132,7 +132,7 @@ public:
 		_Data.UpsizeFast(_Width * _Height);
 
 		//Copy the data.
-		Memory::CopyMemory(_Data.Data(), data, sizeof(TYPE) * _Width * _Height);
+		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height);
 	}
 
 	/*

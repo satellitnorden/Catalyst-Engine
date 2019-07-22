@@ -37,7 +37,7 @@ void main()
 	float edgeFactor = max(dot(perceiverForwardVector, fragmentDirection), 0.0f);
 
 	//Calculate the depth of field weight.
-	float distanceWeight = 1.0f - min(abs(hitDistance - depthOfFieldFocusDistance) / CATALYST_RAY_TRACING_T_MAXIMUM, 1.0f);
+	float distanceWeight = 1.0f - min(abs(hitDistance - depthOfFieldFocusDistance) / viewDistance, 1.0f);
 	float depthOfFieldWeight = 1.0f - (distanceWeight * edgeFactor);
 
 	//Calculate the aspect ratio.

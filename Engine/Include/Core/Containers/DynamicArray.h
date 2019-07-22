@@ -344,13 +344,13 @@ public:
 	FORCE_INLINE void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
 
 		//Free the old array.
-		Memory::FreeMemory(_Array);
+		Memory::Free(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -363,13 +363,13 @@ public:
 	FORCE_INLINE void UpsizeFast(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
 
 		//Free the old array.
-		Memory::FreeMemory(_Array);
+		Memory::Free(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -383,10 +383,10 @@ public:
 	FORCE_INLINE void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::CopyMemory(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
 
 		//Default construct the remaining objects.
 		for (uint64 i = _Size; i < newCapacity; ++i)
@@ -395,7 +395,7 @@ public:
 		}
 
 		//Free the old array.
-		Memory::FreeMemory(_Array);
+		Memory::Free(_Array);
 
 		//Update the array and the capacity.
 		_Array = newArray;
@@ -429,7 +429,7 @@ private:
 			}
 
 			//Free the memory used by the array.
-			Memory::FreeMemory(_Array);
+			Memory::Free(_Array);
 
 			//Set it to nullptr.
 			_Array = nullptr;
@@ -448,7 +448,7 @@ private:
 	FORCE_INLINE void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		_Array = static_cast<Type *RESTRICT>(Memory::AllocateMemory(sizeof(Type) * newCapacity));
+		_Array = static_cast<Type *RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity));
 
 		//Update the capacity.
 		_Capacity = newCapacity;

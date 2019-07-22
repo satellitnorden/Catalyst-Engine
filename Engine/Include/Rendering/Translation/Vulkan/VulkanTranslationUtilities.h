@@ -203,7 +203,7 @@ public:
 		Matrix4 transposedTransform{ data._Transform };
 		transposedTransform.Transpose();
 
-		Memory::CopyMemory(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));
+		Memory::Copy(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));
 
 		//Set the custom index.
 		geometryInstance->_InstanceCustomIndex = data._Index;
