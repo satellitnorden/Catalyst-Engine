@@ -554,8 +554,8 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -778,6 +778,11 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 {
 	//Lock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
+
+	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
+	{
+		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], _DefaultTexture2D);
+	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 

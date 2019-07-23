@@ -322,6 +322,12 @@
     <Filter Include="FileHandling\Include">
       <UniqueIdentifier>{5662c6f5-5045-4e95-a15e-8bc703756368}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{c95c7a0e-1c97-4c2e-8ee4-39b5d082a645}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Terrain\Include">
+      <UniqueIdentifier>{c2eab535-167e-4d59-be2c-bccb8478f1e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1083,6 +1089,42 @@
     <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h">
       <Filter>FileHandling\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTree.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeNode.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1443,6 +1485,9 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>

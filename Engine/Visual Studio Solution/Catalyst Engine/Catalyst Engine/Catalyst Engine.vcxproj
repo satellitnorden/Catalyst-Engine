@@ -214,6 +214,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SeparableBlurGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SpecularIrradianceApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.h" />
@@ -291,7 +292,18 @@
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTree.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeNode.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h" />
@@ -370,6 +382,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SeparableBlurGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SpecularIrradianceApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.cpp" />

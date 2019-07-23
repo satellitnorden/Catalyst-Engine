@@ -22,6 +22,8 @@ glslangValidator.exe -V ScreenSpaceSpecularIrradianceFragmentShader.frag -o 		Sc
 glslangValidator.exe -V SeparableBlurFragmentShader.frag -o 				SeparableBlurFragmentShader.spv
 glslangValidator.exe -V SpecularIrradianceApplicationFragmentShader.frag -o 		SpecularIrradianceApplicationFragmentShader.spv
 glslangValidator.exe -V TemporalAntiAliasingFragmentShader.frag -o 			TemporalAntiAliasingFragmentShader.spv
+glslangValidator.exe -V TerrainSceneFeaturesFragmentShader.frag -o 			TerrainSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V TerrainSceneFeaturesVertexShader.vert -o 				TerrainSceneFeaturesVertexShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv
 glslangValidator.exe -V UserInterfaceFragmentShader.frag -o 				UserInterfaceFragmentShader.spv
 glslangValidator.exe -V UserInterfaceVertexShader.vert -o 				UserInterfaceVertexShader.spv

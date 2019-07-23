@@ -298,6 +298,8 @@ enum class Shader : uint8
 	SeparableBlurFragment,
 	SpecularIrradianceApplicationFragment,
 	TemporalAntiAliasingFragment,
+	TerrainSceneFeaturesFragment,
+	TerrainSceneFeaturesVertex,
 	ToneMappingFragment,
 	UserInterfaceFragment,
 	UserInterfaceVertex,
@@ -378,16 +380,6 @@ enum class Topology : uint8
 	TriangleStrip,
 	TriangleStripWithAdjacency
 };
-
-//Enumeration covering all visibility flags.
-enum class VisibilityFlag : uint8
-{
-	None = BIT(0),
-	Perceiver = BIT(1),
-	DirectionalLight = BIT(2)
-};
-
-ENUMERATION_BIT_OPERATIONS(VisibilityFlag);
 
 //Enumeration covering all address modes.
 enum class AddressMode : uint8

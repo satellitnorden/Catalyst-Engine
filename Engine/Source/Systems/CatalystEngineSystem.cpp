@@ -28,6 +28,7 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
+#include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //Singleton definition.
@@ -41,6 +42,7 @@ namespace CatalystEngineSystemData
 	enum class SequentialUpdate : uint8
 	{
 		EntityPlacementSystem,
+		TerrainSystem,
 
 		NumberOfSequentialUpdates
 	};
@@ -68,6 +70,13 @@ namespace CatalystEngineSystemLogic
 			case CatalystEngineSystemData::SequentialUpdate::EntityPlacementSystem:
 			{
 				EntityPlacementSystem::Instance->SequentialUpdate(context);
+
+				break;
+			}
+
+			case CatalystEngineSystemData::SequentialUpdate::TerrainSystem:
+			{
+				TerrainSystem::Instance->SequentialUpdate(context);
 
 				break;
 			}
@@ -107,6 +116,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();
+	TerrainSystem::Instance->Initialize();
 
 	//Load the Catalyst Engine resource collection. 
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");

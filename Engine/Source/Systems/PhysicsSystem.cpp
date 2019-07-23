@@ -4,6 +4,9 @@
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
+//Systems.
+#include <Systems/TerrainSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(PhysicsSystem);
 
@@ -18,6 +21,9 @@ void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) N
 		//Apply the movement.
 		movement->_Position += movement->_Velocity * context->_DeltaTime;
 		movement->_Velocity = VectorConstants::ZERO;
+
+		//Clamp the position to the terrain height.
+		TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &movement->_Position._Y);
 	}
 }
 
