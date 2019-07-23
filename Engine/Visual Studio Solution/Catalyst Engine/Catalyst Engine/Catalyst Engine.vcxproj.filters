@@ -205,9 +205,6 @@
     <Filter Include="Components\Include\Transient">
       <UniqueIdentifier>{2166e02f-9b7f-4669-bd8c-6fc9e889814d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Source\Essential">
-      <UniqueIdentifier>{d764f9bc-79ba-47a2-8573-c8a1dbad8377}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math\Include\Core">
       <UniqueIdentifier>{85cc6f02-8feb-47c6-bc03-33fe775d928e}</UniqueIdentifier>
     </Filter>
@@ -1144,9 +1141,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
       <Filter>Core\Source\General</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp">
-      <Filter>Core\Source\Essential</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
       <Filter>Resources\Source\Loading</Filter>

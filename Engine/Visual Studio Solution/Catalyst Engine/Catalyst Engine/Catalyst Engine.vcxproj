@@ -302,7 +302,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
-    <ClCompile Include="..\..\..\Source\Core\Essential\CatalystEssential.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
