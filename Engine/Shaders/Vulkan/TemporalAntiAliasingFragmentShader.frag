@@ -81,5 +81,6 @@ void main()
 
 	//Write the fragments.
 	currentFrame = vec4(blendedFrame, 1.0f);
-	scene = vec4(blendedFrame, 1.0f);
+	if (gl_FragCoord.x > 980.0f || true) scene = vec4(blendedFrame, 1.0f);
+	else scene = vec4(texture(velocityTexture, unjitteredScreenCoordinate).x * 10.0f, texture(velocityTexture, unjitteredScreenCoordinate).y * 10.0f, texture(velocityTexture, unjitteredScreenCoordinate).y * 10.0f, 1.0f);
 }

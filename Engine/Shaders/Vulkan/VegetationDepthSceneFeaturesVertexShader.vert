@@ -32,7 +32,7 @@ void main()
 	float displacementMultiplier = vertexPosition.y;
 
 	//Apply the wind displacement.
-	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal) * displacementMultiplier;
+	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal, totalTime) * displacementMultiplier;
 
 	fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;

@@ -29,16 +29,16 @@ void main()
 	vec3 normal = normalize(vec3(transformation * vec4(vertexNormal, 0.0f)));
 
 	//Calculate the world position.
-	vec3 worldPosition = vec3(transformation * vec4(vertexPosition, 1.0f));
+	fragmentPreviousWorldPosition = fragmentCurrentWorldPosition = vec3(transformation * vec4(vertexPosition, 1.0f));
 
 	//Calculate the displacement multiplier.
 	float displacementMultiplier = vertexPosition.y;
 
 	//Apply the wind displacement.
-	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal) * displacementMultiplier;
+	fragmentPreviousWorldPosition += CalculateWindDisplacement(transformation[3].xyz, fragmentCurrentWorldPosition, normal, totalTime - deltaTime) * displacementMultiplier;
+	fragmentCurrentWorldPosition += CalculateWindDisplacement(transformation[3].xyz, fragmentCurrentWorldPosition, normal, totalTime) * displacementMultiplier;
 
 	fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-	fragmentPreviousWorldPosition = fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;
 
 	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);

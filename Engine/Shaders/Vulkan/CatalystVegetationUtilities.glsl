@@ -11,7 +11,7 @@ vec3 windDirection = vec3(1.0f, 0.0f, 1.0f);
 /*
 *	Calculates the wind displacement for vegetation.
 */
-vec3 CalculateWindDisplacement(vec3 instancePosition, vec3 vertexPosition, vec3 vertexNormal)
+vec3 CalculateWindDisplacement(vec3 instancePosition, vec3 vertexPosition, vec3 vertexNormal, float time)
 {
 	//Calculate the wind speed multiplier.
 	float windSpeedMultiplier = windSpeed * INVERSE_MAXIMUM_WIND_SPEED;
@@ -20,7 +20,7 @@ vec3 CalculateWindDisplacement(vec3 instancePosition, vec3 vertexPosition, vec3 
 	float extendedWindSpeedMultiplier = 1.0f + windSpeedMultiplier;
 
 	//Calculate the time factor.
-	float timeFactor = totalTime * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
+	float timeFactor = time * (1.0f + (windSpeedMultiplier * WIND_SPEED_TIME_MULTIPLIER));
 
     //Large scale motion.
     float largeScaleX = windDirection.x * extendedWindSpeedMultiplier * (sin(instancePosition.x + instancePosition.y + instancePosition.z + timeFactor) + 1.0f);
