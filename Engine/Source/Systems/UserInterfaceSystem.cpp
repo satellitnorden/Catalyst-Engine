@@ -78,6 +78,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Minimum = typeDescription->_Minimum;
 			element->_Maximum = typeDescription->_Maximum;
 			element->_Font = typeDescription->_Font;
+			element->_Scale = typeDescription->_Scale;
 			element->_Text = std::move(typeDescription->_Text);
 
 			_UserInterfaceElements.EmplaceSlow(element);

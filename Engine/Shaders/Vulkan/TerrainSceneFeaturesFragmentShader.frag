@@ -48,7 +48,7 @@ void main()
 
     //Retrieve the albedo.
     //vec3 albedo = texture(sampler2D(globalTextures[204], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
-    vec3 albedo = dot(terrainNormal, vec3(0.0f, 1.0f, 0.0f)) > 0.75f ? texture(sampler2D(globalTextures[204], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb : vec3(0.1f, 0.1f, 0.1f);
+    vec3 albedo = dot(terrainNormal, vec3(0.0f, 1.0f, 0.0f)) > 0.75f ? texture(sampler2D(globalTextures[207], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb : vec3(0.1f, 0.1f, 0.1f);
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);

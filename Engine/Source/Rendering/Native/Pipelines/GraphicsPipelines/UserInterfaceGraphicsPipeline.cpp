@@ -155,13 +155,11 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfaceElementType::Text:
 			{
-				constexpr float SCALE{ 0.0275f };
-
 				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
 
 				//Draw all characters.
 				float currentOffsetX{ 0.0f };
-				float currentOffsetY{ typeElement->_Maximum._Y - typeElement->_Minimum._Y - SCALE };
+				float currentOffsetY{ typeElement->_Maximum._Y - typeElement->_Minimum._Y - typeElement->_Scale };
 
 				for (uint64 i{ 0 }, length{ typeElement->_Text.Length() }; i < length; ++i)
 				{
@@ -171,11 +169,11 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					//Push constants.
 					UserInterfaceVertexPushConstantData vertexData;
 
-					vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * SCALE;
-					vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * SCALE;
+					vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * typeElement->_Scale;
+					vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * typeElement->_Scale;
 
-					vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * SCALE;
-					vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * SCALE;
+					vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * typeElement->_Scale;
+					vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * typeElement->_Scale;
 
 					commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
@@ -198,7 +196,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 						for (uint64 j{ i + 1 }; j < length && typeElement->_Text[j] != ' '; ++j)
 						{
-							temporaryOffsetX += typeElement->_Font->_CharacterDescriptions[typeElement->_Text[j]]._Advance * SCALE;
+							temporaryOffsetX += typeElement->_Font->_CharacterDescriptions[typeElement->_Text[j]]._Advance * typeElement->_Scale;
 
 							if (temporaryOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
 							{
@@ -211,18 +209,18 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						if (shouldWrapAround)
 						{
 							currentOffsetX = 0.0f;
-							currentOffsetY -= SCALE;
+							currentOffsetY -= typeElement->_Scale;
 						}
 
 						else
 						{
-							currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
+							currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * typeElement->_Scale;
 						}
 					}
 					
 					else
 					{
-						currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * SCALE;
+						currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * typeElement->_Scale;
 					}
 				}
 

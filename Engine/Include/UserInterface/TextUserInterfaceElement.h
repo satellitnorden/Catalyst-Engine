@@ -18,6 +18,9 @@ public:
 	//The font.
 	const Font *RESTRICT _Font;
 
+	//The scale.
+	float _Scale;
+
 	//The text.
 	DynamicString _Text;
 
