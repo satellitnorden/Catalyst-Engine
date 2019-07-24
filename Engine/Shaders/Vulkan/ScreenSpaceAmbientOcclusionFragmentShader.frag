@@ -10,8 +10,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (1.0f)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (24)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (2.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -31,6 +31,9 @@ void main()
 	vec4 sceneFeatures = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 	vec3 geometryNormal = sceneFeatures.xyz;
 	float hitDistance = sceneFeatures.w;
+
+	//Calculate the bias.
+	float bias = hitDistance * 0.01f;
 
 	//Calculate the world position at this fragment the current frame.
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * hitDistance;
@@ -59,7 +62,7 @@ void main()
 
 		//Sample the samplescene features.
 		vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleScreenCoordinate);
-		float sampleHitDistance = sampleSceneFeatures.w;
+		float sampleHitDistance = sampleSceneFeatures.w + bias;
 
 		//Calculate the distance falloff.
 		float distanceFalloff = SmoothStep(1.0f - min(abs(hitDistance - sampleHitDistance), 1.0f));

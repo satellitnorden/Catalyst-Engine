@@ -142,6 +142,11 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD Matrix4 Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
 	{
+		if (normal == up)
+		{
+			return Matrix4();
+		}
+
 		const Vector3<float> rotationAxis{ Vector3<float>::CrossProduct(up, normal) };
 		const float rotationAngle{ CatalystBaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
 

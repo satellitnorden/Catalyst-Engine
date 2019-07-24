@@ -20,6 +20,7 @@ class VegetationPushConstantData final
 public:
 
 	int32 _MaskTextureIndex;
+	float _CutoffDistanceSquared;
 
 };
 
@@ -148,6 +149,7 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		VegetationPushConstantData fragmentData;
 
 		fragmentData._MaskTextureIndex = component->_MaskTextureIndex;
+		fragmentData._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VegetationPushConstantData), &fragmentData);
 

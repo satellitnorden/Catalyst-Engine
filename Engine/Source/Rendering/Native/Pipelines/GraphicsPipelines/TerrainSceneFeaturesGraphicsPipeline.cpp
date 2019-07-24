@@ -28,8 +28,24 @@ public:
 	//The patch size.
 	float _PatchSize;
 
+	//The borders
+	int32 _Borders;
+
 	//The height texture index.
 	int32 _HeightTextureIndex;
+
+};
+
+/*
+*	Terrain fragment push constant data definition.
+*/
+class TerrainFragmentPushConstantData final
+{
+
+public:
+
+	//The normal texture index.
+	int32 _NormalTextureIndex;
 
 };
 
@@ -61,8 +77,9 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
+	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(TerrainVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -133,9 +150,16 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		vertexData._WorldPosition = information._WorldPosition;
 		vertexData._PatchSize = information._PatchSize;
+		vertexData._Borders = information._Borders;
 		vertexData._HeightTextureIndex = information._HeightTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(TerrainVertexPushConstantData), &vertexData);
+
+		TerrainFragmentPushConstantData fragmentData;
+
+		fragmentData._NormalTextureIndex = information._NormalTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData), &fragmentData);
 
 		//Draw the patch!
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);

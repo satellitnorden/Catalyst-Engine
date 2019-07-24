@@ -37,6 +37,7 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	component._Model = vegetationInitializationData->_Model;
 	component._Material = vegetationInitializationData->_Material;
 	component._MaskTextureIndex = vegetationInitializationData->_MaskTextureIndex;
+	component._CutoffDistance = vegetationInitializationData->_CutoffDistance;
 	RenderingUtilities::CreateTransformationsBuffer(vegetationInitializationData->_Transformations, &component._TransformationsBuffer);
 	component._NumberOfTransformations = static_cast<uint32>(vegetationInitializationData->_Transformations.Size());
 

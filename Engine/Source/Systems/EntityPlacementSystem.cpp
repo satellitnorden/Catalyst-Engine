@@ -12,6 +12,7 @@ DEFINE_SINGLETON(EntityPlacementSystem);
 #include <Math/Geometry/GridPoint2.h>
 
 //Systems.
+#include <Systems/EntityCreationSystem.h>
 #include <Systems/TaskSystem.h>
 
 /*
@@ -143,6 +144,36 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 			return Vector3<float>::LengthSquaredXZ(firstPosition - perceiverPosition) < Vector3<float>::LengthSquaredXZ(secondPosition - perceiverPosition);
 		});
 
+	//Compare the grid points in the entity placement data to the wanted grid points and destroy entities if they shouldn't exist.
+	for (uint64 i{ 0 }; i < data->_GridPoints.Size();)
+	{
+		EntityPlacementData::EntityGridPoint &entityGridPoint{ data->_GridPoints[i] };
+
+		bool gridPointExists{ false };
+
+		for (const GridPoint2 wantedGridPoint : wantedGridPoints)
+		{
+			gridPointExists |= wantedGridPoint == entityGridPoint._GridPoint2;
+		}
+
+		if (!gridPointExists)
+		{
+			for (Entity *const RESTRICT entity : data->_Entities[i])
+			{
+				EntityCreationSystem::Instance->RequestTermination(entity);
+				EntityCreationSystem::Instance->RequestDestruction(entity);
+			}
+
+			data->_GridPoints.EraseAt(i);
+			data->_Entities.EraseAt(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
 	//Compare the grid points in the entity placement data to the wanted grid points and execute placement if it doesn't exist.
 	for (const GridPoint2 wantedGridPoint : wantedGridPoints)
 	{
@@ -182,6 +213,5 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 */
 void EntityPlacementSystem::UpdateThreeDimensionalEntityPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
 {
-	//Calculate the current grid point based on the perceiver's position.
-	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
+	ASSERT(false, "Not implemented yet!");
 }

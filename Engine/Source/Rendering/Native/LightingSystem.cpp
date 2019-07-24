@@ -58,7 +58,7 @@ void LightingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) N
 
 		LightUniformData lightUniformData;
 
-		lightUniformData._NumberOfLights = static_cast<int32>(ComponentManager::GetNumberOfLightComponents());
+		lightUniformData._NumberOfLights = CatalystBaseMath::Minimum<int32>(static_cast<int32>(ComponentManager::GetNumberOfLightComponents()), LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS);
 
 		for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
 		{

@@ -27,6 +27,9 @@ public:
 	//The mask texture index.
 	uint32 _MaskTextureIndex;
 
+	//The cutoff distance.
+	float _CutoffDistance;
+
 	//The transformations.
 	DynamicArray<Matrix4> _Transformations;
 

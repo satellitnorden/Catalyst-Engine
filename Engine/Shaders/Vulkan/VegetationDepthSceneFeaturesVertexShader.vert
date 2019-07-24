@@ -18,6 +18,7 @@ layout (location = 4) in mat4 transformation;
 //Out parameters.
 layout (location = 0) out vec3 fragmentCurrentWorldPosition;
 layout (location = 1) out vec2 fragmentTextureCoordinate;
+layout (location = 2) out float fragmentDistanceSquared;
 
 void main()
 {
@@ -35,6 +36,7 @@ void main()
 
 	fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;
+	fragmentDistanceSquared = LengthSquared3(fragmentCurrentWorldPosition - perceiverWorldPosition);
 
 	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);
 }

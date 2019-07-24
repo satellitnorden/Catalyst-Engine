@@ -126,7 +126,7 @@ namespace VulkanRenderingSystemLogic
 
 					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->ShouldClear())
 					{
-						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 100.0f),
+						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 1'024.0f),
 																					0.0f,
 																					pipelineData->_RenderPass->Get(),
 																					pipelineData->_FrameBuffers[0]->Get(),

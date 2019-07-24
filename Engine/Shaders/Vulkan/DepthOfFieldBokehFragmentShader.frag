@@ -9,8 +9,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DEPTH_OF_FIELD_BOKEH_MAXIMUM_OFFSET (0.0025f)
-#define DEPTH_OF_FIELD_BOKEH_SAMPLES (16)
+#define DEPTH_OF_FIELD_BOKEH_MAXIMUM_OFFSET (0.005f)
+#define DEPTH_OF_FIELD_BOKEH_SAMPLES (32)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -37,7 +37,7 @@ void main()
 	float edgeFactor = max(dot(perceiverForwardVector, fragmentDirection), 0.0f);
 
 	//Calculate the depth of field weight.
-	float distanceWeight = 1.0f - min(abs(hitDistance - depthOfFieldFocusDistance) / viewDistance, 1.0f);
+	float distanceWeight = pow(1.0f - min(abs(hitDistance - depthOfFieldFocusDistance) / viewDistance, 1.0f), 2.0f);
 	float depthOfFieldWeight = 1.0f - (distanceWeight * edgeFactor);
 
 	//Calculate the aspect ratio.
@@ -53,7 +53,7 @@ void main()
 	for (int i = 0; i < DEPTH_OF_FIELD_BOKEH_SAMPLES; ++i)
 	{
 		//Calculate the offset.
-		vec4 randomVector = texture(sampler2D(globalTextures[i], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f);
+		vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f);
 		vec2 randomOffset = normalize(randomVector.xy * 2.0f - 1.0f) * randomVector.z * offsetWeight;
 
 		//Add to the depth of field.

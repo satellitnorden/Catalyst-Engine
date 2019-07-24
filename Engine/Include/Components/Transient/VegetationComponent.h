@@ -21,6 +21,9 @@ public:
 	//The mask texture index.
 	uint32 _MaskTextureIndex;
 
+	//The cutoff distance.
+	float _CutoffDistance;
+
 	//The transformations buffer.
 	BufferHandle _TransformationsBuffer;
 

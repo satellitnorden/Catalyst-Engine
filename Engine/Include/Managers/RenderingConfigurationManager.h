@@ -148,13 +148,13 @@ private:
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };
 
 	//The ambient illumination intensity.
-	float _AmbientIlluminationIntensity{ 0.1f };
+	float _AmbientIlluminationIntensity{ 0.025f };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 1.0f };
 
 	//The chromatic aberration intensity.
-	float _ChromaticAberrationIntensity{ 0.00225f };
+	float _ChromaticAberrationIntensity{ 0.0025f };
 
 	//The volumetric lighting intensity.
 	float _VolumetricLightingIntensity{ 1.0f };
