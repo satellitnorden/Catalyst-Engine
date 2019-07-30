@@ -65,8 +65,19 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 	//Get the physical device properties.
 	vkGetPhysicalDeviceProperties(_VulkanPhysicalDevice, &_PhysicalDeviceProperties);
 
+	//Does the chosen Vulkan physical device have ray tracing support?
+	_HasRayTracingSupport = HasExtension(_VulkanPhysicalDevice, VK_NV_RAY_TRACING_EXTENSION_NAME);
+
 	//Get the ray tracing properties.
-	VulkanPhysicalDeviceLogic::GetRayTracingProperties(_VulkanPhysicalDevice, &_RayTracingProperties);
+	if (_HasRayTracingSupport)
+	{
+		VulkanPhysicalDeviceLogic::GetRayTracingProperties(_VulkanPhysicalDevice, &_RayTracingProperties);
+	}
+
+	else
+	{
+		Memory::Set(&_RayTracingProperties, 0, sizeof(VkPhysicalDeviceRayTracingPropertiesNV));
+	}
 
 	//Get the most optimal present mode.
 	_PresentMode = GetMostOptimalPresentMode();
@@ -136,6 +147,32 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 
 	//If there are at least one format and one present mode available, this physical device is considered to have proper swap chain support.
 	return !formats.Empty() && !presentModes.Empty();
+}
+
+/*
+*	Given a Vulkan physical device and an extension name, returns if the Vulkan physical device has that extension.
+*/
+bool VulkanPhysicalDevice::HasExtension(const VkPhysicalDevice &device, const char *const RESTRICT extension) const NOEXCEPT
+{
+	//Retrieve the available extensions.
+	uint32 number_of_available_extensions;
+	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(device, nullptr, &number_of_available_extensions, nullptr));
+
+	DynamicArray<VkExtensionProperties> available_extensions;
+	available_extensions.UpsizeFast(number_of_available_extensions);
+	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(device, nullptr, &number_of_available_extensions, available_extensions.Data()));
+
+	//Go through all the available extensions and compare them.
+	for (const VkExtensionProperties &available_extension : available_extensions)
+	{
+		if (strcmp(available_extension.extensionName, extension) == 0)
+		{
+			return true;
+		}
+	}
+
+	//The extension was not found. ):
+	return false;
 }
 
 /*

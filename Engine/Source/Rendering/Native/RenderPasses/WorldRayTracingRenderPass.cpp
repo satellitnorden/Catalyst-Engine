@@ -55,5 +55,13 @@ void WorldRayTracingRenderPass::Initialize() NOEXCEPT
 void WorldRayTracingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_WorldRayTracingPipeline.Execute();	
+	if (false)
+	{
+		_WorldRayTracingPipeline.Execute();
+	}
+
+	else
+	{
+		_WorldRayTracingPipeline.SetIncludeInRender(false);
+	}
 }

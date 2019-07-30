@@ -84,6 +84,11 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
+	*	Returns whether or not ray tracing is supported.
+	*/
+	NO_DISCARD bool IsRayTracingSupported() const NOEXCEPT;
+
+	/*
 	*	Returns whether or not ray tracing is active.
 	*/
 	NO_DISCARD bool IsRayTracingActive() const NOEXCEPT;

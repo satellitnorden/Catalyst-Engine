@@ -58,6 +58,14 @@ public:
 	*/
 	const VkSurfaceFormatKHR& GetSurfaceFormat() const NOEXCEPT { return _SurfaceFormat; }
 
+	/*
+	*	Returns whether or not this Vulkan physical device has ray tracing support.
+	*/
+	FORCE_INLINE NO_DISCARD bool HasRayTracingSupport() const NOEXCEPT
+	{
+		return _HasRayTracingSupport;
+	}
+
 private:
 
 	//The underlying Vulkan physical device.
@@ -84,6 +92,9 @@ private:
 	//The surface format.
 	VkSurfaceFormatKHR _SurfaceFormat;
 
+	//Denotes if this Vulkan physical device has ray tracing support.
+	bool _HasRayTracingSupport{ false };
+
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.
 	*/
@@ -98,6 +109,11 @@ private:
 	*	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 	*/
 	bool HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
+
+	/*
+	*	Given a Vulkan physical device and an extension name, returns if the Vulkan physical device has that extension.
+	*/
+	bool HasExtension(const VkPhysicalDevice &device, const char *const RESTRICT extension) const NOEXCEPT;
 
 	/*
 	*	Given a list of suitable physical devices, return most suitable physical device.

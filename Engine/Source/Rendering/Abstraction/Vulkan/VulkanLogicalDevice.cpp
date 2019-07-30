@@ -27,10 +27,15 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_NV_RAY_TRACING_EXTENSION_NAME };
+	DynamicArray<const char *RESTRICT> required_extensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+	if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
+	{
+		required_extensions.EmplaceSlow(VK_NV_RAY_TRACING_EXTENSION_NAME);
+	}
 
 	VkDeviceCreateInfo deviceCreateInfo;
-	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);
+	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, required_extensions, &physicalDeviceFeatures);
 
 	//Create the logical device!
 	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &_VulkanLogicalDevice));

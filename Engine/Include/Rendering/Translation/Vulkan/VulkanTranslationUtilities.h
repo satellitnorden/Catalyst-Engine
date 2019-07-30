@@ -12,6 +12,9 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 class VulkanTranslationUtilities
 {
 
@@ -79,7 +82,7 @@ public:
 
 		MAPPING(BufferUsage::IndexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 		MAPPING(BufferUsage::StorageBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-		MAPPING(BufferUsage::RayTracing, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(BufferUsage::RayTracing, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
 		MAPPING(BufferUsage::UniformBuffer, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		MAPPING(BufferUsage::VertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
@@ -129,7 +132,7 @@ public:
 	{
 		switch (type)
 		{
-			case RenderDataTableLayoutBinding::Type::AccelerationStructure: return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
+			case RenderDataTableLayoutBinding::Type::AccelerationStructure: if (RenderingSystem::Instance->IsRayTracingSupported()) return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV; else return static_cast<VkDescriptorType>(0);
 			case RenderDataTableLayoutBinding::Type::CombinedImageSampler: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			case RenderDataTableLayoutBinding::Type::SampledImage: return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 			case RenderDataTableLayoutBinding::Type::Sampler: return VK_DESCRIPTOR_TYPE_SAMPLER;
@@ -284,11 +287,11 @@ public:
 		MAPPING(ShaderStage::Compute,					VK_SHADER_STAGE_COMPUTE_BIT);
 		MAPPING(ShaderStage::Fragment,				VK_SHADER_STAGE_FRAGMENT_BIT);
 		MAPPING(ShaderStage::Geometry,				VK_SHADER_STAGE_GEOMETRY_BIT);
-		MAPPING(ShaderStage::RayAnyHit,				VK_SHADER_STAGE_ANY_HIT_BIT_NV);
-		MAPPING(ShaderStage::RayClosestHit,			VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
-		MAPPING(ShaderStage::RayGeneration,			VK_SHADER_STAGE_RAYGEN_BIT_NV);
-		MAPPING(ShaderStage::RayIntersection,			VK_SHADER_STAGE_INTERSECTION_BIT_NV);
-		MAPPING(ShaderStage::RayMiss,					VK_SHADER_STAGE_MISS_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayAnyHit,				VK_SHADER_STAGE_ANY_HIT_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayClosestHit,			VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayGeneration,			VK_SHADER_STAGE_RAYGEN_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayIntersection,			VK_SHADER_STAGE_INTERSECTION_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayMiss,					VK_SHADER_STAGE_MISS_BIT_NV);
 		MAPPING(ShaderStage::TessellationControl,		VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 		MAPPING(ShaderStage::TessellationEvaluation,	VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 		MAPPING(ShaderStage::Vertex,					VK_SHADER_STAGE_VERTEX_BIT);

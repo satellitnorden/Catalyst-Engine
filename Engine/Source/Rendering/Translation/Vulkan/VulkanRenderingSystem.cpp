@@ -600,7 +600,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
 		}
 
 		{
@@ -680,7 +684,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+			}
 		}
 
 		{
@@ -690,7 +698,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
 		}
 
 		{
@@ -700,7 +712,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+			}
 		}
 
 		{
@@ -890,7 +906,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VisibilityRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VisibilityRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+			}
 		}
 
 		{
@@ -930,7 +950,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
 		}
 
 		{
@@ -940,7 +964,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+			}
 		}
 
 		{
@@ -950,7 +978,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
 		}
 
 		{
@@ -960,7 +992,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
+			}
 		}
 
 		shaderCollection.Close();
@@ -1029,6 +1065,15 @@ namespace VulkanRenderingSystemLogic
 }
 
 /*
+*	Returns whether or not ray tracing is supported.
+*/
+NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
+{
+	//Just check if the physical device has ray tracing support.
+	return VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport();
+}
+
+/*
 *	Creates a bottom level acceleration structure.
 */
 void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &vertexBuffer,
@@ -1037,35 +1082,43 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 																const uint32 numberOfIndices,
 																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
-	VkGeometryNV geometry;
+	if (IsRayTracingSupported())
+	{
+		VkGeometryNV geometry;
 
-	geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
-	geometry.pNext = nullptr;
-	geometry.geometryType = VkGeometryTypeNV::VK_GEOMETRY_TYPE_TRIANGLES_NV;
-	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
-	geometry.geometry.triangles.pNext = nullptr;
-	geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(vertexBuffer)->Get();
-	geometry.geometry.triangles.vertexOffset = 0;
-	geometry.geometry.triangles.vertexCount = numberOfVertices;
-	geometry.geometry.triangles.vertexStride = sizeof(Vertex);
-	geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-	geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(indexBuffer)->Get();
-	geometry.geometry.triangles.indexOffset = 0;
-	geometry.geometry.triangles.indexCount = numberOfIndices;
-	geometry.geometry.triangles.indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
-	geometry.geometry.triangles.transformData = VK_NULL_HANDLE;
-	geometry.geometry.triangles.transformOffset = 0;
-	geometry.geometry.aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
-	geometry.geometry.aabbs.pNext = nullptr;
-	geometry.geometry.aabbs.aabbData = VK_NULL_HANDLE;
-	geometry.geometry.aabbs.numAABBs = 0;
-	geometry.geometry.aabbs.stride = 0;
-	geometry.geometry.aabbs.offset = 0;
-	geometry.flags = 0;
+		geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
+		geometry.pNext = nullptr;
+		geometry.geometryType = VkGeometryTypeNV::VK_GEOMETRY_TYPE_TRIANGLES_NV;
+		geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
+		geometry.geometry.triangles.pNext = nullptr;
+		geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(vertexBuffer)->Get();
+		geometry.geometry.triangles.vertexOffset = 0;
+		geometry.geometry.triangles.vertexCount = numberOfVertices;
+		geometry.geometry.triangles.vertexStride = sizeof(Vertex);
+		geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+		geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(indexBuffer)->Get();
+		geometry.geometry.triangles.indexOffset = 0;
+		geometry.geometry.triangles.indexCount = numberOfIndices;
+		geometry.geometry.triangles.indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
+		geometry.geometry.triangles.transformData = VK_NULL_HANDLE;
+		geometry.geometry.triangles.transformOffset = 0;
+		geometry.geometry.aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
+		geometry.geometry.aabbs.pNext = nullptr;
+		geometry.geometry.aabbs.aabbData = VK_NULL_HANDLE;
+		geometry.geometry.aabbs.numAABBs = 0;
+		geometry.geometry.aabbs.stride = 0;
+		geometry.geometry.aabbs.offset = 0;
+		geometry.flags = 0;
 
-	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
-																		ArrayProxy<VulkanGeometryInstance>(),
-																		ArrayProxy<VkGeometryNV>(geometry));
+		*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
+																			ArrayProxy<VulkanGeometryInstance>(),
+																			ArrayProxy<VkGeometryNV>(geometry));
+	}
+
+	else
+	{
+		*handle = EMPTY_HANDLE;
+	}
 }
 
 /*
@@ -1487,8 +1540,11 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 
 		case Pipeline::Type::RayTracing:
 		{
-			VulkanRenderingSystemLogic::InitializeRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
-
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemLogic::InitializeRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
+			}
+			
 			break;
 		}
 	}
