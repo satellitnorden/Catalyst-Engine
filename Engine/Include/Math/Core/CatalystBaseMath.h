@@ -26,9 +26,10 @@ public:
 	/*
 	*	Returns the absolute value of the floating point number passed in.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Absolute(const float value) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Absolute(const TYPE value) NOEXCEPT
 	{
-		return value >= 0.0f ? value : value * -1.0f;
+		return value >= static_cast<TYPE>(0) ? value : value * static_cast<TYPE>(-1);
 	}
 
 	/*
