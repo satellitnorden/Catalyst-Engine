@@ -21,3 +21,19 @@ void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEP
 	//Retrieve the current mouse state.
 	CatalystPlatform::GetCurrentMouseState(&_MouseState);
 }
+
+/*
+*	Hides the cursor.
+*/
+void InputSystem::HideCursor() const NOEXCEPT
+{
+	CatalystPlatform::HideCursor();
+}
+
+/*
+*	Shows the cursor.
+*/
+void InputSystem::ShowCursor() const NOEXCEPT
+{
+	CatalystPlatform::ShowCursor();
+}

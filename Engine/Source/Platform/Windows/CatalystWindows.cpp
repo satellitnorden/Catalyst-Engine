@@ -50,9 +50,9 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 }
 
 /*
-	*	Updates a single gamepad button.
-	*/
-void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonState &ButtonState) NOEXCEPT
+*	Updates a single gamepad button.
+*/
+FORCE_INLINE void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonState &ButtonState) NOEXCEPT
 {
 	//The gamepad button is not pressed.
 	if (!(wButtons & xInputButton))
@@ -96,7 +96,7 @@ void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonS
 /*
 *	Updates a single Windows button.
 */
-void UpdateWindowsButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
+FORCE_INLINE void UpdateWindowsButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
 {
 	//The Windows button is not pressed.
 	if (!static_cast<bool>(GetKeyState(button) & 0x8000))
@@ -134,6 +134,22 @@ void UpdateWindowsButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
 		{
 			ButtonState = ButtonState::PressedHold;
 		}
+	}
+}
+
+/*
+*	Sets the visibility of the cursor.
+*/
+FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
+{
+	if (visibility)
+	{
+		ShowCursor(true);
+	}
+
+	else
+	{
+		while (ShowCursor(false) >= 0);
 	}
 }
 
@@ -513,6 +529,22 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 	UpdateWindowsButton(VK_LBUTTON, state->_Left);
 	UpdateWindowsButton(VK_MBUTTON, state->_Scroll);
 	UpdateWindowsButton(VK_RBUTTON, state->_Right);
+}
+
+/*
+*	Hides the cursor.
+*/
+void CatalystPlatform::HideCursor() NOEXCEPT
+{
+	SetCursorVisibility(false);
+}
+
+/*
+*	Shows the cursor.
+*/
+void CatalystPlatform::ShowCursor() NOEXCEPT
+{
+	SetCursorVisibility(true);
 }
 
 #if defined(CATALYST_CONFIGURATION_DEBUG)

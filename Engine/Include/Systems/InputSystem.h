@@ -58,6 +58,16 @@ public:
 		return &_MouseState;
 	}
 
+	/*
+	*	Hides the cursor.
+	*/
+	void HideCursor() const NOEXCEPT;
+
+	/*
+	*	Shows the cursor.
+	*/
+	void ShowCursor() const NOEXCEPT;
+
 private:
 
 	//The gamepad states.

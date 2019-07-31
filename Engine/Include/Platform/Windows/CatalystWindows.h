@@ -98,6 +98,16 @@ public:
 	*/
 	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
 
+	/*
+	*	Hides the cursor.
+	*/
+	static void HideCursor() NOEXCEPT;
+
+	/*
+	*	Shows the cursor.
+	*/
+	static void ShowCursor() NOEXCEPT;
+
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*
 	*	Prints a string to output.
