@@ -4,6 +4,9 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
@@ -25,6 +28,13 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullTerrain();
 	};
 	_TerrainCullingTask._Arguments = nullptr;
+
+	//Initialize the vegetation culling task.
+	_VegetationCullingTask._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullVegetation();
+	};
+	_VegetationCullingTask._Arguments = nullptr;
 }
 
 /*
@@ -34,6 +44,7 @@ void CullingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NO
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_TerrainCullingTask);
+	TaskSystem::Instance->ExecuteTask(&_VegetationCullingTask);
 }
 
 /*
@@ -44,7 +55,7 @@ void CullingSystem::CullTerrain() const NOEXCEPT
 	//Cache the frustum planes.
 	const StaticArray<Vector4<float>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
 
-	//Iterate over all patches and determine if they are in the view frustum.
+	//Iterate over all patches and determine their visibility.
 	const DynamicArray<TerrainPatchInformation> *const RESTRICT patch_informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
 	DynamicArray<TerrainPatchRenderInformation> *const RESTRICT patch_render_informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 	const uint64 number_of_patch_informations{ patch_informations->Size() };
@@ -52,5 +63,23 @@ void CullingSystem::CullTerrain() const NOEXCEPT
 	for (uint64 i{ 0 }; i < number_of_patch_informations; ++i)
 	{
 		patch_render_informations->At(i)._Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, patch_informations->At(i)._AxisAlignedBoundingBox);
+	}
+}
+
+/*
+*	Culls vegetation.
+*/
+void CullingSystem::CullVegetation() const NOEXCEPT
+{	
+	//Cache the frustum planes.
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
+
+	//Iterate over all vegetation entities and determine their visibility.
+	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };
+	VegetationComponent *RESTRICT vegetation_component{ ComponentManager::GetVegetationVegetationComponents() };
+
+	for (uint64 i{ 0 }; i < number_of_vegetation_components; ++i, ++vegetation_component)
+	{
+		vegetation_component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, vegetation_component->_WorldSpaceAxisAlignedBoundingBox);
 	}
 }

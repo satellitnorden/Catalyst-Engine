@@ -22,14 +22,14 @@ namespace RenderingUtilities
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
-	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &modelBox, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
-		float extent{ CatalystBaseMath::Absolute(modelBox._Minimum._X) };
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Minimum._Y));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Minimum._Z));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._X));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._Y));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._Z));
+		float extent{ CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._X) };
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Y));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Z));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._X));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._Y));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._Z));
 
 		extent *= 2.0f;
 
@@ -41,7 +41,7 @@ namespace RenderingUtilities
 		box->_Maximum._Y = -FLOAT_MAXIMUM;
 		box->_Maximum._Z = -FLOAT_MAXIMUM;
 
-		float biggestScale{ -FLOAT_MAXIMUM };
+		float largest_scale{ -FLOAT_MAXIMUM };
 
 		for (const Matrix4 &transformation : transformations)
 		{
@@ -56,18 +56,18 @@ namespace RenderingUtilities
 			box->_Maximum._Y = CatalystBaseMath::Maximum<float>(box->_Maximum._Y, position._Y);
 			box->_Maximum._Z = CatalystBaseMath::Maximum<float>(box->_Maximum._Z, position._Z);
 
-			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._X);
-			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._Y);
-			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._Z);
+			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._X);
+			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._Y);
+			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._Z);
 		}
 
-		box->_Minimum._X -= extent * biggestScale;
-		box->_Minimum._Y -= extent * biggestScale;
-		box->_Minimum._Z -= extent * biggestScale;
+		box->_Minimum._X -= extent * largest_scale;
+		box->_Minimum._Y -= extent * largest_scale;
+		box->_Minimum._Z -= extent * largest_scale;
 
-		box->_Maximum._X += extent * biggestScale;
-		box->_Maximum._Y += extent * biggestScale;
-		box->_Maximum._Z += extent * biggestScale;
+		box->_Maximum._X += extent * largest_scale;
+		box->_Maximum._Y += extent * largest_scale;
+		box->_Maximum._Z += extent * largest_scale;
 	}
 
 	/*

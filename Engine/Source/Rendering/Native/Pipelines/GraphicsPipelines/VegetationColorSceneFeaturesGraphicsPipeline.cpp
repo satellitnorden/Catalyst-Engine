@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -143,6 +144,7 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -150,10 +152,17 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
+	//Wait for vegetation culling to finish.
+	CullingSystem::Instance->WaitForVegetationCulling();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
+		//Don't draw if it's not visible.
+		if (!component->_Visibility)
+		{
+			continue;
+		}
+
 		//Push constants.
 		VegetationPushConstantData fragmentData;
 
