@@ -27,13 +27,22 @@ void ModelSystem::PostInitialize() NOEXCEPT
 */
 void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Store the previous world transform for all dynamic model entities.
+	//Store the previous world transform for all model entities.
 	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
 	DynamicModelComponent *RESTRICT dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 	for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
 	{
 		dynamicModelComponent->_PreviousWorldTransform = dynamicModelComponent->_CurrentWorldTransform;
+	}
+
+	//Store the previous world transform for all animated model entities.
+	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
+	AnimatedModelComponent *RESTRICT animatedModelComponent{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
+
+	for (uint64 i{ 0 }; i < numberOfAnimatedModelComponents; ++i, ++animatedModelComponent)
+	{
+		animatedModelComponent->_PreviousWorldTransform = animatedModelComponent->_CurrentWorldTransform;
 	}
 }
 

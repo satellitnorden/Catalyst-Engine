@@ -131,9 +131,10 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Iterate over all model components and draw them all.
 	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
 	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfStaticModelComponents == 0 && numberOfDynamicModelComponents == 0)
+	if (numberOfStaticModelComponents == 0 && numberOfDynamicModelComponents == 0 && numberOfAnimatedModelComponents == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -186,6 +187,38 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 		for (uint64 i = 0; i < numberOfDynamicModelComponents; ++i, ++component)
+		{
+			//Push constants.
+			VertexPushConstantData vertexData;
+
+			vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
+			vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+
+			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+			FragmentPushConstantData fragmentData;
+
+			fragmentData._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
+			fragmentData._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
+			fragmentData._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
+			fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
+			fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
+
+			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+
+			//Bind the vertex/inder buffer.
+			commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
+			commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+
+			commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
+		}
+	}
+
+	//Draw all animated models
+	{
+		const AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
+
+		for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
 		{
 			//Push constants.
 			VertexPushConstantData vertexData;

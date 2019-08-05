@@ -1038,9 +1038,6 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelinitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
@@ -1124,6 +1121,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\AnimatedModelComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\AnimatedModelEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1489,6 +1498,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

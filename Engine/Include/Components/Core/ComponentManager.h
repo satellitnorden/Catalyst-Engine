@@ -5,6 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
+#include <Components/Transient/AnimatedModelComponent.h>
 #include <Components/Transient/DynamicModelComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/SoundComponent.h>
@@ -53,6 +54,7 @@ class ComponentManager final
 
 public:
 
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DynamicModel, DynamicModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);

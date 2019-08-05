@@ -5,6 +5,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Entities.
+#include <Entities/Types/AnimatedModelEntity.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/SoundEntity.h>

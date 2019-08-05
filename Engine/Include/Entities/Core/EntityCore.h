@@ -18,7 +18,8 @@ enum class EntityPlacementType : uint8
 };
 
 //Entity types.
-#define ENTITY_TYPES	ENTITY_TYPE(DynamicModel)	\
+#define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)	\
+						ENTITY_TYPE(DynamicModel)	\
 						ENTITY_TYPE(Light)			\
 						ENTITY_TYPE(Sound)			\
 						ENTITY_TYPE(StaticModel)	\
