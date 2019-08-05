@@ -33,9 +33,12 @@ public:
 	ButtonState _Left{ ButtonState::ReleasedHold };
 
 	//The scroll wheel button state.
-	ButtonState _Scroll{ ButtonState::ReleasedHold };
+	ButtonState _ScrollWheel{ ButtonState::ReleasedHold };
 
 	//The right button state.
 	ButtonState _Right{ ButtonState::ReleasedHold };
+
+	//The scroll wheel step.
+	int8 _ScrollWheelStep{ 0 };
 
 };

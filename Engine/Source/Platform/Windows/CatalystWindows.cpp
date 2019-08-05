@@ -30,6 +30,9 @@ namespace CatalystWindowsData
 {
 	//Denotes whether or not the cursor is shown.
 	bool _CursorShown{ true };
+
+	//The scroll wheel step.
+	int8 _ScrollWheelStep{ 0 };
 }
 
 /*
@@ -47,6 +50,13 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 			CatalystEngineSystem::Instance->SetShouldTerminate(true);
 
 			return DefWindowProc(window, message, wParam, lParam);
+		}
+
+		case WM_MOUSEWHEEL:
+		{
+			CatalystWindowsData::_ScrollWheelStep = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+
+			return 0;
 		}
 
 		default:
@@ -598,8 +608,12 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 	//Update the button states.
 	UpdateWindowsButton(VK_LBUTTON, state->_Left);
-	UpdateWindowsButton(VK_MBUTTON, state->_Scroll);
+	UpdateWindowsButton(VK_MBUTTON, state->_ScrollWheel);
 	UpdateWindowsButton(VK_RBUTTON, state->_Right);
+
+	//Update the scroll wheel step.
+	state->_ScrollWheelStep = CatalystWindowsData::_ScrollWheelStep;
+	CatalystWindowsData::_ScrollWheelStep = 0;
 }
 
 /*
