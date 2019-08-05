@@ -28,12 +28,12 @@ void ModelSystem::PostInitialize() NOEXCEPT
 void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Store the previous world transform for all model entities.
-	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
-	DynamicModelComponent *RESTRICT dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
+	ModelComponent *RESTRICT modelComponent{ ComponentManager::GetModelModelComponents() };
 
-	for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
+	for (uint64 i{ 0 }; i < numberOfModelComponents; ++i, ++modelComponent)
 	{
-		dynamicModelComponent->_PreviousWorldTransform = dynamicModelComponent->_CurrentWorldTransform;
+		modelComponent->_PreviousWorldTransform = modelComponent->_CurrentWorldTransform;
 	}
 
 	//Store the previous world transform for all animated model entities.
@@ -54,39 +54,24 @@ void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEX
 	//Update the current model data render data table.
 	RenderDataTableHandle &currentModelDataRenderDataTable{ _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
-	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
 
-	ASSERT(numberOfStaticModelComponents + numberOfDynamicModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
+	ASSERT(numberOfModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
 
 	_TopLevelAccelerationStructureInstances.ClearFast();
 	StaticArray<Material, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS> materials;
 
 	{
-		const StaticModelComponent *RESTRICT staticModelComponent{ ComponentManager::GetStaticModelStaticModelComponents() };
+		const ModelComponent *RESTRICT modelComponent{ ComponentManager::GetModelModelComponents() };
 
-		for (uint64 i{ 0 }; i < numberOfStaticModelComponents; ++i, ++staticModelComponent)
+		for (uint64 i{ 0 }; i < numberOfModelComponents; ++i, ++modelComponent)
 		{
-			_TopLevelAccelerationStructureInstances.EmplaceSlow(staticModelComponent->_WorldTransform, staticModelComponent->_Model->_BottomLevelAccelerationStructure, i);
+			_TopLevelAccelerationStructureInstances.EmplaceSlow(modelComponent->_CurrentWorldTransform, modelComponent->_Model->_BottomLevelAccelerationStructure, i);
 
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_VertexBuffer);
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, staticModelComponent->_Model->_IndexBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, modelComponent->_Model->_VertexBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, modelComponent->_Model->_IndexBuffer);
 
-			materials[i] = staticModelComponent->_Material;
-		}
-	}
-
-	{
-		const DynamicModelComponent *RESTRICT dynamicModelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		for (uint64 i{ 0 }; i < numberOfDynamicModelComponents; ++i, ++dynamicModelComponent)
-		{
-			_TopLevelAccelerationStructureInstances.EmplaceSlow(dynamicModelComponent->_CurrentWorldTransform, dynamicModelComponent->_Model->_BottomLevelAccelerationStructure, numberOfStaticModelComponents + i);
-
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_VertexBuffer);
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(numberOfStaticModelComponents + i), &currentModelDataRenderDataTable, dynamicModelComponent->_Model->_IndexBuffer);
-
-			materials[numberOfStaticModelComponents + i] = dynamicModelComponent->_Material;
+			materials[i] = modelComponent->_Material;
 		}
 	}
 

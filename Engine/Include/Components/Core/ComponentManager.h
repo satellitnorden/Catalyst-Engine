@@ -6,10 +6,9 @@
 
 //Components.
 #include <Components/Transient/AnimatedModelComponent.h>
-#include <Components/Transient/DynamicModelComponent.h>
 #include <Components/Transient/LightComponent.h>
+#include <Components/Transient/ModelComponent.h>
 #include <Components/Transient/SoundComponent.h>
-#include <Components/Transient/StaticModelComponent.h>
 #include <Components/Transient/VegetationComponent.h>
 
 /*
@@ -55,10 +54,9 @@ class ComponentManager final
 public:
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DynamicModel, DynamicModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Model, ModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Vegetation, VegetationComponent);
 
 };

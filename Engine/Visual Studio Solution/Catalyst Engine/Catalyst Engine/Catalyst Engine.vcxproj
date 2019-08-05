@@ -48,10 +48,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\AnimatedModelComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\ModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\CompressionAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
@@ -81,19 +80,17 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\ModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\VegetationInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\AnimatedModelEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\ModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
@@ -319,11 +316,10 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\ModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />

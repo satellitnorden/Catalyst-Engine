@@ -129,12 +129,11 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	constexpr uint64 OFFSET{ 0 };
 
 	//Iterate over all model components and draw them all.
-	const uint64 numberOfStaticModelComponents{ ComponentManager::GetNumberOfStaticModelComponents() };
-	const uint64 numberOfDynamicModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
 	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfStaticModelComponents == 0 && numberOfDynamicModelComponents == 0 && numberOfAnimatedModelComponents == 0)
+	if (numberOfModelComponents == 0 && numberOfAnimatedModelComponents == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -151,42 +150,11 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw all static models.
-	{
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		for (uint64 i = 0; i < numberOfStaticModelComponents; ++i, ++component)
-		{
-			//Push constants.
-			VertexPushConstantData vertexData;
-
-			vertexData._PreviousModelMatrix = vertexData._CurrentModelMatrix = component->_WorldTransform;
-
-			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-
-			FragmentPushConstantData fragmentData;
-
-			fragmentData._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
-			fragmentData._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
-			fragmentData._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
-			fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
-			fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
-
-			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
-
-			//Bind the vertex/inder buffer.
-			commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-			commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
-
-			commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
-		}
-	}
-
 	//Draw all dynamic models.
 	{
-		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+		const ModelComponent *RESTRICT component{ ComponentManager::GetModelModelComponents() };
 
-		for (uint64 i = 0; i < numberOfDynamicModelComponents; ++i, ++component)
+		for (uint64 i = 0; i < numberOfModelComponents; ++i, ++component)
 		{
 			//Push constants.
 			VertexPushConstantData vertexData;

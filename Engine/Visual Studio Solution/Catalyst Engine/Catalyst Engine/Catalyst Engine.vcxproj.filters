@@ -819,15 +819,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelinitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
@@ -1035,12 +1026,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1131,8 +1116,14 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelInitializationData.h">
+    <ClInclude Include="..\..\..\Include\Components\Transient\ModelComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\ModelInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\ModelEntity.h">
+      <Filter>Entities\Include\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1322,9 +1313,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp">
-      <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
@@ -1466,9 +1454,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp">
-      <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -1500,6 +1485,9 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\ModelEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>

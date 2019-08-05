@@ -13,7 +13,7 @@
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/Model.h>
 
-class DynamicModelInitializationData final : public EntityInitializationData
+class ModelInitializationData final : public EntityInitializationData
 {
 
 public:
