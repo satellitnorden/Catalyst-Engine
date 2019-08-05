@@ -18,6 +18,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
@@ -112,6 +113,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
+	CullingSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
@@ -187,6 +189,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
+	CullingSystem::Instance->RenderUpdate(&context);
 	RenderingSystem::Instance->RenderUpdate(&context);
 
 	/*

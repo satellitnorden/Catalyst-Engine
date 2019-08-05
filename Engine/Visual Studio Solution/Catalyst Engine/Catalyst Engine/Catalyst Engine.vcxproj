@@ -284,6 +284,7 @@
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
@@ -423,6 +424,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />

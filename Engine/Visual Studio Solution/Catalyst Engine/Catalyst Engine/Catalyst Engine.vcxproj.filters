@@ -1125,6 +1125,9 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\ModelEntity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1489,6 +1492,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\ModelEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

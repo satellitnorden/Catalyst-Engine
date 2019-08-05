@@ -8,6 +8,7 @@
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
 
@@ -142,9 +143,18 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
 	commandBuffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
 
+	//Wait for terrain culling to finish.
+	CullingSystem::Instance->WaitForTerrainCulling();
+
 	//Iterate over all terrain patches and render them.
 	for (const TerrainPatchRenderInformation &information : *TerrainSystem::Instance->GetTerrainPatchRenderInformations())
 	{
+		//Check the visibility of this patch.
+		if (!information._Visibility)
+		{
+			continue;
+		}
+
 		//Push constants.
 		TerrainVertexPushConstantData vertexData;
 

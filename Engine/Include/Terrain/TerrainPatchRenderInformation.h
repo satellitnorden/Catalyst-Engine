@@ -38,4 +38,7 @@ public:
 	//The inverse material texture resolution.
 	float _InverseMaterialTextureResolution;
 
+	//Denotes the visibilty of this patch.
+	bool _Visibility{ false };
+
 };
