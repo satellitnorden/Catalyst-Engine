@@ -208,7 +208,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	CatalystEngineSystemLogic::ExecuteSequentialUpdate(&context);
 
 	//Return if the game should be terminated.
-	return !_ShouldTerminate;
+	return !_ShouldTerminate && InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) != ButtonState::Pressed;
 }
 
 /*
