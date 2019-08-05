@@ -61,7 +61,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
 	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
-	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, 2.0f), 2.0f);
+	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
 	return features;
 }

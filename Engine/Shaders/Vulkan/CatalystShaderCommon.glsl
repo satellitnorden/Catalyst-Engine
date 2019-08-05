@@ -7,6 +7,8 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
+#define AMBIENT_OCCLUSION_POWER (2.0f)
+
 #define ANTI_ALIASING_MODE_NONE (0)
 #define ANTI_ALIASING_MODE_FAST_APPROXIMATE (1)
 #define ANTI_ALIASING_MODE_TEMPORAL (2)
