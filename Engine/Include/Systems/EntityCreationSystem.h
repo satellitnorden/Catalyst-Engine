@@ -35,20 +35,20 @@ public:
 	/*
 	*	Creates a new entity.
 	*/
-	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* const RESTRICT CreateEntity(Arguments&&... arguments) NOEXCEPT;
+	template <class CLASS, class... ARGUMENTS>
+	RESTRICTED CLASS* const RESTRICT CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT;
 
 	/*
 	*	Creates initialization data for an entity.
 	*/
-	template <typename Type>
-	RESTRICTED Type* const RESTRICT CreateInitializationData() NOEXCEPT;
+	template <typename TYPE>
+	RESTRICTED TYPE* const RESTRICT CreateInitializationData() NOEXCEPT;
 
 	/*
 	*	Destroys initialization data for an entity.
 	*/
-	template <typename Type>
-	void DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+	template <typename TYPE>
+	void DestroyInitializationData(EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes one entity.
