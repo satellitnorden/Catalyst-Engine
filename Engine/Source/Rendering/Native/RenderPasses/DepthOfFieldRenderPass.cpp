@@ -80,6 +80,13 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 */
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {
+	if (true)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	for (ResampleGraphicsPipeline &pipeline : _DepthOfFieldDownsampleGraphicsPipelines)
 	{

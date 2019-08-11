@@ -47,7 +47,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
 	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
 	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
-	vec4 ambientOcclusion = Upsample(ambientOcclusionTexture, coordinate);
+	vec4 ambientOcclusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : Upsample(ambientOcclusionTexture, coordinate);
 
 	SceneFeatures features;
 

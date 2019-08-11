@@ -40,8 +40,8 @@ public:
 	float _TotalTime;
 	float _WindSpeed;
 
-	int32 _AntiAliasingMode;
-	int32 _DiffuseIrradianceMode;
+	int32 _AmbientOcclusionMode;
+	int32 _MotionBlurMode;
 	int32 _SpecularIrradianceMode;
 	int32 _ShadowsMode;
 	int32 _VolumetricLightingMode;

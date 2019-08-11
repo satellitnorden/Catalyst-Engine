@@ -8,13 +8,19 @@ class RenderingConfigurationManager final
 
 public:
 
-	//Enumeration covering all anti aliasing modes.
-	enum class AntiAliasingMode : uint8
+	//Enumeration covering all ambient occlusion modes.
+	enum class AmbientOcclusionMode : uint8
 	{
 		None,
-		FastApproximate,
-		Temporal,
-		FastApproximateAndTemporal
+		ScreenSpace
+	};
+
+	//Enumeration covering all motion blur modes.
+	enum class MotionBlurMode : uint8
+	{
+		None,
+		Half,
+		Full
 	};
 
 	//Enumeration covering all specular irradiance modes.
@@ -41,6 +47,22 @@ public:
 	RenderingConfigurationManager() NOEXCEPT
 	{
 	
+	}
+
+	/*
+	*	Returns the ambient occlusion mode.
+	*/
+	AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
+	{
+		return _AmbientOcclusionMode;
+	}
+
+	/*
+	*	Returns the motion blur mode.
+	*/
+	MotionBlurMode GetMotionBlurMode() const NOEXCEPT
+	{
+		return _MotionBlurMode;
 	}
 
 	/*
@@ -141,8 +163,14 @@ public:
 
 private:
 
+	//The ambient occlusion mode.
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
+
+	//The motion blur mode mode.
+	MotionBlurMode _MotionBlurMode{ MotionBlurMode::None };
+
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::None };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };

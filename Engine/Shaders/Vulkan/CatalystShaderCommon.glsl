@@ -9,13 +9,12 @@
 //Constants.
 #define AMBIENT_OCCLUSION_POWER (2.0f)
 
-#define ANTI_ALIASING_MODE_NONE (0)
-#define ANTI_ALIASING_MODE_FAST_APPROXIMATE (1)
-#define ANTI_ALIASING_MODE_TEMPORAL (2)
-#define ANTI_ALIASING_MODE_FAST_APPROXIMATE_AND_TEMPORAL (3)
+#define AMBIENT_OCCLUSION_MODE_NONE (0)
+#define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
 
-#define DIFFUSE_IRRADIANCE_MODE_SIMPLE (0)
-#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+#define MOTION_BLUR_MODE_NONE (0)
+#define MOTION_BLUR_MODE_HALF (1)
+#define MOTION_BLUR_MODE_FULL (2)
 
 #define SPECULAR_IRRADIANCE_MODE_NONE (0)
 #define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
@@ -77,8 +76,8 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 584) float totalTime;
     layout (offset = 588) float windSpeed;
 
-    layout (offset = 592) int antiAliasingMode;
-    layout (offset = 596) int diffuseIrradianceMode;
+    layout (offset = 592) int ambientOcclusionMode;
+    layout (offset = 596) int motionBlurMode;
     layout (offset = 600) int specularIrradianceMode;
     layout (offset = 604) int shadowsMode;
     layout (offset = 608) int volumetricLightingMode;

@@ -59,6 +59,14 @@ void SpecularIrradianceRenderPass::Initialize() NOEXCEPT
 */
 void SpecularIrradianceRenderPass::Execute() NOEXCEPT
 {	
+	//Nothing to do here if specular irradiance isn't enabled.
+	if (RenderingConfigurationManager::Instance->GetSpecularIrradianceMode() == RenderingConfigurationManager::SpecularIrradianceMode::None)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	if (RenderingConfigurationManager::Instance->GetSpecularIrradianceMode() == RenderingConfigurationManager::SpecularIrradianceMode::ScreenSpace)
 	{

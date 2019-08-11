@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/AmbientOcclusionRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -68,11 +71,19 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
+	//Nothing to do here if specular irradiance isn't enabled.
+	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::None)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
-		pipeline.Execute();
+		pipeline.SetIncludeInRender(false);
 	}
 }

@@ -740,8 +740,8 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 2.5f;
 
-	_DynamicUniformData._AntiAliasingMode = 0;
-	_DynamicUniformData._DiffuseIrradianceMode = 0;
+	_DynamicUniformData._AmbientOcclusionMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAmbientOcclusionMode());
+	_DynamicUniformData._MotionBlurMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetMotionBlurMode());
 	_DynamicUniformData._SpecularIrradianceMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSpecularIrradianceMode());
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
 	_DynamicUniformData._VolumetricLightingMode = 0;
