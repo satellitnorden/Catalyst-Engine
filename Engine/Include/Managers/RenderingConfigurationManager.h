@@ -164,13 +164,13 @@ public:
 private:
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
 
 	//The motion blur mode mode.
-	MotionBlurMode _MotionBlurMode{ MotionBlurMode::None };
+	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::None };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };

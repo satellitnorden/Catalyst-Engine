@@ -90,13 +90,6 @@ void BloomRenderPass::Initialize() NOEXCEPT
 */
 void BloomRenderPass::Execute() NOEXCEPT
 {
-	if (true)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Execute all pipelines.
 	_BloomIsolationGraphicsPipeline.Execute();
 
