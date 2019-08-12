@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/BloomRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -90,6 +93,14 @@ void BloomRenderPass::Initialize() NOEXCEPT
 */
 void BloomRenderPass::Execute() NOEXCEPT
 {
+	//No need to perform bloom if it's turned off.
+	if (RenderingConfigurationManager::Instance->GetBloomIntensity() == 0.0f)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	_BloomIsolationGraphicsPipeline.Execute();
 
