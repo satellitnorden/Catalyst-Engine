@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/General/Vector.h>
+#include <Math/General/Quaternion.h>
 
 class Matrix2 final
 {
@@ -68,7 +69,7 @@ public:
 	/*
 	*	Constructor taking the three vectors as arguments.
 	*/
-		FORCE_INLINE constexpr Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
+	FORCE_INLINE constexpr Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
 		:
 		_Matrix{ first, second, third }
 	{
@@ -265,16 +266,6 @@ public:
 	}
 
 	/*
-	*	Constructor taking a Matrix3.
-	*/
-	FORCE_INLINE constexpr Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
-		:
-		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
-	{
-
-	}
-
-	/*
 	*	Constructor taking the four vectors as arguments.
 	*/
 	FORCE_INLINE constexpr Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
@@ -285,14 +276,30 @@ public:
 	}
 
 	/*
-	*	Constructor taking in position, rotation and scale as arguments.
+	*	Constructor taking position, rotation and scale as arguments.
 	*/
 	FORCE_INLINE constexpr Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
 		:
-		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale._Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale._Z, 0.0f },{ position._X, position._Y, position._Z, 1.0f } }
+		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },
+				 { 0.0f, scale._Y, 0.0f, 0.0f },
+				 { 0.0f, 0.0f, scale._Z, 0.0f },
+				 { position._X, position._Y, position._Z, 1.0f } }
 	{
 		//Rotate the matrix.
 		Rotate(rotation);
+	}
+
+	/*
+	*	Constructor taking position and a rotation quaternion as arguments.
+	*/
+	FORCE_INLINE constexpr Matrix4(const Vector3<float> &position, const Quaternion &rotation) NOEXCEPT
+		:
+		_Matrix{ { 1.0f - 2.0f * (rotation._Y * rotation._Y) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._X * rotation._Y + 2.0f * rotation._W * rotation._Z, 2.0f * rotation._X * rotation._Z - 2.0f * rotation._W * rotation._Y, 0.0f },
+				 { 2.0f * rotation._X * rotation._Y - 2.0f * rotation._W * rotation._Z, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._Y * rotation._Z - 2.0f * rotation._W * rotation._X, 0.0f },
+				 { 2.0f * rotation._X * rotation._Z + 2.0f * rotation._W * rotation._Y, 2.0f * rotation._Y * rotation._Z + 2.0f * rotation._W * rotation._X, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Y * rotation._Y), 0.0f },
+				 { position._X, position._Y, position._Z, 1.0f } }
+	{
+
 	}
 
 	/*

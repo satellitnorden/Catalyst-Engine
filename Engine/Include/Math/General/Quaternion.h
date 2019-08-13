@@ -8,9 +8,8 @@
 
 /*
 *	Quaternion definition.
-*	Defines a quaternion with four components of the specified type.
+*	Defines a quaternion with four components.
 */
-template <typename TYPE>
 class Quaternion final
 {
 
@@ -21,20 +20,20 @@ public:
 		struct
 		{
 			//The X component.
-			TYPE _X;
+			float _X;
 
 			//The Y component.
-			TYPE _Y;
+			float _Y;
 
 			//The Z component.
-			TYPE _Z;
+			float _Z;
 
 			//The W component.
-			TYPE _W;
+			float _W;
 		};
 
 		//The data.
-		TYPE _Data[4];
+		float _Data[4];
 	};
 
 	/*
@@ -42,10 +41,10 @@ public:
 	*/
 	FORCE_INLINE constexpr Quaternion() NOEXCEPT
 		:
-		_X(static_cast<TYPE>(0)),
-		_Y(static_cast<TYPE>(0)),
-		_Z(static_cast<TYPE>(0)),
-		_W(static_cast<TYPE>(0))
+		_X(0.0f),
+		_Y(0.0f),
+		_Z(0.0f),
+		_W(1.0f)
 	{
 
 	}
@@ -53,7 +52,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Quaternion(const TYPE initial_x, const TYPE initial_y, const TYPE initial_z, const TYPE initial_w) NOEXCEPT
+	FORCE_INLINE constexpr Quaternion(const float initial_x, const float initial_y, const float initial_z, const float initial_w) NOEXCEPT
 		:
 		_X(initial_x),
 		_Y(initial_y),
@@ -68,10 +67,18 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Quaternion operator*(const Quaternion &other) const NOEXCEPT
 	{
-		return Quaternion(	_W * other._X + _X * other._W + _Y * other._Z - _Z * other._Y,
-							_W * other._Y - _X * other._Z + _Y * other._W + _Z * other._X,
-							_W * other._Z + _X * other._Y - _Y * other._X + _Z * other._W,
-							_W * other._W - _X * other._X - _Y * other._Y - _Z * other._Z);
+		return Quaternion(	(_W * other._X) + (_X * other._W) + (_Y * other._Z) - (_Z * other._Y),
+							(_W * other._Y) - (_X * other._Z) + (_Y * other._W) + (_Z * other._X),
+							(_W * other._Z) + (_X * other._Y) - (_Y * other._X) + (_Z * other._W),
+							(_W * other._W) - (_X * other._X) -( _Y * other._Y) - (_Z * other._Z));
+	}
+
+	/*
+	*	Returns if this quaternion is normalized or not (is a unit quaternion).
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool IsNormalized() const NOEXCEPT
+	{
+		return MagnitudeSquared() == 1.0f;
 	}
 
 	/*
