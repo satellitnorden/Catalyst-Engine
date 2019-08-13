@@ -1128,6 +1128,9 @@
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1495,6 +1498,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

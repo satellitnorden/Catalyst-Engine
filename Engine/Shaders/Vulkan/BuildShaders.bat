@@ -1,4 +1,6 @@
 glslangValidator.exe -V AmbientOcclusionDenoisingFragmentShader.frag -o 		AmbientOcclusionDenoisingFragmentShader.spv
+glslangValidator.exe -V AnimatedModelSceneFeaturesFragmentShader.frag -o 		AnimatedModelSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V AnimatedModelSceneFeaturesVertexShader.vert -o 			AnimatedModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V BloomIsolationFragmentShader.frag -o 				BloomIsolationFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOfFieldApplicationFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldBokehFragmentShader.frag -o 			DepthOfFieldBokehFragmentShader.spv

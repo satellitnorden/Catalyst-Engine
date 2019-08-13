@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -43,14 +43,14 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ModelSceneFeaturesVertex);
+	SetVertexShader(Shader::AnimatedModelSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ModelSceneFeaturesFragment);
+	SetFragmentShader(Shader::AnimatedModelSceneFeaturesFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);
@@ -99,7 +99,7 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetShouldClear(true);
+	SetShouldClear(false);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
@@ -123,16 +123,16 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 /*
 *	Executes this graphics pipeline.
 */
-void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
 	//Iterate over all model components and draw them all.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
+	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfModelComponents == 0)
+	if (numberOfAnimatedModelComponents == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -149,10 +149,10 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw all models.
-	const ModelComponent *RESTRICT component{ ComponentManager::GetModelModelComponents() };
+	//Draw all animated models
+	const AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
 
-	for (uint64 i = 0; i < numberOfModelComponents; ++i, ++component)
+	for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
 	{
 		//Push constants.
 		VertexPushConstantData vertexData;

@@ -275,6 +275,8 @@ enum class Sampler : uint8
 enum class Shader : uint8
 {
 	AmbientOcclusionDenoisingFragment,
+	AnimatedModelSceneFeaturesFragment,
+	AnimatedModelSceneFeaturesVertex,
 	BloomIsolationFragment,
 	DepthOfFieldApplicationFragment,
 	DepthOfFieldBokehFragment,

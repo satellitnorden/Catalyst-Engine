@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
@@ -32,14 +33,17 @@ private:
 	//The vegetation depth scene features graphics pipeline.
 	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;
 
-	//The model scene features graphics pipeline.
-	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
-
 	//The terrain scene features graphics pipeline.
 	TerrainSceneFeaturesGraphicsPipeline _TerrainSceneFeaturesGraphicsPipeline;
 
 	//The vegetation color scene features graphics pipeline.
 	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;
+
+	//The model scene features graphics pipeline.
+	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
+
+	//The animated model scene features graphics pipeline.
+	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
 
 	//The velocity graphics pipeline.
 	VelocityGraphicsPipeline _VelocityGraphicsPipeline;
