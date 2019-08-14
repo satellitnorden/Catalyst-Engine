@@ -41,6 +41,14 @@ public:
 	};
 
 	/*
+	*	Returns the dot product of two vectors.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float DotProduct(const Vector2 &first, const Vector2 &second) NOEXCEPT
+	{
+		return first._X * second._X + first._Y * second._Y;
+	}
+
+	/*
 	*	Given a vector, return it's length.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector2 &vector) NOEXCEPT
