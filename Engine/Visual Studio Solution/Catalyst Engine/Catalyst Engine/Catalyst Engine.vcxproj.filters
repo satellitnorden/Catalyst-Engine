@@ -328,6 +328,12 @@
     <Filter Include="Terrain\Include">
       <UniqueIdentifier>{c2eab535-167e-4d59-be2c-bccb8478f1e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{ea2b3a18-5e77-491f-a599-6afccc85dfc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation\Include">
+      <UniqueIdentifier>{cfefb470-25c5-4b34-b86c-a6a91e93162e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1133,6 +1139,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h">
       <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\Joint.h">
+      <Filter>Animation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\Animation.h">
+      <Filter>Animation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
+    <ClInclude Include="..\..\..\Include\Animation\Joint.h" />
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\AnimatedModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
