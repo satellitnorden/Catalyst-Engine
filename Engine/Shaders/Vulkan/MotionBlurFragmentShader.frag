@@ -47,7 +47,7 @@ void main()
 		float motion_blur_scale = mix(0.5f, 1.0f, float(motionBlurMode == MOTION_BLUR_MODE_FULL));
 
 		//Calculate the blur direction.
-		vec2 blur_direction = GetVelocity() * motion_blur_scale;
+		vec2 blur_direction = GetVelocity() * -1.0f * motion_blur_scale;
 
 		//Sample the active noise texture.
 		vec4 noise_texture_1 = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
