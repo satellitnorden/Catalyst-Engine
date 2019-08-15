@@ -18,9 +18,8 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 1) uniform sampler2D velocityTexture;
-layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 0) uniform sampler2D velocity_texture;
+layout (set = 1, binding = 1) uniform sampler2D scene_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -30,8 +29,7 @@ layout (location = 0) out vec4 fragment;
 */
 vec2 GetVelocity()
 {
-
-	return texture(velocityTexture, fragmentTextureCoordinate).xy;
+	return texture(velocity_texture, fragmentTextureCoordinate).xy;
 }
 
 void main()
@@ -40,7 +38,7 @@ void main()
 	if (motionBlurMode == MOTION_BLUR_MODE_NONE)
 	{
 		//Write the fragment.
-    	fragment = vec4(texture(sceneTexture, fragmentTextureCoordinate).rgb, 1.0f);
+    	fragment = vec4(texture(scene_texture, fragmentTextureCoordinate).rgb, 1.0f);
 	}
 	
 	else
@@ -49,18 +47,23 @@ void main()
 		float motion_blur_scale = mix(0.5f, 1.0f, float(motionBlurMode == MOTION_BLUR_MODE_FULL));
 
 		//Calculate the blur direction.
-		vec2 blurDirection = GetVelocity() * -1.0f * motion_blur_scale;
+		vec2 blur_direction = GetVelocity() * motion_blur_scale;
 
 		//Sample the active noise texture.
-		vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		vec4 noise_texture_1 = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+		vec4 noise_texture_2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 		//Calculate the blurred scene.
-		vec3 blurredScene = (texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.x).rgb +
-							texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.y).rgb +
-							texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.z).rgb +
-							texture(sceneTexture, fragmentTextureCoordinate + blurDirection * activeNoiseTexture.w).rgb) * 0.25f;
+		vec3 blurred_scene = (texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.x - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.y - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.z - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.w - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.x - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.y - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.z - 0.5f)).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.w - 0.5f)).rgb) * 0.125f;
 
 	    //Write the fragment.
-	    fragment = vec4(blurredScene, 1.0f);
+	    fragment = vec4(blurred_scene, 1.0f);
 	}
 }
