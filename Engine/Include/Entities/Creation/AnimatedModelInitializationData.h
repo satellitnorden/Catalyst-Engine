@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Animation.
+#include <Animation/AnimatedModel.h>
+
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
@@ -11,7 +14,6 @@
 
 //Rendering.
 #include <Rendering/Native/Material.h>
-#include <Rendering/Native/Model.h>
 
 class AnimatedModelInitializationData final : public EntityInitializationData
 {
@@ -22,7 +24,7 @@ public:
 	Matrix4 _Transform{ MatrixConstants::IDENTITY };
 
 	//The model.
-	const Model *RESTRICT _Model{ nullptr };
+	const AnimatedModel *RESTRICT _Model{ nullptr };
 
 	//The material.
 	Material _Material;

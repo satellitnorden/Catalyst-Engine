@@ -5,6 +5,9 @@
 #include <Core/Containers/Map.h>
 #include <Core/General/HashString.h>
 
+//Animation.
+#include <Animation/AnimatedModel.h>
+
 //File handling.
 #include <FileHandling/BinaryFile.h>
 
@@ -28,6 +31,11 @@ public:
 	*	Given a file path, loads a resource collection.
 	*/
 	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
+
+	/*
+	*	Given a resource ID, return the corresponding animatedmodel.
+	*/
+	static const AnimatedModel& GetAnimatedModel(const HashString resourceID) { return _AnimatedModels[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding font.
@@ -56,6 +64,9 @@ public:
 
 private:
 
+	//Container for all animated models.
+	static Map<HashString, AnimatedModel> _AnimatedModels;
+
 	//Container for all fonts.
 	static Map<HashString, Font> _Fonts;
 
@@ -75,6 +86,11 @@ private:
 	*	Loads a resource collection, internal implementation.
 	*/
 	static void LoadResourceCollectionInternal(const char *RESTRICT filePath) NOEXCEPT;
+
+	/*
+	*	Given a file, load an animated model.
+	*/
+	static void LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a model.

@@ -1152,6 +1152,12 @@
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h">
+      <Filter>Animation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\AnimatedModelData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

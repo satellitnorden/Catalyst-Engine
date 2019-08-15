@@ -1,12 +1,14 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 
+//Animation.
+#include <Animation/AnimatedVertex.h>
+
 //Components.
 #include <Components/Core/ComponentManager.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
-#include <Rendering/Native/Vertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -73,27 +75,35 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(4);
+	SetNumberOfVertexInputAttributeDescriptions(6);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(Vertex, _Position));
+										offsetof(AnimatedVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(Vertex, _Normal));
+										offsetof(AnimatedVertex, _Normal));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(Vertex, _Tangent));
+										offsetof(AnimatedVertex, _Tangent));
 	AddVertexInputAttributeDescription(	3,
 										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedInt,
+										offsetof(AnimatedVertex, _BoneIndices));
+	AddVertexInputAttributeDescription(	4,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(AnimatedVertex, _BoneWeights));
+	AddVertexInputAttributeDescription(	5,
+										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(Vertex, _TextureCoordinate));
+										offsetof(AnimatedVertex, _TextureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
-	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(0, sizeof(AnimatedVertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());

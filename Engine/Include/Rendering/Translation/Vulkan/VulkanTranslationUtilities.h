@@ -194,6 +194,7 @@ public:
 			case VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat: return VK_FORMAT_R32G32B32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat: return VK_FORMAT_R32G32B32A32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32SignedInt: return VK_FORMAT_R32_SINT;
+			case VertexInputAttributeDescription::Format::X32Y32Z32SignedInt: return VK_FORMAT_R32G32B32_SINT;
 		}
 	}
 

@@ -46,6 +46,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h" />
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h" />
     <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
     <ClInclude Include="..\..\..\Include\Animation\Joint.h" />
@@ -280,6 +281,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Data\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\FontData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h" />

@@ -1,6 +1,9 @@
 //Header file.
 #include <Resources/Loading/ResourceLoader.h>
 
+//Animation.
+#include <Animation/AnimatedVertex.h>
+
 //Multithreading.
 #include <Multithreading/Task.h>
 
@@ -14,6 +17,7 @@
 #include <Systems/TaskSystem.h>
 
 //Static variable definitions.
+Map<HashString, AnimatedModel> ResourceLoader::_AnimatedModels;
 Map<HashString, Font> ResourceLoader::_Fonts;
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
@@ -56,6 +60,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				ASSERT(false, "Undefined resource type.");
 			}
 #endif
+			case ResourceType::AnimatedModel:
+			{
+				LoadAnimatedModel(file);
+
+				break;
+			}
+
 			case ResourceType::Font:
 			{
 				LoadFont(file);
@@ -92,6 +103,41 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			}
 		}
 	}
+}
+
+/*
+*	Given a file, load an animated model.
+*/
+void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Load the model data.
+	AnimatedModelData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the axis-aligned bounding box
+	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	data._Vertices.UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(AnimatedVertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	data._Indices.UpsizeFast(numberOfIndices);
+	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Create the model.
+	ResourceCreator::CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);
 }
 
 /*

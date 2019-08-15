@@ -18,7 +18,9 @@ layout (push_constant) uniform ModelData
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec3 vertexTangent;
-layout (location = 3) in vec2 vertexTextureCoordinate;
+layout (location = 3) in ivec3 vertex_bone_indices;
+layout (location = 4) in vec3 vertex_bone_weights;
+layout (location = 5) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
 layout (location = 0) out mat3 fragmentTangentSpaceMatrix;

@@ -8,6 +8,9 @@
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
+//Animation.
+#include <Animation/AnimatedVertex.h>
+
 //File handling.
 #include <FileHandling/BinaryFile.h>
 
@@ -93,10 +96,10 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	file.Write(&resourceID, sizeof(HashString));
 
 	//Build the model.
-	DynamicArray<Vertex> vertices;
+	DynamicArray<AnimatedVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	AssimpBuilder::BuildModel(parameters._File, &vertices, &indices);
+	AssimpBuilder::BuildAnimatedModel(parameters._File, &vertices, &indices);
 
 	//Transform all vertices and simultaneously calculate the bounding box.
 	AxisAlignedBoundingBox axisAlignedBoundingBox;
@@ -104,7 +107,7 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	axisAlignedBoundingBox._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
 	axisAlignedBoundingBox._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
 
-	for (Vertex &vertex : vertices)
+	for (AnimatedVertex &vertex : vertices)
 	{
 		if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
 		{
@@ -125,7 +128,7 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	file.Write(&sizeOfVertices, sizeof(uint64));
 
 	//Write the vertices to the file.
-	file.Write(vertices.Data(), sizeof(Vertex) * sizeOfVertices);
+	file.Write(vertices.Data(), sizeof(AnimatedVertex) * sizeOfVertices);
 
 	//Write the size of the indices to the file.
 	const uint64 sizeOfIndices{ indices.Size() };

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Animation.
+#include <Animation/AnimatedModel.h>
+
 //Rendering.
 #include <Rendering/Native/Font.h>
 #include <Rendering/Native/GlobalTexture2D.h>
@@ -10,6 +13,7 @@
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
+#include <Resources/Data/AnimatedModelData.h>
 #include <Resources/Data/FontData.h>
 #include <Resources/Data/ModelData.h>
 #include <Resources/Data/TextureCubeData.h>
@@ -19,6 +23,11 @@ class ResourceCreator final
 {
 
 public:
+
+	/*
+	*	Creates an animated model.
+	*/
+	static void CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModel *const RESTRICT model) NOEXCEPT;
 
 	/*
 	*	Creates a font.
