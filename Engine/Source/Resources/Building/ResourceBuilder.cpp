@@ -73,6 +73,72 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 }
 
 /*
+*	Builds an animated model.
+*/
+void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
+{
+	//What should the material be called?
+	DynamicString fileName{ parameters._Output };
+	fileName += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
+
+	//Write the resource type to the file.
+	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::AnimatedModel) };
+	file.Write(&resourceType, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resourceID{ parameters._ID };
+	file.Write(&resourceID, sizeof(HashString));
+
+	//Build the model.
+	DynamicArray<Vertex> vertices;
+	DynamicArray<uint32> indices;
+
+	AssimpBuilder::BuildModel(parameters._File, &vertices, &indices);
+
+	//Transform all vertices and simultaneously calculate the bounding box.
+	AxisAlignedBoundingBox axisAlignedBoundingBox;
+
+	axisAlignedBoundingBox._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
+	axisAlignedBoundingBox._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
+
+	for (Vertex &vertex : vertices)
+	{
+		if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
+		{
+			vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
+		}
+
+		axisAlignedBoundingBox._Minimum = Vector3<float>::Minimum(axisAlignedBoundingBox._Minimum, vertex._Position);
+		axisAlignedBoundingBox._Maximum = Vector3<float>::Maximum(axisAlignedBoundingBox._Maximum, vertex._Position);
+
+		vertex._TextureCoordinate *= parameters._TextureCoordinateMultiplier;
+	}
+
+	//Write the axis-aligned bounding box to the file.
+	file.Write(&axisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+
+	//Write the size of the vertices to the file.
+	const uint64 sizeOfVertices{ vertices.Size() };
+	file.Write(&sizeOfVertices, sizeof(uint64));
+
+	//Write the vertices to the file.
+	file.Write(vertices.Data(), sizeof(Vertex) * sizeOfVertices);
+
+	//Write the size of the indices to the file.
+	const uint64 sizeOfIndices{ indices.Size() };
+	file.Write(&sizeOfIndices, sizeof(uint64));
+
+	//Write the vertices to the file.
+	file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Builds a font.
 */
 void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT

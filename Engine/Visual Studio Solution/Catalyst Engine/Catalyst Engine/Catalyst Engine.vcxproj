@@ -46,6 +46,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h" />
     <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
     <ClInclude Include="..\..\..\Include\Animation\Joint.h" />
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanGraphicsPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\AnimatedModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
