@@ -76,6 +76,22 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 }
 
 /*
+*	Writes a bone to file.
+*/
+FORCE_INLINE void WriteBoneToFile(const Bone &bone, BinaryFile<IOMode::Out> *const RESTRICT file) NOEXCEPT
+{
+	file->Write(&bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
+
+	const uint64 number_of_child_bones{ bone._Children.Size() };
+	file->Write(&number_of_child_bones, sizeof(uint64));
+
+	for (const Bone &child_bone : bone._Children)
+	{
+		WriteBoneToFile(child_bone, file);
+	}
+}
+
+/*
 *	Builds an animated model.
 */
 void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
@@ -98,8 +114,9 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	//Build the model.
 	DynamicArray<AnimatedVertex> vertices;
 	DynamicArray<uint32> indices;
+	Skeleton skeleton;
 
-	AssimpBuilder::BuildAnimatedModel(parameters._File, &vertices, &indices);
+	AssimpBuilder::BuildAnimatedModel(parameters._File, &vertices, &indices, &skeleton);
 
 	//Transform all vertices and simultaneously calculate the bounding box.
 	AxisAlignedBoundingBox axisAlignedBoundingBox;
@@ -136,6 +153,9 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 
 	//Write the vertices to the file.
 	file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
+
+	//Write all the bones to the file.
+	WriteBoneToFile(skeleton._RootBone, &file);
 
 	//Close the file.
 	file.Close();

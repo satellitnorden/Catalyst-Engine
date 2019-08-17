@@ -1140,9 +1140,6 @@
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Animation\Joint.h">
-      <Filter>Animation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Animation\Animation.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
@@ -1157,6 +1154,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\AnimatedModelData.h">
       <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\Bone.h">
+      <Filter>Animation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\Skeleton.h">
+      <Filter>Animation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

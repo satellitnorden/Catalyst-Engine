@@ -3,14 +3,18 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/HashString.h>
 
 //Math.
 #include <Math/General/Matrix.h>
 
-class Joint final
+class Bone final
 {
 
 public:
+
+	//The name.
+	HashString _Name;
 
 	//The bind transform.
 	Matrix4 _BindTransform;
@@ -19,6 +23,6 @@ public:
 	Matrix4 _InverseBindTransform;
 
 	//The children.
-	DynamicArray<Joint> _Children;
+	DynamicArray<Bone> _Children;
 
 };

@@ -106,6 +106,24 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 }
 
 /*
+*	Reads a bone from file.
+*/
+FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> &file, Bone *const RESTRICT bone) NOEXCEPT
+{
+	file.Read(bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
+
+	uint64 number_of_child_bones;
+	file.Read(&number_of_child_bones, sizeof(uint64));
+
+	bone->_Children.UpsizeSlow(number_of_child_bones);
+
+	for (Bone &child_bone : bone->_Children)
+	{
+		ReadBoneFromFile(file, &child_bone);
+	}
+}
+
+/*
 *	Given a file, load an animated model.
 */
 void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
@@ -135,6 +153,9 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the indices.
 	data._Indices.UpsizeFast(numberOfIndices);
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Read the skeleton.
+	ReadBoneFromFile(file, &data._Skeleton._RootBone);
 
 	//Create the model.
 	ResourceCreator::CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);

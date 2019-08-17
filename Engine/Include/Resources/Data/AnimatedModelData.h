@@ -24,4 +24,7 @@ public:
 	//The indices of this model.
 	DynamicArray<uint32> _Indices;
 
+	//The skeleton.
+	Skeleton _Skeleton;
+
 };

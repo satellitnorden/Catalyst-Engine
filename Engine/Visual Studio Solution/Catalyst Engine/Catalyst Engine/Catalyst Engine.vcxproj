@@ -49,7 +49,8 @@
     <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h" />
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h" />
     <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
-    <ClInclude Include="..\..\..\Include\Animation\Joint.h" />
+    <ClInclude Include="..\..\..\Include\Animation\Bone.h" />
+    <ClInclude Include="..\..\..\Include\Animation\Skeleton.h" />
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\AnimatedModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
