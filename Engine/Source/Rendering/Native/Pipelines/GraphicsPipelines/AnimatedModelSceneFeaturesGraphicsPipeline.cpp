@@ -189,7 +189,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		//Bind the aimation data render data table.
-		commandBuffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 
 		commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
 	}

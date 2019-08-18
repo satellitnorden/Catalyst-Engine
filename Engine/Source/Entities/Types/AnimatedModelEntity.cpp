@@ -44,18 +44,27 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._Model->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
 	animated_model_component._Material = animated_model_initialization_data->_Material;
 
-	//Create the animation data buffer and render data table.
-	RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &animated_model_component._AnimationDataBuffer);
+	//Create the animation data buffers and render data tables.
+	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
-	StaticArray<Matrix4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
+	animated_model_component._AnimationDataBuffers.UpsizeFast(number_of_framebuffers);
+	animated_model_component._AnimationDataRenderDataTables.UpsizeFast(number_of_framebuffers);
 
-	const void *const RESTRICT dataChunks[]{ initial_bone_transforms.Data() };
-	const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
+	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
+	{
+		RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &animated_model_component._AnimationDataBuffers[i]);
 
-	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &animated_model_component._AnimationDataBuffer);
+		StaticArray<Matrix4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
 
-	RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &animated_model_component._AnimationDataRenderDataTable);
-	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &animated_model_component._AnimationDataRenderDataTable, animated_model_component._AnimationDataBuffer);
+		const void *const RESTRICT dataChunks[]{ initial_bone_transforms.Data() };
+		const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
+
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &animated_model_component._AnimationDataBuffers[i]);
+
+		RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &animated_model_component._AnimationDataRenderDataTables[i]);
+		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &animated_model_component._AnimationDataRenderDataTables[i], animated_model_component._AnimationDataBuffers[i]);
+
+	}
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<AnimatedModelInitializationData>(data);

@@ -30,9 +30,9 @@ public:
 	Material _Material;
 
 	//The animation data buffer.
-	BufferHandle _AnimationDataBuffer;
+	DynamicArray<BufferHandle> _AnimationDataBuffers;
 
 	//The animation data render data table.
-	RenderDataTableHandle _AnimationDataRenderDataTable;
+	DynamicArray<RenderDataTableHandle> _AnimationDataRenderDataTables;
 
 };
