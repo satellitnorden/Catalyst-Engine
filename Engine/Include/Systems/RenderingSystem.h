@@ -64,7 +64,7 @@ public:
 	void Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
 
 	/*
-	*	Post-initializes the rendering system.
+	*	Post initializes the rendering system.
 	*/
 	void PostInitializeSystem();
 

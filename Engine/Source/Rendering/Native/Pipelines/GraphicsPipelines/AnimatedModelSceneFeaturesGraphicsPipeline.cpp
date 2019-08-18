@@ -11,6 +11,7 @@
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
+#include <Systems/AnimationSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -66,8 +67,9 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Velocity));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
@@ -164,6 +166,10 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
 	{
+		//Bind the vertex/inder buffer.
+		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
+		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+
 		//Push constants.
 		VertexPushConstantData vertexData;
 
@@ -182,9 +188,8 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
-		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+		//Bind the aimation data render data table.
+		commandBuffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTable);
 
 		commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
 	}

@@ -6,6 +6,7 @@
 
 //Resources.
 #include <Resources/Building/AnimatedModelBuildParameters.h>
+#include <Resources/Building/AnimationBuildParameters.h>
 #include <Resources/Building/FontBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
@@ -27,6 +28,11 @@ public:
 	*	Builds an animated model.
 	*/
 	static void BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds an animation.
+	*/
+	static void BuildAnimation(const AnimatedModelBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a font.

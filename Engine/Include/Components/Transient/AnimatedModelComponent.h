@@ -29,4 +29,10 @@ public:
 	//The material.
 	Material _Material;
 
+	//The animation data buffer.
+	BufferHandle _AnimationDataBuffer;
+
+	//The animation data render data table.
+	RenderDataTableHandle _AnimationDataRenderDataTable;
+
 };

@@ -18,6 +18,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
+#include <Systems/AnimationSystem.h>
 #include <Systems/CullingSystem.h>
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/EntityPlacementSystem.h>
@@ -124,6 +125,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
 
 	//Post-initialize all systems.
+	AnimationSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitializeSystem();
 
 	//Post-initialize the platform.

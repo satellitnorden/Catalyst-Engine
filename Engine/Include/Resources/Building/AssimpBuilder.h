@@ -133,14 +133,15 @@ private:
 				}
 				);
 
-				//Renormalize the weights so that they add up to 1.0f.
-				float total_weight{ temporary_bone_weights[0]._Weight + temporary_bone_weights[1]._Weight + temporary_bone_weights[2]._Weight };
-				total_weight = 1.0f / total_weight;
-
-				temporary_bone_weights[0]._Weight *= total_weight;
-				temporary_bone_weights[1]._Weight *= total_weight;
-				temporary_bone_weights[2]._Weight *= total_weight;
 			}
+
+			//Normalize the weights so that they add up to 1.0f.
+			float total_weight{ temporary_bone_weights[0]._Weight + temporary_bone_weights[1]._Weight + temporary_bone_weights[2]._Weight };
+			total_weight = 1.0f / total_weight;
+
+			temporary_bone_weights[0]._Weight *= total_weight;
+			temporary_bone_weights[1]._Weight *= total_weight;
+			temporary_bone_weights[2]._Weight *= total_weight;
 
 			const Vector3<int32> bone_indices{ temporary_bone_weights[0]._Index, temporary_bone_weights[1]._Index, temporary_bone_weights[2]._Index };
 			const Vector3<float> bone_weights{ temporary_bone_weights[0]._Weight, temporary_bone_weights[1]._Weight, temporary_bone_weights[2]._Weight };

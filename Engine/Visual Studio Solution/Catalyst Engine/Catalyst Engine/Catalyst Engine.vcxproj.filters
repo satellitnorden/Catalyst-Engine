@@ -1161,6 +1161,15 @@
     <ClInclude Include="..\..\..\Include\Animation\Skeleton.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\AnimationBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Animation\AnimationCore.h">
+      <Filter>Animation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\AnimationSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1531,6 +1540,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

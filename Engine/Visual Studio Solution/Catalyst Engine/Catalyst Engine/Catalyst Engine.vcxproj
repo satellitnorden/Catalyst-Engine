@@ -49,6 +49,7 @@
     <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h" />
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h" />
     <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
+    <ClInclude Include="..\..\..\Include\Animation\AnimationCore.h" />
     <ClInclude Include="..\..\..\Include\Animation\Bone.h" />
     <ClInclude Include="..\..\..\Include\Animation\Skeleton.h" />
     <ClInclude Include="..\..\..\Include\Components\Core\ComponentManager.h" />
@@ -271,6 +272,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AnimatedModelBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\AnimationBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
@@ -292,6 +294,7 @@
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
+    <ClInclude Include="..\..\..\Include\Systems\AnimationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
@@ -433,6 +436,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />

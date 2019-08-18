@@ -1,6 +1,9 @@
 //Header file.
 #include <Entities/Types/AnimatedModelEntity.h>
 
+//Animation.
+#include <Animation/AnimationCore.h>
+
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -11,6 +14,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
+#include <Systems/AnimationSystem.h>
 #include <Systems/EntityCreationSystem.h>
 
 /*
@@ -31,14 +35,27 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	_ComponentsIndex = ComponentManager::GetNewAnimatedModelComponentsIndex(this);
 
 	//Copy the data.
-	const AnimatedModelInitializationData *const RESTRICT animatedModelInitializationData{ static_cast<const AnimatedModelInitializationData *const RESTRICT>(data) };
-	AnimatedModelComponent& animatedModelComponent{ ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex] };
+	const AnimatedModelInitializationData *const RESTRICT animated_model_initialization_data{ static_cast<const AnimatedModelInitializationData *const RESTRICT>(data) };
+	AnimatedModelComponent& animated_model_component{ ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex] };
 
-	animatedModelComponent._Model = animatedModelInitializationData->_Model;
-	animatedModelComponent._PreviousWorldTransform = animatedModelInitializationData->_Transform;
-	animatedModelComponent._CurrentWorldTransform = animatedModelInitializationData->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(animatedModelComponent._Model->_ModelSpaceAxisAlignedBoundingBox, animatedModelInitializationData->_Transform, &animatedModelComponent._WorldSpaceAxisAlignedBoundingBox);
-	animatedModelComponent._Material = animatedModelInitializationData->_Material;
+	animated_model_component._Model = animated_model_initialization_data->_Model;
+	animated_model_component._PreviousWorldTransform = animated_model_initialization_data->_Transform;
+	animated_model_component._CurrentWorldTransform = animated_model_initialization_data->_Transform;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._Model->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
+	animated_model_component._Material = animated_model_initialization_data->_Material;
+
+	//Create the animation data buffer and render data table.
+	RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &animated_model_component._AnimationDataBuffer);
+
+	StaticArray<Matrix4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
+
+	const void *const RESTRICT dataChunks[]{ initial_bone_transforms.Data() };
+	const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
+
+	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &animated_model_component._AnimationDataBuffer);
+
+	RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &animated_model_component._AnimationDataRenderDataTable);
+	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &animated_model_component._AnimationDataRenderDataTable, animated_model_component._AnimationDataBuffer);
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<AnimatedModelInitializationData>(data);

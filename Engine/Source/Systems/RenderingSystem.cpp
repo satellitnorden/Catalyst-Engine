@@ -94,7 +94,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 }
 
 /*
-*	Post-initializes the rendering system.
+*	Post initializes the rendering system.
 */
 void RenderingSystem::PostInitializeSystem()
 {
