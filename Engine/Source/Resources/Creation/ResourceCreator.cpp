@@ -39,6 +39,15 @@ void ResourceCreator::CreateAnimatedModel(AnimatedModelData *const RESTRICT data
 }
 
 /*
+*	Creates an animation
+*/
+void ResourceCreator::CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT
+{
+	//Just... Copy.
+	*animation = data->_Animation;
+}
+
+/*
 *	Creates a font.
 */
 void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT

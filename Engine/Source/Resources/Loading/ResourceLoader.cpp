@@ -174,9 +174,26 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 */
 void ResourceLoader::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
+	//Load the animation data.
+	AnimationData data;
+
 	//Read the resource ID.
 	HashString resource_ID;
 	file.Read(&resource_ID, sizeof(HashString));
+
+	//Read the duration.
+	file.Read(&data._Animation._Duration, sizeof(float));
+
+	//Read the number of animation keyframes.
+	uint64 number_of_animation_keyframes;
+	file.Read(&number_of_animation_keyframes, sizeof(uint64));
+
+	//Read the animation keyframes.
+	data._Animation._Keyframes.UpsizeFast(number_of_animation_keyframes);
+	file.Read(data._Animation._Keyframes.Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
+
+	//Create the animation.
+	ResourceCreator::CreateAnimation(&data, &_Animations[resource_ID]);
 }
 
 /*

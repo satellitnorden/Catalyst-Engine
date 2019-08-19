@@ -179,7 +179,7 @@ private:
 	float _AmbientIlluminationIntensity{ 0.025f };
 
 	//The bloom intensity.
-	float _BloomIntensity{ 0.0f };
+	float _BloomIntensity{ 0.1f };
 
 	//The chromatic aberration intensity.
 	float _ChromaticAberrationIntensity{ 0.0025f };

@@ -14,6 +14,7 @@
 
 //Resources.
 #include <Resources/Data/AnimatedModelData.h>
+#include <Resources/Data/AnimationData.h>
 #include <Resources/Data/FontData.h>
 #include <Resources/Data/ModelData.h>
 #include <Resources/Data/TextureCubeData.h>
@@ -28,6 +29,11 @@ public:
 	*	Creates an animated model.
 	*/
 	static void CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModel *const RESTRICT model) NOEXCEPT;
+
+	/*
+	*	Creates an animation
+	*/
+	static void CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT;
 
 	/*
 	*	Creates a font.

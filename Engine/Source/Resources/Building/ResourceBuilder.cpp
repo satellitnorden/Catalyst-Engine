@@ -199,6 +199,16 @@ void ResourceBuilder::BuildAnimation(const AnimationBuildParameters &parameters)
 	}
 	);
 
+	//Write the duration of the animation.
+	file.Write(&animation._Duration, sizeof(float));
+
+	//Write the number of animation keyframes.
+	const uint64 number_of_animation_keyframes{ animation._Keyframes.Size() };
+	file.Write(&number_of_animation_keyframes, sizeof(uint64));
+
+	//Write the animation keyframes.
+	file.Write(animation._Keyframes.Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
+
 	//Close the file.
 	file.Close();
 }

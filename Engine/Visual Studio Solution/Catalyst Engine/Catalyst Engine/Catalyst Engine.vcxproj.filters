@@ -1176,6 +1176,9 @@
     <ClInclude Include="..\..\..\Include\Animation\BoneTransform.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\AnimationData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
