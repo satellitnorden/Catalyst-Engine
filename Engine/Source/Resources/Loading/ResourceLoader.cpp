@@ -18,6 +18,7 @@
 
 //Static variable definitions.
 Map<HashString, AnimatedModel> ResourceLoader::_AnimatedModels;
+Map<HashString, Animation> ResourceLoader::_Animations;
 Map<HashString, Font> ResourceLoader::_Fonts;
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
@@ -63,6 +64,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::AnimatedModel:
 			{
 				LoadAnimatedModel(file);
+
+				break;
+			}
+
+			case ResourceType::Animation:
+			{
+				LoadAnimation(file);
 
 				break;
 			}
@@ -159,6 +167,16 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the model.
 	ResourceCreator::CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);
+}
+
+/*
+*	Given a file, load an animation.
+*/
+void ResourceLoader::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Read the resource ID.
+	HashString resource_ID;
+	file.Read(&resource_ID, sizeof(HashString));
 }
 
 /*

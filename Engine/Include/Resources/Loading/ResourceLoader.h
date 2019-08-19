@@ -7,6 +7,7 @@
 
 //Animation.
 #include <Animation/AnimatedModel.h>
+#include <Animation/Animation.h>
 
 //File handling.
 #include <FileHandling/BinaryFile.h>
@@ -33,9 +34,14 @@ public:
 	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
-	*	Given a resource ID, return the corresponding animatedmodel.
+	*	Given a resource ID, return the corresponding animated model.
 	*/
 	static const AnimatedModel& GetAnimatedModel(const HashString resourceID) { return _AnimatedModels[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding animation.
+	*/
+	static const Animation& GetAnimation(const HashString resourceID) { return _Animations[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding font.
@@ -67,6 +73,9 @@ private:
 	//Container for all animated models.
 	static Map<HashString, AnimatedModel> _AnimatedModels;
 
+	//Container for all animations.
+	static Map<HashString, Animation> _Animations;
+
 	//Container for all fonts.
 	static Map<HashString, Font> _Fonts;
 
@@ -91,6 +100,11 @@ private:
 	*	Given a file, load an animated model.
 	*/
 	static void LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load an animation.
+	*/
+	static void LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a model.

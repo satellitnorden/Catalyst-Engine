@@ -7,6 +7,7 @@
 enum class ResourceType : uint8
 {
 	AnimatedModel,
+	Animation,
 	Font,
 	Model,
 	SoundBank,

@@ -7,6 +7,7 @@
 
 //Animation.
 #include <Animation/AnimatedVertex.h>
+#include <Animation/Animation.h>
 #include <Animation/Skeleton.h>
 
 //Rendering.
@@ -57,6 +58,44 @@ public:
 
 		//Process the node(s).
 		ProcessModelNode(modelScene->mRootNode, modelScene, vertices, indices);
+	}
+
+	/*
+	*	Builds an animation.
+	*/
+	FORCE_INLINE static void BuildAnimation(const char *const RESTRICT file, Animation *const RESTRICT animation) NOEXCEPT
+	{
+		//Load the model.
+		Assimp::Importer importer;
+		const aiScene *const RESTRICT scene{ importer.ReadFile(file, 0) };
+
+		ASSERT(scene->HasAnimations(), "The scene has no animations!");
+		ASSERT(scene->mNumAnimations == 1, "The scene must contain exactly one animation!");
+
+		const aiAnimation *const RESTRICT assimp_animation{ scene->mAnimations[0] };
+
+		animation->_Duration = static_cast<float>(assimp_animation->mDuration / assimp_animation->mTicksPerSecond);
+
+		for (uint32 i{ 0 }; i < assimp_animation->mNumChannels; ++i)
+		{
+			const aiNodeAnim *const RESTRICT channel{ assimp_animation->mChannels[i] };
+			const HashString channel_name{ channel->mNodeName.C_Str() };
+
+			for (uint32 j{ 0 }; j < channel->mNumPositionKeys; ++j)
+			{
+				ASSERT(channel->mNumPositionKeys == channel->mNumRotationKeys, "It is expected that the number of position and rotation keys are the same!");
+
+				const aiQuatKey &rotation_key{ channel->mRotationKeys[j] };
+				const aiVectorKey &position_key{ channel->mPositionKeys[j] };
+
+				const Quaternion rotation{ rotation_key.mValue.x , rotation_key.mValue.y, rotation_key.mValue.z, rotation_key.mValue.w };
+				const Vector3<float> position{ position_key.mValue.x, position_key.mValue.y, position_key.mValue.z };
+
+				const BoneTransform bone_transform{ rotation, position };
+
+				animation->_Keyframes.EmplaceSlow(static_cast<float>(rotation_key.mTime / assimp_animation->mTicksPerSecond), channel_name, bone_transform);
+			}
+		}
 	}
 
 private:
@@ -132,7 +171,6 @@ private:
 					return first->_Weight > second->_Weight;
 				}
 				);
-
 			}
 
 			//Normalize the weights so that they add up to 1.0f.

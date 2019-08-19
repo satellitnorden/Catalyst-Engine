@@ -32,7 +32,7 @@ public:
 	/*
 	*	Builds an animation.
 	*/
-	static void BuildAnimation(const AnimatedModelBuildParameters &parameters) NOEXCEPT;
+	static void BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a font.
