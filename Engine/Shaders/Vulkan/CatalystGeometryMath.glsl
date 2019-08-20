@@ -2,6 +2,24 @@
 #define CATALYST_VECTOR_MATH
 
 /*
+*   Performs a line/plane intersection. Returns if there was an intersection and will, in the event of an intersection distance, return the intersection point as well.
+*/
+bool LinePlaneIntersection(vec3 line_origin, vec3 line_direction, vec3 plane_position, vec3 plane_normal, out float intersection_distance)
+{
+    if (dot(line_direction, plane_normal) >= 0.0f)
+    {
+        return false;
+    }
+
+    else
+    {
+        intersection_distance = dot(plane_position - line_origin, plane_normal) / dot(line_direction, plane_normal);
+
+        return true;
+    }
+}
+
+/*
 *   Performs a line/sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
 */
 bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosition, float sphereRadius, out float T)
