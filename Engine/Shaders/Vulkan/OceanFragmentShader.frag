@@ -26,9 +26,8 @@ layout (location = 1) out vec4 scene;
 
 void main()
 {
-	//Sample the textures.
+	//Sample the scene features 2 texture.
 	vec4 scene_features_2_sampler = texture(scene_features_2_texture, fragment_texture_coordinate);
-	vec4 scene_sampler = texture(scene_texture, fragment_texture_coordinate);
 
 	//Calculate the world position.
     vec3 ray_direction = CalculateRayDirection(fragment_texture_coordinate);
@@ -45,17 +44,29 @@ void main()
         vec3 intersection_point = perceiverWorldPosition + ray_direction * intersection_distance;
 
         //Sample the ocean texture.
-        vec4 ocean_texture_sampler = texture(ocean_texture, intersection_point.xz);
+        vec4 ocean_texture_sampler = texture(ocean_texture, intersection_point.xz + vec2(totalTime, totalTime));
+
+        //Calculate the ocean normal.
+        vec3 ocean_normal = ocean_texture_sampler.xyz * 2.0f - 1.0f;
+
+        //Calculate the displacement weight.
+        float displacement_weight = (scene_features_2_sampler.w - intersection_distance) * 0.001f;
+
+        //Calculate the underwater color weight.
+        float underwater_color_weight = clamp((scene_features_2_sampler.w - intersection_distance) * 0.1f, 0.1f, 1.0f);
+
+        //Sample the scene.
+        vec4 scene_sampler = texture(scene_texture, fragment_texture_coordinate + vec2(ocean_normal.xz) * displacement_weight);
 
         //Write the fragments.
     	scene_features_2 = vec4(0.0f, 1.0f, 0.0f, intersection_distance);
-        scene = vec4(vec3(ocean_texture_sampler.w), 1.0f);
+        scene = vec4(mix(scene_sampler.rgb, vec3(0.0f, 0.0f, 0.1f), underwater_color_weight), 1.0f);
     }
     
     else
     {
         //Write the fragments.
     	scene_features_2 = scene_features_2_sampler;
-    	scene = scene_sampler;
+    	scene = texture(scene_texture, fragment_texture_coordinate);
     }
 }

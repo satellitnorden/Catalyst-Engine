@@ -11,6 +11,13 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Ocean graphics pipeline constants
+namespace OceanGraphicsPipelineConstants
+{
+	constexpr uint8 OCEAN_TEXTURE_RESOLUTION{ 32 };
+	constexpr Vector2<float> OCEAN_TEXTURE_OFFSET{ 1.0f / static_cast<float>(OCEAN_TEXTURE_RESOLUTION), 1.0f / static_cast<float>(OCEAN_TEXTURE_RESOLUTION) };
+}
+
 /*
 *	Initializes this graphics pipeline.
 */
@@ -101,26 +108,46 @@ float OceanGraphicsPipeline::OceanHeight(const Vector2<float> coordinate) const 
 }
 
 /*
+*	Returns the ocean normal at the given coordinate.
+*/
+void OceanGraphicsPipeline::OceanNormal(const Vector2<float> coordinate, Vector3<float> *const RESTRICT normal, float *const RESTRICT height) const NOEXCEPT
+{
+	//Retrieve the positions in a cross.
+	const Vector3<float> center{ 0.0f, OceanHeight(coordinate), 0.0f };
+	const Vector3<float> up{ 0.0f, OceanHeight(coordinate + OceanGraphicsPipelineConstants::OCEAN_TEXTURE_OFFSET * Vector2<float>(0.0f, 1.0f)), 1.0f };
+	const Vector3<float> right{ 1.0f, OceanHeight(coordinate + OceanGraphicsPipelineConstants::OCEAN_TEXTURE_OFFSET * Vector2<float>(1.0f, 0.0f)), 0.0f };
+	const Vector3<float> down{ 0.0f, OceanHeight(coordinate + OceanGraphicsPipelineConstants::OCEAN_TEXTURE_OFFSET * Vector2<float>(0.0f, -1.0f)), -1.0f };
+	const Vector3<float> left{ -1.0f, OceanHeight(coordinate + OceanGraphicsPipelineConstants::OCEAN_TEXTURE_OFFSET * Vector2<float>(-1.0f, 0.0f)), 0.0f };
+
+	*normal = Vector3<float>::Normalize(Vector3<float>::CrossProduct(up - center, right - center) + Vector3<float>::CrossProduct(right - center, down - center) + Vector3<float>::CrossProduct(down - center, left - center) + Vector3<float>::CrossProduct(left - center, up - center));
+	*height = center._Y;
+}
+
+/*
 *	Creates the ocean texture.
 */
 void OceanGraphicsPipeline::CreateOceanTexture() NOEXCEPT
 {
-	//Define constants.
-	constexpr uint8 OCEAN_TEXTURE_RESOLUTION{ 16 };
-
 	//Create the data for the ocean texture.
-	Texture2D<Vector4<byte>> ocean_texture{ OCEAN_TEXTURE_RESOLUTION };
+	Texture2D<Vector4<byte>> ocean_texture{ OceanGraphicsPipelineConstants::OCEAN_TEXTURE_RESOLUTION };
 
-	for (uint8 x{ 0 }; x < OCEAN_TEXTURE_RESOLUTION; ++x)
+	for (uint8 x{ 0 }; x < OceanGraphicsPipelineConstants::OCEAN_TEXTURE_RESOLUTION; ++x)
 	{
-		for (uint8 y{ 0 }; y < OCEAN_TEXTURE_RESOLUTION; ++y)
+		for (uint8 y{ 0 }; y < OceanGraphicsPipelineConstants::OCEAN_TEXTURE_RESOLUTION; ++y)
 		{
 			//Calculate the coordinate.
-			const Vector2<float> coordinate{ static_cast<float>(x) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION), static_cast<float>(y) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION) };
+			const Vector2<float> coordinate{ static_cast<float>(x) / static_cast<float>(OceanGraphicsPipelineConstants::OCEAN_TEXTURE_RESOLUTION), static_cast<float>(y) / static_cast<float>(OceanGraphicsPipelineConstants::OCEAN_TEXTURE_RESOLUTION) };
 
-			const float ocean_height = OceanHeight(coordinate);
+			//Retrieve the ocean normal and height.
+			Vector3<float> ocean_normal;
+			float ocean_height;
+			
+			OceanNormal(coordinate, &ocean_normal, &ocean_height);
 
-			ocean_texture.At(x, y) = Vector4<byte>(CatalystRandomMath::RandomIntegerInRange<byte>(0, 255), CatalystRandomMath::RandomIntegerInRange<byte>(0, 255), CatalystRandomMath::RandomIntegerInRange<byte>(0, 255), static_cast<byte>(ocean_height * 255.0f));
+			const Vector3<byte> ocean_normal_byte{ static_cast<byte>((ocean_normal._X * 0.5f + 0.5f) * 255.0f) , static_cast<byte>((ocean_normal._Y * 0.5f + 0.5f) * 255.0f) , static_cast<byte>((ocean_normal._Z * 0.5f + 0.5f) * 255.0f) };
+			const byte ocean_height_byte = static_cast<byte>(ocean_height * 255.0f);
+
+			ocean_texture.At(x, y) = Vector4<byte>(ocean_normal_byte._X, ocean_normal_byte._Y, ocean_normal_byte._Z, ocean_height_byte);
 		}
 	}
 

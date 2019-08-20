@@ -38,6 +38,11 @@ private:
 	float OceanHeight(const Vector2<float> coordinate) const NOEXCEPT;
 
 	/*
+	*	Returns the ocean normal at the given coordinate.
+	*/
+	void OceanNormal(const Vector2<float> coordinate, Vector3<float> *const RESTRICT normal, float *const RESTRICT height) const NOEXCEPT;
+
+	/*
 	*	Creates the ocean texture.
 	*/
 	void CreateOceanTexture() NOEXCEPT;
