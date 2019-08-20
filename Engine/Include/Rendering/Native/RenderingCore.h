@@ -61,6 +61,7 @@ enum class RenderPassStage : uint8
 	DiffuseIrradiance,
 	WorldRayTracing,
 	SpecularIrradiance,
+	Ocean,
 	VolumetricLighting,
 #else
 	PathTracing,
@@ -288,6 +289,7 @@ enum class Shader : uint8
 	ModelSceneFeaturesFragment,
 	ModelSceneFeaturesVertex,
 	MotionBlurFragment,
+	OceanFragment,
 	PassthroughFragment,
 	PathTracingDenoisingFragment,
 	PathTracingRayClosestHit,
