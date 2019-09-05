@@ -13,9 +13,23 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Vegetation push constant data definition.
+*	Vegetation vertex push constant data definition.
 */
-class VegetationPushConstantData final
+class VegetationVertexPushConstantData final
+{
+
+public:
+
+	float _LargeScaleWindDisplacementFactor;
+	float _MediumScaleWindDisplacementFactor;
+	float _SmallScaleWindDisplacementFactor;
+
+};
+
+/*
+*	Vegetation fragment push constant data definition.
+*/
+class VegetationFragmentPushConstantData final
 {
 
 public:
@@ -54,8 +68,9 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferH
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(VegetationPushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
@@ -164,13 +179,21 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Push constants.
-		VegetationPushConstantData fragmentData;
+		VegetationVertexPushConstantData vertex_data;
 
-		fragmentData._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
-		fragmentData._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
+		vertex_data._LargeScaleWindDisplacementFactor = component->_LargeScaleWindDisplacementFactor;
+		vertex_data._MediumScaleWindDisplacementFactor = component->_MediumScaleWindDisplacementFactor;
+		vertex_data._SmallScaleWindDisplacementFactor = component->_SmallScaleWindDisplacementFactor;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VegetationPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData), &vertex_data);
+
+		VegetationFragmentPushConstantData fragment_data;
+
+		fragment_data._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
+		fragment_data._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
+		fragment_data._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
 		//Bind the vertex/inder buffer.
 		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);

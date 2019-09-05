@@ -33,6 +33,15 @@ public:
 	//The cutoff distance.
 	float _CutoffDistance;
 
+	//The large scale wind displacement factor.
+	float _LargeScaleWindDisplacementFactor;
+
+	//The medium scale wind displacement factor.
+	float _MediumScaleWindDisplacementFactor;
+
+	//The small scale wind displacement factor.
+	float _SmallScaleWindDisplacementFactor;
+
 	//The transformations buffer.
 	BufferHandle _TransformationsBuffer;
 

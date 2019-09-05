@@ -10,8 +10,8 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int maskIndex;
-    layout (offset = 4) float cutoffDistanceSquared;
+    layout (offset = 12) int maskIndex;
+    layout (offset = 16) float cutoffDistanceSquared;
 };
 
 //In parameters.

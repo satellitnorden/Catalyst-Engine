@@ -15,9 +15,9 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int albedoTextureIndex;
-    layout (offset = 4) int normalMapTextureIndex;
-    layout (offset = 8) int materialPropertiesIndex;
+    layout (offset = 12) int albedoTextureIndex;
+    layout (offset = 16) int normalMapTextureIndex;
+    layout (offset = 20) int materialPropertiesIndex;
 };
 
 //In parameters.

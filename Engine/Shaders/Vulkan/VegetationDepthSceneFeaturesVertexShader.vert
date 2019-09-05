@@ -8,6 +8,14 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystVegetationUtilities.glsl"
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float large_scale_wind_displacement_factor;
+    layout (offset = 4) float medium_scale_wind_displacement_factor;
+    layout (offset = 8) float small_scale_wind_displacement_factor;
+};
+
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
@@ -32,7 +40,7 @@ void main()
 	float displacementMultiplier = vertexPosition.y;
 
 	//Apply the wind displacement.
-	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal, totalTime) * displacementMultiplier;
+	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal, totalTime, large_scale_wind_displacement_factor, medium_scale_wind_displacement_factor, small_scale_wind_displacement_factor) * displacementMultiplier;
 
 	fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;

@@ -40,6 +40,9 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	component._Material = vegetationInitializationData->_Material;
 	component._MaskTextureIndex = vegetationInitializationData->_MaskTextureIndex;
 	component._CutoffDistance = vegetationInitializationData->_CutoffDistance;
+	component._LargeScaleWindDisplacementFactor = vegetationInitializationData->_LargeScaleWindDisplacementFactor;
+	component._MediumScaleWindDisplacementFactor = vegetationInitializationData->_MediumScaleWindDisplacementFactor;
+	component._SmallScaleWindDisplacementFactor = vegetationInitializationData->_SmallScaleWindDisplacementFactor;
 	RenderingUtilities::CreateTransformationsBuffer(vegetationInitializationData->_Transformations, &component._TransformationsBuffer);
 	component._NumberOfTransformations = static_cast<uint32>(vegetationInitializationData->_Transformations.Size());
 
