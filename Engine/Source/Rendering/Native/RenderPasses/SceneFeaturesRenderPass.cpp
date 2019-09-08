@@ -39,10 +39,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(6);
+	SetNumberOfPipelines(7);
 	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_VegetationSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VelocityGraphicsPipeline);
@@ -50,6 +51,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_VegetationSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_ModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -70,6 +72,7 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
 	_TerrainSceneFeaturesGraphicsPipeline.Execute();
+	_VegetationSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationColorSceneFeaturesGraphicsPipeline.Execute();
 	_ModelSceneFeaturesGraphicsPipeline.Execute();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();

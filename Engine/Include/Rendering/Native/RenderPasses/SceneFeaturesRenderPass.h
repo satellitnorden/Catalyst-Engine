@@ -9,6 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationDepthSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -35,6 +36,9 @@ private:
 
 	//The terrain scene features graphics pipeline.
 	TerrainSceneFeaturesGraphicsPipeline _TerrainSceneFeaturesGraphicsPipeline;
+
+	//The vegetation scene features graphics pipeline.
+	VegetationSceneFeaturesGraphicsPipeline _VegetationSceneFeaturesGraphicsPipeline;
 
 	//The vegetation color scene features graphics pipeline.
 	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;

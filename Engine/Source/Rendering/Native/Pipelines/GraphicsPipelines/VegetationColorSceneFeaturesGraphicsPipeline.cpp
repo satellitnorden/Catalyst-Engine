@@ -178,6 +178,12 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
+		//Don't draw if it's not a masked material.
+		if (component->_Material._Type != Material::Type::Masked)
+		{
+			continue;
+		}
+
 		//Push constants.
 		VegetationVertexPushConstantData vertex_data;
 

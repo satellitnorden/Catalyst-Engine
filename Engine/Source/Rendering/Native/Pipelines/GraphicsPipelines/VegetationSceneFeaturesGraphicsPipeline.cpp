@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationDepthSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -34,25 +34,34 @@ class VegetationFragmentPushConstantData final
 
 public:
 
-	int32 _MaskTextureIndex;
-	float _CutoffDistanceSquared;
+	int32 _AlbedoTextureIndex;
+	int32 _NormalMapTextureIndex;
+	int32 _MaterialPropertiesTextureIndex;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void VegetationDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationDepthSceneFeaturesVertex);
+	SetVertexShader(Shader::VegetationColorSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VegetationDepthSceneFeaturesFragment);
+	SetFragmentShader(Shader::VegetationColorSceneFeaturesFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);
+
+	//Add the render targets.
+	SetNumberOfRenderTargets(5);
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Velocity));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -113,25 +122,25 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferH
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::None);
+	SetCullMode(CullMode::Back);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(true);
+	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilWriteMask(0);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 }
 
 /*
 *	Executes this graphics pipeline.
 */
-void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -169,8 +178,8 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Don't draw if it's not a masked material.
-		if (component->_Material._Type != Material::Type::Masked)
+		//Don't draw if it's not an opaque material.
+		if (component->_Material._Type != Material::Type::Opaque)
 		{
 			continue;
 		}
@@ -186,8 +195,9 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		VegetationFragmentPushConstantData fragment_data;
 
-		fragment_data._MaskTextureIndex = component->_Material._OptionalTextureIndex;
-		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
+		fragment_data._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
+		fragment_data._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
+		fragment_data._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 

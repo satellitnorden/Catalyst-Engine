@@ -38,7 +38,6 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	component._Visibility = false;
 	component._Model = vegetationInitializationData->_Model;
 	component._Material = vegetationInitializationData->_Material;
-	component._MaskTextureIndex = vegetationInitializationData->_MaskTextureIndex;
 	component._CutoffDistance = vegetationInitializationData->_CutoffDistance;
 	component._LargeScaleWindDisplacementFactor = vegetationInitializationData->_LargeScaleWindDisplacementFactor;
 	component._MediumScaleWindDisplacementFactor = vegetationInitializationData->_MediumScaleWindDisplacementFactor;
