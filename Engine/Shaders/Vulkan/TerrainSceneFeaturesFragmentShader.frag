@@ -46,14 +46,29 @@ void main()
     //calculate the material texture coordinate.
     vec2 materialTextureCoordinate = fragmentWorldPosition.xz;
 
-    //Retrieve the albedo.
-    //vec3 albedo = texture(sampler2D(globalTextures[204], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
-    vec3 albedo = dot(terrainNormal, vec3(0.0f, 1.0f, 0.0f)) > 0.75f ? vec3(0.1f, 0.2f, 0.1f) : vec3(0.1f, 0.1f, 0.1f);
+    //Retrieve the albedo, normal map and material properties.
+    vec3 albedo;
+    vec3 normal_map;
+    vec4 material_properties;
+
+    if (dot(terrainNormal, vec3(0.0f, 1.0f, 0.0f)) >= 0.75f)
+    {
+        albedo = texture(sampler2D(globalTextures[210], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
+        normal_map = texture(sampler2D(globalTextures[211], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
+        material_properties = texture(sampler2D(globalTextures[212], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate);
+    }
+    
+    else
+    {
+        albedo = texture(sampler2D(globalTextures[213], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
+        normal_map = texture(sampler2D(globalTextures[214], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate).rgb;
+        material_properties = texture(sampler2D(globalTextures[215], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), materialTextureCoordinate);
+    }
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);
     sceneFeatures2 = vec4(terrainNormal, length(fragmentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = vec4(terrainNormal, 0.0f);
-    sceneFeatures4 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+    sceneFeatures4 = material_properties;
     velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition), 0.0f, 0.0f);
 }
