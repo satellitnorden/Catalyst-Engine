@@ -350,7 +350,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._FirstTextureIndex = texture._Index;
+			material._AlbedoTextureIndex = texture._Index;
 
 			//Make the albedo texture the default texture 2D.
 			_DefaultTexture2D = texture._Texture2D;
@@ -373,7 +373,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._SecondTextureIndex = texture._Index;
+			material._NormalMapTextureIndex = texture._Index;
 		}
 
 		{
@@ -393,7 +393,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._ThirdTextureIndex = texture._Index;
+			material._MaterialPropertiesTextureIndex = texture._Index;
 		}
 
 		material._LuminanceMultiplier = 0.0f;
@@ -422,7 +422,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._FirstTextureIndex = texture._Index;
+			material._AlbedoTextureIndex = texture._Index;
 
 			//Make the albedo texture the default texture 2D.
 			_DefaultTexture2D = texture._Texture2D;
@@ -445,7 +445,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._SecondTextureIndex = texture._Index;
+			material._NormalMapTextureIndex = texture._Index;
 		}
 
 		{
@@ -465,7 +465,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._ThirdTextureIndex = texture._Index;
+			material._MaterialPropertiesTextureIndex = texture._Index;
 		}
 
 		material._LuminanceMultiplier = 0.0f;
@@ -494,7 +494,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._FirstTextureIndex = texture._Index;
+			material._AlbedoTextureIndex = texture._Index;
 
 			//Make the albedo texture the default texture 2D.
 			_DefaultTexture2D = texture._Texture2D;
@@ -517,7 +517,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._SecondTextureIndex = texture._Index;
+			material._NormalMapTextureIndex = texture._Index;
 		}
 
 		{
@@ -537,7 +537,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 
 			ResourceCreator::CreateTexture2D(&data, &texture);
 
-			material._ThirdTextureIndex = texture._Index;
+			material._MaterialPropertiesTextureIndex = texture._Index;
 		}
 
 		material._LuminanceMultiplier = 0.0f;

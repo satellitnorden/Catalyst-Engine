@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
@@ -377,6 +378,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\LightingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\MaterialSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />

@@ -164,9 +164,9 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		FragmentPushConstantData fragmentData;
 
-		fragmentData._AlbedoTextureIndex = component->_Material._FirstTextureIndex;
-		fragmentData._NormalMapTextureIndex = component->_Material._SecondTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = component->_Material._ThirdTextureIndex;
+		fragmentData._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
+		fragmentData._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
+		fragmentData._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
 		fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
 		fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
 
