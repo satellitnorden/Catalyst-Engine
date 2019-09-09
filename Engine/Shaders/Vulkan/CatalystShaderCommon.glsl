@@ -27,6 +27,7 @@
 #define VOLUMETRIC_LIGHTING_MODE_RAY_TRACED (1)
 
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (512)
+#define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (255)
 
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (0)
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX (1)
@@ -44,6 +45,21 @@
 #define INVERSE_PI (0.318309f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 #define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
+
+/*
+*	Material struct definition.
+*/
+struct Material
+{
+	int albedo_texture_index;
+	int normal_map_texture_index;
+	int material_properties_texture_index;
+	int optional_texture_index;
+	int type;
+	int properties;
+	float luminance_multiplier;
+	int padding;
+};
 
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
@@ -103,6 +119,12 @@ layout (set = 0, binding = 1) uniform texture2D globalTextures[MAXIMUM_NUMBER_OF
 
 //The global samplers.
 layout (set = 0, binding = 2) uniform sampler globalSamplers[NUMBER_OF_GLOBAL_SAMPLERS];
+
+//Global materials.
+layout (std140, set = 0, binding = 3) uniform GlobalMaterials
+{
+    layout (offset = 0) Material global_materials[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
+};
 
 /*
 *   Defines the bit at the specified index.

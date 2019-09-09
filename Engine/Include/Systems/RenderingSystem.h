@@ -17,6 +17,7 @@
 #include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/Material.h>
+#include <Rendering/Native/MaterialSystem.h>
 #include <Rendering/Native/ModelSystem.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
@@ -144,7 +145,15 @@ public:
 	}
 
 	/*
-	*	Returns the lighting system.
+	*	Returns the material system.
+	*/
+	RESTRICTED NO_DISCARD MaterialSystem *const RESTRICT GetMaterialSystem() NOEXCEPT
+	{
+		return &_MaterialSystem;
+	}
+
+	/*
+	*	Returns the model system.
 	*/
 	RESTRICTED NO_DISCARD ModelSystem *const RESTRICT GetModelSystem() NOEXCEPT
 	{
@@ -335,6 +344,9 @@ private:
 	//The lighting system.
 	LightingSystem _LightingSystem;
 
+	//The material system.
+	MaterialSystem _MaterialSystem;
+
 	//The model system.
 	ModelSystem _ModelSystem;
 
@@ -413,14 +425,19 @@ private:
 	void UpdateGlobalRenderData() NOEXCEPT;
 
 	/*
-	*	Updates the dynamic uniform data.
+	*	Updates the global uniform data
 	*/
-	void UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+	void UpdateGlobalUniformData(const uint8 current_framebuffer_index) NOEXCEPT;
 
 	/*
 	*	Updates the global textures.
 	*/
-	void UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
+	void UpdateGlobalTextures(const uint8 current_framebuffer_index) NOEXCEPT;
+
+	/*
+	*	Updates the global materials.
+	*/
+	void UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT;
 
 	/*
 	*	Updates the terrain height textures.

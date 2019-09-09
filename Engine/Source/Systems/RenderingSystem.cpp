@@ -110,6 +110,9 @@ void RenderingSystem::PostInitializeSystem()
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
+	//Post-initialize the material system.
+	_MaterialSystem.PostInitialize();
+
 	//Post-initialize the model system.
 	_ModelSystem.PostInitialize();
 
@@ -139,6 +142,9 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 
 	//Update the lighting system.
 	_LightingSystem.RenderUpdate(context);
+
+	//Update the material system.
+	_MaterialSystem.RenderUpdate(context);
 
 	//Update the model system.
 	_ModelSystem.RenderUpdate(context);
@@ -551,11 +557,12 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex)
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -664,19 +671,22 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 {
 	//Retrieve the current frame buffer index.
-	const uint8 currentFrameBufferIndex{ GetCurrentFramebufferIndex() };
+	const uint8 current_framebuffer_index{ GetCurrentFramebufferIndex() };
 
-	//Update the dynamic uniform data.
-	UpdateDynamicUniformData(currentFrameBufferIndex);
+	//Update the global uniform data.
+	UpdateGlobalUniformData(current_framebuffer_index);
 
 	//Update the global textures.
-	UpdateGlobalTextures(currentFrameBufferIndex);
+	UpdateGlobalTextures(current_framebuffer_index);
+
+	//Update global materials.
+	UpdateGlobalMaterials(current_framebuffer_index);
 }
 
 /*
-*	Updates the dynamic uniform data.
+*	Updates the global render data.
 */
-void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
+void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Define constants.
 	constexpr float JITTER_SAMPLE_MULTIPLIER{ 0.5f };
@@ -762,7 +772,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 
-	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex]);
+	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[current_framebuffer_index]);
 
 	//Update the current jitter index.
 	_CurrentJitterIndex = _CurrentJitterIndex == JITTER_SAMPLES.Size() - 1 ? 0 : _CurrentJitterIndex + 1;
@@ -774,25 +784,34 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 /*
 *	Updates the global textures.
 */
-void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
+void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Lock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
-	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
+	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], _DefaultTexture2D);
+		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
 	}
 
-	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
+	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].ClearFast();
 
-	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
+	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
+		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Second);
 	}
 
-	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
+	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].ClearFast();
 
 	//Unlock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
+}
+
+/*
+*	Updates the global materials.
+*/
+void RenderingSystem::UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT
+{
+	//Bind the current global material uniform buffer to the global render data table.
+	BindUniformBufferToRenderDataTable(3, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentGlobalMaterialUnifomBuffer());
 }
