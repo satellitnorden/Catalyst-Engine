@@ -28,8 +28,11 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
+	//Calculate the view direction.
+	vec3 view_direction = CalculateRayDirection(fragmentTextureCoordinate);
+
 	//Calculate the world position at this fragment the current frame.
-	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
+	vec3 worldPosition = perceiverWorldPosition + view_direction * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
 
 	//Calculate the reflection direction.
 	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), texture(sceneFeatures3Texture, fragmentTextureCoordinate).xyz);
@@ -41,7 +44,7 @@ void main()
 	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * activeNoiseTexture.x;
 
 	//Calculate the screen space specular irradiance.
-	vec3 screenSpaceSpecularIrradiance = vec3(0.0f);
+	vec3 screenSpaceSpecularIrradiance = SkyColor(view_direction);
 
 	for (int i = 0; i < SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES; ++i)
 	{

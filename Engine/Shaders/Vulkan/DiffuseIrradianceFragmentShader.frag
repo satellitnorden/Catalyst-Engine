@@ -17,7 +17,7 @@ struct SceneFeatures
 {
 	vec3 albedo;
 	vec3 normal;
-	vec3 hitPosition;
+	vec3 view_direction;
 	int materialProperties;
 	float hitDistance;
 	float roughness;
@@ -57,7 +57,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = sceneFeatures3.xyz;
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.view_direction = CalculateRayDirection(coordinate);
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
 	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
@@ -72,13 +72,13 @@ void main()
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Calculate the indirect lighting.
-	vec3 indirectLighting = CalculateIndirectLighting(	normalize(currentFeatures.hitPosition - perceiverWorldPosition),
+	vec3 indirectLighting = CalculateIndirectLighting(	currentFeatures.view_direction,
 														currentFeatures.albedo,
 														currentFeatures.normal,
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														vec3(ambientIlluminationIntensity),
+														SkyColor(currentFeatures.view_direction),
 														vec3(0.0f));
 
 	//Write the fragment.

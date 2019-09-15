@@ -276,7 +276,7 @@ private:
 	float _NearPlane{ 0.1f };
 
 	//The far plane.
-	float _FarPlane{ 1'024.0f };
+	float _FarPlane{ 2'048.0f };
 
 	//The projection matrix jitter.
 	Vector2<float> _ProjectionMatrixJitter{ 0.0f, 0.0f };

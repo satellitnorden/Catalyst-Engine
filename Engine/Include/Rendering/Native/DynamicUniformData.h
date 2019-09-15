@@ -20,10 +20,10 @@ public:
 	Matrix4 _ProjectionMatrix;
 	Matrix4 _ViewMatrix;
 
-	Vector4<float> _DirectionalLightColor;
+	Vector4<float> _UpperSkyColor;
+	Vector4<float> _LowerSkyColor;
 	Vector4<float> _PerceiverWorldPositionMinusOne;
 	Vector4<float> _PerceiverForwardVector;
-	Vector4<float> _PerceiverVelocity;
 	Vector4<float> _PerceiverWorldPosition;
 
 	Vector2<float> _ScaledResolution;

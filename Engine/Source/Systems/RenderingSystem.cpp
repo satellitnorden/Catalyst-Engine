@@ -9,6 +9,7 @@
 #include <Entities/Types/Entity.h>
 
 //Managers.
+#include <Managers/EnvironmentManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Math.
@@ -729,10 +730,10 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.
-	_DynamicUniformData._DirectionalLightColor = _LightingSystem.GetDirectionalLight()->GetColor();
+	_DynamicUniformData._UpperSkyColor = EnvironmentManager::GetUpperSkyColor();
+	_DynamicUniformData._LowerSkyColor = EnvironmentManager::GetLowerSkyColor();
 	_DynamicUniformData._PerceiverWorldPositionMinusOne = _DynamicUniformData._PerceiverWorldPosition;
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
-	_DynamicUniformData._PerceiverVelocity = Perceiver::Instance->GetPosition() - Vector3<float>(_DynamicUniformData._PerceiverWorldPosition._X, _DynamicUniformData._PerceiverWorldPosition._Y, _DynamicUniformData._PerceiverWorldPosition._Z);
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 
 	_DynamicUniformData._ScaledResolution = Vector2<float>(static_cast<float>(GetScaledResolution()._Width), static_cast<float>(GetScaledResolution()._Height));

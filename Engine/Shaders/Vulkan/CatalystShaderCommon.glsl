@@ -7,7 +7,7 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (2.0f)
+#define AMBIENT_OCCLUSION_POWER (2.5f)
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
@@ -72,10 +72,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 320) mat4 projectionMatrix;
     layout (offset = 384) mat4 viewMatrix;
 
-    layout (offset = 448) vec3 directionalLightColor;
-    layout (offset = 464) vec3 perceiverWorldPositionMinusOne;
-    layout (offset = 480) vec3 perceiverForwardVector;
-    layout (offset = 496) vec3 perceiverVelocity;
+    layout (offset = 448) vec3 upper_sky_color;
+    layout (offset = 464) vec3 lower_sky_color;
+    layout (offset = 480) vec3 perceiverWorldPositionMinusOne;
+    layout (offset = 496) vec3 perceiverForwardVector;
     layout (offset = 512) vec3 perceiverWorldPosition;
 
     layout (offset = 528) vec2 scaledResolution;
@@ -218,6 +218,14 @@ float RandomFloat(vec2 coordinate, float seed)
 float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum)
 {
     return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
+}
+
+/*
+*	Returns the sky color in the given direction.
+*/
+vec3 SkyColor(vec3 direction)
+{
+	return mix(lower_sky_color, upper_sky_color, max(dot(direction, vec3(0.0f, 1.0f, 0.0f)), 0.0f));
 }
 
 /*

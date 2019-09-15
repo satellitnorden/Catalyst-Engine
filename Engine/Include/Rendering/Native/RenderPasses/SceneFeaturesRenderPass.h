@@ -26,6 +26,14 @@ public:
 	*/
 	SceneFeaturesRenderPass() NOEXCEPT;
 
+	/*
+	*	Returns the scene depth buffer.
+	*/
+	FORCE_INLINE NO_DISCARD DepthBufferHandle GetSceneDepthBuffer() NOEXCEPT
+	{
+		return _SceneDepthBuffer;
+	}
+
 private:
 
 	//The scene depth buffer.

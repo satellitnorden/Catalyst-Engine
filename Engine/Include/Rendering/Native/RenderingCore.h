@@ -62,6 +62,7 @@ enum class RenderPassStage : uint8
 	DiffuseIrradiance,
 	WorldRayTracing,
 	SpecularIrradiance,
+	Sky,
 	Ocean,
 	VolumetricLighting,
 #else
@@ -301,6 +302,7 @@ enum class Shader : uint8
 	ScreenSpaceAmbientOcclusionFragment,
 	ScreenSpaceSpecularIrradianceFragment,
 	SeparableBlurFragment,
+	SkyFragment,
 	SpecularIrradianceApplicationFragment,
 	TemporalAntiAliasingFragment,
 	TerrainSceneFeaturesFragment,
