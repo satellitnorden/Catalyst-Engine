@@ -45,8 +45,17 @@ class TerrainFragmentPushConstantData final
 
 public:
 
+	//The terrain texture resolution.
+	float _TerrainTextureResolution;
+
+	//The inverse terrain texture resolution.
+	float _InverseTerrainTextureResolution;
+
 	//The normal texture index.
 	int32 _NormalTextureIndex;
+
+	//The material texture index.
+	int32 _MaterialTextureIndex;
 
 };
 
@@ -167,7 +176,10 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		TerrainFragmentPushConstantData fragmentData;
 
+		fragmentData._TerrainTextureResolution = information._MaterialTextureResolution;
+		fragmentData._InverseTerrainTextureResolution = information._InverseMaterialTextureResolution;
 		fragmentData._NormalTextureIndex = information._NormalTextureIndex;
+		fragmentData._MaterialTextureIndex = information._MaterialTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData), &fragmentData);
 
