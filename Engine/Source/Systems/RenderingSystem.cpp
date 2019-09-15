@@ -743,7 +743,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
-	_DynamicUniformData._DirectionalLightIntensity = _LightingSystem.GetDirectionalLight()->GetIntensity();
+	_DynamicUniformData._StarStrength = EnvironmentManager::GetStarStrength();
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);

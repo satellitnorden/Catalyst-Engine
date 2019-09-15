@@ -44,7 +44,7 @@ void main()
 	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * activeNoiseTexture.x;
 
 	//Calculate the screen space specular irradiance.
-	vec3 screenSpaceSpecularIrradiance = SkyColor(view_direction);
+	vec3 screenSpaceSpecularIrradiance = SkyColor(reflectionDirection);
 
 	for (int i = 0; i < SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES; ++i)
 	{

@@ -43,6 +43,22 @@ public:
 		GetLowerSkyColorInternal() = color;
 	}
 
+	/*
+	*	Returns the star strength.
+	*/
+	FORCE_INLINE static NO_DISCARD float GetStarStrength() NOEXCEPT
+	{
+		return GetStarStrengthInternal();
+	}
+
+	/*
+	*	Sets the star strength.
+	*/
+	FORCE_INLINE static void SetStarStrength(const float strength) NOEXCEPT
+	{
+		GetStarStrengthInternal() = strength;
+	}
+
 private:
 
 	/*
@@ -63,6 +79,16 @@ private:
 		static Vector3<float> color;
 
 		return color;
+	}
+
+	/*
+	*	Returns the star strength.
+	*/
+	FORCE_INLINE static NO_DISCARD float& GetStarStrengthInternal() NOEXCEPT
+	{
+		static float strength;
+
+		return strength;
 	}
 
 };

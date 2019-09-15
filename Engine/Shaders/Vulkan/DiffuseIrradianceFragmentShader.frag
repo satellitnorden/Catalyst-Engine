@@ -78,7 +78,7 @@ void main()
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														SkyColor(currentFeatures.view_direction),
+														SkyColor(currentFeatures.normal),
 														vec3(0.0f));
 
 	//Write the fragment.
