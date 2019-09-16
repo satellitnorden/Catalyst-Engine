@@ -108,7 +108,7 @@ void SkyGraphicsPipeline::Execute() NOEXCEPT
 	if (ComponentManager::GetNumberOfLightComponents() > 0)
 	{
 		data._SkyLightViewDirection = Vector3<float>::Normalize(ComponentManager::GetLightLightComponents()[0]._Position - Perceiver::Instance->GetPosition());
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength;
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color;
 	}
 	
 	else

@@ -33,10 +33,10 @@ void main()
    vec3 sky_color = SkyColor(view_direction);
 
    //Calculate the sun color.
-   vec3 sun_color = sky_light_luminance;
+   vec3 sun_color = sky_light_luminance * 10.0f;
 
    //Calculate the sun weight.
-   float sun_weight = pow(max(dot(view_direction, sky_light_view_direction), 0.0f), 16384.0f);
+   float sun_weight = pow(max(dot(view_direction, sky_light_view_direction), 0.0f), 4096.0f);
 
    //Write the fragment.
    fragment = vec4(mix(sky_color, sun_color, sun_weight), 1.0f);
