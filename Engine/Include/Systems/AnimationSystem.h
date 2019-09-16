@@ -6,6 +6,9 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
+//Forward declarations.
+class AnimatedModelComponent;
+
 class AnimationSystem final
 {
 
@@ -44,5 +47,10 @@ private:
 
 	//The animation data render data table layout.
 	RenderDataTableLayoutHandle _AnimationDataRenderDataTableLayout;
+
+	/*
+	*	Updates an animated model.
+	*/
+	void UpdateAnimatedModel(const UpdateContext *const RESTRICT context, AnimatedModelComponent *const RESTRICT component) NOEXCEPT;
 
 };

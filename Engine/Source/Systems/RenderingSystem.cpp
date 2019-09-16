@@ -29,6 +29,7 @@
 #include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
+#include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
 
 //Singleton definition.
@@ -149,6 +150,9 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 
 	//Update the model system.
 	_ModelSystem.RenderUpdate(context);
+
+	//This shouldn't really be here, but let's have it here for now...
+	AnimationSystem::Instance->RenderUpdate(context);
 
 	//Execute all render passes.
 	RenderingSystemLogic::ExecuteRenderPasses();
