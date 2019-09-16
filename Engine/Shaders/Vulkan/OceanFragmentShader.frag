@@ -8,6 +8,10 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
+
+//Constants.
+#define OCEAN_BASE_COLOR (vec3(0.1f, 0.2f, 1.0f))
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -34,7 +38,7 @@ void main()
 	vec3 world_position = perceiverWorldPosition + ray_direction * scene_features_2_sampler.w;
 
     //Is the world position underwater?
-    if (world_position.y < 0.0f)
+    if (world_position.y <= 0.0f)
     {
         //Calculate the intersection point for the ocean plane.
         float intersection_distance = 0.0f;
@@ -50,17 +54,36 @@ void main()
         vec3 ocean_normal = ocean_texture_sampler.xyz * 2.0f - 1.0f;
 
         //Calculate the displacement weight.
-        float displacement_weight = (scene_features_2_sampler.w - intersection_distance) * 0.001f;
+        float displacement_weight = (scene_features_2_sampler.w - intersection_distance) * 0.01f;
 
-        //Calculate the underwater color weight.
-        float underwater_color_weight = clamp((scene_features_2_sampler.w - intersection_distance) * 0.1f, 0.1f, 1.0f);
-
-        //Sample the scene.
+		//Sample the scene.
         vec4 scene_sampler = texture(scene_texture, fragment_texture_coordinate + vec2(ocean_normal.xz) * displacement_weight);
+
+        //Calculate the scene color weight.
+        float scene_color_weight = 1.0f - clamp((scene_features_2_sampler.w - intersection_distance) * 0.01f, 0.0f, 1.0f);
+
+        //Calculate the underwater color.
+        vec3 underwater_color = mix(OCEAN_BASE_COLOR * SkyColor(vec3(0.0f, 1.0f, 0.0f)), scene_sampler.rgb, scene_color_weight);
+
+        //Calculate the final fragment.
+        vec3 final_fragment = vec3(0.0f);
+
+        //Add the underwater color.
+        final_fragment += underwater_color;
+
+        //Add the specular irradiance.
+        final_fragment += CalculateIndirectLighting(ray_direction,
+													underwater_color,
+													ocean_normal,
+													0.0f,
+													1.0f,
+													1.0f,
+													vec3(0.0f),
+													SkyColor(reflect(ray_direction, ocean_normal)));
 
         //Write the fragments.
     	scene_features_2 = vec4(0.0f, 1.0f, 0.0f, intersection_distance);
-        scene = vec4(mix(scene_sampler.rgb, vec3(0.0f, 0.0f, 0.1f), underwater_color_weight), 1.0f);
+        scene = vec4(final_fragment, 1.0f);
     }
     
     else

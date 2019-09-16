@@ -247,7 +247,7 @@ vec3 SkyColor(vec3 direction)
 
         float star_value = RandomFloat(hit_position.xy, hit_position.z);
 
-        star_weight = float(star_value >= 0.999f) * star_strength;
+        star_weight = float(star_value >= 0.9975f) * star_strength;
     }
 
 	return mix(sky_color, vec3(1.0f), star_weight);
