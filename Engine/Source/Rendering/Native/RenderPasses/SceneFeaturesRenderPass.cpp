@@ -39,20 +39,24 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(7);
+	SetNumberOfPipelines(9);
 	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationColorSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_VegetationImpostorColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_ModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VelocityGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -71,9 +75,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
+	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
 	_TerrainSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationColorSceneFeaturesGraphicsPipeline.Execute();
+	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Execute();
 	_ModelSceneFeaturesGraphicsPipeline.Execute();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 	_VelocityGraphicsPipeline.Execute();

@@ -9,6 +9,8 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationDepthSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationImpostorColorSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationImpostorDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -42,6 +44,9 @@ private:
 	//The vegetation depth scene features graphics pipeline.
 	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;
 
+	//The vegetation impostor depth scene features graphics pipeline.
+	VegetationImpostorDepthSceneFeaturesGraphicsPipeline _VegetationImpostorDepthSceneFeaturesGraphicsPipeline;
+
 	//The terrain scene features graphics pipeline.
 	TerrainSceneFeaturesGraphicsPipeline _TerrainSceneFeaturesGraphicsPipeline;
 
@@ -50,6 +55,9 @@ private:
 
 	//The vegetation color scene features graphics pipeline.
 	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;
+
+	//The vegetation impostor color scene features graphics pipeline.
+	VegetationImpostorColorSceneFeaturesGraphicsPipeline _VegetationImpostorColorSceneFeaturesGraphicsPipeline;
 
 	//The model scene features graphics pipeline.
 	ModelSceneFeaturesGraphicsPipeline _ModelSceneFeaturesGraphicsPipeline;
