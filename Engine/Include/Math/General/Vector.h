@@ -65,6 +65,24 @@ public:
 	}
 
 	/*
+	*	Returns the minimum of two vectors.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector2 Minimum(const Vector2 &first, const Vector2 &second) NOEXCEPT
+	{
+		return Vector2(	CatalystBaseMath::Minimum<TYPE>(first._X, second._X),
+						CatalystBaseMath::Minimum<TYPE>(first._Y, second._Y));
+	}
+
+	/*
+	*	Returns the maximum of two vectors.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector2 Maximum(const Vector2 &first, const Vector2 &second) NOEXCEPT
+	{
+		return Vector2(	CatalystBaseMath::Maximum<TYPE>(first._X, second._X),
+						CatalystBaseMath::Maximum<TYPE>(first._Y, second._Y));
+	}
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr Vector2() NOEXCEPT
@@ -466,8 +484,8 @@ public:
 	}
 
 	/*
-*	Returns the maximum of two vectors.
-*/
+	*	Returns the maximum of two vectors.
+	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 Maximum(const Vector3 &first, const Vector3 &second) NOEXCEPT
 	{
 		return Vector3(	CatalystBaseMath::Maximum<TYPE>(first._X, second._X),

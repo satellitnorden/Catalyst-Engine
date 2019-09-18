@@ -22,7 +22,7 @@ namespace RenderingUtilities
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
-	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
 		float extent{ CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._X) };
 		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Y));
@@ -71,27 +71,59 @@ namespace RenderingUtilities
 	}
 
 	/*
-	*	Transforms an axis aligned bounding box from one space to another.
+	*	Calculates the screen coordinate of a position.
 	*/
-	static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox &originalBox, const Matrix4 &transformation, AxisAlignedBoundingBox *const RESTRICT newBox) NOEXCEPT
+	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4 &view_matrix, const Vector3<float> &position) NOEXCEPT
 	{
-		const Vector3<float> xMinimum{ transformation.GetRight() * originalBox._Minimum._X };
-		const Vector3<float> xMaximum{ transformation.GetRight() * originalBox._Maximum._X };
+		Vector4<float> view_space_coordinate{ view_matrix * Vector4<float>(position, 1.0f) };
 
-		const Vector3<float> yMinimum{ transformation.GetUp() * originalBox._Minimum._Y };
-		const Vector3<float> yMaximum{ transformation.GetUp() * originalBox._Maximum._Y };
+		const float inverse_denominator{ 1.0f / view_space_coordinate._W };
 
-		const Vector3<float> zMinimum{ transformation.GetForward() * originalBox._Minimum._Z };
-		const Vector3<float> zMaximum{ transformation.GetForward() * originalBox._Maximum._Z };
+		view_space_coordinate._X = view_space_coordinate._X * 0.5f + 0.5f;
+		view_space_coordinate._Y = view_space_coordinate._Y * 0.5f + 0.5f;
 
-		newBox->_Minimum = transformation.GetTranslation() + Vector3<float>::Minimum(xMinimum, xMaximum) + Vector3<float>::Minimum(yMinimum, yMaximum) + Vector3<float>::Minimum(zMinimum, zMaximum);
-		newBox->_Maximum = transformation.GetTranslation() + Vector3<float>::Maximum(xMinimum, xMaximum) + Vector3<float>::Maximum(yMinimum, yMaximum) + Vector3<float>::Maximum(zMinimum, zMaximum);
+		view_space_coordinate._X *= inverse_denominator;
+		view_space_coordinate._Y *= inverse_denominator;
+
+		return Vector2<float>(view_space_coordinate._X, view_space_coordinate._Y);
+	}
+
+	/*
+	*	Calculates the screen coverage percent of an axis aligned bounding box.
+	*/
+	FORCE_INLINE static float CalculateScreenCoveragePercent(const Matrix4 &view_matrix, const AxisAlignedBoundingBox &box) NOEXCEPT
+	{
+		Vector2<float> screen_minimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
+		Vector2<float> screen_maximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+
+		StaticArray<Vector3<float>, 8> corners;
+
+		const Vector3<float> difference{ box._Maximum - box._Minimum };
+
+		corners[0] = box._Minimum + difference * Vector3<float>(0.0f, 0.0f, 0.0f);
+		corners[1] = box._Minimum + difference * Vector3<float>(0.0f, 0.0f, 1.0f);
+		corners[2] = box._Minimum + difference * Vector3<float>(0.0f, 1.0f, 0.0f);
+		corners[3] = box._Minimum + difference * Vector3<float>(0.0f, 1.0f, 1.0f);
+		corners[4] = box._Minimum + difference * Vector3<float>(1.0f, 0.0f, 0.0f);
+		corners[5] = box._Minimum + difference * Vector3<float>(1.0f, 0.0f, 1.0f);
+		corners[6] = box._Minimum + difference * Vector3<float>(1.0f, 1.0f, 0.0f);
+		corners[7] = box._Minimum + difference * Vector3<float>(1.0f, 1.0f, 1.0f);
+
+		for (const Vector3<float> &corner : corners)
+		{
+			const Vector2<float> corner_screen_coordinate{ CalculateScreenCoordinate(view_matrix, corner) };
+
+			screen_minimum = Vector2<float>::Minimum(screen_minimum, corner_screen_coordinate);
+			screen_maximum = Vector2<float>::Maximum(screen_maximum, corner_screen_coordinate);
+		}
+
+		return (screen_maximum._X - screen_minimum._X) * (screen_maximum._Y - screen_minimum._Y);
 	}
 
 	/*
 	*	Creates a transformations buffer.
 	*/
-	static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, BufferHandle *const RESTRICT buffer) NOEXCEPT
+	FORCE_INLINE static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, BufferHandle *const RESTRICT buffer) NOEXCEPT
 	{
 		const void *RESTRICT data[]{ transformations.Data() };
 		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
@@ -102,7 +134,7 @@ namespace RenderingUtilities
 	/*
 	*	Returns whether or not an axis-aligned bounding box is within the view frustum.
 	*/
-	static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
 		for (uint8 i = 0; i < 6; ++i)
 		{
@@ -148,4 +180,23 @@ namespace RenderingUtilities
 
 		return true;
 	}
+
+	/*
+	*	Transforms an axis aligned bounding box from one space to another.
+	*/
+	FORCE_INLINE static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox &originalBox, const Matrix4 &transformation, AxisAlignedBoundingBox *const RESTRICT newBox) NOEXCEPT
+	{
+		const Vector3<float> xMinimum{ transformation.GetRight() * originalBox._Minimum._X };
+		const Vector3<float> xMaximum{ transformation.GetRight() * originalBox._Maximum._X };
+
+		const Vector3<float> yMinimum{ transformation.GetUp() * originalBox._Minimum._Y };
+		const Vector3<float> yMaximum{ transformation.GetUp() * originalBox._Maximum._Y };
+
+		const Vector3<float> zMinimum{ transformation.GetForward() * originalBox._Minimum._Z };
+		const Vector3<float> zMaximum{ transformation.GetForward() * originalBox._Maximum._Z };
+
+		newBox->_Minimum = transformation.GetTranslation() + Vector3<float>::Minimum(xMinimum, xMaximum) + Vector3<float>::Minimum(yMinimum, yMaximum) + Vector3<float>::Minimum(zMinimum, zMaximum);
+		newBox->_Maximum = transformation.GetTranslation() + Vector3<float>::Maximum(xMinimum, xMaximum) + Vector3<float>::Maximum(yMinimum, yMaximum) + Vector3<float>::Maximum(zMinimum, zMaximum);
+	}
+
 }
