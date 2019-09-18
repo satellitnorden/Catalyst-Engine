@@ -10,6 +10,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -116,7 +117,7 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfVegetationComponents == 0 || true)
+	if (numberOfVegetationComponents == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -134,8 +135,9 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Wait for vegetation culling to finish.
+	//Wait for vegetation culling and level of detail to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
+	LevelOfDetailSystem::Instance->WaitForVegetationLevelOfDetail();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
@@ -145,8 +147,8 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Don't draw if it's not a masked material.
-		if (component->_Material._Type != Material::Type::Masked)
+		//Don't draw if it's not the correct level of detail.
+		if (component->_LevelOfDetail != VegetationComponent::LevelOfDetail::Impostor)
 		{
 			continue;
 		}
@@ -154,8 +156,8 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		VegetationImpostorGeometryPushConstantData geometry_data;
 
-		geometry_data._ImpostorHalfWidth = 1.0f;
-		geometry_data._ImpostorHeight = 10.0f;
+		geometry_data._ImpostorHalfWidth = CatalystBaseMath::Maximum<float>(component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._X - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._X, component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Z - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Z) * 0.5f;
+		geometry_data._ImpostorHeight = component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Y - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Y;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
 

@@ -15,11 +15,21 @@ class VegetationComponent final
 
 public:
 
+	//Enumeration covering all level of details.
+	enum class LevelOfDetail : uint8
+	{
+		Full,
+		Impostor
+	};
+
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
 
 	//Denotes the visibility of this vegetation.
 	bool _Visibility;
+
+	//The current level of detail.
+	LevelOfDetail _LevelOfDetail{ LevelOfDetail::Full };
 
 	//The model.
 	const Model *RESTRICT _Model;

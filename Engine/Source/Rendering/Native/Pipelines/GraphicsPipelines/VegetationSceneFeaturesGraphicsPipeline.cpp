@@ -10,6 +10,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -167,13 +168,20 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Wait for vegetation culling to finish.
+	//Wait for vegetation culling and level of detail to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
+	LevelOfDetailSystem::Instance->WaitForVegetationLevelOfDetail();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
 		//Don't draw if it's not visible.
 		if (!component->_Visibility)
+		{
+			continue;
+		}
+
+		//Don't draw if it's not the correct level of detail.
+		if (component->_LevelOfDetail != VegetationComponent::LevelOfDetail::Full)
 		{
 			continue;
 		}

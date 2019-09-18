@@ -79,11 +79,11 @@ namespace RenderingUtilities
 
 		const float inverse_denominator{ 1.0f / view_space_coordinate._W };
 
-		view_space_coordinate._X = view_space_coordinate._X * 0.5f + 0.5f;
-		view_space_coordinate._Y = view_space_coordinate._Y * 0.5f + 0.5f;
-
 		view_space_coordinate._X *= inverse_denominator;
 		view_space_coordinate._Y *= inverse_denominator;
+
+		view_space_coordinate._X = view_space_coordinate._X * 0.5f + 0.5f;
+		view_space_coordinate._Y = view_space_coordinate._Y * 0.5f + 0.5f;
 
 		return Vector2<float>(view_space_coordinate._X, view_space_coordinate._Y);
 	}
@@ -116,6 +116,12 @@ namespace RenderingUtilities
 			screen_minimum = Vector2<float>::Minimum(screen_minimum, corner_screen_coordinate);
 			screen_maximum = Vector2<float>::Maximum(screen_maximum, corner_screen_coordinate);
 		}
+
+		screen_minimum._X = CatalystBaseMath::Clamp<float>(screen_minimum._X, 0.0f, 1.0f);
+		screen_minimum._Y = CatalystBaseMath::Clamp<float>(screen_minimum._Y, 0.0f, 1.0f);
+
+		screen_maximum._X = CatalystBaseMath::Clamp<float>(screen_maximum._X, 0.0f, 1.0f);
+		screen_maximum._Y = CatalystBaseMath::Clamp<float>(screen_maximum._Y, 0.0f, 1.0f);
 
 		return (screen_maximum._X - screen_minimum._X) * (screen_maximum._Y - screen_minimum._Y);
 	}
