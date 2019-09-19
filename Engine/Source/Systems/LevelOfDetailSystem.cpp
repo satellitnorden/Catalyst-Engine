@@ -52,7 +52,7 @@ void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_vegetation_components; ++i, ++component)
 	{
-		if (Vector3<float>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPoint(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < (100.0f * 100.0f))
+		if (Vector3<float>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPoint(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
 		{
 			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Full;
 		}

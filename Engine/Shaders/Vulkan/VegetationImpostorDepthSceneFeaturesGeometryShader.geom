@@ -21,10 +21,17 @@ layout (triangle_strip, max_vertices = 4) out;
 //In parameters.
 layout (location = 0) in vec3 geometry_positions[];
 
+//Out parameters.
+layout (location = 0) out vec2 fragment_texture_coordinate;
+layout (location = 1) out float fragment_distance_squared;
+
 void main()
 {
 	//Retrieve the world position.
 	vec3 world_position = geometry_positions[0];
+
+	//Calculate the distance squared.
+	float distance_squared = LengthSquared3(perceiverWorldPosition - world_position);
 
 	//Calculate the forward, up and right vectors.
 	vec3 forward_vector = perceiverWorldPosition - world_position;
@@ -34,26 +41,26 @@ void main()
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	
 	//Construct all the vertices.
-	//fragmentNormal = forwardVector;
-	//fragmentTextureCoordinate = vec2(0.0f, 1.0f);
+	fragment_texture_coordinate = vec2(0.0f, 1.0f);
+	fragment_distance_squared = distance_squared;
 	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = up_vector;
-	//fragmentTextureCoordinate = vec2(0.0f, 0.0f);
+	fragment_texture_coordinate = vec2(0.0f, 0.0f);
+	fragment_distance_squared = distance_squared;
 	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = forwardVector;
-	//fragmentTextureCoordinate = vec2(1.0f, 1.0f);
+	fragment_texture_coordinate = vec2(1.0f, 1.0f);
+	fragment_distance_squared = distance_squared;
 	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = up_vector;
-	//fragmentTextureCoordinate = vec2(1.0f, 0.0f);
+	fragment_texture_coordinate = vec2(1.0f, 0.0f);
+	fragment_distance_squared = distance_squared;
 	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();

@@ -40,6 +40,21 @@ public:
 	//The cutoff distance.
 	float _CutoffDistance;
 
+	//The impostor albedo texture index.
+	uint32 _ImpostorAlbedoTextureIndex;
+
+	//The impostor mask texture index.
+	uint32 _ImpostorMaskTextureIndex;
+
+	//The impostor distance, squared.
+	float _ImpostorDistanceSquared;
+
+	//The impostor half width.
+	float _ImpostorHalfWidth;
+
+	//The impostor height.
+	float _ImpostorHeight;
+
 	//The large scale wind displacement factor.
 	float _LargeScaleWindDisplacementFactor;
 

@@ -27,6 +27,19 @@ public:
 };
 
 /*
+*	Vegetation impostor fragment push constant data definition.
+*/
+class VegetationImpostorFragmentPushConstantData final
+{
+
+public:
+
+	int32 _MaskTextureIndex;
+	float _CutoffDistanceSquared;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
@@ -46,8 +59,9 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Dept
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
+	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -145,13 +159,26 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
+		//Need a correct texture index to render.
+		if (component->_ImpostorMaskTextureIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES)
+		{
+			continue;
+		}
+
 		//Push constants.
 		VegetationImpostorGeometryPushConstantData geometry_data;
 
-		geometry_data._ImpostorHalfWidth = CatalystBaseMath::Maximum<float>(component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._X - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._X, component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Z - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Z) * 0.5f;
-		geometry_data._ImpostorHeight = component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Y - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Y;
+		geometry_data._ImpostorHalfWidth = component->_ImpostorHalfWidth;
+		geometry_data._ImpostorHeight = component->_ImpostorHeight;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
+
+		VegetationImpostorFragmentPushConstantData fragment_data;
+
+		fragment_data._MaskTextureIndex = component->_ImpostorMaskTextureIndex;
+		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
 
 		//Bind the transformations buffer.
 		commandBuffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);

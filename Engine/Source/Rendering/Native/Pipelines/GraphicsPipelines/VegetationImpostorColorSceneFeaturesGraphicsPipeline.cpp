@@ -153,11 +153,17 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
+		//Need a correct texture index to render.
+		if (component->_ImpostorAlbedoTextureIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES)
+		{
+			continue;
+		}
+
 		//Push constants.
 		VegetationImpostorGeometryPushConstantData geometry_data;
 
-		geometry_data._ImpostorHalfWidth = CatalystBaseMath::Maximum<float>(component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._X - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._X, component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Z - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Z) * 0.5f;
-		geometry_data._ImpostorHeight = component->_Model->_ModelSpaceAxisAlignedBoundingBox._Maximum._Y - component->_Model->_ModelSpaceAxisAlignedBoundingBox._Minimum._Y;
+		geometry_data._ImpostorHalfWidth = component->_ImpostorHalfWidth;
+		geometry_data._ImpostorHeight = component->_ImpostorHeight;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
 

@@ -36,6 +36,15 @@ public:
 	}
 
 	/*
+	*	Returns the union of two axis aligned bounding boxes.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD AxisAlignedBoundingBox Union(const AxisAlignedBoundingBox &first, const AxisAlignedBoundingBox &second) NOEXCEPT
+	{
+		return AxisAlignedBoundingBox(	Vector3<float>::Minimum(first._Minimum, second._Minimum),
+										Vector3<float>::Maximum(first._Maximum, second._Maximum));
+	}
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr AxisAlignedBoundingBox() NOEXCEPT
