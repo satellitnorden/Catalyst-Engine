@@ -43,13 +43,16 @@ void LevelOfDetailSystem::RenderUpdate(const UpdateContext *const RESTRICT conte
 */
 void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
 {
+	//Cache the perceiver position.
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+
 	//Iterate over all vegetation components and calculate their level of detail.
 	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };
 	VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
 
 	for (uint64 i = 0; i < number_of_vegetation_components; ++i, ++component)
 	{
-		if (RenderingUtilities::CalculateScreenCoveragePercent(*Perceiver::Instance->GetViewMatrix(), component->_WorldSpaceAxisAlignedBoundingBox) >= 0.75f || true)
+		if (Vector3<float>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPoint(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < (100.0f * 100.0f))
 		{
 			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Full;
 		}
