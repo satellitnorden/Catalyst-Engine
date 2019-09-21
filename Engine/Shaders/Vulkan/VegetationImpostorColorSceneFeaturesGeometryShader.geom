@@ -21,6 +21,10 @@ layout (triangle_strip, max_vertices = 4) out;
 //In parameters.
 layout (location = 0) in vec3 geometry_positions[];
 
+//Out parameters.
+layout (location = 0) out vec3 fragment_normal;
+layout (location = 1) out vec2 fragment_texture_coordinate;
+
 void main()
 {
 	//Retrieve the world position.
@@ -34,26 +38,26 @@ void main()
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	
 	//Construct all the vertices.
-	//fragmentNormal = forwardVector;
-	//fragmentTextureCoordinate = vec2(0.0f, 1.0f);
+	fragment_normal = forward_vector;
+	fragment_texture_coordinate = vec2(0.0f, 1.0f);
 	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = up_vector;
-	//fragmentTextureCoordinate = vec2(0.0f, 0.0f);
+	fragment_normal = up_vector;
+	fragment_texture_coordinate = vec2(0.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = forwardVector;
-	//fragmentTextureCoordinate = vec2(1.0f, 1.0f);
+	fragment_normal = forward_vector;
+	fragment_texture_coordinate = vec2(1.0f, 1.0f);
 	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
-	//fragmentNormal = up_vector;
-	//fragmentTextureCoordinate = vec2(1.0f, 0.0f);
+	fragment_normal = up_vector;
+	fragment_texture_coordinate = vec2(1.0f, 0.0f);
 	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();

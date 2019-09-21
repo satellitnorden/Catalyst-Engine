@@ -27,6 +27,18 @@ public:
 };
 
 /*
+*	Vegetation impostor fragment push constant data definition.
+*/
+class VegetationImpostorFragmentPushConstantData final
+{
+
+public:
+
+	int32 _AlbedoTextureIndex;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
@@ -54,8 +66,9 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Initialize(const Dept
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
+	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -166,6 +179,13 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		geometry_data._ImpostorHeight = component->_ImpostorHeight;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
+
+		//Push constants.
+		VegetationImpostorFragmentPushConstantData fragment_data;
+
+		fragment_data._AlbedoTextureIndex = component->_ImpostorAlbedoTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
 
 		//Bind the transformations buffer.
 		commandBuffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
