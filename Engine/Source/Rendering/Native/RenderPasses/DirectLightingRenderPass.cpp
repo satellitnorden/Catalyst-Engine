@@ -59,6 +59,13 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void DirectLightingRenderPass::Execute() NOEXCEPT
 {
+	if (false)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None)
 	{
 		_DirectLightingGraphicsPipeline.Execute();

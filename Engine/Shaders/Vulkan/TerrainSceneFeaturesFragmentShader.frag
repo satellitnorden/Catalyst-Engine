@@ -55,13 +55,33 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 }
 
 /*
+*   Samples the terrain material at the given world position.
+*/
+vec4 SampleTerrainMaterial(int index, vec3 world_position, vec3 normalized_normal)
+{
+    return  texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.yz * 0.5f) * normalized_normal.x
+            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xz * 0.5f) * normalized_normal.y
+            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xy * 0.5f) * normalized_normal.z;
+
+    /*
+    vec2 coordinate =   world_position.yz * float(normalized_normal.x > normalized_normal.y && normalized_normal.x > normalized_normal.z)
+                        + world_position.xz * float(normalized_normal.y > normalized_normal.x && normalized_normal.y > normalized_normal.z)
+                        + world_position.xy * float(normalized_normal.z > normalized_normal.x && normalized_normal.z > normalized_normal.y);
+
+    coordinate *= 0.5f;
+
+    return texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate);
+    */
+}
+
+/*
 *   Retrieves a single terrain material.
 */
-void RetrieveSingleTerrainMaterial(int index, vec2 material_texture_coordinate, out TerrainMaterial material)
+void RetrieveSingleTerrainMaterial(int index, vec3 world_position, vec3 normalized_normal, out TerrainMaterial material)
 {
-    material.albedo = texture(sampler2D(globalTextures[global_materials[index].albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb;
-    material.normal_map = texture(sampler2D(globalTextures[global_materials[index].normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f;
-    material.material_properties = texture(sampler2D(globalTextures[global_materials[index].material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate);
+    material.albedo = SampleTerrainMaterial(global_materials[index].albedo_texture_index, world_position, normalized_normal).rgb;
+    material.normal_map = SampleTerrainMaterial(global_materials[index].normal_map_texture_index, world_position, normalized_normal).xyz * 2.0f - 1.0f;
+    material.material_properties = SampleTerrainMaterial(global_materials[index].material_properties_texture_index, world_position, normalized_normal);
 }
 
 /*
@@ -93,7 +113,7 @@ void BlendTerrainMaterials(TerrainMaterial first, TerrainMaterial second, float 
 /*
 *   Retrieves the terrain material.
 */
-void RetrieveTerrainMaterial(out TerrainMaterial material)
+void RetrieveTerrainMaterial(vec3 terrain_normal, out TerrainMaterial material)
 {
     //Retrieve the terrain material indices.
     int center_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).x * 255.0f);
@@ -101,18 +121,25 @@ void RetrieveTerrainMaterial(out TerrainMaterial material)
     int upper_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 1.0f)).x * 255.0f);
     int upper_right_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 1.0f)).x * 255.0f);
 
-    //Calculate the material texture coordinate.
-    vec2 material_texture_coordinate = fragmentWorldPosition.xz;
+    //Calculate the normalized normal.
+    terrain_normal = abs(terrain_normal);
+    vec3 normalized_normal;
+
+    float terrain_normal_sum = 1.0f / (terrain_normal.x + terrain_normal.y + terrain_normal.z);
+
+    normalized_normal.x = terrain_normal.x * terrain_normal_sum;
+    normalized_normal.y = terrain_normal.y * terrain_normal_sum;
+    normalized_normal.z = terrain_normal.z * terrain_normal_sum;
 
     //Retrieve the terrain materials.
     TerrainMaterial center_material;
-    RetrieveSingleTerrainMaterial(center_terrain_material_index, material_texture_coordinate, center_material);
+    RetrieveSingleTerrainMaterial(center_terrain_material_index, fragmentWorldPosition, normalized_normal, center_material);
     TerrainMaterial right_material;
-    RetrieveSingleTerrainMaterial(right_terrain_material_index, material_texture_coordinate, right_material);
+    RetrieveSingleTerrainMaterial(right_terrain_material_index, fragmentWorldPosition, normalized_normal, right_material);
     TerrainMaterial upper_material;
-    RetrieveSingleTerrainMaterial(upper_terrain_material_index, material_texture_coordinate, upper_material);
+    RetrieveSingleTerrainMaterial(upper_terrain_material_index, fragmentWorldPosition, normalized_normal, upper_material);
     TerrainMaterial upper_right_material;
-    RetrieveSingleTerrainMaterial(upper_right_terrain_material_index, material_texture_coordinate, upper_right_material);
+    RetrieveSingleTerrainMaterial(upper_right_terrain_material_index, fragmentWorldPosition, normalized_normal, upper_right_material);
 
     //Calculate the horizontal and vertical alpha.
     float horizontal_alpha = fract(fragmentTextureCoordinate.x * terrain_texture_resolution);
@@ -134,7 +161,7 @@ void main()
 
     //Retrieve the terrain material.
     TerrainMaterial material;
-    RetrieveTerrainMaterial(material);
+    RetrieveTerrainMaterial(terrain_normal, material);
 
     //Calculate the tangent space matrix.
     vec3 normal = terrain_normal;
