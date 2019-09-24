@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00011012
+#define FMOD_VERSION    0x00011016
 
 /*
     Compiler specific settings.
@@ -31,7 +31,7 @@
 
 #if defined(_WIN32) || defined(__CYGWIN__) || defined(__ORBIS__) || defined(__psp2__)
     #define F_EXPORT __declspec(dllexport)
-#elif defined(__APPLE__) || defined(__ANDROID__) || defined(__linux__)
+#elif defined(__APPLE__) || defined(__ANDROID__) || defined(__linux__) || defined(F_USE_ATTRIBUTE)
     #define F_EXPORT __attribute__((visibility("default")))
 #else
     #define F_EXPORT
