@@ -177,7 +177,7 @@ void SoundSystem::Play(const SoundInstanceHandle instance) NOEXCEPT
 void SoundSystem::Stop(const SoundInstanceHandle instance) NOEXCEPT
 {
 	//Stop playing the instance.
-	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->stop(FMOD_STUDIO_STOP_MODE::FMOD_STUDIO_STOP_IMMEDIATE));
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->stop(FMOD_STUDIO_STOP_MODE::FMOD_STUDIO_STOP_ALLOWFADEOUT));
 }
 
 /*
