@@ -163,6 +163,15 @@ void SoundSystem::DestroySoundInstance(const SoundInstanceHandle instance) NOEXC
 }
 
 /*
+*	Sets the playback position in seconds for a sound instance.
+*/
+void SoundSystem::SetPlaybackPosition(const float position, const SoundInstanceHandle instance) NOEXCEPT
+{
+	//Set the playback position.
+	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->setTimelinePosition(static_cast<int32>(position * 1'000.0f)));
+}
+
+/*
 *	Plays a sound instance.
 */
 void SoundSystem::Play(const SoundInstanceHandle instance) NOEXCEPT

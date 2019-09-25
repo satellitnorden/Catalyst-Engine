@@ -77,6 +77,11 @@ public:
 	void DestroySoundInstance(const SoundInstanceHandle instance) NOEXCEPT;
 
 	/*
+	*	Sets the playback position in seconds for a sound instance.
+	*/
+	void SetPlaybackPosition(const float position, const SoundInstanceHandle instance) NOEXCEPT;
+
+	/*
 	*	Plays a sound instance.
 	*/
 	void Play(const SoundInstanceHandle instance) NOEXCEPT;
