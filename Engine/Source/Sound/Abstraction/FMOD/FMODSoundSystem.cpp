@@ -22,7 +22,7 @@ namespace FMODSoundSystemConstants
 #endif
 	};
 	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_SYNCHRONOUS_UPDATE | FMOD_STUDIO_INIT_LOAD_FROM_UPDATE };
-	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 512 };
+	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 1'024 };
 }
 
 namespace FMODSoundSystemData
@@ -32,6 +32,9 @@ namespace FMODSoundSystemData
 
 	//The studio system.
 	FMOD::Studio::System *RESTRICT _System{ nullptr };
+
+	//The low level system.
+	FMOD::System *RESTRICT _LowLevelSystem{ nullptr };
 }
 
 namespace FMODSoundSystemLogic
@@ -85,6 +88,12 @@ void SoundSystem::Initialize() NOEXCEPT
 
 	//Create the studio system.
 	FMOD_ERROR_CHECK(FMOD::Studio::System::create(&FMODSoundSystemData::_System));
+
+	//Retrieve the low level system.
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->getLowLevelSystem(&FMODSoundSystemData::_LowLevelSystem));
+
+	//Set the dsp buffer size.
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_LowLevelSystem->setDSPBufferSize(1'024, 4));
 
 	//Initialize the studio system.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->initialize(	FMODSoundSystemConstants::MAXIMUM_NUMBER_OF_CHANNELS,
