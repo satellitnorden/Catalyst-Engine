@@ -119,7 +119,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	EntityPlacementSystem::Instance->Initialize();
 	LevelOfDetailSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
-	SoundSystem::Instance->Initialize();
+	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize();
 	TerrainSystem::Instance->Initialize();
 

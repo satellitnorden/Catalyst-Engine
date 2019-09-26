@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 #include <Core/General/UpdateContext.h>
 
 //Math.
@@ -32,7 +33,7 @@ public:
 	/*
 	*	Initializes the sound system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Updates the sound system during the post update phase.

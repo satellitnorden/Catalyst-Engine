@@ -76,7 +76,7 @@ namespace FMODSoundSystemLogic
 /*
 *	Initializes the sound system.
 */
-void SoundSystem::Initialize() NOEXCEPT
+void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
 	//Set up the update task.
 	FMODSoundSystemData::_UpdateTask._Function = [](void *const RESTRICT)
@@ -93,7 +93,7 @@ void SoundSystem::Initialize() NOEXCEPT
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->getLowLevelSystem(&FMODSoundSystemData::_LowLevelSystem));
 
 	//Set the dsp buffer size.
-	FMOD_ERROR_CHECK(FMODSoundSystemData::_LowLevelSystem->setDSPBufferSize(1'024, 4));
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_LowLevelSystem->setDSPBufferSize(configuration._MixingBufferSize, configuration._NumberOfMixingBuffers));
 
 	//Initialize the studio system.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->initialize(	FMODSoundSystemConstants::MAXIMUM_NUMBER_OF_CHANNELS,

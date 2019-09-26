@@ -13,28 +13,53 @@ class CatalystProjectGeneralConfiguration final
 
 public:
 
-	//The project name.
+	/*
+	*	The project name.
+	*	Will be the name of the window.
+	*	Recommended: "Catalyst Engine Project".
+	*/
 	DynamicString _ProjectName;
 
-	//The initialization function.
+	/*
+	*	The initialization function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_InitializationFunction)();
 
-	//The pre update function.
+	/*
+	*	The pre update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_PreUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The logic update function.
+	/*
+	*	The logic update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_LogicUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The physics update function.
+	/*
+	*	The physics update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_PhysicsUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The render update function.
+	/*
+	*	The physics update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_RenderUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The post update function.
+	/*
+	*	The post update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_PostUpdateFunction)(const UpdateContext *const RESTRICT);
 
-	//The termination function.
+	/*
+	*	The post update function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
 	void(*_TerminationFunction)();
 
 	/*
@@ -52,16 +77,49 @@ class CatalystProjectRenderingConfiguration final
 
 public:
 
-	//The resolution.
+	/*
+	*	The resolution.
+	*	Recommended: 1'920, 1'080.
+	*/
 	Resolution _Resolution;
 
-	//The resolution scale.
+	/*
+	*	The resolution scale.
+	*	Recommended: 1.0f.
+	*/
 	float _ResolutionScale;
 
 	/*
 	*	Default constructor.
 	*/
 	CatalystProjectRenderingConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
+class CatalystProjectSoundConfiguration final
+{
+
+public:
+
+	/*
+	*	The number of mixing buffers.
+	*	Recommended: 4.
+	*/
+	uint8 _NumberOfMixingBuffers;
+
+	/*
+	*	The mixing buffer size.
+	*	Recommended: 1'024.
+	*/
+	uint32 _MixingBufferSize;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectSoundConfiguration() NOEXCEPT
 	{
 
 	}
@@ -78,5 +136,8 @@ public:
 
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
+
+	//The project sound configuration.
+	CatalystProjectSoundConfiguration _SoundConfiguration;
 
 };
