@@ -1212,6 +1212,9 @@
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
+      <Filter>Sound\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
