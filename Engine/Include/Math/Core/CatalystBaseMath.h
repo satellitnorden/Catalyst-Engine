@@ -65,6 +65,15 @@ public:
 	}
 
 	/*
+	*	Given a value in the range [0.0f, 1.0f] and a bias in the range [0.0f, 1.0f],
+	*	biases the value either towards 0.0f if bias is < 0.5f or towards 1.0f if bias is >= 0.5f.
+	*/
+	FORCE_INLINE static NO_DISCARD float Bias(const float value, const float bias) NOEXCEPT
+	{
+		return bias >= 0.5f ? LinearlyInterpolate(value, InverseExponential(value), (bias - 0.5f) * 2.0f) : LinearlyInterpolate(value, Exponential(value), bias * 2.0f);
+	}
+
+	/*
 	*	Rounds a number up to the nearest integer.
 	*/
 	template <typename Type>
@@ -109,6 +118,14 @@ public:
 	}
 
 	/*
+	*	Generates the exponential of a value in the range [0.0f, 1.0f], biasing the value towards 0.0f.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Exponential(const float value) NOEXCEPT
+	{
+		return value * value;
+	}
+
+	/*
 	*	Given an integral number, return the factorial of that number.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD uint64 Factorial(const uint8 number) NOEXCEPT
@@ -131,6 +148,14 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD float Fractional(const float number) NOEXCEPT
 	{
 		return number - static_cast<float>(static_cast<int32>(number));
+	}
+
+	/*
+	*	Generates the inverse exponential of a value in the range [0.0f, 1.0f], biasing the value towards 1.0f.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float InverseExponential(const float value) NOEXCEPT
+	{
+		return 1.0f - Exponential(1.0f - value);
 	}
 
 	/*
