@@ -16,13 +16,13 @@
 
 namespace FMODSoundSystemConstants
 {
-	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{ FMOD_INIT_STREAM_FROM_UPDATE | FMOD_INIT_MIX_FROM_UPDATE | FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_VOL0_BECOMES_VIRTUAL
+	constexpr FMOD_INITFLAGS INITIALIZATION_FLAGS{ FMOD_INIT_STREAM_FROM_UPDATE | FMOD_INIT_MIX_FROM_UPDATE | FMOD_INIT_3D_RIGHTHANDED
 #if FMOD_DEBUGGING
 													| FMOD_INIT_PROFILE_ENABLE
 #endif
 	};
 	constexpr FMOD_STUDIO_INITFLAGS STUDIO_INITIALIZATION_FLAGS{ FMOD_STUDIO_INIT_SYNCHRONOUS_UPDATE | FMOD_STUDIO_INIT_LOAD_FROM_UPDATE };
-	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 2'048 };
+	constexpr int32 MAXIMUM_NUMBER_OF_CHANNELS{ 2'048 + 1'024 + 512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 };
 }
 
 namespace FMODSoundSystemData
@@ -94,6 +94,9 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 
 	//Set the dsp buffer size.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_LowLevelSystem->setDSPBufferSize(configuration._MixingBufferSize, configuration._NumberOfMixingBuffers));
+
+	//Set the number of software channels.
+	FMOD_ERROR_CHECK(FMODSoundSystemData::_LowLevelSystem->setSoftwareChannels(configuration._MaximumNumberOfChannels));
 
 	//Initialize the studio system.
 	FMOD_ERROR_CHECK(FMODSoundSystemData::_System->initialize(	FMODSoundSystemConstants::MAXIMUM_NUMBER_OF_CHANNELS,

@@ -105,6 +105,12 @@ class CatalystProjectSoundConfiguration final
 public:
 
 	/*
+	*	The maximum number of channels.
+	*	Recommended: 64;
+	*/
+	uint32 _MaximumNumberOfChannels;
+
+	/*
 	*	The number of mixing buffers.
 	*	Recommended: 4.
 	*/
