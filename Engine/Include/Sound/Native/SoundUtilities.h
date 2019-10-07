@@ -14,9 +14,6 @@ namespace SoundUtilities
 	*/
 	FORCE_INLINE static NO_DISCARD float CalculateNoteDuration(const NoteDuration duration, const float beats_per_minute) NOEXCEPT
 	{
-		//Define constants.
-		constexpr float BIAS{ std::numeric_limits<float>::epsilon() };
-
 		//Calculate the duration for each beat.
 		const float beat_duration{ 60.0f / beats_per_minute };
 
@@ -25,37 +22,37 @@ namespace SoundUtilities
 		{
 			case NoteDuration::WHOLE:
 			{
-				return beat_duration * 4.0f + BIAS;
+				return beat_duration * 4.0f;
 			}
 
 			case NoteDuration::HALF:
 			{
-				return beat_duration * 2.0f + BIAS;
+				return beat_duration * 2.0f;
 			}
 
 			case NoteDuration::QUARTER:
 			{
-				return beat_duration + BIAS;
+				return beat_duration;
 			}
 
 			case NoteDuration::EIGHTH:
 			{
-				return beat_duration * 0.5f + BIAS;
+				return beat_duration * 0.5f;
 			}
 
 			case NoteDuration::SIXTEENTH:
 			{
-				return beat_duration * 0.25f + BIAS;
+				return beat_duration * 0.25f;
 			}
 
 			case NoteDuration::THIRTYSECOND:
 			{
-				return beat_duration * 0.125f + BIAS;
+				return beat_duration * 0.125f;
 			}
 
 			case NoteDuration::SIXTYFOURTH:
 			{
-				return beat_duration * 0.0625f + BIAS;
+				return beat_duration * 0.0625f;
 			}
 
 			default:
