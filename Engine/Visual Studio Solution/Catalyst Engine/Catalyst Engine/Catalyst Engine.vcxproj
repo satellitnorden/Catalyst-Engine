@@ -304,6 +304,9 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Reading\ImageResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResourceReader.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
