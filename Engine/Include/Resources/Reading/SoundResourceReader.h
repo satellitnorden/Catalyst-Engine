@@ -80,7 +80,7 @@ public:
 
 			case 24:
 			{
-				int8 temporary[3]{};
+				int8 temporary[3]{ 0 };
 
 				for (uint64 i{ 0 }; i < number_of_samples; ++i)
 				{
