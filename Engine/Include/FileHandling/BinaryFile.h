@@ -43,6 +43,14 @@ public:
 	}
 
 	/*
+	*	Bool operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD operator bool() NOEXCEPT
+	{
+		return static_cast<bool>(_FileStream);
+	}
+
+	/*
 	*	Returns the size of this binary file, in bytes.
 	*/
 	FORCE_INLINE NO_DISCARD uint64 Size() const

@@ -15,14 +15,21 @@ class SoundResourceReader final
 public:
 
 	/*
-	*	Reads the sound resource at the given file path.
+	*	Reads the sound resource at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static void Read(const char* const RESTRICT file_path, SoundResource* const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char* const RESTRICT file_path, SoundResource* const RESTRICT resource) NOEXCEPT
 	{
 		ASSERT(resource, "SoundResourceReader::Read - Invalid resource passed!");
 
 		//Open the file.
 		BinaryFile<IOMode::In> file{ file_path };
+
+		if (!file)
+		{
+			ASSERT(false, "Couldn't read file!");
+
+			return false;
+		}
 
 		//Read the header.
 		WAVHeader header;
@@ -73,13 +80,20 @@ public:
 
 			case 24:
 			{
-				uint32 sample{ 0 };
+				int8 temporary[3]{};
 
 				for (uint64 i{ 0 }; i < number_of_samples; ++i)
 				{
-					file.Read(&sample, sizeof(uint8) * 3);
+					file.Read(&temporary, sizeof(int8) * 3);
 
-					resource->_Samples.EmplaceFast(static_cast<float>(sample) / static_cast<float>(UINT24_MAXIMUM));
+					int32 sample{ (temporary[2] << 16) | (temporary[1] << 8) | temporary[0] };
+
+					if (sample & 0x800000)
+					{
+						sample = sample | ~0xFFFFFF;
+					}
+
+					resource->_Samples.EmplaceFast(static_cast<float>(sample) / static_cast<float>(INT24_MAXIMUM));
 				}
 
 				break;
@@ -104,6 +118,8 @@ public:
 
 		//Close the file.
 		file.Close();
+
+		return true;
 	}
 
 private:
