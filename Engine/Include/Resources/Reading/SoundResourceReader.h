@@ -40,6 +40,15 @@ public:
 		file.Read(&header._SubChunk2ID, sizeof(char) * 4);
 		file.Read(&header._SubChunk2Size, sizeof(uint32));
 
+		//It's possible we didn't reach the data chunk, just skip if that's the case.
+		while (strcmp(header._SubChunk2ID, "data") != 0)
+		{
+			file.Skip(header._SubChunk2Size);
+
+			file.Read(&header._SubChunk2ID, sizeof(char) * 4);
+			file.Read(&header._SubChunk2Size, sizeof(uint32));
+		}
+
 		//Set the sample rate.
 		resource->_SampleRate = static_cast<float>(header._SampleRate);
 

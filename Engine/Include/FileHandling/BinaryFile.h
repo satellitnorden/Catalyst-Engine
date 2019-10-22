@@ -59,6 +59,14 @@ public:
 	}
 
 	/*
+	*	Skips a number of bytes.
+	*/
+	void Skip(const uint64 size) NOEXCEPT
+	{
+		_FileStream.seekg(static_cast<uint64>(_FileStream.tellg()) + size);
+	}
+
+	/*
 	*	Closes this file.
 	*/
 	void Close() NOEXCEPT
