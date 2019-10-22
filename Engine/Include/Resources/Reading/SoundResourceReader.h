@@ -52,16 +52,55 @@ public:
 		//Set the sample rate.
 		resource->_SampleRate = static_cast<float>(header._SampleRate);
 
+		//Set the number of channels.
+		resource->_NumberOfChannels = static_cast<uint8>(header._NumberOfChannels);
+
 		//Calculate the number of samples.
-		const uint64 number_of_samples{ header._SubChunk2Size / header._BitsPerSample / 8 };
+		const uint16 bytes_per_sample{ static_cast<uint16>(header._BitsPerSample / 8) };
+		const uint64 number_of_samples{ header._SubChunk2Size / bytes_per_sample };
 
 		//Read all of the samples.
 		resource->_Samples.Reserve(number_of_samples);
 
-		for (uint64 i{ 0 }; i < number_of_samples; ++i)
+		switch (header._BitsPerSample)
 		{
+			case 16:
+			{
+				ASSERT(false, "This is not implemented yet!");
 
+				break;
+			}
+
+			case 24:
+			{
+				uint32 sample{ 0 };
+
+				for (uint64 i{ 0 }; i < number_of_samples; ++i)
+				{
+					file.Read(&sample, sizeof(uint8) * 3);
+
+					resource->_Samples.EmplaceFast(static_cast<float>(sample) / static_cast<float>(UINT24_MAXIMUM));
+				}
+
+				break;
+			}
+
+			case 32:
+			{
+				ASSERT(false, "This is not implemented yet!");
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
 		}
+
+		ASSERT(file.HasReachedEndOfFile(), "There are still data left to read!");
 
 		//Close the file.
 		file.Close();

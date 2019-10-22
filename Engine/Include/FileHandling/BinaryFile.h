@@ -43,17 +43,33 @@ public:
 	}
 
 	/*
-	*	Returns the size of the binary file, in bytes.
+	*	Returns the size of this binary file, in bytes.
 	*/
-	uint64 Size() const
+	FORCE_INLINE NO_DISCARD uint64 Size() const
 	{
 		return _Size;
 	}
 
 	/*
-	*	Reads from this file.
+	*	Returns the current position, in bytes.
 	*/
-	void Read(void *RESTRICT output, const uint64 size) NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 GetCurrentPosition() NOEXCEPT
+	{
+		return static_cast<uint64>(_FileStream.tellg());
+	}
+
+	/*
+	*	Sets the current position, in bytes.
+	*/
+	FORCE_INLINE void SetCurrentPosition(const uint64 position) NOEXCEPT
+	{
+		_FileStream.seekg(static_cast<std::streampos>(position));
+	}
+
+	/*
+	*	Reads from this binary file.
+	*/
+	FORCE_INLINE void Read(void *RESTRICT output, const uint64 size) NOEXCEPT
 	{
 		_FileStream.read(static_cast<char *RESTRICT>(output), size);
 	}
@@ -61,15 +77,23 @@ public:
 	/*
 	*	Skips a number of bytes.
 	*/
-	void Skip(const uint64 size) NOEXCEPT
+	FORCE_INLINE void Skip(const uint64 size) NOEXCEPT
 	{
-		_FileStream.seekg(static_cast<uint64>(_FileStream.tellg()) + size);
+		SetCurrentPosition(GetCurrentPosition() + size);
 	}
 
 	/*
-	*	Closes this file.
+	*	Returns if this binary file has reached the end of file.
 	*/
-	void Close() NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool HasReachedEndOfFile() NOEXCEPT
+	{
+		return GetCurrentPosition() >= _Size;
+	}
+
+	/*
+	*	Closes this binary file.
+	*/
+	FORCE_INLINE void Close() NOEXCEPT
 	{
 		_FileStream.close();
 	}
@@ -111,7 +135,7 @@ public:
 	/*
 	*	Writes to this file.
 	*/
-	void Write(const void *RESTRICT input, const uint64 size) NOEXCEPT
+	FORCE_INLINE void Write(const void *RESTRICT input, const uint64 size) NOEXCEPT
 	{
 		_FileStream.write(static_cast<const char *RESTRICT>(input), size);
 	}
@@ -119,7 +143,7 @@ public:
 	/*
 	*	Closes this file.
 	*/
-	void Close() NOEXCEPT
+	FORCE_INLINE void Close() NOEXCEPT
 	{
 		_FileStream.close();
 	}

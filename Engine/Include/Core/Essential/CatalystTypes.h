@@ -15,6 +15,9 @@ using int64 = long long int;
 
 using byte = uint8;
 
+using float32 = float;
+using float64 = double;
+
 /*
 *	Ensure that all types are indeed of the correct size.
 */
@@ -29,3 +32,6 @@ static_assert(sizeof(int32) == 4, "Size of int32 is not 4 bytes, how could this 
 static_assert(sizeof(int64) == 8, "Size of int64 is not 8 bytes, how could this be?");
 
 static_assert(sizeof(byte) == 1, "Size of byte is not 1 bytes, how could this be?");
+
+static_assert(sizeof(float32) == 4, "Size of float32 is not 4 bytes, how could this be?");
+static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could this be?");
