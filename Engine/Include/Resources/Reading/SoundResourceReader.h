@@ -53,7 +53,7 @@ public:
 		resource->_SampleRate = static_cast<float>(header._SampleRate);
 
 		//Calculate the number of samples.
-		const uint64 number_of_samples{ header._SubChunk2Size / (header._NumberOfChannels * header._BitsPerSample / 8) };
+		const uint64 number_of_samples{ header._SubChunk2Size / header._BitsPerSample / 8 };
 
 		//Read all of the samples.
 		resource->_Samples.Reserve(number_of_samples);
