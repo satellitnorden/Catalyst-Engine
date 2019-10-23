@@ -80,11 +80,11 @@ public:
 
 			case 24:
 			{
-				int8 temporary[3]{ 0 };
+				uint8 temporary[3]{ 0 };
 
 				for (uint64 i{ 0 }; i < number_of_samples; ++i)
 				{
-					file.Read(&temporary, sizeof(int8) * 3);
+					file.Read(&temporary, sizeof(uint8) * 3);
 
 					int32 sample{ (temporary[2] << 16) | (temporary[1] << 8) | temporary[0] };
 
