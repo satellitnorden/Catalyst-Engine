@@ -2,7 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Utilities/CompileTimeUtilities.h>
+#include <Core/Utilities/StringUtilities.h>
 
 //Algorithms.
 #include <Core/Algorithms/HashAlgorithms.h>
@@ -39,11 +39,11 @@ public:
 	constexpr HashString(const char *const RESTRICT string) NOEXCEPT
 		:
 #if defined(HASHING_ALGORITHM_CATALYST)
-		_Hash(HashAlgorithms::CatalystHash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::CatalystHash(string, StringUtilities::StringLength(string)))
 #elif defined(HASHING_ALGORITHM_DJB2)
-		_Hash(HashAlgorithms::DJB2Hash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::DJB2Hash(string, StringUtilities::StringLength(string)))
 #elif defined(HASHING_ALGORITHM_JENKINS)
-		_Hash(HashAlgorithms::JenkinsHash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::JenkinsHash(string, StringUtilities::StringLength(string)))
 #endif
 	{
 

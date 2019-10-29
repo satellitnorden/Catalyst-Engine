@@ -85,7 +85,7 @@
     <ClInclude Include="..\..\..\Include\Core\General\Quintuple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Triple.h" />
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
-    <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />

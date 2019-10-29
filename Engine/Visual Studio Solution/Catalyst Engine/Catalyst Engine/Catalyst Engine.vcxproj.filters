@@ -354,9 +354,6 @@
     <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h">
       <Filter>Core\Include\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h">
-      <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
@@ -1226,6 +1223,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResourceReader.h">
       <Filter>Resources\Include\Reading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h">
+      <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

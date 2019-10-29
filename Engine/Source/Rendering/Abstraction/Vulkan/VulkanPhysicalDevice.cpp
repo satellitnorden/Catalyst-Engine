@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
 
+//Core.
+#include <Core/Utilities/StringUtilities.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
@@ -165,7 +168,7 @@ bool VulkanPhysicalDevice::HasExtension(const VkPhysicalDevice &device, const ch
 	//Go through all the available extensions and compare them.
 	for (const VkExtensionProperties &available_extension : available_extensions)
 	{
-		if (strcmp(available_extension.extensionName, extension) == 0)
+		if (StringUtilities::IsEqual(available_extension.extensionName, extension))
 		{
 			return true;
 		}

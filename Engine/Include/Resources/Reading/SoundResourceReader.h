@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Utilities/StringUtilities.h>
 
 //File handling.
 #include <FileHandling/BinaryFile.h>
@@ -48,10 +49,7 @@ public:
 		file.Read(&header._SubChunk2Size, sizeof(uint32));
 
 		//It's possible we didn't reach the data chunk, just skip if that's the case.
-		while (	!(header._SubChunk2ID[0] == 'd'
-				&& header._SubChunk2ID[1] == 'a'
-				&& header._SubChunk2ID[2] == 't'
-				&& header._SubChunk2ID[3] == 'a'))
+		while (!StringUtilities::IsEqual(header._SubChunk2ID, "data", 4))
 		{
 			file.Skip(header._SubChunk2Size);
 
