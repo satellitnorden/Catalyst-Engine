@@ -10,7 +10,10 @@ public:
 	*/
 	FORCE_INLINE static constexpr NO_DISCARD bool IsEqual(const char* const RESTRICT first, const char* const RESTRICT second) NOEXCEPT
 	{
-		const uint64 length{ StringLength(first) };
+		const uint64 first_length{ StringLength(first) };
+		const uint64 second_length{ StringLength(second) };
+
+		const uint64 length{ first_length < second_length ? first_length : second_length };
 
 		for (uint64 i{ 0 }; i < length; ++i)
 		{
