@@ -20,7 +20,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal at the given position.
 	*/
-	static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr) NOEXCEPT
+	FORCE_INLINE static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr, const void *const RESTRICT context = nullptr) NOEXCEPT
 	{
 		constexpr float OFFSET{ 1.0f };
 
@@ -28,9 +28,9 @@ namespace TerrainGeneralUtilities
 		float up;
 		float right;
 
-		properties._HeightFunction(properties, position, &center);
-		properties._HeightFunction(properties, position + Vector3<float>(0.0f, 0.0f, OFFSET), &up);
-		properties._HeightFunction(properties, position + Vector3<float>(OFFSET, 0.0f, 0.0f), &right);
+		properties._HeightFunction(properties, position, &center, context);
+		properties._HeightFunction(properties, position + Vector3<float>(0.0f, 0.0f, OFFSET), &up, context);
+		properties._HeightFunction(properties, position + Vector3<float>(OFFSET, 0.0f, 0.0f), &right, context);
 		
 		normal->_X = center - right;
 		normal->_Y = 1.0f;
@@ -47,7 +47,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a height texture.
 	*/
-	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	FORCE_INLINE static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		*minimumHeight = FLOAT_MAXIMUM;
 		*maximumHeight = -FLOAT_MAXIMUM;
@@ -70,7 +70,7 @@ namespace TerrainGeneralUtilities
 
 				float height;
 
-				properties._HeightFunction(properties, worldPosition, &height);
+				properties._HeightFunction(properties, worldPosition, &height, nullptr);
 
 				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i)] = height;
 
@@ -89,7 +89,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the terrain textures.
 	*/
-	static void GenerateTerrainTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialTextureHandle) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialTextureHandle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
@@ -123,10 +123,10 @@ namespace TerrainGeneralUtilities
 
 				//Retrieve the height.
 				float height;
-				properties._HeightFunction(properties, worldPosition, &height);
+				properties._HeightFunction(properties, worldPosition, &height, nullptr);
 
 				//Write the material.
-				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j));
+				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j), nullptr);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a patch identifier.
 	*/
-	static uint64 GeneratePatchIdentifier() NOEXCEPT
+	FORCE_INLINE static NO_DISCARD uint64 GeneratePatchIdentifier() NOEXCEPT
 	{
 		static uint64 counter{ 0 };
 
@@ -148,7 +148,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainPlane(DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 		indices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * 6);

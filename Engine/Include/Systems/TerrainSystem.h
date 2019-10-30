@@ -97,19 +97,19 @@ public:
 	/*
 	*	Returns the terrain height at the given position.
 	*/
-	bool GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT;
+	bool GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height, const void* const RESTRICT context = nullptr) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain normal at the given position.
 	*	Can optionally retrieve the height at the same time.
 	*/
-	bool GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr) const NOEXCEPT;
+	bool GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height = nullptr, const void* const RESTRICT context = nullptr) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain material at the given position.
 	*	Can optionally retrieve the height and the normal at the same time.
 	*/
-	bool GetTerrainMaterialAtPosition(const Vector3<float> &position, uint8 *const RESTRICT material, float *const RESTRICT height = nullptr, Vector3<float> *const RESTRICT normal = nullptr) const NOEXCEPT;
+	bool GetTerrainMaterialAtPosition(const Vector3<float> &position, uint8 *const RESTRICT material, float *const RESTRICT height = nullptr, Vector3<float> *const RESTRICT normal = nullptr, const void* const RESTRICT context = nullptr) const NOEXCEPT;
 
 private:
 

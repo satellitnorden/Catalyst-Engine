@@ -86,7 +86,7 @@ void TerrainSystem::SequentialUpdate(const UpdateContext *const RESTRICT context
 /*
 *	Returns the terrain height at the given position.
 */
-bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT
+bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
 	//If there's no height function, just set the height to zero, and return that the retrieval failed.
 	if (!_Properties._HeightFunction)
@@ -97,7 +97,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, f
 	}
 
 	//Generate the height.
-	_Properties._HeightFunction(_Properties, position, height);
+	_Properties._HeightFunction(_Properties, position, height, context);
 
 	//Return that the retrieval succeeded.
 	return true;
@@ -106,7 +106,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, f
 /*
 *	Returns the terrain normal at the given position.
 */
-bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height) const NOEXCEPT
+bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal, float *const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
 	//If there's no height function, just set the normal to up and the height to zero, and return that the retrieval failed.
 	if (!_Properties._HeightFunction)
@@ -118,7 +118,7 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, V
 	}
 
 	//Generate a normal at the position.
-	TerrainGeneralUtilities::GenerateNormal(_Properties, position, normal, height);
+	TerrainGeneralUtilities::GenerateNormal(_Properties, position, normal, height, context);
 
 	//Return that the retrieval succeeded.
 	return true;
@@ -128,7 +128,7 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, V
 *	Returns the terrain material at the given position.
 *	Can optionally retrieve the height and the normal at the same time.
 */
-bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position, uint8 *const RESTRICT material, float *const RESTRICT height, Vector3<float> *const RESTRICT normal) const NOEXCEPT
+bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position, uint8 *const RESTRICT material, float *const RESTRICT height, Vector3<float> *const RESTRICT normal, const void* const RESTRICT context) const NOEXCEPT
 {
 	//If there's no height function, just set the material to zero, the normal to up and the height to zero, and return that the retrieval failed.
 	if (!_Properties._MaterialFunction)
@@ -144,10 +144,10 @@ bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position,
 	float terrainHeight;
 	Vector3<float> terrainNormal;
 
-	GetTerrainNormalAtPosition(position, &terrainNormal, &terrainHeight);
+	GetTerrainNormalAtPosition(position, &terrainNormal, &terrainHeight, context);
 
 	//Generate the material.
-	_Properties._MaterialFunction(_Properties, position, terrainHeight, terrainNormal, material);
+	_Properties._MaterialFunction(_Properties, position, terrainHeight, terrainNormal, material, context);
 
 	//Set the height.
 	if (height)
