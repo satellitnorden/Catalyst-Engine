@@ -13,18 +13,19 @@
 */
 struct SceneFeatures
 {
-	float hitDistance;
+	vec3 hit_position;
+	float hit_distance;
 };
 
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 1) uniform sampler2D volumetricLightingTexture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 1) uniform sampler2D volumetric_lighting_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -34,11 +35,12 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
+	vec4 sceneFeatures2 = texture(scene_features_2_texture, coordinate);
 
 	SceneFeatures features;
 
-	features.hitDistance = sceneFeatures2.w;
+	features.hit_position = perceiverWorldPosition + CalculateRayDirection(fragment_texture_coordinate) * sceneFeatures2.w;
+	features.hit_distance = sceneFeatures2.w;
 
 	return features;
 }
@@ -46,14 +48,15 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void main()
 {
 	//Sample the current features.
-	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
+	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample the current volumetric lighting.
-	vec3 currentVolumetricLighting = texture(volumetricLightingTexture, fragmentTextureCoordinate).rgb;
+	vec3 current_volumetric_lighting = texture(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
 
 	//Calculate the volumetric lighting weight.
-	float volumetricLightingWeight = 1.0f - pow(1.0f - min(currentFeatures.hitDistance / viewDistance, 1.0f), volumetricLightingIntensity);
+	float volumetric_lighting_weight = 1.0f - pow(1.0f - min(current_features.hit_distance / viewDistance, 1.0f), volumetricLightingIntensity);
+	volumetric_lighting_weight *= 1.0f - min(current_features.hit_position.y * 0.001f, 1.0f);
 
 	//Write the fragment.
-	fragment = vec4(currentVolumetricLighting, volumetricLightingWeight);
+	fragment = vec4(current_volumetric_lighting, volumetric_lighting_weight);
 }
