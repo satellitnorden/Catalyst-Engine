@@ -68,8 +68,8 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), intBitsToFloat(materialPropertyFlags));
-    sceneFeatures2 = vec4(PackNormal(fragmentTangentSpaceMatrix[2]), 0.0f, luminanceMultiplier, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
-    sceneFeatures3 = vec4(PackNormal(shadingNormal), 0.0f, 0.0f, 0.0f);
+    sceneFeatures2 = vec4(PackNormal(fragmentTangentSpaceMatrix[2]), PackNormal(shadingNormal), luminanceMultiplier, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
+    sceneFeatures3 = vec4(0.0f);
     sceneFeatures4 = materialProperties;
     velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition), 0.0f, 0.0f);
 }

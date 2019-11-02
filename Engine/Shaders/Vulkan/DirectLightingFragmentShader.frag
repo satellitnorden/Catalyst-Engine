@@ -40,7 +40,7 @@ void main()
 	vec3 albedo = sceneFeatures1.rgb;
 	float luminanceMultiplier = sceneFeatures2.z;
 	float hitDistance = sceneFeatures2.w;
-	vec3 shadingNormal = UnpackNormal(sceneFeatures3.x);
+	vec3 shadingNormal = UnpackNormal(sceneFeatures2.y);
 	float roughness = sceneFeatures4.x;
 	float metallic = sceneFeatures4.y;
 	float ambientOcclusion = sceneFeatures4.z;

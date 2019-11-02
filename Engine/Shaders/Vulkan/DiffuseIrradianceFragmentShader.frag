@@ -57,7 +57,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.albedo = sceneFeatures1.rgb;
-	features.normal = UnpackNormal(sceneFeatures3.x);
+	features.normal = UnpackNormal(sceneFeatures2.y);
 	features.view_direction = CalculateRayDirection(coordinate);
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;

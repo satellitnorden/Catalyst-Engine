@@ -29,14 +29,17 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
+	//Sample the texture(s).
+	vec4 scene_features_2_texture_sampler = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
+
 	//Calculate the view direction.
 	vec3 view_direction = CalculateRayDirection(fragmentTextureCoordinate);
 
 	//Calculate the world position at this fragment the current frame.
-	vec3 worldPosition = perceiverWorldPosition + view_direction * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
+	vec3 worldPosition = perceiverWorldPosition + view_direction * scene_features_2_texture_sampler.w;
 
 	//Calculate the reflection direction.
-	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(texture(sceneFeatures3Texture, fragmentTextureCoordinate).x));
+	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(scene_features_2_texture_sampler.y));
 
 	//Sample the active noise texture.
 	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
