@@ -33,6 +33,7 @@
 #include <Resources/Data/TextureCubeData.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -126,7 +127,7 @@ namespace VulkanRenderingSystemLogic
 
 					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->ShouldClear())
 					{
-						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 1'024.0f),
+						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance),
 																					0.0f,
 																					pipelineData->_RenderPass->Get(),
 																					pipelineData->_FrameBuffers[0]->Get(),

@@ -177,6 +177,18 @@ public:
 	}
 
 	/*
+	*	Sets the far plane.
+	*/
+	void SetFarPlane(const float far_plane) NOEXCEPT
+	{
+		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+
+		_ProjectionMatrixDirty = true;
+
+		_FarPlane = far_plane;
+	}
+
+	/*
 	*	Sets the jitter of the projection matrix.
 	*/
 	void SetProjectionMatrixJitter(const Vector2<float> &newProjectionMatrixJitter) NOEXCEPT
@@ -276,7 +288,7 @@ private:
 	float _NearPlane{ 0.1f };
 
 	//The far plane.
-	float _FarPlane{ 1'024.0f * 4.0f };
+	float _FarPlane{ 1'024.0f };
 
 	//The projection matrix jitter.
 	Vector2<float> _ProjectionMatrixJitter{ 0.0f, 0.0f };

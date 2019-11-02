@@ -90,6 +90,12 @@ public:
 	float _ResolutionScale;
 
 	/*
+	*	The view distance.
+	*	Recommended: 1'024.0f.
+	*/
+	float _ViewDistance;
+
+	/*
 	*	Default constructor.
 	*/
 	CatalystProjectRenderingConfiguration() NOEXCEPT
