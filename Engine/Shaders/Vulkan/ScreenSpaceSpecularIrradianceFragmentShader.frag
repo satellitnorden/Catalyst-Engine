@@ -38,7 +38,7 @@ void main()
 	vec3 worldPosition = perceiverWorldPosition + view_direction * scene_features_2_texture_sampler.w;
 
 	//Calculate the reflection direction.
-	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(scene_features_2_texture_sampler.y));
+	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(scene_features_2_texture_sampler.x));
 
 	//Sample the active noise texture.
 	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));

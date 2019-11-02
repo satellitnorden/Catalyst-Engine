@@ -52,7 +52,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.albedo = sceneFeatures1.rgb;
-	features.normal = UnpackNormal(sceneFeatures2.y);
+	features.normal = UnpackNormal(sceneFeatures2.x);
 	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 	features.roughness = sceneFeatures3.x;
 	features.metallic = sceneFeatures3.y;
