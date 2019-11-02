@@ -12,7 +12,7 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -64,7 +64,7 @@ void main()
 			vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
 
 			//Calculate the attenuation.
-			float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 2.0f);
+			float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 1.5f);
 
 			//Add the direct lighting.
 			volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.strength * float(numberOfLights) * attenuation * 0.25f;

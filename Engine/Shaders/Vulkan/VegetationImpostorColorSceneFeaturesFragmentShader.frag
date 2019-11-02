@@ -17,6 +17,7 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec3 fragment_normal;
 layout (location = 1) in vec2 fragment_texture_coordinate;
+layout (location = 2) in float fragment_hit_distance;
 
 //Out parameters.
 layout (location = 0) out vec4 sceneFeatures1;
@@ -31,7 +32,7 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);
-    sceneFeatures2 = vec4(PackNormal(fragment_normal), 0.0f, 0.0f, 0.0f);
+    sceneFeatures2 = vec4(PackNormal(fragment_normal), 0.0f, 0.0f, fragment_hit_distance);
     sceneFeatures3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
     velocity = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
