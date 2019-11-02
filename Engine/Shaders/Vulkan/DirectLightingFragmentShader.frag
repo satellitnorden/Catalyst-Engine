@@ -41,7 +41,6 @@ void main()
 	float luminanceMultiplier = sceneFeatures2.z;
 	float hitDistance = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures3.x);
-	int materialProperties = floatBitsToInt(sceneFeatures3.w);
 	float roughness = sceneFeatures4.x;
 	float metallic = sceneFeatures4.y;
 	float ambientOcclusion = sceneFeatures4.z;

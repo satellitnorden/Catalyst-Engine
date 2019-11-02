@@ -101,7 +101,7 @@ void LuminanceLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 }
 
 /*
-*	Creates the render data table.
+//*	Creates the render data table.
 */
 void LuminanceLightingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {

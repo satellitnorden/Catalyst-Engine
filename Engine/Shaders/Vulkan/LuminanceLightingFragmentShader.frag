@@ -51,7 +51,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	features.albedo = sceneFeatures1.rgb;
 	features.normal = UnpackNormal(sceneFeatures3.x);
-	features.materialProperties = floatBitsToInt(sceneFeatures3.w);
+	features.materialProperties = floatBitsToInt(sceneFeatures1.w);
 	features.luminance = sceneFeatures4.w * sceneFeatures2.z;
 
 	return features;
