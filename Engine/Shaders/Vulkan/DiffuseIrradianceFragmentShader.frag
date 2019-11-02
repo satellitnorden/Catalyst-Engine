@@ -61,7 +61,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.view_direction = CalculateRayDirection(coordinate);
 	features.roughness = sceneFeatures4.x;
 	features.metallic = sceneFeatures4.y;
-	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
+	features.luminance = sceneFeatures4.w * sceneFeatures2.z;
 	features.ambientOcclusion = pow(sceneFeatures4.z * pow(ambientOcclusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
 	return features;

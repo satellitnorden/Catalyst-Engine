@@ -38,7 +38,7 @@ void main()
 
 	//Retrieve all properties.
 	vec3 albedo = sceneFeatures1.rgb;
-	float luminanceMultiplier = sceneFeatures1.w;
+	float luminanceMultiplier = sceneFeatures2.z;
 	float hitDistance = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures3.x);
 	int materialProperties = floatBitsToInt(sceneFeatures3.w);
