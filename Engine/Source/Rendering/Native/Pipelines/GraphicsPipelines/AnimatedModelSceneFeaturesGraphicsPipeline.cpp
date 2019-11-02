@@ -59,10 +59,9 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	SetDepthBuffer(depthBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(5);
+	SetNumberOfRenderTargets(4);
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Velocity));
 

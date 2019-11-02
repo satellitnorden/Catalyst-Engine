@@ -36,9 +36,8 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneFeatures1Texture;
 layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
-layout (set = 1, binding = 2) uniform sampler2D sceneFeatures3Texture;
-layout (set = 1, binding = 3) uniform sampler2D sceneFeatures4Texture;
-layout (set = 1, binding = 4) uniform sampler2D ambientOcclusionTexture;
+layout (set = 1, binding = 2) uniform sampler2D sceneFeatures4Texture;
+layout (set = 1, binding = 3) uniform sampler2D ambientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -50,7 +49,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
 	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, coordinate);
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
-	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, coordinate);
 	vec4 sceneFeatures4 = texture(sceneFeatures4Texture, coordinate);
 	vec4 ambientOcclusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : Upsample(ambientOcclusionTexture, coordinate);
 

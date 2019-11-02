@@ -180,22 +180,17 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the albedo and the luminance multiplier.
+	*	Contains the albedo in the RGB channels and the material property flags in the A channel.
 	*/
 	SceneFeatures1,
 
 	/*
-	*	Contains the geometry normal and the hit distance.
+	*	Contains the geometry normal in the R channel, the shading normal in the B channel, the luminance multiplier in the G channel and the hit distance in the A channel.
 	*/
 	SceneFeatures2,
 
 	/*
-	*	Contains the shading normal and the material properties.
-	*/
-	SceneFeatures3,
-
-	/*
-	*	Contains the roughness, metallic, ambient occlusion and luminance.
+	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
 	*/
 	SceneFeatures4,
 
