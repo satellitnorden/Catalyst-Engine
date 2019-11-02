@@ -41,6 +41,14 @@ public:
 	};
 
 	/*
+	*	Given a vector, clamp it between the minimum and the maximum values
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Clamp(const Vector2& vector, const float minimum, const float maximum) NOEXCEPT
+	{
+		return Vector2(CatalystBaseMath::Clamp<TYPE>(vector._X, minimum, maximum), CatalystBaseMath::Clamp<TYPE>(vector._Y, minimum, maximum));
+	}
+
+	/*
 	*	Returns the dot product of two vectors.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float DotProduct(const Vector2 &first, const Vector2 &second) NOEXCEPT

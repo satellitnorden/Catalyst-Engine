@@ -4,8 +4,10 @@
 //Constants.
 #define MAXIMUM_10_BIT_FLOAT (1023.0f)
 #define MAXIMUM_11_BIT_FLOAT (2047.0f)
+#define MAXIMUM_16_BIT_FLOAT (63535.0f)
 #define MAXIMUM_10_BIT_UINT (1023)
 #define MAXIMUM_11_BIT_UINT (2047)
+#define MAXIMUM_16_BIT_UINT (63535)
 
 /*
 *   Packs a normal into one float.
@@ -47,5 +49,43 @@ vec3 UnpackNormal(float normal)
 	unpacked_normal.z = unpacked_normal.z * 2.0f - 1.0f;
 
     return normalize(unpacked_normal);
+}
+
+/*
+*   Packs a velocity into one float.
+*/
+float PackVelocity(vec2 velocity)
+{
+    //Normalize the velocity into a [0.0f, 1.0f] range.
+    velocity.x = clamp(velocity.x, -1.0f, 1.0f) * 0.5f + 0.5f;
+    velocity.y = clamp(velocity.y, -1.0f, 1.0f) * 0.5f + 0.5f;
+
+    //Construct the uint.
+    uint packed_velocity = 0;
+
+    packed_velocity |= uint(velocity.x * MAXIMUM_16_BIT_FLOAT) << 16;
+    packed_velocity |= uint(velocity.y * MAXIMUM_16_BIT_FLOAT);
+
+    return float(packed_velocity);
+}
+
+/*
+*   Unpacks a velocity into a vec2.
+*/
+vec2 UnpackVelocity(float velocity)
+{   
+    uint uint_velocity = uint(velocity);
+
+    //Upack the velocity.
+    vec2 unpacked_velocity;
+
+    unpacked_velocity.x = float((uint_velocity >> 16) & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT;
+    unpacked_velocity.y = float(uint_velocity & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT;
+
+    //Unnormalize the velocity into a [-1.0f, 1.0f] range.
+    unpacked_velocity.x = unpacked_velocity.x * 2.0f - 1.0f;
+    unpacked_velocity.y = unpacked_velocity.y * 2.0f - 1.0f;
+
+    return unpacked_velocity;
 }
 #endif
