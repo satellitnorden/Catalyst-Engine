@@ -7,6 +7,7 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
@@ -82,7 +83,7 @@ void main()
 													SkyColor(reflect(ray_direction, ocean_normal)));
 
         //Write the fragments.
-    	scene_features_2 = vec4(0.0f, 1.0f, 0.0f, intersection_distance);
+    	scene_features_2 = vec4(PackNormal(vec3(0.0f, 1.0f, 0.0f)), 0.0f, 0.0f, intersection_distance);
         scene = vec4(final_fragment, 1.0f);
     }
     

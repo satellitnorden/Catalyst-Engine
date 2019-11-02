@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRandomUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
@@ -29,7 +30,7 @@ void main()
 {
 	//Sample the scene features.
 	vec4 sceneFeatures = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
-	vec3 geometryNormal = sceneFeatures.xyz;
+	vec3 geometryNormal = UnpackNormal(sceneFeatures.x);
 	float hitDistance = sceneFeatures.w;
 
 	//Calculate the bias.

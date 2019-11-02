@@ -66,7 +66,7 @@ void main()
 		vec4 sampleSceneFeatures = texture(sceneFeatures2Texture, sampleScreenCoordinate);
 
 		//Retrieve the sample geometry normal/hit distance.
-		vec3 sampleGeometryNormal = sampleSceneFeatures.xyz;
+		vec3 sampleGeometryNormal = UnpackNormal(sampleSceneFeatures.x);
 		float sampleHitDistance = sampleSceneFeatures.w;
 
 		//Calculate the expected sample hit distance.

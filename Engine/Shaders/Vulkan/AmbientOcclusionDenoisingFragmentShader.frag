@@ -6,11 +6,12 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_DENOISING_SIZE (12.0f)
+#define AMBIENT_OCCLUSION_DENOISING_SIZE (14.0f)
 #define AMBIENT_OCCLUSION_DENOISING_START_END (AMBIENT_OCCLUSION_DENOISING_SIZE * 0.5f)
 
 /*
@@ -51,7 +52,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.geometryNormal = sceneFeatures2.xyz;
+	features.geometryNormal = UnpackNormal(sceneFeatures2.x);
 	features.hitDistance = sceneFeatures2.w;
 
 	return features;
