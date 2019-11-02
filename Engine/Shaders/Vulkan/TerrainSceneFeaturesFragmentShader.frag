@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 
 //Constants.
 #define MATERIAL_TEXTURE_COORDINATE_OFFSET (vec2(inverse_terrain_texture_resolution, inverse_terrain_texture_resolution))
@@ -176,7 +177,7 @@ void main()
     //Write the fragments.
     sceneFeatures1 = vec4(pow(material.albedo, vec3(2.2f)), 0.0f);
     sceneFeatures2 = vec4(terrain_normal, length(fragmentWorldPosition - perceiverWorldPosition));
-    sceneFeatures3 = vec4(shading_normal, 0.0f);
+    sceneFeatures3 = vec4(PackNormal(shading_normal), 0.0f, 0.0f, 0.0f);
     sceneFeatures4 = material.material_properties;
     velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition), 0.0f, 0.0f);
 }

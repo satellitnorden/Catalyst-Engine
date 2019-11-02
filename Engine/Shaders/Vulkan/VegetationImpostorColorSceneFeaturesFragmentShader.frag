@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -32,7 +33,7 @@ void main()
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);
     sceneFeatures2 = vec4(fragment_normal, 0.0f);
-    sceneFeatures3 = vec4(fragment_normal, 0);
+    sceneFeatures3 = vec4(PackNormal(fragment_normal), 0.0f, 0.0f, 0);
     sceneFeatures4 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
     velocity = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }

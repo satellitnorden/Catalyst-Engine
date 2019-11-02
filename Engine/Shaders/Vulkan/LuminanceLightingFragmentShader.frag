@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -47,7 +48,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.albedo = sceneFeatures1.rgb;
-	features.normal = sceneFeatures3.xyz;
+	features.normal = UnpackNormal(sceneFeatures3.x);
 	features.materialProperties = floatBitsToInt(sceneFeatures3.w);
 	features.luminance = sceneFeatures4.w * sceneFeatures1.w;
 

@@ -8,6 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystModelData.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
@@ -39,7 +40,7 @@ void main()
 	vec3 albedo = sceneFeatures1.rgb;
 	float luminanceMultiplier = sceneFeatures1.w;
 	float hitDistance = sceneFeatures2.w;
-	vec3 shadingNormal = sceneFeatures3.xyz;
+	vec3 shadingNormal = UnpackNormal(sceneFeatures3.x);
 	int materialProperties = floatBitsToInt(sceneFeatures3.w);
 	float roughness = sceneFeatures4.x;
 	float metallic = sceneFeatures4.y;

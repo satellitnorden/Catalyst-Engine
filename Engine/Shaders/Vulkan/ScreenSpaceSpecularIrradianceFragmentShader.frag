@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
@@ -35,7 +36,7 @@ void main()
 	vec3 worldPosition = perceiverWorldPosition + view_direction * texture(sceneFeatures2Texture, fragmentTextureCoordinate).w;
 
 	//Calculate the reflection direction.
-	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), texture(sceneFeatures3Texture, fragmentTextureCoordinate).xyz);
+	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(texture(sceneFeatures3Texture, fragmentTextureCoordinate).x));
 
 	//Sample the active noise texture.
 	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));

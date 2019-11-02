@@ -1,16 +1,28 @@
 #if !defined(CATALYST_PACKING_UTILITIES)
 #define CATALYST_PACKING_UTILITIES
 
+//Constants.
+#define MAXIMUM_10_BIT_UINT (1023)
+#define MAXIMUM_11_BIT_UINT (2047)
+
 /*
 *   Packs a normal into one float.
 */
 float PackNormal(vec3 normal)
 {
+    //Normalize the normal into a [0.0f, 1.0f] range.
 	normal.x = normal.x * 0.5f + 0.5f;
 	normal.y = normal.y * 0.5f + 0.5f;
 	normal.z = normal.z * 0.5f + 0.5f;
 
-    return uintBitsToFloat((uint(normal.x * 255.0f) << 16) | (uint(normal.y * 255.0f) << 8) | uint(normal.z * 255.0f));
+    //Construct the uint.
+    uint packed_normal = 0;
+
+    packed_normal |= uint(normal.x * MAXIMUM_11_BIT_UINT) << 21;
+    packed_normal |= uint(normal.y * MAXIMUM_10_BIT_UINT) << 11;
+    packed_normal |= uint(normal.z * MAXIMUM_11_BIT_UINT);
+
+    return uintBitsToFloat(packed_normal);
 }
 
 /*
@@ -18,17 +30,20 @@ float PackNormal(vec3 normal)
 */
 vec3 UnpackNormal(float normal)
 {   
-    vec3 normal3;
     uint uint_normal = floatBitsToUint(normal);
 
-    normal3.x = float(uint_normal >> 16) / 255.0f;
-    normal3.y = float((uint_normal >> 8) & 255) / 255.0f;
-    normal3.z = float(uint_normal & 255) / 255.0f;
+    //Upack the normal.
+    vec3 unpacked_normal;
 
-    normal3.x = normal3.x * 2.0f - 1.0f;
-	normal3.y = normal3.y * 2.0f - 1.0f;
-	normal3.z = normal3.z * 2.0f - 1.0f;
+    unpacked_normal.x = float(uint_normal >> 21) / MAXIMUM_11_BIT_UINT;
+    unpacked_normal.y = float((uint_normal >> 11) & MAXIMUM_10_BIT_UINT) / MAXIMUM_10_BIT_UINT;
+    unpacked_normal.z = float(uint_normal & MAXIMUM_11_BIT_UINT) / MAXIMUM_11_BIT_UINT;
 
-    return normal3;
+    //Unnormalize the normal into a [-1.0f, 1.0f] range.
+    unpacked_normal.x = unpacked_normal.x * 2.0f - 1.0f;
+	unpacked_normal.y = unpacked_normal.y * 2.0f - 1.0f;
+	unpacked_normal.z = unpacked_normal.z * 2.0f - 1.0f;
+
+    return normalize(unpacked_normal);
 }
 #endif

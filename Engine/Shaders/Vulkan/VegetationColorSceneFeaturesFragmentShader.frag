@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 
@@ -64,7 +65,7 @@ void main()
   //Write the fragments.
   sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);
   sceneFeatures2 = vec4(fragmentTangentSpaceMatrix[2] * (gl_FrontFacing ? 1.0f : -1.0f), length(fragmentCurrentWorldPosition - perceiverWorldPosition));
-  sceneFeatures3 = vec4(shadingNormal, 0);
+  sceneFeatures3 = vec4(PackNormal(shadingNormal), 0.0f, 0.0f, 0);
   sceneFeatures4 = materialProperties;
   velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition), 0.0f, 0.0f);
 }
