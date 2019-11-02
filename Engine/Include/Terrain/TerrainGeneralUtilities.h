@@ -72,7 +72,7 @@ namespace TerrainGeneralUtilities
 
 				properties._HeightFunction(properties, worldPosition, &height, nullptr);
 
-				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i)] = height;
+				data[(j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i] = height;
 
 				*minimumHeight = CatalystBaseMath::Minimum<float>(*minimumHeight, height);
 				*maximumHeight = CatalystBaseMath::Maximum<float>(*maximumHeight, height);
