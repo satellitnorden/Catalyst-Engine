@@ -55,7 +55,7 @@ void main()
 
 	//Calculate the volumetric lighting weight.
 	float volumetric_lighting_weight = 1.0f - pow(1.0f - min(current_features.hit_distance / viewDistance, 1.0f), volumetricLightingIntensity);
-	volumetric_lighting_weight *= 1.0f - min(current_features.hit_position.y * 0.001f, 1.0f);
+	volumetric_lighting_weight *= SmoothStep(1.0f - min(current_features.hit_position.y * 0.001f, 1.0f));
 
 	//Write the fragment.
 	fragment = vec4(current_volumetric_lighting, volumetric_lighting_weight);
