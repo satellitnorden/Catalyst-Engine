@@ -31,7 +31,7 @@ layout (location = 5) in vec2 fragmentTextureCoordinate;
 //Out parameters.
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
-layout (location = 2) out vec4 sceneFeatures4;
+layout (location = 2) out vec4 sceneFeatures3;
 layout (location = 3) out vec4 velocity;
 
 /*
@@ -68,6 +68,6 @@ void main()
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), intBitsToFloat(materialPropertyFlags));
     sceneFeatures2 = vec4(PackNormal(fragmentTangentSpaceMatrix[2]), PackNormal(shadingNormal), luminanceMultiplier, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
-    sceneFeatures4 = materialProperties;
+    sceneFeatures3 = materialProperties;
     velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition), 0.0f, 0.0f);
 }

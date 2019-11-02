@@ -57,7 +57,7 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Initialize(const Dept
 	SetNumberOfRenderTargets(4);
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures1));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2));
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures4));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3));
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Velocity));
 
 	//Add the render data table layouts.

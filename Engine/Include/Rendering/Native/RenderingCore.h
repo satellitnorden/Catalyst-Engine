@@ -192,7 +192,7 @@ enum class RenderTarget : uint8
 	/*
 	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
 	*/
-	SceneFeatures4,
+	SceneFeatures3,
 
 	/*
 	*	Contains the ambient occlusion.
