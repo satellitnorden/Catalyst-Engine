@@ -54,14 +54,14 @@ void main()
 		vec4 noise_texture_2 = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + 1) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 		//Calculate the blurred scene.
-		vec3 blurred_scene = (texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.x - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.y - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.z - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_1.w - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.x - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.y - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.z - 0.5f)).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * (noise_texture_2.w - 0.5f)).rgb) * 0.125f;
+		vec3 blurred_scene = (texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.x).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.y).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.z).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.w).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_2.x).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_2.y).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_2.z).rgb +
+							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_2.w).rgb) * 0.125f;
 
 	    //Write the fragment.
 	    fragment = vec4(blurred_scene, 1.0f);

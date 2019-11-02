@@ -57,7 +57,7 @@ vec3 ApplyVignette(vec3 fragment, float edgeFactor)
 */
 vec3 ApplyHorizontalBorders(vec3 fragment)
 {
-	return fragment * float(fragmentTextureCoordinate.y >= 0.05f && fragmentTextureCoordinate.y <= 0.95f);
+	return fragment * float(fragmentTextureCoordinate.y >= 0.0f && fragmentTextureCoordinate.y <= 1.0f);
 }
 
 void main()
