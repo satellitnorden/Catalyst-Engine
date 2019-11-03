@@ -36,13 +36,11 @@ void main()
 
 	//Retrieve all properties.
 	vec3 albedo = sceneFeatures1.rgb;
-	float luminanceMultiplier = sceneFeatures2.z;
 	float hitDistance = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
 	float ambientOcclusion = sceneFeatures3.z;
-	float luminance = sceneFeatures3.w * luminanceMultiplier;
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);

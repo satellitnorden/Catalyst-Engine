@@ -19,7 +19,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D velocityTexture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
 layout (set = 1, binding = 1) uniform sampler2D previousFrameTexture;
 layout (set = 1, binding = 2) uniform sampler2D currentFrameTexture;
 
@@ -57,7 +57,7 @@ void main()
 	float maximumLuminance = CalculateAverage(maximum);
 
 	//Calculate the previous screen coordinate.
-	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(velocityTexture, unjitteredScreenCoordinate).xy;
+	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(scene_features_2_texture, unjitteredScreenCoordinate).yz;
 
 	//Sample the previous frame texture.
 	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previousScreenCoordinate);
@@ -81,6 +81,5 @@ void main()
 
 	//Write the fragments.
 	currentFrame = vec4(blendedFrame, 1.0f);
-	if (gl_FragCoord.x > 980.0f || true) scene = vec4(blendedFrame, 1.0f);
-	else scene = vec4(texture(velocityTexture, unjitteredScreenCoordinate).x * 10.0f, texture(velocityTexture, unjitteredScreenCoordinate).y * 10.0f, texture(velocityTexture, unjitteredScreenCoordinate).y * 10.0f, 1.0f);
+	scene = vec4(blendedFrame, 1.0f);
 }

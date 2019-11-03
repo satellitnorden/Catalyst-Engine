@@ -200,11 +200,6 @@ enum class RenderTarget : uint8
 	AmbientOcclusion,
 
 	/*
-	*	Contains the velocity.
-	*/
-	Velocity,
-
-	/*
 	*	Contains the final color for the scene.
 	*/
 	Scene,

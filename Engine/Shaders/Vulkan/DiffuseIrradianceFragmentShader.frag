@@ -23,7 +23,6 @@ struct SceneFeatures
 	float hitDistance;
 	float roughness;
 	float metallic;
-	float luminance;
 	float ambientOcclusion;
 };
 
@@ -59,7 +58,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.view_direction = CalculateRayDirection(coordinate);
 	features.roughness = sceneFeatures3.x;
 	features.metallic = sceneFeatures3.y;
-	features.luminance = sceneFeatures3.w * sceneFeatures2.z;
 	features.ambientOcclusion = pow(sceneFeatures3.z * pow(ambientOcclusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
 	return features;

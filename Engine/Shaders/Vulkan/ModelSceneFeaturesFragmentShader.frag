@@ -65,9 +65,11 @@ void main()
 
     albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 
+    //Calculate the velocity.
+    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);
+
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), intBitsToFloat(materialPropertyFlags));
-    sceneFeatures2 = vec4(PackNormal(shadingNormal), 0.0f, luminanceMultiplier, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
+    sceneFeatures2 = vec4(PackNormal(shadingNormal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = materialProperties;
-    velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition), 0.0f, 0.0f);
 }

@@ -41,7 +41,6 @@ layout (location = 1) in vec2 fragmentTextureCoordinate;
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
-layout (location = 3) out vec4 velocity;
 
 /*
 * Returns the screen coordinate with the given view matrix and world position.
@@ -173,9 +172,11 @@ void main()
     //Calculate the shading normal.
     vec3 shading_normal = normalize(tangent_space_matrix * material.normal_map);
 
+    //Calculate the velocity.
+    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition);
+
     //Write the fragments.
     sceneFeatures1 = vec4(pow(material.albedo, vec3(2.2f)), 0.0f);
-    sceneFeatures2 = vec4(PackNormal(shading_normal), 0.0f, 0.0f, length(fragmentWorldPosition - perceiverWorldPosition));
+    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = material.material_properties;
-    velocity = vec4(CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition), 0.0f, 0.0f);
 }

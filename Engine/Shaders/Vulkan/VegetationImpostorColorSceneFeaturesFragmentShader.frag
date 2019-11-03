@@ -23,7 +23,6 @@ layout (location = 2) in float fragment_hit_distance;
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
-layout (location = 3) out vec4 velocity;
 
 void main()
 {
@@ -34,5 +33,4 @@ void main()
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0.0f);
     sceneFeatures2 = vec4(PackNormal(fragment_normal), 0.0f, 0.0f, fragment_hit_distance);
     sceneFeatures3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
-    velocity = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
