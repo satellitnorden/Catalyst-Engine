@@ -311,4 +311,12 @@ bool ValidCoordinate(vec2 coordinate)
             && coordinate.y < 1.0f;
 }
 
+/*
+*   Calculates the ambient illumination intensity.
+*/
+float CalculateAmbientIlluminationIntensity()
+{
+    return mix(CalculateAverage(SkyColor(vec3(1.0f, 0.0f, 0.0f))), CalculateAverage(SkyColor(vec3(0.0f, 1.0f, 0.0f))), 0.5f);
+}
+
 #endif

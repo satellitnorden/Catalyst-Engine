@@ -37,11 +37,13 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 void SkyRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 	AddPipeline(&_SkyGraphicsPipeline);
+	AddPipeline(&_CloudsGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
+	_CloudsGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -56,4 +58,5 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	_SkyGraphicsPipeline.Execute();
+	_CloudsGraphicsPipeline.Execute();
 }
