@@ -8,6 +8,7 @@
 #include <Entities/Types/AnimatedModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ModelEntity.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/VegetationEntity.h>
 

@@ -21,6 +21,7 @@ enum class EntityPlacementType : uint8
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)	\
 						ENTITY_TYPE(Light)			\
 						ENTITY_TYPE(Model)			\
+						ENTITY_TYPE(ParticleSystem)	\
 						ENTITY_TYPE(Sound)			\
 						ENTITY_TYPE(Vegetation)
 

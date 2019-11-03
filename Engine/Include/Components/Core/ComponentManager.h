@@ -8,6 +8,7 @@
 #include <Components/Transient/AnimatedModelComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ModelComponent.h>
+#include <Components/Transient/ParticleSystemComponent.h>
 #include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/VegetationComponent.h>
 
@@ -56,6 +57,7 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Model, ModelComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ParticleSystem, ParticleSystemComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Vegetation, VegetationComponent);
 
