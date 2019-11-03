@@ -283,6 +283,7 @@ enum class Shader : uint8
 	ModelSceneFeaturesVertex,
 	MotionBlurFragment,
 	OceanFragment,
+	ParticleSystemCompute,
 	PassthroughFragment,
 	PathTracingDenoisingFragment,
 	PathTracingRayClosestHit,

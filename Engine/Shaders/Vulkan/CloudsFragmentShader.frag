@@ -38,5 +38,5 @@ void main()
    float cloud_weight = float(RandomFloat(cell_coordinate, 0.0f) > 0.9f);
 
    //Write the fragment.
-   fragment = vec4(vec3(0.8f, 0.9f, 1.0f) * mix(SkyColor(vec3(1.0f, 0.0f, 0.0f)), SkyColor(vec3(0.0f, 1.0f, 0.0f)), 0.5f), cloud_weight);
+   fragment = vec4(vec3(0.8f, 0.9f, 1.0f) * CalculateAmbientIlluminationIntensity(), cloud_weight);
 }

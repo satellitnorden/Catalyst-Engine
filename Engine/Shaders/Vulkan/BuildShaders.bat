@@ -14,6 +14,7 @@ glslangValidator.exe -V ModelSceneFeaturesFragmentShader.frag -o 			ModelSceneFe
 glslangValidator.exe -V ModelSceneFeaturesVertexShader.vert -o 				ModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V OceanFragmentShader.frag -o 					OceanFragmentShader.spv
+glslangValidator.exe -V ParticleSystemComputeShader.comp -o 			ParticleSystemComputeShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PathTracingDenoisingFragmentShader.frag -o 			PathTracingDenoisingFragmentShader.spv
 glslangValidator.exe -V PathTracingRayClosestHitShader.rchit -o 			PathTracingRayClosestHitShader.spv

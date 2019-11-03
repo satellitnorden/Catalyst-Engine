@@ -1,0 +1,71 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+
+/*
+*	Particle system input data struct definition.
+*/
+struct ParticleSystemInputData
+{
+	vec3 world_position;
+
+	vec3 minimum_position;
+	vec3 maximum_position;
+	vec3 minimum_velocity;
+	vec3 maximum_velocity;
+	vec2 minimum_size;
+	vec2 maximum_size;
+	float fade_time;
+
+	int spawned_index;
+};
+
+//Layout specification.
+layout (local_size_x = 128) in;
+
+//Push constant data.
+layout (push_constant) uniform Buffer1
+{
+    layout (offset = 0) vec4 particle_system_input_data[8];
+};
+
+//Descriptor set data.
+layout (std140, set = 1, binding = 0) buffer Buffer2
+{
+	vec4 particle_system_state_data[];
+};
+
+/*
+*	Unpacks the particle system input data.
+
+void UnpackParticleSystemInputData(out ParticleSystemInputData data)
+{
+	data.world_position = vec3(particle_system_input_data[0][0], particle_system_input_data[0][1], particle_system_input_data[0][2]);
+	data.minimum_position = vec3(particle_system_input_data[0][3], particle_system_input_data[1][0], particle_system_input_data[1][1]);
+	data.maximum_position = vec3(particle_system_input_data[1][2], particle_system_input_data[1][3], particle_system_input_data[2][0]);
+	data.minimum_velocity = vec3(particle_system_input_data[2][1], particle_system_input_data[2][2], particle_system_input_data[2][3]);
+	data.maximum_velocity = vec3(particle_system_input_data[3][0], particle_system_input_data[3][1], particle_system_input_data[3][2]);
+	data.minimum_size = vec2(particle_system_input_data[3][3], particle_system_input_data[4][0]);
+	data.maximum_size = vec2(particle_system_input_data[4][1], particle_system_input_data[4][2]);
+	data.fade_time = particle_system_input_data[4][3];
+	data.spawned_index = particle_system_input_data[5][0];
+}
+*/
+
+void main() 
+{
+	//Unpack the particle system input data.
+	ParticleSystemInputData data;
+	//UnpackParticleSystemInputData(data);
+
+	//Get the index of the particle to update.
+	uint particle_index = gl_GlobalInvocationID.x * 2; //Multiply the index since the particle data is stored in blocks of vec4's.
+
+	//If this particle is unspawned, generate the initial properties.
+	//if (particle_index <= )
+}
