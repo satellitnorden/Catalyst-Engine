@@ -206,6 +206,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.h" />
@@ -397,6 +398,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\MaterialSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp" />

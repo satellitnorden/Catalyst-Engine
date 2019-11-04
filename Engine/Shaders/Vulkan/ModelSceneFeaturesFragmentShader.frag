@@ -32,7 +32,6 @@ layout (location = 5) in vec2 fragmentTextureCoordinate;
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
-layout (location = 3) out vec4 velocity;
 
 /*
 * Returns the screen coordinate with the given view matrix and world position.

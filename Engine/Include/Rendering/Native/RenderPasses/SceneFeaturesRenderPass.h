@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
@@ -40,6 +41,9 @@ private:
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer;
+
+	//The particle system compute pipeline.
+	ParticleSystemComputePipeline _ParticleSystemComputePipeline;
 
 	//The vegetation depth scene features graphics pipeline.
 	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;

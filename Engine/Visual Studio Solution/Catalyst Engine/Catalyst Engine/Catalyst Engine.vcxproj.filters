@@ -1239,6 +1239,9 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemComponent.h">
       <Filter>Components\Include\Transient</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1648,6 +1651,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
