@@ -77,6 +77,13 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(vulkan2DTexture);
 	}
 
+	//Release all Vulkan 3D textures.
+	for (Vulkan3DTexture* const RESTRICT vulkan3DTexture : _Vulkan3DTextures)
+	{
+		vulkan3DTexture->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(Vulkan3DTexture)>(vulkan3DTexture);
+	}
+
 	//Release all Vulkan acceleration structures.
 	for (VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure : _VulkanAccelerationStructures)
 	{
@@ -254,6 +261,22 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 	texture->Release();
 	_Vulkan2DTextures.Erase(texture);
 	Memory::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(texture);
+}
+
+/*
+*	Creates and returns a 3D texture.
+*/
+RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureDepth, const uint32 textureChannels, const uint32 textureTexelSize, const void* RESTRICT const* RESTRICT textureData, const VkFormat format) NOEXCEPT
+{
+	Vulkan3DTexture* const RESTRICT new3DTexture{ new (Memory::GlobalPoolAllocate<sizeof(Vulkan3DTexture)>()) Vulkan3DTexture() };
+	new3DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureDepth, textureChannels, textureTexelSize, textureData, format);
+
+	static Spinlock lock;
+	ScopedWriteLock<Spinlock> scopedLock{ lock };
+
+	_Vulkan3DTextures.EmplaceSlow(new3DTexture);
+
+	return new3DTexture;
 }
 
 /*

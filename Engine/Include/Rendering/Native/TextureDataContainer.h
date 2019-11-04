@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/Texture3D.h>
 
 class TextureDataContainer final
 {
@@ -87,8 +88,8 @@ public:
 	/*
 	*	Constructor taking a Texture2D with 1 channel.
 	*/
-	template <typename Type>
-	FORCE_INLINE TextureDataContainer(const Texture2D<Type> &texture) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE TextureDataContainer(const Texture2D<TYPE> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
@@ -96,18 +97,18 @@ public:
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureDepth = 1;
 		_TextureChannels = 1;
-		_TextureTexelSize = sizeof(Type);
+		_TextureTexelSize = sizeof(TYPE);
 	}
 
 	/*
 	*	Constructor taking a dynamic array of Texture2D with 1 channel.
 	*/
-	template <typename Type>
-	FORCE_INLINE TextureDataContainer(const DynamicArray<Texture2D<Type>> &texture) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE TextureDataContainer(const DynamicArray<Texture2D<TYPE>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(texture.Size());
 
-		for (const Texture2D<byte> &mip : texture)
+		for (const Texture2D<TYPE> &mip : texture)
 		{
 			_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(mip.Data()));
 		}
@@ -116,7 +117,7 @@ public:
 		_TextureHeight = static_cast<uint32>(texture[0].GetHeight());
 		_TextureDepth = 1;
 		_TextureChannels = 1;
-		_TextureTexelSize = sizeof(Type);
+		_TextureTexelSize = sizeof(TYPE);
 	}
 
 	/*
@@ -131,6 +132,21 @@ public:
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureDepth = 1;
 		_TextureChannels = 4;
+		_TextureTexelSize = sizeof(TYPE);
+	}
+
+	/*
+	*	Constructor taking a Texture3D with 1 channel.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE TextureDataContainer(const Texture3D<TYPE>& texture) NOEXCEPT
+	{
+		_TextureData.Reserve(1);
+		_TextureData.EmplaceFast(reinterpret_cast<const void* RESTRICT>(texture.Data()));
+		_TextureWidth = static_cast<uint32>(texture.GetWidth());
+		_TextureHeight = static_cast<uint32>(texture.GetHeight());
+		_TextureDepth = static_cast<uint32>(texture.GetDepth());
+		_TextureChannels = 1;
 		_TextureTexelSize = sizeof(TYPE);
 	}
 

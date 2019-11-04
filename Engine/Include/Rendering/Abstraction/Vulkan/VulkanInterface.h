@@ -7,6 +7,7 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/Vulkan2DTexture.h>
+#include <Rendering/Abstraction/Vulkan/Vulkan3DTexture.h>
 #include <Rendering/Abstraction/Vulkan/VulkanAccelerationStructure.h>
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
@@ -150,6 +151,11 @@ public:
 	void Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT;
 
 	/*
+	*	Creates and returns a 3D texture.
+	*/
+	RESTRICTED Vulkan3DTexture* const RESTRICT Create3DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureDepth, const uint32 textureChannels, const uint32 textureTexelSize, const void* RESTRICT const* RESTRICT textureData, const VkFormat format) NOEXCEPT;
+
+	/*
 	*	Creates an acceleration structure.
 	*/
 	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT;
@@ -291,6 +297,9 @@ private:
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> _Vulkan2DTextures;
+
+	//Container for all Vulkan 3D textures.
+	DynamicArray<Vulkan3DTexture * RESTRICT> _Vulkan3DTextures;
 
 	//Container for all Vulkan acceleration structures.
 	DynamicArray<VulkanAccelerationStructure *RESTRICT> _VulkanAccelerationStructures;

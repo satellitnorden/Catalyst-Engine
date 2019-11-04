@@ -21,4 +21,14 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+private:
+
+	//The cloud texture.
+	Texture3DHandle _CloudTexture;
+
+	/*
+	*	Creates the cloud texture.
+	*/
+	void CreateCloudTexture() NOEXCEPT;
+
 };

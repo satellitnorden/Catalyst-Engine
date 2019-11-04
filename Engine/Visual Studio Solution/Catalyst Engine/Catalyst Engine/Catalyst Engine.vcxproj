@@ -154,6 +154,7 @@
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingCore.h" />
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingTimer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan3DTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanAllocator.h" />
@@ -278,6 +279,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Texture2D.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Texture3D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureCube.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureDataContainer.h" />
@@ -363,6 +365,7 @@
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp" />

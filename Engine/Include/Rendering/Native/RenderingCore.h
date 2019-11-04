@@ -40,7 +40,8 @@ using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;
 using SamplerHandle = void *RESTRICT;
-using Texture2DHandle = void *RESTRICT;
+using Texture2DHandle = void* RESTRICT;
+using Texture3DHandle = void* RESTRICT;
 using TextureCubeHandle = void *RESTRICT;
 
 /*

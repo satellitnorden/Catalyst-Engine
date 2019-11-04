@@ -12,7 +12,7 @@
 #include <Rendering/Native/RenderingCore.h>
 
 template <typename TYPE>
-class Texture2D final
+class Texture3D final
 {
 
 public:
@@ -20,10 +20,11 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Texture2D() NOEXCEPT
+	Texture3D() NOEXCEPT
 		:
 		_Width(0),
-		_Height(0)
+		_Height(0),
+		_Depth(0)
 	{
 
 	}
@@ -31,10 +32,11 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	Texture2D(const Texture2D &other) NOEXCEPT
+	Texture3D(const Texture3D&other) NOEXCEPT
 		:
 		_Width(other._Width),
 		_Height(other._Height),
+		_Depth(other._Depth),
 		_Data(other._Data)
 	{
 
@@ -43,47 +45,51 @@ public:
 	/*
 	*	Move constructor.
 	*/
-	Texture2D(Texture2D &&other) NOEXCEPT
+	Texture3D(Texture3D&&other) NOEXCEPT
 		:
 		_Width(other._Width),
 		_Height(other._Height),
+		_Depth(other._Depth),
 		_Data(std::move(other._Data))
 	{
 
 	}
 
 	/*
-	*	Constructor taking in the resolution of the texture. Assumes that width and height does not differ.
+	*	Constructor taking in the resolution of the texture. Assumes that width, height and depth does not differ.
 	*/
-	Texture2D(const uint32 initialResolution) NOEXCEPT
+	Texture3D(const uint32 initial_resolution) NOEXCEPT
 		:
-		_Width(initialResolution),
-		_Height(initialResolution)
+		_Width(initial_resolution),
+		_Height(initial_resolution),
+		_Depth(initial_resolution)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height);
+		_Data.UpsizeFast(_Width * _Height * _Depth);
 	}
 
 	/*
-	*	Constructor taking in the resolution of the texture. Takes both the width and the height
+	*	Constructor taking in the width, height and depth of the texture. Takes both the width and the height
 	*/
-	Texture2D(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
+	Texture3D(const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth) NOEXCEPT
 		:
-		_Width(initialWidth),
-		_Height(initialHeight)
+		_Width(initial_width),
+		_Height(initial_height),
+		_Depth(initial_depth)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height);
+		_Data.UpsizeFast(_Width * _Height * _Depth);
 	}
 
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const Texture2D &otherTexture) NOEXCEPT
+	void operator=(const Texture3D &other) NOEXCEPT
 	{
-		_Width = otherTexture._Width;
-		_Height = otherTexture._Height;
-		_Data = otherTexture._Data;
+		_Width = other._Width;
+		_Height = other._Height;
+		_Depth = other._Depth;
+		_Data = other._Data;
 	}
 
 	/*
@@ -107,32 +113,34 @@ public:
 	RESTRICTED TYPE *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
-	*	Initializes this CPU texture 2D.
+	*	Initializes this texture 3D.
 	*/
-	void Initialize(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
+	void Initialize(const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth) NOEXCEPT
 	{
-		//Set the width and height.
-		_Width = initialWidth;
-		_Height = initialHeight;
+		//Set the width, height and depth.
+		_Width = initial_width;
+		_Height = initial_height;
+		_Depth = initial_depth;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height);
+		_Data.UpsizeFast(_Width * _Height * _Depth);
 	}
 
 	/*
-	*	Initializes this CPU texture 2D.
+	*	Initializes this texture 3D.
 	*/
-	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const void *const RESTRICT data) NOEXCEPT
+	void Initialize(const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const void *const RESTRICT data) NOEXCEPT
 	{
-		//Set the width and height.
-		_Width = initialWidth;
-		_Height = initialHeight;
+		//Set the width, height and depth.
+		_Width = initial_width;
+		_Height = initial_height;
+		_Depth = initial_depth;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height);
+		_Data.UpsizeFast(_Width * _Height * _Depth);
 
 		//Copy the data.
-		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height);
+		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height * _Depth);
 	}
 
 	/*
@@ -148,26 +156,27 @@ public:
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
-	const TYPE& At(const uint32 X, const uint32 Y) const NOEXCEPT
+	const TYPE& At(const uint32 X, const uint32 Y, const uint32 Z) const NOEXCEPT
 	{
-		return _Data[X + (Y * _Width)];
+		return _Data[X + (Y * _Width) + (Z * _Width * _Height)];
 	}
 
 	/*
 	*	Returns the texture value at the specified indices, non-const.
 	*/
-	TYPE& At(const uint32 X, const uint32 Y) NOEXCEPT
+	TYPE& At(const uint32 X, const uint32 Y, const uint32 Z) NOEXCEPT
 	{
-		return _Data[X + (Y * _Width)];
+		return _Data[X + (Y * _Width) + (Z * _Width * _Height)];
 	}
 
 	/*
 	*	Returns the texture value at the specified coordinates using linear sampling and the given address mode.
 	*/
-	const TYPE Sample(const Vector2<float> &coordinate, const AddressMode addressMode) const NOEXCEPT
+	const TYPE Sample(const Vector3<float> &coordinate, const AddressMode address_mode) const NOEXCEPT
 	{
+		/*
 		//Calculate the texel step.
-		const Vector2<float> textelStep{ 1.0f / static_cast<float>(_Width), 1.0f / static_cast<float>(_Height) };
+		const Vector3<float> textelStep{ 1.0f / static_cast<float>(_Width), 1.0f / static_cast<float>(_Height), 1.0f / static_cast<float>(_Depth) };
 
 		//Calculate the coordinates.
 		Vector2<float> lowerLeftCoordinate{ coordinate };
@@ -202,14 +211,9 @@ public:
 		const TYPE blend2{ TYPE::LinearlyInterpolate(upperLeftValue, upperRightValue, horizontalBlend) };
 
 		return TYPE::LinearlyInterpolate(blend1, blend2, verticalBlend);
-	}
+		*/
 
-	/*
-	*	Returns the texture value at the specified coordinates using linear sampling and the given address mode.
-	*/
-	const TYPE Sample(const float X, const float Y, const AddressMode addressMode) const NOEXCEPT
-	{
-		return Sample(Vector2<float>(X, Y), addressMode);
+		return TYPE();
 	}
 
 	/*
@@ -222,6 +226,11 @@ public:
 	*/
 	uint32 GetHeight() const NOEXCEPT { return _Height; }
 
+	/*
+	*	Returns the depth of the texture.
+	*/
+	uint32 GetDepth() const NOEXCEPT { return _Depth; }
+
 private:
 
 	//The underlying texture data.
@@ -233,10 +242,13 @@ private:
 	//The height of this texture.
 	uint32 _Height;
 
+	//The depth of this texture.
+	uint32 _Depth;
+
 	/*
 	*	Applies address mode.
 	*/
-	void ApplyAddressMode(const AddressMode mode, Vector2<float> *const RESTRICT coordinate) const NOEXCEPT
+	void ApplyAddressMode(const AddressMode mode, Vector3<float> *const RESTRICT coordinate) const NOEXCEPT
 	{
 		switch (mode)
 		{
@@ -244,6 +256,7 @@ private:
 			{
 				coordinate->_X = CatalystBaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float>(_Width));
 				coordinate->_Y = CatalystBaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float>(_Height));
+				coordinate->_Z = CatalystBaseMath::Clamp<float>(coordinate->_Z, 0.0f, 1.0f - 1.0f / static_cast<float>(_Depth));
 
 				break;
 			}
@@ -252,6 +265,7 @@ private:
 			{
 				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_X));
 				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Y));
+				coordinate->_Z = coordinate->_Z >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Z) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Z));
 
 				break;
 			}

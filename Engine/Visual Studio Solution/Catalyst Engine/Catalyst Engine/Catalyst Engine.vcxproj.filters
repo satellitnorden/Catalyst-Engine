@@ -1242,6 +1242,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Texture3D.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan3DTexture.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1654,6 +1660,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

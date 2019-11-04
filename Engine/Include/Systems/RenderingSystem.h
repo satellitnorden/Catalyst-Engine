@@ -272,6 +272,11 @@ public:
 	void DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
+	*	Creates a texture 3D.
+	*/
+	void CreateTexture3D(const TextureData& textureData, Texture3DHandle* const RESTRICT handle) const NOEXCEPT;
+
+	/*
 	*	Creates a texture cube.
 	*/
 	void CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;

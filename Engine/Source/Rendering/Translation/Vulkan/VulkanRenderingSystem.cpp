@@ -1621,6 +1621,22 @@ void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *
 }
 
 /*
+*	Creates a texture 3D.
+*/
+void RenderingSystem::CreateTexture3D(const TextureData& data, Texture3DHandle* const RESTRICT handle) const NOEXCEPT
+{
+	//Create the texture 3D.
+	*handle = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create3DTexture(	static_cast<uint32>(data._TextureDataContainer._TextureData.Size()),
+																						data._TextureDataContainer._TextureWidth,
+																						data._TextureDataContainer._TextureHeight,
+																						data._TextureDataContainer._TextureDepth,
+																						data._TextureDataContainer._TextureChannels,
+																						data._TextureDataContainer._TextureTexelSize,
+																						data._TextureDataContainer._TextureData.Data(),
+																						VulkanTranslationUtilities::GetVulkanFormat(data._TextureFormat)));
+}
+
+/*
 *	Destroys a texture 2D.
 */
 void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
