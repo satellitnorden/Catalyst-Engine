@@ -82,6 +82,7 @@ namespace TerrainGeneralUtilities
 		RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(data.Data(),
 																TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
 																TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
+																1,
 																1),
 																TextureFormat::R32_Float), texture);
 	}

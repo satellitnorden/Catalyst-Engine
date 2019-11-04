@@ -20,6 +20,9 @@ public:
 	//The height of the texture.
 	uint32 _TextureHeight;
 
+	//The depth of the texture. Only applies to 3D textures.
+	uint32 _TextureDepth;
+
 	//The number of channels of the texture.
 	uint8 _TextureChannels;
 
@@ -29,37 +32,40 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	TextureDataContainer(const TextureDataContainer &otherContainer) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(const TextureDataContainer &other) NOEXCEPT
 	{
-		_TextureData = otherContainer._TextureData;
-		_TextureWidth = otherContainer._TextureWidth;
-		_TextureHeight = otherContainer._TextureHeight;
-		_TextureChannels = otherContainer._TextureChannels;
-		_TextureTexelSize = otherContainer._TextureTexelSize;
+		_TextureData = other._TextureData;
+		_TextureWidth = other._TextureWidth;
+		_TextureHeight = other._TextureHeight;
+		_TextureDepth = other._TextureDepth;
+		_TextureChannels = other._TextureChannels;
+		_TextureTexelSize = other._TextureTexelSize;
 	}
 
 	/*
 	*	Move constructor.
 	*/
-	TextureDataContainer(TextureDataContainer &&otherContainer) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(TextureDataContainer &&other) NOEXCEPT
 	{
-		_TextureData = otherContainer._TextureData;
-		_TextureWidth = otherContainer._TextureWidth;
-		_TextureHeight = otherContainer._TextureHeight;
-		_TextureChannels = otherContainer._TextureChannels;
-		_TextureTexelSize = otherContainer._TextureTexelSize;
+		_TextureData = std::move(other._TextureData);
+		_TextureWidth = other._TextureWidth;
+		_TextureHeight = other._TextureHeight;
+		_TextureDepth = other._TextureDepth;
+		_TextureChannels = other._TextureChannels;
+		_TextureTexelSize = other._TextureTexelSize;
 	}
 
 	/*
 	*	Constructor taking a byte pointer along with the width, height and number of channels of the texture.
 	*/
-	TextureDataContainer(byte *RESTRICT textureDataPointer, const uint32 initialWidth, const uint32 initialHeight, const uint8 initilNumberOfChannels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(byte *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initil_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(textureDataPointer);
-		_TextureWidth = initialWidth;
-		_TextureHeight = initialHeight;
-		_TextureChannels = initilNumberOfChannels;
+		_TextureData.EmplaceFast(texture_data);
+		_TextureWidth = initial_width;
+		_TextureHeight = initial_height;
+		_TextureDepth = initial_depth;
+		_TextureChannels = initil_number_of_channels;
 		_TextureTexelSize = sizeof(byte);
 	}
 
@@ -67,13 +73,14 @@ public:
 	/*
 	*	Constructor taking a float pointer along with the width, height and number of channels of the texture.
 	*/
-	TextureDataContainer(float *RESTRICT textureDataPointer, const uint32 initialWidth, const uint32 initialHeight, const uint8 initilNumberOfChannels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(float *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initil_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(textureDataPointer);
-		_TextureWidth = initialWidth;
-		_TextureHeight = initialHeight;
-		_TextureChannels = initilNumberOfChannels;
+		_TextureData.EmplaceFast(texture_data);
+		_TextureWidth = initial_width;
+		_TextureHeight = initial_height;
+		_TextureDepth = initial_depth;
+		_TextureChannels = initil_number_of_channels;
 		_TextureTexelSize = sizeof(float);
 	}
 
@@ -81,12 +88,13 @@ public:
 	*	Constructor taking a Texture2D with 1 channel.
 	*/
 	template <typename Type>
-	TextureDataContainer(const Texture2D<Type> &texture) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(const Texture2D<Type> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
+		_TextureDepth = 1;
 		_TextureChannels = 1;
 		_TextureTexelSize = sizeof(Type);
 	}
@@ -95,7 +103,7 @@ public:
 	*	Constructor taking a dynamic array of Texture2D with 1 channel.
 	*/
 	template <typename Type>
-	TextureDataContainer(const DynamicArray<Texture2D<Type>> &texture) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(const DynamicArray<Texture2D<Type>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(texture.Size());
 
@@ -106,6 +114,7 @@ public:
 
 		_TextureWidth = static_cast<uint32>(texture[0].GetWidth());
 		_TextureHeight = static_cast<uint32>(texture[0].GetHeight());
+		_TextureDepth = 1;
 		_TextureChannels = 1;
 		_TextureTexelSize = sizeof(Type);
 	}
@@ -113,21 +122,22 @@ public:
 	/*
 	*	Constructor taking a Texture2D with 4 channels.
 	*/
-	template <typename Type>
-	TextureDataContainer(const Texture2D<Vector4<Type>> &texture) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE TextureDataContainer(const Texture2D<Vector4<TYPE>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
+		_TextureDepth = 1;
 		_TextureChannels = 4;
-		_TextureTexelSize = sizeof(Type);
+		_TextureTexelSize = sizeof(TYPE);
 	}
 
 	/*
 	*	Constructor taking a double dynamic array of bytes.
 	*/
-	TextureDataContainer(const DynamicArray<DynamicArray<byte>> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(const DynamicArray<DynamicArray<byte>> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
 	{
 		_TextureData.Reserve(initialTextureData.Size());
 
@@ -138,6 +148,7 @@ public:
 
 		_TextureWidth = initialTextureWidth;
 		_TextureHeight = initialTextureHeight;
+		_TextureDepth = 1;
 		_TextureChannels = initilTextureChannels;
 		_TextureTexelSize = sizeof(byte);
 	}
@@ -145,7 +156,7 @@ public:
 	/*
 	*	Constructor taking a double dynamic array of floats.
 	*/
-	TextureDataContainer(const DynamicArray<DynamicArray<float>> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(const DynamicArray<DynamicArray<float>> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
 	{
 		_TextureData.Reserve(initialTextureData.Size());
 
@@ -156,6 +167,7 @@ public:
 
 		_TextureWidth = initialTextureWidth;
 		_TextureHeight = initialTextureHeight;
+		_TextureDepth = 1;
 		_TextureChannels = initilTextureChannels;
 		_TextureTexelSize = sizeof(float);
 	}
@@ -163,14 +175,15 @@ public:
 	/*
 	*	Constructor taking a static array of Vector.
 	*/
-	template <uint64 NumberOfTexels>
-	TextureDataContainer(const StaticArray<Vector4<float>, NumberOfTexels> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight) NOEXCEPT
+	template <uint64 NUMBER_OF_TEXELS>
+	FORCE_INLINE TextureDataContainer(const StaticArray<Vector4<float>, NUMBER_OF_TEXELS> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(initialTextureData.Data());
 
 		_TextureWidth = initialTextureWidth;
 		_TextureHeight = initialTextureHeight;
+		_TextureDepth = 1;
 		_TextureChannels = 4;
 		_TextureTexelSize = sizeof(float);
 	}
