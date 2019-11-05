@@ -259,6 +259,7 @@ enum class Sampler : uint8
 	FilterLinear_MipmapModeLinear_AddressModeClampToEdge,
 	FilterLinear_MipmapModeLinear_AddressModeRepeat,
 	FilterLinear_MipmapModeNearest_AddressModeClampToEdge,
+	FilterLinear_MipmapModeNearest_AddressModeRepeat,
 	FilterNearest_MipmapModeNearest_AddressModeClampToEdge,
 	FilterNearest_MipmapModeNearest_AddressModeRepeat,
 

@@ -23,7 +23,13 @@
 void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Create the cloud texture.
-	//CreateCloudTexture();
+	CreateCloudTexture();
+
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -40,8 +46,9 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -81,13 +88,13 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);
-
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
@@ -100,6 +107,8 @@ void CloudsGraphicsPipeline::CreateCloudTexture() NOEXCEPT
 {
 	//Defone constants.
 	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 64 };
+
+	CATALYST_BENCHMARK_SECTION_START();
 
 	//Create the texture 3d.
 	Texture3D<byte> texture{ CLOUD_TEXTURE_RESOLUTION };
@@ -115,7 +124,32 @@ void CloudsGraphicsPipeline::CreateCloudTexture() NOEXCEPT
 		}
 	}
 
+	CATALYST_BENCHMARK_SECTION_END("CreateCloudTexture");
+
 	//Create the texture 3D.
 	RenderingSystem::Instance->CreateTexture3D(	TextureData(TextureDataContainer(texture),
 															TextureFormat::R8_Byte), &_CloudTexture);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void CloudsGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void CloudsGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, _CloudTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 }

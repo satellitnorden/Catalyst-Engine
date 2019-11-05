@@ -35,11 +35,10 @@
 *	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-	#define CATALYST_BENCHMARK_SECTION_START()																													\
-	{																																							\
-		static uint64 iterations{ 0 };																															\
-		static uint64 averageDuration{ 0 };																														\
-		std::chrono::time_point<std::chrono::steady_clock> timeBeforeFunction{ std::chrono::high_resolution_clock::now() };
+	#define CATALYST_BENCHMARK_SECTION_START()																				\
+	static uint64 iterations{ 0 };																							\
+	static uint64 average_duration{ 0 };																					\
+	std::chrono::time_point<std::chrono::steady_clock> time_before_function{ std::chrono::high_resolution_clock::now() };
 #else
 	#define CATALYST_BENCHMARK_SECTION_START()
 #endif
@@ -48,12 +47,11 @@
 *	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
 #if defined(CATALYST_CONFIGURATION_DEBUG)
-#define CATALYST_BENCHMARK_SECTION_END(NAME)																													\
-		averageDuration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
-		++iterations;																																			\
-		float duration{ static_cast<float>(averageDuration / iterations) / 1'000'000.0f };																		\
-		PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");																							\
-	}
+#define CATALYST_BENCHMARK_SECTION_END(NAME)																											\
+	average_duration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - time_before_function).count(); \
+	++iterations;																																		\
+	const float duration{ static_cast<float>(average_duration / iterations) / 1'000'000.0f };															\
+	PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");
 #else
 #define CATALYST_BENCHMARK_SECTION_END(NAME)
 #endif

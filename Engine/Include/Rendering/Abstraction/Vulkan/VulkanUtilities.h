@@ -117,7 +117,7 @@ public:
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
+	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT
 	{
 		//Create the command pool.
 		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
@@ -144,11 +144,11 @@ public:
 			bufferImageCopy.imageSubresource.baseArrayLayer = 0;
 			bufferImageCopy.imageSubresource.layerCount = layerCount;
 			bufferImageCopy.imageOffset = { 0, 0, 0 };
-			bufferImageCopy.imageExtent = { width >> i, height >> i, 1 };
+			bufferImageCopy.imageExtent = { width >> i, height >> i, CatalystBaseMath::Maximum<uint32>(depth >> i, 1) };
 
 			bufferImageCopies.EmplaceFast(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * 4 * sizeof(byte);
+			currentOffset += (width >> i) * (height >> i) * CatalystBaseMath::Maximum<uint32>(depth >> i, 1) * 4 * sizeof(byte);
 		}
 
 		//Begin the transfer ommand buffer.
@@ -529,7 +529,7 @@ public:
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 mipLevels, const uint32 arrayLayers, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags memoryPropertyFlags, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkImageType image_type, const VkFormat format, const uint32 width, const uint32 height, const uint32 depth, const uint32 mipLevels, const uint32 arrayLayers, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags memoryPropertyFlags, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
@@ -537,11 +537,11 @@ public:
 		imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageCreateInfo.pNext = nullptr;
 		imageCreateInfo.flags = flags;
-		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageCreateInfo.imageType = image_type;
 		imageCreateInfo.format = format;
 		imageCreateInfo.extent.width = width;
 		imageCreateInfo.extent.height = height;
-		imageCreateInfo.extent.depth = 1;
+		imageCreateInfo.extent.depth = depth;
 		imageCreateInfo.mipLevels = mipLevels;
 		imageCreateInfo.arrayLayers = arrayLayers;
 		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
