@@ -59,6 +59,22 @@ public:
 		GetStarStrengthInternal() = strength;
 	}
 
+	/*
+	*	Returns the cloud density.
+	*/
+	FORCE_INLINE static NO_DISCARD float GetCloudDensity() NOEXCEPT
+	{
+		return GetCloudDensityInternal();
+	}
+
+	/*
+	*	Sets the cloud density.
+	*/
+	FORCE_INLINE static void SetCloudDensity(const float density) NOEXCEPT
+	{
+		GetCloudDensityInternal() = density;
+	}
+
 private:
 
 	/*
@@ -86,9 +102,19 @@ private:
 	*/
 	FORCE_INLINE static NO_DISCARD float& GetStarStrengthInternal() NOEXCEPT
 	{
-		static float strength;
+		static float strength{ 0.0f };
 
 		return strength;
+	}
+
+	/*
+	*	Returns the cloud density.
+	*/
+	FORCE_INLINE static NO_DISCARD float& GetCloudDensityInternal() NOEXCEPT
+	{
+		static float density{ 0.5f };
+
+		return density;
 	}
 
 };

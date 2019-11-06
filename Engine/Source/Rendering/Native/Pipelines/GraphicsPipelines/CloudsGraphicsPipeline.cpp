@@ -7,6 +7,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -16,6 +19,31 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+
+/*
+*	Push constant data definition.
+*/
+class PushConstantData final
+{
+
+public:
+
+	//The sky light view direction.
+	Vector3<float> _SkyLightViewDirection;
+
+	//Padding.
+	Padding<4> _Padding1;
+
+	//The sky light luminance.
+	Vector3<float> _SkyLightLuminance;
+
+	//Padding.
+	Padding<4> _Padding2;
+
+	//The cloud density.
+	float _CloudDensity;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -49,6 +77,10 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -90,6 +122,26 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
+	//Push constants.
+	PushConstantData data;
+
+	//Assume that the first light is the sky light, for now. (:
+	if (ComponentManager::GetNumberOfLightComponents() > 0)
+	{
+		data._SkyLightViewDirection = Vector3<float>::Normalize(ComponentManager::GetLightLightComponents()[0]._Position - Perceiver::Instance->GetPosition());
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.00000001f;
+	}
+
+	else
+	{
+		data._SkyLightViewDirection = VectorConstants::UP;
+		data._SkyLightLuminance = VectorConstants::ONE;
+	}
+
+	data._CloudDensity = EnvironmentManager::GetCloudDensity();
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
 
@@ -106,7 +158,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 void CloudsGraphicsPipeline::CreateCloudTexture() NOEXCEPT
 {
 	//Defone constants.
-	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 64 };
+	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 32 };
 	constexpr uint32 CLOUD_TEXTURE_LAYER_0_POINTS{ 8 };
 
 	CATALYST_BENCHMARK_SECTION_START();

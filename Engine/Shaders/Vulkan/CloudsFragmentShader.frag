@@ -17,11 +17,18 @@
 #define CLOUD_LAYER_1_POSITION_SCALE (0.01f) //0.00025f step.
 #define CLOUD_LAYER_2_POSITION_SCALE (0.1f) //0.00025f step.
 #define CLOUD_LAYER_3_POSITION_SCALE (1.0f) //0.00025f step.
-
-#define CLOUD_DENSITY (0.5f)
+#define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+   layout (offset = 0) vec3 sky_light_direction;
+   layout (offset = 16) vec3 sky_light_luminance;
+   layout (offset = 32) float cloud_density;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
@@ -35,10 +42,15 @@ layout (location = 0) out vec4 fragment;
 /*
 *  Calculates the inverse exponential of a number.
 */
-float InverseExponential(float number)
+float InverseExponential(float number, int iterations)
 {
    float result = 1.0f - number;
-   result *= result;
+
+   for (int i = 0; i < iterations; ++i)
+   {
+      result *= result;
+   }
+
    result = 1.0f - result;
 
    return result;
@@ -52,22 +64,29 @@ float SampleDensity(vec3 point)
    float density = 0.0f;
 
    point = point * CLOUD_LAYER_0_POSITION_SCALE;
+   point -= vec3(totalTime, 0.0f, totalTime) * 0.01f;
    density += texture(cloud_texture, point).x;
 
-   point = point * CLOUD_LAYER_1_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.5f;
+   //point = point * CLOUD_LAYER_1_POSITION_SCALE;
+   //point -= vec3(totalTime, 0.0f, totalTime) * 0.01f;
+   //density += texture(cloud_texture, point).x;
 
-   point = point * CLOUD_LAYER_2_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.25f;
+   //point = point * CLOUD_LAYER_2_POSITION_SCALE;
+   //point -= vec3(totalTime, 0.0f, totalTime) * 0.1f;
+   //density += texture(cloud_texture, point).x;
 
-   point = point * CLOUD_LAYER_3_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.125f;
+   //point = point * CLOUD_LAYER_3_POSITION_SCALE;
+   //point -= vec3(totalTime, 0.0f, totalTime) * 0.1f;
+   //density += texture(cloud_texture, point).x;
 
-   density /= 1.875f;
+   //density /= 1.5f;
+   //density /= 1.75f;
+   //density /= 1.875f;
+   //density /= 4.0f;
 
-   density = max(density - (1.0f - CLOUD_DENSITY), 0.0f) * 2.0f;
+   density = max(density - (1.0f - cloud_density), 0.0f);
 
-   return density;
+   return mix(InverseExponential(density, 1), density, cloud_density);
 }
 
 void main()
@@ -107,10 +126,10 @@ void main()
       //Normalize the density.
       density /= NUMBER_OF_STEPS;
 
-      //Calculate the transmittance.
-      float transmittance = exp(-density);
+      //Calculate the cloud color.
+      vec3 cloud_color = CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() + CLOUD_BASE_COLOR * sky_light_luminance;
 
       //Write the fragment.
-      fragment = vec4(vec3(1.0f), density);
+      fragment = vec4(cloud_color, density);
    }
 }
