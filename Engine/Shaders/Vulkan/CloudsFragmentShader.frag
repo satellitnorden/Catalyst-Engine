@@ -12,8 +12,11 @@
 //Constants.
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
-#define NUMBER_OF_STEPS (16)
-#define CLOUD_POSITION_SCALE (0.0001f)
+#define NUMBER_OF_STEPS (4)
+#define CLOUD_LAYER_0_POSITION_SCALE (0.001f) //0.00025f step.
+#define CLOUD_LAYER_1_POSITION_SCALE (0.01f) //0.00025f step.
+#define CLOUD_LAYER_2_POSITION_SCALE (0.1f) //0.00025f step.
+#define CLOUD_LAYER_3_POSITION_SCALE (1.0f) //0.00025f step.
 
 #define CLOUD_DENSITY (0.5f)
 
@@ -46,9 +49,25 @@ float InverseExponential(float number)
 */
 float SampleDensity(vec3 point)
 {
-   return   InverseExponential(max( ((texture(cloud_texture, point).x
-                                    + texture(cloud_texture, point * 2.0f).x * 0.5f
-                                    + texture(cloud_texture, point * 4.0f).x * 0.25f) / 1.75f) - (1.0f - CLOUD_DENSITY), 0.0f));
+   float density = 0.0f;
+
+   point = point * CLOUD_LAYER_0_POSITION_SCALE;
+   density += texture(cloud_texture, point).x;
+
+   point = point * CLOUD_LAYER_1_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.5f;
+
+   point = point * CLOUD_LAYER_2_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.25f;
+
+   point = point * CLOUD_LAYER_3_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.125f;
+
+   density /= 1.875f;
+
+   density = max(density - (1.0f - CLOUD_DENSITY), 0.0f) * 2.0f;
+
+   return density;
 }
 
 void main()
@@ -73,30 +92,25 @@ void main()
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
 
-      //Calculate the step.
-      vec3 step = (end - start) / NUMBER_OF_STEPS;
+      //Sample the noise texture.
+      vec4 noise_texture_1 = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
       //Calculate the density.
       float density = 0.0f;
 
-      vec3 current = start;
-
       for (int i = 0; i < NUMBER_OF_STEPS; ++i)
       {
          //Get the ensity at this point.
-         density += SampleDensity((current - (vec3(totalTime, 0.0f, totalTime) * 16.0f)) * CLOUD_POSITION_SCALE);
-
-         //Advance the current position.
-         current += step;
+         density += SampleDensity(mix(start, end, noise_texture_1[i]));
       }
 
       //Normalize the density.
       density /= NUMBER_OF_STEPS;
 
       //Calculate the transmittance.
-      float transmittance = density;
+      float transmittance = exp(-density);
 
       //Write the fragment.
-      fragment = vec4(vec3(0.8f, 0.9f, 1.0f), transmittance);
+      fragment = vec4(vec3(1.0f), density);
    }
 }
