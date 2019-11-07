@@ -12,11 +12,13 @@
 //Constants.
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
-#define NUMBER_OF_STEPS (4)
+#define NUMBER_OF_SAMPLES (8) //Needs to be a multiple of 4.
+#define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 2)
+#define CLOUD_POSITION_SCALE_MULTIPLIER (5.0f)
 #define CLOUD_LAYER_0_POSITION_SCALE (0.000025f)
-#define CLOUD_LAYER_1_POSITION_SCALE (0.0001f)
-#define CLOUD_LAYER_2_POSITION_SCALE (0.0004f)
-#define CLOUD_LAYER_3_POSITION_SCALE (0.0016f)
+#define CLOUD_LAYER_1_POSITION_SCALE (CLOUD_LAYER_0_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
+#define CLOUD_LAYER_2_POSITION_SCALE (CLOUD_LAYER_1_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
+#define CLOUD_LAYER_3_POSITION_SCALE (CLOUD_LAYER_2_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 
 //Layout specification.
@@ -61,21 +63,23 @@ float InverseExponential(float number, int iterations)
 */
 float SampleDensity(vec3 point)
 {
-   vec3 original_point = point - vec3(totalTime, 0.0f, totalTime);
+   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime);
+
+   vec3 sample_point;
 
    float density = 0.0f;
 
-   point = original_point * CLOUD_LAYER_0_POSITION_SCALE;
-   density += texture(cloud_texture, point).x;
+   sample_point = (point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * CLOUD_LAYER_0_POSITION_SCALE;
+   density += texture(cloud_texture, sample_point).x;
 
-   point = original_point * CLOUD_LAYER_1_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.5f;
+   sample_point = (point + (cloud_offset * HALF_PI)) * CLOUD_LAYER_1_POSITION_SCALE;
+   density += texture(cloud_texture, sample_point).x * 0.5f;
 
-   point = original_point * CLOUD_LAYER_2_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.25f;
+   sample_point = (point + (cloud_offset * PHI)) * CLOUD_LAYER_2_POSITION_SCALE;
+   density += texture(cloud_texture, sample_point).x * 0.25f;
 
-   point = original_point * CLOUD_LAYER_3_POSITION_SCALE;
-   density += texture(cloud_texture, point).x * 0.125f;
+   sample_point = (point + (cloud_offset * EULERS_NUMBER)) * CLOUD_LAYER_3_POSITION_SCALE;
+   density += texture(cloud_texture, sample_point).x * 0.125f;
 
    density /= 1.875f;
 
@@ -106,25 +110,35 @@ void main()
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
 
-      //Sample the noise texture.
-      vec4 noise_texture_1 = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+      //Sample all the sample offsets.
+      float sample_offsets[NUMBER_OF_SAMPLES];
+
+      for (int i = 0; i < NUMBER_OF_NOISE_TEXTURES; ++i)
+      {
+         vec4 noise_texture = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+         for (int j = 0; j < 4; ++j)
+         {
+            sample_offsets[(i * 4) + j] = noise_texture[j];
+         }
+      }
 
       //Calculate the density.
       float density = 0.0f;
 
-      for (int i = 0; i < NUMBER_OF_STEPS; ++i)
+      for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
       {
          //Get the ensity at this point.
-         density += SampleDensity(mix(start, end, noise_texture_1[i]));
+         density += SampleDensity(mix(start, end, sample_offsets[i]));
       }
 
-      //Normalize the density.
-      density /= NUMBER_OF_STEPS;
+      //Calculate the transmittance.
+      float transmittance = density / NUMBER_OF_SAMPLES;
 
       //Calculate the cloud color.
       vec3 cloud_color = CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() + CLOUD_BASE_COLOR * sky_light_luminance;
 
       //Write the fragment.
-      fragment = vec4(cloud_color, density);
+      fragment = vec4(cloud_color, transmittance);
    }
 }
