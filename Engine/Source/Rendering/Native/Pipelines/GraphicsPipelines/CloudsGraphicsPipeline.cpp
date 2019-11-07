@@ -129,7 +129,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	if (ComponentManager::GetNumberOfLightComponents() > 0)
 	{
 		data._SkyLightViewDirection = Vector3<float>::Normalize(ComponentManager::GetLightLightComponents()[0]._Position - Perceiver::Instance->GetPosition());
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.00000001f;
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.000000025f;
 	}
 
 	else
@@ -139,6 +139,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	data._CloudDensity = EnvironmentManager::GetCloudDensity();
+	//data._CloudDensity = 0.25f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
@@ -158,8 +159,8 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 void CloudsGraphicsPipeline::CreateCloudTexture() NOEXCEPT
 {
 	//Defone constants.
-	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 32 };
-	constexpr uint32 CLOUD_TEXTURE_LAYER_0_POINTS{ 8 };
+	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 64 };
+	constexpr uint32 CLOUD_TEXTURE_LAYER_0_POINTS{ 64 };
 
 	CATALYST_BENCHMARK_SECTION_START();
 

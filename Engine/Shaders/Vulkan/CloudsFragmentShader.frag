@@ -13,10 +13,10 @@
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
 #define NUMBER_OF_STEPS (4)
-#define CLOUD_LAYER_0_POSITION_SCALE (0.001f) //0.00025f step.
-#define CLOUD_LAYER_1_POSITION_SCALE (0.01f) //0.00025f step.
-#define CLOUD_LAYER_2_POSITION_SCALE (0.1f) //0.00025f step.
-#define CLOUD_LAYER_3_POSITION_SCALE (1.0f) //0.00025f step.
+#define CLOUD_LAYER_0_POSITION_SCALE (0.000025f)
+#define CLOUD_LAYER_1_POSITION_SCALE (0.0001f)
+#define CLOUD_LAYER_2_POSITION_SCALE (0.0004f)
+#define CLOUD_LAYER_3_POSITION_SCALE (0.0016f)
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 
 //Layout specification.
@@ -61,28 +61,23 @@ float InverseExponential(float number, int iterations)
 */
 float SampleDensity(vec3 point)
 {
+   vec3 original_point = point - vec3(totalTime, 0.0f, totalTime);
+
    float density = 0.0f;
 
-   point = point * CLOUD_LAYER_0_POSITION_SCALE;
-   point -= vec3(totalTime, 0.0f, totalTime) * 0.01f;
+   point = original_point * CLOUD_LAYER_0_POSITION_SCALE;
    density += texture(cloud_texture, point).x;
 
-   //point = point * CLOUD_LAYER_1_POSITION_SCALE;
-   //point -= vec3(totalTime, 0.0f, totalTime) * 0.01f;
-   //density += texture(cloud_texture, point).x;
+   point = original_point * CLOUD_LAYER_1_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.5f;
 
-   //point = point * CLOUD_LAYER_2_POSITION_SCALE;
-   //point -= vec3(totalTime, 0.0f, totalTime) * 0.1f;
-   //density += texture(cloud_texture, point).x;
+   point = original_point * CLOUD_LAYER_2_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.25f;
 
-   //point = point * CLOUD_LAYER_3_POSITION_SCALE;
-   //point -= vec3(totalTime, 0.0f, totalTime) * 0.1f;
-   //density += texture(cloud_texture, point).x;
+   point = original_point * CLOUD_LAYER_3_POSITION_SCALE;
+   density += texture(cloud_texture, point).x * 0.125f;
 
-   //density /= 1.5f;
-   //density /= 1.75f;
-   //density /= 1.875f;
-   //density /= 4.0f;
+   density /= 1.875f;
 
    density = max(density - (1.0f - cloud_density), 0.0f);
 
