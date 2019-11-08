@@ -13,7 +13,7 @@
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
 #define NUMBER_OF_SAMPLES (8) //Needs to be a multiple of 4.
-#define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 2)
+#define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 4)
 #define CLOUD_POSITION_SCALE_MULTIPLIER (5.0f)
 #define CLOUD_LAYER_0_POSITION_SCALE (0.000025f)
 #define CLOUD_LAYER_1_POSITION_SCALE (CLOUD_LAYER_0_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
@@ -128,7 +128,12 @@ float SampleDensityInDirection(vec3 point, vec3 direction)
       vec3 sample_point = mix(start, end, sample_offsets[i]);
 
       //Get the ensity at this point.
-      density = min(density + SampleDensity(sample_point) * 128.0f, 1.0f);
+      density = min(density + SampleDensity(sample_point) * 4.0f, 1.0f);
+
+      if (density == 1.0f)
+      {
+         break;
+      }
    }
 
    //Return the total density.
@@ -164,13 +169,14 @@ void main()
 
          for (int j = 0; j < 4; ++j)
          {
-            sample_offsets[(i * 4) + j] = noise_texture[j];
+            int sample_offset_index = (i * 4) + j;
+
+            sample_offsets[sample_offset_index] = (float(sample_offset_index) / NUMBER_OF_SAMPLES) + ((noise_texture[j] * 2.0f - 1.0f) / NUMBER_OF_SAMPLES);
          }
       }
 
       //Calculate the density and cloud color.
       float density = 0.0f;
-      //vec3 cloud_color = CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() + CLOUD_BASE_COLOR * sky_light_luminance;
       vec3 cloud_color = vec3(0.0f);
 
       //Start off with ambient lighting.
@@ -182,14 +188,20 @@ void main()
          vec3 sample_point = mix(start, end, sample_offsets[i]);
 
          //Get the ensity at this point.
-         density += SampleDensity(sample_point);
+         float new_density = SampleDensity(sample_point);
+         density = min(density + new_density, 1.0f);
 
          //Add to the cloud color.
-         cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) / NUMBER_OF_SAMPLES;
+         cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) * new_density;
+
+         if (density == 1.0f)
+         {
+            break;
+         }
       }
 
       //Calculate the transmittance.
-      float transmittance = density / NUMBER_OF_SAMPLES;
+      float transmittance = density;
 
       //Write the fragment.
       fragment = vec4(cloud_color, transmittance);

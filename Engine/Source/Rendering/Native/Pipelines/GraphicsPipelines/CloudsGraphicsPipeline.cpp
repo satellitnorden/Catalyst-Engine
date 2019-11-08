@@ -112,6 +112,10 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 */
 void CloudsGraphicsPipeline::Execute() NOEXCEPT
 {
+	//Define constants.
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 1.0f };
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -128,8 +132,8 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	//Assume that the first light is the sky light, for now. (:
 	if (ComponentManager::GetNumberOfLightComponents() > 0)
 	{
-		data._SkyLightViewDirection = Vector3<float>::Normalize(ComponentManager::GetLightLightComponents()[0]._Position - Perceiver::Instance->GetPosition());
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.000000025f;
+		data._SkyLightViewDirection = Vector3<float>::Normalize(Perceiver::Instance->GetPosition() - ComponentManager::GetLightLightComponents()[0]._Position);
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.0000001f;
 	}
 
 	else
@@ -138,8 +142,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 		data._SkyLightLuminance = VectorConstants::ONE;
 	}
 
-	data._CloudDensity = EnvironmentManager::GetCloudDensity();
-	//data._CloudDensity = 0.25f;
+	data._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
