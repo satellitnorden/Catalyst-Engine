@@ -41,6 +41,9 @@ layout (set = 1, binding = 0) uniform sampler3D cloud_texture;
 //Out parameters
 layout (location = 0) out vec4 fragment;
 
+//Global variables.
+float sample_offsets[NUMBER_OF_SAMPLES];
+
 /*
 *  Calculates the inverse exponential of a number.
 */
@@ -88,6 +91,50 @@ float SampleDensity(vec3 point)
    return mix(InverseExponential(density, 1), density, cloud_density);
 }
 
+/*
+*  Returns the density in the direction.
+*/
+float SampleDensityInDirection(vec3 point, vec3 direction)
+{
+   //Calculate the start and end points.
+   vec3 start = point;
+   vec3 end;
+
+   //Is the direction pointing up or down?
+   if (dot(direction, vec3(0.0f, 1.0f, 0.0f)) > 0.0f)
+   {
+      float intersection_distance;
+
+      LinePlaneIntersection(perceiverWorldPosition, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+      end = start + direction * intersection_distance;
+
+      
+   }
+
+   else
+   {
+      float intersection_distance;
+
+      LinePlaneIntersection(perceiverWorldPosition, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+      end = start + direction * intersection_distance;
+   }
+
+   //Calculate the density.
+   float density = 0.0f;
+
+   for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
+   {
+      //Calculate the sample point.
+      vec3 sample_point = mix(start, end, sample_offsets[i]);
+
+      //Get the ensity at this point.
+      density = min(density + SampleDensity(sample_point) * 128.0f, 1.0f);
+   }
+
+   //Return the total density.
+   return density;
+}
+
 void main()
 {
    //Calculate the view direction
@@ -111,8 +158,6 @@ void main()
       vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
 
       //Sample all the sample offsets.
-      float sample_offsets[NUMBER_OF_SAMPLES];
-
       for (int i = 0; i < NUMBER_OF_NOISE_TEXTURES; ++i)
       {
          vec4 noise_texture = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
@@ -123,20 +168,28 @@ void main()
          }
       }
 
-      //Calculate the density.
+      //Calculate the density and cloud color.
       float density = 0.0f;
+      //vec3 cloud_color = CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() + CLOUD_BASE_COLOR * sky_light_luminance;
+      vec3 cloud_color = vec3(0.0f);
+
+      //Start off with ambient lighting.
+      cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity();
 
       for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
       {
+         //Calculate the sample point.
+         vec3 sample_point = mix(start, end, sample_offsets[i]);
+
          //Get the ensity at this point.
-         density += SampleDensity(mix(start, end, sample_offsets[i]));
+         density += SampleDensity(sample_point);
+
+         //Add to the cloud color.
+         cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) / NUMBER_OF_SAMPLES;
       }
 
       //Calculate the transmittance.
       float transmittance = density / NUMBER_OF_SAMPLES;
-
-      //Calculate the cloud color.
-      vec3 cloud_color = CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() + CLOUD_BASE_COLOR * sky_light_luminance;
 
       //Write the fragment.
       fragment = vec4(cloud_color, transmittance);
