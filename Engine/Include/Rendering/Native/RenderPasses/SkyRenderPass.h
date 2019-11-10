@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -29,6 +30,9 @@ private:
 
 	//The clouds graphics pipeline.
 	CloudsGraphicsPipeline _CloudsGraphicsPipeline;
+
+	//The clouds application graphics pipeline.
+	CloudsApplicationGraphicsPipeline _CloudsApplicationGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

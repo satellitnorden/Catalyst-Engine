@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class CloudsGraphicsPipeline final : public GraphicsPipeline
+class CloudsApplicationGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -23,19 +23,11 @@ public:
 
 private:
 
-	//The cloud texture.
-	Texture3DHandle _CloudTexture;
-
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	/*
-	*	Creates the cloud texture.
-	*/
-	void CreateCloudTexture() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

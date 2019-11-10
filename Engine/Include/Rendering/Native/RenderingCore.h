@@ -273,6 +273,7 @@ enum class Shader : uint8
 	AnimatedModelSceneFeaturesFragment,
 	AnimatedModelSceneFeaturesVertex,
 	BloomIsolationFragment,
+	CloudsApplicationFragment,
 	CloudsFragment,
 	DepthOfFieldApplicationFragment,
 	DepthOfFieldBokehFragment,

@@ -293,10 +293,10 @@ vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
 {
     vec4 result = vec4(0.0f);
 
-    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y) * 0.25f);
-    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y) * 0.25f);
-    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y) * 0.25f);
-    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y) * 0.25f);
+    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y));
+    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y));
+    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y));
+    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y));
 
     return result * 0.25f;
 }

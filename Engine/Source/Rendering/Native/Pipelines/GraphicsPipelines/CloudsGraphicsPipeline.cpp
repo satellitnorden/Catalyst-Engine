@@ -48,7 +48,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void CloudsGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the cloud texture.
 	CreateCloudTexture();
@@ -66,12 +66,9 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::CloudsFragment);
 
-	//Set the depth buffer.
-	SetDepthBuffer(depthBuffer);
-
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -83,11 +80,11 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
-	SetBlendEnabled(true);
+	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
@@ -96,14 +93,14 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(true);
+	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::NotEqual);
-	SetStencilCompareMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilCompareMask(0);
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
 }
 
@@ -113,8 +110,8 @@ void CloudsGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOE
 void CloudsGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 1.0f };
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.3f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.7f };
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -133,7 +130,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	if (ComponentManager::GetNumberOfLightComponents() > 0)
 	{
 		data._SkyLightViewDirection = Vector3<float>::Normalize(Perceiver::Instance->GetPosition() - ComponentManager::GetLightLightComponents()[0]._Position);
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.0000001f;
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.0000000025f;
 	}
 
 	else
@@ -143,6 +140,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	data._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
+	//data._CloudDensity = 0.5f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

@@ -12,14 +12,15 @@
 //Constants.
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
-#define NUMBER_OF_SAMPLES (8) //Needs to be a multiple of 4.
+#define NUMBER_OF_SAMPLES (12) //Needs to be a multiple of 4.
 #define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 4)
-#define CLOUD_POSITION_SCALE_MULTIPLIER (5.0f)
+#define CLOUD_POSITION_SCALE_MULTIPLIER (6.0f) //0.25f step.
 #define CLOUD_LAYER_0_POSITION_SCALE (0.000025f)
 #define CLOUD_LAYER_1_POSITION_SCALE (CLOUD_LAYER_0_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
 #define CLOUD_LAYER_2_POSITION_SCALE (CLOUD_LAYER_1_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
 #define CLOUD_LAYER_3_POSITION_SCALE (CLOUD_LAYER_2_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define CLOUD_DENSITY_MULTIPLIER (1.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -66,7 +67,7 @@ float InverseExponential(float number, int iterations)
 */
 float SampleDensity(vec3 point)
 {
-   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime);
+   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 2.0f;
 
    vec3 sample_point;
 
@@ -86,9 +87,9 @@ float SampleDensity(vec3 point)
 
    density /= 1.875f;
 
-   density = max(density - (1.0f - cloud_density), 0.0f);
+   density = max(density - (1.0f - cloud_density), 0.0f) * CLOUD_DENSITY_MULTIPLIER;
 
-   return mix(InverseExponential(density, 1), density, cloud_density);
+   return density;
 }
 
 /*
@@ -107,8 +108,6 @@ float SampleDensityInDirection(vec3 point, vec3 direction)
 
       LinePlaneIntersection(perceiverWorldPosition, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       end = start + direction * intersection_distance;
-
-      
    }
 
    else
@@ -122,13 +121,13 @@ float SampleDensityInDirection(vec3 point, vec3 direction)
    //Calculate the density.
    float density = 0.0f;
 
-   for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
+   for (int i = 0; i < NUMBER_OF_SAMPLES; i += 2)
    {
       //Calculate the sample point.
       vec3 sample_point = mix(start, end, sample_offsets[i]);
 
       //Get the ensity at this point.
-      density = min(density + SampleDensity(sample_point) * 4.0f, 1.0f);
+      density = min(density + SampleDensity(sample_point), 1.0f);
 
       if (density == 1.0f)
       {
@@ -159,6 +158,9 @@ void main()
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 start = perceiverWorldPosition + view_direction * intersection_distance;
 
+      //Remember the hit distance.
+      float hit_distance = intersection_distance;
+
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
 
@@ -171,7 +173,7 @@ void main()
          {
             int sample_offset_index = (i * 4) + j;
 
-            sample_offsets[sample_offset_index] = (float(sample_offset_index) / NUMBER_OF_SAMPLES) + ((noise_texture[j] * 2.0f - 1.0f) / NUMBER_OF_SAMPLES);
+            sample_offsets[sample_offset_index] = (float(sample_offset_index) / NUMBER_OF_SAMPLES) + (((noise_texture[j] * 2.0f - 1.0f) / NUMBER_OF_SAMPLES) * 0.5f);
          }
       }
 
@@ -189,19 +191,20 @@ void main()
 
          //Get the ensity at this point.
          float new_density = SampleDensity(sample_point);
-         density = min(density + new_density, 1.0f);
+         new_density = min(new_density, 1.0f - density);
+         density += new_density;
 
          //Add to the cloud color.
          cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) * new_density;
 
-         if (density == 1.0f)
+         if (density >= 1.0f)
          {
             break;
          }
       }
 
       //Calculate the transmittance.
-      float transmittance = density;
+      float transmittance = density * (1.0f - clamp((hit_distance - CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER) * 0.0001f, 0.0f, 1.0f));
 
       //Write the fragment.
       fragment = vec4(cloud_color, transmittance);
