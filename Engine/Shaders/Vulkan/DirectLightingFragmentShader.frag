@@ -56,19 +56,45 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		float lengthToLight = length(light.position - hitPosition);
-		vec3 lightDirection = vec3(light.position - hitPosition) / lengthToLight;
+		switch (light.type)
+		{
+			case LIGHT_TYPE_DIRECTIONAL:
+			{
+				directLighting += CalculateDirectLight(	-rayDirection,
+														-light.position_or_direction,
+														albedo,
+														shadingNormal,
+														roughness,
+														metallic,
+														light.luminance);
 
-		//Calculate the attenuation.
-		float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+				break;
+			}
 
-		directLighting += CalculateDirectLight(	-rayDirection,
-												lightDirection,
-												albedo,
-												shadingNormal,
-												roughness,
-												metallic,
-												light.color * light.strength) * attenuation;
+			case LIGHT_TYPE_POINT:
+			{
+				float lengthToLight = length(light.position_or_direction - hitPosition);
+				vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;
+
+				//Calculate the attenuation.
+				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+				directLighting += CalculateDirectLight(	-rayDirection,
+														lightDirection,
+														albedo,
+														shadingNormal,
+														roughness,
+														metallic,
+														light.luminance) * attenuation;
+
+				break;
+			}
+		}
+
+		if (light.type > 1)
+		{
+			directLighting = vec3(1.0f, 0.0f, 0.0f);
+		}
 	}
 
 	//Write the fragment.

@@ -20,6 +20,7 @@ hitAttributeNV vec3 hitAttribute;
 
 void main()
 {
+	/*
 	//Unpack the vertices making up the triangle.
 	Vertex vertex1 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3]);
 	Vertex vertex2 = UnpackVertex(gl_InstanceCustomIndexNV, indexBuffers[gl_InstanceCustomIndexNV].indicesData[gl_PrimitiveID * 3 + 1]);
@@ -133,4 +134,5 @@ void main()
 
 	//Write to the ray payload.
 	rayPayload.directLighting = directLighting;
+	*/
 }

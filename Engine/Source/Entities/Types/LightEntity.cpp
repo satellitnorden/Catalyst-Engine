@@ -28,13 +28,29 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	_ComponentsIndex = ComponentManager::GetNewLightComponentsIndex(this);
 
 	//Copy the data over to the components.
-	LightComponent &lightComponent{ ComponentManager::GetLightLightComponents()[_ComponentsIndex] };
-	const LightInitializationData *const RESTRICT lightInitializationData{ static_cast<const LightInitializationData *const RESTRICT>(data) };
+	LightComponent &light_component{ ComponentManager::GetLightLightComponents()[_ComponentsIndex] };
+	const LightInitializationData *const RESTRICT light_initialization_data{ static_cast<const LightInitializationData *const RESTRICT>(data) };
 
-	lightComponent._Color = lightInitializationData->_Color;
-	lightComponent._Position = lightInitializationData->_Position;
-	lightComponent._Size = lightInitializationData->_Size;
-	lightComponent._Strength = lightInitializationData->_Strength;
+	switch (light_initialization_data->_LightType)
+	{
+		case LightType::DIRECTIONAL:
+		{
+			light_component._Direction = light_initialization_data->_Direction;
+
+			break;
+		}
+
+		case LightType::POINT:
+		{
+			light_component._Position = light_initialization_data->_Position;
+
+			break;
+		}
+	}
+
+	light_component._Luminance = light_initialization_data->_Luminance;
+	light_component._LightType = light_initialization_data->_LightType;
+	light_component._Size = light_initialization_data->_Size;
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<LightInitializationData>(data);
@@ -50,19 +66,11 @@ void LightEntity::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns the color of this light.
+*	Returns the light type of this light.
 */
-Vector3<float> LightEntity::GetColor() NOEXCEPT
+LightType LightEntity::GetLightType() NOEXCEPT
 {
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color;
-}
-
-/*
-*	Sets the color of this light.
-*/
-void LightEntity::SetColor(const Vector3<float> &color) NOEXCEPT
-{
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color = color;
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType;
 }
 
 /*
@@ -76,23 +84,39 @@ Vector3<float> LightEntity::GetPosition() NOEXCEPT
 /*
 *	Sets the position of this light.
 */
-void LightEntity::SetPosition(const Vector3<float> &position) NOEXCEPT
+void LightEntity::SetPosition(const Vector3<float>& position) NOEXCEPT
 {
 	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position = position;
 }
 
 /*
-*	Returns the strength of this light.
+*	Returns the direction of this light.
 */
-float LightEntity::GetStrength() NOEXCEPT
+Vector3<float> LightEntity::GetDirection() NOEXCEPT
 {
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Strength;
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction;
 }
 
 /*
-*	Sets the strength of this light.
+*	Sets the direction of this light.
 */
-void LightEntity::SetStrength(const float strength) NOEXCEPT
+void LightEntity::SetDirection(const Vector3<float>& direction) NOEXCEPT
 {
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Strength = strength;
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction = direction;
+}
+
+/*
+*	Returns the luminance of this light.
+*/
+Vector3<float> LightEntity::GetLuminance() NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance;
+}
+
+/*
+*	Sets the luminance of this light.
+*/
+void LightEntity::SetLuminance(const Vector3<float>& luminance) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance = luminance;
 }

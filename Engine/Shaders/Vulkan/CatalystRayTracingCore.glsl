@@ -3,6 +3,7 @@
 
 //Preprocessor defines.
 #define CATALYST_RAY_TRACING_T_MINIMUM (0.0f)
+#define CATALYST_RAY_TRACING_T_MAXIMUM (100.0f)
 
 /*
 *	Primary ray payload struct definition.

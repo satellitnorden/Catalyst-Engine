@@ -14,16 +14,35 @@ class LightInitializationData final : public EntityInitializationData
 
 public:
 
-	//The color.
-	Vector3<float> _Color;
+	//The light type.
+	LightType _LightType;
 
-	//The position.
-	Vector3<float> _Position;
+	union
+	{
+		//The position. Used for point lights.
+		Vector3<float> _Position;
+
+		//The direction. Used for directional lights.
+		Vector3<float> _Direction;
+	};
+
+	//The luminance.
+	Vector3<float> _Luminance;
 
 	//The size.
 	float _Size;
 
-	//The strength.
-	float _Strength;
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE LightInitializationData() NOEXCEPT
+		:
+		_LightType(LightType::POINT),
+		_Position(VectorConstants::ZERO),
+		_Luminance(VectorConstants::ZERO),
+		_Size(0.0f)
+	{
+
+	}
 
 };

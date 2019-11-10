@@ -6,6 +6,9 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
+
 class LightEntity : public Entity
 {
 
@@ -37,14 +40,9 @@ public:
 	}
 
 	/*
-	*	Returns the color of this light.
+	*	Returns the light type of this light.
 	*/
-	Vector3<float> GetColor() NOEXCEPT;
-
-	/*
-	*	Sets the color of this light.
-	*/
-	void SetColor(const Vector3<float> &color) NOEXCEPT;
+	LightType GetLightType() NOEXCEPT;
 
 	/*
 	*	Returns the position of this light.
@@ -57,13 +55,23 @@ public:
 	void SetPosition(const Vector3<float> &position) NOEXCEPT;
 
 	/*
-	*	Returns the strength of this light.
+	*	Returns the direction of this light.
 	*/
-	float GetStrength() NOEXCEPT;
+	Vector3<float> GetDirection() NOEXCEPT;
 
 	/*
-	*	Sets the strength of this light.
+	*	Sets the direction of this light.
 	*/
-	void SetStrength(const float strength) NOEXCEPT;
+	void SetDirection(const Vector3<float>& direction) NOEXCEPT;
+
+	/*
+	*	Returns the luminance of this light.
+	*/
+	Vector3<float> GetLuminance() NOEXCEPT;
+
+	/*
+	*	Sets the luminance of this light.
+	*/
+	void SetLuminance(const Vector3<float>& luminance) NOEXCEPT;
 
 };

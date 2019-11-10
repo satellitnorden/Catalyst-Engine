@@ -47,6 +47,9 @@
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 #define SQUARE_ROOT_OF_NINETY_NINE (9.949784f)
 
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+
 /*
 *	Material struct definition.
 */

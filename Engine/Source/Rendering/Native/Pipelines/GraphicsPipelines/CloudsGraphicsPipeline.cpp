@@ -126,21 +126,24 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	//Assume that the first light is the sky light, for now. (:
-	if (ComponentManager::GetNumberOfLightComponents() > 0)
-	{
-		data._SkyLightViewDirection = Vector3<float>::Normalize(Perceiver::Instance->GetPosition() - ComponentManager::GetLightLightComponents()[0]._Position);
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.00000000275f;
-	}
+	//Pick the first directional light.
+	data._SkyLightViewDirection = VectorConstants::UP;
+	data._SkyLightLuminance = VectorConstants::ZERO;
 
-	else
+	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
 	{
-		data._SkyLightViewDirection = VectorConstants::UP;
-		data._SkyLightLuminance = VectorConstants::ONE;
+		const LightComponent& component{ ComponentManager::GetLightLightComponents()[i] };
+
+		if (component._LightType == LightType::DIRECTIONAL)
+		{
+			data._SkyLightViewDirection = component._Direction;
+			data._SkyLightLuminance = component._Luminance;
+
+			break;
+		}
 	}
 
 	data._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
-	//data._CloudDensity = 0.5f;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

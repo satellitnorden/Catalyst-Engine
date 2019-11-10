@@ -7,10 +7,10 @@
 //Light struct definition.
 struct Light
 {
-	vec3 color;
-	vec3 position;
+  int type;
+  vec3 position_or_direction;
+	vec3 luminance;
 	float size;
-  float strength;
 };
 
 //Light uniform data.
@@ -27,15 +27,15 @@ Light UnpackLight(uint index)
 {
 	Light light;
 
-  	vec4 lightData1 = lightData[index * 2 + 0];
-  	vec4 lightData2 = lightData[index * 2 + 1];
+  vec4 light_data_1 = lightData[index * 2 + 0];
+  vec4 light_data_2 = lightData[index * 2 + 1];
 
-  	light.color = lightData1.xyz;
-  	light.position = vec3(lightData1.w, lightData2.xy);
-  	light.size = lightData2.z;
-  	light.strength = lightData2.w * float(numberOfLights);
+  light.type = bool(floatBitsToUint(light_data_2.z) & 1) ? LIGHT_TYPE_POINT : LIGHT_TYPE_DIRECTIONAL;
+  light.position_or_direction = light_data_1.xyz;
+  light.luminance = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  light.size = light_data_2.w;
 
-  	return light;
+  return light;
 }
 
 #endif

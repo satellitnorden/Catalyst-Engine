@@ -611,7 +611,8 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 	patchRenderInformation->_HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_HeightTexture));
 
 	//Generate the terrain textures.
-	const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_RESOLUTIONS[depth] };
+	//const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_RESOLUTIONS[depth] };
+	const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_BASE_RESOLUTION };
 
 	TerrainGeneralUtilities::GenerateTerrainTextures(	_Properties,
 														patchSizeMultiplier,

@@ -143,38 +143,78 @@ void main()
 	//Calculate a random chosen light.
 	Light light = UnpackLight(int(randomValue * float(numberOfLights)));
 
-	vec3 randomLightPosition = light.position + randomDirection * light.size;
+	switch (light.type)
+	{
+		case LIGHT_TYPE_DIRECTIONAL:
+		{
+			//Determine the visibility.
+			visibility = 0.0f;
 
-	float lengthToLight = length(randomLightPosition - hitPosition);
-	vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					-light.position_or_direction,																//direction
+					CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+					1 																							//payload
+					);
 
-	//Calculate the attenuation.
-	float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+			radiance += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+												-light.position_or_direction,
+												albedo,
+												shadingNormal,
+												roughness,
+												metallic,
+												light.luminance * float(numberOfLights)) * visibility;
 
-	//Determine the visibility.
-	visibility = 0.0f;
+			break;
+		}
 
-	traceNV(
-			topLevelAccelerationStructure, 																//topLevel
-			gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-			0xff, 																						//cullMask
-			0, 																							//sbtRecordOffset
-			0, 																							//sbtRecordStride
-			1, 																							//missIndex
-			hitPosition, 																				//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-			lightDirection,																				//direction
-			lengthToLight,																				//Tmax
-			1 																							//payload
-			);
+		case LIGHT_TYPE_POINT:
+		{
+			vec3 randomLightPosition = light.position_or_direction + randomDirection * light.size;
 
-	radiance += CalculateDirectLight(	-gl_WorldRayDirectionNV,
-										lightDirection,
-										albedo,
-										shadingNormal,
-										roughness,
-										metallic,
-										light.color * light.strength * float(numberOfLights)) * attenuation * visibility;
+			float lengthToLight = length(randomLightPosition - hitPosition);
+			vec3 lightDirection = vec3(randomLightPosition - hitPosition) / lengthToLight;
+
+			//Calculate the attenuation.
+			float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+
+			//Determine the visibility.
+			visibility = 0.0f;
+
+			traceNV(
+					topLevelAccelerationStructure, 																//topLevel
+					gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+					0xff, 																						//cullMask
+					0, 																							//sbtRecordOffset
+					0, 																							//sbtRecordStride
+					1, 																							//missIndex
+					hitPosition, 																				//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+					lightDirection,																				//direction
+					lengthToLight,																				//Tmax
+					1 																							//payload
+					);
+
+			radiance += CalculateDirectLight(	-gl_WorldRayDirectionNV,
+												lightDirection,
+												albedo,
+												shadingNormal,
+												roughness,
+												metallic,
+												light.luminance * float(numberOfLights)) * attenuation * visibility;
+
+			break;
+		}
+	}
+
+	
 
 	//Write to the ray payload.
 	rayPayload.radiance = radiance;
