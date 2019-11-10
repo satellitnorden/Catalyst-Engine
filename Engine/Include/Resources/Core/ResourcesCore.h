@@ -22,6 +22,7 @@ enum class ResourceType : uint8
 	SoundBank,
 	TextureCube,
 	Texture2D,
+	Texture3D,
 
 	NumberOfResourceTypes
 };

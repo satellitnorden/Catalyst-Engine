@@ -13,6 +13,7 @@
 #include <Resources/Building/SoundBankBuildParameters.h>
 #include <Resources/Building/TextureCubeBuildParameters.h>
 #include <Resources/Building/Texture2DBuildParameters.h>
+#include <Resources/Building/Texture3DBuildParameters.h>
 
 class ResourceBuilder final
 {
@@ -58,6 +59,11 @@ public:
 	*	Builds a texture 2D.
 	*/
 	static void BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a texture 3D.
+	*/
+	static void BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT;
 
 };
 #endif

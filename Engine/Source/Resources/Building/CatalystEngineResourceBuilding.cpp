@@ -2,17 +2,27 @@
 //Header file.
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 
+//Math.
+#include <Math/Core/CatalystRandomMath.h>
+
 //Resources.
 #include <Resources/Building/ResourceBuilder.h>
 
-#define BUILD_ENGINE_RESOURCES false
+#define BUILD_ENGINE_CLOUD_TEXTURE true
+#define BUILD_ENGINE_FONTS true
+#define BUILD_ENGINE_TEXTURES true
 
 /*
 *	Builds resources for the Catalyst Engine.
 */
 void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 {
-#if BUILD_ENGINE_RESOURCES
+
+#if BUILD_ENGINE_CLOUD_TEXTURE
+	BuildCloudTexture();
+#endif
+
+#if BUILD_ENGINE_FONTS
 	{
 		FontBuildParameters parameters;
 
@@ -24,7 +34,9 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		ResourceBuilder::BuildFont(parameters);
 	}
+#endif
 
+#if BUILD_ENGINE_TEXTURES
 	{
 		Texture2DBuildParameters parameters;
 
@@ -999,80 +1011,194 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
+#endif
 
-	ResourceCollectionBuildParameters resourceCollectionBuildParameters;
+#if BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_CLOUD_FONTS || BUILD_ENGINE_TEXTURES
+	{
+		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 
-	resourceCollectionBuildParameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
+		resourceCollectionBuildParameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
 
-	//It's important that the blue noise textures are added first because of some fairly non-ideal reasons... (:
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_1_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_2_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_3_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_4_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_5_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_6_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_7_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_8_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_9_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_10_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_11_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_12_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_13_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_14_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_15_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_16_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_17_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_18_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_19_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_20_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_21_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_22_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_23_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_24_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_25_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_26_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_27_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_28_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_29_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_30_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_31_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_32_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_33_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_34_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_35_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_36_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_37_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_38_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_39_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_40_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_41_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_42_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_43_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_44_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_45_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_46_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_47_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_48_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_49_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_50_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_51_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_52_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_53_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_54_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_55_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_56_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_57_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_58_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_59_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_60_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_61_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_62_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_63_Texture2D.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font.cr");
-	resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Color_Grading_Lookup_Texture2D.cr");
+		//It's important that the blue noise textures are added first because of some fairly non-ideal reasons... (:
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_1_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_2_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_3_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_4_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_5_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_6_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_7_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_8_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_9_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_10_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_11_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_12_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_13_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_14_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_15_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_16_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_17_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_18_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_19_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_20_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_21_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_22_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_23_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_24_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_25_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_26_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_27_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_28_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_29_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_30_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_31_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_32_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_33_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_34_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_35_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_36_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_37_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_38_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_39_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_40_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_41_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_42_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_43_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_44_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_45_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_46_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_47_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_48_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_49_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_50_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_51_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_52_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_53_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_54_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_55_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_56_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_57_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_58_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_59_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_60_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_61_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_62_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_63_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Cloud_Texture3D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Color_Grading_Lookup_Texture2D.cr");
 
-	ResourceBuilder::BuildResourceCollection(resourceCollectionBuildParameters);
+		ResourceBuilder::BuildResourceCollection(resourceCollectionBuildParameters);
+	}
 #endif
 }
 #endif
+
+/*
+*	Builds the cloud texture.
+*/
+void CatalystEngineResourceBuilding::BuildCloudTexture()
+{
+	//Defone constants.
+	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 32 };
+	constexpr uint32 CLOUD_TEXTURE_LAYER_0_POINTS{ 64 };
+
+	//Generate the points for the layer.
+	DynamicArray<Vector3<float>> points;
+	points.Reserve(CLOUD_TEXTURE_LAYER_0_POINTS * 27);
+
+	for (uint32 i{ 0 }; i < CLOUD_TEXTURE_LAYER_0_POINTS; ++i)
+	{
+		points.EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+							CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+							CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+	}
+
+	//Copy the first N points to the sides of the cube.
+	for (int8 X{ -1 }; X <= 1; ++X)
+	{
+		for (int8 Y{ -1 }; Y <= 1; ++Y)
+		{
+			for (int8 Z{ -1 }; Z <= 1; ++Z)
+			{
+				if (X == 0 && Y == 0 && Z == 0)
+				{
+					continue;
+				}
+
+				for (uint8 i{ 0 }; i < CLOUD_TEXTURE_LAYER_0_POINTS; ++i)
+				{
+					const Vector3<float> offset{ static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z) };
+					points.EmplaceFast(points[i] + offset);
+				}
+			}
+		}
+	}
+
+	//Create the temporary texture.
+	Texture3D<float> temporary_texture{ CLOUD_TEXTURE_RESOLUTION };
+
+	//Keep track of the longest distance.
+	float longest_distance{ -FLOAT_MAXIMUM };
+
+	for (uint32 X{ 0 }; X < CLOUD_TEXTURE_RESOLUTION; ++X)
+	{
+		for (uint32 Y{ 0 }; Y < CLOUD_TEXTURE_RESOLUTION; ++Y)
+		{
+			for (uint32 Z{ 0 }; Z < CLOUD_TEXTURE_RESOLUTION; ++Z)
+			{
+				//Calcualte the position in the texture.
+				const Vector3<float> position{	static_cast<float>(X) / static_cast<float>(CLOUD_TEXTURE_RESOLUTION),
+												static_cast<float>(Y) / static_cast<float>(CLOUD_TEXTURE_RESOLUTION),
+												static_cast<float>(Z) / static_cast<float>(CLOUD_TEXTURE_RESOLUTION) };
+
+				//Find the closest distance.
+				float closest_distance{ FLOAT_MAXIMUM };
+
+				for (const Vector3<float>& point : points)
+				{
+					const float distance{ Vector3<float>::Length(position - point) };
+					closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
+				}
+
+				//Write to the texture.
+				temporary_texture.At(X, Y, Z) = closest_distance;
+
+				//Update the longest distance.
+				longest_distance = CatalystBaseMath::Maximum<float>(longest_distance, closest_distance);
+			}
+		}
+	}
+
+	//Create the final texture.
+	Texture3D<Vector4<byte>> final_texture{ CLOUD_TEXTURE_RESOLUTION };
+
+	for (uint32 X{ 0 }; X < CLOUD_TEXTURE_RESOLUTION; ++X)
+	{
+		for (uint32 Y{ 0 }; Y < CLOUD_TEXTURE_RESOLUTION; ++Y)
+		{
+			for (uint32 Z{ 0 }; Z < CLOUD_TEXTURE_RESOLUTION; ++Z)
+			{
+				//Get the distance at the current position.
+				float distance{ temporary_texture.At(X, Y, Z) };
+
+				//Normalize the distance.
+				distance /= longest_distance;
+
+				//Invert the distance.
+				distance = 1.0f - distance;
+
+				//Convert it into byte.
+				final_texture.At(X, Y, Z) = Vector4<byte>(static_cast<byte>(distance * UINT8_MAXIMUM));
+			}
+		}
+	}
+
+	Texture3DBuildParameters parameters;
+
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Cloud_Texture3D";
+	parameters._ID = "Cloud_Texture3D";
+	parameters._Texture = &final_texture;
+
+	ResourceBuilder::BuildTexture3D(parameters);
+}

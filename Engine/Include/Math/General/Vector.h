@@ -1060,14 +1060,14 @@ public:
 	}
 
 	/*
-	*	Constructor taking a single float as argument.
+	*	Constructor taking a single value as argument.
 	*/
-	FORCE_INLINE constexpr Vector4(const float newValue) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const TYPE new_value) NOEXCEPT
 		:
-		_X(newValue),
-		_Y(newValue),
-		_Z(newValue),
-		_W(newValue)
+		_X(new_value),
+		_Y(new_value),
+		_Z(new_value),
+		_W(new_value)
 	{
 
 	}

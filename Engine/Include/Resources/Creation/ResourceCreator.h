@@ -19,6 +19,7 @@
 #include <Resources/Data/ModelData.h>
 #include <Resources/Data/TextureCubeData.h>
 #include <Resources/Data/Texture2DData.h>
+#include <Resources/Data/Texture3DData.h>
 
 class ResourceCreator final
 {
@@ -54,5 +55,10 @@ public:
 	*	Creates a texture 2D.
 	*/
 	static void CreateTexture2D(Texture2DData *const RESTRICT data, GlobalTexture2D *const RESTRICT texture) NOEXCEPT;
+
+	/*
+	*	Creates a texture 3D.
+	*/
+	static void CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT;
 
 };

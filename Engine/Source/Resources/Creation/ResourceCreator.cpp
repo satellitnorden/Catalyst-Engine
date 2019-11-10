@@ -128,3 +128,15 @@ void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Global
 	//Add the texture to the global render data.
 	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2D);
 }
+
+/*
+*	Creates a texture 3D.
+*/
+void ResourceCreator::CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT
+{
+	//Create a texture 3D ouf of the incoming data.
+	Texture3D<Vector4<byte>> temporary_texture{ data->_Width, data->_Height, data->_Depth, data->_Data[0].Data() };
+
+	//Create the texture!
+	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::R8G8B8A8_Byte), texture);
+}

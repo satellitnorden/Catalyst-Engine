@@ -1251,6 +1251,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\CloudsApplicationGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Data\Texture3DData.h">
+      <Filter>Resources\Include\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

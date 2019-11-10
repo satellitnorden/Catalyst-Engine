@@ -670,4 +670,41 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 		}
 	}
 }
+
+/*
+*	Builds a texture 3D.
+*/
+void ResourceBuilder::BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT
+{
+	//What should the material be called?
+	DynamicString file_name{ parameters._Output };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource type to the file.
+	constexpr ResourceType RESOURCE_TYPE{ ResourceType::Texture3D };
+	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resource_ID{ parameters._ID };
+	file.Write(&resource_ID, sizeof(HashString));
+
+	//Write the number of mipmap levels to the file.
+	constexpr uint8 MIPMAP_LEVELS{ 1 };
+	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
+
+	//Write the width, height and depth.
+	const uint32 width{ parameters._Texture->GetWidth() };
+	const uint32 height{ parameters._Texture->GetHeight() };
+	const uint32 depth{ parameters._Texture->GetDepth() };
+
+	file.Write(&width, sizeof(uint32));
+	file.Write(&height, sizeof(uint32));
+	file.Write(&depth, sizeof(uint32));
+
+	//Write the data.
+	file.Write(parameters._Texture->Data(), width * height * depth * sizeof(Vector4<byte>));
+}
 #endif

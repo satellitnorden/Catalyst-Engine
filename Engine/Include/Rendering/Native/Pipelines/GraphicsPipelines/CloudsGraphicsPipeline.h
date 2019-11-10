@@ -23,19 +23,11 @@ public:
 
 private:
 
-	//The cloud texture.
-	Texture3DHandle _CloudTexture;
-
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	/*
-	*	Creates the cloud texture.
-	*/
-	void CreateCloudTexture() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

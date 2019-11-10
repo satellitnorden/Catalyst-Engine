@@ -68,6 +68,11 @@ public:
 	*/
 	static const GlobalTexture2D& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
 
+	/*
+	*	Given a resource ID, return the corresponding texture 3D.
+	*/
+	static const Texture3DHandle& GetTexture3D(const HashString resourceID) { return _Texture3Ds[resourceID]; }
+
 private:
 
 	//Container for all animated models.
@@ -90,6 +95,9 @@ private:
 
 	//Container for all texture 2Ds.
 	static Map<HashString, GlobalTexture2D> _Texture2Ds;
+
+	//Container for all texture 3Ds.
+	static Map<HashString, Texture3DHandle> _Texture3Ds;
 
 	/*
 	*	Loads a resource collection, internal implementation.
@@ -130,5 +138,10 @@ private:
 	*	Given a file, load a texture 2D.
 	*/
 	static void LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a texture 3D.
+	*/
+	static void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
 
 };

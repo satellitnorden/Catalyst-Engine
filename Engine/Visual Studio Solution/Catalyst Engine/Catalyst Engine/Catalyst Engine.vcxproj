@@ -301,6 +301,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\SoundBankBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
@@ -310,6 +311,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Data\Texture3DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\Reading\ImageResource.h" />
