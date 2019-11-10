@@ -18,9 +18,11 @@ namespace CatalystEngineResourceBuilding
 	}
 #endif
 
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	/*
 	*	Builds the cloud texture.
 	*/
 	void BuildCloudTexture();
+#endif
 
 }

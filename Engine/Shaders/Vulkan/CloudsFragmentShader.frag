@@ -12,16 +12,14 @@
 //Constants.
 #define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
 #define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
-#define NUMBER_OF_SAMPLES (12) //Needs to be a multiple of 4.
+#define NUMBER_OF_SAMPLES (16) //Needs to be a multiple of 4.
 #define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 4)
-#define CLOUD_POSITION_SCALE_MULTIPLIER (6.0f) //0.25f step.
-#define CLOUD_LAYER_0_POSITION_SCALE (0.000025f)
-#define CLOUD_LAYER_1_POSITION_SCALE (CLOUD_LAYER_0_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
-#define CLOUD_LAYER_2_POSITION_SCALE (CLOUD_LAYER_1_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
-#define CLOUD_LAYER_3_POSITION_SCALE (CLOUD_LAYER_2_POSITION_SCALE * CLOUD_POSITION_SCALE_MULTIPLIER)
+#define CLOUD_POSITION_SCALE (0.000125f) //0.000025f step.
+#define CLOUD_PERSISTENCE (0.5f) //0.025f step.
+#define CLOUD_LACUNARITY (2.0f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (1.0f)
-
+#define CLOUD_DENSITY_MULTIPLIER (2.0f) //0.25f step.
+      
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -67,25 +65,44 @@ float InverseExponential(float number, int iterations)
 */
 float SampleDensity(vec3 point)
 {
-   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 2.0f;
+   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 16.0f;
 
    vec3 sample_point;
-
+   float density_sample;
+   float amplitude = 1.0f;
+   float frequency = 1.0f;
+   float total = 0.0f;
    float density = 0.0f;
 
-   sample_point = (point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * CLOUD_LAYER_0_POSITION_SCALE;
-   density += texture(cloud_texture, sample_point).x;
+   sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * CLOUD_POSITION_SCALE;
+   density_sample = texture(cloud_texture, sample_point).x;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
 
-   sample_point = (point + (cloud_offset * HALF_PI)) * CLOUD_LAYER_1_POSITION_SCALE;
-   density += texture(cloud_texture, sample_point).x * 0.5f;
+   sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * CLOUD_POSITION_SCALE;
+   density_sample = texture(cloud_texture, sample_point).y;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
 
-   sample_point = (point + (cloud_offset * PHI)) * CLOUD_LAYER_2_POSITION_SCALE;
-   density += texture(cloud_texture, sample_point).x * 0.25f;
+   sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * CLOUD_POSITION_SCALE;
+   density_sample = texture(cloud_texture, sample_point).z;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
 
-   sample_point = (point + (cloud_offset * EULERS_NUMBER)) * CLOUD_LAYER_3_POSITION_SCALE;
-   density += texture(cloud_texture, sample_point).x * 0.125f;
+   sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * CLOUD_POSITION_SCALE;
+   density_sample = texture(cloud_texture, sample_point).w;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
 
-   density /= 1.875f;
+   density /= total;
 
    density = max(density - (1.0f - cloud_density), 0.0f) * CLOUD_DENSITY_MULTIPLIER;
 
@@ -204,7 +221,7 @@ void main()
       }
 
       //Calculate the transmittance.
-      float transmittance = density * (1.0f - clamp((hit_distance - CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER) * 0.0001f, 0.0f, 1.0f));
+      float transmittance = density * (1.0f - clamp((hit_distance - 1000.0f) / 1000.0f, 0.0f, 1.0f));
 
       //Write the fragment.
       fragment = vec4(cloud_color, transmittance);

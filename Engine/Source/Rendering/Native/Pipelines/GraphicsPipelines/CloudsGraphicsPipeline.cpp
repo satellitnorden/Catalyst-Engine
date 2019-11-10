@@ -110,8 +110,8 @@ void CloudsGraphicsPipeline::Initialize() NOEXCEPT
 void CloudsGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.3f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.7f };
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.5f };
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -130,7 +130,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	if (ComponentManager::GetNumberOfLightComponents() > 0)
 	{
 		data._SkyLightViewDirection = Vector3<float>::Normalize(Perceiver::Instance->GetPosition() - ComponentManager::GetLightLightComponents()[0]._Position);
-		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.0000000025f;
+		data._SkyLightLuminance = ComponentManager::GetLightLightComponents()[0]._Color * ComponentManager::GetLightLightComponents()[0]._Strength * 0.00000000275f;
 	}
 
 	else

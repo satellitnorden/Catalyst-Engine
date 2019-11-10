@@ -2,15 +2,18 @@
 //Header file.
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 
+//Core.
+#include <Core/Containers/StaticArray.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
 //Resources.
 #include <Resources/Building/ResourceBuilder.h>
 
-#define BUILD_ENGINE_CLOUD_TEXTURE true
-#define BUILD_ENGINE_FONTS true
-#define BUILD_ENGINE_TEXTURES true
+#define BUILD_ENGINE_CLOUD_TEXTURE false
+#define BUILD_ENGINE_FONTS false
+#define BUILD_ENGINE_TEXTURES false
 
 /*
 *	Builds resources for the Catalyst Engine.
@@ -1092,7 +1095,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 }
-#endif
 
 /*
 *	Builds the cloud texture.
@@ -1100,18 +1102,24 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 void CatalystEngineResourceBuilding::BuildCloudTexture()
 {
 	//Defone constants.
-	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 32 };
+	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 64 };
 	constexpr uint32 CLOUD_TEXTURE_LAYER_0_POINTS{ 64 };
 
-	//Generate the points for the layer.
-	DynamicArray<Vector3<float>> points;
-	points.Reserve(CLOUD_TEXTURE_LAYER_0_POINTS * 27);
+	//Generate the points for the layers.
+	StaticArray<DynamicArray<Vector3<float>>, 4> points;
 
-	for (uint32 i{ 0 }; i < CLOUD_TEXTURE_LAYER_0_POINTS; ++i)
+	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		points.EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-							CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-							CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+		const uint32 cloud_layer_points{ CLOUD_TEXTURE_LAYER_0_POINTS << i };
+
+		points[i].Reserve(cloud_layer_points * 27);
+
+		for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
+		{
+			points[i].EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+		}
 	}
 
 	//Copy the first N points to the sides of the cube.
@@ -1126,20 +1134,25 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 					continue;
 				}
 
-				for (uint8 i{ 0 }; i < CLOUD_TEXTURE_LAYER_0_POINTS; ++i)
+				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					const Vector3<float> offset{ static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z) };
-					points.EmplaceFast(points[i] + offset);
+					const uint32 cloud_layer_points{ CLOUD_TEXTURE_LAYER_0_POINTS << i };
+
+					for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
+					{
+						const Vector3<float> offset{ static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z) };
+						points[i].EmplaceFast(points[i][j] + offset);
+					}
 				}
 			}
 		}
 	}
 
 	//Create the temporary texture.
-	Texture3D<float> temporary_texture{ CLOUD_TEXTURE_RESOLUTION };
+	Texture3D<Vector4<float>> temporary_texture{ CLOUD_TEXTURE_RESOLUTION };
 
-	//Keep track of the longest distance.
-	float longest_distance{ -FLOAT_MAXIMUM };
+	//Keep track of the longest distances.
+	StaticArray<float, 4> longest_distances{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
 
 	for (uint32 X{ 0 }; X < CLOUD_TEXTURE_RESOLUTION; ++X)
 	{
@@ -1152,20 +1165,23 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 												static_cast<float>(Y) / static_cast<float>(CLOUD_TEXTURE_RESOLUTION),
 												static_cast<float>(Z) / static_cast<float>(CLOUD_TEXTURE_RESOLUTION) };
 
-				//Find the closest distance.
-				float closest_distance{ FLOAT_MAXIMUM };
-
-				for (const Vector3<float>& point : points)
+				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					const float distance{ Vector3<float>::Length(position - point) };
-					closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
+					//Find the closest distance.
+					float closest_distance{ FLOAT_MAXIMUM };
+
+					for (const Vector3<float>& point : points[i])
+					{
+						const float distance{ Vector3<float>::Length(position - point) };
+						closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
+					}
+
+					//Write to the texture.
+					temporary_texture.At(X, Y, Z)[i] = closest_distance;
+
+					//Update the longest distance.
+					longest_distances[i] = CatalystBaseMath::Maximum<float>(longest_distances[i], closest_distance);
 				}
-
-				//Write to the texture.
-				temporary_texture.At(X, Y, Z) = closest_distance;
-
-				//Update the longest distance.
-				longest_distance = CatalystBaseMath::Maximum<float>(longest_distance, closest_distance);
 			}
 		}
 	}
@@ -1179,17 +1195,23 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 		{
 			for (uint32 Z{ 0 }; Z < CLOUD_TEXTURE_RESOLUTION; ++Z)
 			{
-				//Get the distance at the current position.
-				float distance{ temporary_texture.At(X, Y, Z) };
+				//Get the distances at the current position.
+				Vector4<float> distances{ temporary_texture.At(X, Y, Z) };
 
-				//Normalize the distance.
-				distance /= longest_distance;
+				//Normalize the distances.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					distances[i] /= longest_distances[i];
+				}
 
 				//Invert the distance.
-				distance = 1.0f - distance;
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					distances[i] = 1.0f - distances[i];
+				}
 
 				//Convert it into byte.
-				final_texture.At(X, Y, Z) = Vector4<byte>(static_cast<byte>(distance * UINT8_MAXIMUM));
+				final_texture.At(X, Y, Z) = Vector4<byte>(static_cast<byte>(distances[0] * UINT8_MAXIMUM), static_cast<byte>(distances[1] * UINT8_MAXIMUM), static_cast<byte>(distances[2] * UINT8_MAXIMUM), static_cast<byte>(distances[3] * UINT8_MAXIMUM));
 			}
 		}
 	}
@@ -1202,3 +1224,4 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 
 	ResourceBuilder::BuildTexture3D(parameters);
 }
+#endif
