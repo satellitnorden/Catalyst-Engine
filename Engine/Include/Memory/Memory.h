@@ -13,7 +13,7 @@
 //Memory constants.
 namespace MemoryConstants
 {
-	constexpr uint64 GLOBAL_LINEAR_ALLOCATOR_SIZE{ 32'768 };
+	constexpr uint64 GLOBAL_LINEAR_ALLOCATOR_SIZE{ 65'536 };
 }
 
 class Memory

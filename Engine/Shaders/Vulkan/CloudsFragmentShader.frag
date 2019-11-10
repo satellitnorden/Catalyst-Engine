@@ -175,8 +175,16 @@ void main()
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 start = perceiverWorldPosition + view_direction * intersection_distance;
 
-      //Remember the hit distance.
-      float hit_distance = intersection_distance;
+      //Calculate the hit distance multiplier.
+      float hit_distance_multiplier = (1.0f - clamp((intersection_distance - 1000.0f) * 0.001f, 0.0f, 1.0f));
+
+      //Return early. (:
+      if (hit_distance_multiplier == 0.0f)
+      {
+         fragment = vec4(vec3(0.0f), 0.0f);
+
+         return;
+      }
 
       LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
       vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
@@ -212,16 +220,19 @@ void main()
          density += new_density;
 
          //Add to the cloud color.
-         cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) * new_density;
+         if (new_density > 0.0f)
+         {
+            cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleDensityInDirection(sample_point, -sky_light_direction))) * new_density;
+         }
 
-         if (density >= 1.0f)
+         if (density >= 0.99f)
          {
             break;
          }
       }
 
       //Calculate the transmittance.
-      float transmittance = density * (1.0f - clamp((hit_distance - 1000.0f) / 1000.0f, 0.0f, 1.0f));
+      float transmittance = density * hit_distance_multiplier;
 
       //Write the fragment.
       fragment = vec4(cloud_color, transmittance);
