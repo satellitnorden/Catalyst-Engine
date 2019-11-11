@@ -36,25 +36,28 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 */
 void SkyRenderPass::Initialize() NOEXCEPT
 {
+	//Define constants.
+	constexpr float CLOUDS_BLUR_SIZE{ 8.0f };
+
 	//Add the pipelines.
 	SetNumberOfPipelines(5);
 	AddPipeline(&_SkyGraphicsPipeline);
+	AddPipeline(&_CloudsGraphicsPipeline);
 	AddPipeline(&_CloudsBlurGraphicsPipelines[0]);
 	AddPipeline(&_CloudsBlurGraphicsPipelines[1]);
-	AddPipeline(&_CloudsGraphicsPipeline);
 	AddPipeline(&_CloudsApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 	_CloudsGraphicsPipeline.Initialize();
 	_CloudsBlurGraphicsPipelines[0].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,
-												16.0f,
+												CLOUDS_BLUR_SIZE,
 												1.0f,
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
 												RenderingSystem::Instance->GetScaledResolution() / 2);
 	_CloudsBlurGraphicsPipelines[1].Initialize(	SeparableBlurGraphicsPipeline::Direction::Vertical,
-												16.0f,
+												CLOUDS_BLUR_SIZE,
 												1.0f,
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
 												RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),

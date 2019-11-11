@@ -21,21 +21,6 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	//calculate the result.
-	vec4 result = vec4(0.0f);
-
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(-inverseScaledResolution.x, 0.0f));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(0.0f, -inverseScaledResolution.y));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(0.0f, 0.0f));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(0.0f, inverseScaledResolution.y));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(inverseScaledResolution.x, 0.0f));
-    result += Upsample(cloud_texture, fragment_texture_coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y));
-
-    result /= 9.0f;
-
     //Write the fragment.
-    fragment = result;
+    fragment = Upsample(cloud_texture, fragment_texture_coordinate);
 }
