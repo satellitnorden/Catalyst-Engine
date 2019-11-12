@@ -15,7 +15,7 @@
 #define NUMBER_OF_SAMPLES (16) //Needs to be a multiple of 4.
 #define NUMBER_OF_NOISE_TEXTURES (NUMBER_OF_SAMPLES / 4)
 #define CLOUD_POSITION_SCALE (0.000125f) //0.000025f step.
-#define CLOUD_PERSISTENCE (0.5f) //0.025f step.
+#define CLOUD_PERSISTENCE (0.525f) //0.025f step.
 #define CLOUD_LACUNARITY (2.25f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 #define CLOUD_DENSITY_MULTIPLIER (2.0f) //0.25f step.

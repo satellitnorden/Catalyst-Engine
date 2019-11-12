@@ -170,7 +170,7 @@ private:
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::None };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };
