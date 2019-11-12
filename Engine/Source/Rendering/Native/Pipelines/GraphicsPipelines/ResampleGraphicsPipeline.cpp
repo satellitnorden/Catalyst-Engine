@@ -104,9 +104,6 @@ void ResampleGraphicsPipeline::Execute() NOEXCEPT
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
 
-	//Establish an image memory barrier for the render target that is drawn to.
-	//command_buffer->ImageMemoryBarrier(this, GetRenderTargets()[0]);
-
 	//End the command buffer.
 	command_buffer->End(this);
 

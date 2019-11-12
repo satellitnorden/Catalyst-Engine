@@ -151,7 +151,8 @@ void CommandBuffer::ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, 
 	image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	image_memory_barrier.pNext = nullptr;
 	image_memory_barrier.srcAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	image_memory_barrier.dstAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+	image_memory_barrier.dstAccessMask =	VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+											| VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 	image_memory_barrier.oldLayout = vulkan_image->GetImageLayout();
@@ -166,8 +167,7 @@ void CommandBuffer::ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, 
 	image_memory_barrier.subresourceRange.layerCount = 1;
 
 	//Record the pipeline barrier command.
-	vkCmdPipelineBarrier(vulkan_command_buffer->Get(), VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
-
+	vkCmdPipelineBarrier(vulkan_command_buffer->Get(), VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
 }
 
 /*
