@@ -610,22 +610,22 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 
 	patchRenderInformation->_HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_HeightTexture));
 
-	//Generate the terrain textures.
-	//const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_RESOLUTIONS[depth] };
-	const uint32 textureResolution{ TerrainConstants::TERRAIN_TEXTURE_BASE_RESOLUTION };
+	//Calculate the texture resolution.
+	const uint32 texture_resolution{ CatalystBaseMath::Minimum<uint32>(TerrainConstants::TERRAIN_TEXTURE_BASE_RESOLUTION << (TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH - depth), TerrainConstants::TERRAIN_TEXTURE_MAXIMUM_RESOLUTION) };
 
+	//Generate the terrain textures.
 	TerrainGeneralUtilities::GenerateTerrainTextures(	_Properties,
 														patchSizeMultiplier,
-														textureResolution,
+														texture_resolution,
 														worldPosition,
 														&patchInformation->_NormalTexture,
 														&patchInformation->_MaterialTexture);
 
 	patchRenderInformation->_NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
 	patchRenderInformation->_MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
-	patchRenderInformation->_MaterialTextureResolution = static_cast<float>(textureResolution);
-	patchRenderInformation->_MaterialTextureResolutionSquared = static_cast<float>(textureResolution) * static_cast<float>(textureResolution);
-	patchRenderInformation->_InverseMaterialTextureResolution = 1.0f / static_cast<float>(textureResolution);
+	patchRenderInformation->_MaterialTextureResolution = static_cast<float>(texture_resolution);
+	patchRenderInformation->_MaterialTextureResolutionSquared = static_cast<float>(texture_resolution) * static_cast<float>(texture_resolution);
+	patchRenderInformation->_InverseMaterialTextureResolution = 1.0f / static_cast<float>(texture_resolution);
 
 	//Calculate the axis-aligned bounding box.
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3<float>(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
