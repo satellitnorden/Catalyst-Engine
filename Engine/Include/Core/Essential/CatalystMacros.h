@@ -32,7 +32,7 @@
 #endif
 
 /*
-*	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
+*	Tracks the average execution time of a given section of code and prints the average execution time in profile builds.
 */
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	#define CATALYST_BENCHMARK_SECTION_START()																				\
@@ -44,7 +44,7 @@
 #endif
 
 /*
-*	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
+*	Tracks the average execution time of a given section of code and prints the average execution time in profile builds.
 */
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 #define CATALYST_BENCHMARK_SECTION_END(NAME)																											\
