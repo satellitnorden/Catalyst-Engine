@@ -287,8 +287,18 @@ namespace VulkanRenderingSystemLogic
 			parameters._SubpassDescriptions = &subpassDescription;
 
 			//Create the subpass depencies.
-			parameters._SubpassDependencyCount = 0;
-			parameters._SubpassDependencies = nullptr;
+			VkSubpassDependency dependency;
+
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.dstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			dependency.dependencyFlags = 0;
+
+			parameters._SubpassDependencyCount = 1;
+			parameters._SubpassDependencies = &dependency;
 
 			//Create the render pass!
 			data->_RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);

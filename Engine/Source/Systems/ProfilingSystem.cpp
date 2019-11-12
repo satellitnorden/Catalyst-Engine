@@ -34,10 +34,10 @@ namespace ProfilingSystemData
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE ProfilingEntry(const DynamicString &initialName, const float initialDuration) NOEXCEPT
+		FORCE_INLINE ProfilingEntry(const DynamicString &initial_name, const float initial_duration) NOEXCEPT
 			:
-			_Name(initialName),
-			_Duration(initialDuration)
+			_Name(initial_name),
+			_Duration(initial_duration)
 		{
 
 		}
@@ -69,7 +69,7 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 		TextUserInterfaceElementDescription description;
 
 		description._Type = UserInterfaceElementType::Text;
-		description._Minimum = Vector2<float>(0.01f, 0.89f);
+		description._Minimum = Vector2<float>(0.01f, 0.01f);
 		description._Maximum = Vector2<float>(0.99f, 0.99f);
 		description._Font = &ResourceLoader::GetFont(HashString("Main_Font"));
 

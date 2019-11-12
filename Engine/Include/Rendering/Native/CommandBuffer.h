@@ -73,6 +73,11 @@ public:
 	void DrawIndexed(const Pipeline *const RESTRICT pipeline, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT;
 
 	/*
+	*	Establishes an image memory barrier.
+	*/
+	void ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, const OpaqueHandle image) NOEXCEPT;
+
+	/*
 	*	Pushes constants.
 	*/
 	void PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT;

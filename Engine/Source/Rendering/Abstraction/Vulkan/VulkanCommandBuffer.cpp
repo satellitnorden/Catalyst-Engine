@@ -210,31 +210,6 @@ void VulkanCommandBuffer::CommandNextSubpass() NOEXCEPT
 }
 
 /*
-*	Records a pipeline barrier command.
-*/
-void VulkanCommandBuffer::CommandPipelineBarrier(const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, VkImage image, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT
-{
-	VkImageMemoryBarrier imageMemoryBarrier;
-
-	imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	imageMemoryBarrier.pNext = nullptr;
-	imageMemoryBarrier.srcAccessMask = sourceAccessMask;
-	imageMemoryBarrier.dstAccessMask = destinationAccessMask;
-	imageMemoryBarrier.oldLayout = oldLayout;
-	imageMemoryBarrier.newLayout = newLayout;
-	imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	imageMemoryBarrier.image = image;
-	imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
-	imageMemoryBarrier.subresourceRange.levelCount = 1;
-	imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
-	imageMemoryBarrier.subresourceRange.layerCount = 1;
-
-	vkCmdPipelineBarrier(_VulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-}
-
-/*
 *	Records a push constants command.
 */
 void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT

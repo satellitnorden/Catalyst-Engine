@@ -104,11 +104,6 @@ public:
 	void CommandNextSubpass() NOEXCEPT;
 
 	/*
-	*	Records a pipeline barrier command.
-	*/
-	void CommandPipelineBarrier(const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, VkImage image, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT;
-
-	/*
 	*	Records a push constants command.
 	*/
 	void CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT;

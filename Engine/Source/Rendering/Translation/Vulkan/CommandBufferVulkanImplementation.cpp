@@ -135,6 +135,42 @@ void CommandBuffer::DrawIndexed(const Pipeline *const RESTRICT pipeline, const u
 }
 
 /*
+*	Establishes an image memory barrier.
+*/
+void CommandBuffer::ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, const OpaqueHandle image) NOEXCEPT
+{
+	//Retrieve the Vulkan command buffer.
+	VulkanCommandBuffer* const RESTRICT vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData) };
+
+	//Retrieve the Vulkan image.
+	VulkanImage* const RESTRICT vulkan_image{ static_cast<VulkanImage* const RESTRICT>(image) };
+
+	//Create the image memory barrier.
+	VkImageMemoryBarrier image_memory_barrier;
+
+	image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	image_memory_barrier.pNext = nullptr;
+	image_memory_barrier.srcAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	image_memory_barrier.dstAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+	image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+	image_memory_barrier.oldLayout = vulkan_image->GetImageLayout();
+	image_memory_barrier.newLayout = vulkan_image->GetImageLayout();
+	image_memory_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	image_memory_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	image_memory_barrier.image = vulkan_image->GetImage();
+
+	image_memory_barrier.subresourceRange.baseMipLevel = 0;
+	image_memory_barrier.subresourceRange.levelCount = 1;
+	image_memory_barrier.subresourceRange.baseArrayLayer = 0;
+	image_memory_barrier.subresourceRange.layerCount = 1;
+
+	//Record the pipeline barrier command.
+	vkCmdPipelineBarrier(vulkan_command_buffer->Get(), VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+
+}
+
+/*
 *	Pushes constants.
 */
 void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT

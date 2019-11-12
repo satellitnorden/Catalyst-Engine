@@ -23,9 +23,9 @@ public:
 	/*
 	*	Constructor taking the name of the profiling entry.
 	*/
-	FORCE_INLINE ProfilingTimer(const char *const RESTRICT profilingEntryName) NOEXCEPT
+	FORCE_INLINE ProfilingTimer(const char *const RESTRICT profiling_entry_name) NOEXCEPT
 		:
-		_ProfilingEntryName(profilingEntryName)
+		_ProfilingEntryName(profiling_entry_name)
 	{
 		//Store the start time.
 		_StartTime = std::chrono::high_resolution_clock::now();

@@ -12,7 +12,7 @@
 *	Defines a profiling scope.
 */
 #if defined(CATALYST_CONFIGURATION_PROFILE)
-	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingTimer profilingTimer{ ENTRY_NAME };
+	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingTimer profiling_timer{ ENTRY_NAME };
 #else
 	#define PROFILING_SCOPE(ENTRY_NAME)
 #endif

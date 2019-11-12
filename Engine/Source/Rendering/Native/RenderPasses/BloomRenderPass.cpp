@@ -67,13 +67,25 @@ void BloomRenderPass::Initialize() NOEXCEPT
 													RenderingSystem::Instance->GetScaledResolution() / 4,
 													false);
 
-	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
+	_BloomDownsampleGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Eighth_R32G32B32A32_Float_1),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)),
+													RenderingSystem::Instance->GetScaledResolution() / 8,
+													false);
+
+	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Eighth_R32G32B32A32_Float_1),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 8), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 8)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution() / 4,
+													true);
+
+	_BloomUpsampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Quarter_R32G32B32A32_Float_1),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
 													RenderingSystem::Instance->GetScaledResolution() / 2,
 													true);
 
-	_BloomUpsampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
+	_BloomUpsampleGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)) * 0.5f,
 													RenderingSystem::Instance->GetScaledResolution(),
