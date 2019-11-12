@@ -1292,9 +1292,6 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>

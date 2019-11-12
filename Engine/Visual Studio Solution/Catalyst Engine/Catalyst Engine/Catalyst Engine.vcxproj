@@ -492,7 +492,6 @@
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
