@@ -31,6 +31,11 @@ public:
 	void RegisterGlobalMaterial(const uint32 index, const Material &material) NOEXCEPT;
 
 	/*
+	*	Returns the global material at the given index.
+	*/
+	const Material& GetGlobalMaterial(const uint32 index) NOEXCEPT;
+
+	/*
 	*	Returns the current global material uniform buffer.
 	*/
 	BufferHandle GetCurrentGlobalMaterialUnifomBuffer() NOEXCEPT;

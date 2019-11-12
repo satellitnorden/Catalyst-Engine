@@ -78,9 +78,9 @@ vec4 SampleTerrainMaterial(int index, vec3 world_position, vec3 normalized_norma
 */
 void RetrieveSingleTerrainMaterial(int index, vec3 world_position, vec3 normalized_normal, out TerrainMaterial material)
 {
-    material.albedo = SampleTerrainMaterial(global_materials[index].albedo_texture_index, world_position, normalized_normal).rgb;
-    material.normal_map = SampleTerrainMaterial(global_materials[index].normal_map_texture_index, world_position, normalized_normal).xyz * 2.0f - 1.0f;
-    material.material_properties = SampleTerrainMaterial(global_materials[index].material_properties_texture_index, world_position, normalized_normal);
+    material.albedo = SampleTerrainMaterial(GLOBAL_MATERIALS[index].albedo_texture_index, world_position, normalized_normal).rgb;
+    material.normal_map = SampleTerrainMaterial(GLOBAL_MATERIALS[index].normal_map_texture_index, world_position, normalized_normal).xyz * 2.0f - 1.0f;
+    material.material_properties = SampleTerrainMaterial(GLOBAL_MATERIALS[index].material_properties_texture_index, world_position, normalized_normal);
 }
 
 /*

@@ -10,7 +10,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 12) int maskIndex;
+    layout (offset = 12) int material_index;
     layout (offset = 16) float cutoffDistanceSquared;
 };
 
@@ -21,11 +21,14 @@ layout (location = 2) in float fragmentDistanceSquared;
 
 void main()
 {
+    //Retrieve the material.
+    Material material = GLOBAL_MATERIALS[material_index];
+
 	//Retrieve the random length.
 	float randomLength = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f).x * cutoffDistanceSquared;
 
     //Discard conditionally.
-    if (texture(sampler2D(globalTextures[maskIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).r < 0.5f
+    if (texture(sampler2D(globalTextures[material.optional_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).r < 0.5f
     	|| randomLength < fragmentDistanceSquared)
     {
         discard;

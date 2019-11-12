@@ -34,8 +34,8 @@ public:
 	//The model.
 	const Model *RESTRICT _Model;
 
-	//The material.
-	Material _Material;
+	//The global material index.
+	uint32 _GlobalMaterialIndex;
 
 	//The cutoff distance.
 	float _CutoffDistance;

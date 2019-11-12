@@ -127,7 +127,7 @@ layout (set = 0, binding = 2) uniform sampler globalSamplers[NUMBER_OF_GLOBAL_SA
 //Global materials.
 layout (std140, set = 0, binding = 3) uniform GlobalMaterials
 {
-    layout (offset = 0) Material global_materials[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
+    layout (offset = 0) Material GLOBAL_MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
 /*

@@ -35,9 +35,7 @@ class VegetationFragmentPushConstantData final
 
 public:
 
-	int32 _AlbedoTextureIndex;
-	int32 _NormalMapTextureIndex;
-	int32 _MaterialPropertiesTextureIndex;
+	int32 _GlobalMaterialIndex;
 
 };
 
@@ -185,7 +183,7 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not a masked material.
-		if (component->_Material._Type != Material::Type::Masked)
+		if (RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex)._Type != Material::Type::Masked)
 		{
 			continue;
 		}
@@ -201,9 +199,7 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		VegetationFragmentPushConstantData fragment_data;
 
-		fragment_data._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
-		fragment_data._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
-		fragment_data._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
+		fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 

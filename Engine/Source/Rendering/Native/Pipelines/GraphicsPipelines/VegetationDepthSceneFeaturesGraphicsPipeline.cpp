@@ -35,7 +35,7 @@ class VegetationFragmentPushConstantData final
 
 public:
 
-	int32 _MaskTextureIndex;
+	int32 _GlobalMaterialIndex;
 	float _CutoffDistanceSquared;
 
 };
@@ -178,7 +178,7 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not a masked material.
-		if (component->_Material._Type != Material::Type::Masked)
+		if (RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex)._Type != Material::Type::Masked)
 		{
 			continue;
 		}
@@ -194,7 +194,7 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		VegetationFragmentPushConstantData fragment_data;
 
-		fragment_data._MaskTextureIndex = component->_Material._OptionalTextureIndex;
+		fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
 		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);

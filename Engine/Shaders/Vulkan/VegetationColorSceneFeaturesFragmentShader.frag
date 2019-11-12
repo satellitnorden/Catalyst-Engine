@@ -16,9 +16,7 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 12) int albedoTextureIndex;
-    layout (offset = 16) int normalMapTextureIndex;
-    layout (offset = 20) int materialPropertiesIndex;
+    layout (offset = 12) int material_index;
 };
 
 //In parameters.
@@ -45,14 +43,17 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 
 void main()
 {
+  //Retrieve the material.
+  Material material = GLOBAL_MATERIALS[material_index];
+
   //Sample the albedo.
-  vec3 albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
+  vec3 albedo = texture(sampler2D(globalTextures[material.albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
 
   //Sample the normal map.
-  vec3 normalMap = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
+  vec3 normalMap = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
 
   //Sample the material properties.
-  vec4 materialProperties = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
+  vec4 materialProperties = texture(sampler2D(globalTextures[material.material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
 
   //Calculate the shading normal.
   vec3 shadingNormal = normalMap * 2.0f - 1.0f;
