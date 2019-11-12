@@ -60,8 +60,11 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
                             vec3 normal,
                             float roughness,
                             float metallic,
+                            float thickness,
                             vec3 radiance)
 {
+    normal = mix(lightDirection, normal, thickness);
+
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
     float lightAngle = max(dot(normal, lightDirection), 0.0f);

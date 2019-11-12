@@ -170,6 +170,7 @@ void main()
 												shadingNormal,
 												roughness,
 												metallic,
+												1.0f,
 												light.luminance * float(numberOfLights)) * visibility;
 
 			break;
@@ -208,6 +209,7 @@ void main()
 												shadingNormal,
 												roughness,
 												metallic,
+												1.0f,
 												light.luminance * float(numberOfLights)) * attenuation * visibility;
 
 			break;

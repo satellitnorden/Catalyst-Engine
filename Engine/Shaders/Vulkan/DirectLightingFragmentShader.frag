@@ -35,6 +35,7 @@ void main()
 	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, fragmentTextureCoordinate);
 
 	//Retrieve all properties.
+	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
 	float hitDistance = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
@@ -66,6 +67,7 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
+														material.thickness,
 														light.luminance);
 
 				break;
@@ -85,15 +87,11 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
+														material.thickness,
 														light.luminance) * attenuation;
 
 				break;
 			}
-		}
-
-		if (light.type > 1)
-		{
-			directLighting = vec3(1.0f, 0.0f, 0.0f);
 		}
 	}
 

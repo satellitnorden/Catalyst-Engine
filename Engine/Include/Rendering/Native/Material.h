@@ -52,8 +52,8 @@ public:
 	//The luminance multiplier.
 	float _LuminanceMultiplier{ 0.0f };
 
-	//Some padding.
-	Padding<4> _Padding;
+	//The thickness.
+	float _Thickness{ 1.0f };
 
 	/*
 	*	Default constructor.
@@ -72,7 +72,8 @@ public:
 									const int32 initial_optional_texture_index,
 									const Type initial_type,
 									const Property initial_properties,
-									const float initial_luminance_multiplier) NOEXCEPT
+									const float initial_luminance_multiplier,
+									const float initial_thickness) NOEXCEPT
 		:
 		_AlbedoTextureIndex(initial_albedo_texture_index),
 		_NormalMapTextureIndex(initial_normal_map_texture_index),
@@ -80,7 +81,8 @@ public:
 		_OptionalTextureIndex(initial_optional_texture_index),
 		_Type(initial_type),
 		_Properties(initial_properties),
-		_LuminanceMultiplier(initial_luminance_multiplier)
+		_LuminanceMultiplier(initial_luminance_multiplier),
+		_Thickness(initial_thickness)
 	{
 
 	}

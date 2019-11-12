@@ -62,7 +62,7 @@ struct Material
 	int type;
 	int properties;
 	float luminance_multiplier;
-	int padding;
+	float thickness;
 };
 
 //Global uniform data.

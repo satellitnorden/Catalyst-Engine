@@ -19,11 +19,11 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 view_direction;
-	int materialProperties;
 	float hitDistance;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
+	float thickness;
 };
 
 //Layout specification.
@@ -59,6 +59,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.roughness = sceneFeatures3.x;
 	features.metallic = sceneFeatures3.y;
 	features.ambientOcclusion = pow(sceneFeatures3.z * pow(ambientOcclusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
+	features.thickness = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)].thickness;
 
 	return features;
 }
@@ -75,7 +76,7 @@ void main()
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														SkyColor(currentFeatures.normal),
+														SkyColor(mix(vec3(0.0f, 1.0f, 0.0f), currentFeatures.normal, currentFeatures.thickness)),
 														vec3(0.0f));
 
 	//Write the fragment.

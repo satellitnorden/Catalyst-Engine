@@ -188,7 +188,7 @@ ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the albedo in the RGB channels and the material property flags in the A channel.
+	*	Contains the albedo in the RGB channels and the material index in the A channel.
 	*/
 	SceneFeatures1,
 
