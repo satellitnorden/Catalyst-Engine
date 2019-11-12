@@ -103,7 +103,7 @@ public:
 	};
 
 	//The borders updates.
-	DynamicArray<Pair<const uint64, const int32>> _BordersUpdates;
+	DynamicArray<Pair<uint64, int32>> _BordersUpdates;
 
 	/*
 	*	Default constructor

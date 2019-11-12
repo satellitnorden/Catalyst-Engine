@@ -259,7 +259,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	//Process the borders updats.
 	if (_Update._Type != TerrainUpdate::Type::Invalid)
 	{
-		for (Pair<const uint64, const int32> &pair : _Update._BordersUpdates)
+		for (Pair<uint64, int32> &pair : _Update._BordersUpdates)
 		{
 			const uint64 patchInformationIndex{ GetPatchInformationIndex(pair._First) };
 			_PatchRenderInformations[patchInformationIndex]._Borders = pair._Second;
@@ -765,7 +765,7 @@ void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node
 		//If the borders differ, add the new borders to the borders updates.
 		if (patchRenderInformationIndex == UINT64_MAX || _PatchRenderInformations[patchRenderInformationIndex]._Borders != borders)
 		{
-			_Update._BordersUpdates.EmplaceSlow(Pair<const uint64, const int32>(node->_Identifier, borders));
+			_Update._BordersUpdates.EmplaceSlow(Pair<uint64, int32>(node->_Identifier, borders));
 		}
 	}
 }
