@@ -34,7 +34,7 @@
 /*
 *	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 	#define CATALYST_BENCHMARK_SECTION_START()																				\
 	static uint64 iterations{ 0 };																							\
 	static uint64 average_duration{ 0 };																					\
@@ -46,7 +46,7 @@
 /*
 *	Tracks the average execution time of a given section of code and prints the average execution time in non-final builds.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if defined(CATALYST_CONFIGURATION_PROFILE)
 #define CATALYST_BENCHMARK_SECTION_END(NAME)																											\
 	average_duration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - time_before_function).count(); \
 	++iterations;																																		\
