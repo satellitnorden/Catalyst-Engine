@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (32)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_ORIGIN_BIAS (2.25f) //0.25f step.
 
 //Layout specification.
@@ -34,7 +34,7 @@ void main()
 	float hitDistance = sceneFeatures.w;
 
 	//Calculate the bias.
-	float bias = hitDistance * 0.01f;
+	float bias = hitDistance * 0.0125f; //0.0025f step.
 
 	//Calculate the world position at this fragment the current frame.
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * hitDistance;

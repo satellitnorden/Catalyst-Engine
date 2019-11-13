@@ -7,7 +7,7 @@
 #extension GL_NV_ray_tracing : require
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (3.0f) //0.25f step.
+#define AMBIENT_OCCLUSION_POWER (3.25f) //0.25f step.
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
