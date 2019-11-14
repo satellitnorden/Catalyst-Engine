@@ -32,28 +32,49 @@
 #endif
 
 /*
-*	Tracks the average execution time of a given section of code and prints the average execution time in profile builds.
+*	Tracks the execution time of a given section of code and prints the execution time in profile builds.
 */
 #if defined(CATALYST_CONFIGURATION_PROFILE)
-	#define CATALYST_BENCHMARK_SECTION_START()																				\
-	static uint64 iterations{ 0 };																							\
-	static uint64 average_duration{ 0 };																					\
+#define CATALYST_BENCHMARK_SECTION_START()																					\
 	std::chrono::time_point<std::chrono::steady_clock> time_before_function{ std::chrono::high_resolution_clock::now() };
 #else
-	#define CATALYST_BENCHMARK_SECTION_START()
+#define CATALYST_BENCHMARK_SECTION_START()
+#endif
+
+/*
+*	Tracks the execution time of a given section of code and prints the execution time in profile builds.
+*/
+#if defined(CATALYST_CONFIGURATION_PROFILE)
+#define CATALYST_BENCHMARK_SECTION_END(NAME)																																					\
+	const float duration{ static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - time_before_function).count()) / 1'000'000.0f };	\
+	PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");
+#else
+#define CATALYST_BENCHMARK_SECTION_END(NAME)
 #endif
 
 /*
 *	Tracks the average execution time of a given section of code and prints the average execution time in profile builds.
 */
 #if defined(CATALYST_CONFIGURATION_PROFILE)
-#define CATALYST_BENCHMARK_SECTION_END(NAME)																											\
+	#define CATALYST_BENCHMARK_AVERAGE_SECTION_START()																				\
+	static uint64 iterations{ 0 };																							\
+	static uint64 average_duration{ 0 };																					\
+	std::chrono::time_point<std::chrono::steady_clock> time_before_function{ std::chrono::high_resolution_clock::now() };
+#else
+	#define CATALYST_BENCHMARK_AVERAGE_SECTION_START()
+#endif
+
+/*
+*	Tracks the average execution time of a given section of code and prints the average execution time in profile builds.
+*/
+#if defined(CATALYST_CONFIGURATION_PROFILE)
+#define CATALYST_BENCHMARK_AVERAGE_SECTION_END(NAME)																											\
 	average_duration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - time_before_function).count(); \
 	++iterations;																																		\
 	const float duration{ static_cast<float>(average_duration / iterations) / 1'000'000.0f };															\
 	PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");
 #else
-#define CATALYST_BENCHMARK_SECTION_END(NAME)
+#define CATALYST_BENCHMARK_AVERAGE_SECTION_END(NAME)
 #endif
 
 /*
@@ -115,7 +136,7 @@ return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																	\
 /*
 *	Prints a message to the output in non-final builds.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
 #endif
 

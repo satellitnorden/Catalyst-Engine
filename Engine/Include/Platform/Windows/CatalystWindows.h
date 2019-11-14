@@ -108,7 +108,7 @@ public:
 	*/
 	static void ShowCursor() NOEXCEPT;
 
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Prints a string to output.
 	*/
