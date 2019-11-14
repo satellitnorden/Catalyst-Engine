@@ -6,6 +6,10 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_NV_ray_tracing : require
 
+//Includes.
+#include "CatalystShaderCommon.glsl"
+#include "CatalystGeometryMath.glsl"
+
 //Constants.
 #define AMBIENT_OCCLUSION_POWER (3.25f) //0.25f step.
 
@@ -114,8 +118,9 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 640) float activeNoiseTextureOffsetY;
 
     layout (offset = 644) float viewDistance;
+    layout (offset = 648) float CLOUD_DENSITY;
 
-    //Total size; 648
+    //Total size; 652
 };
 
 //The global textures.
@@ -323,7 +328,178 @@ bool ValidCoordinate(vec2 coordinate)
 */
 float CalculateAmbientIlluminationIntensity()
 {
-    return mix(CalculateAverage(SkyColor(vec3(1.0f, 0.0f, 0.0f))), CalculateAverage(SkyColor(vec3(0.0f, 1.0f, 0.0f))), 0.5f);
+    return mix(CalculateAverage(lower_sky_color), CalculateAverage(upper_sky_color), 0.5f) + star_strength * 0.1f;
 }
 
+/**************/
+/*   CLOUDS   */
+/**************/
+
+//Cloud constants.
+#define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
+#define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
+#define CLOUD_NUMBER_OF_SAMPLES (16) //Needs to be a multiple of 4.
+#define CLOUD_NUMBER_OF_NOISE_TEXTURES (CLOUD_NUMBER_OF_SAMPLES / 4)
+#define CLOUD_POSITION_SCALE (0.000125f) //0.000025f step.
+#define CLOUD_PERSISTENCE (0.525f) //0.025f step.
+#define CLOUD_LACUNARITY (2.25f) //0.25f step.
+#define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define CLOUD_DENSITY_MULTIPLIER (2.0f) //0.25f step.
+
+/*
+*  Samples the cloud density at the given point.
+*/
+float SampleCloudDensity(vec3 point)
+{
+   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 10.0f;
+
+   vec3 sample_point;
+   float density_sample;
+   float amplitude = 1.0f;
+   float frequency = 1.0f;
+   float total = 0.0f;
+   float density = 0.0f;
+
+   sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * CLOUD_POSITION_SCALE;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).x;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
+
+   sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * CLOUD_POSITION_SCALE;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).y;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
+
+   sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * CLOUD_POSITION_SCALE;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).z;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
+
+   sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * CLOUD_POSITION_SCALE;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).w;
+   density += density_sample * amplitude;
+   total += amplitude;
+   amplitude *= CLOUD_PERSISTENCE;
+   frequency *= CLOUD_LACUNARITY;
+
+   density /= total;
+
+   density = max(density - (1.0f - CLOUD_DENSITY), 0.0f) * CLOUD_DENSITY_MULTIPLIER;
+
+   return density;
+}
+
+/*
+*  Returns the cloud density in the given direction.
+*/
+float SampleCloudDensityInDirection(vec3 point, vec3 direction)
+{
+    //Calculate the start and end points.
+    vec3 start;
+    vec3 end;
+
+    //Calculate the direction angle.
+    float direction_angle = dot(direction, vec3(0.0f, 1.0f, 0.0f));
+
+    //Is the direction pointing up?
+    if (direction_angle > 0.0f)
+    {
+        //Is the point below the cloud plane?
+        if (point.y < perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
+        {
+            float intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            start = point + direction * intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            end = point + direction * intersection_distance;
+        }
+
+        //Is the point above the cloud plane?
+        else if (point.y > perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
+        {
+            //If the point is above the cloud plane and pointing up, then there's no density here. (:
+            return 0.0f;
+        }
+
+        //Is the point contained inside the cloud plane?
+        else
+        {
+            start = point;
+
+            float intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            end = point + direction * intersection_distance;
+        }
+    }
+
+    //Is the direction pointing down?
+   else if (direction_angle < 0.0f)
+   {
+        //Is the point below the cloud plane?
+        if (point.y < perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
+        {
+            //If the point is bloew the cloud plane and pointing down, then there's no density here. (:
+            return 0.0f;
+        }
+
+        //Is the point above the cloud plane?
+        else if (point.y > perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
+        {
+            float intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            start = point + direction * intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            end = point + direction * intersection_distance;
+        }
+
+        //Is the point contained inside the cloud plane?
+        else
+        {
+            start = point;
+
+            float intersection_distance;
+
+            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            end = point + direction * intersection_distance;
+        }
+   }
+
+   //Is the direction pointing straight forward?
+   else
+   {
+        start = point;
+        end = start + direction * 1000.0f;
+   }
+
+   //Calculate the density.
+   float density = 0.0f;
+
+   for (int i = 0; i < 4; ++i)
+   {
+      //Calculate the sample point.
+      vec3 sample_point = mix(start, end, float(i) * 0.333333f);
+
+      //Get the ensity at this point.
+      density = min(density + SampleCloudDensity(sample_point), 1.0f);
+
+      if (density == 1.0f)
+      {
+         break;
+      }
+   }
+
+   //Return the total density.
+   return density;
+}
 #endif

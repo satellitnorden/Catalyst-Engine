@@ -56,9 +56,9 @@ public:
 	int32 _ActiveBlueNoiseTextureIndex;
 	float _ActiveBlueNoiseTextureOffsetX;
 	float _ActiveBlueNoiseTextureOffsetY;
-
 	float _ViewDistance;
+	float _CloudDensity;
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 648, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 652, "Size of dynamic uniform data is wrong!");

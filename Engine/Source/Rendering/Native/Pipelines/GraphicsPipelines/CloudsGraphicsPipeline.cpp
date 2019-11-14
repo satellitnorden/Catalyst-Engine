@@ -43,9 +43,6 @@ public:
 	//Padding.
 	Padding<4> _Padding2;
 
-	//The cloud density.
-	float _CloudDensity;
-
 };
 
 /*
@@ -134,8 +131,6 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 			break;
 		}
 	}
-
-	data._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 

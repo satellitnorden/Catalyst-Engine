@@ -43,6 +43,9 @@ void main()
 	//Add the ambient lighting.
 	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
 
+	//Sample the noise vector.
+	vec4 noise_vector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
 	//Calculate the volumetric lighting for all lights.
 	for (int i = 0; i < numberOfLights; ++i)
 	{
@@ -56,8 +59,20 @@ void main()
 				//Calculate the density multiplier.
 				float density_multiplier = exp(-(1.0f + volumetricLightingIntensity));
 
-				//Add the volumetric lighting lighting.
-				volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier;
+				for (int j = 0; j < 4; ++j)
+				{
+					//Calculate the volumetric particle hit distance.
+					float volumetric_particle_hit_distance = hitDistance * noise_vector[j];
+
+					//Calculate the volumetric particle hit position.
+					vec3 volumetric_particle_hit_position = perceiverWorldPosition + rayDirection * volumetric_particle_hit_distance;
+
+					//Sample the cloud density.
+					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction);
+
+					//Add the volumetric lighting.
+					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - cloud_density) * 0.25f;
+				}
 
 				break;
 			}
