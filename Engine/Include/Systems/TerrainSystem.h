@@ -9,6 +9,7 @@
 #include <Math/Geometry/GridPoint2.h>
 
 //Multithreading.
+#include <Multithreading/AtomicQueue.h>
 #include <Multithreading/Spinlock.h>
 #include <Multithreading/Task.h>
 
@@ -119,11 +120,14 @@ private:
 	//The quad tree.
 	TerrainQuadTree _QuadTree;
 
-	//The update.
-	TerrainUpdate _Update;
-
 	//The update task.
 	Task _UpdateTask;
+
+	//The update.
+	AtomicQueue<TerrainUpdate, UINT8_MAXIMUM> _Updates;
+
+	//The current update.
+	TerrainUpdate _Update;
 
 	//The patch informations.
 	DynamicArray<TerrainPatchInformation> _PatchInformations;
@@ -137,9 +141,9 @@ private:
 	uint64 GetPatchInformationIndex(const uint64 identifier) const NOEXCEPT;
 
 	/*
-	*	Processes the update.
+	*	Processes the updates.
 	*/
-	void ProcessUpdate() NOEXCEPT;
+	void ProcessUpdates() NOEXCEPT;
 
 	/*
 	*	Updates the terrain system asynchronously.

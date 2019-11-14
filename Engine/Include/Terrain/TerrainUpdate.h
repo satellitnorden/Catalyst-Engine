@@ -39,9 +39,6 @@ class TerrainCombineNodeUpdate final
 
 public:
 
-	//The node to restore.
-	TerrainQuadTreeNode *RESTRICT _Node;
-
 	//The patch information.
 	TerrainPatchInformation _PatchInformation;
 
@@ -58,14 +55,30 @@ class TerrainSubdivideNodeUpdate final
 
 public:
 
-	//The node to subdivide.
-	TerrainQuadTreeNode *RESTRICT _Node;
+	//The identifier.
+	uint64 _Identifier;
 
 	//The patch informations.
 	StaticArray<TerrainPatchInformation, 4> _PatchInformations;
 
 	//The patch render informations.
 	StaticArray<TerrainPatchRenderInformation, 4> _PatchRenderInformations;
+
+};
+
+class TerrainRemoveNodeUpdate final
+{
+
+public:
+
+
+};
+
+class TerrainAddNodeUpdate final
+{
+
+public:
+
 
 };
 
@@ -77,29 +90,37 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		Invalid,
-		AddRootNode,
-		RemoveRootNode,
-		CombineNode,
-		SubdivideNode,
+		CombineNode, //TODO: Remove this!
+		SubdivideNode, //TODO: Remove this!
+
+		REMOVE_ROOT_NODE,
+		ADD_ROOT_NODE,
+		REMOVE_NODE,
+		ADD_NODE
 	};
 
 	//The type.
-	Type _Type{ Type::Invalid };
+	Type _Type;
 
 	union
 	{
-		//The add root node update.
-		TerrainAddRootNodeUpdate _AddRootNodeUpdate;
+		//The combine node update.
+		TerrainCombineNodeUpdate _CombineNodeUpdate; //TODO: Remove this!
+
+		//The subdivide node update.
+		TerrainSubdivideNodeUpdate _SubdivideNodeUpdate; //TODO: Remove this!
 
 		//The remove root node update.
 		TerrainRemoveRootNodeUpdate _RemoveRootNodeUpdate;
 
-		//The combine node update.
-		TerrainCombineNodeUpdate _CombineNodeUpdate;
+		//The add root node update.
+		TerrainAddRootNodeUpdate _AddRootNodeUpdate;
 
-		//The subdivide node update.
-		TerrainSubdivideNodeUpdate _SubdivideNodeUpdate;
+		//The remove node update.
+		TerrainRemoveNodeUpdate _RemoveNoteUpdate;
+
+		//The add node update.
+		TerrainAddNodeUpdate _AddNoteUpdate;
 	};
 
 	//The borders updates.
@@ -111,6 +132,55 @@ public:
 	TerrainUpdate() NOEXCEPT
 	{
 
+	}
+
+	/*
+	*	Copy constructor.
+	*/
+	TerrainUpdate(const TerrainUpdate& other) NOEXCEPT
+	{
+		_Type = other._Type;
+
+		switch (other._Type)
+		{
+			case Type::REMOVE_ROOT_NODE:
+			{
+				_RemoveRootNodeUpdate = other._RemoveRootNodeUpdate;
+
+				break;
+			}
+
+			case Type::ADD_ROOT_NODE:
+			{
+				_AddRootNodeUpdate = other._AddRootNodeUpdate;
+
+				break;
+			}
+
+			case Type::CombineNode:
+			{
+				_CombineNodeUpdate = other._CombineNodeUpdate;
+
+				break;
+			}
+
+			case Type::SubdivideNode:
+			{
+				_SubdivideNodeUpdate = other._SubdivideNodeUpdate;
+
+				break;
+			}
+		}
+
+		_BordersUpdates = other._BordersUpdates;
+	}
+
+	/*
+	*	Copy operator overload.
+	*/
+	void operator=(const TerrainUpdate& other) NOEXCEPT
+	{
+		new (this) TerrainUpdate(other);
 	}
 
 };

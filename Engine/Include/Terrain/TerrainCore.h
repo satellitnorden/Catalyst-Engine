@@ -10,7 +10,7 @@
 //Terrain constants.
 namespace TerrainConstants
 {
-	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ 255 };
+	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
 	constexpr uint8 TERRAIN_QUAD_TREE_MAX_DEPTH{ 6 };
 	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 65 };
 	constexpr uint32 TERRAIN_HEIGHT_TEXTURE_RESOLUTION{ TERRAIN_PATCH_RESOLUTION };

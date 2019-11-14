@@ -75,12 +75,12 @@ void TerrainSystem::SequentialUpdate(const UpdateContext *const RESTRICT context
 	//Check if the asynchronous update has finished.
 	if (_UpdateTask.IsExecuted())
 	{
-		//Process the update.
-		ProcessUpdate();
-
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
+
+	//Process the updates.
+	ProcessUpdates();
 }
 
 /*
@@ -182,90 +182,104 @@ uint64 TerrainSystem::GetPatchInformationIndex(const uint64 identifier) const NO
 }
 
 /*
-*	Processes the update.
+*	Processes the updates.
 */
-void TerrainSystem::ProcessUpdate() NOEXCEPT
+void TerrainSystem::ProcessUpdates() NOEXCEPT
 {
-	switch (_Update._Type)
+	while (TerrainUpdate* const RESTRICT update{ _Updates.Pop() })
 	{
-		case TerrainUpdate::Type::AddRootNode:
+		switch (update->_Type)
 		{
-			for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
+			case TerrainUpdate::Type::REMOVE_ROOT_NODE:
 			{
-				if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+				_QuadTree._RootGridPoints[update->_RemoveRootNodeUpdate._Index] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
+
+				RemoveNode(&_QuadTree._RootNodes[update->_RemoveRootNodeUpdate._Index]);
+
+				break;
+			}
+
+			case TerrainUpdate::Type::ADD_ROOT_NODE:
+			{
+				for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
 				{
-					const Vector3<float> gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(_Update._AddRootNodeUpdate._GridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
+					if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+					{
+						const Vector3<float> grid_point_world_position{ GridPoint2::GridPointToWorldPosition(update->_AddRootNodeUpdate._GridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
 
-					_QuadTree._RootGridPoints[i] = _Update._AddRootNodeUpdate._GridPoint;
-					_QuadTree._RootNodes[i]._Depth = 0;
-					_QuadTree._RootNodes[i]._Subdivided = false;
-					_QuadTree._RootNodes[i]._Identifier = _Update._AddRootNodeUpdate._PatchInformation._Identifier;
-					_QuadTree._RootNodes[i]._ChildNodes = nullptr;
-					_QuadTree._RootNodes[i]._Minimum = Vector2<float>(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
-					_QuadTree._RootNodes[i]._Maximum = Vector2<float>(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
+						_QuadTree._RootGridPoints[i] = update->_AddRootNodeUpdate._GridPoint;
+						_QuadTree._RootNodes[i]._Depth = 0;
+						_QuadTree._RootNodes[i]._Subdivided = false;
+						_QuadTree._RootNodes[i]._Identifier = update->_AddRootNodeUpdate._PatchInformation._Identifier;
+						_QuadTree._RootNodes[i]._ChildNodes = nullptr;
+						_QuadTree._RootNodes[i]._Minimum = Vector2<float>(grid_point_world_position._X - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), grid_point_world_position._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
+						_QuadTree._RootNodes[i]._Maximum = Vector2<float>(grid_point_world_position._X + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), grid_point_world_position._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
 
-					break;
+						break;
+					}
 				}
+
+				_PatchInformations.EmplaceFast(update->_AddRootNodeUpdate._PatchInformation);
+				_PatchRenderInformations.EmplaceFast(update->_AddRootNodeUpdate._PatchRenderInformation);
+
+				break;
 			}
 
-			_PatchInformations.EmplaceFast(_Update._AddRootNodeUpdate._PatchInformation);
-			_PatchRenderInformations.EmplaceFast(_Update._AddRootNodeUpdate._PatchRenderInformation);
-
-			break;
-		}
-
-		case TerrainUpdate::Type::RemoveRootNode:
-		{
-			_QuadTree._RootGridPoints[_Update._RemoveRootNodeUpdate._Index] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
-			
-			RemoveNode(&_QuadTree._RootNodes[_Update._RemoveRootNodeUpdate._Index]);
-
-			break;
-		}
-
-		case TerrainUpdate::Type::CombineNode:
-		{	
-			//Destroy the existing child nodes.
-			for (uint8 i{ 0 }; i < 4; ++i)
+			case TerrainUpdate::Type::CombineNode:
 			{
-				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._PatchInformationIdentifiers[i]) };
+				//Destroy the existing child nodes.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					const uint64 patchInformationIndex{ GetPatchInformationIndex(update->_CombineNodeUpdate._PatchInformationIdentifiers[i]) };
+					DestroyPatch(patchInformationIndex);
+				}
+
+				//Add the new patch information.
+				_PatchInformations.EmplaceFast(update->_CombineNodeUpdate._PatchInformation);
+				_PatchRenderInformations.EmplaceFast(update->_CombineNodeUpdate._PatchRenderInformation);
+
+				break;
+			}
+
+			case TerrainUpdate::Type::SubdivideNode:
+			{
+				//Find the patch information for this node and destroy it.
+				const uint64 patchInformationIndex{ GetPatchInformationIndex(update->_SubdivideNodeUpdate._Identifier) };
 				DestroyPatch(patchInformationIndex);
+
+				//Add the new patch informations.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					_PatchInformations.EmplaceFast(update->_SubdivideNodeUpdate._PatchInformations[i]);
+					_PatchRenderInformations.EmplaceFast(update->_SubdivideNodeUpdate._PatchRenderInformations[i]);
+				}
+
+				break;
 			}
 
-			//Add the new patch information.
-			_PatchInformations.EmplaceFast(_Update._CombineNodeUpdate._PatchInformation);
-			_PatchRenderInformations.EmplaceFast(_Update._CombineNodeUpdate._PatchRenderInformation);
-
-			break;
-		}
-
-		case TerrainUpdate::Type::SubdivideNode:
-		{
-			//Find the patch information for this node and destroy it.
-			const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._SubdivideNodeUpdate._Node->_Identifier) };
-			DestroyPatch(patchInformationIndex);
-
-			//Add the new patch informations.
-			for (uint8 i{ 0 }; i < 4; ++i)
+			case TerrainUpdate::Type::REMOVE_NODE:
 			{
-				_PatchInformations.EmplaceFast(_Update._SubdivideNodeUpdate._PatchInformations[i]);
-				_PatchRenderInformations.EmplaceFast(_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
+
+
+				break;
 			}
 
-			break;
-		}
-	}
+			case TerrainUpdate::Type::ADD_NODE:
+			{
 
-	//Process the borders updats.
-	if (_Update._Type != TerrainUpdate::Type::Invalid)
-	{
-		for (Pair<uint64, int32> &pair : _Update._BordersUpdates)
+
+				break;
+			}
+		}
+
+		//Process the borders updats.
+		for (Pair<uint64, int32>& pair : update->_BordersUpdates)
 		{
 			const uint64 patchInformationIndex{ GetPatchInformationIndex(pair._First) };
 			_PatchRenderInformations[patchInformationIndex]._Borders = pair._Second;
 		}
 
-		_Update._BordersUpdates.ClearFast();
+		update->_BordersUpdates.ClearFast();
 	}
 }
 
@@ -274,9 +288,6 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 */
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
-	//Reset the update.
-	_Update._Type = TerrainUpdate::Type::Invalid;
-
 	//Get the current perceiver position.
 	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 
@@ -322,7 +333,7 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 
 		if (!exists)
 		{
-			_Update._Type = TerrainUpdate::Type::RemoveRootNode;
+			_Update._Type = TerrainUpdate::Type::REMOVE_ROOT_NODE;
 			_Update._RemoveRootNodeUpdate._Index = i;
 
 			//Calculate new borders.
@@ -349,7 +360,7 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 
 		if (!exists)
 		{
-			_Update._Type = TerrainUpdate::Type::AddRootNode;
+			_Update._Type = TerrainUpdate::Type::ADD_ROOT_NODE;
 			_Update._AddRootNodeUpdate._GridPoint = validGridPoint;
 
 			GeneratePatch(	GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE),
@@ -501,7 +512,6 @@ bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &pe
 void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	_Update._Type = TerrainUpdate::Type::CombineNode;
-	_Update._CombineNodeUpdate._Node = node;
 
 	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
@@ -538,7 +548,7 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	_Update._Type = TerrainUpdate::Type::SubdivideNode;
-	_Update._SubdivideNodeUpdate._Node = node;
+	_Update._SubdivideNodeUpdate._Identifier = node->_Identifier;
 
 	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
 
@@ -572,7 +582,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 						&_Update._SubdivideNodeUpdate._PatchInformations[i],
 						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 
-		node->_ChildNodes[i]._Depth = _Update._SubdivideNodeUpdate._Node->_Depth + 1;
+		node->_ChildNodes[i]._Depth = node->_Depth + 1;
 		node->_ChildNodes[i]._Subdivided = false;
 		node->_ChildNodes[i]._Identifier = _Update._SubdivideNodeUpdate._PatchInformations[i]._Identifier;
 		node->_ChildNodes[i]._ChildNodes = nullptr;
@@ -658,6 +668,9 @@ void TerrainSystem::CalculateNewborders() NOEXCEPT
 	{
 		CalculateNewborders(&rootNode);
 	}
+
+	//Add the update.
+	_Updates.Push(_Update);
 }
 
 /*
