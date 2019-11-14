@@ -123,7 +123,7 @@ void CloudsGraphicsPipeline::Execute() NOEXCEPT
 	{
 		const LightComponent& component{ ComponentManager::GetLightLightComponents()[i] };
 
-		if (component._LightType == LightType::DIRECTIONAL)
+		if (static_cast<LightType>(component._LightType) == LightType::DIRECTIONAL)
 		{
 			data._SkyLightViewDirection = component._Direction;
 			data._SkyLightLuminance = component._Luminance;

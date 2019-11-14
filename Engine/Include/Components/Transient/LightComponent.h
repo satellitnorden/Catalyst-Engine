@@ -27,7 +27,7 @@ public:
 	Vector3<float> _Luminance;
 
 	//The light type.
-	LightType _LightType;
+	int32 _LightType;
 
 	//The size.
 	float _Size;
@@ -39,7 +39,7 @@ public:
 		:
 		_Position(VectorConstants::ZERO),
 		_Luminance(VectorConstants::ZERO),
-		_LightType(LightType::POINT),
+		_LightType(static_cast<int32>(LightType::POINT)),
 		_Size(0.0f)
 	{
 
@@ -50,7 +50,7 @@ public:
 	*/
 	void operator=(const LightComponent& other) NOEXCEPT
 	{
-		switch (other._LightType)
+		switch (static_cast<LightType>(other._LightType))
 		{
 			case LightType::DIRECTIONAL:
 			{

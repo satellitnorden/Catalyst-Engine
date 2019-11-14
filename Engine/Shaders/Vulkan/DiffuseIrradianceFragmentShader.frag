@@ -76,7 +76,7 @@ void main()
 														currentFeatures.roughness,
 														currentFeatures.metallic,
 														currentFeatures.ambientOcclusion,
-														SkyColor(mix(vec3(0.0f, 1.0f, 0.0f), currentFeatures.normal, currentFeatures.thickness)),
+														SkyColor(currentFeatures.normal, false),
 														vec3(0.0f));
 
 	//Write the fragment.

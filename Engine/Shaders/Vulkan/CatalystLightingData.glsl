@@ -30,7 +30,7 @@ Light UnpackLight(uint index)
   vec4 light_data_1 = lightData[index * 2 + 0];
   vec4 light_data_2 = lightData[index * 2 + 1];
 
-  light.type = bool(floatBitsToUint(light_data_2.z) & 1) ? LIGHT_TYPE_POINT : LIGHT_TYPE_DIRECTIONAL;
+  light.type = floatBitsToInt(light_data_2.z);
   light.position_or_direction = light_data_1.xyz;
   light.luminance = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
   light.size = light_data_2.w;

@@ -235,7 +235,7 @@ float Scale(float value, float originalMinimum, float originalMaximum, float new
 /*
 *	Returns the sky color in the given direction.
 */
-vec3 SkyColor(vec3 direction)
+vec3 SkyColor(vec3 direction, bool include_stars)
 {
     //Calculate the sky color.
     vec3 sky_color = mix(lower_sky_color, upper_sky_color, max(dot(direction, vec3(0.0f, 1.0f, 0.0f)), 0.0f));
@@ -243,26 +243,34 @@ vec3 SkyColor(vec3 direction)
     //Calculate the stars.
     float star_weight = 0.0f;
 
-    if (star_strength > 0.0f)
+    if (include_stars)
     {
-        /*
-        *   Imagine that the ray hits at an imaginary sphere, some distance away.
-        *   Then assign that hit position to a cell in 3D space.
-        *   Generate a random number using that cell.
-        *   And that's the star value. (:
-        */
-        vec3 hit_position = direction * 1024.0f;
+        if (star_strength > 0.0f)
+        {
+            /*
+            *   Imagine that the ray hits at an imaginary sphere, some distance away.
+            *   Then assign that hit position to a cell in 3D space.
+            *   Generate a random number using that cell.
+            *   And that's the star value. (:
+            */
+            vec3 hit_position = direction * 1024.0f;
 
-        hit_position.x = float(int(hit_position.x)) / 1024.0f;
-        hit_position.y = float(int(hit_position.y)) / 1024.0f;
-        hit_position.z = float(int(hit_position.z)) / 1024.0f;
+            hit_position.x = float(int(hit_position.x)) / 1024.0f;
+            hit_position.y = float(int(hit_position.y)) / 1024.0f;
+            hit_position.z = float(int(hit_position.z)) / 1024.0f;
 
-        float star_value = RandomFloat(hit_position.xy, hit_position.z);
+            float star_value = RandomFloat(hit_position.xy, hit_position.z);
 
-        star_weight = float(star_value >= 0.9975f) * star_strength;
+            star_weight = float(star_value >= 0.9975f) * star_strength;
+        }
+
+        return mix(sky_color, vec3(1.0f), star_weight);
     }
 
-	return mix(sky_color, vec3(1.0f), star_weight);
+	else
+    {
+        return sky_color + vec3(star_strength * 0.0125f);
+    }
 }
 
 /*
@@ -328,7 +336,7 @@ bool ValidCoordinate(vec2 coordinate)
 */
 float CalculateAmbientIlluminationIntensity()
 {
-    return mix(CalculateAverage(lower_sky_color), CalculateAverage(upper_sky_color), 0.5f) + star_strength * 0.1f;
+    return mix(CalculateAverage(SkyColor(vec3(1.0f, 0.0f, 0.0f), false)), CalculateAverage(SkyColor(vec3(0.0f, 1.0f, 0.0f), false)), 0.5f);
 }
 
 /**************/
@@ -344,7 +352,7 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_PERSISTENCE (0.525f) //0.025f step.
 #define CLOUD_LACUNARITY (2.25f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (2.25f) //0.25f step.
+#define CLOUD_DENSITY_MULTIPLIER (2.75f) //0.25f step.
 
 /*
 *  Samples the cloud density at the given point.

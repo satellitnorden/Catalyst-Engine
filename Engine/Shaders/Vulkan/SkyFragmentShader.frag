@@ -30,7 +30,7 @@ void main()
    vec3 view_direction = CalculateRayDirection(fragment_texture_coordinate);
 
    //Calculate the sky color.
-   vec3 sky_color = SkyColor(view_direction);
+   vec3 sky_color = SkyColor(view_direction, true);
 
    //Calculate the sun weight.
    float sun_weight = pow(max(dot(view_direction, -sky_light_view_direction), 0.0f), 4096.0f);

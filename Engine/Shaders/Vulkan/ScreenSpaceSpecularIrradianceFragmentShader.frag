@@ -34,21 +34,13 @@ void main()
 	//Calculate the view direction.
 	vec3 view_direction = CalculateRayDirection(fragmentTextureCoordinate);
 
-	//Calculate the world position at this fragment the current frame.
-	vec3 worldPosition = perceiverWorldPosition + view_direction * scene_features_2_texture_sampler.w;
-
 	//Calculate the reflection direction.
-	vec3 reflectionDirection = reflect(normalize(worldPosition - perceiverWorldPosition), UnpackNormal(scene_features_2_texture_sampler.x));
-
-	//Sample the active noise texture.
-	vec4 activeNoiseTexture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-	//Modify the original world position a bit.
-	worldPosition += reflectionDirection * SCREEN_SPACE_SPECULAR_IRRADIANCE_STEP_LENGTH * activeNoiseTexture.x;
+	vec3 reflectionDirection = reflect(view_direction, UnpackNormal(scene_features_2_texture_sampler.x));
 
 	//Calculate the screen space specular irradiance.
-	vec3 screenSpaceSpecularIrradiance = SkyColor(reflectionDirection);
+	vec3 screenSpaceSpecularIrradiance = SkyColor(reflectionDirection, true);
 
+	/*
 	for (int i = 0; i < SCREEN_SPACE_SPECULAR_IRRADIANCE_MAXIMUM_SAMPLES; ++i)
 	{
 		//Calculate the expected sample world position.
@@ -86,6 +78,7 @@ void main()
 			break;
 		}
 	}
+	*/
 
     //Write the fragment
     fragment = vec4(screenSpaceSpecularIrradiance, 1.0f);

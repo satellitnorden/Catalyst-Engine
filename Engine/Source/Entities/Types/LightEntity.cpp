@@ -49,7 +49,7 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	}
 
 	light_component._Luminance = light_initialization_data->_Luminance;
-	light_component._LightType = light_initialization_data->_LightType;
+	light_component._LightType = static_cast<int32>(light_initialization_data->_LightType);
 	light_component._Size = light_initialization_data->_Size;
 
 	//Destroy the initialization data.
@@ -70,7 +70,7 @@ void LightEntity::Terminate() NOEXCEPT
 */
 LightType LightEntity::GetLightType() NOEXCEPT
 {
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType;
+	return static_cast<LightType>(ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType);
 }
 
 /*

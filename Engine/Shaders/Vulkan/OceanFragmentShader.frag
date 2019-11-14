@@ -64,7 +64,7 @@ void main()
         float scene_color_weight = 1.0f - clamp((scene_features_2_sampler.w - intersection_distance) * 0.01f, 0.0f, 1.0f);
 
         //Calculate the underwater color.
-        vec3 underwater_color = mix(OCEAN_BASE_COLOR * SkyColor(vec3(0.0f, 1.0f, 0.0f)), scene_sampler.rgb, scene_color_weight);
+        vec3 underwater_color = mix(OCEAN_BASE_COLOR * SkyColor(vec3(0.0f, 1.0f, 0.0f), false), scene_sampler.rgb, scene_color_weight);
 
         //Calculate the final fragment.
         vec3 final_fragment = vec3(0.0f);
@@ -80,7 +80,7 @@ void main()
 													1.0f,
 													1.0f,
 													vec3(0.0f),
-													SkyColor(reflect(ray_direction, ocean_normal)));
+													SkyColor(reflect(ray_direction, ocean_normal), true));
 
         //Write the fragments.
     	scene_features_2 = vec4(PackNormal(vec3(0.0f, 1.0f, 0.0f)), 0.0f, 0.0f, intersection_distance);

@@ -84,7 +84,7 @@ void main()
 		float sampleWeight = 1.0f;
 
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		sampleWeight *= pow(1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f), 1.0f);
+		//sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
 
 		denoisedVolumetricLighting += sampleVolumetricLighting * sampleWeight;
 		volumetricLightingWeightSum += sampleWeight;

@@ -546,7 +546,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 			data._Data[0].EmplaceFast(127);
 			data._Data[0].EmplaceFast(127);
 			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
+			data._Data[0].EmplaceFast(0);
 
 			GlobalTexture2D texture;
 
@@ -720,8 +720,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(28, 3), HaltonSequence::Generate(29, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.5f };
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.2f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.55f };
 
 	//Store the previous perceiver forward vector.
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
