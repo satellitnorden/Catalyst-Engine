@@ -86,14 +86,14 @@ void main()
          vec3 sample_point = mix(start, end, sample_offsets[i]);
 
          //Get the ensity at this point.
-         float new_density = SampleCloudDensity(sample_point);
+         float new_density = SampleCloudDensity(sample_point, 3);
          new_density = min(new_density, 1.0f - density);
          density += new_density;
 
          //Add to the cloud color.
          if (new_density > 0.0f)
          {
-            cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction))) * new_density;
+            cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
          }
 
          if (density >= 0.99f)

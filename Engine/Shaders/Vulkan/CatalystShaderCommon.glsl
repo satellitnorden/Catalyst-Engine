@@ -344,61 +344,70 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_PERSISTENCE (0.525f) //0.025f step.
 #define CLOUD_LACUNARITY (2.25f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (2.0f) //0.25f step.
+#define CLOUD_DENSITY_MULTIPLIER (2.25f) //0.25f step.
 
 /*
 *  Samples the cloud density at the given point.
 */
-float SampleCloudDensity(vec3 point)
+float SampleCloudDensity(vec3 point, int level)
 {
-   vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 10.0f;
+    vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 10.0f;
 
-   vec3 sample_point;
-   float density_sample;
-   float amplitude = 1.0f;
-   float frequency = 1.0f;
-   float total = 0.0f;
-   float density = 0.0f;
+    vec3 sample_point;
+    float density_sample;
+    float amplitude = 1.0f;
+    float frequency = 1.0f;
+    float total = 0.0f;
+    float density = 0.0f;
 
-   sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * CLOUD_POSITION_SCALE;
-   density_sample = texture(CLOUD_TEXTURE, sample_point).x;
-   density += density_sample * amplitude;
-   total += amplitude;
-   amplitude *= CLOUD_PERSISTENCE;
-   frequency *= CLOUD_LACUNARITY;
+    sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * CLOUD_POSITION_SCALE;
+    density_sample = texture(CLOUD_TEXTURE, sample_point).x;
+    density += density_sample * amplitude;
+    total += amplitude;
+    amplitude *= CLOUD_PERSISTENCE;
+    frequency *= CLOUD_LACUNARITY;
 
-   sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * CLOUD_POSITION_SCALE;
-   density_sample = texture(CLOUD_TEXTURE, sample_point).y;
-   density += density_sample * amplitude;
-   total += amplitude;
-   amplitude *= CLOUD_PERSISTENCE;
-   frequency *= CLOUD_LACUNARITY;
+    if (level >= 1)
+    {
+        sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * CLOUD_POSITION_SCALE;
+        density_sample = texture(CLOUD_TEXTURE, sample_point).y;
+        density += density_sample * amplitude;
+        total += amplitude;
+        amplitude *= CLOUD_PERSISTENCE;
+        frequency *= CLOUD_LACUNARITY;
+    }
 
-   sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * CLOUD_POSITION_SCALE;
-   density_sample = texture(CLOUD_TEXTURE, sample_point).z;
-   density += density_sample * amplitude;
-   total += amplitude;
-   amplitude *= CLOUD_PERSISTENCE;
-   frequency *= CLOUD_LACUNARITY;
+    if (level >= 2)
+    {
+        sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * CLOUD_POSITION_SCALE;
+        density_sample = texture(CLOUD_TEXTURE, sample_point).z;
+        density += density_sample * amplitude;
+        total += amplitude;
+        amplitude *= CLOUD_PERSISTENCE;
+        frequency *= CLOUD_LACUNARITY;
+    }
 
-   sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * CLOUD_POSITION_SCALE;
-   density_sample = texture(CLOUD_TEXTURE, sample_point).w;
-   density += density_sample * amplitude;
-   total += amplitude;
-   amplitude *= CLOUD_PERSISTENCE;
-   frequency *= CLOUD_LACUNARITY;
+    if (level >= 3)
+    {
+        sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * CLOUD_POSITION_SCALE;
+        density_sample = texture(CLOUD_TEXTURE, sample_point).w;
+        density += density_sample * amplitude;
+        total += amplitude;
+        amplitude *= CLOUD_PERSISTENCE;
+        frequency *= CLOUD_LACUNARITY;
+    }
 
-   density /= total;
+    density /= total;
 
-   density = max(density - (1.0f - CLOUD_DENSITY), 0.0f) * CLOUD_DENSITY_MULTIPLIER;
+    density = max(density - (1.0f - CLOUD_DENSITY), 0.0f) * CLOUD_DENSITY_MULTIPLIER;
 
-   return density;
+    return density;
 }
 
 /*
 *  Returns the cloud density in the given direction.
 */
-float SampleCloudDensityInDirection(vec3 point, vec3 direction)
+float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 {
     //Calculate the start and end points.
     vec3 start;
@@ -491,7 +500,7 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction)
       vec3 sample_point = mix(start, end, float(i) * 0.333333f);
 
       //Get the ensity at this point.
-      density = min(density + SampleCloudDensity(sample_point), 1.0f);
+      density = min(density + SampleCloudDensity(sample_point, level), 1.0f);
 
       if (density == 1.0f)
       {
