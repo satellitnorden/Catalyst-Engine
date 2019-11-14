@@ -34,9 +34,6 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler3D cloud_texture;
-
 //Out parameters
 layout (location = 0) out vec4 fragment;
 
@@ -75,28 +72,28 @@ float SampleDensity(vec3 point)
    float density = 0.0f;
 
    sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * CLOUD_POSITION_SCALE;
-   density_sample = texture(cloud_texture, sample_point).x;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).x;
    density += density_sample * amplitude;
    total += amplitude;
    amplitude *= CLOUD_PERSISTENCE;
    frequency *= CLOUD_LACUNARITY;
 
    sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * CLOUD_POSITION_SCALE;
-   density_sample = texture(cloud_texture, sample_point).y;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).y;
    density += density_sample * amplitude;
    total += amplitude;
    amplitude *= CLOUD_PERSISTENCE;
    frequency *= CLOUD_LACUNARITY;
 
    sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * CLOUD_POSITION_SCALE;
-   density_sample = texture(cloud_texture, sample_point).z;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).z;
    density += density_sample * amplitude;
    total += amplitude;
    amplitude *= CLOUD_PERSISTENCE;
    frequency *= CLOUD_LACUNARITY;
 
    sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * CLOUD_POSITION_SCALE;
-   density_sample = texture(cloud_texture, sample_point).w;
+   density_sample = texture(CLOUD_TEXTURE, sample_point).w;
    density += density_sample * amplitude;
    total += amplitude;
    amplitude *= CLOUD_PERSISTENCE;

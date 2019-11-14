@@ -130,6 +130,9 @@ layout (std140, set = 0, binding = 3) uniform GlobalMaterials
     layout (offset = 0) Material GLOBAL_MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
+//The cloud texture.
+layout (set = 0, binding = 4) uniform sampler3D CLOUD_TEXTURE;
+
 /*
 *   Defines the bit at the specified index.
 */
