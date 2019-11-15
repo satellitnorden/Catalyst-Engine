@@ -75,12 +75,12 @@ void TerrainSystem::SequentialUpdate(const UpdateContext *const RESTRICT context
 	//Check if the asynchronous update has finished.
 	if (_UpdateTask.IsExecuted())
 	{
+		//Process the updates.
+		ProcessUpdates();
+
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
-
-	//Process the updates.
-	ProcessUpdates();
 }
 
 /*
@@ -278,8 +278,6 @@ void TerrainSystem::ProcessUpdates() NOEXCEPT
 			const uint64 patchInformationIndex{ GetPatchInformationIndex(pair._First) };
 			_PatchRenderInformations[patchInformationIndex]._Borders = pair._Second;
 		}
-
-		update->_BordersUpdates.ClearFast();
 	}
 }
 
@@ -288,6 +286,9 @@ void TerrainSystem::ProcessUpdates() NOEXCEPT
 */
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
+	//Reset the update.
+	_Update._Type = TerrainUpdate::Type::INVALID;
+
 	//Get the current perceiver position.
 	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
 

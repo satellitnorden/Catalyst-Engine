@@ -93,6 +93,7 @@ public:
 		CombineNode, //TODO: Remove this!
 		SubdivideNode, //TODO: Remove this!
 
+		INVALID,
 		REMOVE_ROOT_NODE,
 		ADD_ROOT_NODE,
 		REMOVE_NODE,
@@ -141,8 +142,15 @@ public:
 	{
 		_Type = other._Type;
 
-		switch (other._Type)
+		switch (_Type)
 		{
+			case Type::INVALID:
+			{
+				CRASH();
+
+				break;
+			}
+
 			case Type::REMOVE_ROOT_NODE:
 			{
 				_RemoveRootNodeUpdate = other._RemoveRootNodeUpdate;

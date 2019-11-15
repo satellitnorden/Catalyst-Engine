@@ -62,7 +62,7 @@ void main()
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
 				//Sample the cloud density.
-				float cloud_density = SampleCloudDensityInDirection(hitPosition, -light.position_or_direction, 2);
+				float cloud_density = SampleCloudDensityInDirection(hitPosition, -light.position_or_direction, 3);
 
 				directLighting += CalculateDirectLight(	-rayDirection,
 														-light.position_or_direction,

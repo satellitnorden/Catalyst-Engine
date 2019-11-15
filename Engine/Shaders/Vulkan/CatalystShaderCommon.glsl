@@ -30,7 +30,7 @@
 #define VOLUMETRIC_LIGHTING_MODE_NONE (0)
 #define VOLUMETRIC_LIGHTING_MODE_RAY_TRACED (1)
 
-#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (512)
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (1024)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (255)
 
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (0)
@@ -269,7 +269,7 @@ vec3 SkyColor(vec3 direction, bool include_stars)
 
 	else
     {
-        return sky_color + vec3(star_strength * 0.0125f);
+        return sky_color + vec3(star_strength * 0.025f);
     }
 }
 
@@ -352,14 +352,14 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_PERSISTENCE (0.525f) //0.025f step.
 #define CLOUD_LACUNARITY (2.25f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (2.75f) //0.25f step.
+#define CLOUD_DENSITY_MULTIPLIER (3.0f) //0.25f step.
 
 /*
 *  Samples the cloud density at the given point.
 */
 float SampleCloudDensity(vec3 point, int level)
 {
-    vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 10.0f;
+    vec3 cloud_offset = -vec3(totalTime, 0.0f, totalTime) * 2.5f;
 
     vec3 sample_point;
     float density_sample;
@@ -508,7 +508,7 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
       vec3 sample_point = mix(start, end, float(i) * 0.333333f);
 
       //Get the ensity at this point.
-      density = min(density + SampleCloudDensity(sample_point, level), 1.0f);
+      density = min(density + SampleCloudDensity(sample_point, level) * 1.25f, 1.0f);
 
       if (density == 1.0f)
       {

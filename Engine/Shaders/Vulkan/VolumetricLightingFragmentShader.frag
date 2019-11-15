@@ -37,15 +37,14 @@ void main()
 	//Calculate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
 
-	//Calculate the density multipliers.
-	float ambient_density_multiplier = exp(-(0.0f + volumetricLightingIntensity));
-	float light_density_multiplier = exp(-(0.25f + volumetricLightingIntensity));
+	//Calculate the density multiplier.
+	float density_multiplier = exp(-(1.0f + volumetricLightingIntensity));
 
 	//Calculate the volumetric lighting.
 	vec3 volumetricLighting = vec3(0.0f);
 
 	//Add the ambient lighting.
-	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity() * ambient_density_multiplier;
+	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
 
 	//Sample the noise vector.
 	vec4 noise_vector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
@@ -69,10 +68,10 @@ void main()
 					vec3 volumetric_particle_hit_position = perceiverWorldPosition + rayDirection * volumetric_particle_hit_distance;
 
 					//Sample the cloud density.
-					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction, 2);
+					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction, 3);
 
 					//Add the volumetric lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * light_density_multiplier * (1.0f - cloud_density) * 0.25f;
+					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - cloud_density) * 0.25f;
 				}
 
 				break;
@@ -85,9 +84,6 @@ void main()
 
 				for (int j = 0; j < 4; ++j)
 				{
-					//Calculate the density multiplier.
-					float density_multiplier = exp(-(1.0f + volumetricLightingIntensity));
-
 					//Calculate the volumetric particle hit distance.
 					float volumetricParticleHitDistance = hitDistance * randomVector[j];
 

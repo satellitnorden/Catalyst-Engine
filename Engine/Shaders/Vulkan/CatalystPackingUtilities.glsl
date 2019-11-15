@@ -14,6 +14,18 @@
 */
 float PackNormal(vec3 normal)
 {
+    //Calculate the angles.
+    vec2 angles = (vec2(atan(normal.y, normal.x) / PI, normal.z) + 1.0f) * 0.5f;
+
+    //Construct the uint.
+    uint packed_normal = 0;
+
+    packed_normal |= uint(angles.x * MAXIMUM_16_BIT_FLOAT) << 16;
+    packed_normal |= uint(angles.y * MAXIMUM_16_BIT_FLOAT);
+
+    return float(packed_normal);
+
+    /*
     //Normalize the normal into a [0.0f, 1.0f] range.
 	normal.x = normal.x * 0.5f + 0.5f;
 	normal.y = normal.y * 0.5f + 0.5f;
@@ -27,6 +39,7 @@ float PackNormal(vec3 normal)
     packed_normal |= uint(normal.z * MAXIMUM_11_BIT_FLOAT);
 
     return float(packed_normal);
+    */
 }
 
 /*
@@ -34,6 +47,20 @@ float PackNormal(vec3 normal)
 */
 vec3 UnpackNormal(float normal)
 {   
+    //Unpack the uint normal.
+    uint uint_normal = uint(normal);
+
+    //Calculate the encoding.
+    vec2 encoding = vec2(float((uint_normal >> 16) & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT, float(uint_normal & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT);
+    encoding = encoding * 2.0f - 1.0f;
+
+    //Unpack the final normal.
+    vec2 scth = vec2(sin(encoding.x * PI), cos(encoding.x * PI));
+    vec2 scphi = vec2(sqrt(1.0 - encoding.y * encoding.y), encoding.y);
+
+    return vec3(scth.y * scphi.x, scth.x * scphi.x, scphi.y);
+
+    /*
     uint uint_normal = uint(normal);
 
     //Upack the normal.
@@ -49,6 +76,7 @@ vec3 UnpackNormal(float normal)
 	unpacked_normal.z = unpacked_normal.z * 2.0f - 1.0f;
 
     return normalize(unpacked_normal);
+    */
 }
 
 /*
