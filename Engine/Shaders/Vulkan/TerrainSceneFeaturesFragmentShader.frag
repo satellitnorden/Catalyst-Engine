@@ -29,8 +29,7 @@ layout (push_constant) uniform PushConstantData
 {
     layout (offset = 20) float terrain_texture_resolution;
     layout (offset = 24) float inverse_terrain_texture_resolution;
-    layout (offset = 28) int normal_texture_index;
-    layout (offset = 32) int material_texture_index;
+    layout (offset = 28) int normal_and_material_texture_index;
 };
 
 //In parameters.
@@ -115,10 +114,10 @@ void BlendTerrainMaterials(TerrainMaterial first, TerrainMaterial second, float 
 void RetrieveTerrainMaterial(vec3 terrain_normal, out TerrainMaterial material)
 {
     //Retrieve the terrain material indices.
-    int center_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).x * 255.0f);
-    int right_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 0.0f)).x * 255.0f);
-    int upper_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 1.0f)).x * 255.0f);
-    int upper_right_terrain_material_index = int(texture(sampler2D(globalTextures[material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 1.0f)).x * 255.0f);
+    int center_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).w * 255.0f);
+    int right_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 0.0f)).w * 255.0f);
+    int upper_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 1.0f)).w * 255.0f);
+    int upper_right_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 1.0f)).w * 255.0f);
 
     //Calculate the normalized normal.
     terrain_normal = abs(terrain_normal);
@@ -156,7 +155,7 @@ void RetrieveTerrainMaterial(vec3 terrain_normal, out TerrainMaterial material)
 void main()
 {
     //Retrieve the terrain normal.
-    vec3 terrain_normal = normalize(texture(sampler2D(globalTextures[normal_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f);
+    vec3 terrain_normal = normalize(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f);
 
     //Retrieve the terrain material.
     TerrainMaterial material;

@@ -23,11 +23,8 @@ public:
 	//The height texture index.
 	int32 _HeightTextureIndex;
 
-	//The normal texture index.
-	int32 _NormalTextureIndex;
-
-	//The material texture index.
-	int32 _MaterialTextureIndex;
+	//The normal and material texture index.
+	int32 _NormalAndMaterialTextureIndex;
 
 	//The material texture resolution.
 	float _MaterialTextureResolution;

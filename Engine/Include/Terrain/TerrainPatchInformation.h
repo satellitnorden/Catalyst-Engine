@@ -27,10 +27,7 @@ public:
 	//The height texture.
 	Texture2DHandle _HeightTexture;
 
-	//The normal texture.
-	Texture2DHandle _NormalTexture;
-
-	//The material texture.
-	Texture2DHandle _MaterialTexture;
+	//The normal and material texture.
+	Texture2DHandle _NormalAndMaterialTexture;
 
 };

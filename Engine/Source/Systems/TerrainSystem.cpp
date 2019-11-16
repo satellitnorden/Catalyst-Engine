@@ -631,13 +631,11 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 														patchSizeMultiplier,
 														texture_resolution,
 														worldPosition,
-														&patchInformation->_NormalTexture,
-														&patchInformation->_MaterialTexture);
+														&patchInformation->_NormalAndMaterialTexture);
 
 	CATALYST_BENCHMARK_AVERAGE_SECTION_END("GenerateTerrainTextures");
 
-	patchRenderInformation->_NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
-	patchRenderInformation->_MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
+	patchRenderInformation->_NormalAndMaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalAndMaterialTexture));
 	patchRenderInformation->_MaterialTextureResolution = static_cast<float>(texture_resolution);
 	patchRenderInformation->_MaterialTextureResolutionSquared = static_cast<float>(texture_resolution) * static_cast<float>(texture_resolution);
 	patchRenderInformation->_InverseMaterialTextureResolution = 1.0f / static_cast<float>(texture_resolution);
@@ -653,11 +651,9 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 {
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._HeightTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._NormalTextureIndex));
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._MaterialTextureIndex));
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._NormalAndMaterialTextureIndex));
 	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._HeightTexture);
-	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._NormalTexture);
-	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._MaterialTexture);
+	RenderingSystem::Instance->DestroyTexture2D(&_PatchInformations[index]._NormalAndMaterialTexture);
 
 	_PatchInformations.EraseAt(index);
 	_PatchRenderInformations.EraseAt(index);

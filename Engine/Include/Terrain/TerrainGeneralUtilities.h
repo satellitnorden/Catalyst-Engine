@@ -90,14 +90,13 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the terrain textures.
 	*/
-	FORCE_INLINE static void GenerateTerrainTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialTextureHandle) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT texture_handle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		//Store the intermediate data in a CPU texture.
-		Texture2D<Vector4<byte>> normalTexture{ resolution };
-		Texture2D<byte> materialTexture{ resolution };
+		Texture2D<Vector4<byte>> texture{ resolution };
 
 		for (uint32 Y{ 0 }; Y < resolution; ++Y)
 		{
@@ -116,21 +115,19 @@ namespace TerrainGeneralUtilities
 				GenerateNormal(properties, worldPosition, &normal, &height);
 
 				//Write the normal.
-				Vector4<byte> &normalTextureValue{ normalTexture.At(X, Y) };
+				Vector4<byte> &texture_value{ texture.At(X, Y) };
 
-				normalTextureValue._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._Z = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._W = 255;
+				texture_value._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
+				texture_value._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
+				texture_value._Z = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
 
 				//Write the material.
-				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(X, Y), nullptr);
+				properties._MaterialFunction(properties, worldPosition, height, normal, &texture_value._W, nullptr);
 			}
 		}
 
 		//Create the textures.
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normalTexture), TextureFormat::R8G8B8A8_Byte), normalTextureHandle);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(materialTexture), TextureFormat::R8_Byte), materialTextureHandle);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(texture), TextureFormat::R8G8B8A8_Byte), texture_handle);
 	}
 
 	/*

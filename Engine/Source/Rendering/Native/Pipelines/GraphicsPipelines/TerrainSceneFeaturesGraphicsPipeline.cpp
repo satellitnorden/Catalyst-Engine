@@ -51,8 +51,8 @@ public:
 	//The inverse terrain texture resolution.
 	float _InverseTerrainTextureResolution;
 
-	//The normal texture index.
-	int32 _NormalTextureIndex;
+	//The normal and material texture index.
+	int32 _NormalAndMaterialTextureIndex;
 
 	//The material texture index.
 	int32 _MaterialTextureIndex;
@@ -176,8 +176,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		fragmentData._TerrainTextureResolution = information._MaterialTextureResolution;
 		fragmentData._InverseTerrainTextureResolution = information._InverseMaterialTextureResolution;
-		fragmentData._NormalTextureIndex = information._NormalTextureIndex;
-		fragmentData._MaterialTextureIndex = information._MaterialTextureIndex;
+		fragmentData._NormalAndMaterialTextureIndex = information._NormalAndMaterialTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData), &fragmentData);
 
