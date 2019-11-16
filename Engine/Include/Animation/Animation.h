@@ -15,7 +15,7 @@ public:
 	//The duration of this animation, denoted in seconds.
 	float _Duration;
 
-	//Container for all the keyframes.
+	//Container for all the keyframes for all bones.
 	DynamicArray<AnimationKeyframe> _Keyframes;
 
 };
