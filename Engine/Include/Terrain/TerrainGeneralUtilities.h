@@ -57,12 +57,12 @@ namespace TerrainGeneralUtilities
 		DynamicArray<float> data;
 		data.UpsizeFast(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION * TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION);
 
-		for (uint32 i = 0; i < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++i)
+		for (uint32 Y{ 0 }; Y < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++Y)
 		{
-			for (uint32 j = 0; j < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++j)
+			for (uint32 X{ 0 }; X < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++X)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
+				const float coordinateX{ static_cast<float>(X) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(Y) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
 
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
@@ -72,7 +72,7 @@ namespace TerrainGeneralUtilities
 
 				properties._HeightFunction(properties, worldPosition, &height, nullptr);
 
-				data[(j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i] = height;
+				data[(Y * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + X] = height;
 
 				*minimumHeight = CatalystBaseMath::Minimum<float>(*minimumHeight, height);
 				*maximumHeight = CatalystBaseMath::Maximum<float>(*maximumHeight, height);
@@ -99,12 +99,12 @@ namespace TerrainGeneralUtilities
 		Texture2D<Vector4<byte>> normalTexture{ resolution };
 		Texture2D<byte> materialTexture{ resolution };
 
-		for (uint32 i = 0; i < resolution; ++i)
+		for (uint32 Y{ 0 }; Y < resolution; ++Y)
 		{
-			for (uint32 j = 0; j < resolution; ++j)
+			for (uint32 X{ 0 }; X < resolution; ++X)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
+				const float coordinateX{ static_cast<float>(X) / static_cast<float>(resolution - 1) };
+				const float coordinateY{ static_cast<float>(Y) / static_cast<float>(resolution - 1) };
 			
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
@@ -116,7 +116,7 @@ namespace TerrainGeneralUtilities
 				GenerateNormal(properties, worldPosition, &normal, &height);
 
 				//Write the normal.
-				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
+				Vector4<byte> &normalTextureValue{ normalTexture.At(X, Y) };
 
 				normalTextureValue._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
 				normalTextureValue._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
@@ -124,7 +124,7 @@ namespace TerrainGeneralUtilities
 				normalTextureValue._W = 255;
 
 				//Write the material.
-				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j), nullptr);
+				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(X, Y), nullptr);
 			}
 		}
 
