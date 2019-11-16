@@ -2,7 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/Map.h>
 
 //Animation.
 #include <Animation/AnimationKeyframe.h>
@@ -16,6 +16,6 @@ public:
 	float _Duration;
 
 	//Container for all the keyframes for all bones.
-	DynamicArray<AnimationKeyframe> _Keyframes;
+	Map<HashString, DynamicArray<AnimationKeyframe>> _Keyframes;
 
 };

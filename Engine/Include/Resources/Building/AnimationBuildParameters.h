@@ -23,10 +23,4 @@ public:
 	//The transformation.
 	Matrix4 _Transformation{ };
 
-	//The texture coordinate multiplier.
-	float _TextureCoordinateMultiplier{ 1.0f };
-
-	//The texture coordinate rotation.
-	float _TexturCoordinateRotation{ 0.0f };
-
 };

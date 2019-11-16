@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Animation.
+#include <Animation/Animation.h>
 #include <Animation/AnimatedModel.h>
 
 //Entities.
@@ -28,5 +29,8 @@ public:
 
 	//The material.
 	Material _Material;
+
+	//The initial animation.
+	const Animation* RESTRICT _InitialAnimation{ nullptr };
 
 };

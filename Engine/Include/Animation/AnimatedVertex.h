@@ -22,7 +22,7 @@ public:
 	Vector3<float> _Tangent;
 
 	//The bone indices of this vertex.
-	Vector3<int32> _BoneIndices;
+	Vector3<uint32> _BoneIndices;
 
 	//The bone weights of this vertex.
 	Vector3<float> _BoneWeights;
@@ -44,7 +44,7 @@ public:
 	AnimatedVertex(	const Vector3<float> &initial_position,
 					const Vector3<float> &initial_normal,
 					const Vector3<float> &initial_tangent,
-					const Vector3<int32> &initial_bone_indices,
+					const Vector3<uint32> &initial_bone_indices,
 					const Vector3<float> &initial_bone_weights,
 					const Vector2<float> &initial_texture_coordinate) NOEXCEPT
 		:

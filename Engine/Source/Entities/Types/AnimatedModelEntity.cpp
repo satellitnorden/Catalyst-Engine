@@ -40,6 +40,7 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 
 	animated_model_component._Model = animated_model_initialization_data->_Model;
 	animated_model_component._Material = animated_model_initialization_data->_Material;
+	animated_model_component._CurrentAnimation = animated_model_initialization_data->_InitialAnimation;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._Model->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
 	animated_model_component._PreviousWorldTransform = animated_model_initialization_data->_Transform;
 	animated_model_component._CurrentWorldTransform = animated_model_initialization_data->_Transform;

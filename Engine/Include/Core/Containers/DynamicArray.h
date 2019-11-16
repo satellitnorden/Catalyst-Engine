@@ -41,8 +41,12 @@ public:
 	*/
 	FORCE_INLINE DynamicArray(const DynamicArray &other) NOEXCEPT
 		:
-		_Size(0)
+		_Array(nullptr),
+		_Size(0),
+		_Capacity(0)
 	{
+		DestroyArray();
+
 		ReserveConstruct(other._Capacity);
 
 		for (uint64 i{ 0 }; i < other._Size; ++i)
@@ -55,7 +59,13 @@ public:
 	*	Move constructor.
 	*/
 	FORCE_INLINE DynamicArray(DynamicArray &&other) NOEXCEPT
+		:
+		_Array(nullptr),
+		_Size(0),
+		_Capacity(0)
 	{
+		DestroyArray();
+
 		_Array = other._Array;
 		_Size = other._Size;
 		_Capacity = other._Capacity;
@@ -78,14 +88,7 @@ public:
 	*/
 	FORCE_INLINE void operator=(const DynamicArray &other) NOEXCEPT
 	{
-		DestroyArray();
-
-		ReserveConstruct(other._Capacity);
-
-		for (uint64 i{ 0 }; i < other._Size; ++i)
-		{
-			EmplaceFast(other._Array[i]);
-		}
+		new (this) DynamicArray(other);
 	}
 
 	/*
@@ -93,15 +96,7 @@ public:
 	*/
 	FORCE_INLINE void operator=(DynamicArray &&other) NOEXCEPT
 	{
-		DestroyArray();
-
-		_Array = other._Array;
-		_Size = other._Size;
-		_Capacity = other._Capacity;
-
-		other._Array = nullptr;
-		other._Size = 0;
-		other._Capacity = 0;
+		new (this) DynamicArray(other);
 	}
 
 	/*

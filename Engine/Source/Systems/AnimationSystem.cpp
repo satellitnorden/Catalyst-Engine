@@ -54,11 +54,64 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 
 	if (component->_CurrentAnimation)
 	{
-		//Animate...
+		//Update the current animation time.
+		component->_CurrentAnimationTime += context->_DeltaTime;
+
+		//Wrap around if the animation is looping.
+		if (true) //IsLooping() or whater...
+		{
+			while (component->_CurrentAnimationTime >= component->_CurrentAnimation->_Duration)
+			{
+				component->_CurrentAnimationTime -= component->_CurrentAnimation->_Duration;
+			}
+		}
+
+		//For every keyframe channel, calculate it's bone transform.
+		for (const Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : component->_CurrentAnimation->_Keyframes)
+		{
+			for (const AnimationKeyframe& keyframe : keyframes._Second)
+			{
+				if (keyframe._Timestamp >= component->_CurrentAnimationTime)
+				{
+					//Find the bone index.
+					uint32 bone_index{ 0 };
+
+					if (FindBoneIndex(&component->_Model->_Skeleton._RootBone, keyframes._First, &bone_index))
+					{
+						bone_transforms[bone_index] = Matrix4(keyframe._BoneTransform._Position, keyframe._BoneTransform._Rotation);
+					}
+
+					break;
+				}
+			}
+		}
 	}
 
 	const void *const RESTRICT dataChunks[]{ bone_transforms.Data() };
 	const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
 
 	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &component->_AnimationDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
+}
+
+/*
+*	Finds the bone index of the animated model with the given name.
+*/
+bool AnimationSystem::FindBoneIndex(const Bone* const RESTRICT bone, const HashString name, uint32* const RESTRICT bone_index) NOEXCEPT
+{
+	if (bone->_Name == name)
+	{
+		*bone_index = bone->_Index;
+
+		return true;
+	}
+
+	for (const Bone& child : bone->_Children)
+	{
+		if (FindBoneIndex(&child, name, bone_index))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

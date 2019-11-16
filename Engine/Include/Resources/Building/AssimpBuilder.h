@@ -32,8 +32,8 @@ public:
 		Assimp::Importer importer;
 		const aiScene *scene = importer.ReadFile(file, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
-		//Process the node(s).
-		ProcessAnimatedModelNode(scene->mRootNode, scene, vertices, indices);
+		//Process the mesh. Assume there is only ine.
+		ProcessAnimatedModelMesh(scene->mMeshes[0], scene, vertices, indices);
 
 		//Calculate the skeleton, starting with the root node.
 		aiNode *RESTRICT root_node{ FindRootNode(scene->mRootNode, scene) };
@@ -41,7 +41,7 @@ public:
 		aiBone *RESTRICT root_bone{ FindBone(scene->mRootNode, scene, root_node->mName) };
 		ASSERT(root_bone, "Could not find root bone!");
 
-		ConvertBone(root_bone, &skeleton->_RootBone);
+		ConvertBone(scene->mMeshes[0], root_bone, &skeleton->_RootBone);
 
 		//Calculate all the children.
 		AddChildBones(root_node, scene, &skeleton->_RootBone);
@@ -93,7 +93,7 @@ public:
 
 				const BoneTransform bone_transform{ rotation, position };
 
-				animation->_Keyframes.EmplaceSlow(static_cast<float>(rotation_key.mTime / assimp_animation->mTicksPerSecond), channel_name, bone_transform);
+				animation->_Keyframes[channel_name].EmplaceSlow(static_cast<float>(rotation_key.mTime / assimp_animation->mTicksPerSecond), bone_transform);
 			}
 		}
 	}
@@ -112,7 +112,7 @@ private:
 		public:
 
 			//The index.
-			int32 _Index;
+			uint32 _Index;
 
 			//The weight.
 			float _Weight;
@@ -181,7 +181,7 @@ private:
 			temporary_bone_weights[1]._Weight *= total_weight;
 			temporary_bone_weights[2]._Weight *= total_weight;
 
-			const Vector3<int32> bone_indices{ temporary_bone_weights[0]._Index, temporary_bone_weights[1]._Index, temporary_bone_weights[2]._Index };
+			const Vector3<uint32> bone_indices{ temporary_bone_weights[0]._Index, temporary_bone_weights[1]._Index, temporary_bone_weights[2]._Index };
 			const Vector3<float> bone_weights{ temporary_bone_weights[0]._Weight, temporary_bone_weights[1]._Weight, temporary_bone_weights[2]._Weight };
 
 			vertices->EmplaceSlow(position, normal, tangent, bone_indices, bone_weights, texture_coordinate);
@@ -211,24 +211,6 @@ private:
 			{
 				indices->EmplaceSlow(face.mIndices[j]);
 			}
-		}
-	}
-
-	/*
-	*	Processes a single Assimp node.
-	*/
-	static void ProcessAnimatedModelNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<AnimatedVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
-	{
-		//Process all meshes.
-		for (uint32 i = 0; i < node->mNumMeshes; ++i)
-		{
-			ProcessAnimatedModelMesh(scene->mMeshes[node->mMeshes[i]], scene, vertices, indices);
-		}
-
-		//Process all nodes.
-		for (uint32 i = 0; i < node->mNumChildren; ++i)
-		{
-			ProcessAnimatedModelNode(node->mChildren[i], scene, vertices, indices);
 		}
 	}
 
@@ -293,7 +275,7 @@ private:
 			if (aiBone *const RESTRICT found_bone{ FindBone(scene->mRootNode, scene, node->mChildren[i]->mName) })
 			{
 				bone->_Children.EmplaceSlow();
-				ConvertBone(found_bone, &bone->_Children.Back());
+				ConvertBone(scene->mMeshes[0], found_bone, &bone->_Children.Back());
 
 				AddChildBones(node->mChildren[i], scene, &bone->_Children.Back());
 			}
@@ -303,9 +285,10 @@ private:
 	/*
 	*	Converts an aiBone to  a Bone.
 	*/
-	FORCE_INLINE static void ConvertBone(const aiBone *const RESTRICT in, Bone *const RESTRICT out) NOEXCEPT
+	FORCE_INLINE static void ConvertBone(const aiMesh *const RESTRICT mesh, const aiBone *const RESTRICT in, Bone *const RESTRICT out) NOEXCEPT
 	{
 		out->_Name = HashString(in->mName.C_Str());
+		out->_Index = FindBoneIndex(mesh, in->mName);
 		Memory::Copy(&out->_BindTransform, &in->mOffsetMatrix, sizeof(Matrix4));
 		out->_InverseBindTransform = out->_BindTransform;
 		out->_InverseBindTransform.Inverse();
@@ -362,6 +345,24 @@ private:
 		{
 			ProcessModelNode(node->mChildren[i], scene, vertices, indices);
 		}
+	}
+
+	/*
+	*	Finds the index of a bone in a mesh.
+	*/
+	static uint32 FindBoneIndex(const aiMesh* const RESTRICT mesh, const aiString name)
+	{
+		for (uint32 i{ 0 }; i < mesh->mNumBones; ++i)
+		{
+			if (name == mesh->mBones[i]->mName)
+			{
+				return i;
+			}
+		}
+
+		ASSERT(false, "Couldn't find bone with the given name!");
+
+		return 0;
 	}
 
 };

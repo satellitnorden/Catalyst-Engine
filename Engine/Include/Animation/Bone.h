@@ -16,6 +16,9 @@ public:
 	//The name.
 	HashString _Name;
 
+	//The index.
+	uint32 _Index;
+
 	//The bind transform.
 	Matrix4 _BindTransform;
 

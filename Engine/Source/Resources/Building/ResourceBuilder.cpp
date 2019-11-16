@@ -188,26 +188,40 @@ void ResourceBuilder::BuildAnimation(const AnimationBuildParameters &parameters)
 	AssimpBuilder::BuildAnimation(parameters._File, &animation);
 
 	//Sort the animation keyframes.
-	SortingAlgorithms::InsertionSort<AnimationKeyframe>
-	(
-	animation._Keyframes.Begin(),
-	animation._Keyframes.End(),
-	nullptr,
-	[](const void *const RESTRICT, const AnimationKeyframe *const RESTRICT first, const AnimationKeyframe *const RESTRICT second)
+	for (Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : animation._Keyframes)
 	{
-		return first->_Timestamp < second->_Timestamp;
+		SortingAlgorithms::InsertionSort<AnimationKeyframe>
+		(
+			keyframes._Second.Begin(),
+			keyframes._Second.End(),
+			nullptr,
+			[](const void* const RESTRICT, const AnimationKeyframe* const RESTRICT first, const AnimationKeyframe* const RESTRICT second)
+			{
+				return first->_Timestamp < second->_Timestamp;
+			}
+		);
 	}
-	);
 
 	//Write the duration of the animation.
 	file.Write(&animation._Duration, sizeof(float));
 
-	//Write the number of animation keyframes.
-	const uint64 number_of_animation_keyframes{ animation._Keyframes.Size() };
-	file.Write(&number_of_animation_keyframes, sizeof(uint64));
+	//Write the number of animation keyframe channels.
+	const uint64 number_of_animation_keyframe_channels{ animation._Keyframes.Size() };
+	file.Write(&number_of_animation_keyframe_channels, sizeof(uint64));
 
 	//Write the animation keyframes.
-	file.Write(animation._Keyframes.Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
+	for (Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : animation._Keyframes)
+	{
+		//Write the name of the channel.
+		file.Write(&keyframes._First, sizeof(HashString));
+
+		//Write the number of animation keyframes.
+		const uint64 number_of_animation_keyframes{ keyframes._Second.Size() };
+		file.Write(&number_of_animation_keyframes, sizeof(uint64));
+
+		//Write the keyframes.
+		file.Write(keyframes._Second.Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
+	}
 
 	//Close the file.
 	file.Close();

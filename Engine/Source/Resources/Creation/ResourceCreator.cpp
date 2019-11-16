@@ -36,6 +36,9 @@ void ResourceCreator::CreateAnimatedModel(AnimatedModelData *const RESTRICT data
 																		model->_IndexBuffer,
 																		static_cast<uint32>(data->_Indices.Size()),
 																		&model->_BottomLevelAccelerationStructure);
+
+	//Copy the skeleton.
+	model->_Skeleton = data->_Skeleton;
 }
 
 /*

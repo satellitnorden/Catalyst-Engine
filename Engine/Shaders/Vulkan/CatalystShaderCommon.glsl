@@ -73,7 +73,7 @@ struct Material
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
     layout (offset = 0) mat4 viewMatrixMinusOne;
-    layout (offset = 64) mat4 UNUSED;
+    layout (offset = 64) mat4 UNUSED_1;
     layout (offset = 128) mat4 inversePerceiverMatrix;
     layout (offset = 192) mat4 inverseProjectionMatrix;
     layout (offset = 256) mat4 perceiverMatrix;
@@ -106,7 +106,7 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 604) int shadowsMode;
     layout (offset = 608) int volumetricLightingMode;
 
-    layout (offset = 612) float ambientIlluminationIntensity;
+    layout (offset = 612) float UNUSED_2;
     layout (offset = 616) float bloomIntensity;
     layout (offset = 620) float chromaticAberrationIntensity;
     layout (offset = 624) float volumetricLightingIntensity;

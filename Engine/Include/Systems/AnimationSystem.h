@@ -2,12 +2,14 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/HashString.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
 //Forward declarations.
 class AnimatedModelComponent;
+class Bone;
 
 class AnimationSystem final
 {
@@ -52,5 +54,10 @@ private:
 	*	Updates an animated model.
 	*/
 	void UpdateAnimatedModel(const UpdateContext *const RESTRICT context, AnimatedModelComponent *const RESTRICT component) NOEXCEPT;
+
+	/*
+	*	Finds the bone index of the animated model with the given name.
+	*/
+	bool FindBoneIndex(const Bone* const RESTRICT bone, const HashString name, uint32 *const RESTRICT bone_index) NOEXCEPT;
 
 };

@@ -56,8 +56,8 @@ void main()
 	vec3 normal = normalize(vec3(current_model_matrix * vec4(animated_normal, 0.0f)));
 
 	fragment_tangent_space_matrix = mat3(tangent, bitangent, normal);
-	fragment_previous_world_position = vec3(previous_model_matrix * vec4(animated_position, 1.0));
-	fragment_current_world_position = vec3(current_model_matrix * vec4(animated_position, 1.0));
+	fragment_previous_world_position = vec3(previous_model_matrix * vec4(animated_position, 1.0f));
+	fragment_current_world_position = vec3(current_model_matrix * vec4(animated_position, 1.0f));
 	fragment_texture_coordinate = vertex_texture_coordinate;
 
 	gl_Position = viewMatrix * vec4(fragment_current_world_position, 1.0f);

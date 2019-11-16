@@ -81,7 +81,7 @@ void main()
 												roughness,
 												metallic,
 												ambientOcclusion,
-												vec3(ambientIlluminationIntensity) * albedo,
+												CalculateAmbientIlluminationIntensity() * albedo,
 												vec3(0.0f));;
 
 	//Add the luminance lighting.
