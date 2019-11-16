@@ -110,9 +110,10 @@ namespace TerrainGeneralUtilities
 													0.0f,
 													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
-				//Generate the normal.
+				//Generate the height and normal.
+				float height;
 				Vector3<float> normal;
-				GenerateNormal(properties, worldPosition, &normal);
+				GenerateNormal(properties, worldPosition, &normal, &height);
 
 				//Write the normal.
 				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
@@ -121,10 +122,6 @@ namespace TerrainGeneralUtilities
 				normalTextureValue._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
 				normalTextureValue._Z = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
 				normalTextureValue._W = 255;
-
-				//Retrieve the height.
-				float height;
-				properties._HeightFunction(properties, worldPosition, &height, nullptr);
 
 				//Write the material.
 				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j), nullptr);

@@ -625,12 +625,16 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 	const uint32 texture_resolution{ CatalystBaseMath::Minimum<uint32>(TerrainConstants::TERRAIN_TEXTURE_BASE_RESOLUTION << (TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH - depth), TerrainConstants::TERRAIN_TEXTURE_MAXIMUM_RESOLUTION) };
 
 	//Generate the terrain textures.
+	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+
 	TerrainGeneralUtilities::GenerateTerrainTextures(	_Properties,
 														patchSizeMultiplier,
 														texture_resolution,
 														worldPosition,
 														&patchInformation->_NormalTexture,
 														&patchInformation->_MaterialTexture);
+
+	CATALYST_BENCHMARK_AVERAGE_SECTION_END("GenerateTerrainTextures");
 
 	patchRenderInformation->_NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
 	patchRenderInformation->_MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
