@@ -29,6 +29,7 @@ void TerrainSystem::Initialize() NOEXCEPT
 		TerrainSystem::Instance->UpdateAsynchronous();
 	};
 	_UpdateTask._Arguments = nullptr;
+	_UpdateTask._ExecutableOnSameThread = false;
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
@@ -625,15 +626,11 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 	const uint32 texture_resolution{ CatalystBaseMath::Minimum<uint32>(TerrainConstants::TERRAIN_TEXTURE_BASE_RESOLUTION << (TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH - depth), TerrainConstants::TERRAIN_TEXTURE_MAXIMUM_RESOLUTION) };
 
 	//Generate the terrain textures.
-	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
-
 	TerrainGeneralUtilities::GenerateTerrainTextures(	_Properties,
 														patchSizeMultiplier,
 														texture_resolution,
 														worldPosition,
 														&patchInformation->_NormalAndMaterialTexture);
-
-	CATALYST_BENCHMARK_AVERAGE_SECTION_END("GenerateTerrainTextures");
 
 	patchRenderInformation->_NormalAndMaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalAndMaterialTexture));
 	patchRenderInformation->_MaterialTextureResolution = static_cast<float>(texture_resolution);

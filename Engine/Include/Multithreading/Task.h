@@ -20,6 +20,9 @@ public:
 	//The arguments that will be sent to the function that this task will execute.
 	void *RESTRICT _Arguments;
 
+	//Denotes if this task is executable on the same thread as it was queued from.
+	bool _ExecutableOnSameThread;
+
 	//The semaphore that will be signalled after the function that this task will execute has finished executing.
 	Semaphore _Semaphore{ SemaphoreCreationFlags::Signalled };
 

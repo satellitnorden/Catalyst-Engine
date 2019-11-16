@@ -85,6 +85,7 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 		FMOD_ERROR_CHECK(FMODSoundSystemData::_System->update());
 	};
 	FMODSoundSystemData::_UpdateTask._Arguments = nullptr;
+	FMODSoundSystemData::_UpdateTask._ExecutableOnSameThread = true;
 
 	//Create the studio system.
 	FMOD_ERROR_CHECK(FMOD::Studio::System::create(&FMODSoundSystemData::_System));

@@ -26,6 +26,7 @@ void EntityPlacementSystem::Initialize() NOEXCEPT
 		EntityPlacementSystem::Instance->AsynchronousUpdate();
 	};
 	_AsynchronousUpdateTask._Arguments = nullptr;
+	_AsynchronousUpdateTask._ExecutableOnSameThread = false;
 }
 
 /*

@@ -28,6 +28,7 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullTerrain();
 	};
 	_TerrainCullingTask._Arguments = nullptr;
+	_TerrainCullingTask._ExecutableOnSameThread = true;
 
 	//Initialize the vegetation culling task.
 	_VegetationCullingTask._Function = [](void *const RESTRICT)
@@ -35,6 +36,7 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullVegetation();
 	};
 	_VegetationCullingTask._Arguments = nullptr;
+	_VegetationCullingTask._ExecutableOnSameThread = true;
 }
 
 /*

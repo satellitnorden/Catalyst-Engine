@@ -27,6 +27,7 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 		LevelOfDetailSystem::Instance->LevelOfDetailVegetation();
 	};
 	_VegetationLevelOfDetailTask._Arguments = nullptr;
+	_VegetationLevelOfDetailTask._ExecutableOnSameThread = true;
 }
 
 /*

@@ -46,7 +46,7 @@ public:
 	/*
 	*	Executes a task.
 	*/
-	void ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT;
+	void ExecuteTask(Task *const RESTRICT task) NOEXCEPT;
 
 private:
 
