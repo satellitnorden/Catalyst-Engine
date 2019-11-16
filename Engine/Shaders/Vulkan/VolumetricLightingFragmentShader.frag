@@ -38,7 +38,7 @@ void main()
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
 
 	//Calculate the density multiplier.
-	float density_multiplier = exp(-(1.0f + volumetricLightingIntensity));
+	float density_multiplier = exp(-(0.5f + volumetricLightingIntensity));
 
 	//Calculate the volumetric lighting.
 	vec3 volumetricLighting = vec3(0.0f);

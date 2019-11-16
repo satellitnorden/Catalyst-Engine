@@ -11,7 +11,7 @@
 #include "CatalystGeometryMath.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (3.25f) //0.25f step.
+#define AMBIENT_OCCLUSION_POWER (3.0f) //0.25f step.
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
@@ -352,7 +352,7 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_PERSISTENCE (0.525f) //0.025f step.
 #define CLOUD_LACUNARITY (2.25f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (3.0f) //0.25f step.
+#define CLOUD_DENSITY_MULTIPLIER (2.75f) //0.25f step.
 
 /*
 *  Samples the cloud density at the given point.
