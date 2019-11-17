@@ -99,6 +99,7 @@ void main()
 														roughness,
 														metallic,
 														1.0f,
+														1.0f,
 														light.luminance) * visibility;
 
 				break;
@@ -143,6 +144,7 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
+														1.0f,
 														1.0f,
 														light.luminance) * attenuation * visibility;
 

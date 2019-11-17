@@ -79,7 +79,6 @@ void main()
 													0.0f,
 													1.0f,
 													1.0f,
-													vec3(0.0f),
 													SkyColor(reflect(ray_direction, ocean_normal), true));
 
         //Write the fragments.

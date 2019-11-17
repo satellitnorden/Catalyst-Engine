@@ -643,16 +643,6 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DiffuseIrradianceFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
-			//Initialize the shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
@@ -678,6 +668,16 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::FireflyReductionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
@@ -833,16 +833,6 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
-			//Initialize the fragment shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ScreenSpaceSpecularIrradianceFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
 			//Initialize the shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
@@ -860,16 +850,6 @@ namespace VulkanRenderingSystemLogic
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
-			//Initialize the shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SpecularIrradianceApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
@@ -1107,48 +1087,6 @@ namespace VulkanRenderingSystemLogic
 			if (RenderingSystem::Instance->IsRayTracingSupported())
 			{
 				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
-			}
-		}
-
-		{
-			//Initialize the world ray closest hit shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-
-			if (RenderingSystem::Instance->IsRayTracingSupported())
-			{
-				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
-			}
-		}
-
-		{
-			//Initialize the world ray generation shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-
-			if (RenderingSystem::Instance->IsRayTracingSupported())
-			{
-				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
-			}
-		}
-
-		{
-			//Initialize the world ray miss shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
-
-			if (RenderingSystem::Instance->IsRayTracingSupported())
-			{
-				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::WorldRayMiss)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_MISS_BIT_NV);
 			}
 		}
 

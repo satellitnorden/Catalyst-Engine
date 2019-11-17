@@ -4,26 +4,26 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/RayTracingPipelines/WorldRayTracingPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class WorldRayTracingRenderPass final : public RenderPass
+class IndirectLightingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(WorldRayTracingRenderPass);
+	DECLARE_SINGLETON(IndirectLightingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	WorldRayTracingRenderPass() NOEXCEPT;
+	IndirectLightingRenderPass() NOEXCEPT;
 
 private:
 
-	//The world ray tracing pipeline.
-	WorldRayTracingPipeline _WorldRayTracingPipeline;
+	//The indirect lighting graphics pipeline.
+	IndirectLightingGraphicsPipeline _IndirectLightingGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

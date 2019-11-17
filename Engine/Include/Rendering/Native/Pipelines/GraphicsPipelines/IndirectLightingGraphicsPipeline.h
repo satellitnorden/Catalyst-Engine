@@ -9,7 +9,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class DiffuseIrradianceGraphicsPipeline final : public GraphicsPipeline
+class IndirectLightingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

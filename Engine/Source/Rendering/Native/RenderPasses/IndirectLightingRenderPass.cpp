@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/DiffuseIrradianceRenderPass.h>
+#include <Rendering/Native/RenderPasses/IndirectLightingRenderPass.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -8,42 +8,42 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DiffuseIrradianceRenderPass);
+DEFINE_SINGLETON(IndirectLightingRenderPass);
 
 /*
 *	Default constructor.
 */
-DiffuseIrradianceRenderPass::DiffuseIrradianceRenderPass() NOEXCEPT
+IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
-	SetStage(RenderPassStage::DiffuseIrradiance);
+	SetStage(RenderPassStage::IndirectLighting);
 #endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		DiffuseIrradianceRenderPass::Instance->Initialize();
+		IndirectLightingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		DiffuseIrradianceRenderPass::Instance->Execute();
+		IndirectLightingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
+void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_DiffuseIrradianceGraphicsPipeline);
+	AddPipeline(&_IndirectLightingGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_DiffuseIrradianceGraphicsPipeline.Initialize();
+	_IndirectLightingGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -55,8 +55,8 @@ void DiffuseIrradianceRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void DiffuseIrradianceRenderPass::Execute() NOEXCEPT
+void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_DiffuseIrradianceGraphicsPipeline.Execute();
+	_IndirectLightingGraphicsPipeline.Execute();
 }

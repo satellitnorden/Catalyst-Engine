@@ -70,6 +70,7 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
+														ambientOcclusion,
 														material.thickness,
 														light.luminance) * (1.0f - cloud_density);
 
@@ -90,6 +91,7 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
+														ambientOcclusion,
 														material.thickness,
 														light.luminance) * attenuation;
 

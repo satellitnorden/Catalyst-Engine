@@ -792,9 +792,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanGraphicsPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\Memory.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
@@ -809,9 +806,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanBuffer.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\TopLevelAccelerationStructureInstanceData.h">
       <Filter>Rendering\Include\Native</Filter>
@@ -927,14 +921,8 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\HaltonSequence.h">
       <Filter>Math\Include\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceSpecularIrradianceGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
       <Filter>Physics\Include</Filter>
@@ -962,12 +950,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PathTracingDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DiffuseIrradianceRayTracingPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DiffuseIrradianceRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
@@ -999,14 +981,8 @@
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingTimer.h">
       <Filter>Profiling\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SpecularIrradianceApplicationGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SpecularIrradianceRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
@@ -1025,9 +1001,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DiffuseIrradianceGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1257,6 +1230,12 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\IndirectLightingRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1430,17 +1409,11 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\WorldRayTracingPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\WorldRayTracingRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
@@ -1499,9 +1472,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceSpecularIrradianceGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -1522,9 +1492,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PathTracingDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DiffuseIrradianceRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1550,14 +1517,8 @@
     <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SpecularIrradianceApplicationGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SpecularIrradianceRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
@@ -1576,9 +1537,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DiffuseIrradianceGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1672,6 +1630,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\CloudsApplicationGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

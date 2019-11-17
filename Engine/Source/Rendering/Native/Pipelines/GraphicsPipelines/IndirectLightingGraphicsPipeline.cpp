@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SpecularIrradianceApplicationGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -10,7 +10,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void SpecularIrradianceApplicationGraphicsPipeline::Initialize() NOEXCEPT
+void IndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -23,7 +23,7 @@ void SpecularIrradianceApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::SpecularIrradianceApplicationFragment);
+	SetFragmentShader(Shader::IndirectLightingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -62,7 +62,7 @@ void SpecularIrradianceApplicationGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void SpecularIrradianceApplicationGraphicsPipeline::Execute() NOEXCEPT
+void IndirectLightingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -87,15 +87,14 @@ void SpecularIrradianceApplicationGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void SpecularIrradianceApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void IndirectLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 5> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -104,7 +103,7 @@ void SpecularIrradianceApplicationGraphicsPipeline::CreateRenderDataTableLayout(
 /*
 *	Creates the render data table.
 */
-void SpecularIrradianceApplicationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void IndirectLightingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -112,5 +111,4 @@ void SpecularIrradianceApplicationGraphicsPipeline::CreateRenderDataTable() NOEX
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

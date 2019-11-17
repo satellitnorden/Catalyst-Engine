@@ -136,7 +136,6 @@ void main()
 												roughness,
 												metallic,
 												ambientOcclusion,
-												rayPayload.radiance,
 												rayPayload.radiance);
 	}
 
@@ -170,6 +169,7 @@ void main()
 												shadingNormal,
 												roughness,
 												metallic,
+												1.0f,
 												1.0f,
 												light.luminance * float(numberOfLights)) * visibility;
 
@@ -209,6 +209,7 @@ void main()
 												shadingNormal,
 												roughness,
 												metallic,
+												1.0f,
 												1.0f,
 												light.luminance * float(numberOfLights)) * attenuation * visibility;
 
