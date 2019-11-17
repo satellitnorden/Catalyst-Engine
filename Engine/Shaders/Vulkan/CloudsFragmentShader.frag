@@ -47,7 +47,7 @@ void main()
       vec3 start = perceiverWorldPosition + view_direction * intersection_distance;
 
       //Calculate the hit distance multiplier.
-      float hit_distance_multiplier = (1.0f - clamp((intersection_distance - 1000.0f) * 0.001f, 0.0f, 1.0f));
+      float hit_distance_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
 
       //Return early. (:
       if (hit_distance_multiplier == 0.0f)

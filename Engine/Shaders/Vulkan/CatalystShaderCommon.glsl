@@ -349,10 +349,18 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_NUMBER_OF_SAMPLES (16) //Needs to be a multiple of 4.
 #define CLOUD_NUMBER_OF_NOISE_TEXTURES (CLOUD_NUMBER_OF_SAMPLES / 4)
 #define CLOUD_POSITION_SCALE (0.000125f) //0.000025f step.
-#define CLOUD_PERSISTENCE (0.55f) //0.025f step.
-#define CLOUD_LACUNARITY (2.5f) //0.25f step.
+#define CLOUD_PERSISTENCE (0.575f) //0.025f step.
+#define CLOUD_LACUNARITY (2.75f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 #define CLOUD_DENSITY_MULTIPLIER (2.5f) //0.25f step.
+
+/*
+*   Calculates the cloud density multiplier for the given hit distance.
+*/
+float CalculateCloudDensityMultipluer(float hit_distance)
+{
+    return (1.0f - clamp((hit_distance - 1000.0f) * 0.001f, 0.0f, 1.0f));
+}
 
 /*
 *  Samples the cloud density at the given point.
@@ -420,6 +428,7 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
     //Calculate the start and end points.
     vec3 start;
     vec3 end;
+    float cloud_density_multiplier;
 
     //Calculate the direction angle.
     float direction_angle = dot(direction, vec3(0.0f, 1.0f, 0.0f));
@@ -434,6 +443,8 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             start = point + direction * intersection_distance;
+
+            cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
 
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
@@ -455,6 +466,8 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
+
+            cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
         }
     }
 
@@ -476,6 +489,8 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             start = point + direction * intersection_distance;
 
+            cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
+
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
         }
@@ -489,6 +504,8 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 
             LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
+
+            cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
         }
    }
 
@@ -517,6 +534,6 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
    }
 
    //Return the total density.
-   return density;
+   return density * cloud_density_multiplier;
 }
 #endif
