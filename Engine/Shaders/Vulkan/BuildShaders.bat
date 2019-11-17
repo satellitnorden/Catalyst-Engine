@@ -8,6 +8,7 @@ glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOf
 glslangValidator.exe -V DepthOfFieldBokehFragmentShader.frag -o 			DepthOfFieldBokehFragmentShader.spv
 glslangValidator.exe -V DirectLightingFragmentShader.frag -o 				DirectLightingFragmentShader.spv
 glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLightingRayGenerationShader.spv
+glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 			FireflyReductionFragmentShader.spv
 glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 			IndirectLightingFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv

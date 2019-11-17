@@ -218,6 +218,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DirectLightingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\FastApproximateAntiAliasingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\FireflyReductionGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.h" />
@@ -256,6 +257,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\BloomRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\IndirectLightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LuminanceLightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\MotionBlurRenderPass.h" />
@@ -408,6 +410,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DirectLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\FastApproximateAntiAliasingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\FireflyReductionGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.cpp" />
@@ -444,6 +447,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\BloomRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingDenoisingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\LuminanceLightingRenderPass.cpp" />
