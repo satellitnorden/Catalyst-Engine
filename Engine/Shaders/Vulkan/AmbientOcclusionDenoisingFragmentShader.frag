@@ -52,7 +52,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.geometryNormal = UnpackNormal(sceneFeatures2.x);
 	features.hitDistance = sceneFeatures2.w;
 
 	return features;
@@ -81,15 +80,13 @@ void main()
 		/*
 		*	Calculate the sample weight based on certain criteria;
 		*	
-		*	1. How closely aligned are the normals to each other?
+		*	1. Is the sample coordinate valid?
 		*	2. How closely aligned are the hit distances to each other?
-		*	3. Is the sample coordinate valid?
 		*/
 		float sampleWeight = 1.0f;
 
-		sampleWeight *= max(dot(currentFeatures.geometryNormal, sampleFeatures.geometryNormal), 0.0f);
-		sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
+		sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
 
 		denoisedAmbientOcclusion += sampleAmbientOcclusion * sampleWeight;
 		ambientOcclusionWeightSum += sampleWeight;

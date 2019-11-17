@@ -28,7 +28,7 @@ private:
 	ScreenSpaceAmbientOcclusionGraphicsPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline;
 
 	//The ambient occlusion denoising graphics pipelines.
-	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 2> _AmbientOcclusionDenoisingGraphicsPipelines;
+	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 4> _AmbientOcclusionDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.
