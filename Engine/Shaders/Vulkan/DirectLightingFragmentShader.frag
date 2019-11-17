@@ -23,6 +23,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (set = 3, binding = 0) uniform sampler2D sceneFeatures1Texture;
 layout (set = 3, binding = 1) uniform sampler2D sceneFeatures2Texture;
 layout (set = 3, binding = 2) uniform sampler2D sceneFeatures3Texture;
+layout (set = 3, binding = 3) uniform sampler2D ambient_occlusion_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -33,6 +34,7 @@ void main()
 	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, fragmentTextureCoordinate);
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 	vec4 sceneFeatures3 = texture(sceneFeatures3Texture, fragmentTextureCoordinate);
+	vec4 ambient_occlusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : Upsample(ambient_occlusion_texture, fragmentTextureCoordinate);
 
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
@@ -41,7 +43,7 @@ void main()
 	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
-	float ambientOcclusion = sceneFeatures3.z;
+	float ambientOcclusion = pow(sceneFeatures3.z * pow(ambient_occlusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
 	//Generate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
