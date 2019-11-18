@@ -35,8 +35,6 @@ public:
 	int32 _AlbedoTextureIndex;
 	int32 _NormalMapTextureIndex;
 	int32 _MaterialPropertiesTextureIndex;
-	int32 _MaterialProperties;
-	float _LuminanceMultiplier;
 
 };
 
@@ -165,8 +163,6 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		fragmentData._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
 		fragmentData._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
 		fragmentData._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
-		fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
-		fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

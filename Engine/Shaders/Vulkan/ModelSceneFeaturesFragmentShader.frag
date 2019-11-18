@@ -18,8 +18,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 128) int albedoTextureIndex;
     layout (offset = 132) int normalMapTextureIndex;
     layout (offset = 136) int materialPropertiesIndex;
-    layout (offset = 140) int materialPropertyFlags;
-    layout (offset = 144) float luminanceMultiplier;
 };
 
 //In parameters.
@@ -34,6 +32,16 @@ layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
 
 /*
+*	Applies parallax mapping.
+*/
+vec2 ApplyParallaxMapping(vec2 texture_coordinate, vec3 tangent_space_view_direction)
+{
+	float height =  texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), texture_coordinate).w;    
+    vec2 p = tangent_space_view_direction.xy / tangent_space_view_direction.z * (height * 1.0f);
+    return texture_coordinate - p;   
+}
+
+/*
 * Returns the screen coordinate with the given view matrix and world position.
 */
 vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
@@ -46,29 +54,43 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 
 void main()
 {
-    //Sample the albedo.
-   vec3 albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
+	//Calculate the final texture coordinate.
+	vec2 final_texture_coordinate = fragmentTextureCoordinate;
+
+	if (false) //Whether or not to apply parallax mapping.
+	{
+		//Calculate the tangent space perceiver position.
+		vec3 tangent_space_perceiver_position = fragmentTangentSpaceMatrix * perceiverWorldPosition;
+
+		//Calculate the tangent space fragment position.
+		vec3 tangent_space_fragment_position = fragmentTangentSpaceMatrix * fragmentCurrentWorldPosition;
+
+		//Calculate the tangent space view direction.
+		vec3 tangent_space_view_direction = normalize(tangent_space_perceiver_position - tangent_space_fragment_position);
+
+		//Apply parallax mapping to the texture coordinate.
+		final_texture_coordinate = ApplyParallaxMapping(final_texture_coordinate, tangent_space_view_direction);
+	}
+
+   //Sample the albedo.
+   vec3 albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_texture_coordinate).rgb;
 
    //Sample the normal map.
-   vec3 normalMap = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
+   vec3 normalMap = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_texture_coordinate).xyz;
 
    //Sample the material properties.
-   vec4 materialProperties = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
+   vec4 materialProperties = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_texture_coordinate);
 
    //Calculate the shading normal.
     vec3 shadingNormal = normalMap * 2.0f - 1.0f;
     shadingNormal = fragmentTangentSpaceMatrix * shadingNormal;
     shadingNormal = normalize(shadingNormal);
 
-    float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), shadingNormal, materialPropertyFlags), 0.0f);
-
-    albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
-
     //Calculate the velocity.
     vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), intBitsToFloat(materialPropertyFlags));
+    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0);
     sceneFeatures2 = vec4(PackNormal(shadingNormal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
     sceneFeatures3 = materialProperties;
 }
