@@ -6,6 +6,7 @@
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
+#include <Entities/Types/DistanceTriggerEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ModelEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
@@ -15,11 +16,6 @@
 //Systems.
 #include <Systems/EntityCreationSystem.h>
 #include <Systems/PhysicsSystem.h>
-
-//Static variable definitions.
-constexpr Vector3<float> Entity::_DefaultPosition;
-constexpr Vector3<float> Entity::_DefaultRotation;
-constexpr Vector3<float> Entity::_DefaultScale;
 
 /*
 *	Initializes this entity.

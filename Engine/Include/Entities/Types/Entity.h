@@ -41,15 +41,4 @@ public:
 	*/
 	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
 
-private:
-
-	//The default position.
-	static constexpr Vector3<float> _DefaultPosition{ 0.0f, 0.0f, 0.0f };
-
-	//The default rotation.
-	static constexpr Vector3<float> _DefaultRotation{ 0.0f, 0.0f, 0.0f };
-
-	//The default scale.
-	static constexpr Vector3<float> _DefaultScale{ 1.0f, 1.0f, 1.0f };
-
 };

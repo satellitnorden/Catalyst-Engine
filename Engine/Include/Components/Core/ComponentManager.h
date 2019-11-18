@@ -6,6 +6,7 @@
 
 //Components.
 #include <Components/Transient/AnimatedModelComponent.h>
+#include <Components/Transient/DistanceTriggerComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ModelComponent.h>
 #include <Components/Transient/ParticleSystemComponent.h>
@@ -55,6 +56,7 @@ class ComponentManager final
 public:
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DistanceTrigger, DistanceTriggerComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Model, ModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ParticleSystem, ParticleSystemComponent);

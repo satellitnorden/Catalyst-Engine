@@ -24,4 +24,11 @@ public:
 	*/
 	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
+private:
+
+	/*
+	*	Updates all distance triggers.
+	*/
+	void UpdateDistanceTriggers() NOEXCEPT;
+
 };
