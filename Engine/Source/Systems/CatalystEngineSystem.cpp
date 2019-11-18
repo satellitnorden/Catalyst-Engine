@@ -33,6 +33,7 @@
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CatalystEngineSystem);
@@ -177,6 +178,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Logic update phase.
 	*/
 	_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
+	WorldSystem::Instance->LogicUpdate(&context);
 
 	/*
 	*	Physics update phase.

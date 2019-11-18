@@ -598,6 +598,72 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 			break;
 		}
 
+		case Texture2DBuildParameters::Mode::RToRGBAToA:
+		{
+			//Load the files for the R and A channels.
+			int32 width, height, numberOfChannels;
+
+			byte* RESTRICT dataR{ parameters._FileR ? stbi_load(parameters._FileR, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte* RESTRICT dataA{ parameters._FileA ? stbi_load(parameters._FileA, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+
+			const uint32 uWidth{ static_cast<uint32>(width) };
+			const uint32 uHeight{ static_cast<uint32>(height) };
+
+			//Write the width and height of the texture to the file.
+			file.Write(&uWidth, sizeof(uint32));
+			file.Write(&uHeight, sizeof(uint32));
+
+			//Write the R and A channel data to the file.
+			constexpr byte DEFAULT_R{ 255 };
+			constexpr byte DEFAULT_A{ 255 };
+
+			for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
+			{
+				const uint64 textureSize{ (uWidth >> i)* (uHeight >> i) };
+
+				//If this is the base mipmap level, treat it differently.
+				if (i == 0)
+				{
+					for (uint64 j = 0; j < textureSize; ++j)
+					{
+						file.Write(dataR ? &dataR[j * 4 + 0] : &DEFAULT_R, sizeof(byte));
+						file.Write(dataR ? &dataR[j * 4 + 1] : &DEFAULT_R, sizeof(byte));
+						file.Write(dataR ? &dataR[j * 4 + 2] : &DEFAULT_R, sizeof(byte));
+						file.Write(dataA ? &dataA[j * 4] : &DEFAULT_A, sizeof(byte));
+					}
+				}
+
+				else
+				{
+					byte* RESTRICT downsampledDataR{ dataR ? static_cast<byte * RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
+					byte* RESTRICT downsampledDataA{ dataA ? static_cast<byte * RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
+
+					if (dataR) stbir_resize_uint8(dataR, width, height, 0, downsampledDataR, uWidth >> i, uHeight >> i, 0, 4);
+					if (dataA) stbir_resize_uint8(dataA, width, height, 0, downsampledDataA, uWidth >> i, uHeight >> i, 0, 4);
+
+					for (uint64 j = 0; j < textureSize; ++j)
+					{
+						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 0] : &DEFAULT_R, sizeof(byte));
+						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 1] : &DEFAULT_R, sizeof(byte));
+						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 2] : &DEFAULT_R, sizeof(byte));
+						file.Write(downsampledDataA ? &downsampledDataA[j * 4] : &DEFAULT_A, sizeof(byte));
+					}
+
+					Memory::Free(downsampledDataR);
+					Memory::Free(downsampledDataA);
+				}
+			}
+
+			//Free the R and A channel data.
+			stbi_image_free(dataR);
+			stbi_image_free(dataA);
+
+			//Close the file.
+			file.Close();
+
+			break;
+		}
+
 		case Texture2DBuildParameters::Mode::RToRGToGBToBAToA:
 		{
 			//Load the files for the R, G, B and A channels.

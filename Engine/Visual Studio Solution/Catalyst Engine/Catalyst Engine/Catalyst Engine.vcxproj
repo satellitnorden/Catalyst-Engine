@@ -330,6 +330,7 @@
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\WorldSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
@@ -484,6 +485,7 @@
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
