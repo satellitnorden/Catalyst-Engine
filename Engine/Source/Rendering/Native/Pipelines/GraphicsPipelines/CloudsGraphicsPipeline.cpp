@@ -99,10 +99,6 @@ void CloudsGraphicsPipeline::Initialize() NOEXCEPT
 */
 void CloudsGraphicsPipeline::Execute() NOEXCEPT
 {
-	//Define constants.
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.5f };
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
