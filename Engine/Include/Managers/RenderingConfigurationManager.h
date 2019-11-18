@@ -157,7 +157,7 @@ private:
 	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::None };
+	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };

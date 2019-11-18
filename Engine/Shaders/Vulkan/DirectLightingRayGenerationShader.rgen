@@ -9,15 +9,16 @@
 #include "CatalystLightingData.glsl"
 #define RAY_TRACING_SHADER
 #include "CatalystModelData.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba32f) uniform image2D sceneFeatures1Image;
+layout (set = 3, binding = 0, rgba8) uniform image2D sceneFeatures1Image;
 layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures3Image;
-layout (set = 3, binding = 3, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 3, binding = 2, rgba8) uniform image2D sceneFeatures3Image;
+layout (set = 3, binding = 3, r8) uniform image2D ambientOcclusionImage;
 layout (set = 3, binding = 4, rgba32f) uniform image2D sceneImage;
 
 //In parameters.
@@ -29,19 +30,16 @@ void main()
 	vec4 sceneFeatures1 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
 	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
 	vec4 sceneFeatures3 = imageLoad(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy));
-	vec4 sceneFeatures4 = imageLoad(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy));
+	vec4 ambient_occlusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : imageLoad(ambientOcclusionImage, ivec2(gl_LaunchIDNV.xy));
 
 	//Retrieve all properties.
+	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
-	float luminanceMultiplier = sceneFeatures1.w;
-	vec3 geometryNormal = sceneFeatures2.xyz;
 	float hitDistance = sceneFeatures2.w;
-	vec3 shadingNormal = sceneFeatures3.xyz;
-	int materialProperties = floatBitsToInt(sceneFeatures3.w);
-	float roughness = sceneFeatures4.x;
-	float metallic = sceneFeatures4.y;
-	float ambientOcclusion = sceneFeatures4.z;
-	float luminance = sceneFeatures4.w * luminanceMultiplier;
+	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
+	float roughness = sceneFeatures3.x;
+	float metallic = sceneFeatures3.y;
+	float ambientOcclusion = pow(sceneFeatures3.z * pow(ambient_occlusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
 	//Retrieve the current scene.
 	vec3 currentScene = imageLoad(sceneImage, ivec2(gl_LaunchIDNV.xy)).rgb;
@@ -53,7 +51,7 @@ void main()
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
 
 	//Calculate the hit position.
-	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + geometryNormal * 0.001f;
+	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + shadingNormal * 0.01f;
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
@@ -67,30 +65,25 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				//Determine the visibility.
-				if (shadowsMode == SHADOWS_MODE_NONE)
-				{
-					visibility = 1.0f;
-				}
+				//Sample the cloud density.
+				float cloud_density = SampleCloudDensityInDirection(hitPosition, -light.position_or_direction, 2);
 
-				else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
-				{
-					visibility = 0.0f;
+				//Trace the visibility.
+				visibility = 0.0f;
 
-					traceNV(
-							topLevelAccelerationStructure, 																//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							hitPosition, 																				//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light.position_or_direction,																//direction
-							CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
-							1 																							//payload
-							);
-				}
+				traceNV(
+						topLevelAccelerationStructure, 																//topLevel
+						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+						0xff, 																						//cullMask
+						0, 																							//sbtRecordOffset
+						0, 																							//sbtRecordStride
+						0, 																							//missIndex
+						hitPosition, 																				//origin
+						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+						-light.position_or_direction,																//direction
+						viewDistance,																				//Tmax
+						1 																							//payload
+						);
 
 				directLighting += CalculateDirectLight(	-rayDirection,
 														-light.position_or_direction,
@@ -98,9 +91,9 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
-														1.0f,
-														1.0f,
-														light.luminance) * visibility;
+														ambientOcclusion,
+														material.thickness,
+														light.luminance) * (1.0f - cloud_density) * visibility;
 
 				break;
 			}
@@ -113,30 +106,22 @@ void main()
 				//Calculate the attenuation.
 				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-				//Determine the visibility.
-				if (shadowsMode == SHADOWS_MODE_NONE)
-				{
-					visibility = 1.0f;
-				}
+				//Trace the visibility.
+				visibility = 0.0f;
 
-				else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
-				{
-					visibility = 0.0f;
-
-					traceNV(
-							topLevelAccelerationStructure, 																//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							hitPosition, 																				//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							lightDirection,																				//direction
-							lengthToLight,																				//Tmax
-							1 																							//payload
-							);
-				}
+				traceNV(
+						topLevelAccelerationStructure, 																//topLevel
+						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+						0xff, 																						//cullMask
+						0, 																							//sbtRecordOffset
+						0, 																							//sbtRecordStride
+						0, 																							//missIndex
+						hitPosition, 																				//origin
+						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+						lightDirection,																				//direction
+						lengthToLight,																				//Tmax
+						1 																							//payload
+						);
 
 				directLighting += CalculateDirectLight(	-rayDirection,
 														lightDirection,
@@ -144,8 +129,8 @@ void main()
 														shadingNormal,
 														roughness,
 														metallic,
-														1.0f,
-														1.0f,
+														ambientOcclusion,
+														material.thickness,
 														light.luminance) * attenuation * visibility;
 
 				break;
