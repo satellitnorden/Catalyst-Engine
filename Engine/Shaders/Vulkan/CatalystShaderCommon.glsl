@@ -11,7 +11,7 @@
 #include "CatalystGeometryMath.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (2.75f) //0.25f step.
+#define AMBIENT_OCCLUSION_POWER (2.5f) //0.25f step.
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)

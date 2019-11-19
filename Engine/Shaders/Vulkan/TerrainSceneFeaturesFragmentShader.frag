@@ -57,9 +57,9 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 */
 vec4 SampleTerrainMaterial(int index, vec3 world_position, vec3 normalized_normal)
 {
-    return  texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.yz * 0.25f) * normalized_normal.x
-            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xz * 0.25f) * normalized_normal.y
-            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xy * 0.25f) * normalized_normal.z;
+    return  texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.yz * 0.125f) * normalized_normal.x
+            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xz * 0.125f) * normalized_normal.y
+            + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xy * 0.125f) * normalized_normal.z;
 
     /*
     vec2 coordinate =   world_position.yz * float(normalized_normal.x > normalized_normal.y && normalized_normal.x > normalized_normal.z)
