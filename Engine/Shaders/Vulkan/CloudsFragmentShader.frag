@@ -93,7 +93,7 @@ void main()
          //Add to the cloud color.
          if (new_density > 0.0f)
          {
-            cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * exp(-(0.75f + CLOUD_DENSITY))) * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
+            cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * exp(-(1.0f + CLOUD_DENSITY))) * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
          }
 
          if (density >= 0.99f)
