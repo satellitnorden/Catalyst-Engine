@@ -4,15 +4,25 @@
 
 //Core.
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/DynamicString.h>
+#include <Core/General/HashString.h>
+
+//File handling.
+#include <FileHandling/BinaryFile.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Rendering.
+#include <Rendering/Native/Texture2D.h>
+
 //Resources.
+#include <Resources/Core/ResourcesCore.h>
 #include <Resources/Building/ResourceBuilder.h>
 
 #define BUILD_ENGINE_CLOUD_TEXTURE false
 #define BUILD_ENGINE_FONTS false
+#define BUILD_ENGINE_OCEAN_TEXTURE false
 #define BUILD_ENGINE_TEXTURES false
 
 /*
@@ -37,6 +47,10 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		ResourceBuilder::BuildFont(parameters);
 	}
+#endif
+
+#if BUILD_ENGINE_OCEAN_TEXTURE
+	BuildOceanTexture();
 #endif
 
 #if BUILD_ENGINE_TEXTURES
@@ -1016,7 +1030,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_CLOUD_FONTS || BUILD_ENGINE_TEXTURES
+#if BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_TEXTURES
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 
@@ -1090,6 +1104,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font.cr");
 		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Cloud_Texture3D.cr");
 		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Color_Grading_Lookup_Texture2D.cr");
+		resourceCollectionBuildParameters._Resources.EmplaceSlow("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Ocean_Texture2D.cr");
 
 		ResourceBuilder::BuildResourceCollection(resourceCollectionBuildParameters);
 	}
@@ -1223,5 +1238,138 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 	parameters._Texture = &final_texture;
 
 	ResourceBuilder::BuildTexture3D(parameters);
+}
+
+/*
+*	Builds the ocean texture.
+*/
+void CatalystEngineResourceBuilding::BuildOceanTexture()
+{
+	//Defone constants.
+	constexpr uint32 OCEAN_TEXTURE_RESOLUTION{ 64 };
+	constexpr uint32 OCEAN_TEXTURE_LAYER_0_POINTS{ 64 };
+
+	//Generate the points for the layers.
+	StaticArray<DynamicArray<Vector2<float>>, 4> points;
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		const uint32 cloud_layer_points{ OCEAN_TEXTURE_LAYER_0_POINTS << i };
+
+		points[i].Reserve(cloud_layer_points * 27);
+
+		for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
+		{
+			points[i].EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+		}
+	}
+
+	//Copy the first N points to the sides of the cube.
+	for (int8 X{ -1 }; X <= 1; ++X)
+	{
+		for (int8 Y{ -1 }; Y <= 1; ++Y)
+		{
+			if (X == 0 && Y == 0)
+			{
+				continue;
+			}
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				const uint32 cloud_layer_points{ OCEAN_TEXTURE_LAYER_0_POINTS << i };
+
+				for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
+				{
+					const Vector2<float> offset{ static_cast<float>(X), static_cast<float>(Y) };
+					points[i].EmplaceFast(points[i][j] + offset);
+				}
+			}
+		}
+	}
+
+	//Create the temporary texture.
+	Texture2D<Vector4<float>> temporary_texture{ OCEAN_TEXTURE_RESOLUTION };
+
+	//Keep track of the longest distances.
+	StaticArray<float, 4> longest_distances{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+
+	for (uint32 X{ 0 }; X < OCEAN_TEXTURE_RESOLUTION; ++X)
+	{
+		for (uint32 Y{ 0 }; Y < OCEAN_TEXTURE_RESOLUTION; ++Y)
+		{
+			//Calcualte the position in the texture.
+			const Vector2<float> position{	static_cast<float>(X) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION),
+											static_cast<float>(Y) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION) };
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				//Find the closest distance.
+				float closest_distance{ FLOAT_MAXIMUM };
+
+				for (const Vector2<float>& point : points[i])
+				{
+					const float distance{ Vector2<float>::Length(position - point) };
+					closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
+				}
+
+				//Write to the texture.
+				temporary_texture.At(X, Y)[i] = closest_distance;
+
+				//Update the longest distance.
+				longest_distances[i] = CatalystBaseMath::Maximum<float>(longest_distances[i], closest_distance);
+			}
+		}
+	}
+
+	//Create the final texture.
+	Texture2D<Vector4<byte>> final_texture{ OCEAN_TEXTURE_RESOLUTION };
+
+	for (uint32 X{ 0 }; X < OCEAN_TEXTURE_RESOLUTION; ++X)
+	{
+		for (uint32 Y{ 0 }; Y < OCEAN_TEXTURE_RESOLUTION; ++Y)
+		{
+			//Get the distances at the current position.
+			Vector4<float> distances{ temporary_texture.At(X, Y) };
+
+			//Normalize the distances.
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				distances[i] /= longest_distances[i];
+			}
+
+			//Convert it into byte.
+			final_texture.At(X, Y) = Vector4<byte>(static_cast<byte>(distances[0] * UINT8_MAXIMUM), static_cast<byte>(distances[1] * UINT8_MAXIMUM), static_cast<byte>(distances[2] * UINT8_MAXIMUM), static_cast<byte>(distances[3] * UINT8_MAXIMUM));
+		}
+	}
+
+	//What should the file be called?
+	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Ocean_Texture2D" };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource type to the file.
+	constexpr ResourceType RESOURCE_TYPE{ ResourceType::Texture2D };
+	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	constexpr HashString RESOURCE_ID{ "Ocean_Texture2D" };
+	file.Write(&RESOURCE_ID, sizeof(HashString));
+
+	//Write the number of mipmap levels to the file.
+	constexpr uint8 MIPMAP_LEVELS{ 1 };
+	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
+
+	//Write the width and height of the texture to the file.
+	file.Write(&OCEAN_TEXTURE_RESOLUTION, sizeof(uint32));
+	file.Write(&OCEAN_TEXTURE_RESOLUTION, sizeof(uint32));
+
+	//Write the texture data to the file.
+	file.Write(final_texture.Data(), OCEAN_TEXTURE_RESOLUTION * OCEAN_TEXTURE_RESOLUTION * 4);
+
+	//Cloe the file.
+	file.Close();
 }
 #endif

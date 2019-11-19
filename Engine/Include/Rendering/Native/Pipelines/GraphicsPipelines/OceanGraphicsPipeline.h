@@ -23,29 +23,14 @@ public:
 
 private:
 
-	//The ocean texture.
-	Texture2DHandle _OceanTexture;
+	//The ocean texture index.
+	uint32 _OceanTextureIndex;
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	/*
-	*	Returns the ocean height at the given coordinate.
-	*/
-	float OceanHeight(const Vector2<float> coordinate) const NOEXCEPT;
-
-	/*
-	*	Returns the ocean normal at the given coordinate.
-	*/
-	void OceanNormal(const Vector2<float> coordinate, Vector3<float> *const RESTRICT normal, float *const RESTRICT height) const NOEXCEPT;
-
-	/*
-	*	Creates the ocean texture.
-	*/
-	void CreateOceanTexture() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

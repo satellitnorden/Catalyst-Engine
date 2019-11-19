@@ -57,12 +57,12 @@ enum class RenderPassStage : uint8
 {
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SceneFeatures,
+	Ocean,
 	AmbientOcclusion,
 	LuminanceLighting,
 	DirectLighting,
 	IndirectLighting,
 	Sky,
-	Ocean,
 	VolumetricLighting,
 #else
 	PathTracing,

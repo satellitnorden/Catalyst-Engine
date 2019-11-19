@@ -23,6 +23,11 @@ namespace CatalystEngineResourceBuilding
 	*	Builds the cloud texture.
 	*/
 	void BuildCloudTexture();
+
+	/*
+	*	Builds the ocean texture.
+	*/
+	void BuildOceanTexture();
 #endif
 
 }
