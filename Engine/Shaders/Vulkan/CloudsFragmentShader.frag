@@ -78,7 +78,7 @@ void main()
       vec3 cloud_color = vec3(0.0f);
 
       //Start off with ambient lighting.
-      cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity();
+      cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() * 0.25f + CLOUD_BASE_COLOR * lower_sky_color * 0.25f + CLOUD_BASE_COLOR * upper_sky_color * 0.25f;
 
       for (int i = 0; i < CLOUD_NUMBER_OF_SAMPLES; ++i)
       {
@@ -93,7 +93,7 @@ void main()
          //Add to the cloud color.
          if (new_density > 0.0f)
          {
-            cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * exp(-(1.0f + CLOUD_DENSITY))) * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
+            cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * exp(-(1.25f + CLOUD_DENSITY))) * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
          }
 
          if (density >= 0.99f)
