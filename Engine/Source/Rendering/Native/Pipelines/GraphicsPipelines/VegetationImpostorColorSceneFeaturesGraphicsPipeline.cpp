@@ -34,7 +34,7 @@ class VegetationImpostorFragmentPushConstantData final
 
 public:
 
-	int32 _AlbedoTextureIndex;
+	int32 _MaterialIndex;
 
 };
 
@@ -164,8 +164,8 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Need a correct texture index to render.
-		if (component->_ImpostorAlbedoTextureIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES)
+		//Need a correct material index to render.
+		if (component->_ImpostorMaterialIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS)
 		{
 			continue;
 		}
@@ -181,7 +181,7 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		VegetationImpostorFragmentPushConstantData fragment_data;
 
-		fragment_data._AlbedoTextureIndex = component->_ImpostorAlbedoTextureIndex;
+		fragment_data._MaterialIndex = component->_ImpostorMaterialIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
 

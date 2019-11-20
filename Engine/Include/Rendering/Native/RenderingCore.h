@@ -22,7 +22,7 @@
 namespace RenderingConstants
 {
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 1'024 };
-	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS{ 255 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS{ 256 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_MODELS{ 2'048 };
 
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };

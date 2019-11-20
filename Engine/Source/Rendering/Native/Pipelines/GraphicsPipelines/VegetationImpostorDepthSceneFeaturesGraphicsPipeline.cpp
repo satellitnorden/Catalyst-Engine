@@ -34,7 +34,7 @@ class VegetationImpostorFragmentPushConstantData final
 
 public:
 
-	int32 _MaskTextureIndex;
+	int32 _MaterialIndex;
 	float _CutoffDistanceSquared;
 
 };
@@ -159,8 +159,8 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Need a correct texture index to render.
-		if (component->_ImpostorMaskTextureIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES)
+		//Need a correct material index to render.
+		if (component->_ImpostorMaterialIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS)
 		{
 			continue;
 		}
@@ -175,7 +175,7 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		VegetationImpostorFragmentPushConstantData fragment_data;
 
-		fragment_data._MaskTextureIndex = component->_ImpostorMaskTextureIndex;
+		fragment_data._MaterialIndex = component->_ImpostorMaterialIndex;
 		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);

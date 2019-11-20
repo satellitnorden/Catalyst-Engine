@@ -27,11 +27,8 @@ public:
 	//The cutoff distance.
 	float _CutoffDistance;
 
-	//The impostor albedo texture index.
-	uint32 _ImpostorAlbedoTextureIndex;
-
-	//The impostor mask texture index.
-	uint32 _ImpostorMaskTextureIndex;
+	//The impostor material index.
+	uint32 _ImpostorMaterialIndex;
 
 	//The impostor distance.
 	float _ImpostorDistance;
