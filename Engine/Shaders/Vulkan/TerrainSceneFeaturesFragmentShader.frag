@@ -42,6 +42,40 @@ layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
 
 /*
+*   Calculates the texture coordinate.
+*/
+vec2 CalculateTextureCoordinate(vec3 world_position, vec3 normal)
+{
+    //Only use the absolute values of the normal for this calculation.
+    normal = abs(normal);
+
+    //Normalize the normal.
+    float inverse_normal_sum = 1.0f / (normal.x + normal.y + normal.z);
+
+    normal.x = normal.x * inverse_normal_sum;
+    normal.y = normal.y * inverse_normal_sum;
+    normal.z = normal.z * inverse_normal_sum;
+
+    //Sample the noise.
+    vec4 noise = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+    if (noise[0] <= normal.x)
+    {
+        return world_position.yz * 0.25f;
+    }
+
+    else if (noise[0] <= (normal.x + normal.y))
+    {
+        return world_position.xz * 0.25f;
+    }
+
+    else
+    {
+        return world_position.xy * 0.25f;
+    }
+}
+
+/*
 * Returns the screen coordinate with the given view matrix and world position.
 */
 vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
