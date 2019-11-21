@@ -30,7 +30,7 @@ layout (location = 1) out vec2 fragmentTextureCoordinate;
 void main()
 {
 	//New way. (:
-	if (heightTextureIndex < 1024)
+	if (heightTextureIndex > 1024)
 	{
 		gl_Position = viewMatrix * vec4(vertexPosition, 1.0f);
 	}
