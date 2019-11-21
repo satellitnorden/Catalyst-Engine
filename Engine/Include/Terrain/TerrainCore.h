@@ -24,4 +24,7 @@ class TerrainProperties;
 
 //Type aliases.
 using HeightFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &world_position, float *const RESTRICT height, const void *const RESTRICT context);
-using MaterialFunction = void(*)(const TerrainProperties &properties, const Vector3<float> & world_position, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material, const void* const RESTRICT context);
+using MaterialFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &world_position, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material, const void *const RESTRICT context);
+
+//Defines if the new terrain system should be used or not.
+#define NEW_TERRAIN_SYSTEM false

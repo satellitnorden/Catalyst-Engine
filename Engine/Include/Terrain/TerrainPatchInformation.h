@@ -1,5 +1,41 @@
 #pragma once
 
+//Terrain.
+#include <Terrain/TerrainCore.h>
+
+#if NEW_TERRAIN_SYSTEM
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+
+//Math.
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+
+//Rendering.
+#include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/RenderingCore.h>
+
+class TerrainPatchInformation final
+{
+
+public:
+
+	//The identifier.
+	uint64 _Identifier;
+
+	//The axis-aligned bounding box for this terrain patch.
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+
+	//The height texture.
+	Texture2DHandle _HeightTexture;
+
+	//The normal and material texture.
+	Texture2DHandle _NormalAndMaterialTexture;
+
+};
+
+#else
+
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
@@ -31,3 +67,5 @@ public:
 	Texture2DHandle _NormalAndMaterialTexture;
 
 };
+
+#endif

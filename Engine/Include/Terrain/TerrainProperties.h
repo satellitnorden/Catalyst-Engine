@@ -1,5 +1,34 @@
 #pragma once
 
+//Terrain.
+#include <Terrain/TerrainCore.h>
+
+#if NEW_TERRAIN_SYSTEM
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
+
+//Terrain.
+#include <Terrain/TerrainCore.h>
+
+class TerrainProperties final
+{
+
+public:
+
+	//The height function.
+	HeightFunction _HeightFunction{ nullptr };
+
+	//The material function.
+	MaterialFunction _MaterialFunction{ nullptr };
+
+};
+
+#else
+
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
@@ -30,3 +59,5 @@ public:
 	MaterialFunction _MaterialFunction{ nullptr };
 
 };
+
+#endif

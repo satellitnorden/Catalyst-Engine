@@ -90,15 +90,11 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	AddPushConstantRange(ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(2);
+	SetNumberOfVertexInputAttributeDescriptions(1);
 	AddVertexInputAttributeDescription(	0,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(TerrainVertex, _Position));
-	AddVertexInputAttributeDescription(	1,
-										0,
-										VertexInputAttributeDescription::Format::X32SignedInt,
-										offsetof(TerrainVertex, _Borders));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -146,9 +142,11 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
+#if !NEW_TERRAIN_SYSTEM
 	//Bind the vertex/index buffer.
 	commandBuffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
 	commandBuffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
+#endif
 
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
@@ -162,13 +160,23 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
+#if NEW_TERRAIN_SYSTEM
+		//Bind the vertex/index buffer.
+		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &OFFSET);
+		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
+#endif
+
 		//Push constants.
 		TerrainVertexPushConstantData vertexData;
 
 		vertexData._WorldPosition = information._WorldPosition;
 		vertexData._PatchSize = information._PatchSize;
 		vertexData._Borders = information._Borders;
+#if NEW_TERRAIN_SYSTEM
+		vertexData._HeightTextureIndex = UINT32_MAX;
+#else
 		vertexData._HeightTextureIndex = information._HeightTextureIndex;
+#endif
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(TerrainVertexPushConstantData), &vertexData);
 
@@ -181,7 +189,11 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData), &fragmentData);
 
 		//Draw the patch!
+#if NEW_TERRAIN_SYSTEM
+		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
+#else
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
+#endif
 	}
 
 	//End the command buffer.
