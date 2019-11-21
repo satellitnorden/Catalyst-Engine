@@ -31,23 +31,33 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	_ComponentsIndex = ComponentManager::GetNewVegetationComponentsIndex(this);
 
 	//Copy the data.
-	const VegetationInitializationData *const RESTRICT vegetationInitializationData{ static_cast<const VegetationInitializationData *const RESTRICT>(data) };
+	const VegetationInitializationData *const RESTRICT vegetation_initialization_data{ static_cast<const VegetationInitializationData *const RESTRICT>(data) };
 	VegetationComponent& component{ ComponentManager::GetVegetationVegetationComponents()[_ComponentsIndex] };
 
-	RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(vegetationInitializationData->_Transformations, vegetationInitializationData->_Model->_ModelSpaceAxisAlignedBoundingBox, &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(vegetation_initialization_data->_Transformations, vegetation_initialization_data->_Model->_ModelSpaceAxisAlignedBoundingBox, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._Visibility = false;
-	component._Model = vegetationInitializationData->_Model;
-	component._GlobalMaterialIndex = vegetationInitializationData->_GlobalMaterialIndex;
-	component._CutoffDistance = vegetationInitializationData->_CutoffDistance;
-	component._ImpostorMaterialIndex = vegetationInitializationData->_ImpostorMaterialIndex;
-	component._ImpostorDistanceSquared = vegetationInitializationData->_ImpostorDistance * vegetationInitializationData->_ImpostorDistance;
-	component._ImpostorHalfWidth = vegetationInitializationData->_ImpostorWidth * 0.5f;
-	component._ImpostorHeight = vegetationInitializationData->_ImpostorHeight;
-	component._LargeScaleWindDisplacementFactor = vegetationInitializationData->_LargeScaleWindDisplacementFactor;
-	component._MediumScaleWindDisplacementFactor = vegetationInitializationData->_MediumScaleWindDisplacementFactor;
-	component._SmallScaleWindDisplacementFactor = vegetationInitializationData->_SmallScaleWindDisplacementFactor;
-	RenderingUtilities::CreateTransformationsBuffer(vegetationInitializationData->_Transformations, &component._TransformationsBuffer);
-	component._NumberOfTransformations = static_cast<uint32>(vegetationInitializationData->_Transformations.Size());
+	component._Model = vegetation_initialization_data->_Model;
+	component._GlobalMaterialIndex = vegetation_initialization_data->_GlobalMaterialIndex;
+	component._CutoffDistance = vegetation_initialization_data->_CutoffDistance;
+	component._ImpostorMaterialIndex = vegetation_initialization_data->_ImpostorMaterialIndex;
+	component._ImpostorDistanceSquared = vegetation_initialization_data->_ImpostorDistance * vegetation_initialization_data->_ImpostorDistance;
+	component._ImpostorHalfWidth = vegetation_initialization_data->_ImpostorWidth * 0.5f;
+	component._ImpostorHeight = vegetation_initialization_data->_ImpostorHeight;
+	component._LargeScaleWindDisplacementFactor = vegetation_initialization_data->_LargeScaleWindDisplacementFactor;
+	component._MediumScaleWindDisplacementFactor = vegetation_initialization_data->_MediumScaleWindDisplacementFactor;
+	component._SmallScaleWindDisplacementFactor = vegetation_initialization_data->_SmallScaleWindDisplacementFactor;
+	RenderingUtilities::CreateTransformationsBuffer(vegetation_initialization_data->_Transformations, &component._TransformationsBuffer);
+	component._NumberOfTransformations = static_cast<uint32>(vegetation_initialization_data->_Transformations.Size());
+
+	//Add the static instances.
+	if (RenderingSystem::Instance->IsRayTracingSupported()
+		&& RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component._GlobalMaterialIndex)._Type == Material::Type::Opaque)
+	{
+		for (const Matrix4 &transformation : vegetation_initialization_data->_Transformations)
+		{
+			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(transformation, component._Model->_BottomLevelAccelerationStructure, 0));
+		}
+	}
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<VegetationInitializationData>(data);

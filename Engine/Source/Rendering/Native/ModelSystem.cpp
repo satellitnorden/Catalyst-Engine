@@ -51,6 +51,8 @@ void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEP
 */
 void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Don't need this anymore. (:
+	/*
 	//Update the current model data render data table.
 	RenderDataTableHandle &currentModelDataRenderDataTable{ _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
@@ -102,6 +104,7 @@ void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEX
 	{
 		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &currentModelDataRenderDataTable, _TopLevelAccelerationStructure);
 	}
+	*/
 }
 
 /*

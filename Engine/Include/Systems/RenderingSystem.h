@@ -19,6 +19,7 @@
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/MaterialSystem.h>
 #include <Rendering/Native/ModelSystem.h>
+#include <Rendering/Native/RayTracingSystem.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
@@ -158,6 +159,14 @@ public:
 	RESTRICTED NO_DISCARD ModelSystem *const RESTRICT GetModelSystem() NOEXCEPT
 	{
 		return &_ModelSystem;
+	}
+
+	/*
+	*	Returns the ray tracing system.
+	*/
+	RESTRICTED NO_DISCARD RayTracingSystem *const RESTRICT GetRayTracingSystem() NOEXCEPT
+	{
+		return &_RayTracingSystem;
 	}
 
 	/*
@@ -354,6 +363,9 @@ private:
 
 	//The model system.
 	ModelSystem _ModelSystem;
+
+	//The ray tracing system.
+	RayTracingSystem _RayTracingSystem;
 
 	//The default texture 2D.
 	Texture2DHandle _DefaultTexture2D;

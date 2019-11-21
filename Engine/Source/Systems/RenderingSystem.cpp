@@ -121,6 +121,9 @@ void RenderingSystem::PostInitializeSystem()
 	//Post-initialize the model system.
 	_ModelSystem.PostInitialize();
 
+	//Post-initialize the ray tracing system.
+	_RayTracingSystem.PostInitialize();
+
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses();
 }
@@ -153,6 +156,9 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 
 	//Update the model system.
 	_ModelSystem.RenderUpdate(context);
+
+	//Update the ray tracing system.
+	_RayTracingSystem.RenderUpdate(context);
 
 	//This shouldn't really be here, but let's have it here for now...
 	AnimationSystem::Instance->RenderUpdate(context);

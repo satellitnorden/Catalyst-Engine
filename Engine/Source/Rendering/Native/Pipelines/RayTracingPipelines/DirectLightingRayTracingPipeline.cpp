@@ -27,7 +27,7 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
@@ -65,7 +65,7 @@ void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 

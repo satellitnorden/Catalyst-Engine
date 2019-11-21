@@ -31,14 +31,20 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	_ComponentsIndex = ComponentManager::GetNewModelComponentsIndex(this);
 
 	//Copy the data.
-	const ModelInitializationData *const RESTRICT modelInitializationData{ static_cast<const ModelInitializationData *const RESTRICT>(data) };
-	ModelComponent& modelComponent{ ComponentManager::GetModelModelComponents()[_ComponentsIndex] };
+	const ModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const ModelInitializationData *const RESTRICT>(data) };
+	ModelComponent& component{ ComponentManager::GetModelModelComponents()[_ComponentsIndex] };
 
-	modelComponent._Model = modelInitializationData->_Model;
-	modelComponent._PreviousWorldTransform = modelInitializationData->_Transform;
-	modelComponent._CurrentWorldTransform = modelInitializationData->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(modelComponent._Model->_ModelSpaceAxisAlignedBoundingBox, modelInitializationData->_Transform, &modelComponent._WorldSpaceAxisAlignedBoundingBox);
-	modelComponent._Material = modelInitializationData->_Material;
+	component._Model = model_initialization_data->_Model;
+	component._PreviousWorldTransform = model_initialization_data->_Transform;
+	component._CurrentWorldTransform = model_initialization_data->_Transform;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
+	component._Material = model_initialization_data->_Material;
+
+	//Add the static instance. Assume this model will not move for now.
+	if (RenderingSystem::Instance->IsRayTracingSupported())
+	{
+		RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(component._PreviousWorldTransform, component._Model->_BottomLevelAccelerationStructure, 0));
+	}
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<ModelInitializationData>(data);

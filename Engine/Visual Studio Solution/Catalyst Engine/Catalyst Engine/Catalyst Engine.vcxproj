@@ -254,6 +254,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RayTracingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h" />
@@ -448,6 +449,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RayTracingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\BloomRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.cpp" />

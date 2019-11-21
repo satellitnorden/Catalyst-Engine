@@ -7,10 +7,9 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
-#define RAY_TRACING_SHADER
-#include "CatalystModelData.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
@@ -72,7 +71,7 @@ void main()
 				visibility = 0.0f;
 
 				traceNV(
-						topLevelAccelerationStructure, 																//topLevel
+						STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
 						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 						0xff, 																						//cullMask
 						0, 																							//sbtRecordOffset
@@ -110,7 +109,7 @@ void main()
 				visibility = 0.0f;
 
 				traceNV(
-						topLevelAccelerationStructure, 																//topLevel
+						STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
 						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 						0xff, 																						//cullMask
 						0, 																							//sbtRecordOffset

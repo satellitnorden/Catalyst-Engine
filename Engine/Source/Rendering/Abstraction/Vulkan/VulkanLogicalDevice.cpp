@@ -118,7 +118,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.fragmentStoresAndAtomics = VK_FALSE;
 	physicalDeviceFeatures.shaderTessellationAndGeometryPointSize = VK_FALSE;
 	physicalDeviceFeatures.shaderImageGatherExtended = VK_FALSE;
-	physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_FALSE;
+	physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_TRUE;
 	physicalDeviceFeatures.shaderStorageImageMultisample = VK_FALSE;
 	physicalDeviceFeatures.shaderStorageImageReadWithoutFormat = VK_FALSE;
 	physicalDeviceFeatures.shaderStorageImageWriteWithoutFormat = VK_FALSE;
