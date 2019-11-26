@@ -211,10 +211,10 @@ public:
 		const float verticalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._Y * static_cast<float>(_Height)) };
 
 		//Perform the blends.
-		const TYPE blend1{ TYPE::LinearlyInterpolate(lowerLeftValue, lowerRightValue, horizontalBlend) };
-		const TYPE blend2{ TYPE::LinearlyInterpolate(upperLeftValue, upperRightValue, horizontalBlend) };
+		const TYPE blend1{ CatalystBaseMath::LinearlyInterpolate<TYPE>(lowerLeftValue, lowerRightValue, horizontalBlend) };
+		const TYPE blend2{ CatalystBaseMath::LinearlyInterpolate<TYPE>(upperLeftValue, upperRightValue, horizontalBlend) };
 
-		return TYPE::LinearlyInterpolate(blend1, blend2, verticalBlend);
+		return CatalystBaseMath::LinearlyInterpolate<TYPE>(blend1, blend2, verticalBlend);
 	}
 
 	/*

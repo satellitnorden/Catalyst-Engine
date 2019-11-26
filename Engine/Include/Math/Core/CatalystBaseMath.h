@@ -195,9 +195,10 @@ public:
 	/*
 	*	Linearly interpolate between two float values.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE LinearlyInterpolate(const TYPE A, const TYPE B, const float alpha) NOEXCEPT
 	{
-		return (valueA * (1.0f - alpha)) + (valueB * alpha);
+		return (A * (1.0f - alpha)) + (B * alpha);
 	}
 
 	/*
