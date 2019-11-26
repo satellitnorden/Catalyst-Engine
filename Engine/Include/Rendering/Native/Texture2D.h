@@ -107,20 +107,33 @@ public:
 	RESTRICTED TYPE *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
-	*	Initializes this CPU texture 2D.
+	*	Initializes this texture 2D.
 	*/
-	void Initialize(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
+	void Initialize(const uint32 initial_resolution) NOEXCEPT
 	{
 		//Set the width and height.
-		_Width = initialWidth;
-		_Height = initialHeight;
+		_Width = initial_resolution;
+		_Height = initial_resolution;
 
 		//Resize the underlying texture data to be able to hold all the data.
 		_Data.UpsizeFast(_Width * _Height);
 	}
 
 	/*
-	*	Initializes this CPU texture 2D.
+	*	Initializes this texture 2D.
+	*/
+	void Initialize(const uint32 initial_width, const uint32 initial_height) NOEXCEPT
+	{
+		//Set the width and height.
+		_Width = initial_width;
+		_Height = initial_height;
+
+		//Resize the underlying texture data to be able to hold all the data.
+		_Data.UpsizeFast(_Width * _Height);
+	}
+
+	/*
+	*	Initializes this texture 2D.
 	*/
 	void Initialize(const uint32 initialWidth, const uint32 initialHeight, const void *const RESTRICT data) NOEXCEPT
 	{

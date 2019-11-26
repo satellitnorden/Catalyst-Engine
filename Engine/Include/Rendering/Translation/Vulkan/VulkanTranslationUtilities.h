@@ -27,18 +27,18 @@ public:
 	{
 		switch (addressMode)
 		{
-			case AddressMode::ClampToBorder: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-			case AddressMode::ClampToEdge: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-			case AddressMode::MirrorClampToEdge: return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
-			case AddressMode::MirroredRepeat: return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-			case AddressMode::Repeat: return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			case AddressMode::ClampToBorder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+			case AddressMode::ClampToEdge: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			case AddressMode::MirrorClampToEdge: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+			case AddressMode::MirroredRepeat: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+			case AddressMode::Repeat: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 			default:
 			{
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown address mode.");
 #endif
-				return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 			}
 		}
 	}
@@ -50,23 +50,23 @@ public:
 	{
 		switch (blendFactor)
 		{
-			case BlendFactor::Zero: return VK_BLEND_FACTOR_ZERO;
-			case BlendFactor::One: return VK_BLEND_FACTOR_ONE;
-			case BlendFactor::SourceColor: return VK_BLEND_FACTOR_SRC_COLOR;
-			case BlendFactor::OneMinusSourceColor: return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-			case BlendFactor::DestinationColor: return VK_BLEND_FACTOR_DST_COLOR;
-			case BlendFactor::OneMinusDestinationColor: return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-			case BlendFactor::SourceAlpha: return VK_BLEND_FACTOR_SRC_ALPHA;
-			case BlendFactor::OneMinusSourceAlpha: return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-			case BlendFactor::DestinationAlpha: return VK_BLEND_FACTOR_DST_ALPHA;
-			case BlendFactor::OneMinusDestinationAlpha: return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+			case BlendFactor::Zero: return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+			case BlendFactor::One: return VkBlendFactor::VK_BLEND_FACTOR_ONE;
+			case BlendFactor::SourceColor: return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
+			case BlendFactor::OneMinusSourceColor: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+			case BlendFactor::DestinationColor: return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
+			case BlendFactor::OneMinusDestinationColor: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+			case BlendFactor::SourceAlpha: return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
+			case BlendFactor::OneMinusSourceAlpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			case BlendFactor::DestinationAlpha: return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
+			case BlendFactor::OneMinusDestinationAlpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
 
 			default:
 			{
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown blend factor.");
 #endif
-				return VK_BLEND_FACTOR_ZERO;
+				return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
 			}
 		}
 	}
@@ -80,11 +80,11 @@ public:
 
 #define MAPPING(USAGE, BIT) if (TEST_BIT(usage, USAGE)) flags |= BIT;
 
-		MAPPING(BufferUsage::IndexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-		MAPPING(BufferUsage::StorageBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(BufferUsage::RayTracing, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
-		MAPPING(BufferUsage::UniformBuffer, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-		MAPPING(BufferUsage::VertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		MAPPING(BufferUsage::IndexBuffer, VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		MAPPING(BufferUsage::StorageBuffer, VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(BufferUsage::RayTracing, VkBufferUsageFlagBits::VK_BUFFER_USAGE_RAY_TRACING_BIT_NV);
+		MAPPING(BufferUsage::UniformBuffer, VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		MAPPING(BufferUsage::VertexBuffer, VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
 #undef MAPPING
 
@@ -99,14 +99,14 @@ public:
 		switch (compareOperator)
 		{
 			default: return VK_COMPARE_OP_NEVER;
-			case CompareOperator::Always: return VK_COMPARE_OP_ALWAYS;
-			case CompareOperator::Equal: return VK_COMPARE_OP_EQUAL;
-			case CompareOperator::Greater: return VK_COMPARE_OP_GREATER;
-			case CompareOperator::GreaterOrEqual: return VK_COMPARE_OP_GREATER_OR_EQUAL;
-			case CompareOperator::Less: return VK_COMPARE_OP_LESS;
-			case CompareOperator::LessOrEqual: return VK_COMPARE_OP_LESS_OR_EQUAL;
-			case CompareOperator::Never: return VK_COMPARE_OP_NEVER;
-			case CompareOperator::NotEqual: return VK_COMPARE_OP_NOT_EQUAL;
+			case CompareOperator::Always: return VkCompareOp::VK_COMPARE_OP_ALWAYS;
+			case CompareOperator::Equal: return VkCompareOp::VK_COMPARE_OP_EQUAL;
+			case CompareOperator::Greater: return VkCompareOp::VK_COMPARE_OP_GREATER;
+			case CompareOperator::GreaterOrEqual: return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
+			case CompareOperator::Less: return VkCompareOp::VK_COMPARE_OP_LESS;
+			case CompareOperator::LessOrEqual: return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+			case CompareOperator::Never: return VkCompareOp::VK_COMPARE_OP_NEVER;
+			case CompareOperator::NotEqual: return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
 		}
 	}
 
@@ -328,15 +328,15 @@ public:
 	{
 		switch (textureFilter)
 		{
-			case TextureFilter::Linear: return VK_FILTER_LINEAR;
-			case TextureFilter::Nearest: return VK_FILTER_NEAREST;
+			case TextureFilter::Linear: return VkFilter::VK_FILTER_LINEAR;
+			case TextureFilter::Nearest: return VkFilter::VK_FILTER_NEAREST;
 
 			default:
 			{
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 				ASSERT(false, "Unknown texture filter.");
 #endif
-				return VK_FILTER_NEAREST;
+				return VkFilter::VK_FILTER_NEAREST;
 			}
 		}
 	}
