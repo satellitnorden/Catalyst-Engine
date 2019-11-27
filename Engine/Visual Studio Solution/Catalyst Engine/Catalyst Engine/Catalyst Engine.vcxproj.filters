@@ -1263,6 +1263,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBlurGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -10,6 +10,7 @@
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ModelComponent.h>
 #include <Components/Transient/ParticleSystemComponent.h>
+#include <Components/Transient/ParticleSystemRenderComponent.h>
 #include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/VegetationComponent.h>
 
@@ -37,16 +38,6 @@ public:																														\
 private:																													\
 	static DynamicArray<SECOND_COMPONENT> _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s;
 
-/*
-*	Declares an entity class with three components.
-*/
-#define DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT)		\
-DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT)									\
-public:																														\
-	RESTRICTED static NO_DISCARD THIRD_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT;	\
-private:																													\
-	static DynamicArray<THIRD_COMPONENT> _ ## ENTITY_CLASS ## THIRD_COMPONENT ## s;
-
 //Forward declarations.
 class Entity;
 
@@ -59,7 +50,7 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DistanceTrigger, DistanceTriggerComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Model, ModelComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ParticleSystem, ParticleSystemComponent);
+	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Vegetation, VegetationComponent);
 

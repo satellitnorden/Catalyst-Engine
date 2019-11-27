@@ -48,7 +48,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(3);
+	SetNumberOfVertexInputAttributeDescriptions(4);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
@@ -61,10 +61,14 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										sizeof(Vector3<float>) + sizeof(Vector3<float>));
+	AddVertexInputAttributeDescription(	3,
+										0,
+										VertexInputAttributeDescription::Format::X32SignedFloat,
+										sizeof(Vector3<float>) + sizeof(Vector3<float>) + sizeof(Vector2<float>));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
-	AddVertexInputBindingDescription(0, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
+	AddVertexInputBindingDescription(0, sizeof(ParticleInstanceData), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -113,7 +117,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer* const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
-	const ParticleSystemComponent* RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
+	const ParticleSystemRenderComponent* RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);
@@ -123,45 +127,18 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
 	{
-		/*
-		//Don't draw if it's not visible.
-		if (!component->_Visibility)
-		{
-			continue;
-		}
-
-		//Don't draw if it's not the correct level of detail.
-		if (component->_LevelOfDetail != VegetationComponent::LevelOfDetail::Impostor)
-		{
-			continue;
-		}
-
-		//Need a correct material index to render.
-		if (component->_ImpostorMaterialIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS)
-		{
-			continue;
-		}
-
 		//Push constants.
-		VegetationImpostorGeometryPushConstantData geometry_data;
+		ParticleSystemMaskedColorFragmentPushConstantData data;
 
-		geometry_data._ImpostorHalfWidth = component->_ImpostorHalfWidth;
-		geometry_data._ImpostorHeight = component->_ImpostorHeight;
+		data._MaterialIndex = 0;
 
-		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
-
-		//Push constants.
-		VegetationImpostorFragmentPushConstantData fragment_data;
-
-		fragment_data._MaterialIndex = component->_ImpostorMaterialIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
+		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
 
 		//Bind the transformations buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
 
-		commandBuffer->Draw(this, 1, component->_NumberOfTransformations);
-		*/
+		//Draw!
+		command_buffer->Draw(this, 1, component->_NumberOfTransformations);
 	}
 
 	//End the command buffer.

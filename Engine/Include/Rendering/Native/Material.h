@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Padding.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 class Material final
 {
 
@@ -71,6 +74,17 @@ public:
 
 	//The thickness.
 	float _Thickness{ 1.0f };
+
+	/*
+	*	Packs a color into an integer.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD int32 PackColor(const Vector4<float> &color) NOEXCEPT
+	{
+		return	static_cast<int32>(color._X * 255.0f)
+				| (static_cast<int32>(color._Y * 255.0f) << 8)
+				| (static_cast<int32>(color._Z * 255.0f) << 16)
+				| (static_cast<int32>(color._W * 255.0f) << 24);
+	}
 
 	/*
 	*	Default constructor.

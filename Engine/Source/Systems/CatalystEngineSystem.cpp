@@ -173,6 +173,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	InputSystem::Instance->PreUpdate(&context);
 	RenderingSystem::Instance->PreUpdate(&context);
+	WorldSystem::Instance->PreUpdate(&context);
 
 	/*
 	*	Logic update phase.

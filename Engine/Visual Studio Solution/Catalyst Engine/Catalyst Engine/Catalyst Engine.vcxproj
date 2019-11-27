@@ -60,6 +60,7 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\ModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\CompressionAlgorithms.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />

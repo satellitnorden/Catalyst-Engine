@@ -47,25 +47,35 @@ void main()
   Material material = GLOBAL_MATERIALS[material_index];
 
   //Sample the albedo.
-  vec3 albedo = texture(sampler2D(globalTextures[material.albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
-
-  //Sample the normal map.
-  vec3 normalMap = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
+  vec3 albedo = RetrieveAlbedo(material, fragmentTextureCoordinate);
 
   //Sample the material properties.
-  vec4 materialProperties = texture(sampler2D(globalTextures[material.material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate);
+  vec4 materialProperties = RetrieveMaterialProperties(material, fragmentTextureCoordinate);
 
   //Calculate the shading normal.
-  vec3 shadingNormal = normalMap * 2.0f - 1.0f;
-  shadingNormal = fragmentTangentSpaceMatrix * shadingNormal;
-  shadingNormal *= gl_FrontFacing ? 1.0f : -1.0f;
-  shadingNormal = normalize(shadingNormal);
+  vec3 shading_normal;
 
+  if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
+  {
+  	shading_normal = fragmentTangentSpaceMatrix[2];
+  }
+
+  else
+  {
+  	//Sample the normal map.
+  	vec3 normal_map = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
+  	shading_normal = normal_map * 2.0f - 1.0f;
+	shading_normal = fragmentTangentSpaceMatrix * shading_normal;
+	shading_normal = normalize(shading_normal);
+  }
+
+  shading_normal *= gl_FrontFacing ? 1.0f : -1.0f;
+  
   //Calculate the velocity.
   vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);
 
   //Write the fragments.
   sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
-  sceneFeatures2 = vec4(PackNormal(shadingNormal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
+  sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
   sceneFeatures3 = materialProperties;
 }

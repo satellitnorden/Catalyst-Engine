@@ -63,7 +63,7 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 */
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {
-	if (false)
+	if (true)
 	{
 		SetEnabled(false);
 
