@@ -14,7 +14,7 @@ public:
 	{
 		/*
 		*	Visual entities with a masked material will use the optional texture index as the mask texture.
-		*	Will usually run in a pre-depth pass and a color pass.
+		*	Will usually run in a depth pass and a color pass.
 		*/
 		Masked,
 
@@ -27,8 +27,25 @@ public:
 	//Enumeration covering all material properties.
 	enum class Property : int32
 	{
-		None = 0,
-		Highlight = BIT(0)
+		/*
+		*	Defines that this material does not have any properties.
+		*/
+		NONE = 0,
+
+		/*
+		*	Defines that this material has no albedo texture, and instead the albedo is packed into the albedo texture index.
+		*/
+		NO_ALBEDO_TEXTURE = BIT(0),
+
+		/*
+		*	Defines that this material has no normal map texture, and instead visual entities will just use the normal of the model directly.
+		*/
+		NO_NORMAL_MAP_TEXTURE = BIT(1),
+
+		/*
+		*	Defines that this material has no material properties texture, and instead the material properties is packed into the material properties texture index.
+		*/
+		NO_MATERIAL_PROPERTIES_TEXTURE = BIT(2)
 	};
 
 	//The index of the albedo texture.
@@ -47,7 +64,7 @@ public:
 	Type _Type{ Type::Opaque };
 
 	//The properties.
-	Property _Properties{ Property::None };
+	Property _Properties{ Property::NONE };
 
 	//The luminance multiplier.
 	float _LuminanceMultiplier{ 0.0f };

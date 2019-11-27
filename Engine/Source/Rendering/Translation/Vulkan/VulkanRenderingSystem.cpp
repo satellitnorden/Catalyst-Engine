@@ -633,7 +633,7 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DepthOfFieldBokehFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DepthOfFieldBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{

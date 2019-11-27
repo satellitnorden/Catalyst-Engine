@@ -93,12 +93,6 @@ void main()
 		luminance = 0.0f;
 	}
 
-	//Calculate the highlight weight of this material and modify the material properties based on that.
-	float highlightWeight = max(CalculateHighlightWeight(gl_WorldRayDirectionNV, shadingNormal, modelMaterials[gl_InstanceCustomIndexNV].properties), 0.0f);
-
-	albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
-	luminance = mix(luminance, luminance + 1.0f, highlightWeight);
-
 	//Calculate the radiance.
 	vec3 radiance = vec3(0.0f);
 

@@ -5,7 +5,7 @@ glslangValidator.exe -V BloomIsolationFragmentShader.frag -o 				BloomIsolationF
 glslangValidator.exe -V CloudsApplicationFragmentShader.frag -o 			CloudsApplicationFragmentShader.spv
 glslangValidator.exe -V CloudsFragmentShader.frag -o 					CloudsFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOfFieldApplicationFragmentShader.spv
-glslangValidator.exe -V DepthOfFieldBokehFragmentShader.frag -o 			DepthOfFieldBokehFragmentShader.spv
+glslangValidator.exe -V DepthOfFieldBlurFragmentShader.frag -o 				DepthOfFieldBlurFragmentShader.spv
 glslangValidator.exe -V DirectLightingFragmentShader.frag -o 				DirectLightingFragmentShader.spv
 glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLightingRayGenerationShader.spv
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv

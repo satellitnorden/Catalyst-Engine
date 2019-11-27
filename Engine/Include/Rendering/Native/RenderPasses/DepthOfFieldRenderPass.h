@@ -6,8 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldApplicationGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldBokehGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class DepthOfFieldRenderPass final : public RenderPass
@@ -25,14 +24,8 @@ public:
 
 private:
 
-	//The depth of field downsample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 2> _DepthOfFieldDownsampleGraphicsPipelines;
-
-	//The depth of field bokeh graphics pipeline.
-	DepthOfFieldBokehGraphicsPipeline _DepthOfFieldBokehGraphicsPipeline;
-
-	//The depth of field upsample graphics pipeline.
-	ResampleGraphicsPipeline _DepthOfFieldUpsampleGraphicsPipeline;
+	//The depth of field blur graphics pipelines.
+	StaticArray<DepthOfFieldBlurGraphicsPipeline, 2> _DepthOfFieldBlurGraphicsPipelines;
 
 	//The depth of field application graphics pipeline.
 	DepthOfFieldApplicationGraphicsPipeline _DepthOfFieldApplicationGraphicsPipeline;

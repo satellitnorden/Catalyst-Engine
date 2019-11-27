@@ -2,15 +2,42 @@
 #define CATALYST_RENDERING_UTILITIES
 
 //Preprocessor defines.
-#define HIGHLIGHT_COLOR (vec3(0.0f, 1.0f, 1.0f))
-#define MATERIAL_HIGHLIGHT_BIT (1 << 0)
+#define MATERIAL_PROPERTY_NO_ALBEDO_TEXTURE_BIT (1 << 0)
+#define MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT (1 << 1)
+#define MATERIAL_PROPERTY_NO_MATERIAL_PROPERTIES_TEXTURE_BIT (1 << 2)
+
+//Includes.
+#include "CatalystPackingUtilities.glsl"
 
 /*
-*	Calculates the highlight weight of a material.
+*	Retrieves the albedo at the given coordinate from the given material.
 */
-float CalculateHighlightWeight(vec3 viewDirection, vec3 shadingNormal, int materialProperties)
+vec3 RetrieveAlbedo(Material material, vec2 coordinate)
 {
-	//Calculate the highlight weight.
-	return clamp((0.125f + (dot(viewDirection, shadingNormal) + 1.0f) * (sin(totalTime * 2.0f) + 1.0f)) * float(bool(materialProperties & MATERIAL_HIGHLIGHT_BIT)), 0.0f, 1.0f);
+	if (bool(material.properties & MATERIAL_PROPERTY_NO_ALBEDO_TEXTURE_BIT))
+	{
+		return UnpackColor(material.albedo_texture_index).rgb;
+	}
+	
+	else
+	{
+		return texture(sampler2D(globalTextures[material.albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate).rgb;
+	}
+}
+
+/*
+*	Retrieves the material properties at the given coordinate from the given material.
+*/
+vec4 RetrieveMaterialProperties(Material material, vec2 coordinate)
+{
+	if (bool(material.properties & MATERIAL_PROPERTY_NO_MATERIAL_PROPERTIES_TEXTURE_BIT))
+	{
+		return UnpackColor(material.material_properties_texture_index);
+	}
+	
+	else
+	{
+		return texture(sampler2D(globalTextures[material.material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate);
+	}
 }
 #endif

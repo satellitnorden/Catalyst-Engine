@@ -60,9 +60,6 @@ void main()
     shadingNormal = fragmentTangentSpaceMatrix * shadingNormal;
     shadingNormal = normalize(shadingNormal);
 
-    float highlightWeight = max(CalculateHighlightWeight(CalculateRayDirection(fragmentTextureCoordinate), shadingNormal, materialPropertyFlags), 0.0f);
-
-    albedo = mix(albedo, HIGHLIGHT_COLOR, highlightWeight);
 
     //Calculate the velocity.
     vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);

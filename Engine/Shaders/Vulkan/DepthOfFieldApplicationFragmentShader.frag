@@ -12,19 +12,26 @@
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D depthOfFieldTexture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 1) uniform sampler2D depth_of_field_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	//Sample the depth of field texture.
-	vec4 depthOfField = Upsample(depthOfFieldTexture, fragmentTextureCoordinate);
+	//Sample the hit distance.
+	float hit_distance = texture(scene_features_2_texture, fragment_texture_coordinate).w;
+
+	//Sample the depth of field.
+	vec3 depth_of_field = texture(depth_of_field_texture, fragment_texture_coordinate).rgb;
+
+	//Calculate the weight.
+	float weight = min(hit_distance * 0.1f, 1.0f);
 
     //Write the fragment.
-    fragment = depthOfField;
+    fragment = vec4(depth_of_field, weight);
 }

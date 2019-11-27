@@ -292,7 +292,7 @@ enum class Shader : uint8
 	CloudsApplicationFragment,
 	CloudsFragment,
 	DepthOfFieldApplicationFragment,
-	DepthOfFieldBokehFragment,
+	DepthOfFieldBlurFragment,
 	DirectLightingFragment,
 	DirectLightingRayGeneration,
 	FastApproximateFragment,

@@ -352,7 +352,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 		//Initialize the black common material.
 		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::Black)] };
 
-		material._Properties = Material::Property::None;
+		material._Properties = Material::Property::NONE;
 
 		{
 			Texture2DData data;
@@ -424,7 +424,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 		//Initialize the glass blue common material.
 		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::GlassBlue)] };
 
-		material._Properties = Material::Property::None;
+		material._Properties = Material::Property::NONE;
 
 		{
 			Texture2DData data;
@@ -496,7 +496,7 @@ void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
 		//Initialize the white porcelain common material.
 		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::WhitePorcelain)] };
 
-		material._Properties = Material::Property::None;
+		material._Properties = Material::Property::NONE;
 
 		{
 			Texture2DData data;
