@@ -39,12 +39,14 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(10);
+	SetNumberOfPipelines(12);
 	AddPipeline(&_ParticleSystemComputePipeline);
 	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationImpostorColorSceneFeaturesGraphicsPipeline);
@@ -53,9 +55,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ParticleSystemComputePipeline.Initialize();
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -77,9 +81,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	_ParticleSystemComputePipeline.Execute();
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
 	_TerrainSceneFeaturesGraphicsPipeline.Execute();
+	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationColorSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Execute();
