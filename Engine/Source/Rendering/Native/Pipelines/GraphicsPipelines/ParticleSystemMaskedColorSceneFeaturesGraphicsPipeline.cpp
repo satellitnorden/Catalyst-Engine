@@ -30,11 +30,11 @@ public:
 void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ParticleSystemMaskedDepthSceneFeaturesVertexShader);
+	SetVertexShader(Shader::ParticleSystemMaskedColorSceneFeaturesVertexShader);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::ParticleSystemMaskedDepthSceneFeaturesGeometryShader);
-	SetFragmentShader(Shader::ParticleSystemMaskedDepthSceneFeaturesFragmentShader);
+	SetGeometryShader(Shader::ParticleSystemMaskedColorSceneFeaturesGeometryShader);
+	SetFragmentShader(Shader::ParticleSystemMaskedColorSceneFeaturesFragmentShader);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

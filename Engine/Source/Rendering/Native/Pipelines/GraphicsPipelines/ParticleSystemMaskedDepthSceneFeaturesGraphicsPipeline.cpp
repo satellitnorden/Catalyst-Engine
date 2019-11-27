@@ -30,11 +30,11 @@ public:
 void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ParticleSystemMaskedColorSceneFeaturesVertexShader);
+	SetVertexShader(Shader::ParticleSystemMaskedDepthSceneFeaturesVertexShader);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::ParticleSystemMaskedColorSceneFeaturesGeometryShader);
-	SetFragmentShader(Shader::ParticleSystemMaskedColorSceneFeaturesFragmentShader);
+	SetGeometryShader(Shader::ParticleSystemMaskedDepthSceneFeaturesGeometryShader);
+	SetFragmentShader(Shader::ParticleSystemMaskedDepthSceneFeaturesFragmentShader);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
@@ -45,7 +45,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(3);
