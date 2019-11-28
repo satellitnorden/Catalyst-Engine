@@ -726,17 +726,19 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(28, 3), HaltonSequence::Generate(29, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.25f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.5f };
+
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.4f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.65f };
 
 	//Store the previous perceiver forward vector.
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
 
 	//Jitter the projection matrix a bit.
-	Vector2<float> currentFrameJitter{ 0.0f, 0.0f };
-
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
-	Perceiver::Instance->SetProjectionMatrixJitter(JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution);
+	Vector2<float> current_frame_jitter{ JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution };
+	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
+#else
+	Vector2<float> current_frame_jitter{ 0.0f, 0.0f };
 #endif
 
 	//Update matrices.
@@ -757,7 +759,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ScaledResolution = Vector2<float>(static_cast<float>(GetScaledResolution()._Width), static_cast<float>(GetScaledResolution()._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / _DynamicUniformData._ScaledResolution;
 	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;
-	_DynamicUniformData._CurrentFrameJitter = currentFrameJitter;
+	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
