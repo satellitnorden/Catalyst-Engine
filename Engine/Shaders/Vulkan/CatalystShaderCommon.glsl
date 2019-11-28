@@ -344,22 +344,22 @@ float CalculateAmbientIlluminationIntensity()
 /**************/
 
 //Cloud constants.
-#define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (100.0f)
-#define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (1000.0f)
+#define CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER (10000.0f)
+#define CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER (20000.0f)
 #define CLOUD_NUMBER_OF_SAMPLES (16) //Needs to be a multiple of 4.
 #define CLOUD_NUMBER_OF_NOISE_TEXTURES (CLOUD_NUMBER_OF_SAMPLES / 4)
-#define CLOUD_POSITION_SCALE (0.000125f) //0.000025f step.
+#define CLOUD_POSITION_SCALE (0.00000125f) //0.000025f step.
 #define CLOUD_PERSISTENCE (0.625f) //0.025f step.
-#define CLOUD_LACUNARITY (3.25f) //0.25f step.
+#define CLOUD_LACUNARITY (3.5f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY_MULTIPLIER (2.75f) //0.25f step.
+#define CLOUD_DENSITY_MULTIPLIER (3.75f) //0.25f step.
 
 /*
 *   Calculates the cloud density multiplier for the given hit distance.
 */
 float CalculateCloudDensityMultipluer(float hit_distance)
 {
-    return (1.0f - clamp((hit_distance - 1000.0f) * 0.001f, 0.0f, 1.0f));
+    return (1.0f - clamp((hit_distance - 10000.0f) * 0.00001f, 0.0f, 1.0f));
 }
 
 /*

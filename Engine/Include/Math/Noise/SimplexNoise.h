@@ -237,25 +237,31 @@ public:
 	/*
 	*	Generates an IQ FBM value in the range [-1.0f, 1.0f] at the given coordinates.
 	*/
-	FORCE_INLINE static NO_DISCARD float GenerateIQFBM(const Vector2<float> &coordinates, const uint8 octaves, const float lacunarity, const float gain, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float GenerateIQFBM(const Vector2<float> &coordinates, const uint8 octaves, const float lacunarity, const float gain, const float derivative_weight, const float seed = 0.0f) NOEXCEPT
 	{
-		float sum = 0.0f;
-		float amp = 0.5f;
-		float dx = 0.0f;
-		float dy = 0.0f;
-		float freq = 1.0f;
+		float total{ 0.0f };
+		float maximum{ 0.0f };
+		float amplitude{  1.0f };
+		float frequency{ 1.0f };
+		float derivative_x{ 0.0f };
+		float derivative_y{ 0.0f };
 
 		for (uint8 i{ 0 }; i < octaves; ++i)
 		{
-			Vector3<float> noise{ GenerateDerivaties(coordinates * freq, seed) };
-			dx += noise._Y;
-			dy += noise._Z;
-			sum += amp * noise._X / (1.0f + dx * dx + dy * dy);
-			freq *= lacunarity;
-			amp *= gain;
+			Vector3<float> noise{ GenerateDerivaties(coordinates * frequency, seed) };
+
+			derivative_x += noise._Y;
+			derivative_y += noise._Z;
+
+			total += noise._X / CatalystBaseMath::LinearlyInterpolate(1.0f, 1.0f + derivative_x * derivative_x + derivative_y * derivative_y, derivative_weight) * amplitude;
+
+			maximum += amplitude;
+
+			frequency *= lacunarity;
+			amplitude *= gain;
 		}
 
-		return sum;
+		return total / maximum;
 	}
 
 	/*
