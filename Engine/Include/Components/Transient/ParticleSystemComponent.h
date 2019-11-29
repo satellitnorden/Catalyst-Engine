@@ -46,13 +46,10 @@ public:
 	//The fade time.
 	float _FadeTime;
 
-	//The current time.
-	float _CurrentTime;
-
 	//The instance data.
 	DynamicArray<ParticleInstanceData> _InstanceData;
 
-	//The current instance.
-	uint64 _CurrentInstance;
+	//The time since the last instance spawn.
+	float _TimeSinceLastSpawn;
 
 };

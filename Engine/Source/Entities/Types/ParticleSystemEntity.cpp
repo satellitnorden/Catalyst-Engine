@@ -50,9 +50,14 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	component._SpawnFrequency = particle_system_initialization_data->_SpawnFrequency;
 	component._Lifetime = particle_system_initialization_data->_Lifetime;
 	component._FadeTime = particle_system_initialization_data->_FadeTime;
-	component._CurrentTime = 0.0f;
 	component._InstanceData.UpsizeFast(maximum_instances);
-	component._CurrentInstance = 0;
+
+	for (ParticleInstanceData& instance_data : component._InstanceData)
+	{
+		instance_data._Time = FLOAT_MAXIMUM;
+	}
+
+	component._TimeSinceLastSpawn = 0.0f;
 
 	//Initialize the render component.
 	RenderingSystem::Instance->CreateBuffer(sizeof(ParticleInstanceData) * maximum_instances,

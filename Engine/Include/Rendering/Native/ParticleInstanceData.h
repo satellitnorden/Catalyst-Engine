@@ -20,7 +20,7 @@ public:
 	//The scale.
 	Vector2<float> _Scale;
 
-	//The opacity.
-	float _Opacity;
+	//The time.
+	float _Time;
 
 };
