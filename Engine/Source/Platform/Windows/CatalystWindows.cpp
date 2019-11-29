@@ -572,7 +572,7 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 					if (ClientToScreen(_Window, &adjusted_center))
 					{
-						SetCursorPos(adjusted_center.x, adjusted_center.y);
+						//SetCursorPos(adjusted_center.x, adjusted_center.y);
 
 						const float current_x{ CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
 						const float current_y{ CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };

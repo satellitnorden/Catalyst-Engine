@@ -16,9 +16,6 @@ class ParticleSystemComponent final
 
 public:
 
-	//The global material index.
-	uint32 _GlobalMaterialIndex;
-
 	//The minimum position.
 	Vector3<float> _MinimumPosition;
 

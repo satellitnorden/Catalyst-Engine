@@ -14,8 +14,8 @@ class ParticleSystemInitializationData final : public EntityInitializationData
 
 public:
 
-	//The global material index.
-	uint32 _GlobalMaterialIndex;
+	//The material index.
+	uint32 _MaterialIndex;
 
 	//The minimum position.
 	Vector3<float> _MinimumPosition;

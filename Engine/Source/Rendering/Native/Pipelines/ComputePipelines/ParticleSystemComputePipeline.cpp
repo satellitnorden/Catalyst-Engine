@@ -28,7 +28,7 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 	const uint64 number_of_components{ ComponentManager::GetNumberOfParticleSystemComponents() };
 
 	//If there's none to update - update none.
-	if (number_of_components == 0)
+	if (number_of_components == 0 || true)
 	{
 		//Don't include this pipeline in the final render.
 		SetIncludeInRender(false);

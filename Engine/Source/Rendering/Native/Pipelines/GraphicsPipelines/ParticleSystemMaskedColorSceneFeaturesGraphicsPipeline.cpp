@@ -113,7 +113,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	const uint64 number_of_particle_system_components{ ComponentManager::GetNumberOfParticleSystemComponents() };
 
 	//If there's none to render - render none.
-	if (number_of_particle_system_components == 0)
+	if (number_of_particle_system_components == 0 || true)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -133,10 +133,16 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
 	{
+		//Skip if there's no transformations yet.
+		if (component->_NumberOfTransformations == 0)
+		{
+			continue;
+		}
+
 		//Push constants.
 		ParticleSystemMaskedDepthFragmentPushConstantData data;
 
-		data._MaterialIndex = 0;
+		data._MaterialIndex = component->_MaterialIndex;
 
 		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedDepthFragmentPushConstantData), &data);
 

@@ -100,7 +100,7 @@ void WorldSystem::UpdateParticleSystems(const UpdateContext* const RESTRICT cont
 		}
 
 		//Update the transformations buffer.
-		const void* RESTRICT data[]{ component->_InstanceData.Data() };
+		const void *RESTRICT data[]{ component->_InstanceData.Data() };
 		const uint64 data_sizes[]{ sizeof(ParticleInstanceData) * component->_InstanceData.Size() };
 		RenderingSystem::Instance->UploadDataToBuffer(data, data_sizes, 1, &render_component->_TransformationsBuffer);
 	}

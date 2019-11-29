@@ -91,3 +91,5 @@
 #define UINT24_MINIMUM (0)
 #define UINT32_MINIMUM (std::numeric_limits<uint32>::min())
 #define UINT64_MINIMUM (std::numeric_limits<uint64>::min())
+
+#define BYTE_MAXIMUM (UINT8_MAXIMUM)

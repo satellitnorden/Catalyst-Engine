@@ -36,11 +36,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	ParticleSystemComponent& component{ ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex] };
 	ParticleSystemRenderComponent& render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex] };
 
-	//Calculate the maximum number of instances that will be active at one time.
-	const uint64 maximum_instances{ static_cast<uint64>(component._Lifetime / component._SpawnFrequency) };
-
 	//Initialize the component.
-	component._GlobalMaterialIndex = particle_system_initialization_data->_GlobalMaterialIndex;
 	component._MinimumPosition = particle_system_initialization_data->_MinimumPosition;
 	component._MaximumPosition = particle_system_initialization_data->_MaximumPosition;
 	component._MinimumVelocity = particle_system_initialization_data->_MinimumVelocity;
@@ -50,19 +46,25 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	component._SpawnFrequency = particle_system_initialization_data->_SpawnFrequency;
 	component._Lifetime = particle_system_initialization_data->_Lifetime;
 	component._FadeTime = particle_system_initialization_data->_FadeTime;
-	component._InstanceData.UpsizeFast(maximum_instances);
+
+	//Calculate the maximum number of instances that will be active at one time.
+	const uint64 maximum_instances{ static_cast<uint64>(component._Lifetime / component._SpawnFrequency) };
+
+	component._InstanceData.UpsizeSlow(maximum_instances);
 
 	for (ParticleInstanceData& instance_data : component._InstanceData)
 	{
-		instance_data._Time = FLOAT_MAXIMUM;
+		instance_data._Time = component._Lifetime;
 	}
 
 	component._TimeSinceLastSpawn = 0.0f;
 
 	//Initialize the render component.
+	render_component._MaterialIndex = particle_system_initialization_data->_MaterialIndex;
 	RenderingSystem::Instance->CreateBuffer(sizeof(ParticleInstanceData) * maximum_instances,
 											BufferUsage::VertexBuffer,
 											MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
+											//MemoryProperty::DeviceLocal,
 											&render_component._TransformationsBuffer);
 	render_component._NumberOfTransformations = 0;
 
