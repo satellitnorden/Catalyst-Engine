@@ -31,6 +31,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -727,8 +728,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
 
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.4f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.65f };
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.375f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.625f };
 
 	//Store the previous perceiver forward vector.
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };
@@ -789,6 +790,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetY = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
 	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
 	_DynamicUniformData._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
+	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };

@@ -29,6 +29,10 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
                                 float ambientOcclusion,
                                 vec3 irradiance)
 {
+    //Apply wetness.
+    albedo = mix(albedo, albedo * 0.75f, WETNESS);
+    //roughness = mix(roughness, roughness * 0.75f, WETNESS);
+
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
     vec3 specularComponent = CalculateFresnelRoughness(CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
@@ -61,6 +65,11 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
                             float thickness,
                             vec3 radiance)
 {
+    //Apply wetness.
+    albedo = mix(albedo, albedo * 0.75f, WETNESS);
+    roughness = mix(roughness, roughness * 0.25f, WETNESS);
+
+    //Apply thickness.
     normal = mix(lightDirection, normal, thickness);
 
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);

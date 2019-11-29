@@ -29,7 +29,26 @@ public:
 	*/
 	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
+	/*
+	*	Returns the wetness.
+	*/
+	FORCE_INLINE NO_DISCARD float GetWetness() const NOEXCEPT
+	{
+		return _Wetness;
+	}
+
+	/*
+	*	Sets the wetness.
+	*/
+	FORCE_INLINE void SetWetness(const float wetness) NOEXCEPT
+	{
+		_Wetness = wetness;
+	}
+
 private:
+
+	//The wetness.
+	float _Wetness{ 0.0f };
 
 	/*
 	*	Updates all particle systems.

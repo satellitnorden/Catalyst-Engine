@@ -119,8 +119,9 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 
     layout (offset = 644) float viewDistance;
     layout (offset = 648) float CLOUD_DENSITY;
+    layout (offset = 652) float WETNESS;
 
-    //Total size; 652
+    //Total size; 656
 };
 
 //The global textures.
@@ -350,7 +351,7 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_NUMBER_OF_NOISE_TEXTURES (CLOUD_NUMBER_OF_SAMPLES / 4)
 #define CLOUD_POSITION_SCALE (0.00000125f) //0.000025f step.
 #define CLOUD_PERSISTENCE (0.5f) //0.025f step.
-#define CLOUD_LACUNARITY (3.675f) //0.025f step.
+#define CLOUD_LACUNARITY (3.725f) //0.025f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 #define CLOUD_DENSITY_MULTIPLIER (4.0f) //0.25f step.
 
