@@ -728,7 +728,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
 
-	constexpr float MINIMUM_CLOUD_DENSITY{ 0.375f };
+	constexpr float MINIMUM_CLOUD_DENSITY{ 0.175f };
 	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.625f };
 
 	//Store the previous perceiver forward vector.

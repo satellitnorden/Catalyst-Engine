@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DEPTH_OF_FIELD_BLUR_SIZE (16.0f)
+#define DEPTH_OF_FIELD_BLUR_SIZE (4.0f)
 #define DEPTH_OF_FIELD_BLUR_START_END (DEPTH_OF_FIELD_BLUR_SIZE * 0.5f)
 
 /*

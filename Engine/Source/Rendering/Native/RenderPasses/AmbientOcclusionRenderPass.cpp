@@ -58,15 +58,6 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
-	_AmbientOcclusionDenoisingGraphicsPipelines[2].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte));
-
-	_AmbientOcclusionDenoisingGraphicsPipelines[3].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																2.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -93,7 +84,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
-		//pipeline.Execute();
-		pipeline.SetIncludeInRender(false);
+		pipeline.Execute();
+		//pipeline.SetIncludeInRender(false);
 	}
 }

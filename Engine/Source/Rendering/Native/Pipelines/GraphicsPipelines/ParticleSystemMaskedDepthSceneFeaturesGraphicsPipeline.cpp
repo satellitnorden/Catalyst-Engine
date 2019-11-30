@@ -107,7 +107,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	const uint64 number_of_particle_system_components{ ComponentManager::GetNumberOfParticleSystemComponents() };
 
 	//If there's none to render - render none.
-	if (number_of_particle_system_components == 0 || true)
+	if (number_of_particle_system_components == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
