@@ -43,7 +43,7 @@ void main()
 	float displacementMultiplier = vertexPosition.y;
 
 	//Apply the wind displacement.
-	fragmentPreviousWorldPosition += CalculateWindDisplacement(transformation[3].xyz, fragmentCurrentWorldPosition, normal, totalTime - deltaTime, large_scale_wind_displacement_factor, medium_scale_wind_displacement_factor, small_scale_wind_displacement_factor) * displacementMultiplier;
+	fragmentPreviousWorldPosition += CalculateWindDisplacement(transformation[3].xyz, fragmentCurrentWorldPosition, normal, totalTime - DELTA_TIME, large_scale_wind_displacement_factor, medium_scale_wind_displacement_factor, small_scale_wind_displacement_factor) * displacementMultiplier;
 	fragmentCurrentWorldPosition += CalculateWindDisplacement(transformation[3].xyz, fragmentCurrentWorldPosition, normal, totalTime, large_scale_wind_displacement_factor, medium_scale_wind_displacement_factor, small_scale_wind_displacement_factor) * displacementMultiplier;
 
 	fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);

@@ -16,6 +16,9 @@ class ParticleSystemComponent final
 
 public:
 
+	//The position.
+	Vector3<float> _Position;
+
 	//The minimum position.
 	Vector3<float> _MinimumPosition;
 
@@ -34,6 +37,9 @@ public:
 	//The maximum scale.
 	Vector2<float> _MaximumScale;
 
+	//The number of instances.
+	uint32 _NumberOfInstances;
+
 	//The spawn frequency.
 	float _SpawnFrequency;
 
@@ -43,10 +49,16 @@ public:
 	//The fade time.
 	float _FadeTime;
 
-	//The instance data.
-	DynamicArray<ParticleInstanceData> _InstanceData;
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
 
 	//The time since the last instance spawn.
 	float _TimeSinceLastSpawn;
+
+	//The first particle index to spawn this frame.
+	uint32 _FirstParticleIndexToSpawn;
+
+	//The number of particles to spawn this frame.
+	uint32 _NumberOfParticlesToSpawn;
 
 };

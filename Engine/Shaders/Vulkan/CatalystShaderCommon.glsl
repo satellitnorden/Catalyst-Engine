@@ -11,7 +11,7 @@
 #include "CatalystGeometryMath.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (2.5f) //0.25f step.
+#define AMBIENT_OCCLUSION_POWER (2.75f) //0.25f step.
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
@@ -91,7 +91,7 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 544) vec2 previousFrameJitter;
     layout (offset = 552) vec2 currentFrameJitter;
 
-    layout (offset = 560) float deltaTime;
+    layout (offset = 560) float DELTA_TIME;
     layout (offset = 564) float star_strength;
     layout (offset = 568) float globalRandomSeed1;
     layout (offset = 572) float globalRandomSeed2;
@@ -351,7 +351,7 @@ float CalculateAmbientIlluminationIntensity()
 #define CLOUD_NUMBER_OF_NOISE_TEXTURES (CLOUD_NUMBER_OF_SAMPLES / 4)
 #define CLOUD_POSITION_SCALE (0.00001f)
 #define CLOUD_PERSISTENCE (0.5f) //0.025f step.
-#define CLOUD_LACUNARITY (3.0f) //0.25f step.
+#define CLOUD_LACUNARITY (4.0f) //0.25f step.
 #define CLOUD_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
 #define CLOUD_DENSITY_MULTIPLIER (4.0f) //0.25f step.
 

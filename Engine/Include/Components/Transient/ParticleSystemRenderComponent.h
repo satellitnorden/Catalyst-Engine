@@ -17,7 +17,7 @@ public:
 	//The transformations buffer.
 	BufferHandle _TransformationsBuffer;
 
-	//The number of transformations.
-	uint32 _NumberOfTransformations;
+	//The number of instances.
+	uint32 _NumberOfInstances;
 
 };

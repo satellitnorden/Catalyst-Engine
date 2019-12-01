@@ -65,8 +65,8 @@ void main()
   	//Sample the normal map.
   	vec3 normal_map = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
   	shading_normal = normal_map * 2.0f - 1.0f;
-	shading_normal = fragmentTangentSpaceMatrix * shading_normal;
-	shading_normal = normalize(shading_normal);
+  	shading_normal = fragmentTangentSpaceMatrix * shading_normal;
+  	shading_normal = normalize(shading_normal);
   }
 
   shading_normal *= gl_FrontFacing ? 1.0f : -1.0f;

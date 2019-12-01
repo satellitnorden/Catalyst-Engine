@@ -34,7 +34,7 @@ void main()
 	float hitDistance = sceneFeatures.w;
 
 	//Calculate the bias.
-	float bias = hitDistance * 0.01f; //0.0025f step.
+	float bias = hitDistance * 0.015f; //0.0025f step.
 
 	//Calculate the world position at this fragment the current frame.
 	vec3 worldPosition = perceiverWorldPosition + CalculateRayDirection(fragmentTextureCoordinate) * hitDistance;

@@ -37,8 +37,13 @@ public:
 	}
 
 	/*
-	*	Returns the world transform.
+	*	Sets the position.
 	*/
-	RESTRICTED NO_DISCARD Matrix4 *const RESTRICT GetWorldTransform() NOEXCEPT;
+	void SetPosition(const Vector3<float>& position) NOEXCEPT;
+
+	/*
+	*	Sets the spawn frequency.
+	*/
+	void SetSpawnFrequency(const float spawn_frequency) NOEXCEPT;
 
 };

@@ -16,7 +16,7 @@
 //Define the validation layers.
 namespace
 {
-	constexpr StaticArray<const char *const RESTRICT, 2> validationLayers{ "VK_LAYER_LUNARG_standard_validation", "VK_LAYER_LUNARG_assistant_layer" };
+	constexpr StaticArray<const char *const RESTRICT, 1> validationLayers{ "VK_LAYER_KHRONOS_validation" };
 }
 #endif
 

@@ -130,6 +130,7 @@ enum class CommonMaterial : uint8
 enum class CommonRenderDataTableLayout : uint8
 {
 	Global,
+	ParticleSystem,
 
 	NumberOfCommonRenderDataTableLayouts
 };

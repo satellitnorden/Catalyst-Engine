@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -17,10 +18,19 @@ public:
 	//The velocity.
 	Vector3<float> _Velocity;
 
-	//The scale.
-	Vector2<float> _Scale;
+	//The size.
+	Vector2<float> _Size;
 
 	//The time.
 	float _Time;
+
+	//The random seed 1.
+	float _RandomSeed1;
+
+	//The random seed 2.
+	float _RandomSeed2;
+
+	//The random seed 3.
+	float _RandomSeed3;
 
 };

@@ -584,6 +584,16 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
 	}
+
+	{
+		//Initialize the dynamic uniform data render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::Compute)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
+	}
 }
 
 /*
@@ -729,7 +739,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	};
 
 	constexpr float MINIMUM_CLOUD_DENSITY{ 0.175f };
-	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.625f };
+	constexpr float MAXIMUM_CLOUD_DENSITY{ 0.7f };
 
 	//Store the previous perceiver forward vector.
 	const Vector3<float> previousPerceiverForwardVector{ Vector3<float>(_DynamicUniformData._PerceiverForwardVector._X, _DynamicUniformData._PerceiverForwardVector._Y, _DynamicUniformData._PerceiverForwardVector._Z) };

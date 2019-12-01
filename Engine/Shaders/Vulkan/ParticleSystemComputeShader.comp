@@ -12,21 +12,29 @@
 */
 struct ParticleSystemInputData
 {
-	vec3 world_position;
-
+	vec3 position;
 	vec3 minimum_position;
 	vec3 maximum_position;
 	vec3 minimum_velocity;
 	vec3 maximum_velocity;
 	vec2 minimum_size;
 	vec2 maximum_size;
+	float lifetime;
 	float fade_time;
-
-	int spawned_index;
+	float position_seed_1;
+	float position_seed_2;
+	float position_seed_3;
+	float velocity_seed_1;
+	float velocity_seed_2;
+	float velocity_seed_3;
+	float size_seed;
+	uint first_particle_index_to_spawn;
+	uint number_of_particles_to_spawn;
+	uint number_of_instances;
 };
 
 //Layout specification.
-layout (local_size_x = 128) in;
+layout (local_size_x = 1) in;
 
 //Push constant data.
 layout (push_constant) uniform Buffer1
@@ -37,35 +45,195 @@ layout (push_constant) uniform Buffer1
 //Descriptor set data.
 layout (std140, set = 1, binding = 0) buffer Buffer2
 {
-	vec4 particle_system_state_data[];
+	vec4 particle_system_instance_data[];
 };
 
 /*
 *	Unpacks the particle system input data.
-
+*/
 void UnpackParticleSystemInputData(out ParticleSystemInputData data)
 {
-	data.world_position = vec3(particle_system_input_data[0][0], particle_system_input_data[0][1], particle_system_input_data[0][2]);
+	data.position = vec3(particle_system_input_data[0][0], particle_system_input_data[0][1], particle_system_input_data[0][2]);
 	data.minimum_position = vec3(particle_system_input_data[0][3], particle_system_input_data[1][0], particle_system_input_data[1][1]);
 	data.maximum_position = vec3(particle_system_input_data[1][2], particle_system_input_data[1][3], particle_system_input_data[2][0]);
 	data.minimum_velocity = vec3(particle_system_input_data[2][1], particle_system_input_data[2][2], particle_system_input_data[2][3]);
 	data.maximum_velocity = vec3(particle_system_input_data[3][0], particle_system_input_data[3][1], particle_system_input_data[3][2]);
 	data.minimum_size = vec2(particle_system_input_data[3][3], particle_system_input_data[4][0]);
 	data.maximum_size = vec2(particle_system_input_data[4][1], particle_system_input_data[4][2]);
-	data.fade_time = particle_system_input_data[4][3];
-	data.spawned_index = particle_system_input_data[5][0];
+	data.lifetime = particle_system_input_data[4][3];
+	data.fade_time = particle_system_input_data[5][0];
+	data.position_seed_1 = particle_system_input_data[5][1];
+	data.position_seed_2 = particle_system_input_data[5][2];
+	data.position_seed_3 = particle_system_input_data[5][3];
+	data.velocity_seed_1 = particle_system_input_data[6][0];
+	data.velocity_seed_2 = particle_system_input_data[6][1];
+	data.velocity_seed_3 = particle_system_input_data[6][2];
+	data.size_seed = particle_system_input_data[6][3];
+	data.first_particle_index_to_spawn = floatBitsToUint(particle_system_input_data[7][0]);
+	data.number_of_particles_to_spawn = floatBitsToUint(particle_system_input_data[7][1]);
+	data.number_of_instances = floatBitsToUint(particle_system_input_data[7][2]);
 }
+
+/*
+*	Returns if the particle instance at the specified index should spawn.
 */
+bool ShouldSpawn(ParticleSystemInputData data, uint index)
+{
+	uint begin = data.first_particle_index_to_spawn;
+	uint end = data.first_particle_index_to_spawn + data.number_of_particles_to_spawn;
+
+	if (index >= begin && index < end)
+	{
+		return true;
+	}
+
+	else if (	end >= data.number_of_instances
+				&& index < (end - data.number_of_instances))
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+/*
+*	Returns the position of the particle instance at the specified index.
+*/
+vec3 GetInstancePosition(uint index)
+{
+	return vec3(particle_system_instance_data[index * 3].x, particle_system_instance_data[index * 3].y, particle_system_instance_data[index * 3].z);
+}
+
+/*
+*	Sets the position of the particle instance at the specified index.
+*/
+void SetInstancePosition(uint index, vec3 position)
+{
+	particle_system_instance_data[index * 3].x = position.x;
+	particle_system_instance_data[index * 3].y = position.y;
+	particle_system_instance_data[index * 3].z = position.z;
+}
+
+/*
+*	Returns the velocity of the particle instance at the specified index.
+*/
+vec3 GetInstanceVelocity(uint index)
+{
+	return vec3(particle_system_instance_data[index * 3].w, particle_system_instance_data[index * 3 + 1].x, particle_system_instance_data[index * 3 + 1].y);
+}
+
+/*
+*	Sets the velocity of the particle instance at the specified index.
+*/
+void SetInstanceVelocity(uint index, vec3 velocity)
+{
+	particle_system_instance_data[index * 3].w = velocity.x;
+	particle_system_instance_data[index * 3 + 1].x = velocity.y;
+	particle_system_instance_data[index * 3 + 1].y = velocity.z;
+}
+
+/*
+*	Returns the size of the particle instance at the specified index.
+*/
+vec2 GetInstanceSize(uint index)
+{
+	return vec2(particle_system_instance_data[index * 3 + 1].z, particle_system_instance_data[index * 3 + 1].w);
+}
+
+/*
+*	Sets the size of the particle instance at the specified index.
+*/
+void SetInstanceSize(uint index, vec2 size)
+{
+	particle_system_instance_data[index * 3 + 1].z = size.x;
+	particle_system_instance_data[index * 3 + 1].w = size.y;
+}
+
+/*
+*	Returns the time of the particle instance at the specified index.
+*/
+float GetInstanceTime(uint index)
+{
+	return particle_system_instance_data[index * 3 + 2].x;
+}
+
+/*
+*	Sets the time of the particle instance at the specified index.
+*/
+void SetInstanceTime(uint index, float time)
+{
+	particle_system_instance_data[index * 3 + 2].x = time;
+}
+
+/*
+*	Returns the random seed 1 of the particle instance at the specified index.
+*/
+float GetInstanceRandomSeed1(uint index)
+{
+	return particle_system_instance_data[index * 3 + 2].y;
+}
+
+/*
+*	Returns the random seed 1 of the particle instance at the specified index.
+*/
+float GetInstanceRandomSeed2(uint index)
+{
+	return particle_system_instance_data[index * 3 + 2].z;
+}
+
+/*
+*	Returns the random seed 1 of the particle instance at the specified index.
+*/
+float GetInstanceRandomSeed3(uint index)
+{
+	return particle_system_instance_data[index * 3 + 2].w;
+}
 
 void main() 
 {
 	//Unpack the particle system input data.
 	ParticleSystemInputData data;
-	//UnpackParticleSystemInputData(data);
+	UnpackParticleSystemInputData(data);
 
 	//Get the index of the particle to update.
-	uint particle_index = gl_GlobalInvocationID.x * 2; //Multiply the index since the particle data is stored in blocks of vec4's.
+	uint particle_index = gl_GlobalInvocationID.x; //Multiply the index since the particle data is stored in blocks of vec4's.
 
-	//If this particle is unspawned, generate the initial properties.
-	//if (particle_index <= )
+	//Update this particles time.
+	SetInstanceTime(particle_index, GetInstanceTime(particle_index) + DELTA_TIME);
+
+	//IF this particle's time is over the lifetime and it should spawn, generate new properties.
+	if (GetInstanceTime(particle_index) >= data.lifetime
+		&& ShouldSpawn(data, particle_index))
+	{
+		vec3 new_position;
+
+		new_position.x = mix(data.minimum_position.x, data.maximum_position.x, fract(data.position_seed_1 + GetInstanceRandomSeed1(particle_index)));
+		new_position.y = mix(data.minimum_position.y, data.maximum_position.y, fract(data.position_seed_2 + GetInstanceRandomSeed2(particle_index)));
+		new_position.z = mix(data.minimum_position.z, data.maximum_position.z, fract(data.position_seed_3 + GetInstanceRandomSeed3(particle_index)));
+
+		SetInstancePosition(particle_index, data.position + new_position);
+
+		vec3 new_velocity;
+
+		new_velocity.x = mix(data.minimum_velocity.x, data.maximum_velocity.x, fract(data.velocity_seed_1 + GetInstanceRandomSeed1(particle_index)));
+		new_velocity.y = mix(data.minimum_velocity.y, data.maximum_velocity.y, fract(data.velocity_seed_2 + GetInstanceRandomSeed2(particle_index)));
+		new_velocity.z = mix(data.minimum_velocity.z, data.maximum_velocity.z, fract(data.velocity_seed_3 + GetInstanceRandomSeed3(particle_index)));
+
+		SetInstanceVelocity(particle_index, new_velocity);
+
+		vec2 new_size = mix(data.minimum_size, data.maximum_size, fract(data.size_seed + GetInstanceRandomSeed1(particle_index)));
+
+		SetInstanceSize(particle_index, new_size);
+
+		SetInstanceTime(particle_index, 0.0f);
+	}
+
+	//Otherwise, just update the properties.
+	else
+	{
+		SetInstancePosition(particle_index, GetInstancePosition(particle_index) + GetInstanceVelocity(particle_index) * DELTA_TIME);
+	}
 }

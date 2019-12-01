@@ -14,6 +14,9 @@ class ParticleSystemInitializationData final : public EntityInitializationData
 
 public:
 
+	//The initial position.
+	Vector3<float> _InitialPosition;
+
 	//The material index.
 	uint32 _MaterialIndex;
 
@@ -35,8 +38,11 @@ public:
 	//The maximum scale.
 	Vector2<float> _MaximumScale;
 
-	//The spawn frequency.
-	float _SpawnFrequency;
+	//The number of instances.
+	uint32 _NumberOfInstances;
+
+	//The initial spawn frequency.
+	float _InitialSpawnFrequency;
 
 	//The lifetime.
 	float _Lifetime;

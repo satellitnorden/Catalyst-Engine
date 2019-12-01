@@ -133,12 +133,6 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
 	{
-		//Skip if there's no transformations yet.
-		if (component->_NumberOfTransformations == 0)
-		{
-			continue;
-		}
-
 		//Push constants.
 		ParticleSystemMaskedDepthFragmentPushConstantData data;
 
@@ -150,7 +144,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
 
 		//Draw!
-		command_buffer->Draw(this, 1, component->_NumberOfTransformations);
+		command_buffer->Draw(this, 1, component->_NumberOfInstances);
 	}
 
 	//End the command buffer.
