@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/Creation/ParticleSystemInitializationData.h>
 
+//Math.
+#include <Math/Core/CatalystRandomMath.h>
+
 //Rendering.
 #include <Rendering/Native/ParticleInstanceData.h>
 
@@ -37,36 +40,48 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	ParticleSystemRenderComponent& render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex] };
 
 	//Initialize the component.
+	component._Position = particle_system_initialization_data->_InitialPosition;
 	component._MinimumPosition = particle_system_initialization_data->_MinimumPosition;
 	component._MaximumPosition = particle_system_initialization_data->_MaximumPosition;
 	component._MinimumVelocity = particle_system_initialization_data->_MinimumVelocity;
 	component._MaximumVelocity = particle_system_initialization_data->_MaximumVelocity;
 	component._MinimumScale = particle_system_initialization_data->_MinimumScale;
 	component._MaximumScale = particle_system_initialization_data->_MaximumScale;
-	component._SpawnFrequency = particle_system_initialization_data->_SpawnFrequency;
+	component._NumberOfInstances = particle_system_initialization_data->_NumberOfInstances;
+	component._SpawnFrequency = particle_system_initialization_data->_InitialSpawnFrequency;
 	component._Lifetime = particle_system_initialization_data->_Lifetime;
 	component._FadeTime = particle_system_initialization_data->_FadeTime;
 
-	//Calculate the maximum number of instances that will be active at one time.
-	const uint64 maximum_instances{ static_cast<uint64>(component._Lifetime / component._SpawnFrequency) };
+	//Set up the initial instance data.
+	DynamicArray<ParticleInstanceData> instance_data;
+	instance_data.UpsizeFast(component._NumberOfInstances);
 
-	component._InstanceData.UpsizeSlow(maximum_instances);
-
-	for (ParticleInstanceData& instance_data : component._InstanceData)
+	for (ParticleInstanceData& instance : instance_data)
 	{
-		instance_data._Time = component._Lifetime;
+		instance._Time = CatalystRandomMath::RandomFloatInRange(0.0f, component._Lifetime);
+		instance._RandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+		instance._RandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+		instance._RandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	}
 
 	component._TimeSinceLastSpawn = 0.0f;
+	component._FirstParticleIndexToSpawn = 0;
+	component._NumberOfParticlesToSpawn = 0;
 
 	//Initialize the render component.
 	render_component._MaterialIndex = particle_system_initialization_data->_MaterialIndex;
-	RenderingSystem::Instance->CreateBuffer(sizeof(ParticleInstanceData) * maximum_instances,
-											BufferUsage::VertexBuffer,
-											MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
-											//MemoryProperty::DeviceLocal,
+	RenderingSystem::Instance->CreateBuffer(sizeof(ParticleInstanceData) * component._NumberOfInstances,
+											BufferUsage::StorageBuffer | BufferUsage::VertexBuffer,
+											MemoryProperty::DeviceLocal,
 											&render_component._TransformationsBuffer);
-	render_component._NumberOfTransformations = 0;
+	const void* RESTRICT data_chunks[]{ instance_data.Data() };
+	const uint64 data_sizes[]{ sizeof(ParticleInstanceData) * instance_data.Size() };
+	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &render_component._TransformationsBuffer);
+
+	render_component._NumberOfInstances = particle_system_initialization_data->_NumberOfInstances;
+
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &component._RenderDataTable);
+	RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, 0, &component._RenderDataTable, render_component._TransformationsBuffer);
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<ParticleSystemInitializationData>(data);
@@ -82,10 +97,17 @@ void ParticleSystemEntity::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns the world transform.
+*	Sets the position.
 */
-RESTRICTED NO_DISCARD Matrix4 *const RESTRICT ParticleSystemEntity::GetWorldTransform() NOEXCEPT
+void ParticleSystemEntity::SetPosition(const Vector3<float>& position) NOEXCEPT
 {
-	//return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
-	return nullptr;
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Position = position;
+}
+
+/*
+*	Sets the spawn frequency.
+*/
+void ParticleSystemEntity::SetSpawnFrequency(const float spawn_frequency) NOEXCEPT
+{
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._SpawnFrequency = spawn_frequency;
 }
