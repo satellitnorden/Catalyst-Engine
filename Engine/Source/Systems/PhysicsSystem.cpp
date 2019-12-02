@@ -18,22 +18,8 @@ void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) N
 	//Update all character movements.
 	for (CharacterMovement *const RESTRICT movement : _CharacterMovements)
 	{
-		//Apply the movement.
-		movement->_Position += movement->_Velocity * context->_DeltaTime;
-		movement->_Velocity = VectorConstants::ZERO;
-
-		//Clamp the position to the terrain height.
-		TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &movement->_Position._Y);
+		UpdateCharacterMovement(context, movement);
 	}
-}
-
-/*
-*	Registers a character movement.
-*/
-void PhysicsSystem::RegisterCharacterMovement(CharacterMovement *const RESTRICT movement) NOEXCEPT
-{
-	//Add it to the container.
-	_CharacterMovements.EmplaceSlow(movement);
 }
 
 /*
@@ -47,16 +33,19 @@ void PhysicsSystem::CastRay(const Ray &ray, const PhysicsChannel channels, Rayca
 	result->_HitEntity = nullptr;
 
 	//Raycast against the terrain.
-	if (TEST_BIT(channels, PhysicsChannel::Terrain))
+	if (TEST_BIT(channels, PhysicsChannel::TERRAIN))
 	{
 		CastRayTerrain(ray, result);
 	}
+}
 
-	//Raycast against models.
-	if (TEST_BIT(channels, PhysicsChannel::Model))
-	{
-
-	}
+/*
+*	Registers a character movement.
+*/
+void PhysicsSystem::RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT
+{
+	//Add it to the container.
+	_CharacterMovements.EmplaceSlow(movement);
 }
 
 /*
@@ -91,4 +80,41 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT
 			return;
 		}
 	}
+}
+
+/*
+*	Updates one character movement.
+*/
+void PhysicsSystem::UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT
+{
+	//Apply the movement input to the velocity.
+	movement->_Velocity += movement->_MovementInput;
+
+	//Apply the jump input to the velocity.
+	movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
+
+	//Apply gravity.
+	movement->_Velocity._Y -= PhysicsConstants::GRAVITY * context->_DeltaTime;
+
+	//Apply the velocity to the position.
+	movement->_Position += movement->_Velocity * context->_DeltaTime;
+
+	//Clamp the position to the terrain height.
+	float terrain_height{ 0.0f };
+
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
+
+	if (movement->_Position._Y <= terrain_height)
+	{
+		movement->_Position._Y = terrain_height;
+
+		//Apply some ground damping when walking on terrain.
+		movement->_Velocity *= 0.01f;
+	}
+
+	movement->_Position._Y = CatalystBaseMath::Maximum<float>(movement->_Position._Y, terrain_height);
+
+	//Reset the inputs.
+	movement->_MovementInput = VectorConstants::ZERO;
+	movement->_JumpInput = 0.0f;
 }

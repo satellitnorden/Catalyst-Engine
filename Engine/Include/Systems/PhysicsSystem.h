@@ -34,14 +34,14 @@ public:
 	void PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Registers a character movement.
-	*/
-	void RegisterCharacterMovement(CharacterMovement *const RESTRICT movement) NOEXCEPT;
-
-	/*
 	*	Casts a ray.
 	*/
 	void CastRay(const Ray &ray, const PhysicsChannel channels, RaycastResult *const RESTRICT result) NOEXCEPT;
+
+	/*
+	*	Registers a character movement.
+	*/
+	void RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT;
 
 private:
 
@@ -52,5 +52,10 @@ private:
 	*	Casts a ray against the terrain.
 	*/
 	void CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT;
+
+	/*
+	*	Updates one character movement.
+	*/
+	void UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT;
 
 };

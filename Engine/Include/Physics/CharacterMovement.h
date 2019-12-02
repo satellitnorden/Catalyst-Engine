@@ -17,6 +17,12 @@ public:
 	//The velocity.
 	Vector3<float> _Velocity{ VectorConstants::ZERO };
 
+	//The movement input.
+	Vector3<float> _MovementInput{ VectorConstants::ZERO };
+
+	//The jump input.
+	float _JumpInput{ 0.0f };
+
 	//The mass, denoted in kilograms.
 	float _Mass{ 100.0f };
 
@@ -24,17 +30,25 @@ public:
 	float _Height{ 1.75f };
 
 	//The radius, denoted in meters.
-	float _Radius{ 0.25f };
+	float _Radius{ 0.5f };
 
 	//Denotes whether or not character movement is enabled.
 	bool _Enabled{ true };
 
 	/*
-	*	Adds movement in a direction.
+	*	Adds movement input.
 	*/
-	void AddMovement(const Vector3<float> &direction, const float force) NOEXCEPT
+	void AddMovementInput(const Vector3<float> & input) NOEXCEPT
 	{
-		_Velocity += direction * force;
+		_MovementInput += input;
+	}
+
+	/*
+	*	Adds jump input.
+	*/
+	void AddJumpInput(const float input) NOEXCEPT
+	{
+		_JumpInput += input;
 	}
 
 };

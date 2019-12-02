@@ -3,13 +3,18 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Physics constants.
+namespace PhysicsConstants
+{
+	constexpr float GRAVITY{ 9.80'665f };
+}
+
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {
-	Terrain = BIT(0),
-	Model = BIT(1),
+	TERRAIN = BIT(0),
 
-	All = Terrain | Model
+	ALL = TERRAIN
 };
 
 ENUMERATION_BIT_OPERATIONS(PhysicsChannel);
