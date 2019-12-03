@@ -1,64 +1,59 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/Essential/CatalystEssential.h>
 
 class Microbenchmarker final
 {
 
 public:
 
-	static void StartBenchmark(long long iterations, std::function<void()> function1, std::function<void()> function2) NOEXCEPT
+	static void StartBenchmark(const uint64 iterations, std::function<void()> function_1, std::function<void()> function_2) NOEXCEPT
 	{
-		std::thread function1Thread{ &ExecuteFunction, "Function 1", iterations, function1 };
-		std::thread function2Thread{ &ExecuteFunction, "Function 2", iterations, function2 };
+		std::thread thread_1{ &ExecuteFunction, "Function 1", iterations, function_1 };
+		std::thread thread_2{ &ExecuteFunction, "Function 2", iterations, function_2 };
 
-		function1Thread.join();
-		function2Thread.join();
+		thread_1.join();
+		thread_2.join();
 	}
 
 private:
 
-	static void ExecuteFunction(std::string functionName, long long iterations, std::function<void()> function) NOEXCEPT
+	static void ExecuteFunction(std::string function_name, const uint64 iterations, std::function<void()> function) NOEXCEPT
 	{
-		std::chrono::time_point<std::chrono::steady_clock> startTime = std::chrono::high_resolution_clock::now();
-		std::vector<long long> durations;
-		durations.reserve(static_cast<size_t>(iterations));
-		unsigned short int currentPercent = 0;
-		long long percentCounter = 0;
-		const long long iterationsPerPercent = iterations / 100;
+		std::chrono::time_point<std::chrono::steady_clock> start_time{ std::chrono::high_resolution_clock::now() };
 
-		for (long long i = 0; i < iterations; ++i)
+		uint64 total_duration{ 0 };
+
+		uint32 current_percent{ 0 };
+		uint64 percent_counter{ 0 };
+		const uint64 iterations_per_percent{ iterations / 100 };
+
+		for (uint64 i{ 0 }; i < iterations; ++i)
 		{
 			function();
 
-			++percentCounter;
+			++percent_counter;
 
-			if (percentCounter >= iterationsPerPercent)
+			if (percent_counter >= iterations_per_percent)
 			{
-				++currentPercent;
-				percentCounter = 0;
+				++current_percent;
+				percent_counter = 0;
 
-				std::cout << functionName << ": " << currentPercent << "%" << std::endl;
+				PRINT_TO_OUTPUT(function_name << ": " << current_percent << "%");
 			}
 
-			durations.emplace_back(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - startTime).count());
-			startTime = std::chrono::high_resolution_clock::now();
+			total_duration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+
+			start_time = std::chrono::high_resolution_clock::now();
 		}
 
-		long long totalTime = 0;
+		const uint64 average_duration{ total_duration / iterations };
 
-		for (auto& duration : durations)
-		{
-			totalTime += duration;
-		}
-
-		long long averageTime = totalTime / iterations;
-
-		std::cout << "Average duration for " << functionName << " was " << FormatNumber(averageTime) << " nanoseconds." << std::endl;
+		PRINT_TO_OUTPUT("Average duration for " << function_name << " was " << FormatNumber(average_duration) << " nanoseconds.");
 	}
 
-	static std::string FormatNumber(const long long &number) NOEXCEPT
+	static std::string FormatNumber(const uint64 number) NOEXCEPT
 	{
 		std::string formattedString = std::to_string(number);
 

@@ -72,10 +72,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Include;$(IncludePath)</IncludePath>
     <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\Github\Catalyst-Engine\Engine\Libraries\Static;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Include;$(IncludePath)</IncludePath>
     <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\Github\Catalyst-Engine\Engine\Libraries\Static;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -91,7 +93,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmod64_vc.lib;fmodstudio64_vc.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -115,16 +121,159 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>fmod64_vc.lib;fmodstudio64_vc.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Microbenchmarker Source\Include\Microbenchmarker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Core\General\Perceiver.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\AnimatedModelEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\DistanceTriggerEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\Entity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\LightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\ModelEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\SoundEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\VegetationEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\PhysicallyBasedLighting.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\RenderingConfigurationManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanCubeMapTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanDepthBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorSet.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanDescriptorSetLayout.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanErrorReporting.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanEvent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanFence.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanFramebuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanInstance.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanLogicalDevice.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanQueue.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanSampler.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanSemaphore.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\LightingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\MaterialSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\ModelSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomApplicationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomIsolationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\CloudsApplicationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\CloudsGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBlurGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\DirectLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\FastApproximateAntiAliasingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\FireflyReductionGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\LuminanceLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\MotionBlurGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\OceanGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\PassthroughGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\PathTracingDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\SeparableBlurGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\SkyGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorColorSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorDepthSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RayTracingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\BloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\DirectLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\IndirectLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\LuminanceLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\MotionBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\OceanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\PathTracingRayTracingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\PostProcessingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\RenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\ScreenRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\SkyRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\UserInterfaceRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\Building\CatalystEngineResourceBuilding.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\Building\ResourceBuilder.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\Creation\ResourceCreator.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\Loading\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\AnimationSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CatalystEngineSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CullingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityCreationSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityPlacementSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\LevelOfDetailSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\ProfilingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\RenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TerrainSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UserInterfaceSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\WorldSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\StbImageImplementation.cpp" />
     <ClCompile Include="..\..\..\Microbenchmarker Source\Source\MicrobenchmarkerMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
