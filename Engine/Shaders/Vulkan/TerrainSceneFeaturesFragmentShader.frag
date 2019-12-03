@@ -10,6 +10,7 @@
 
 //Constants.
 #define MATERIAL_TEXTURE_COORDINATE_OFFSET (vec2(inverse_terrain_texture_resolution, inverse_terrain_texture_resolution))
+#define MATERIAL_HEIGHT_BLEND_STRENGTH (2.0f)
 
 /*
 *   Terrain material struct definition.
@@ -17,7 +18,7 @@
 struct TerrainMaterial
 {
     vec3 albedo;
-    vec3 normal_map;
+    vec4 normal_and_height_map;
     vec4 material_properties;
 };
 
@@ -48,6 +49,9 @@ vec2 CalculateTextureCoordinate(vec3 world_position, vec3 normal)
 {
     //Only use the absolute values of the normal for this calculation.
     normal = abs(normal);
+
+    //Mutate the normal a bit so that the noise is less noticable on more flat surfaces.
+    normal *= normal;
 
     //Normalize the normal.
     float inverse_normal_sum = 1.0f / (normal.x + normal.y + normal.z);
@@ -94,16 +98,6 @@ vec4 SampleTerrainMaterial(int index, vec3 world_position, vec3 normalized_norma
     return  texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.yz * 0.125f) * normalized_normal.x
             + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xz * 0.125f) * normalized_normal.y
             + texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), world_position.xy * 0.125f) * normalized_normal.z;
-
-    /*
-    vec2 coordinate =   world_position.yz * float(normalized_normal.x > normalized_normal.y && normalized_normal.x > normalized_normal.z)
-                        + world_position.xz * float(normalized_normal.y > normalized_normal.x && normalized_normal.y > normalized_normal.z)
-                        + world_position.xy * float(normalized_normal.z > normalized_normal.x && normalized_normal.z > normalized_normal.y);
-
-    coordinate *= 0.5f;
-
-    return texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate);
-    */
 }
 
 /*
@@ -112,7 +106,8 @@ vec4 SampleTerrainMaterial(int index, vec3 world_position, vec3 normalized_norma
 void RetrieveSingleTerrainMaterial(int index, vec3 world_position, vec3 normalized_normal, out TerrainMaterial material)
 {
     material.albedo = SampleTerrainMaterial(GLOBAL_MATERIALS[index].albedo_texture_index, world_position, normalized_normal).rgb;
-    material.normal_map = SampleTerrainMaterial(GLOBAL_MATERIALS[index].normal_map_texture_index, world_position, normalized_normal).xyz * 2.0f - 1.0f;
+    material.normal_and_height_map = SampleTerrainMaterial(GLOBAL_MATERIALS[index].normal_map_texture_index, world_position, normalized_normal);
+    material.normal_and_height_map.xyz = material.normal_and_height_map.xyz * 2.0f - 1.0f;
     material.material_properties = SampleTerrainMaterial(GLOBAL_MATERIALS[index].material_properties_texture_index, world_position, normalized_normal);
 }
 
@@ -121,15 +116,13 @@ void RetrieveSingleTerrainMaterial(int index, vec3 world_position, vec3 normaliz
 */
 void BlendTerrainMaterials(TerrainMaterial first, TerrainMaterial second, float alpha, out TerrainMaterial material)
 {
-    /*
-    *   Modify the alpha a bit, to take int account the "height" of the material.
-    *   The "height" is approximated from the normal map.
-    */
-    float first_height = max(dot(first.normal_map, vec3(0.0f, 0.0f, 1.0f)), 0.0f);
-    float second_height = max(dot(second.normal_map, vec3(0.0f, 0.0f, 1.0f)), 0.0f);
+    //Calculate the alphas.
+    float first_alpha = (1.0f - alpha) * first.normal_and_height_map.w;
+    float second_alpha = alpha * second.normal_and_height_map.w;
 
-    float first_alpha = (1.0f - alpha) * first_height;
-    float second_alpha = alpha * second_height;
+    //Strengthen the height influence on the alphas.
+    first_alpha = pow(first_alpha, MATERIAL_HEIGHT_BLEND_STRENGTH);
+    second_alpha = pow(second_alpha, MATERIAL_HEIGHT_BLEND_STRENGTH);
 
     //And renormalize it!
     float inverse_alpha_sum = 1.0f / (first_alpha + second_alpha);
@@ -138,7 +131,8 @@ void BlendTerrainMaterials(TerrainMaterial first, TerrainMaterial second, float 
     second_alpha *= inverse_alpha_sum;
 
     material.albedo = first.albedo * first_alpha + second.albedo * second_alpha;
-    material.normal_map = normalize(first.normal_map * first_alpha + second.normal_map * second_alpha);
+    material.normal_and_height_map = first.normal_and_height_map * first_alpha + second.normal_and_height_map * second_alpha;
+    material.normal_and_height_map.xyz = normalize(material.normal_and_height_map.xyz);
     material.material_properties = first.material_properties * first_alpha + second.material_properties * second_alpha;
 }
 
@@ -203,7 +197,7 @@ void main()
     mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
 
     //Calculate the shading normal.
-    vec3 shading_normal = normalize(tangent_space_matrix * material.normal_map);
+    vec3 shading_normal = normalize(tangent_space_matrix * material.normal_and_height_map.xyz);
 
     //Calculate the velocity.
     vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition);
