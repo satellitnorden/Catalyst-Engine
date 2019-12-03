@@ -24,7 +24,7 @@ public:
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material.
-	Material _Material;
+	//The material index.
+	uint32 _MaterialIndex;
 
 };

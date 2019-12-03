@@ -24,7 +24,7 @@ public:
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
 
-	//The material.
-	Material _Material;
+	//The material index.
+	uint32 _MaterialIndex;
 
 };

@@ -38,7 +38,7 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	component._PreviousWorldTransform = model_initialization_data->_Transform;
 	component._CurrentWorldTransform = model_initialization_data->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
-	component._Material = model_initialization_data->_Material;
+	component._MaterialIndex = model_initialization_data->_MaterialIndex;
 
 	//Add the static instance. Assume this model will not move for now.
 	if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -81,12 +81,4 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
-}
-
-/*
-*	Returns the material.
-*/
-RESTRICTED NO_DISCARD Material *const RESTRICT ModelEntity::GetMaterial() NOEXCEPT
-{
-	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._Material;
 }

@@ -32,9 +32,7 @@ class FragmentPushConstantData final
 
 public:
 
-	int32 _AlbedoTextureIndex;
-	int32 _NormalMapTextureIndex;
-	int32 _MaterialPropertiesTextureIndex;
+	int32 _MaterialIndex;
 
 };
 
@@ -160,9 +158,7 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		FragmentPushConstantData fragmentData;
 
-		fragmentData._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
-		fragmentData._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
+		fragmentData._MaterialIndex = component->_MaterialIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

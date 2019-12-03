@@ -54,9 +54,4 @@ public:
 	*/
 	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
-	/*
-	*	Returns the material.
-	*/
-	RESTRICTED NO_DISCARD Material *const RESTRICT GetMaterial() NOEXCEPT;
-
 };
