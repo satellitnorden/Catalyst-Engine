@@ -78,7 +78,7 @@ void main()
       vec3 cloud_color = vec3(0.0f);
 
       //Start off with ambient lighting.
-      cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() * 0.5f;
+      cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() * 0.25f;
 
       for (int i = 0; i < CLOUD_NUMBER_OF_SAMPLES; ++i)
       {

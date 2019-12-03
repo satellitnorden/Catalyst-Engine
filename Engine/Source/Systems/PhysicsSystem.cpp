@@ -87,32 +87,58 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT
 */
 void PhysicsSystem::UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT
 {
-	//Apply the movement input to the velocity.
-	movement->_Velocity += movement->_MovementInput;
-
-	//Apply the jump input to the velocity.
-	movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
-
-	//Apply gravity.
-	movement->_Velocity._Y -= PhysicsConstants::GRAVITY * context->_DeltaTime;
-
-	//Apply the velocity to the position.
-	movement->_Position += movement->_Velocity * context->_DeltaTime;
-
-	//Clamp the position to the terrain height.
-	float terrain_height{ 0.0f };
-
-	TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
-
-	if (movement->_Position._Y <= terrain_height)
+	//Apply different logic based on whether or not the character is jumping or not.
+	if (movement->_IsJumping)
 	{
-		movement->_Position._Y = terrain_height;
+		//Apply gravity.
+		movement->_Velocity._Y -= PhysicsConstants::GRAVITY * context->_DeltaTime;
 
-		//Apply some ground damping when walking on terrain.
-		movement->_Velocity *= 0.01f;
+		//Apply the velocity to the position.
+		movement->_Position += movement->_Velocity * context->_DeltaTime;
+
+		//Clamp the position to the terrain height.
+		float terrain_height{ 0.0f };
+
+		TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
+
+		if (movement->_Position._Y <= terrain_height)
+		{
+			movement->_Position._Y = terrain_height;
+
+			//Signal that this character is no longer jumping.
+			movement->_IsJumping = false;
+		}
 	}
 
-	movement->_Position._Y = CatalystBaseMath::Maximum<float>(movement->_Position._Y, terrain_height);
+	else
+	{
+		//Apply the movement input to the velocity.
+		movement->_Velocity += movement->_MovementInput;
+
+		//Apply the jump input to the velocity.
+		if (movement->_JumpInput > 0.0f)
+		{
+			movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
+
+			movement->_IsJumping = true;
+		}
+
+		//Apply the velocity to the position.
+		movement->_Position += movement->_Velocity * context->_DeltaTime;
+
+		//Clamp the position to the terrain height.
+		if (!movement->_IsJumping)
+		{
+			float terrain_height{ 0.0f };
+
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
+
+			movement->_Position._Y = terrain_height;
+
+			//Apply some ground damping when walking on terrain.
+			movement->_Velocity *= 0.01f;
+		}
+	}
 
 	//Reset the inputs.
 	movement->_MovementInput = VectorConstants::ZERO;

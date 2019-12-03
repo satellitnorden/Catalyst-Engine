@@ -35,6 +35,9 @@ public:
 	//Denotes whether or not character movement is enabled.
 	bool _Enabled{ true };
 
+	//Denotes whether or not this character is currently jumping.
+	bool _IsJumping{ false };
+
 	/*
 	*	Adds movement input.
 	*/

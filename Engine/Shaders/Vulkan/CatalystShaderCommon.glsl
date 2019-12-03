@@ -526,15 +526,10 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
       vec3 sample_point = mix(start, end, float(i) * 0.333333f);
 
       //Get the ensity at this point.
-      density = min(density + SampleCloudDensity(sample_point, level) * 1.25f, 1.0f);
-
-      if (density == 1.0f)
-      {
-         break;
-      }
+      density += SampleCloudDensity(sample_point, level);
    }
 
    //Return the total density.
-   return density * cloud_density_multiplier;
+   return (1.0f - exp(-density)) * cloud_density_multiplier;
 }
 #endif
