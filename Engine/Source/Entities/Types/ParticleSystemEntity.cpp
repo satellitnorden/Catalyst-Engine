@@ -58,7 +58,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	for (ParticleInstanceData& instance : instance_data)
 	{
-		instance._Time = CatalystRandomMath::RandomFloatInRange(0.0f, component._Lifetime);
+		instance._Time = component._Lifetime;
 		instance._RandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 		instance._RandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 		instance._RandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
