@@ -17,7 +17,7 @@ void main()
 	rayPayload.radiance = vec3(0.0f);
 	rayPayload.albedo = vec3(0.0f);
 	rayPayload.geometryNormal = vec3(0.0f, 1.0f, 0.0f);
-	rayPayload.hitDistance = viewDistance;
+	rayPayload.hitDistance = VIEW_DISTANCE;
 	rayPayload.shadingNormal = vec3(0.0f, 1.0f, 0.0f);
 	rayPayload.materialProperties = 0;
 	rayPayload.roughness = 1.0f;

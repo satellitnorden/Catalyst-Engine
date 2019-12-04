@@ -80,7 +80,7 @@ void main()
 					perceiverWorldPosition, 			//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
 					rayDirection, 						//direction
-					viewDistance, 	//Tmax
+					VIEW_DISTANCE, 						//Tmax
 					0 									//payload
 					);
 

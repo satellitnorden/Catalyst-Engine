@@ -78,7 +78,7 @@ void main()
 	vec3 shadingNormal = tangentSpaceMatrix * normalMap;
 
 	//Determine if this ray hit a volumetric particle instead, and if so, alter the material properties so that that particle is lit instead.
-	float volumetricHitDistance = mix(viewDistance, 0.0f, VOLUMETRIC_LIGHTING_DENSITY) * RandomFloat(vec2(gl_LaunchIDNV.xy), globalRandomSeed1);
+	float volumetricHitDistance = mix(VIEW_DISTANCE, 0.0f, VOLUMETRIC_LIGHTING_DENSITY) * RandomFloat(vec2(gl_LaunchIDNV.xy), globalRandomSeed1);
 
 	if (gl_HitTNV > volumetricHitDistance)
 	{
@@ -119,7 +119,7 @@ void main()
 				hitPosition, 						//origin
 				CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
 				randomIrradianceDirection, 			//direction
-				viewDistance, 	//Tmax
+				VIEW_DISTANCE, 						//Tmax
 				0 									//payload
 				);
 

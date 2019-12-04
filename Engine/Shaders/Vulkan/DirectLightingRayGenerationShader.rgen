@@ -80,7 +80,7 @@ void main()
 						hitPosition, 																				//origin
 						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 						-light.position_or_direction,																//direction
-						viewDistance,																				//Tmax
+						VIEW_DISTANCE,																				//Tmax
 						1 																							//payload
 						);
 

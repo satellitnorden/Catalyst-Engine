@@ -54,7 +54,7 @@ void main()
 	vec3 current_volumetric_lighting = Upsample(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
 
 	//Calculate the volumetric lighting weight.
-	float volumetric_lighting_weight = 1.0f - pow(1.0f - min(current_features.hit_distance / viewDistance, 1.0f), volumetricLightingIntensity);
+	float volumetric_lighting_weight = 1.0f - pow(1.0f - min(current_features.hit_distance / VIEW_DISTANCE, 1.0f), volumetricLightingIntensity);
 	volumetric_lighting_weight *= SmoothStep(1.0f - clamp((current_features.hit_position.y - 1000.0f) / 1000.0f, 0.0f, 1.0f));
 
 	//Write the fragment.
