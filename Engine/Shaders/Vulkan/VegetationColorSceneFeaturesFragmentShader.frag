@@ -63,7 +63,7 @@ void main()
   else
   {
   	//Sample the normal map.
-  	vec3 normal_map = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
+  	vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
   	shading_normal = normal_map * 2.0f - 1.0f;
   	shading_normal = fragmentTangentSpaceMatrix * shading_normal;
   	shading_normal = normalize(shading_normal);
@@ -76,6 +76,6 @@ void main()
 
   //Write the fragments.
   sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
-  sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
+  sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - PERCEIVER_WORLD_POSITION));
   sceneFeatures3 = materialProperties;
 }

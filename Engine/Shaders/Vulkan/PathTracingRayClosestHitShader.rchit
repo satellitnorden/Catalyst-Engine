@@ -57,13 +57,13 @@ void main()
 	vec3 hitPosition = finalVertex.position + geometryNormal * 0.00001f;
 
 	//Sample the albedo.
-	vec3 albedo = pow(texture(sampler2D(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate).rgb, vec3(2.2f));
+	vec3 albedo = pow(texture(sampler2D(GLOBAL_TEXTURES[modelMaterials[gl_InstanceCustomIndexNV].albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate).rgb, vec3(2.2f));
 
 	//Sample the normal map.
-	vec3 normalMap = texture(sampler2D(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
+	vec3 normalMap = texture(sampler2D(GLOBAL_TEXTURES[modelMaterials[gl_InstanceCustomIndexNV].normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate).xyz * 2.0f - 1.0f;
 
 	//Sample the material properties.
-	vec4 materialProperties = texture(sampler2D(globalTextures[modelMaterials[gl_InstanceCustomIndexNV].material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate);
+	vec4 materialProperties = texture(sampler2D(GLOBAL_TEXTURES[modelMaterials[gl_InstanceCustomIndexNV].material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), finalVertex.textureCoordinate);
 
 	//Store the roughness, metallic, ambient occlusion and luminance.
 	float roughness = materialProperties.x;

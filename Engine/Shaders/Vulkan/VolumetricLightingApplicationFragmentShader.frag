@@ -39,7 +39,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hit_position = perceiverWorldPosition + CalculateRayDirection(fragment_texture_coordinate) * sceneFeatures2.w;
+	features.hit_position = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragment_texture_coordinate) * sceneFeatures2.w;
 	features.hit_distance = sceneFeatures2.w;
 
 	return features;

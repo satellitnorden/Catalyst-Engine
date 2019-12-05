@@ -43,8 +43,8 @@ void main()
       //Calculate the start and end points using the two cloud planes.
       float intersection_distance;
 
-      LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
-      vec3 start = perceiverWorldPosition + view_direction * intersection_distance;
+      LinePlaneIntersection(PERCEIVER_WORLD_POSITION, view_direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+      vec3 start = PERCEIVER_WORLD_POSITION + view_direction * intersection_distance;
 
       //Calculate the hit distance multiplier.
       float hit_distance_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
@@ -57,13 +57,13 @@ void main()
          return;
       }
 
-      LinePlaneIntersection(perceiverWorldPosition, view_direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
-      vec3 end = perceiverWorldPosition + view_direction * intersection_distance;
+      LinePlaneIntersection(PERCEIVER_WORLD_POSITION, view_direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+      vec3 end = PERCEIVER_WORLD_POSITION + view_direction * intersection_distance;
 
       //Sample all the sample offsets.
       for (int i = 0; i < CLOUD_NUMBER_OF_NOISE_TEXTURES; ++i)
       {
-         vec4 noise_texture = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+         vec4 noise_texture = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
          for (int j = 0; j < 4; ++j)
          {
@@ -93,7 +93,9 @@ void main()
          //Add to the cloud color.
          if (new_density > 0.0f)
          {
-            cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * exp(-(1.25f + CLOUD_DENSITY))) * (1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3))) * new_density;
+            float cloud_density_in_direction = 1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3);
+            cloud_density_in_direction *= cloud_density_in_direction;
+            cloud_color += (CLOUD_BASE_COLOR * sky_light_luminance * cloud_density_in_direction) * new_density;
          }
 
          if (density >= 0.99f)

@@ -49,7 +49,7 @@ void main()
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
 
 	//Calculate the hit position.
-	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance;
+	vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * hitDistance;
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);

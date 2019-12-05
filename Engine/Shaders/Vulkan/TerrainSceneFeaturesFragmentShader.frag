@@ -78,7 +78,7 @@ vec2 CalculateTextureCoordinate(vec3 world_position, vec3 normal)
 
     /*
     //Sample the noise.
-    float noise = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY))[0];
+    float noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY))[0];
 
     if (noise <= normal.x)
     {
@@ -113,7 +113,7 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 */
 vec4 SampleTerrainMaterial(int index, vec2 texture_coordinate)
 {
-    return texture(sampler2D(globalTextures[index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), texture_coordinate);
+    return texture(sampler2D(GLOBAL_TEXTURES[index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), texture_coordinate);
 }
 
 /*
@@ -174,10 +174,10 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
         vec2 fourth_texture_coordinate = fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, -1.0f);
 
         //Retrieve the terrain material indices.
-        int first_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
-        int second_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
-        int third_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
-        int fourth_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
+        int first_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
+        int second_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
+        int third_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
+        int fourth_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
 
 
         //Retrieve the terrain materials.
@@ -212,10 +212,10 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
         vec2 fourth_texture_coordinate = fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 0.0f);
 
         //Retrieve the terrain material indices.
-        int first_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
-        int second_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
-        int third_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
-        int fourth_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
+        int first_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
+        int second_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
+        int third_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
+        int fourth_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
 
 
         //Retrieve the terrain materials.
@@ -251,10 +251,10 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
         vec2 fourth_texture_coordinate = fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, -1.0f);
 
         //Retrieve the terrain material indices.
-        int first_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
-        int second_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
-        int third_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
-        int fourth_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
+        int first_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
+        int second_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
+        int third_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
+        int fourth_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
 
 
         //Retrieve the terrain materials.
@@ -289,10 +289,10 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
         vec2 fourth_texture_coordinate = fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 0.0f);
 
         //Retrieve the terrain material indices.
-        int first_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
-        int second_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
-        int third_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
-        int fourth_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
+        int first_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), first_texture_coordinate).w * 255.0f);
+        int second_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), second_texture_coordinate).w * 255.0f);
+        int third_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), third_texture_coordinate).w * 255.0f);
+        int fourth_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fourth_texture_coordinate).w * 255.0f);
 
 
         //Retrieve the terrain materials.
@@ -315,10 +315,10 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
     }
 #else
     //Retrieve the terrain material indices.
-    int center_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).w * 255.0f);
-    int right_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 0.0f)).w * 255.0f);
-    int upper_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 1.0f)).w * 255.0f);
-    int upper_right_terrain_material_index = int(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 1.0f)).w * 255.0f);
+    int center_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).w * 255.0f);
+    int right_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 0.0f)).w * 255.0f);
+    int upper_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(0.0f, 1.0f)).w * 255.0f);
+    int upper_right_terrain_material_index = int(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate + MATERIAL_TEXTURE_COORDINATE_OFFSET * vec2(1.0f, 1.0f)).w * 255.0f);
 
 
     //Retrieve the terrain materials.
@@ -348,7 +348,7 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 void main()
 {
     //Retrieve the terrain normal.
-    vec3 terrain_normal = normalize(texture(sampler2D(globalTextures[normal_and_material_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f);
+    vec3 terrain_normal = normalize(texture(sampler2D(GLOBAL_TEXTURES[normal_and_material_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f);
 
     //Calculate the texture coordinate.
     vec2 texture_coordinate = CalculateTextureCoordinate(fragmentWorldPosition, terrain_normal);
@@ -372,6 +372,6 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(material.albedo, vec3(2.2f)), 0.0f);
-    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentWorldPosition - perceiverWorldPosition));
+    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentWorldPosition - PERCEIVER_WORLD_POSITION));
     sceneFeatures3 = material.material_properties;
 }

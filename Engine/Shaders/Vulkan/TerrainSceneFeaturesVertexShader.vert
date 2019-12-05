@@ -74,7 +74,7 @@ void main()
 		fragmentTextureCoordinate = position + 0.5f;
 
 		//Apply the height.
-		fragmentWorldPosition.y = texture(sampler2D(globalTextures[heightTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).x;
+		fragmentWorldPosition.y = texture(sampler2D(GLOBAL_TEXTURES[heightTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).x;
 
 		gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 	}

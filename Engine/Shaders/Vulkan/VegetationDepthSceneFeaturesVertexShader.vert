@@ -44,7 +44,7 @@ void main()
 
 	fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;
-	fragmentDistanceSquared = LengthSquared3(fragmentCurrentWorldPosition - perceiverWorldPosition);
+	fragmentDistanceSquared = LengthSquared3(fragmentCurrentWorldPosition - PERCEIVER_WORLD_POSITION);
 
 	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);
 }

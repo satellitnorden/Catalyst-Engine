@@ -47,7 +47,7 @@ void main()
 	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
 
 	//Sample the noise vector.
-	vec4 noise_vector = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+	vec4 noise_vector = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 	//Calculate the volumetric lighting for all lights.
 	for (int i = 0; i < numberOfLights; ++i)
@@ -65,7 +65,7 @@ void main()
 					float volumetric_particle_hit_distance = hitDistance * noise_vector[j];
 
 					//Calculate the volumetric particle hit position.
-					vec3 volumetric_particle_hit_position = perceiverWorldPosition + rayDirection * volumetric_particle_hit_distance;
+					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
 
 					//Sample the cloud density.
 					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction, 3);
@@ -80,7 +80,7 @@ void main()
 			case LIGHT_TYPE_POINT:
 			{
 				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 				for (int j = 0; j < 4; ++j)
 				{
@@ -88,7 +88,7 @@ void main()
 					float volumetricParticleHitDistance = hitDistance * randomVector[j];
 
 					//Calculate the hit position.
-					vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
+					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
 
 					float lengthToLight = length(light.position_or_direction - hitPosition);
 					vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;

@@ -35,7 +35,7 @@ void main()
 	float time = geometry_times[0];
 
 	//Calculate the forward, up and right vectors.
-	vec3 forward_vector = normalize(perceiverWorldPosition - world_position);
+	vec3 forward_vector = normalize(PERCEIVER_WORLD_POSITION - world_position);
 	vec3 up_vector = vec3(0.0f, 1.0f, 0.0f);
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	

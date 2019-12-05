@@ -13,7 +13,7 @@ class DynamicUniformData final
 public:
 
 	Matrix4 _ViewMatrixMinusOne;
-	Matrix4 _UNUSED;
+	Matrix4 _UNUSED1;
 	Matrix4 _InversePerceiverMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _PerceiverMatrix;
@@ -22,7 +22,7 @@ public:
 
 	Vector4<float> _UpperSkyColor;
 	Vector4<float> _LowerSkyColor;
-	Vector4<float> _PerceiverWorldPositionMinusOne;
+	Vector4<float> _UNUSED6;
 	Vector4<float> _PerceiverForwardVector;
 	Vector4<float> _PerceiverWorldPosition;
 
@@ -36,17 +36,17 @@ public:
 	float _GlobalRandomSeed1;
 	float _GlobalRandomSeed2;
 	float _GlobalRandomSeed3;
-	float _PerceiverRotationVelocity;
+	float _UNUSED5;
 	float _TotalTime;
 	float _WindSpeed;
 
 	int32 _AmbientOcclusionMode;
 	int32 _MotionBlurMode;
-	int32 _SpecularIrradianceMode;
+	int32 _UNUSED3;
 	int32 _ShadowsMode;
-	int32 _VolumetricLightingMode;
+	int32 _UNUSED4;
 
-	float _AmbientIllumionationIntensity;
+	float _UNUSED2;
 	float _BloomIntensity;
 	float _ChromaticAberrationIntensity;
 	float _VolumetricLightingIntensity;

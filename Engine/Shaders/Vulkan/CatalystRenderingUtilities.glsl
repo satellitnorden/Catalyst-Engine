@@ -21,7 +21,7 @@ vec3 RetrieveAlbedo(Material material, vec2 coordinate)
 	
 	else
 	{
-		return texture(sampler2D(globalTextures[material.albedo_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate).rgb;
+		return texture(sampler2D(GLOBAL_TEXTURES[material.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate).rgb;
 	}
 }
 
@@ -37,7 +37,7 @@ vec4 RetrieveMaterialProperties(Material material, vec2 coordinate)
 	
 	else
 	{
-		return texture(sampler2D(globalTextures[material.material_properties_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate);
+		return texture(sampler2D(GLOBAL_TEXTURES[material.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), coordinate);
 	}
 }
 #endif

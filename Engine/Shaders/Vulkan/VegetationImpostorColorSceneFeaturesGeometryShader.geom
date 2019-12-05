@@ -32,10 +32,10 @@ void main()
 	vec3 world_position = geometry_positions[0];
 
 	//Calculate the hit distance.
-	const float hit_distance = length(world_position - perceiverWorldPosition);
+	const float hit_distance = length(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the forward, up and right vectors.
-	vec3 forward_vector = perceiverWorldPosition - world_position;
+	vec3 forward_vector = PERCEIVER_WORLD_POSITION - world_position;
 	forward_vector.y = 0.0f;
 	forward_vector = normalize(forward_vector);
 	vec3 up_vector = vec3(0.0f, 1.0f, 0.0f);

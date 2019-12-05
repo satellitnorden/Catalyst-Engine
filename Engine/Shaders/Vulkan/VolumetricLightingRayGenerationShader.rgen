@@ -53,7 +53,7 @@ void main()
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
 				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 				for (int j = 0; j < 4; ++j)
 				{
@@ -61,7 +61,7 @@ void main()
 					float volumetricParticleHitDistance = hitDistance * randomVector[j];
 
 					//Calculate the hit position.
-					vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
+					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
 
 					//Determine the visibility.
 					if (shadowsMode == SHADOWS_MODE_NONE)
@@ -98,7 +98,7 @@ void main()
 			case LIGHT_TYPE_POINT:
 			{
 				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 				for (int j = 0; j < 4; ++j)
 				{
@@ -106,7 +106,7 @@ void main()
 					float volumetricParticleHitDistance = hitDistance * randomVector[j];
 
 					//Calculate the hit position.
-					vec3 hitPosition = perceiverWorldPosition + rayDirection * volumetricParticleHitDistance;
+					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
 
 					float lengthToLight = length(light.position_or_direction - hitPosition);
 					vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;

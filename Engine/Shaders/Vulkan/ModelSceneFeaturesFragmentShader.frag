@@ -34,7 +34,7 @@ layout (location = 2) out vec4 sceneFeatures3;
 */
 vec2 ApplyParallaxMapping(vec2 texture_coordinate, vec3 tangent_space_view_direction)
 {
-	//float height =  texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), texture_coordinate).w;    
+	//float height =  texture(sampler2D(GLOBAL_TEXTURES[normalMapTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), texture_coordinate).w;    
 	float height = 1.0f;
     vec2 p = tangent_space_view_direction.xy / tangent_space_view_direction.z * (height * 1.0f);
     return texture_coordinate - p;   
@@ -59,7 +59,7 @@ void main()
 	if (false) //Whether or not to apply parallax mapping.
 	{
 		//Calculate the tangent space perceiver position.
-		vec3 tangent_space_perceiver_position = fragmentTangentSpaceMatrix * perceiverWorldPosition;
+		vec3 tangent_space_perceiver_position = fragmentTangentSpaceMatrix * PERCEIVER_WORLD_POSITION;
 
 		//Calculate the tangent space fragment position.
 		vec3 tangent_space_fragment_position = fragmentTangentSpaceMatrix * fragmentCurrentWorldPosition;
@@ -91,7 +91,7 @@ void main()
 	else
 	{
 	 //Sample the normal map.
-	 vec3 normal_map = texture(sampler2D(globalTextures[material.normal_map_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_texture_coordinate).xyz;
+	 vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_texture_coordinate).xyz;
 	 shading_normal = normal_map * 2.0f - 1.0f;
 	 shading_normal = fragmentTangentSpaceMatrix * shading_normal;
 	 shading_normal = normalize(shading_normal);
@@ -102,6 +102,6 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), 0);
-    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - perceiverWorldPosition));
+    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - PERCEIVER_WORLD_POSITION));
     sceneFeatures3 = material_properties;
 }

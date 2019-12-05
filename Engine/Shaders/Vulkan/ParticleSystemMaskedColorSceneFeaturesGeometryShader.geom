@@ -32,13 +32,13 @@ void main()
 	vec3 previous_world_position = current_world_position - geometry_velocities[0];
 
 	//Calculate the hit distance.
-	float hit_distance = length(current_world_position - perceiverWorldPosition);
+	float hit_distance = length(current_world_position - PERCEIVER_WORLD_POSITION);
 
 	//Retrieve the scale.
 	vec2 scale = geometry_scales[0];
 
 	//Calculate the forward, up and right vectors.
-	vec3 forward_vector = (perceiverWorldPosition - current_world_position) / hit_distance;
+	vec3 forward_vector = (PERCEIVER_WORLD_POSITION - current_world_position) / hit_distance;
 	vec3 up_vector = vec3(0.0f, 1.0f, 0.0f);
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	

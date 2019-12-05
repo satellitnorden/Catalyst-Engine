@@ -23,14 +23,6 @@ public:
 		Full
 	};
 
-	//Enumeration covering all specular irradiance modes.
-	enum class SpecularIrradianceMode : uint8
-	{
-		None,
-		ScreenSpace,
-		RayTraced
-	};
-
 	//Enumeration covering all shadows modes.
 	enum class ShadowsMode : uint8
 	{
@@ -63,14 +55,6 @@ public:
 	MotionBlurMode GetMotionBlurMode() const NOEXCEPT
 	{
 		return _MotionBlurMode;
-	}
-
-	/*
-	*	Returns the specular irradiance mode.
-	*/
-	SpecularIrradianceMode GetSpecularIrradianceMode() const NOEXCEPT
-	{
-		return _SpecularIrradianceMode;
 	}
 
 	/*
@@ -152,9 +136,6 @@ private:
 
 	//The motion blur mode mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
-
-	//The specular irradiance mode.
-	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::ScreenSpace };
 
 	//The shadows mode.
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };

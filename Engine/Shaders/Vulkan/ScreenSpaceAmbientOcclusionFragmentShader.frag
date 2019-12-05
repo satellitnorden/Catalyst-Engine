@@ -34,7 +34,7 @@ void main()
 	float hit_distance = scene_features.w;
 
 	//Calculate the world position at this fragment.
-	vec3 world_position = perceiverWorldPosition + CalculateRayDirection(fragment_texture_coordinate) * hit_distance;
+	vec3 world_position = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragment_texture_coordinate) * hit_distance;
 
 	//Calculate the noise texture coordinate.
 	vec2 noise_texture_coordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
@@ -48,7 +48,7 @@ void main()
 	for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
-		vec4 random_sample = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+		vec4 random_sample = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
 		vec3 random_direction = normalize(random_sample.xyz * 2.0f - 1.0f);
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : random_direction * -1.0f;
@@ -58,7 +58,7 @@ void main()
 		vec3 sample_position = world_position + random_direction * random_length;
 
 		//Calculate the expected hit distance.
-		float expected_hit_distance = length(sample_position - perceiverWorldPosition);
+		float expected_hit_distance = length(sample_position - PERCEIVER_WORLD_POSITION);
 
 		//Calculate the sample screen coordinate.
 		vec4 sample_view_space_position = viewMatrix * vec4(sample_position, 1.0f);

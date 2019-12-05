@@ -64,7 +64,7 @@ void main()
 
 		//Sample the noise texture.
 		vec2 noiseCoordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-		vec4 noiseSample = texture(sampler2D(globalTextures[(activeNoiseTextureIndex + i) & 63], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noiseCoordinate);
+		vec4 noiseSample = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noiseCoordinate);
 
 		//Write the random vector.
 		rayPayload.randomVector = noiseSample;
@@ -77,7 +77,7 @@ void main()
 					0, 									//sbtRecordOffset
 					0, 									//sbtRecordStride
 					0, 									//missIndex
-					perceiverWorldPosition, 			//origin
+					PERCEIVER_WORLD_POSITION, 			//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
 					rayDirection, 						//direction
 					VIEW_DISTANCE, 						//Tmax

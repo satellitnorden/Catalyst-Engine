@@ -56,28 +56,28 @@ float SampleHeight(vec3 point)
 
     //Sample all levels.
     sample_point = ((point + (offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * OCEAN_POSITION_SCALE;
-    height_sample = texture(sampler2D(globalTextures[ocean_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).x;
+    height_sample = texture(sampler2D(GLOBAL_TEXTURES[ocean_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).x;
     height += height_sample * amplitude;
     total += amplitude;
     amplitude *= OCEAN_PERSISTENCE;
     frequency *= OCEAN_LACUNARITY;
 
     sample_point = ((point + (offset * HALF_PI)) * frequency * HALF_PI) * OCEAN_POSITION_SCALE;
-    height_sample = texture(sampler2D(globalTextures[ocean_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).y;
+    height_sample = texture(sampler2D(GLOBAL_TEXTURES[ocean_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).y;
     height += height_sample * amplitude;
     total += amplitude;
     amplitude *= OCEAN_PERSISTENCE;
     frequency *= OCEAN_LACUNARITY;
 
     sample_point = ((point + (offset * PHI)) * frequency * PHI) * OCEAN_POSITION_SCALE;
-    height_sample = texture(sampler2D(globalTextures[ocean_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).z;
+    height_sample = texture(sampler2D(GLOBAL_TEXTURES[ocean_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).z;
     height += height_sample * amplitude;
     total += amplitude;
     amplitude *= OCEAN_PERSISTENCE;
     frequency *= OCEAN_LACUNARITY;
 
     sample_point = ((point + (offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * OCEAN_POSITION_SCALE;
-    height_sample = texture(sampler2D(globalTextures[ocean_texture_index], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).w;
+    height_sample = texture(sampler2D(GLOBAL_TEXTURES[ocean_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), sample_point.xz).w;
     height += height_sample * amplitude;
     total += amplitude;
     amplitude *= OCEAN_PERSISTENCE;
@@ -118,7 +118,7 @@ void main()
 
 	//Calculate the world position.
     vec3 ray_direction = CalculateRayDirection(fragment_texture_coordinate);
-	vec3 world_position = perceiverWorldPosition + ray_direction * scene_features_2_sampler.w;
+	vec3 world_position = PERCEIVER_WORLD_POSITION + ray_direction * scene_features_2_sampler.w;
 
     //Is the world position under water?
     if (world_position.y <= OCEAN_WAVE_HEIGHT)
@@ -128,8 +128,8 @@ void main()
 
         float intersection_distance;
 
-        LinePlaneIntersection(perceiverWorldPosition, ray_direction, vec3(0.0f, OCEAN_WAVE_HEIGHT, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
-        start = perceiverWorldPosition + ray_direction * intersection_distance;
+        LinePlaneIntersection(PERCEIVER_WORLD_POSITION, ray_direction, vec3(0.0f, OCEAN_WAVE_HEIGHT, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+        start = PERCEIVER_WORLD_POSITION + ray_direction * intersection_distance;
 
         //Remember the hit distance.
         float hit_distance = intersection_distance;
@@ -138,7 +138,7 @@ void main()
         vec3 end = world_position;
 
         //Sample the noise texture.
-        vec4 noise_texture = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+        vec4 noise_texture = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
         //Sample the density.
         float density = 0.0f;
@@ -154,7 +154,7 @@ void main()
         }
 
         //Sample the ocean texture.
-        vec4 ocean_texture_sampler = texture(sampler2D(globalTextures[activeNoiseTextureIndex], globalSamplers[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), start.xz);
+        vec4 ocean_texture_sampler = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), start.xz);
 
         //Write the fragments.
         scene_features_1 = mix(scene_features_1_sampler, vec4(OCEAN_BASE_COLOR, 0.0f), density);

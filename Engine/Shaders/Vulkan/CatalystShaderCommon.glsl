@@ -30,17 +30,33 @@
 #define VOLUMETRIC_LIGHTING_MODE_NONE (0)
 #define VOLUMETRIC_LIGHTING_MODE_RAY_TRACED (1)
 
+#define RENDER_TARGET_SCENE_FEATURES_1_INDEX                        (0)
+#define RENDER_TARGET_SCENE_FEATURES_2_INDEX                        (1)
+#define RENDER_TARGET_SCENE_FEATURES_3_INDEX                        (2)
+#define RENDER_TARGET_AMBIENT_OCCLUSION_INDEX                       (3)
+#define RENDER_TARGET_SCENE_INDEX                                   (4)
+#define RENDER_TARGET_TEMPORAL_ANTI_ALIASING_BUFFER_1_INDEX         (5)
+#define RENDER_TARGET_TEMPORAL_ANTI_ALIASING_BUFFER_2_INDEX         (6)
+#define RENDER_TARGET_INTERMEDIATE_R32G32B32A32_FLOAT_1_INDEX       (7)
+#define RENDER_TARGET_INTERMEDIATE_R32G32B32A32_FLOAT_2_INDEX       (8)
+#define RENDER_TARGET_INTERMEDIATE_R8_BYTE_INDEX                    (9)
+#define RENDER_TARGET_INTERMEDIATE_HALF_R32G32B32A32_FLOAT_1_INDEX  (10)
+#define RENDER_TARGET_INTERMEDIATE_HALF_R32G32B32A32_FLOAT_2_INDEX  (11)
+#define RENDER_TARGET_INTERMEDIATE_QUARTER_R32G32B32A32_FLOAT_INDEX (12)
+#define RENDER_TARGET_INTERMEDIATE_EIGHTH_R32G32B32A32_FLOAT_INDEX  (13)
+#define RENDER_TARGET_SCREEN_INDEX                                  (14)
+#define RENDER_TARGET_NUMBER_OF_RENDER_TARGETS                      (15)
+
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (1024)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (255)
 
-#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (0)
-#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX (1)
-#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (2)
-#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX (3)
-#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX (4)
-#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX (5)
-
-#define NUMBER_OF_GLOBAL_SAMPLERS (6)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX    (0)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX           (1)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX   (2)
+#define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX          (3)
+#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX  (4)
+#define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX         (5)
+#define GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS                                            (6)
 
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
@@ -70,7 +86,7 @@ struct Material
 };
 
 //Global uniform data.
-layout (std140, set = 0, binding = 0) uniform GlobalUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     layout (offset = 0) mat4 viewMatrixMinusOne;
     layout (offset = 64) mat4 UNUSED_1;
@@ -82,9 +98,9 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 
     layout (offset = 448) vec3 upper_sky_color;
     layout (offset = 464) vec3 lower_sky_color;
-    layout (offset = 480) vec3 perceiverWorldPositionMinusOne;
+    layout (offset = 480) vec3 UNUSED_6;
     layout (offset = 496) vec3 perceiverForwardVector;
-    layout (offset = 512) vec3 perceiverWorldPosition;
+    layout (offset = 512) vec3 PERCEIVER_WORLD_POSITION;
 
     layout (offset = 528) vec2 scaledResolution;
     layout (offset = 536) vec2 inverseScaledResolution;
@@ -96,15 +112,15 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 568) float globalRandomSeed1;
     layout (offset = 572) float globalRandomSeed2;
     layout (offset = 576) float globalRandomSeed3;
-    layout (offset = 580) float perceiverRotationVelocity;
+    layout (offset = 580) float UNUSED_5;
     layout (offset = 584) float totalTime;
     layout (offset = 588) float windSpeed;
 
     layout (offset = 592) int ambientOcclusionMode;
     layout (offset = 596) int motionBlurMode;
-    layout (offset = 600) int specularIrradianceMode;
+    layout (offset = 600) int UNUSED_3;
     layout (offset = 604) int shadowsMode;
-    layout (offset = 608) int volumetricLightingMode;
+    layout (offset = 608) int UNUSED_4;
 
     layout (offset = 612) float UNUSED_2;
     layout (offset = 616) float bloomIntensity;
@@ -127,10 +143,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 };
 
 //The global textures.
-layout (set = 0, binding = 1) uniform texture2D globalTextures[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+layout (set = 0, binding = 1) uniform texture2D GLOBAL_TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
 //The global samplers.
-layout (set = 0, binding = 2) uniform sampler globalSamplers[NUMBER_OF_GLOBAL_SAMPLERS];
+layout (set = 0, binding = 2) uniform sampler GLOBAL_SAMPLERS[GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS];
 
 //Global materials.
 layout (std140, set = 0, binding = 3) uniform GlobalMaterials
@@ -475,21 +491,21 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
     if (direction_angle > 0.0f)
     {
         //Is the point below the cloud plane?
-        if (point.y < perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
+        if (point.y < PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
         {
             float intersection_distance;
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             start = point + direction * intersection_distance;
 
             cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
         }
 
         //Is the point above the cloud plane?
-        else if (point.y > perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
+        else if (point.y > PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
         {
             //If the point is above the cloud plane and pointing up, then there's no density here. (:
             return 0.0f;
@@ -502,7 +518,7 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 
             float intersection_distance;
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
 
             cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
@@ -513,23 +529,23 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
    else if (direction_angle < 0.0f)
    {
         //Is the point below the cloud plane?
-        if (point.y < perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
+        if (point.y < PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER)
         {
             //If the point is bloew the cloud plane and pointing down, then there's no density here. (:
             return 0.0f;
         }
 
         //Is the point above the cloud plane?
-        else if (point.y > perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
+        else if (point.y > PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER)
         {
             float intersection_distance;
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_END_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             start = point + direction * intersection_distance;
 
             cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
         }
 
@@ -540,7 +556,7 @@ float SampleCloudDensityInDirection(vec3 point, vec3 direction, int level)
 
             float intersection_distance;
 
-            LinePlaneIntersection(point, direction, vec3(0.0f, perceiverWorldPosition.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
+            LinePlaneIntersection(point, direction, vec3(0.0f, PERCEIVER_WORLD_POSITION.y + CLOUD_PLANE_START_HEIGHT_OVER_PERCEIVER, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
             end = point + direction * intersection_distance;
 
             cloud_density_multiplier = CalculateCloudDensityMultipluer(intersection_distance);

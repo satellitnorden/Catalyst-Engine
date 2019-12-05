@@ -53,7 +53,7 @@ vec3 CalculateRayDirection(vec2 coordinate)
 
 	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
 
-	return normalize(worldPosition - perceiverWorldPosition);
+	return normalize(worldPosition - PERCEIVER_WORLD_POSITION);
 }
 
 #endif

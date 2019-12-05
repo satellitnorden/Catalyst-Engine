@@ -50,7 +50,7 @@ void main()
 	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
 
 	//Calculate the hit position.
-	vec3 hitPosition = perceiverWorldPosition + rayDirection * hitDistance + shadingNormal * 0.1f;
+	vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * hitDistance + shadingNormal * 0.1f;
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);

@@ -52,7 +52,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.normal = sceneFeatures2.xyz;
-	features.hitPosition = perceiverWorldPosition + CalculateRayDirection(coordinate) * sceneFeatures2.w;
+	features.hitPosition = PERCEIVER_WORLD_POSITION + CalculateRayDirection(coordinate) * sceneFeatures2.w;
 
 	return features;
 }
