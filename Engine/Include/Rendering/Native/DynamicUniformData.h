@@ -59,7 +59,9 @@ public:
 	float _ViewDistance;
 	float _CloudDensity;
 	float _Wetness;
+	float _NearPlane;
+	float _FarPlane;
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 656, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 664, "Size of dynamic uniform data is wrong!");

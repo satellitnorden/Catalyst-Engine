@@ -800,6 +800,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
 	_DynamicUniformData._CloudDensity = CatalystBaseMath::Scale(EnvironmentManager::GetCloudDensity(), 0.0f, 1.0f, MINIMUM_CLOUD_DENSITY, MAXIMUM_CLOUD_DENSITY);
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
+	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
+	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };

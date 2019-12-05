@@ -120,8 +120,10 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     layout (offset = 644) float VIEW_DISTANCE;
     layout (offset = 648) float CLOUD_DENSITY;
     layout (offset = 652) float WETNESS;
+    layout (offset = 656) float NEAR_PLANE;
+    layout (offset = 660) float FAR_PLANE;
 
-    //Total size; 656
+    //Total size; 664
 };
 
 //The global textures.
@@ -231,9 +233,7 @@ float LinearInterpolation(float a, float b, float c, float alpha)
 */
 float LinearizeDepth(float depth)
 {
-    #define NEAR (0.1f)
-
-    return NEAR * VIEW_DISTANCE / (VIEW_DISTANCE + depth * (NEAR - VIEW_DISTANCE));
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
 }
 
 /*
