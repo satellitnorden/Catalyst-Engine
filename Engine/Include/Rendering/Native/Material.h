@@ -48,7 +48,12 @@ public:
 		/*
 		*	Defines that this material has no material properties texture, and instead the material properties is packed into the material properties texture index.
 		*/
-		NO_MATERIAL_PROPERTIES_TEXTURE = BIT(2)
+		NO_MATERIAL_PROPERTIES_TEXTURE = BIT(2),
+
+		/*
+		*	Defines that this material is double-sided, meaning no backface culling will occur.
+		*/
+		DOUBLE_SIDED = BIT(3)
 	};
 
 	//The index of the albedo texture.
@@ -122,4 +127,4 @@ public:
 
 ENUMERATION_BIT_OPERATIONS(Material::Property);
 
-static_assert(sizeof(Material) == 32, "The size of the material struct must be 16-byte-aligned!");
+static_assert(sizeof(Material) == 32, "The size of the material struct must be 32-byte-aligned!");

@@ -42,8 +42,11 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool draw_double_sided_materials) NOEXCEPT
 {
+	//Remember if this graphics pipeline should draw double-sided materials.
+	_DrawDoubleSidedMaterials = draw_double_sided_materials;
+
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationColorSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
@@ -52,7 +55,7 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 	SetFragmentShader(Shader::VegetationColorSceneFeaturesFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(depthBuffer);
+	SetDepthBuffer(depth_buffer);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(3);
@@ -119,7 +122,7 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+	SetCullMode(_DrawDoubleSidedMaterials ? CullMode::None : CullMode::Back);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
@@ -183,7 +186,16 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not an opaque material.
-		if (RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex)._Type != Material::Type::Opaque)
+		const Material& material{ RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex) };
+
+		if (material._Type != Material::Type::Opaque)
+		{
+			continue;
+		}
+
+		//Don't draw double-sided materials if not supposed to.
+		if ((_DrawDoubleSidedMaterials && !TEST_BIT(material._Properties, Material::Property::DOUBLE_SIDED))
+			|| (!_DrawDoubleSidedMaterials && TEST_BIT(material._Properties, Material::Property::DOUBLE_SIDED)))
 		{
 			continue;
 		}

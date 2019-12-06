@@ -14,11 +14,16 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT;
+	void Initialize(const DepthBufferHandle depth_buffer, const bool draw_double_sided_materials) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
 	*/
 	void Execute() NOEXCEPT;
+
+private:
+
+	//Denotes if this graphics pipeline should draw double-sided materials
+	bool _DrawDoubleSidedMaterials{ false };
 
 };

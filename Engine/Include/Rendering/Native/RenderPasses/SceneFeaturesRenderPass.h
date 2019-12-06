@@ -62,8 +62,11 @@ private:
 	//The particle system masked color graphics pipeline.
 	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
 
-	//The vegetation scene features graphics pipeline.
-	VegetationSceneFeaturesGraphicsPipeline _VegetationSceneFeaturesGraphicsPipeline;
+	//The vegetation opaque single sided scene features graphics pipeline.
+	VegetationSceneFeaturesGraphicsPipeline _VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline;
+
+	//The vegetation opaque double sided scene features graphics pipeline.
+	VegetationSceneFeaturesGraphicsPipeline _VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline;
 
 	//The vegetation color scene features graphics pipeline.
 	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;
