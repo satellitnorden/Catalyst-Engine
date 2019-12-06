@@ -39,8 +39,8 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hit_position = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragment_texture_coordinate) * sceneFeatures2.w;
-	features.hit_distance = sceneFeatures2.w;
+	features.hit_position = CalculateWorldPosition(fragment_texture_coordinate, sceneFeatures2.w);
+	features.hit_distance = length(features.hit_position - PERCEIVER_WORLD_POSITION);
 
 	return features;
 }
@@ -55,7 +55,7 @@ void main()
 
 	//Calculate the volumetric lighting weight.
 	float volumetric_lighting_weight = 1.0f - pow(1.0f - min(current_features.hit_distance / VIEW_DISTANCE, 1.0f), volumetricLightingIntensity);
-	volumetric_lighting_weight *= SmoothStep(1.0f - clamp((current_features.hit_position.y - 1000.0f) / 1000.0f, 0.0f, 1.0f));
+	volumetric_lighting_weight *= SmoothStep(1.0f - clamp((current_features.hit_position.y - 1024.0f) / 1024.0f, 0.0f, 1.0f));
 
 	//Write the fragment.
 	fragment = vec4(current_volumetric_lighting, volumetric_lighting_weight);

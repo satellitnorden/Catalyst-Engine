@@ -19,7 +19,7 @@
 */
 struct SceneFeatures
 {
-	float hit_distance;
+	float depth;
 };
 
 //Layout specification.
@@ -50,7 +50,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hit_distance = scene_features_2.w;
+	features.depth = LinearizeDepth(scene_features_2.w);
 
 	return features;
 }
@@ -76,12 +76,12 @@ void main()
 		*	Calculate the sample weight based on certain criteria;
 		*	
 		*	1. Is the sample coordinate valid?
-		*	2. Is the hit distance behind or roughly the same?
+		*	2. Is the depth behind or roughly the same?
 		*/
 		float sample_weight = 1.0f;
 
 		sample_weight *= float(ValidCoordinate(sample_coordinate));
-		sample_weight *= 1.0f - clamp(current_features.hit_distance - sample_features.hit_distance, 0.0f, 1.0f);
+		sample_weight *= 1.0f - clamp(current_features.depth - sample_features.depth, 0.0f, 1.0f);
 
 		blurred_scene += sample_scene * sample_weight;
 		blurred_scene_sum += sample_weight;

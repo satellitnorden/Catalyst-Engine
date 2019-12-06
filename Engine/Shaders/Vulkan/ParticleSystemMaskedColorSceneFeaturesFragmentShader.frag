@@ -20,7 +20,6 @@ layout (location = 0) in vec3 fragment_current_world_position;
 layout (location = 1) in vec3 fragment_previous_world_position;
 layout (location = 2) in vec3 fragment_normal;
 layout (location = 3) in vec2 fragment_texture_coordinate;
-layout (location = 4) in float fragment_hit_distance;
 
 //Out parameters.
 layout (location = 0) out vec4 sceneFeatures1;
@@ -55,6 +54,6 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
-    sceneFeatures2 = vec4(PackNormal(fragment_normal), velocity, fragment_hit_distance);
+    sceneFeatures2 = vec4(PackNormal(fragment_normal), velocity, gl_FragCoord.z);
     sceneFeatures3 = materialProperties;
 }

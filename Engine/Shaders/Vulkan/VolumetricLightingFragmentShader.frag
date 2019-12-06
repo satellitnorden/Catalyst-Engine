@@ -32,7 +32,8 @@ void main()
 	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
 
 	//Retrieve all properties.
-	float hitDistance = sceneFeatures2.w;
+	vec3 world_position = CalculateWorldPosition(fragmentTextureCoordinate, sceneFeatures2.w);
+	float hitDistance = length(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);

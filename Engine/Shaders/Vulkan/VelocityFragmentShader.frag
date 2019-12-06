@@ -31,8 +31,8 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 void main()
 {
    //Calculate the world position.
-   vec3 worldPosition = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragmentTextureCoordinate) * VIEW_DISTANCE;
+   vec3 worldPosition = CalculateWorldPosition(fragmentTextureCoordinate, 0.0f);
 
     //Write the fragments.
-    scene_features_2 = vec4(0.0f, CalculateScreenCoordinate(viewMatrix, worldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, worldPosition), VIEW_DISTANCE);
+    scene_features_2 = vec4(0.0f, CalculateScreenCoordinate(viewMatrix, worldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, worldPosition), 0.0f);
 }

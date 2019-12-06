@@ -23,14 +23,14 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	//Sample the hit distance.
-	float hit_distance = texture(scene_features_2_texture, fragment_texture_coordinate).w;
+	//Sample the depth.
+	float depth = LinearizeDepth(texture(scene_features_2_texture, fragment_texture_coordinate).w);
 
 	//Sample the depth of field.
 	vec3 depth_of_field = texture(depth_of_field_texture, fragment_texture_coordinate).rgb;
 
 	//Calculate the weight.
-	float weight = min(hit_distance * 0.1f, 1.0f);
+	float weight = 1.0f - depth;
 
     //Write the fragment.
     fragment = vec4(depth_of_field, weight);

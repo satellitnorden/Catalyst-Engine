@@ -76,6 +76,6 @@ void main()
 
   //Write the fragments.
   sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
-  sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, length(fragmentCurrentWorldPosition - PERCEIVER_WORLD_POSITION));
+  sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, gl_FragCoord.z);
   sceneFeatures3 = materialProperties;
 }

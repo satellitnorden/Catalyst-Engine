@@ -18,7 +18,7 @@
 */
 struct SceneFeatures
 {
-	float hitDistance;
+	float depth;
 };
 
 //Layout specification.
@@ -50,7 +50,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hitDistance = sceneFeatures2.w;
+	features.depth = LinearizeDepth(sceneFeatures2.w);
 
 	return features;
 }
@@ -84,7 +84,7 @@ void main()
 		float sampleWeight = 1.0f;
 
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		//sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+		//sampleWeight *= 1.0f - min(abs(currentFeatures.depth - sampleFeatures.depth), 1.0f);
 
 		denoisedVolumetricLighting += sampleVolumetricLighting * sampleWeight;
 		volumetricLightingWeightSum += sampleWeight;

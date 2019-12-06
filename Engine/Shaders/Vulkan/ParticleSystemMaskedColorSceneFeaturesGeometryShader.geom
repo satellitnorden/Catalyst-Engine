@@ -21,7 +21,6 @@ layout (location = 0) out vec3 fragment_current_world_position;
 layout (location = 1) out vec3 fragment_previous_world_position;
 layout (location = 2) out vec3 fragment_normal;
 layout (location = 3) out vec2 fragment_texture_coordinate;
-layout (location = 4) out float fragment_hit_distance;
 
 void main()
 {
@@ -31,14 +30,11 @@ void main()
 	//Calculate the previous world position.
 	vec3 previous_world_position = current_world_position - geometry_velocities[0];
 
-	//Calculate the hit distance.
-	float hit_distance = length(current_world_position - PERCEIVER_WORLD_POSITION);
-
 	//Retrieve the scale.
 	vec2 scale = geometry_scales[0];
 
 	//Calculate the forward, up and right vectors.
-	vec3 forward_vector = (PERCEIVER_WORLD_POSITION - current_world_position) / hit_distance;
+	vec3 forward_vector = normalize(PERCEIVER_WORLD_POSITION - current_world_position);
 	vec3 up_vector = vec3(0.0f, 1.0f, 0.0f);
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	

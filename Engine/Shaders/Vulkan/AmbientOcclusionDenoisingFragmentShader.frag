@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_DENOISING_SIZE (8.0f)
+#define AMBIENT_OCCLUSION_DENOISING_SIZE (10.0f)
 #define AMBIENT_OCCLUSION_DENOISING_START_END (AMBIENT_OCCLUSION_DENOISING_SIZE * 0.5f)
 
 /*
@@ -19,8 +19,7 @@
 */
 struct SceneFeatures
 {
-	vec3 geometryNormal;
-	float hitDistance;
+	float view_distance;
 };
 
 //Layout specification.
@@ -52,7 +51,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hitDistance = sceneFeatures2.w;
+	features.view_distance = CalculateViewSpacePosition(fragmentTextureCoordinate, sceneFeatures2.w).z;
 
 	return features;
 }
@@ -81,12 +80,12 @@ void main()
 		*	Calculate the sample weight based on certain criteria;
 		*	
 		*	1. Is the sample coordinate valid?
-		*	2. How closely aligned are the hit distances to each other?
+		*	2. How closely aligned are the depths to each other?
 		*/
 		float sampleWeight = 1.0f;
 
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		sampleWeight *= 1.0f - min(abs(currentFeatures.hitDistance - sampleFeatures.hitDistance), 1.0f);
+		sampleWeight *= 1.0f - min(abs(currentFeatures.view_distance - sampleFeatures.view_distance), 1.0f);
 
 		denoisedAmbientOcclusion += sampleAmbientOcclusion * sampleWeight;
 		ambientOcclusionWeightSum += sampleWeight;

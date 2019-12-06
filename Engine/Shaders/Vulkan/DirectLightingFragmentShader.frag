@@ -39,17 +39,17 @@ void main()
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
-	float hitDistance = sceneFeatures2.w;
+	float depth = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
 	float ambientOcclusion = pow(sceneFeatures3.z * pow(ambient_occlusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
 
-	//Generate the ray direction.
-	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
-
 	//Calculate the hit position.
-	vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * hitDistance;
+	vec3 world_position = CalculateWorldPosition(fragmentTextureCoordinate, depth);
+
+	//Generate the view direction.
+	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);
@@ -64,9 +64,9 @@ void main()
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
 				//Sample the cloud density.
-				float cloud_density = SampleCloudDensityInDirection(hitPosition, -light.position_or_direction, 2);
+				float cloud_density = SampleCloudDensityInDirection(world_position, -light.position_or_direction, 2);
 
-				directLighting += CalculateDirectLight(	-rayDirection,
+				directLighting += CalculateDirectLight(	-view_direction,
 														-light.position_or_direction,
 														albedo,
 														shadingNormal,
@@ -81,13 +81,13 @@ void main()
 
 			case LIGHT_TYPE_POINT:
 			{
-				float lengthToLight = length(light.position_or_direction - hitPosition);
-				vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;
+				float lengthToLight = length(light.position_or_direction - world_position);
+				vec3 lightDirection = vec3(light.position_or_direction - world_position) / lengthToLight;
 
 				//Calculate the attenuation.
 				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-				directLighting += CalculateDirectLight(	-rayDirection,
+				directLighting += CalculateDirectLight(	-view_direction,
 														lightDirection,
 														albedo,
 														shadingNormal,
