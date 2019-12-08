@@ -94,7 +94,6 @@ void main()
          if (new_density > 0.0f)
          {
             float cloud_density_in_direction = 1.0f - SampleCloudDensityInDirection(sample_point, -sky_light_direction, 3);
-            cloud_density_in_direction *= cloud_density_in_direction;
             cloud_color += (CLOUD_BASE_COLOR * (sky_light_luminance * 0.1f) * cloud_density_in_direction) * new_density;
          }
 
