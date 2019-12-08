@@ -17,7 +17,7 @@ float CalculateDiffuseComponent(float roughness, float metallic)
 *   albedo - The albedo of the surface at the surface point.
 *   normal - The normal of the surface at the surface point.
 *   roughness - The roughness of the surface at the surface point.
-*   ambientOcclusion - The ambient oclusion of the surface at the surface point.
+*   ambient_occlusion - The ambient oclusion of the surface at the surface point.
 *   metallic - The metallic of the surface at the surface point.
 *   irradiance - The irradiance in the hemisphere of the surface at the surface point.
 */
@@ -26,22 +26,21 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
                                 vec3 normal,
                                 float roughness,
                                 float metallic,
-                                float ambientOcclusion,
+                                float ambient_occlusion,
                                 vec3 irradiance)
 {
     //Apply wetness.
-    albedo = mix(albedo, albedo * 0.75f, WETNESS);
-    //roughness = mix(roughness, roughness * 0.75f, WETNESS);
+    albedo = mix(albedo, albedo * 0.5f, WETNESS);
+    roughness = mix(roughness, roughness * 0.125f, WETNESS);
 
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
     vec3 specularComponent = CalculateFresnelRoughness(CalculateSurfaceColor(albedo, metallic), roughness, viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 diffuse = irradiance * albedo;
-    vec3 specular = irradiance;
+    irradiance *= albedo;
 
-    return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
+    return (irradiance * diffuseComponent + irradiance * specularComponent) * ambient_occlusion;
 }
 
 /*
@@ -61,13 +60,13 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
                             vec3 normal,
                             float roughness,
                             float metallic,
-                            float ambientOcclusion,
+                            float ambient_occlusion,
                             float thickness,
                             vec3 radiance)
 {
     //Apply wetness.
-    albedo = mix(albedo, albedo * 0.75f, WETNESS);
-    roughness = mix(roughness, roughness * 0.25f, WETNESS);
+    albedo = mix(albedo, albedo * 0.5f, WETNESS);
+    roughness = mix(roughness, roughness * 0.125f, WETNESS);
 
     //Apply thickness.
     normal = mix(lightDirection, normal, thickness);
@@ -89,5 +88,5 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
     vec3 specularComponent = denominator != 0.0f ? nominator / denominator : vec3(0.0f);
 
     //Return the combined components.
-    return (diffuseComponent * albedo / PI + specularComponent) * radiance * lightAngle * ambientOcclusion * (1.0f - ((1.0f - thickness) * (1.0f - thickness)));
+    return (diffuseComponent * albedo / PI + specularComponent) * radiance * lightAngle * ambient_occlusion * (1.0f - ((1.0f - thickness) * (1.0f - thickness)));
 }
