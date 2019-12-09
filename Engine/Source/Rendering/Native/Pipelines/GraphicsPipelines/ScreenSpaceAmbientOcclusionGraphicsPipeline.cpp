@@ -1,17 +1,55 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 
+//Math.
+#include <Math/Noise/HaltonSequence.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+#define PRINT_SAMPLES (false)
+
+#if PRINT_SAMPLES
+/*
+*	Prints the samples.
+*/
+void PrintSamples()
+{
+	//Define constants.
+	constexpr uint32 NUMBER_OF_SAMPLES{ 64 };
+
+	uint32 counter{ 0 };
+
+	for (uint32 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		Vector3<float> direction;
+
+		direction._X = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
+		direction._Y = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
+		direction._Z = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
+
+		direction.Normalize();
+
+		const float length{ HaltonSequence::Generate(counter++, 3) };
+
+		PRINT_TO_OUTPUT("vec4(" << direction._X << "f, " << direction._Y << "f, " << direction._Z << "f, " << length << "f),");
+	}
+}
+#endif
+
 /*
 *	Initializes this graphics pipeline.
 */
 void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
 {
+#if PRINT_SAMPLES
+	//Print the samples.
+	PrintSamples();
+#endif
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
