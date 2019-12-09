@@ -23,7 +23,8 @@
 #define BUILD_ENGINE_CLOUD_TEXTURE false
 #define BUILD_ENGINE_FONTS false
 #define BUILD_ENGINE_OCEAN_TEXTURE false
-#define BUILD_ENGINE_TEXTURES false
+#define BUILD_ENGINE_NOISE_TEXTURES false
+#define BUILD_ENGINE_COLOR_GRADING_TEXTURES false
 
 /*
 *	Builds resources for the Catalyst Engine.
@@ -53,7 +54,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	BuildOceanTexture();
 #endif
 
-#if BUILD_ENGINE_TEXTURES
+#if BUILD_ENGINE_NOISE_TEXTURES
 	{
 		Texture2DBuildParameters parameters;
 
@@ -1013,7 +1014,9 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
+#endif
 
+#if BUILD_ENGINE_COLOR_GRADING_TEXTURES
 	{
 		Texture2DBuildParameters parameters;
 
@@ -1030,7 +1033,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_TEXTURES
+#if BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_NOISE_TEXTURES ||BUILD_ENGINE_COLOR_GRADING_TEXTURES
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 

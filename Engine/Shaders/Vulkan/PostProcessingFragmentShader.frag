@@ -9,17 +9,17 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
+#define POST_PROCESSING_CONTRAST (1.025f) //0.025f step.
 #define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0125f) //0.0025f step.
-#define POST_PROCESSING_VIGNETTE_STRENGTH (1.25f) //0.25f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sourceTexture;
+layout (set = 1, binding = 0) uniform sampler2D source_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -27,13 +27,23 @@ layout (location = 0) out vec4 fragment;
 /*
 *	Applies chromatic aberration.
 */
-vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
+vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 {
 	//Determine the offset weight.
-	float offsetWeight = 1.0f - edgeFactor;
+	float offset_weight = 1.0f - edge_factor;
 
 	//Calculate the chromatic aberration.
-	return vec3(texture(sourceTexture, fragmentTextureCoordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offsetWeight).r, texture(sourceTexture, fragmentTextureCoordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offsetWeight).gb);
+	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).r, texture(source_texture, fragment_texture_coordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).gb);
+}
+
+/*
+*	Applies contrast.
+*/
+vec3 ApplyContrast(vec3 fragment)
+{
+	//return mix(fragment, vec3(SmoothStep(fragment.r), SmoothStep(fragment.g), SmoothStep(fragment.b)), 1.0f - POST_PROCESSING_CONTRAST);
+	//return mix(vec3(0.5f), fragment, POST_PROCESSING_CONTRAST);
+    return fragment * POST_PROCESSING_CONTRAST + (0.5f - POST_PROCESSING_CONTRAST * 0.5f);
 }
 
 /*
@@ -41,48 +51,51 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edgeFactor)
 */
 vec3 ApplyFilmGrain(vec3 fragment)
 {
-	return mix(fragment, vec3(RandomFloat(fragmentTextureCoordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
+	return mix(fragment, vec3(RandomFloat(fragment_texture_coordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
 }
 
 /*
 *	Applies vignette.
 */
-vec3 ApplyVignette(vec3 fragment, float edgeFactor)
+vec3 ApplyVignette(vec3 fragment, float edge_factor)
 {
-	return mix(vec3(0.0f), fragment, pow(edgeFactor, POST_PROCESSING_VIGNETTE_STRENGTH));
+	return mix(vec3(0.0f), fragment, edge_factor);
 }
 
 /*
-*	Applies horizontal borders.
+*	Applies borders.
 */
-vec3 ApplyHorizontalBorders(vec3 fragment)
+vec3 ApplyBorders(vec3 fragment)
 {
-	return fragment * float(fragmentTextureCoordinate.y >= 0.0f && fragmentTextureCoordinate.y <= 1.0f);
+	return fragment * float(fragment_texture_coordinate.y >= 0.0f && fragment_texture_coordinate.y <= 1.0f);
 }
 
 void main()
 {
 	//Sample the source texture.
-	vec3 postProcessedFragment = texture(sourceTexture, fragmentTextureCoordinate).rgb;
+	vec3 post_processed_fragment = texture(source_texture, fragment_texture_coordinate).rgb;
 
 	//Determine the direction of the current fragment.
-	vec3 fragmentDirection = CalculateRayDirection(fragmentTextureCoordinate);
+	vec3 fragment_direction = CalculateRayDirection(fragment_texture_coordinate);
 
 	//Calculate the edge factor.
-	float edgeFactor = max(dot(perceiverForwardVector, fragmentDirection), 0.0f);
+	float edge_factor = max(dot(perceiverForwardVector, fragment_direction), 0.0f);
 
 	//Apply chromatic aberration.
-	postProcessedFragment = ApplyChromaticAberration(postProcessedFragment, edgeFactor);
+	post_processed_fragment = ApplyChromaticAberration(post_processed_fragment, edge_factor);
+
+	//Apply contrast.
+	post_processed_fragment = ApplyContrast(post_processed_fragment);
 
 	//Apply film grain.
-	postProcessedFragment = ApplyFilmGrain(postProcessedFragment);
+	post_processed_fragment = ApplyFilmGrain(post_processed_fragment);
 
 	//Apply vignette.
-	postProcessedFragment = ApplyVignette(postProcessedFragment, edgeFactor);
+	post_processed_fragment = ApplyVignette(post_processed_fragment, edge_factor);
 
-	//Apply horizontal borders.
-	postProcessedFragment = ApplyHorizontalBorders(postProcessedFragment);
+	//Apply borders.
+	post_processed_fragment = ApplyBorders(post_processed_fragment);
 
     //Write the fragment.
-    fragment = vec4(postProcessedFragment, 1.0f);
+    fragment = vec4(post_processed_fragment, 1.0f);
 }

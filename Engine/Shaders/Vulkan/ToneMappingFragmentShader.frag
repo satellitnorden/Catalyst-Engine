@@ -25,8 +25,8 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D colorGradingTexture;
+layout (set = 1, binding = 0) uniform sampler2D scene_texture;
+layout (set = 1, binding = 1) uniform sampler2D color_grading_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -92,25 +92,25 @@ vec3 ApplyColorGrading(vec3 fragment)
     float cell = fragment.b * TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE;
 
     //Calculate the current cell and the next cell.
-    float currentCell = floor(cell);
-    float nextCell = ceil(cell);
+    float current_cell = floor(cell);
+    float next_cell = ceil(cell);
 
     //Calculate the red and green offsets.
-    float redOffset = (0.5f / TONE_MAPPING_COLOR_GRADING_WIDTH) + fragment.r / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
-    float greenOffset = (0.5f / TONE_MAPPING_COLOR_GRADING_HEIGHT) + fragment.g * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
+    float red_offset = (0.5f / TONE_MAPPING_COLOR_GRADING_WIDTH) + fragment.r / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
+    float green_offset = (0.5f / TONE_MAPPING_COLOR_GRADING_HEIGHT) + fragment.g * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
 
     //Sample the current and next color graded values.
-    vec3 currentColorGradedValue = texture(colorGradingTexture, vec2(currentCell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + redOffset, greenOffset)).rgb;
-    vec3 nextColorGradedValue = texture(colorGradingTexture, vec2(nextCell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + redOffset, greenOffset)).rgb;
+    vec3 current_color_graded_value = texture(color_grading_texture, vec2(current_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
+    vec3 next_colorgraded_value = texture(color_grading_texture, vec2(next_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
 
     //The color graded value is a linearly interpolated value of the current and the next cells!
-    return mix(currentColorGradedValue, nextColorGradedValue, fract(cell));
+    return mix(current_color_graded_value, next_colorgraded_value, fract(cell));
 }
 
 void main()
 {
     //Sample the scene texture.
-    vec3 sceneTextureColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+    vec3 sceneTextureColor = texture(scene_texture, fragmentTextureCoordinate).rgb;
 
     //Apply tone mapping.
     sceneTextureColor = ApplyToneMapping(sceneTextureColor);
