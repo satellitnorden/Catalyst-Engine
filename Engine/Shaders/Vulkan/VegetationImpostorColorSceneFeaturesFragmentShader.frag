@@ -75,7 +75,7 @@ void main()
   	vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_world_position);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
+    sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
     sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, gl_FragCoord.z);
     sceneFeatures3 = material_properties;
 }

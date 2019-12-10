@@ -53,7 +53,7 @@ void main()
   	vec2 velocity = vec2(0.0f);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(pow(albedo, vec3(2.2f)), float(material_index) / 255.0f);
+    sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
     sceneFeatures2 = vec4(PackNormal(fragment_normal), velocity, gl_FragCoord.z);
     sceneFeatures3 = materialProperties;
 }
