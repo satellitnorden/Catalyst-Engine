@@ -24,9 +24,8 @@ layout (location = 3) in vec2 vertexTextureCoordinate;
 layout (location = 4) in mat4 transformation;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentCurrentWorldPosition;
-layout (location = 1) out vec2 fragmentTextureCoordinate;
-layout (location = 2) out float fragmentDistanceSquared;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out float fragmentDistanceSquared;
 
 void main()
 {
@@ -42,9 +41,8 @@ void main()
 	//Apply the wind displacement.
 	worldPosition += CalculateWindDisplacement(transformation[3].xyz, worldPosition, normal, totalTime, large_scale_wind_displacement_factor, medium_scale_wind_displacement_factor, small_scale_wind_displacement_factor) * displacementMultiplier;
 
-	fragmentCurrentWorldPosition = worldPosition;
 	fragmentTextureCoordinate = vertexTextureCoordinate;
-	fragmentDistanceSquared = LengthSquared3(fragmentCurrentWorldPosition - PERCEIVER_WORLD_POSITION);
+	fragmentDistanceSquared = LengthSquared3(worldPosition - PERCEIVER_WORLD_POSITION);
 
-	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);
+	gl_Position = viewMatrix * vec4(worldPosition, 1.0f);
 }

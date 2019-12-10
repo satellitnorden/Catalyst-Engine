@@ -85,7 +85,7 @@ void main()
 		float sampleWeight = 1.0f;
 
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		sampleWeight *= 1.0f - min(abs(currentFeatures.view_distance - sampleFeatures.view_distance), 1.0f);
+		sampleWeight *= pow(1.0f - min(abs(currentFeatures.view_distance - sampleFeatures.view_distance), 1.0f), 2.0f);
 
 		denoisedAmbientOcclusion += sampleAmbientOcclusion * sampleWeight;
 		ambientOcclusionWeightSum += sampleWeight;

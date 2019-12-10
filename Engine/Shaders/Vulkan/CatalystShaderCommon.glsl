@@ -198,6 +198,14 @@ vec3 CalculateWorldPosition(vec2 texture_coordinate, float depth)
 }
 
 /*
+*   Calculates the distance based on the opacity.
+*/
+float CalculateDistanceBasedOpacity(float current_distance_squared, float maximum_distance_squared)
+{
+    return 1.0f - clamp((current_distance_squared - (maximum_distance_squared * 0.5f)) / (maximum_distance_squared * 0.5f), 0.0f, 1.0f);
+}
+
+/*
 *   Hash function taking a lone uint.
 */
 uint Hash1(uint x)

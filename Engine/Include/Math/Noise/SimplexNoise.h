@@ -288,6 +288,30 @@ public:
 		return noise / total;
 	}
 
+	/*
+	*	Generates a ridged value in the range [0.0f, 1.0f] at the given coordinates, with octaves
+	*/
+	FORCE_INLINE static NO_DISCARD float GenerateRidgedOctaves(const Vector2<float>& coordinate, const uint8 octaves, const float lacunarity = 2.0f, const float gain = 0.5f, const float seed = 0.0f) NOEXCEPT
+	{
+		float noise{ 0.0f };
+		float total{ 0.0f };
+		float frequency{ 1.0f };
+		float amplitude{ 1.0f };
+
+		for (uint8 i{ 0 }; i < octaves; ++i)
+		{
+			float octave{ 1.0f - CatalystBaseMath::Absolute<float>(Generate(coordinate * frequency, seed)) };
+
+			noise += octave * amplitude;
+			total += amplitude;
+
+			frequency *= lacunarity;
+			amplitude *= gain;
+		}
+
+		return noise / total;
+	}
+
 private:
 
 	/*
