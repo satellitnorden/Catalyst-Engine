@@ -7,6 +7,7 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 //Constants.
 #define MATERIAL_TEXTURE_COORDINATE_OFFSET (vec2(inverse_terrain_texture_resolution, inverse_terrain_texture_resolution))
@@ -358,11 +359,7 @@ void main()
     RetrieveTerrainMaterial(texture_coordinate, material);
 
     //Calculate the tangent space matrix.
-    vec3 normal = terrain_normal;
-    vec3 tangent = cross(normal, vec3(1.0f, 0.0f, 0.0f));
-    vec3 bitangent = cross(normal, tangent);
-
-    mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
+    mat3 tangent_space_matrix = CalculateTangentSpaceMatrix(terrain_normal);
 
     //Calculate the shading normal.
     vec3 shading_normal = normalize(tangent_space_matrix * material.normal_and_height_map.xyz);

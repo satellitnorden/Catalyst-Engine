@@ -68,13 +68,13 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
     albedo = mix(albedo, albedo * 0.5f, WETNESS);
     roughness = mix(roughness, roughness * 0.125f, WETNESS);
 
-    //Apply thickness.
-    normal = mix(lightDirection, normal, thickness);
-
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
     float lightAngle = max(dot(normal, lightDirection), 0.0f);
     float viewAngle = max(dot(normal, viewDirection), 0.0f);
+
+    //Apply thickness.
+    lightAngle = mix(1.0f, lightAngle, thickness);
 
     float distribution = CalculateDistribution(roughness, normal, halfwayDirection);
     float geometry = CalculateGeometry(roughness, lightAngle, viewAngle);

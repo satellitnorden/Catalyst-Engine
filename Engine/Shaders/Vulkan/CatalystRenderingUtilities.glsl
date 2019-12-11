@@ -10,6 +10,26 @@
 #include "CatalystPackingUtilities.glsl"
 
 /*
+*	Calculates an (approximate) tangent space matrix from a normal.
+*/
+mat3 CalculateTangentSpaceMatrix(vec3 normal)
+{
+	float x_dot = abs(dot(normal, vec3(1.0f, 0.0f, 0.0f)));
+	float y_dot = abs(dot(normal, vec3(0.0f, 1.0f, 0.0f)));
+	float z_dot = abs(dot(normal, vec3(0.0f, 0.0f, 1.0f)));
+
+	vec3 tangent = vec3(0.0f);
+
+	tangent += vec3(0.0f, 1.0f, 0.0f) * float(x_dot > y_dot && x_dot > z_dot);
+	tangent += vec3(0.0f, 0.0f, 1.0f) * float(y_dot > x_dot && y_dot > z_dot);
+	tangent += vec3(1.0f, 0.0f, 0.0f) * float(z_dot > x_dot && z_dot > y_dot);
+
+	vec3 bitangent = normalize(cross(normal, tangent));
+
+	return mat3(tangent, bitangent, normal);
+}
+
+/*
 *	Retrieves the albedo at the given coordinate from the given material.
 */
 vec3 RetrieveAlbedo(Material material, vec2 coordinate)
