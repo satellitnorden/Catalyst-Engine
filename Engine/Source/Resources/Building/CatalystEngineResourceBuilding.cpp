@@ -66,6 +66,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -81,6 +82,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -96,6 +98,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -111,6 +114,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -126,6 +130,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -141,6 +146,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -156,6 +162,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -171,6 +178,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -186,6 +194,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -201,6 +210,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -216,6 +226,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -231,6 +242,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -246,6 +258,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -261,6 +274,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -276,6 +290,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -291,6 +306,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -306,6 +322,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -321,6 +338,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -336,6 +354,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -351,6 +370,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -366,6 +386,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -381,6 +402,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -396,6 +418,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -411,6 +434,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -426,6 +450,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -441,6 +466,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -456,6 +482,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -471,6 +498,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -486,6 +514,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -501,6 +530,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -516,6 +546,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -531,6 +562,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -546,6 +578,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -561,6 +594,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -576,6 +610,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -591,6 +626,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -606,6 +642,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -621,6 +658,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -636,6 +674,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -651,6 +690,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -666,6 +706,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -681,6 +722,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -696,6 +738,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -711,6 +754,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -726,6 +770,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -741,6 +786,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -756,6 +802,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -771,6 +818,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -786,6 +834,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -801,6 +850,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -816,6 +866,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -831,6 +882,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -846,6 +898,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -861,6 +914,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -876,6 +930,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -891,6 +946,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -906,6 +962,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -921,6 +978,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -936,6 +994,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -951,6 +1010,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -966,6 +1026,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -981,6 +1042,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -996,6 +1058,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -1011,6 +1074,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}
@@ -1028,6 +1092,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
+		parameters._ApplyGammaCorrection = false;
 
 		ResourceBuilder::BuildTexture2D(parameters);
 	}

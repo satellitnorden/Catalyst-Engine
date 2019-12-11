@@ -55,4 +55,7 @@ public:
 	//The file path for the A channel.
 	const char *RESTRICT _FileA{ nullptr };
 
+	//Whether or not to apply gamma correction.
+	bool _ApplyGammaCorrection{ false };
+
 };

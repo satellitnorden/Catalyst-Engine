@@ -569,6 +569,20 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 			file.Write(&uWidth, sizeof(uint32));
 			file.Write(&uHeight, sizeof(uint32));
 
+			//Apply gamma correction.
+			if (parameters._ApplyGammaCorrection)
+			{
+				for (uint64 i{ 0 }; i < uWidth * uHeight * 4; ++i)
+				{
+					byte& texel{ data[i] };
+
+					float texel_float{ static_cast<float>(texel) / 255.0f };
+					texel_float = powf(texel_float, 2.2f);
+
+					texel = static_cast<byte>(texel_float * 255.0f);
+				}
+			}
+
 			//Write the texture to the file.
 			for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
 			{
