@@ -88,5 +88,5 @@ vec3 CalculateDirectLight(  vec3 viewDirection,
     vec3 specularComponent = denominator != 0.0f ? nominator / denominator : vec3(0.0f);
 
     //Return the combined components.
-    return (diffuseComponent * albedo / PI + specularComponent) * radiance * lightAngle * ambient_occlusion * (1.0f - ((1.0f - thickness) * (1.0f - thickness)));
+    return (diffuseComponent * albedo / PI + specularComponent) * radiance * lightAngle * (0.25f + ambient_occlusion * 0.75f) * (1.0f - ((1.0f - thickness) * (1.0f - thickness)));
 }

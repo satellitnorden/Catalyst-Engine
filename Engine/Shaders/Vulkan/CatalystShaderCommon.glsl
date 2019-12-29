@@ -11,7 +11,7 @@
 #include "CatalystGeometryMath.glsl"
 
 //Constants.
-#define AMBIENT_OCCLUSION_POWER (2.5f) //0.25f step.
+#define AMBIENT_OCCLUSION_POWER (2.0f) //0.25f step.
 
 #define AMBIENT_OCCLUSION_MODE_NONE (0)
 #define AMBIENT_OCCLUSION_MODE_SCREEN_SPACE (1)
@@ -195,14 +195,6 @@ vec3 CalculateWorldPosition(vec2 texture_coordinate, float depth)
     vec4 world_space_position = inversePerceiverMatrix * view_space_position;
 
     return world_space_position.xyz;
-}
-
-/*
-*   Calculates the distance based on the opacity.
-*/
-float CalculateDistanceBasedOpacity(float current_distance_squared, float maximum_distance_squared)
-{
-    return 1.0f - clamp((current_distance_squared - (maximum_distance_squared * 0.5f)) / (maximum_distance_squared * 0.5f), 0.0f, 1.0f);
 }
 
 /*

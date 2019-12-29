@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystTransparency.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -23,7 +24,9 @@ void main()
     Material material = GLOBAL_MATERIALS[material_index];
 
     //Discard conditionally.
-    if (texture(sampler2D(GLOBAL_TEXTURES[material.optional_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragment_texture_coordinate).r * fragment_opacity < 0.5f)
+    float final_opacity = texture(sampler2D(GLOBAL_TEXTURES[material.optional_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragment_texture_coordinate).r * fragment_opacity;
+    
+    if (ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), final_opacity))
     {
         discard;
     }

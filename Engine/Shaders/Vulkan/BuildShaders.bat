@@ -47,10 +47,10 @@ glslangValidator.exe -V VegetationImpostorColorSceneFeaturesFragmentShader.frag 
 glslangValidator.exe -V VegetationImpostorColorSceneFeaturesGeometryShader.geom -o 	VegetationImpostorColorSceneFeaturesGeometryShader.spv
 glslangValidator.exe -V VegetationImpostorColorSceneFeaturesVertexShader.vert -o 	VegetationImpostorColorSceneFeaturesVertexShader.spv
 glslangValidator.exe -V VegetationImpostorDepthSceneFeaturesFragmentShader.frag -o 	VegetationImpostorDepthSceneFeaturesFragmentShader.spv
-glslangValidator.exe -V VegetationImpostorDepthSceneFeaturesGeometryShader.geom -o 	VegetationImpostorDepthSceneFeaturesGeometryShader.spv
-glslangValidator.exe -V VegetationImpostorDepthSceneFeaturesVertexShader.vert -o 	VegetationImpostorDepthSceneFeaturesVertexShader.spv
-glslangValidator.exe -V VelocityFragmentShader.frag -o 					VelocityFragmentShader.spv
-glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
+glslangValidator.exe -V VegetationOpaqueSceneFeaturesFragmentShader.frag -o 		VegetationOpaqueSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V VegetationOpaqueSceneFeaturesVertexShader.vert -o 		VegetationOpaqueSceneFeaturesVertexShader.spv
+glslangValidator.exe -V VelocityFragmentShader.frag -o 				VelocityFragmentShader.spv
+glslangValidator.exe -V ViewportVertexShader.vert -o 				ViewportVertexShader.spv
 glslangValidator.exe -V VisibilityRayMissShader.rmiss -o 				VisibilityRayMissShader.spv
 glslangValidator.exe -V VolumetricLightingApplicationFragmentShader.frag -o 		VolumetricLightingApplicationFragmentShader.spv
 glslangValidator.exe -V VolumetricLightingDenoisingFragmentShader.frag -o 		VolumetricLightingDenoisingFragmentShader.spv

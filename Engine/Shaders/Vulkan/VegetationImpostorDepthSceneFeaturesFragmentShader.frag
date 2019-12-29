@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystTransparency.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -35,14 +36,8 @@ void main()
     //Retrieve the random opacity.
     if (opacity < 1.0f)
     {
-        //Calculate the noise texture coordinate.
-        vec2 noise_texture_coordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-
-        //Retrieve the random opacity.
-        float random_opacity = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate).x;
-
-        //Discard conditionally based on the opacity.
-        if (opacity < random_opacity)
+         //Discard conditionally based on the opacity.
+        if (ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), opacity))
         {
             discard;
         }

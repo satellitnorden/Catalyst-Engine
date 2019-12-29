@@ -83,12 +83,43 @@ public:
 	/*
 	*	Packs a color into an integer.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD int32 PackColor(const Vector4<float> &color) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD int32 PackColor(const Vector4<float> &color, const bool apply_gamma_correction) NOEXCEPT
 	{
-		return	static_cast<int32>(color._X * 255.0f)
-				| (static_cast<int32>(color._Y * 255.0f) << 8)
-				| (static_cast<int32>(color._Z * 255.0f) << 16)
-				| (static_cast<int32>(color._W * 255.0f) << 24);
+		if (apply_gamma_correction)
+		{
+			float first{ 0.0f };
+			float second{ 0.0f };
+			Vector4<float> corrected;
+
+			first = color._X * color._X;
+			second = first * first;
+			corrected._X = first * 0.8f + second * 0.2f;
+
+			first = color._Y * color._Y;
+			second = first * first;
+			corrected._Y = first * 0.8f + second * 0.2f;
+
+			first = color._Z * color._Z;
+			second = first * first;
+			corrected._Z = first * 0.8f + second * 0.2f;
+
+			first = color._W * color._W;
+			second = first * first;
+			corrected._W = first * 0.8f + second * 0.2f;
+
+			return	static_cast<int32>(corrected._X * 255.0f)
+					| (static_cast<int32>(corrected._Y * 255.0f) << 8)
+					| (static_cast<int32>(corrected._Z * 255.0f) << 16)
+					| (static_cast<int32>(corrected._W * 255.0f) << 24);
+		}
+
+		else
+		{
+			return	static_cast<int32>(color._X * 255.0f)
+					| (static_cast<int32>(color._Y * 255.0f) << 8)
+					| (static_cast<int32>(color._Z * 255.0f) << 16)
+					| (static_cast<int32>(color._W * 255.0f) << 24);
+		}
 	}
 
 	/*

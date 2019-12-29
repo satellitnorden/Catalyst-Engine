@@ -332,6 +332,8 @@ enum class Shader : uint8
 	VegetationImpostorDepthSceneFeaturesFragment,
 	VegetationImpostorDepthSceneFeaturesGeometry,
 	VegetationImpostorDepthSceneFeaturesVertex,
+	VegetationOpaqueSceneFeaturesFragment,
+	VegetationOpaqueSceneFeaturesVertex,
 	VelocityFragment,
 	ViewportVertex,
 	VisibilityRayMiss,

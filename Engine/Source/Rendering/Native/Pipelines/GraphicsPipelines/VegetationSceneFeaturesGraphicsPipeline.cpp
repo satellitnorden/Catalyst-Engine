@@ -36,6 +36,7 @@ class VegetationFragmentPushConstantData final
 public:
 
 	int32 _GlobalMaterialIndex;
+	float _CutoffDistanceSquared;
 
 };
 
@@ -48,11 +49,11 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 	_DrawDoubleSidedMaterials = draw_double_sided_materials;
 
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationColorSceneFeaturesVertex);
+	SetVertexShader(Shader::VegetationOpaqueSceneFeaturesVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VegetationColorSceneFeaturesFragment);
+	SetFragmentShader(Shader::VegetationOpaqueSceneFeaturesFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
@@ -212,6 +213,7 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		VegetationFragmentPushConstantData fragment_data;
 
 		fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
+		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
