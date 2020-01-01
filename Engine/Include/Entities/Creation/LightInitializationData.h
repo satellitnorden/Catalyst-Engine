@@ -9,6 +9,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
+
 class LightInitializationData final : public EntityInitializationData
 {
 

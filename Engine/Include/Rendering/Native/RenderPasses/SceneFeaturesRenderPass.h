@@ -6,6 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelHighlightSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
@@ -79,6 +80,9 @@ private:
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
+
+	//The model highlight scene features graphics pipeline.
+	ModelHighlightSceneFeaturesGraphicsPipeline _ModelHighlightSceneFeaturesGraphicsPipeline;
 
 	//The velocity graphics pipeline.
 	VelocityGraphicsPipeline _VelocityGraphicsPipeline;

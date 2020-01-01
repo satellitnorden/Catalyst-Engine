@@ -92,6 +92,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Initialize all common render data table layouts.
 	InitializeCommonRenderDataTableLayouts();
 
+	//Initialize the default texture.
+	InitializeDefaultTexture();
+
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
 
@@ -104,9 +107,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 */
 void RenderingSystem::PostInitializeSystem()
 {
-	//Initialize all common materials.
-	InitializeCommonMaterials();
-
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();
 
@@ -154,9 +154,6 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 
 	//Update the material system.
 	_MaterialSystem.RenderUpdate(context);
-
-	//Update the model system.
-	_ModelSystem.RenderUpdate(context);
 
 	//Update the ray tracing system.
 	_RayTracingSystem.RenderUpdate(context);
@@ -245,25 +242,11 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 	//Lock the global texture slots.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
-	//Add the global texture updates.
-	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
-	{
-		globalTextureUpdate.EmplaceSlow(index);
-	}
-
 	//Mark the global texture slot as available.
 	_GlobalRenderData._GlobalTextureSlots[index] = false;
 
 	//Unlock the global texture slots.
 	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
-}
-
-/*
-*	Returns the given common material.
-*/
-Material RenderingSystem::GetCommonMaterial(const CommonMaterial material) const NOEXCEPT
-{
-	return _CommonMaterials[UNDERLYING(material)];
 }
 
 /*
@@ -286,7 +269,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
 	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
-	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
@@ -344,228 +326,6 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 }
 
 /*
-*	Initializes all common materials.
-*/
-void RenderingSystem::InitializeCommonMaterials() NOEXCEPT
-{
-	{
-		//Initialize the black common material.
-		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::Black)] };
-
-		material._Properties = Material::Property::NONE;
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(0);
-			data._Data[0].EmplaceFast(0);
-			data._Data[0].EmplaceFast(0);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._AlbedoTextureIndex = texture._Index;
-
-			//Make the albedo texture the default texture 2D.
-			_DefaultTexture2D = texture._Texture2D;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._NormalMapTextureIndex = texture._Index;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(0);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(0);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._MaterialPropertiesTextureIndex = texture._Index;
-		}
-
-		material._LuminanceMultiplier = 0.0f;
-	}
-
-	{
-		//Initialize the glass blue common material.
-		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::GlassBlue)] };
-
-		material._Properties = Material::Property::NONE;
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(204);
-			data._Data[0].EmplaceFast(230);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._AlbedoTextureIndex = texture._Index;
-
-			//Make the albedo texture the default texture 2D.
-			_DefaultTexture2D = texture._Texture2D;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._NormalMapTextureIndex = texture._Index;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(0);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._MaterialPropertiesTextureIndex = texture._Index;
-		}
-
-		material._LuminanceMultiplier = 0.0f;
-	}
-
-	{
-		//Initialize the white porcelain common material.
-		Material &material{ _CommonMaterials[UNDERLYING(CommonMaterial::WhitePorcelain)] };
-
-		material._Properties = Material::Property::NONE;
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._AlbedoTextureIndex = texture._Index;
-
-			//Make the albedo texture the default texture 2D.
-			_DefaultTexture2D = texture._Texture2D;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(255);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._NormalMapTextureIndex = texture._Index;
-		}
-
-		{
-			Texture2DData data;
-
-			data._MipmapLevels = 1;
-			data._Width = 1;
-			data._Height = 1;
-			data._Data.UpsizeSlow(1);
-			data._Data[0].Reserve(4);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(127);
-			data._Data[0].EmplaceFast(255);
-			data._Data[0].EmplaceFast(0);
-
-			GlobalTexture2D texture;
-
-			ResourceCreator::CreateTexture2D(&data, &texture);
-
-			material._MaterialPropertiesTextureIndex = texture._Index;
-		}
-
-		material._LuminanceMultiplier = 0.0f;
-	}
-}
-
-/*
 *	Initializes all common render data table layouts.
 */
 void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
@@ -593,6 +353,16 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
 	}
+}
+
+/*
+*	Initializes the default texture.
+*/
+void RenderingSystem::InitializeDefaultTexture() NOEXCEPT
+{
+	//Create the default texture 2D.
+	StaticArray<byte, 4> default_texture_2d_data{ static_cast<byte>(255), static_cast<byte>(0), static_cast<byte>(0), static_cast<byte>(255) };
+	CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::R8G8B8A8_Byte), &_DefaultTexture2D);
 }
 
 /*
@@ -672,7 +442,6 @@ void RenderingSystem::InitializeNoiseTextures() NOEXCEPT
 */
 void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 {
-	
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
@@ -819,13 +588,6 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 {
 	//Lock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
-
-	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
-	{
-		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
-	}
-
-	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].ClearFast();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{

@@ -6,6 +6,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 //Windows.
 #include <Windows.h>
 
@@ -97,6 +100,11 @@ public:
 	*	Retrieves the current mouse state.
 	*/
 	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
+
+	/*
+	*	Sets the cursor position.
+	*/
+	static void SetCursorPosition(const Vector2<float>& position) NOEXCEPT;
 
 	/*
 	*	Hides the cursor.

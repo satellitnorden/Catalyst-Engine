@@ -77,6 +77,13 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 */
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
+	if (true)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None || true)
 	{

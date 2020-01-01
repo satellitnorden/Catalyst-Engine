@@ -116,16 +116,6 @@ enum class BufferUsage : uint8
 
 ENUMERATION_BIT_OPERATIONS(BufferUsage);
 
-//Enumeration covering all common materials.
-enum class CommonMaterial : uint8
-{
-	Black,
-	GlassBlue,
-	WhitePorcelain,
-
-	NumberOfCommonMaterials
-};
-
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
@@ -295,6 +285,8 @@ enum class Shader : uint8
 	FireflyReductionFragment,
 	IndirectLightingFragment,
 	LuminanceLightingFragment,
+	ModelHighlightSceneFeaturesFragment,
+	ModelHighlightSceneFeaturesVertex,
 	ModelSceneFeaturesFragment,
 	ModelSceneFeaturesVertex,
 	MotionBlurFragment,

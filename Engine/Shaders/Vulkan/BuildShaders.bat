@@ -12,8 +12,10 @@ glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		Fast
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 				FireflyReductionFragmentShader.spv
 glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 				IndirectLightingFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv
+glslangValidator.exe -V ModelHighlightSceneFeaturesFragmentShader.frag -o 		ModelHighlightSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V ModelHighlightSceneFeaturesVertexShader.vert -o 		ModelHighlightSceneFeaturesVertexShader.spv
 glslangValidator.exe -V ModelSceneFeaturesFragmentShader.frag -o 			ModelSceneFeaturesFragmentShader.spv
-glslangValidator.exe -V ModelSceneFeaturesVertexShader.vert -o 				ModelSceneFeaturesVertexShader.spv
+glslangValidator.exe -V ModelSceneFeaturesVertexShader.vert -o 			ModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
 glslangValidator.exe -V OceanFragmentShader.frag -o 					OceanFragmentShader.spv
 glslangValidator.exe -V ParticleSystemComputeShader.comp -o 				ParticleSystemComputeShader.spv

@@ -82,3 +82,35 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::
 {
 	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }
+
+/*
+*	Disables highlight on this model entity.
+*/
+void ModelEntity::DisableHighlight() NOEXCEPT
+{
+	RenderingSystem::Instance->GetModelSystem()->DisableHighlight(this);
+}
+
+/*
+*	Returns if this model entity is highlighted or not.
+*/
+NO_DISCARD bool ModelEntity::IsHighlighted() const NOEXCEPT
+{
+	for (const HighlightedModel &highlighted_model : *RenderingSystem::Instance->GetModelSystem()->GetHighlightedModels())
+	{
+		if (_ComponentsIndex == highlighted_model._ComponentsIndex)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+*	Enables highlight on this model entity.
+*/
+void ModelEntity::EnableHighlight(const Vector3<float>& color, const float strength) NOEXCEPT
+{
+	RenderingSystem::Instance->GetModelSystem()->EnableHighlight(this, color, strength);
+}

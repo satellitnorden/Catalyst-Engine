@@ -59,14 +59,14 @@ public:
 	/*
 	*	Constructor taking a byte pointer along with the width, height and number of channels of the texture.
 	*/
-	FORCE_INLINE TextureDataContainer(byte *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initil_number_of_channels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(byte *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initial_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(texture_data);
 		_TextureWidth = initial_width;
 		_TextureHeight = initial_height;
 		_TextureDepth = initial_depth;
-		_TextureChannels = initil_number_of_channels;
+		_TextureChannels = initial_number_of_channels;
 		_TextureTexelSize = sizeof(byte);
 	}
 
@@ -74,14 +74,14 @@ public:
 	/*
 	*	Constructor taking a float pointer along with the width, height and number of channels of the texture.
 	*/
-	FORCE_INLINE TextureDataContainer(float *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initil_number_of_channels) NOEXCEPT
+	FORCE_INLINE TextureDataContainer(float *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initial_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(texture_data);
 		_TextureWidth = initial_width;
 		_TextureHeight = initial_height;
 		_TextureDepth = initial_depth;
-		_TextureChannels = initil_number_of_channels;
+		_TextureChannels = initial_number_of_channels;
 		_TextureTexelSize = sizeof(float);
 	}
 

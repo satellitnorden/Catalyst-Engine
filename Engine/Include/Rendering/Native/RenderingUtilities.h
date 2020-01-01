@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Perceiver.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -16,8 +17,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-namespace RenderingUtilities
+class RenderingUtilities final
 {
+
+public:
 
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
@@ -71,9 +74,19 @@ namespace RenderingUtilities
 	}
 
 	/*
+	*	Calculates the ray direction from a screen coordinate.
+	*/
+	FORCE_INLINE static Vector3<float> CalculateRayDirectionFromScreenCoordinate(const Vector2<float>& screen_coordinate) NOEXCEPT
+	{
+		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 0.0f) };
+
+		return Vector3<float>::Normalize(world_position - Perceiver::Instance->GetPosition());
+	}
+
+	/*
 	*	Calculates the screen coordinate of a position.
 	*/
-	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4 &view_matrix, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4& view_matrix, const Vector3<float>& position) NOEXCEPT
 	{
 		Vector4<float> view_space_coordinate{ view_matrix * Vector4<float>(position, 1.0f) };
 
@@ -89,41 +102,17 @@ namespace RenderingUtilities
 	}
 
 	/*
-	*	Calculates the screen coverage percent of an axis aligned bounding box.
+	*	Calculates a world position from a screen coordinate.
 	*/
-	FORCE_INLINE static float CalculateScreenCoveragePercent(const Matrix4 &view_matrix, const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE static Vector3<float> CalculateWorldPositionFromScreenCoordinate(const Vector2<float>& screen_coordinate, const float depth) NOEXCEPT
 	{
-		Vector2<float> screen_minimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
-		Vector2<float> screen_maximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+		const Vector2<float> near_plane_coordinate{ screen_coordinate * 2.0f - 1.0f };
+		Vector4<float> view_space_position{ *Perceiver::Instance->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
+		const float inverse_view_space_position_denominator{ 1.0f / view_space_position._W };
+		view_space_position *= inverse_view_space_position_denominator;
+		const Vector4<float> world_space_position{ *Perceiver::Instance->GetInversePerceiverMatrix() * view_space_position };
 
-		StaticArray<Vector3<float>, 8> corners;
-
-		const Vector3<float> difference{ box._Maximum - box._Minimum };
-
-		corners[0] = box._Minimum + difference * Vector3<float>(0.0f, 0.0f, 0.0f);
-		corners[1] = box._Minimum + difference * Vector3<float>(0.0f, 0.0f, 1.0f);
-		corners[2] = box._Minimum + difference * Vector3<float>(0.0f, 1.0f, 0.0f);
-		corners[3] = box._Minimum + difference * Vector3<float>(0.0f, 1.0f, 1.0f);
-		corners[4] = box._Minimum + difference * Vector3<float>(1.0f, 0.0f, 0.0f);
-		corners[5] = box._Minimum + difference * Vector3<float>(1.0f, 0.0f, 1.0f);
-		corners[6] = box._Minimum + difference * Vector3<float>(1.0f, 1.0f, 0.0f);
-		corners[7] = box._Minimum + difference * Vector3<float>(1.0f, 1.0f, 1.0f);
-
-		for (const Vector3<float> &corner : corners)
-		{
-			const Vector2<float> corner_screen_coordinate{ CalculateScreenCoordinate(view_matrix, corner) };
-
-			screen_minimum = Vector2<float>::Minimum(screen_minimum, corner_screen_coordinate);
-			screen_maximum = Vector2<float>::Maximum(screen_maximum, corner_screen_coordinate);
-		}
-
-		screen_minimum._X = CatalystBaseMath::Clamp<float>(screen_minimum._X, 0.0f, 1.0f);
-		screen_minimum._Y = CatalystBaseMath::Clamp<float>(screen_minimum._Y, 0.0f, 1.0f);
-
-		screen_maximum._X = CatalystBaseMath::Clamp<float>(screen_maximum._X, 0.0f, 1.0f);
-		screen_maximum._Y = CatalystBaseMath::Clamp<float>(screen_maximum._Y, 0.0f, 1.0f);
-
-		return (screen_maximum._X - screen_minimum._X) * (screen_maximum._Y - screen_minimum._Y);
+		return Vector3<float>(world_space_position._X, world_space_position._Y, world_space_position._Z);
 	}
 
 	/*
@@ -205,4 +194,4 @@ namespace RenderingUtilities
 		newBox->_Maximum = transformation.GetTranslation() + Vector3<float>::Maximum(xMinimum, xMaximum) + Vector3<float>::Maximum(yMinimum, yMaximum) + Vector3<float>::Maximum(zMinimum, zMaximum);
 	}
 
-}
+};

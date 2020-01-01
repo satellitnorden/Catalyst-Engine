@@ -23,6 +23,19 @@ void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEP
 }
 
 /*
+*	Sets the cursor position.
+*/
+void InputSystem::SetCursorPosition(const Vector2<float>& position) NOEXCEPT
+{
+	//Update internal state.
+	_MouseState._CurrentX = position._X;
+	_MouseState._CurrentY = position._Y;
+
+	//Update platform cursor.
+	CatalystPlatform::SetCursorPosition(position);
+}
+
+/*
 *	Hides the cursor.
 */
 void InputSystem::HideCursor() const NOEXCEPT

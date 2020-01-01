@@ -17,9 +17,6 @@ void ModelSystem::PostInitialize() NOEXCEPT
 
 	//Create the render data tables.
 	CreateRenderDataTables();
-
-	//Create the uniform buffers.
-	CreateUniformBuffers();
 }
 
 /*
@@ -47,73 +44,40 @@ void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEP
 }
 
 /*
-*	Updates the model system during the render update phase.
-*/
-void ModelSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Don't need this anymore. (:
-	/*
-	//Update the current model data render data table.
-	RenderDataTableHandle &currentModelDataRenderDataTable{ _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
-
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
-
-	ASSERT(numberOfModelComponents < RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, "Increase maximum number of models plz. c:");
-
-	_TopLevelAccelerationStructureInstances.ClearFast();
-	StaticArray<Material, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS> materials;
-
-	{
-		const ModelComponent *RESTRICT modelComponent{ ComponentManager::GetModelModelComponents() };
-
-		for (uint64 i{ 0 }; i < numberOfModelComponents; ++i, ++modelComponent)
-		{
-			_TopLevelAccelerationStructureInstances.EmplaceSlow(modelComponent->_CurrentWorldTransform, modelComponent->_Model->_BottomLevelAccelerationStructure, i);
-
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, static_cast<uint32>(i), &currentModelDataRenderDataTable, modelComponent->_Model->_VertexBuffer);
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, static_cast<uint32>(i), &currentModelDataRenderDataTable, modelComponent->_Model->_IndexBuffer);
-
-			materials[i] = modelComponent->_Material;
-		}
-	}
-
-	BufferHandle &currentMaterialsUniformBuffer{ _MaterialsUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
-
-	const void *const RESTRICT dataChunks[]{ materials.Data() };
-	const uint64 dataSizes[]{ sizeof(Material) * RenderingConstants::MAXIMUM_NUMBER_OF_MODELS };
-
-	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentMaterialsUniformBuffer);
-
-	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(3, 0, &currentModelDataRenderDataTable, currentMaterialsUniformBuffer);
-
-	//Re-create the top level acceleration structure, but only if ray tracing is actually active.
-	if (RenderingSystem::Instance->IsRayTracingActive())
-	{
-		if (_TopLevelAccelerationStructure)
-		{
-			RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_TopLevelAccelerationStructure);
-		}
-
-		if (!_TopLevelAccelerationStructureInstances.Empty())
-		{
-			RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_TopLevelAccelerationStructureInstances), &_TopLevelAccelerationStructure);
-		}
-	}
-	
-	if (_TopLevelAccelerationStructure)
-	{
-		RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &currentModelDataRenderDataTable, _TopLevelAccelerationStructure);
-	}
-	*/
-}
-
-/*
 *	Returns the current model data render data table.
 */
 RenderDataTableHandle ModelSystem::GetCurrentModelDataRenderDataTable() const NOEXCEPT
 {
 	//Return the current lighting data compute render data table.
 	return _ModelDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+}
+
+/*
+*	Disables highlight on a model entity.
+*/
+void ModelSystem::DisableHighlight(const ModelEntity* const RESTRICT entity) NOEXCEPT
+{
+	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot disable highlight!");
+
+	for (uint64 i{ 0 }, size{ _HighlightedModels.Size() }; i < size; ++i)
+	{
+		if (_HighlightedModels[i]._ComponentsIndex == entity->_ComponentsIndex)
+		{
+			_HighlightedModels.EraseAt(i);
+
+			break;
+		}
+	}
+}
+
+/*
+*	Enables highlight on a model entity.
+*/
+void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT
+{
+	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot enable highlight!");
+
+	_HighlightedModels.EmplaceSlow(color, entity->_ComponentsIndex, strength);
 }
 
 /*
@@ -144,19 +108,5 @@ void ModelSystem::CreateRenderDataTables() NOEXCEPT
 	for (RenderDataTableHandle &renderDataTable : _ModelDataRenderDataTables)
 	{
 		RenderingSystem::Instance->CreateRenderDataTable(_ModelDataRenderDataTableLayout, &renderDataTable);
-	}
-}
-
-/*
-*	Creates the uniform buffers.
-*/
-void ModelSystem::CreateUniformBuffers() NOEXCEPT
-{
-	//Create the uniform buffers.
-	_MaterialsUniformBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
-
-	for (BufferHandle &materialsUniformBuffer : _MaterialsUniformBuffers)
-	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &materialsUniformBuffer);
 	}
 }

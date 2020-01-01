@@ -311,11 +311,6 @@ public:
 	void ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT;
 
 	/*
-	*	Returns the given common material.
-	*/
-	Material GetCommonMaterial(const CommonMaterial materia) const NOEXCEPT;
-
-	/*
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
@@ -343,11 +338,11 @@ private:
 	//Container for all samplers.
 	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;
 
-	//Container for all common materials.
-	StaticArray<Material, UNDERLYING(CommonMaterial::NumberOfCommonMaterials)> _CommonMaterials;
-
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
+
+	//The default texture 2D.
+	Texture2DHandle _DefaultTexture2D;
 
 	//The dynamic uniform data.
 	DynamicUniformData _DynamicUniformData;
@@ -366,9 +361,6 @@ private:
 
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
-
-	//The default texture 2D.
-	Texture2DHandle _DefaultTexture2D;
 
 	//The noise textures.
 	StaticArray<GlobalTexture2D, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
@@ -425,6 +417,11 @@ private:
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
+
+	/*
+	*	Initializes the default texture.
+	*/
+	void InitializeDefaultTexture() NOEXCEPT;
 
 	/*
 	*	Initializes the noise textures.

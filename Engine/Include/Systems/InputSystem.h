@@ -4,14 +4,17 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
-
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
 #include <Input/MouseState.h>
 #include <Input/TouchState.h>
+
+//Math.
+#include <Math/General/Vector.h>
+
+//Multithreading.
+#include <Multithreading/Task.h>
 
 class InputSystem final
 {
@@ -57,6 +60,11 @@ public:
 	{
 		return &_MouseState;
 	}
+
+	/*
+	*	Sets the cursor position.
+	*/
+	void SetCursorPosition(const Vector2<float>& position) NOEXCEPT;
 
 	/*
 	*	Hides the cursor.

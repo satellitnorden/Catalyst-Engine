@@ -43,7 +43,7 @@ public:
 	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool BoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
 	{
 		return	box1._Minimum._X <= box2._Maximum._X
 				&& box1._Maximum._X >= box2._Minimum._X
@@ -58,18 +58,18 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(	const Ray &ray,
 																		const AxisAlignedBoundingBox &box,
-																		Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		//Pre-calculate the reciprocal of the direction of the ray to avoid costly divisions later on.
-		const Vector3<float> directionReciprocal{ Vector3<float>(1.0f) / ray._Direction };
+		const Vector3<float> direction_reciprocal{ Vector3<float>(1.0f) / ray._Direction };
 
 		//Find the minimum/maximum.
-		float minimum{ 0.0f };
+		float minimum{ -FLOAT_MAXIMUM };
 		float maximum{ FLOAT_MAXIMUM };
 
 		//Test the X-axis slab.
-		float minimumX{ (box._Minimum._X - ray._Origin._X) * directionReciprocal._X };
-		float maximumX{ (box._Maximum._X - ray._Origin._X) * directionReciprocal._X };
+		float minimumX{ (box._Minimum._X - ray._Origin._X) * direction_reciprocal._X };
+		float maximumX{ (box._Maximum._X - ray._Origin._X) * direction_reciprocal._X };
 
 		if (minimumX > maximumX)
 		{
@@ -85,8 +85,8 @@ public:
 		}
 
 		//Test the Y-axis slab.
-		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * directionReciprocal._Y };
-		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * directionReciprocal._Y };
+		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * direction_reciprocal._Y };
+		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * direction_reciprocal._Y };
 
 		if (minimumY > maximumY)
 		{
@@ -102,8 +102,8 @@ public:
 		}
 
 		//Test the Z-axis slab.
-		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * directionReciprocal._Z };
-		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * directionReciprocal._Z };
+		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * direction_reciprocal._Z };
+		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * direction_reciprocal._Z };
 
 		if (minimumZ > maximumZ)
 		{
@@ -119,9 +119,9 @@ public:
 		}
 
 		//All slabs succeeded!
-		if (intersectionPoint)
+		if (intersection_distance)
 		{
-			*intersectionPoint = ray._Origin + ray._Direction * minimum;
+			*intersection_distance = minimum;
 		}
 
 		return true;
