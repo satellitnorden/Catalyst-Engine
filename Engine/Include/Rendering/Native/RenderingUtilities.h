@@ -106,7 +106,7 @@ public:
 	*/
 	FORCE_INLINE static Vector3<float> CalculateWorldPositionFromScreenCoordinate(const Vector2<float>& screen_coordinate, const float depth) NOEXCEPT
 	{
-		const Vector2<float> near_plane_coordinate{ screen_coordinate * 2.0f - 1.0f };
+		const Vector2<float> near_plane_coordinate{ screen_coordinate._X * 2.0f - 1.0f, (1.0f - screen_coordinate._Y) * 2.0f - 1.0f };
 		Vector4<float> view_space_position{ *Perceiver::Instance->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
 		const float inverse_view_space_position_denominator{ 1.0f / view_space_position._W };
 		view_space_position *= inverse_view_space_position_denominator;
