@@ -102,18 +102,10 @@ layout (location = 0) out vec4 fragment;
 */
 void SampleRandom(int index, out vec3 direction, out float length)
 {
-#if 1
 	vec4 random_sample = RANDOM_SAMPLES[(index + int(gl_FragCoord.x) + int(gl_FragCoord.y)) & 63];
 
 	direction = random_sample.xyz;
 	length = random_sample.w;
-#else
-	vec2 noise_texture_coordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-	vec4 random_sample = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + index) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
-
-	direction = normalize(random_sample.xyz * 2.0f - 1.0f);
-	length = random_sample.w;
-#endif
 }
 
 void main()

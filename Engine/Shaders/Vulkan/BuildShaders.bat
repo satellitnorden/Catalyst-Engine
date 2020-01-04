@@ -9,8 +9,10 @@ glslangValidator.exe -V DepthOfFieldBlurFragmentShader.frag -o 				DepthOfFieldB
 glslangValidator.exe -V DirectLightingFragmentShader.frag -o 				DirectLightingFragmentShader.spv
 glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLightingRayGenerationShader.spv
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
-glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 				FireflyReductionFragmentShader.spv
-glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 				IndirectLightingFragmentShader.spv
+glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 			FireflyReductionFragmentShader.spv
+glslangValidator.exe -V IndirectLightingApplicationFragmentShader.frag -o 		IndirectLightingApplicationFragmentShader.spv
+glslangValidator.exe -V IndirectLightingDenoisingFragmentShader.frag -o 		IndirectLightingDenoisingFragmentShader.spv
+glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 			IndirectLightingFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv
 glslangValidator.exe -V ModelHighlightSceneFeaturesFragmentShader.frag -o 		ModelHighlightSceneFeaturesFragmentShader.spv
 glslangValidator.exe -V ModelHighlightSceneFeaturesVertexShader.vert -o 		ModelHighlightSceneFeaturesVertexShader.spv

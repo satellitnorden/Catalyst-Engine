@@ -283,6 +283,8 @@ enum class Shader : uint8
 	DirectLightingRayGeneration,
 	FastApproximateFragment,
 	FireflyReductionFragment,
+	IndirectLightingApplicationFragment,
+	IndirectLightingDenoisingFragment,
 	IndirectLightingFragment,
 	LuminanceLightingFragment,
 	ModelHighlightSceneFeaturesFragment,

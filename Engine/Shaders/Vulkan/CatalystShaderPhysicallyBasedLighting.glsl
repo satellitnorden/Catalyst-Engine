@@ -38,9 +38,10 @@ vec3 CalculateIndirectLighting( vec3 viewDirection,
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    irradiance *= albedo;
+    vec3 diffuse_irradiance = irradiance * albedo;
+    vec3 specular_irradiance = irradiance;
 
-    return (irradiance * diffuseComponent + irradiance * specularComponent) * ambient_occlusion;
+    return (diffuse_irradiance * diffuseComponent + specular_irradiance * specularComponent) * ambient_occlusion;
 }
 
 /*
