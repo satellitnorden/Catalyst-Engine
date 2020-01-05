@@ -242,6 +242,12 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 	//Lock the global texture slots.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
 
+	//Add the global texture updates.
+	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
+	{
+		globalTextureUpdate.EmplaceSlow(index);
+	}
+
 	//Mark the global texture slot as available.
 	_GlobalRenderData._GlobalTextureSlots[index] = false;
 
@@ -269,6 +275,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
 	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
@@ -444,6 +451,7 @@ void RenderingSystem::InitializeNoiseTextures() NOEXCEPT
 */
 void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 {
+	
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
@@ -590,6 +598,13 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 {
 	//Lock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.WriteLock();
+
+	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
+	{
+		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
+	}
+
+	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].ClearFast();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
