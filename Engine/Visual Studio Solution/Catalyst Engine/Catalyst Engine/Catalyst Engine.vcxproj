@@ -260,6 +260,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.h" />
@@ -461,6 +462,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.cpp" />

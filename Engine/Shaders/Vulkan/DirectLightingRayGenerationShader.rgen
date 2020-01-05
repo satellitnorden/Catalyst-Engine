@@ -34,7 +34,7 @@ void main()
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
-	float hitDistance = sceneFeatures2.w;
+	float depth = sceneFeatures2.w;
 	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
@@ -46,11 +46,11 @@ void main()
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
-	//Generate the ray direction.
-	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
-
 	//Calculate the hit position.
-	vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * hitDistance + shadingNormal * 0.1f;
+	vec3 hitPosition = CalculateWorldPosition(screenCoordinate, depth) + shadingNormal * 0.01f;
+
+	//Generate the ray direction.
+	vec3 rayDirection = normalize(hitPosition - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the direct lighting.
 	vec3 directLighting = vec3(0.0f);

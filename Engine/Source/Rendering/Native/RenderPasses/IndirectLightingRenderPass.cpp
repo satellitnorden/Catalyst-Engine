@@ -39,9 +39,10 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _IndirectLightingDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + 1 + _IndirectLightingDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
 	AddPipeline(&_IndirectLightingGraphicsPipeline);
+	AddPipeline(&_IndirectLightingRayTracingPipeline);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 	{
@@ -57,6 +58,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_IndirectLightingGraphicsPipeline.Initialize();
+	_IndirectLightingRayTracingPipeline.Initialize();
 	_IndirectLightingDenoisingGraphicsPipelines[0].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1),
@@ -94,7 +96,17 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	_IndirectLightingGraphicsPipeline.Execute();
+	if (true)
+	{
+		_IndirectLightingGraphicsPipeline.Execute();
+		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
+	}
+	
+	else
+	{
+		_IndirectLightingRayTracingPipeline.Execute();
+		_IndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+	}
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 	{

@@ -1284,6 +1284,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1717,6 +1720,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
