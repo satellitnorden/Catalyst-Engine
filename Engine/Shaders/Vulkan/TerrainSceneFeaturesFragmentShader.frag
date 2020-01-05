@@ -120,12 +120,22 @@ vec4 SampleTerrainMaterial(int index, vec2 texture_coordinate)
 /*
 *   Retrieves a single terrain material.
 */
-void RetrieveSingleTerrainMaterial(int index, vec2 texture_coordinate, out TerrainMaterial material)
+void RetrieveSingleTerrainMaterial(int index, vec2 texture_coordinate, vec3 normal, out TerrainMaterial material)
 {
-    material.albedo = SampleTerrainMaterial(GLOBAL_MATERIALS[index].albedo_texture_index, texture_coordinate).rgb;
-    material.normal_and_height_map = SampleTerrainMaterial(GLOBAL_MATERIALS[index].normal_map_texture_index, texture_coordinate);
-    material.normal_and_height_map.xyz = material.normal_and_height_map.xyz * 2.0f - 1.0f;
-    material.material_properties = SampleTerrainMaterial(GLOBAL_MATERIALS[index].material_properties_texture_index, texture_coordinate);
+    material.albedo = RetrieveAlbedo(GLOBAL_MATERIALS[index], texture_coordinate);
+
+    if (bool(GLOBAL_MATERIALS[index].properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
+    {
+        material.normal_and_height_map = vec4(normal, 1.0f);
+    }
+
+    else
+    {
+        material.normal_and_height_map = SampleTerrainMaterial(GLOBAL_MATERIALS[index].normal_map_texture_index, texture_coordinate);
+        material.normal_and_height_map.xyz = material.normal_and_height_map.xyz * 2.0f - 1.0f;
+    }
+
+    material.material_properties = RetrieveMaterialProperties(GLOBAL_MATERIALS[index], texture_coordinate);
 }
 
 /*
@@ -154,7 +164,7 @@ void BlendTerrainMaterials(TerrainMaterial first, TerrainMaterial second, float 
 /*
 *   Retrieves the terrain material.
 */
-void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial material)
+void RetrieveTerrainMaterial(vec2 texture_coordinate, vec3 normal, out TerrainMaterial material)
 {
 #if TRILINEAR
     //Calculate the horizontal and vertical alpha.
@@ -183,13 +193,13 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 
         //Retrieve the terrain materials.
         TerrainMaterial first_material;
-        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate, first_material);
+        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate, normal, first_material);
         TerrainMaterial second_material;
-        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate, second_material);
+        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate normal, second_material);
         TerrainMaterial third_material;
-        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate, third_material);
+        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate normal, third_material);
         TerrainMaterial fourth_material;
-        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate, fourth_material);
+        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate normal, fourth_material);
 
         //Blend the terrain materials.
         TerrainMaterial blend_1;
@@ -221,13 +231,13 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 
         //Retrieve the terrain materials.
         TerrainMaterial first_material;
-        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate, first_material);
+        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate normal, first_material);
         TerrainMaterial second_material;
-        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate, second_material);
+        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate normal, second_material);
         TerrainMaterial third_material;
-        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate, third_material);
+        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate normal, third_material);
         TerrainMaterial fourth_material;
-        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate, fourth_material);
+        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate normal, fourth_material);
 
         //Blend the terrain materials.
         TerrainMaterial blend_1;
@@ -260,13 +270,13 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 
         //Retrieve the terrain materials.
         TerrainMaterial first_material;
-        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate, first_material);
+        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate normal, first_material);
         TerrainMaterial second_material;
-        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate, second_material);
+        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate normal, second_material);
         TerrainMaterial third_material;
-        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate, third_material);
+        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate normal, third_material);
         TerrainMaterial fourth_material;
-        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate, fourth_material);
+        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate normal, fourth_material);
 
         //Blend the terrain materials.
         TerrainMaterial blend_1;
@@ -298,13 +308,13 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 
         //Retrieve the terrain materials.
         TerrainMaterial first_material;
-        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate, first_material);
+        RetrieveSingleTerrainMaterial(first_terrain_material_index, texture_coordinate normal, first_material);
         TerrainMaterial second_material;
-        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate, second_material);
+        RetrieveSingleTerrainMaterial(second_terrain_material_index, texture_coordinate normal, second_material);
         TerrainMaterial third_material;
-        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate, third_material);
+        RetrieveSingleTerrainMaterial(third_terrain_material_index, texture_coordinate normal, third_material);
         TerrainMaterial fourth_material;
-        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate, fourth_material);
+        RetrieveSingleTerrainMaterial(fourth_terrain_material_index, texture_coordinate normal, fourth_material);
 
         //Blend the terrain materials.
         TerrainMaterial blend_1;
@@ -324,13 +334,13 @@ void RetrieveTerrainMaterial(vec2 texture_coordinate, out TerrainMaterial materi
 
     //Retrieve the terrain materials.
     TerrainMaterial center_material;
-    RetrieveSingleTerrainMaterial(center_terrain_material_index, texture_coordinate, center_material);
+    RetrieveSingleTerrainMaterial(center_terrain_material_index, texture_coordinate, normal, center_material);
     TerrainMaterial right_material;
-    RetrieveSingleTerrainMaterial(right_terrain_material_index, texture_coordinate, right_material);
+    RetrieveSingleTerrainMaterial(right_terrain_material_index, texture_coordinate, normal, right_material);
     TerrainMaterial upper_material;
-    RetrieveSingleTerrainMaterial(upper_terrain_material_index, texture_coordinate, upper_material);
+    RetrieveSingleTerrainMaterial(upper_terrain_material_index, texture_coordinate, normal, upper_material);
     TerrainMaterial upper_right_material;
-    RetrieveSingleTerrainMaterial(upper_right_terrain_material_index, texture_coordinate, upper_right_material);
+    RetrieveSingleTerrainMaterial(upper_right_terrain_material_index, texture_coordinate, normal, upper_right_material);
 
     //Calculate the horizontal and vertical alpha.
     float horizontal_alpha = fract(fragmentTextureCoordinate.x * terrain_texture_resolution);
@@ -356,7 +366,7 @@ void main()
 
     //Retrieve the terrain material.
     TerrainMaterial material;
-    RetrieveTerrainMaterial(texture_coordinate, material);
+    RetrieveTerrainMaterial(texture_coordinate, terrain_normal, material);
 
     //Calculate the tangent space matrix.
     mat3 tangent_space_matrix = CalculateTangentSpaceMatrix(terrain_normal);
