@@ -39,11 +39,16 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _IndirectLightingDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + _IndirectLightingDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
 	AddPipeline(&_IndirectLightingGraphicsPipeline);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
+	for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -53,14 +58,20 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_IndirectLightingGraphicsPipeline.Initialize();
 	_IndirectLightingDenoisingGraphicsPipelines[0].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Horizontal,
-																1.0f,
+																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_2));
 
 	_IndirectLightingDenoisingGraphicsPipelines[1].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Vertical,
-																1.0f,
+																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_2),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
+	_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1));
+
+	_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer2));
+
 	_IndirectLightingApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -75,6 +86,13 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
+	if (false)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	_IndirectLightingGraphicsPipeline.Execute();
 
@@ -82,6 +100,23 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	{
 		pipeline.Execute();
 	}
+
+	//Execute the current buffer, don't include the rest.
+	for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+	{
+		if (i == _CurrentTemporalBufferIndex)
+		{
+			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].Execute();
+		}
+
+		else
+		{
+			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+	}
+
+	//Update the current buffer index.
+	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
 	_IndirectLightingApplicationGraphicsPipeline.Execute();
 }

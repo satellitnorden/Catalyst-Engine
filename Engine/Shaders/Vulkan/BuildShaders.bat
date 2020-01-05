@@ -13,6 +13,7 @@ glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 			FireflyReducti
 glslangValidator.exe -V IndirectLightingApplicationFragmentShader.frag -o 		IndirectLightingApplicationFragmentShader.spv
 glslangValidator.exe -V IndirectLightingDenoisingFragmentShader.frag -o 		IndirectLightingDenoisingFragmentShader.spv
 glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 			IndirectLightingFragmentShader.spv
+glslangValidator.exe -V IndirectLightingTemporalDenoisingFragmentShader.frag -o 		IndirectLightingTemporalDenoisingFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv
 glslangValidator.exe -V ModelHighlightSceneFeaturesFragmentShader.frag -o 		ModelHighlightSceneFeaturesFragmentShader.spv
 glslangValidator.exe -V ModelHighlightSceneFeaturesVertexShader.vert -o 		ModelHighlightSceneFeaturesVertexShader.spv

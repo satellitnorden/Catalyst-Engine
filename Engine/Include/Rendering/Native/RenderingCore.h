@@ -203,6 +203,16 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
+	*	Contains the first temporal indirect lighting buffer.
+	*/
+	TemporalIndirectLightingBuffer1,
+
+	/*
+	*	Contains the second temporal indirect lighting buffer.
+	*/
+	TemporalIndirectLightingBuffer2,
+
+	/*
 	*	Contains the first temporal anti aliasing buffer.
 	*/
 	TemporalAntiAliasingBuffer1,
@@ -286,6 +296,7 @@ enum class Shader : uint8
 	IndirectLightingApplicationFragment,
 	IndirectLightingDenoisingFragment,
 	IndirectLightingFragment,
+	IndirectLightingTemporalDenoisingFragment,
 	LuminanceLightingFragment,
 	ModelHighlightSceneFeaturesFragment,
 	ModelHighlightSceneFeaturesVertex,

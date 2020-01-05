@@ -12,7 +12,8 @@
 #include "CatalystRenderingUtilities.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_SAMPLES (8)
+#define INDIRECT_LIGHTING_SAMPLES (16)
+#define INDIRECT_LIGHTING_STEP_SIZE (0.5f)
 
 //The random samples.
 vec4 RANDOM_SAMPLES[64] = vec4[]
@@ -133,7 +134,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 */
 vec3 Irradiance(vec3 origin, vec3 direction)
 {
-	vec3 current_position = origin + direction;
+	vec3 current_position = origin;
 
 	for (int i = 0; i < INDIRECT_LIGHTING_SAMPLES; ++i)
 	{
@@ -154,19 +155,13 @@ vec3 Irradiance(vec3 origin, vec3 direction)
 		//Sample the depth value at the screen space coordinate.
 		float sample_depth = texture(scene_features_2_texture, screen_space_coordinate.xy).w;
 
-		//If the sample depth isn't valid, break.
-		if (sample_depth < 0.0f)
-		{
-			break;
-		}
-
 		//Is the sample depth higher than the expected depth?
 		if (sample_depth > expected_depth)
 		{
 			return texture(scene_texture, screen_space_coordinate.xy).rgb;
 		}
 
-		current_position += direction;
+		current_position += direction * INDIRECT_LIGHTING_STEP_SIZE;
 	}
 
 	//There was no hit - just return the sky color.
@@ -213,10 +208,10 @@ void main()
 	SampleRandomDirectionAndLength(current_features.normal, diffuse_direction, random_length);
 	diffuse_direction = dot(diffuse_direction, current_features.normal) >= 0.0f ? diffuse_direction : diffuse_direction * -1.0f;
 
-	vec3 ray_direction = mix(specular_direction, diffuse_direction, current_features.roughness * (1.0f - current_features.metallic));
+	vec3 ray_direction = normalize(mix(specular_direction, diffuse_direction, current_features.roughness * (1.0f - current_features.metallic)));
 
 	//Cast the ray!
-	vec3 irradiance = Irradiance(current_features.world_position + ray_direction * random_length, ray_direction);
+	vec3 irradiance = Irradiance(current_features.world_position + ray_direction * random_length * INDIRECT_LIGHTING_STEP_SIZE, ray_direction);
 
 	//Write the fragment.
 	fragment = vec4(irradiance, 1.0f);

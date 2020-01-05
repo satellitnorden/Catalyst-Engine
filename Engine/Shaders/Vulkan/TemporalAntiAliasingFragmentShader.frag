@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.9f)
+#define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.99f)
 #define TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_SIZE (3.0f)
 #define TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END ((TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
@@ -26,6 +26,33 @@ layout (set = 1, binding = 2) uniform sampler2D currentFrameTexture;
 //Out parameters.
 layout (location = 0) out vec4 currentFrame;
 layout (location = 1) out vec4 scene;
+
+/*
+*	Constrains the point within the minimum/maximum.
+*/
+vec3 Constrain(vec3 minimum, vec3 maximum, vec3 point)
+{
+#if 0 //Clamp instead of clip.
+
+	return clamp(point, minimum, maximum);
+
+#else
+
+	vec3 p_clip = 0.5f * (maximum + minimum);
+	vec3 e_clip = 0.5f * (maximum - minimum);
+
+	vec3 v_clip = point - p_clip;
+	vec3 v_unit = v_clip / e_clip;
+	vec3 a_unit = abs(v_unit);
+	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
+
+	if (ma_unit > 1.0f)
+		return p_clip + v_clip / ma_unit;
+	else
+		return point;
+
+#endif
+}
 
 void main()
 {
@@ -52,29 +79,23 @@ void main()
 		}
 	}
 
-	//Calculate the minimum/maximum luminance.
-	float minimumLuminance = CalculateAverage(minimum);
-	float maximumLuminance = CalculateAverage(maximum);
-
 	//Calculate the previous screen coordinate.
 	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(scene_features_2_texture, unjitteredScreenCoordinate).yz;
 
 	//Sample the previous frame texture.
 	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previousScreenCoordinate);
 
-	//Calculate the previous frame luminance.
-	float previousFrameLuminance = CalculateAverage(previousFrameTextureSampler.rgb);
+	//Constrain the previous frame sample.
+	previousFrameTextureSampler.rgb = Constrain(minimum, maximum, previousFrameTextureSampler.rgb);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
-	*	2. How far away is the previous frame sample from the minimum/maximum luminance?
 	*/
 	float previousSampleWeight = 1.0f;
 
 	previousSampleWeight *= float(ValidCoordinate(previousScreenCoordinate));
-	previousSampleWeight *= pow(1.0f - min(max(max(minimumLuminance - previousFrameLuminance, 0.0f), max(previousFrameLuminance - maximumLuminance, 0.0f)), 1.0f), 64.0f);
 
 	//Blend the previous and the current frame.
 	vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previousSampleWeight);
