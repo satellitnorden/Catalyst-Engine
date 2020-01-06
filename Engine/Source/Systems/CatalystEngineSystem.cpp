@@ -29,6 +29,7 @@
 #include <Systems/ProfilingSystem.h>
 #endif
 #include <Systems/RenderingSystem.h>
+#include <Systems/SaveSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -46,6 +47,7 @@ namespace CatalystEngineSystemData
 	enum class SequentialUpdate : uint8
 	{
 		EntityPlacementSystem,
+		SaveSystem,
 		TerrainSystem,
 
 		NumberOfSequentialUpdates
@@ -74,6 +76,13 @@ namespace CatalystEngineSystemLogic
 			case CatalystEngineSystemData::SequentialUpdate::EntityPlacementSystem:
 			{
 				EntityPlacementSystem::Instance->SequentialUpdate(context);
+
+				break;
+			}
+
+			case CatalystEngineSystemData::SequentialUpdate::SaveSystem:
+			{
+				SaveSystem::Instance->SequentialUpdate(context);
 
 				break;
 			}
@@ -119,6 +128,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CullingSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
 	LevelOfDetailSystem::Instance->Initialize();
+	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize();

@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h" />
+    <ClInclude Include="..\..\..\Include\FileHandling\FileHandlingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -326,6 +327,9 @@
     <ClInclude Include="..\..\..\Include\Resources\Reading\ImageResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResourceReader.h" />
+    <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
+    <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
+    <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h" />
     <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
@@ -340,6 +344,7 @@
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\ProfilingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\SaveSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
@@ -504,6 +509,7 @@
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\SaveSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />

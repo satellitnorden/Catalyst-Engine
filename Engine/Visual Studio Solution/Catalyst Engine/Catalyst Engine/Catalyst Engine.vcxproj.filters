@@ -337,6 +337,12 @@
     <Filter Include="Resources\Include\Reading">
       <UniqueIdentifier>{2d7eaced-a092-4b23-b323-56078473bbdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Save">
+      <UniqueIdentifier>{5760f812-531d-453a-81bf-2bbdf73edbd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Save\Include">
+      <UniqueIdentifier>{52ec0e34-d9d7-488f-a18d-8519d38cab0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1287,6 +1293,21 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\SaveSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Save\SaveEntry.h">
+      <Filter>Save\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Save\SaveCore.h">
+      <Filter>Save\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Save\SaveHeader.h">
+      <Filter>Save\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\FileHandling\FileHandlingUtilities.h">
+      <Filter>FileHandling\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1723,6 +1744,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\SaveSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
