@@ -8,8 +8,7 @@
 #include <Math/General/Matrix.h>
 
 //Multithreading.
-#include <Multithreading/ScopedReadLock.h>
-#include <Multithreading/ScopedWriteLock.h>
+#include <Multithreading/ScopedLock.h>
 #include <Multithreading/Spinlock.h>
 
 class DirectionalLight final
@@ -22,7 +21,7 @@ public:
 	*/
 	const Vector3<float>& GetColor() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _Color;
 	}
@@ -32,7 +31,7 @@ public:
 	*/
 	void SetColor(const Vector3<float> &newColor) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Color = newColor;
 	}
@@ -42,7 +41,7 @@ public:
 	*/
 	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Rotation = newRotation;
 	}
@@ -52,7 +51,7 @@ public:
 	*/
 	float GetIntensity() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _Intensity;
 	}
@@ -62,7 +61,7 @@ public:
 	*/
 	void SetIntensity(const float newIntensity) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Intensity = newIntensity;
 	}
@@ -72,7 +71,7 @@ public:
 	*/
 	Vector3<float> GetDirection() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return Vector3<float>::ForwardVector(_Rotation);
 	}

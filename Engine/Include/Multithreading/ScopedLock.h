@@ -4,10 +4,10 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Preprocess defines.
-#define SCOPED_READ_LOCK(LOCK) ScopedReadLock<decltype(LOCK)> scoped_lock{ LOCK };
+#define SCOPED_LOCK(LOCK) ScopedLock<decltype(LOCK)> scoped_lock{ LOCK };
 
 template <typename TYPE>
-class ScopedReadLock final
+class ScopedLock final
 {
 
 public:
@@ -15,26 +15,26 @@ public:
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	ScopedReadLock() NOEXCEPT = delete;
+	ScopedLock() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking the lock as it's argument.
 	*/
-	ScopedReadLock(TYPE &newLock) NOEXCEPT
+	ScopedLock(TYPE &newLock) NOEXCEPT
 		:
 		_Lock(newLock)
 	{
 		//Lock the lock.
-		_Lock.ReadLock();
+		_Lock.Lock();
 	}
 
 	/*
 	*	Default destructor.
 	*/
-	~ScopedReadLock() NOEXCEPT
+	~ScopedLock() NOEXCEPT
 	{
 		//Unlock the lock.
-		_Lock.ReadUnlock();
+		_Lock.Unlock();
 	}
 
 private:

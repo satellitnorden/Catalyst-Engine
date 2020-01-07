@@ -202,7 +202,7 @@ RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
 {
 	//Lock global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.WriteLock();
+	_GlobalRenderData._GlobalTexturesLock.Lock();
 
 	//Find the first available index and store it.
 	uint32 index{ UINT32_MAXIMUM };
@@ -228,7 +228,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 	}
 
 	//Unlock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 
 	//Return the index.
 	return index;
@@ -240,7 +240,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT
 {
 	//Lock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.WriteLock();
+	_GlobalRenderData._GlobalTexturesLock.Lock();
 
 	//Add the global texture updates.
 	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
@@ -252,7 +252,7 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 	_GlobalRenderData._GlobalTextureSlots[index] = false;
 
 	//Unlock the global texture slots.
-	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 }
 
 /*
@@ -597,7 +597,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Lock the global textures.
-	_GlobalRenderData._GlobalTexturesLock.WriteLock();
+	_GlobalRenderData._GlobalTexturesLock.Lock();
 
 	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
 	{
@@ -614,7 +614,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].ClearFast();
 
 	//Unlock the global textures.
-	_GlobalRenderData._GlobalTexturesLock.WriteUnlock();
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 }
 
 /*

@@ -1308,6 +1308,12 @@
     <ClInclude Include="..\..\..\Include\FileHandling\FileHandlingUtilities.h">
       <Filter>FileHandling\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Multithreading\ReadWriteSpinlock.h">
+      <Filter>Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h">
+      <Filter>Multithreading\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

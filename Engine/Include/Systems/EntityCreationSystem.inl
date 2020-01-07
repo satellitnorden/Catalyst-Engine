@@ -6,15 +6,15 @@
 template <class CLASS, class... ARGUMENTS>
 RESTRICTED CLASS* const RESTRICT EntityCreationSystem::CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT
 {
-	_AllocatorLock.WriteLock();
+	_AllocatorLock.Lock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
-	_AllocatorLock.WriteUnlock();
+	_AllocatorLock.Unlock();
 
 	CLASS *const RESTRICT newEntity{ new (memory) CLASS(std::forward<ARGUMENTS>(arguments)...) };
 
-	_EntitiesLock.WriteLock();
+	_EntitiesLock.Lock();
 	_Entities.EmplaceSlow(newEntity);
-	_EntitiesLock.WriteUnlock();
+	_EntitiesLock.Unlock();
 
 	return newEntity;
 }

@@ -145,6 +145,8 @@
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\ReadWriteSpinlock.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\ScopedReadLock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\ScopedWriteLock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h" />

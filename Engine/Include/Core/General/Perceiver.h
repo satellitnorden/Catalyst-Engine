@@ -8,8 +8,7 @@
 #include <Math/General/Vector.h>
 
 //Multithreading.
-#include <Multithreading/ScopedReadLock.h>
-#include <Multithreading/ScopedWriteLock.h>
+#include <Multithreading/ScopedLock.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -35,7 +34,7 @@ public:
 	*/
 	const Vector3<float>& GetPosition() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _Position;
 	}
@@ -45,7 +44,7 @@ public:
 	*/
 	void Move(const Vector3<float> &amount) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Position += amount;
 
@@ -58,7 +57,7 @@ public:
 	*/
 	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Position = newPosition;
 
@@ -71,7 +70,7 @@ public:
 	*/
 	const Vector3<float>& GetRotation() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _Rotation;
 	}
@@ -81,7 +80,7 @@ public:
 	*/
 	void Rotate(const Vector3<float> &amount) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Rotation += amount;
 
@@ -94,7 +93,7 @@ public:
 	*/
 	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_Rotation = newRotation;
 
@@ -107,7 +106,7 @@ public:
 	*/
 	Vector3<float> GetForwardVector() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return Vector3<float>::ForwardVector(_Rotation);
 	}
@@ -117,7 +116,7 @@ public:
 	*/
 	Vector3<float> GetRightVector() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return Vector3<float>::RightVector(_Rotation);
 	}
@@ -127,7 +126,7 @@ public:
 	*/
 	Vector3<float> GetUpVector() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return Vector3<float>::UpVector(_Rotation);
 	}
@@ -137,7 +136,7 @@ public:
 	*/
 	float GetFieldOfView() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _FieldOfView;
 	}
@@ -147,7 +146,7 @@ public:
 	*/
 	void SetFieldOfView(const float fieldOfView) NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_FieldOfView = fieldOfView;
 
@@ -161,7 +160,7 @@ public:
 	*/
 	float GetNearPlane() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _NearPlane;
 	}
@@ -171,7 +170,7 @@ public:
 	*/
 	float GetFarPlane() const NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		return _FarPlane;
 	}
@@ -181,7 +180,7 @@ public:
 	*/
 	void SetFarPlane(const float far_plane) NOEXCEPT
 	{
-		ScopedReadLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		_ProjectionMatrixDirty = true;
 
@@ -193,6 +192,8 @@ public:
 	*/
 	void SetProjectionMatrixJitter(const Vector2<float> &newProjectionMatrixJitter) NOEXCEPT
 	{
+		SCOPED_LOCK(_Lock);
+
 		_ProjectionMatrixJitter = newProjectionMatrixJitter;
 
 		_ProjectionMatrixDirty = true;
@@ -203,7 +204,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
@@ -215,7 +216,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
@@ -227,7 +228,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
@@ -239,7 +240,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
@@ -251,7 +252,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
@@ -263,7 +264,7 @@ public:
 	*/
 	RESTRICTED const StaticArray<Vector4<float>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 

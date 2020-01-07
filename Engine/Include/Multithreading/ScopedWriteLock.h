@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Preprocess defines.
+#define SCOPED_WRITE_LOCK(LOCK) ScopedWriteLock<decltype(LOCK)> scoped_lock{ LOCK };
+
 template <typename TYPE>
 class ScopedWriteLock final
 {

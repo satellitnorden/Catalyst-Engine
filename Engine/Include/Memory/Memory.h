@@ -7,7 +7,7 @@
 #include <Memory/UniquePointer.h>
 
 //Multithreading.
-#include <Multithreading/ScopedWriteLock.h>
+#include <Multithreading/ScopedLock.h>
 #include <Multithreading/Spinlock.h>
 
 //Memory constants.
@@ -89,7 +89,7 @@ public:
 	template <uint64 SIZE>
 	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT GlobalPoolAllocate() NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+		SCOPED_LOCK(*GlobalPoolAllocatorLock<SIZE>());
 
 		return GlobalPoolAllocator<SIZE>()->Allocate();
 	}
@@ -100,7 +100,7 @@ public:
 	template <uint64 SIZE>
 	FORCE_INLINE static void GlobalPoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
 	{
-		ScopedWriteLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+		SCOPED_LOCK(*GlobalPoolAllocatorLock<SIZE>());
 
 		GlobalPoolAllocator<SIZE>()->DeAllocate(memory);
 	}

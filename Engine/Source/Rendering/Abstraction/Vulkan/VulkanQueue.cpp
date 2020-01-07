@@ -3,7 +3,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanQueue.h>
 
 //Multithreading.
-#include <Multithreading/ScopedWriteLock.h>
+#include <Multithreading/ScopedLock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
@@ -27,7 +27,7 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 	CreateSubmitInfo(submitInfo, waitSemaphoreCount, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphoreCount, signalSemaphores);
 
 	//Lock the queue.
-	ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+	SCOPED_LOCK(_Lock);
 
 	//Submit the command buffer!
 	VULKAN_ERROR_CHECK(vkQueueSubmit(_VulkanQueue, 1, &submitInfo, fence));
@@ -43,7 +43,7 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 	CreatePresentInfo(presentInfo, renderFinishedSemaphore, swapchain, imageIndex);
 
 	//Lock the queue.
-	ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+	SCOPED_LOCK(_Lock);
 
 	//Present!
 	VULKAN_ERROR_CHECK(vkQueuePresentKHR(_VulkanQueue, &presentInfo));
@@ -55,7 +55,7 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 void VulkanQueue::WaitIdle() const NOEXCEPT
 {
 	//Lock the queue.
-	ScopedWriteLock<Spinlock> scopedLock{ _Lock };
+	SCOPED_LOCK(_Lock);
 
 	//Wait idle for this Vulkan queue.
 	VULKAN_ERROR_CHECK(vkQueueWaitIdle(_VulkanQueue));
