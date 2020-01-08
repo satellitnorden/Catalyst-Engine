@@ -58,14 +58,19 @@ public:
 	RenderDataTableHandle GetCurrentModelDataRenderDataTable() const NOEXCEPT;
 
 	/*
-	*	Disables highlight on a model entity.
-	*/
-	void DisableHighlight(const ModelEntity *const RESTRICT entity) NOEXCEPT;
-
-	/*
 	*	Enables highlight on a model entity.
 	*/
 	void EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT;
+
+	/*
+	*	Sets the highlight color on a model entity.
+	*/
+	void SetHighlightColor(const ModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT;
+
+	/*
+	*	Disables highlight on a model entity.
+	*/
+	void DisableHighlight(const ModelEntity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Returns the highlighted models.

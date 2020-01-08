@@ -55,9 +55,9 @@ public:
 	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 	/*
-	*	Disables highlight on this model entity.
+	*	Enables highlight on this model entity.
 	*/
-	void DisableHighlight() NOEXCEPT;
+	void EnableHighlight(const Vector3<float> &color, const float strength) NOEXCEPT;
 
 	/*
 	*	Returns if this model entity is highlighted or not.
@@ -65,8 +65,13 @@ public:
 	NO_DISCARD bool IsHighlighted() const NOEXCEPT;
 
 	/*
-	*	Enables highlight on this model entity.
+	*	Sets the highlight color on this model entity.
 	*/
-	void EnableHighlight(const Vector3<float> &color, const float strength) NOEXCEPT;
+	void SetHighlightColor(const Vector3<float> &color) NOEXCEPT;
+
+	/*
+	*	Disables highlight on this model entity.
+	*/
+	void DisableHighlight() NOEXCEPT;
 
 };

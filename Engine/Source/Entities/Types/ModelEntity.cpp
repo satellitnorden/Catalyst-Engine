@@ -84,11 +84,11 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::
 }
 
 /*
-*	Disables highlight on this model entity.
+*	Enables highlight on this model entity.
 */
-void ModelEntity::DisableHighlight() NOEXCEPT
+void ModelEntity::EnableHighlight(const Vector3<float>& color, const float strength) NOEXCEPT
 {
-	RenderingSystem::Instance->GetModelSystem()->DisableHighlight(this);
+	RenderingSystem::Instance->GetModelSystem()->EnableHighlight(this, color, strength);
 }
 
 /*
@@ -108,9 +108,17 @@ NO_DISCARD bool ModelEntity::IsHighlighted() const NOEXCEPT
 }
 
 /*
-*	Enables highlight on this model entity.
+*	Sets the highlight color on this model entity.
 */
-void ModelEntity::EnableHighlight(const Vector3<float>& color, const float strength) NOEXCEPT
+void ModelEntity::SetHighlightColor(const Vector3<float> &color) NOEXCEPT
 {
-	RenderingSystem::Instance->GetModelSystem()->EnableHighlight(this, color, strength);
+	RenderingSystem::Instance->GetModelSystem()->SetHighlightColor(this, color);
+}
+
+/*
+*	Disables highlight on this model entity.
+*/
+void ModelEntity::DisableHighlight() NOEXCEPT
+{
+	RenderingSystem::Instance->GetModelSystem()->DisableHighlight(this);
 }

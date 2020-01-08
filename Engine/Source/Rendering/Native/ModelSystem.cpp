@@ -53,6 +53,34 @@ RenderDataTableHandle ModelSystem::GetCurrentModelDataRenderDataTable() const NO
 }
 
 /*
+*	Enables highlight on a model entity.
+*/
+void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT
+{
+	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot enable highlight!");
+
+	_HighlightedModels.EmplaceSlow(color, entity->_ComponentsIndex, strength);
+}
+
+/*
+*	Sets the highlight color on a model entity.
+*/
+void ModelSystem::SetHighlightColor(const ModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT
+{
+	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot set highlight color!");
+
+	for (uint64 i{ 0 }, size{ _HighlightedModels.Size() }; i < size; ++i)
+	{
+		if (_HighlightedModels[i]._ComponentsIndex == entity->_ComponentsIndex)
+		{
+			_HighlightedModels[i]._HighlightColor = color;
+
+			break;
+		}
+	}
+}
+
+/*
 *	Disables highlight on a model entity.
 */
 void ModelSystem::DisableHighlight(const ModelEntity* const RESTRICT entity) NOEXCEPT
@@ -68,16 +96,6 @@ void ModelSystem::DisableHighlight(const ModelEntity* const RESTRICT entity) NOE
 			break;
 		}
 	}
-}
-
-/*
-*	Enables highlight on a model entity.
-*/
-void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT
-{
-	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot enable highlight!");
-
-	_HighlightedModels.EmplaceSlow(color, entity->_ComponentsIndex, strength);
 }
 
 /*
