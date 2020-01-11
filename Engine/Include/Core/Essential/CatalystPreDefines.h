@@ -27,3 +27,7 @@
 #if __cplusplus >= 201703L
 	#define CATALYST_CXX17
 #endif
+
+#if __cplusplus >= 202000L //Temporary!
+	#define CATALYST_CXX20
+#endif

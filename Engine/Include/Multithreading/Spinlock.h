@@ -6,6 +6,39 @@
 //Intrinsics.
 #include <immintrin.h>
 
+#if defined(CATALYST_CXX20) //C++20 implementation of a spinlock.
+class Spinlock final
+{
+
+public:
+
+	/*
+	*	Locks this spinlock.
+	*/
+	FORCE_INLINE void Lock() NOEXCEPT
+	{
+		while (_Locked.test_and_set(std::memory_order_acquire))
+		{
+			_Locked.wait(true, std::memory_order_relaxed);
+		}
+	}
+
+	/*
+	*	Unlocks the lock.
+	*/
+	FORCE_INLINE void Unlock() NOEXCEPT
+	{
+		_Locked.clear(false, std::memory_order_release);
+		_Locked.notify_one();
+	}
+
+private:
+
+	//Denotes whether or not this lock is locked.
+	std::atomic_flag _Locked{ ATOMIC_FLAG_INIT };
+
+};
+#else //Normal implementation of a spinlock.
 class Spinlock final
 {
 
@@ -56,3 +89,4 @@ private:
 	}
 
 };
+#endif
