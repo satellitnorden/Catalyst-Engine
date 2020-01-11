@@ -1314,6 +1314,9 @@
     <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Optional.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

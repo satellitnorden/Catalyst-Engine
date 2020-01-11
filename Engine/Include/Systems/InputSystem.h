@@ -33,6 +33,11 @@ public:
 	}
 
 	/*
+	*	Initializes the input system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
 	*	Updates the input system during the pre update phase.
 	*/
 	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
@@ -42,7 +47,7 @@ public:
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const GamepadState *const RESTRICT GetGamepadState(const uint8 index = 0) const NOEXCEPT
 	{
-		return &_GamepadStates[index];
+		return &_InputState._GamepadStates[index];
 	}
 
 	/*
@@ -50,7 +55,7 @@ public:
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const KeyboardState *const RESTRICT GetKeyboardState() const NOEXCEPT
 	{
-		return &_KeyboardState;
+		return &_InputState._KeyboardState;
 	}
 
 	/*
@@ -58,13 +63,8 @@ public:
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const MouseState *const RESTRICT GetMouseState() const NOEXCEPT
 	{
-		return &_MouseState;
+		return &_InputState._MouseState;
 	}
-
-	/*
-	*	Sets the cursor position.
-	*/
-	void SetCursorPosition(const Vector2<float>& position) NOEXCEPT;
 
 	/*
 	*	Hides the cursor.
@@ -78,13 +78,38 @@ public:
 
 private:
 
-	//The gamepad states.
-	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> _GamepadStates;
+	/*
+	*	Input stat class definition.
+	*/
+	class InputState final
+	{
 
-	//The keyboard state.
-	KeyboardState _KeyboardState;
 
-	//The mouse state.
-	MouseState _MouseState;
+	public:
+
+		//The gamepad states.
+		StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> _GamepadStates;
+
+		//The keyboard state.
+		KeyboardState _KeyboardState;
+
+		//The mouse state.
+		MouseState _MouseState;
+
+	};
+
+	//The input state.
+	InputState _InputState;
+
+	//The asynchronous input state.
+	InputState _AsynchronousInputState;
+
+	//The update task.
+	Task _UpdateTask;
+
+	/*
+	*	Updates the input system asynchronously.
+	*/
+	void UpdateAsynchronous() NOEXCEPT;
 
 };

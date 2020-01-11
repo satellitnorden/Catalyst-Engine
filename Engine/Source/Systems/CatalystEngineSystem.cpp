@@ -127,6 +127,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize all systems.
 	CullingSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
+	InputSystem::Instance->Initialize();
 	LevelOfDetailSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);

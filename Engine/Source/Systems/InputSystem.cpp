@@ -1,38 +1,55 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
+//Systems.
+#include <Systems/TaskSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
+
+/*
+*	Initializes the input system.
+*/
+void InputSystem::Initialize() NOEXCEPT
+{
+	//Set up the update task.
+	_UpdateTask._Function = [](void *const RESTRICT)
+	{
+		InputSystem::Instance->UpdateAsynchronous();
+	};
+	_UpdateTask._Arguments = nullptr;
+	_UpdateTask._ExecutableOnSameThread = false;
+}
 
 /*
 *	Updates the input system during the pre update phase.
 */
 void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Retrieve the current gamepad states.
-	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
+	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+	//Wait for the update task to finish.
+	_UpdateTask.WaitFor();
+
+	//Copy over the asynchronous input state.
+	Memory::Copy(&_InputState, &_AsynchronousInputState, sizeof(InputState));
+
+	//Check if there was a set cursor position request.
+	if (_SetCursorPositionRequest)
 	{
-		CatalystPlatform::GetCurrentGamepadState(i, &_GamepadStates[i]);
+		//Update internal state.
+		_AsynchronousInputState._MouseState._CurrentX = _SetCursorPositionRequest->_X;
+		_AsynchronousInputState._MouseState._CurrentY = _SetCursorPositionRequest->_Y;
+
+		//Update platform cursor.
+		CatalystPlatform::SetCursorPosition(_SetCursorPositionRequest);
+
+		//Reset the set cursor position request.
+		_SetCursorPositionRequest.Reset();
 	}
 
-	//Retrieve the current keyboard state.
-	CatalystPlatform::GetCurrentKeyboardState(&_KeyboardState);
-
-	//Retrieve the current mouse state.
-	CatalystPlatform::GetCurrentMouseState(&_MouseState);
-}
-
-/*
-*	Sets the cursor position.
-*/
-void InputSystem::SetCursorPosition(const Vector2<float>& position) NOEXCEPT
-{
-	//Update internal state.
-	_MouseState._CurrentX = position._X;
-	_MouseState._CurrentY = position._Y;
-
-	//Update platform cursor.
-	CatalystPlatform::SetCursorPosition(position);
+	//Fire off the update task again.
+	TaskSystem::Instance->ExecuteTask(&_UpdateTask);
+	CATALYST_BENCHMARK_AVERAGE_SECTION_END("InputSystem::PreUpdate");
 }
 
 /*
@@ -49,4 +66,22 @@ void InputSystem::HideCursor() const NOEXCEPT
 void InputSystem::ShowCursor() const NOEXCEPT
 {
 	CatalystPlatform::ShowCursor();
+}
+
+/*
+*	Updates the input system asynchronously.
+*/
+void InputSystem::UpdateAsynchronous() NOEXCEPT
+{
+	//Retrieve the current gamepad states.
+	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
+	{
+		CatalystPlatform::GetCurrentGamepadState(i, &_AsynchronousInputState._GamepadStates[i]);
+	}
+
+	//Retrieve the current keyboard state.
+	CatalystPlatform::GetCurrentKeyboardState(&_AsynchronousInputState._KeyboardState);
+
+	//Retrieve the current mouse state.
+	CatalystPlatform::GetCurrentMouseState(&_AsynchronousInputState._MouseState);
 }
