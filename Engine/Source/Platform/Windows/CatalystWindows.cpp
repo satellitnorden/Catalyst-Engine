@@ -12,6 +12,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/Vector.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
@@ -28,6 +29,9 @@ HWND CatalystPlatform::_Window;
 //Catalyst Windows data.
 namespace CatalystWindowsData
 {
+	//The last known cursor position.
+	Vector2<float> _LastKnownCursorPosition{ 0.5f, 0.5f };
+
 	//Denotes whether or not the cursor is shown.
 	bool _CursorShown{ true };
 
@@ -159,17 +163,20 @@ FORCE_INLINE void UpdateWindowsButton(const uint16 button, ButtonState &ButtonSt
 */
 FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 {
-	if (visibility)
+	if (CatalystWindowsData::_CursorShown != visibility)
 	{
-		while (ShowCursor(true) < 0);
-	}
+		CatalystWindowsData::_CursorShown = visibility;
 
-	else
-	{
-		while (ShowCursor(false) > 0);
-	}
+		if (visibility)
+		{
+			while (ShowCursor(true) < 0);
+		}
 
-	CatalystWindowsData::_CursorShown = visibility;
+		else
+		{
+			while (ShowCursor(false) > 0);
+		}
+	}
 }
 
 /*
@@ -544,6 +551,47 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 		ASSERT(false, "Could not retrieve the current cursor position.");
 	}
 
+	//Remember the last known cursor position.
+	if (CatalystWindowsData::_CursorShown)
+	{
+		CatalystWindowsData::_LastKnownCursorPosition._X = state->_CurrentX;
+		CatalystWindowsData::_LastKnownCursorPosition._Y = state->_CurrentY;
+	}
+
+	//Else, just imagine that the cursor is always at the last known cursor position.
+	else
+	{
+		state->_PreviousX = state->_CurrentX = CatalystWindowsData::_LastKnownCursorPosition._X;
+		state->_PreviousY = state->_CurrentY = CatalystWindowsData::_LastKnownCursorPosition._Y;
+
+		//Get the current screen rectangle.
+		RECT rectangle;
+
+		if (GetClientRect(_Window, &rectangle))
+		{
+			//Calculate the last known cursor point.
+			POINT last_known_cursor_point;
+
+			last_known_cursor_point.x = static_cast<LONG>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.left), static_cast<float>(rectangle.right), CatalystWindowsData::_LastKnownCursorPosition._X));
+			last_known_cursor_point.y = static_cast<LONG>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.bottom), static_cast<float>(rectangle.top), CatalystWindowsData::_LastKnownCursorPosition._Y));
+
+			if (ClientToScreen(_Window, &last_known_cursor_point))
+			{
+				SetCursorPos(last_known_cursor_point.x, last_known_cursor_point.y);
+			}
+
+			else
+			{
+				ASSERT(false, "Could not convert cursor position to window coordinates.");
+			}
+		}
+
+		else
+		{
+			ASSERT(false, "Could not retrieve window rectangle.");
+		}
+	}
+
 	//Update the button states.
 	UpdateWindowsButton(VK_LBUTTON, state->_Left);
 	UpdateWindowsButton(VK_MBUTTON, state->_ScrollWheel);
@@ -552,28 +600,6 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 	//Update the scroll wheel step.
 	state->_ScrollWheelStep = CatalystWindowsData::_ScrollWheelStep;
 	CatalystWindowsData::_ScrollWheelStep = 0;
-}
-
-/*
-*	Sets the cursor position.
-*/
-void CatalystPlatform::SetCursorPosition(const Vector2<float>& position) NOEXCEPT
-{
-	//Get the client rectangle.
-	RECT rectangle;
-
-	if (GetClientRect(_Window, &rectangle))
-	{
-		POINT actual_position;
-
-		actual_position.x = static_cast<int32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.left), static_cast<float>(rectangle.right), position._X));
-		actual_position.y = static_cast<int32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.bottom), static_cast<float>(rectangle.top), position._Y));
-
-		if (ClientToScreen(_Window, &actual_position))
-		{
-			SetCursorPos(actual_position.x, actual_position.y);
-		}
-	}
 }
 
 /*

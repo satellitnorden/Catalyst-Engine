@@ -26,30 +26,14 @@ void InputSystem::Initialize() NOEXCEPT
 */
 void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 	//Wait for the update task to finish.
 	_UpdateTask.WaitFor();
 
 	//Copy over the asynchronous input state.
 	Memory::Copy(&_InputState, &_AsynchronousInputState, sizeof(InputState));
 
-	//Check if there was a set cursor position request.
-	if (_SetCursorPositionRequest)
-	{
-		//Update internal state.
-		_AsynchronousInputState._MouseState._CurrentX = _SetCursorPositionRequest->_X;
-		_AsynchronousInputState._MouseState._CurrentY = _SetCursorPositionRequest->_Y;
-
-		//Update platform cursor.
-		CatalystPlatform::SetCursorPosition(_SetCursorPositionRequest);
-
-		//Reset the set cursor position request.
-		_SetCursorPositionRequest.Reset();
-	}
-
 	//Fire off the update task again.
 	TaskSystem::Instance->ExecuteTask(&_UpdateTask);
-	CATALYST_BENCHMARK_AVERAGE_SECTION_END("InputSystem::PreUpdate");
 }
 
 /*
