@@ -76,27 +76,35 @@ public:
 	/*
 	*	Rounds a number up to the nearest integer.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Ceiling(const float number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Ceiling(const float number) NOEXCEPT
 	{
-		return static_cast<Type>(number + 1.0f);
+		return static_cast<TYPE>(number + 1.0f);
 	}
 
 	/*
 	*	Clamps a value between a lower and an upper limit and returns the clamped value.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Clamp(const Type value, const Type lowerLimit, const Type upperLimit) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Clamp(const TYPE value, const TYPE lower, const TYPE upper) NOEXCEPT
 	{
-		return value < lowerLimit ? lowerLimit : value > upperLimit ? upperLimit : value;
+		return value < lower ? lower : value > upper ? upper : value;
 	}
 
 	/*
-	*	Given a number, returns the cosine of the angle.
+	*	Given an angle, returns the cosecant of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Cosine(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Cosecant(const float angle) NOEXCEPT
 	{
-		float temporary{ WrapAround(number, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
+		return 1.0f / Sine(angle);
+	}
+
+	/*
+	*	Given an angle, returns the cosine of the angle.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Cosine(const float angle) NOEXCEPT
+	{
+		float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
 
 		return	1.0f
 				- PowerOf(temporary, 2) * InverseFactorial(2)
@@ -107,6 +115,14 @@ public:
 				+ PowerOf(temporary, 12) * InverseFactorial(12)
 				- PowerOf(temporary, 14) * InverseFactorial(14)
 				+ PowerOf(temporary, 16) * InverseFactorial(16);
+	}
+
+	/*
+	*	Given an angle, returns the cotangent of the angle.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Cotangent(const float angle) NOEXCEPT
+	{
+		return Cosine(angle) / Sine(angle);
 	}
 
 	/*
@@ -136,10 +152,10 @@ public:
 	/*
 	*	Rounds a number down to the nearest integer.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Floor(const float number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Floor(const float number) NOEXCEPT
 	{
-		return number >= 0.0f ? static_cast<Type>(static_cast<int32>(number)) : static_cast<Type>(static_cast<int32>(number - 1.0f));
+		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number)) : static_cast<TYPE>(static_cast<int32>(number - 1.0f));
 	}
 
 	/*
@@ -169,8 +185,8 @@ public:
 	/*
 	*	Returns whether or not an integer is even or not.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type IsEven(const Type number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE IsEven(const TYPE number) NOEXCEPT
 	{
 		return Modulo(number, 2) == 0;
 	}
@@ -186,8 +202,8 @@ public:
 	/*
 	*	Returns whether or not an integer is odd or not.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type IsOdd(const Type number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE IsOdd(const TYPE number) NOEXCEPT
 	{
 		return Modulo(number, 2) != 0;
 	}
@@ -204,26 +220,26 @@ public:
 	/*
 	*	Returns the maximum of two numbers.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Maximum(const Type firstNumber, const Type secondNumber) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Maximum(const TYPE first, const TYPE second) NOEXCEPT
 	{
-		return LIKELY(firstNumber > secondNumber) ? firstNumber : secondNumber;
+		return LIKELY(first > second) ? first : second;
 	}
 
 	/*
 	*	Returns the minimum of two numbers.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Minimum(const Type firstNumber, const Type secondNumber) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Minimum(const TYPE first, const TYPE second) NOEXCEPT
 	{
-		return LIKELY(firstNumber < secondNumber) ? firstNumber : secondNumber;
+		return LIKELY(first < second) ? first : second;
 	}
 
 	/*
 	*	Returns the modulo of two integers.
 	*/
-	template <typename First, typename Second>
-	FORCE_INLINE constexpr static NO_DISCARD First Modulo(const First input, const Second ceiling) NOEXCEPT
+	template <typename FIRST, typename SECOND>
+	FORCE_INLINE constexpr static NO_DISCARD FIRST Modulo(const FIRST input, const SECOND ceiling) NOEXCEPT
 	{
 		return UNLIKELY(input >= ceiling) ? input % ceiling : input;
 	}
@@ -263,10 +279,10 @@ public:
 	/*
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
-	template <typename Type>
-	FORCE_INLINE constexpr static NO_DISCARD Type Round(const float value) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Round(const float value) NOEXCEPT
 	{
-		return value >= 0.0f ? static_cast<Type>(static_cast<int32>(value + 0.5f)) : static_cast<Type>(static_cast<int32>(value - 0.5f));
+		return value >= 0.0f ? static_cast<TYPE>(static_cast<int32>(value + 0.5f)) : static_cast<TYPE>(static_cast<int32>(value - 0.5f));
 	}
 
 	/*
@@ -278,6 +294,14 @@ public:
 	}
 
 	/*
+	*	Given an angle, returns the secant of the angle.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Secant(const float angle) NOEXCEPT
+	{
+		return 1.0f / Cosine(angle);
+	}
+
+	/*
 	*	Given a number, returns the signum of that number.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Signum(const float number) NOEXCEPT
@@ -286,11 +310,29 @@ public:
 	}
 
 	/*
-	*	Given a number, returns the sine of the angle.
+	*	Given an angle, returns the sine of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Sine(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Sine(const float angle) NOEXCEPT
 	{
-		return Cosine(number - CatalystBaseMathConstants::HALF_PI);
+		/*
+		float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
+
+		return	temporary
+				- PowerOf(temporary, 3) * InverseFactorial(3)
+				+ PowerOf(temporary, 5) * InverseFactorial(5)
+				- PowerOf(temporary, 7) * InverseFactorial(7)
+				+ PowerOf(temporary, 9) * InverseFactorial(9)
+				- PowerOf(temporary, 11) * InverseFactorial(11)
+				+ PowerOf(temporary, 13) * InverseFactorial(13)
+				- PowerOf(temporary, 15) * InverseFactorial(15)
+				+ PowerOf(temporary, 17) * InverseFactorial(17);
+		*/
+
+		/*
+		*	Due to the implementation of Sine/Cosine (using Taylor Series), it's slightly cheaper
+		*	to redirect Sine to Cosine since it uses slighlty lower exponents for PowerOf().
+		*/
+		return Cosine(angle - CatalystBaseMathConstants::HALF_PI);
 	}
 
 	/*
@@ -342,11 +384,11 @@ public:
 	}
 
 	/*
-	*	Given a number, return the tangent.
+	*	Given an angle, return the tangent of the angle.
 	*/
-	FORCE_INLINE static NO_DISCARD float Tangent(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Tangent(const float angle) NOEXCEPT
 	{
-		return tan(number);
+		return Sine(angle) / Cosine(angle);
 	}
 
 	/*
@@ -355,16 +397,16 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD float WrapAround(const float number, const float minimumRange, const float maximumRange) NOEXCEPT
 	{
 		float temporary{ number };
-		const float wholeRange{ maximumRange - minimumRange };
+		const float whole_range{ maximumRange - minimumRange };
 
 		while (temporary < minimumRange)
 		{
-			temporary += wholeRange;
+			temporary += whole_range;
 		}
 
 		while (temporary > maximumRange)
 		{
-			temporary -= wholeRange;
+			temporary -= whole_range;
 		}
 
 		return temporary;
