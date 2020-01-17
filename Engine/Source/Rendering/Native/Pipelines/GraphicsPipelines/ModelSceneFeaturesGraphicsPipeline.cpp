@@ -163,10 +163,10 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffers[0], &OFFSET);
+		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffers[0], OFFSET);
 
-		commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
+		commandBuffer->DrawIndexed(this, component->_Model->_IndexCounts[0], 1);
 	}
 
 	//End the command buffer.

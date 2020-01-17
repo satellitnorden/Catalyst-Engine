@@ -126,7 +126,7 @@ void RetrieveSingleTerrainMaterial(int index, vec2 texture_coordinate, vec3 norm
 
     if (bool(GLOBAL_MATERIALS[index].properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
     {
-        material.normal_and_height_map = vec4(normal, 1.0f);
+        material.normal_and_height_map = vec4(vec3(0.0f, 0.0f, 1.0f), 1.0f);
     }
 
     else

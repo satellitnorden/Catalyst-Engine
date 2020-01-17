@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Math.
 #include <Math/General/Matrix.h>
@@ -17,8 +18,8 @@ public:
 	//The resource ID.
 	const char *RESTRICT _ID{ nullptr };
 
-	//The file.
-	const char *RESTRICT _File{ nullptr };
+	//The level of details. Each entry represents one level of detail. The first element is the highest level of detail.
+	DynamicArray<const char *RESTRICT> _LevelOfDetails;
 
 	//The transformation.
 	Matrix4 _Transformation{ };

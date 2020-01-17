@@ -266,24 +266,37 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
-	//Read the axis-aligned bounding box
-	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+	//Read the number of level of details.
+	uint64 number_of_level_of_details{ 0 };
+	file.Read(&number_of_level_of_details, sizeof(uint64));
 
-	//Read the number of vertices.
-	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
+	data._NumberOfLevelfDetails = number_of_level_of_details;
 
-	//Read the vertices.
-	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(Vertex) * numberOfVertices);
+	data._AxisAlignedBoundingBoxes.UpsizeFast(data._NumberOfLevelfDetails);
+	data._Vertices.UpsizeSlow(data._NumberOfLevelfDetails);
+	data._Indices.UpsizeSlow(data._NumberOfLevelfDetails);
 
-	//Read the number of indices.
-	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
+	for (uint64 i{ 0 }; i < data._NumberOfLevelfDetails; ++i)
+	{
+		//Read the axis-aligned bounding box
+		file.Read(&data._AxisAlignedBoundingBoxes[i], sizeof(AxisAlignedBoundingBox));
 
-	//Read the indices.
-	data._Indices.UpsizeFast(numberOfIndices);
-	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+		//Read the number of vertices.
+		uint64 numberOfVertices;
+		file.Read(&numberOfVertices, sizeof(uint64));
+
+		//Read the vertices.
+		data._Vertices[i].UpsizeFast(numberOfVertices);
+		file.Read(data._Vertices[i].Data(), sizeof(Vertex) * numberOfVertices);
+
+		//Read the number of indices.
+		uint64 numberOfIndices;
+		file.Read(&numberOfIndices, sizeof(uint64));
+
+		//Read the indices.
+		data._Indices[i].UpsizeFast(numberOfIndices);
+		file.Read(data._Indices[i].Data(), sizeof(uint32) * numberOfIndices);
+	}
 
 	//Create the model.
 	ResourceCreator::CreateModel(&data, &_Models[resourceID]);

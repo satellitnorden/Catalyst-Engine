@@ -15,13 +15,16 @@ class ModelData final
 
 public:
 
+	//The number of level of details.
+	uint64 _NumberOfLevelfDetails;
+
 	//The axis-aligned bounding box.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	DynamicArray<AxisAlignedBoundingBox> _AxisAlignedBoundingBoxes;
 
 	//The vertices of this model.
-	DynamicArray<Vertex> _Vertices;
+	DynamicArray<DynamicArray<Vertex>> _Vertices;
 
 	//The indices of this model.
-	DynamicArray<uint32> _Indices;
+	DynamicArray<DynamicArray<uint32>> _Indices;
 
 };

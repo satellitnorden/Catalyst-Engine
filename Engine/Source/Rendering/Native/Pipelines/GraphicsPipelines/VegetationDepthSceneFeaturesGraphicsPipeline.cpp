@@ -200,13 +200,13 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
 		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffers[0], &OFFSET);
+		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffers[0], OFFSET);
 
 		//Bind the transformations buffer.
 		commandBuffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &OFFSET);
 
-		commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, component->_NumberOfTransformations);
+		commandBuffer->DrawIndexed(this, component->_Model->_IndexCounts[0], component->_NumberOfTransformations);
 	}
 
 	//End the command buffer.

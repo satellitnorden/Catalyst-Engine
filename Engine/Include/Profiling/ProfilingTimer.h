@@ -7,16 +7,13 @@
 //Systems.
 #include <Systems/ProfilingSystem.h>
 
-/*
-*	Profiling timer class definition.
-*/
 class ProfilingTimer final
 {
 
 public:
 
 	/*
-	*	Default constructor, prohitibed - must be constructed with the proper arguments..
+	*	Default constructor, prohitibed - must be constructed with the proper arguments.
 	*/
 	FORCE_INLINE ProfilingTimer() NOEXCEPT = delete;
 

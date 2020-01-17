@@ -19,14 +19,14 @@ public:
 	//The model space axis-aligned bounding box.
 	AxisAlignedBoundingBox _ModelSpaceAxisAlignedBoundingBox;
 
-	//The vertex buffer.
-	BufferHandle _VertexBuffer;
+	//The vertex buffers.
+	DynamicArray<BufferHandle> _VertexBuffers;
 
-	//The index buffer.
-	BufferHandle _IndexBuffer;
+	//The index buffers.
+	DynamicArray<BufferHandle> _IndexBuffers;
 
-	//The index count.
-	uint32 _IndexCount;
+	//The index counts.
+	DynamicArray<uint32> _IndexCounts;
 
 	//The bottom level acceleration structure.
 	AccelerationStructureHandle _BottomLevelAccelerationStructure;

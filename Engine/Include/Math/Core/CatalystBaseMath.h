@@ -104,7 +104,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Cosine(const float angle) NOEXCEPT
 	{
-		float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
+		const float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
 
 		return	1.0f
 				- PowerOf(temporary, 2) * InverseFactorial(2)
