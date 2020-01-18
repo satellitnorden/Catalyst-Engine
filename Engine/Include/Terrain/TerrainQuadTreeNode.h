@@ -14,11 +14,11 @@ public:
 	//The depth.
 	uint8 _Depth{ 0 };
 
+	//The borders.
+	int32 _Borders;
+
 	//Denotes whether or not this node is subdivided.
 	bool _Subdivided{ false };
-
-	//The patch identifier.
-	uint64 _Identifier{ UINT64_MAXIMUM };
 
 	//The child nodes.
 	TerrainQuadTreeNode *RESTRICT _ChildNodes{ nullptr };

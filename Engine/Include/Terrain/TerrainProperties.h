@@ -1,10 +1,5 @@
 #pragma once
 
-//Terrain.
-#include <Terrain/TerrainCore.h>
-
-#if NEW_TERRAIN_SYSTEM
-
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
@@ -19,29 +14,14 @@ class TerrainProperties final
 
 public:
 
-	//The height function.
-	HeightFunction _HeightFunction{ nullptr };
+	//The patch size of the root nodes.
+	float _PatchSize;
 
-	//The material function.
-	MaterialFunction _MaterialFunction{ nullptr };
+	//The patch resolution.
+	uint32 _PatchResolution;
 
-};
-
-#else
-
-//Core.
-#include <Core/Essential/CatalystEssential.h>
-
-//Rendering.
-#include <Rendering/Native/RenderingCore.h>
-
-//Terrain.
-#include <Terrain/TerrainCore.h>
-
-class TerrainProperties final
-{
-
-public:
+	//The maximum quad tree depth.
+	uint8 _MaximumQuadTreeDepth;
 
 	//The buffer.
 	BufferHandle _Buffer;
@@ -52,12 +32,16 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
-	//The height function.
-	HeightFunction _HeightFunction{ nullptr };
+	//Denotes whether or not a height map has been set.
+	bool _HasHeightMap{ false };
 
-	//The material function.
-	MaterialFunction _MaterialFunction{ nullptr };
+	//The height map.
+	Texture2D<float> _HeightMap;
+
+	//The height map texture.
+	Texture2DHandle _HeightMapTexture;
+
+	//The height map texture index.
+	uint32 _HeightMapTextureIndex;
 
 };
-
-#endif

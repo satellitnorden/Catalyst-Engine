@@ -343,10 +343,19 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		//Initialize the dynamic uniform data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
 		{
+			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			
+			//Global textures.
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			
+			//Global samplers.
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayGeneration),
+			
+			//Global materials.
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			
+			//Cloud texture.
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment | ShaderStage::RayGeneration),
 		};
 

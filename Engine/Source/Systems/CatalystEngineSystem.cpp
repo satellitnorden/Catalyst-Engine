@@ -133,7 +133,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize();
-	TerrainSystem::Instance->Initialize();
+	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
 
 	//Load the Catalyst Engine resource collection. 
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");

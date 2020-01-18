@@ -96,7 +96,7 @@ public:
 	*/
 	FORCE_INLINE void operator=(DynamicArray &&other) NOEXCEPT
 	{
-		new (this) DynamicArray(other);
+		new (this) DynamicArray(std::move(other));
 	}
 
 	/*

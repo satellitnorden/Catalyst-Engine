@@ -1077,9 +1077,6 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -1316,6 +1313,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Optional.h">
       <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
+      <Filter>Terrain\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

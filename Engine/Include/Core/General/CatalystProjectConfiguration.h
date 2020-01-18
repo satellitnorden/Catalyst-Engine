@@ -112,7 +112,7 @@ public:
 
 	/*
 	*	The maximum number of channels.
-	*	Recommended: 64;
+	*	Recommended: 64.
 	*/
 	uint32 _MaximumNumberOfChannels;
 
@@ -138,6 +138,45 @@ public:
 
 };
 
+class CatalystProjectTerrainConfiguration final
+{
+
+public:
+
+	/*
+	*	The patch size of the root nodes.
+	*	The total terrain will be (_PatchSize * 3.0f) * (_PatchSize * 3.0f) large.
+	*	Recommended: 1'024.0f.
+	*/
+	float _PatchSize;
+
+	/*
+	*	The patch resolution.
+	*	Defines the resolution of the terrain plane.
+	*	Higher resolutions means better quality for displacement, but worse performance.
+	*	MUST be a power of two plus one.
+	*	Recommended: 65.
+	*/
+	uint32 _PatchResolution;
+
+	/*
+	*	The maximum quad tree depth.
+	*	Defines the maximum number of times each quad tree node can be subdivided.
+	*	Higher depths means better quality for displacement, but worse performance.
+	*	Recommended: 8.
+	*/
+	uint8 _MaximumQuadTreeDepth;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectTerrainConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
 class CatalystProjectConfiguration final
 {
 
@@ -151,5 +190,8 @@ public:
 
 	//The project sound configuration.
 	CatalystProjectSoundConfiguration _SoundConfiguration;
+
+	//The project terrain configuration.
+	CatalystProjectTerrainConfiguration _TerrainConfiguration;
 
 };

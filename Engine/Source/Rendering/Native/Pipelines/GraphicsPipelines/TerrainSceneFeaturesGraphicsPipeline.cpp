@@ -16,9 +16,9 @@
 #include <Terrain/TerrainVertex.h>
 
 /*
-*	Terrain vertex push constant data definition.
+*	Terrain push constant data definition.
 */
-class TerrainVertexPushConstantData final
+class TerrainPushConstantData final
 {
 
 public:
@@ -34,28 +34,6 @@ public:
 
 	//The height texture index.
 	int32 _HeightTextureIndex;
-
-};
-
-/*
-*	Terrain fragment push constant data definition.
-*/
-class TerrainFragmentPushConstantData final
-{
-
-public:
-
-	//The terrain texture resolution.
-	float _TerrainTextureResolution;
-
-	//The inverse terrain texture resolution.
-	float _InverseTerrainTextureResolution;
-
-	//The normal and material texture index.
-	int32 _NormalAndMaterialTextureIndex;
-
-	//The material texture index.
-	int32 _MaterialTextureIndex;
 
 };
 
@@ -85,16 +63,19 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(TerrainVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(TerrainPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(1);
+	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										offsetof(TerrainVertex, _Position));
+	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										offsetof(TerrainVertex, _Borders));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -142,11 +123,9 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-#if !NEW_TERRAIN_SYSTEM
 	//Bind the vertex/index buffer.
 	commandBuffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
 	commandBuffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
-#endif
 
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
@@ -160,40 +139,18 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-#if NEW_TERRAIN_SYSTEM
-		//Bind the vertex/index buffer.
-		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &OFFSET);
-		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-#endif
-
 		//Push constants.
-		TerrainVertexPushConstantData vertexData;
+		TerrainPushConstantData data;
 
-		vertexData._WorldPosition = information._WorldPosition;
-		vertexData._PatchSize = information._PatchSize;
-		vertexData._Borders = information._Borders;
-#if NEW_TERRAIN_SYSTEM
-		vertexData._HeightTextureIndex = UINT32_MAX;
-#else
-		vertexData._HeightTextureIndex = information._HeightTextureIndex;
-#endif
+		data._WorldPosition = information._WorldPosition;
+		data._PatchSize = information._PatchSize;
+		data._Borders = information._Borders;
+		data._HeightTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(TerrainVertexPushConstantData), &vertexData);
-
-		TerrainFragmentPushConstantData fragmentData;
-
-		fragmentData._TerrainTextureResolution = information._MaterialTextureResolution;
-		fragmentData._InverseTerrainTextureResolution = information._InverseMaterialTextureResolution;
-		fragmentData._NormalAndMaterialTextureIndex = information._NormalAndMaterialTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(TerrainVertexPushConstantData), sizeof(TerrainFragmentPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(TerrainPushConstantData), &data);
 
 		//Draw the patch!
-#if NEW_TERRAIN_SYSTEM
-		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
-#else
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
-#endif
 	}
 
 	//End the command buffer.
