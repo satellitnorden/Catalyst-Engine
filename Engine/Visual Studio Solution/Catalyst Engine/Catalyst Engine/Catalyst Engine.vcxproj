@@ -354,6 +354,7 @@
     <ClInclude Include="..\..\..\Include\Systems\UserInterfaceSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\WorldSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainErosion.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h" />

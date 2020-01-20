@@ -1317,6 +1317,9 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainErosion.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
