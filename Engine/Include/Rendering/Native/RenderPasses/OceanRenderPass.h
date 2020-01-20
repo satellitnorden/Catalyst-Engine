@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/OceanGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/PassthroughGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class OceanRenderPass final : public RenderPass
@@ -25,9 +24,6 @@ private:
 
 	//The ocean graphics pipeline.
 	OceanGraphicsPipeline _OceanGraphicsPipeline;
-
-	//The copy graphics pipeline.
-	PassthroughGraphicsPipeline _CopyGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

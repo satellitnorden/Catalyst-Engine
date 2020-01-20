@@ -87,14 +87,14 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 			//First of all, does the file exist?
 			if (!FileHandlingUtilities::DoesFileExist(entry._File.Data()))
 			{
-				//If not, create it.
-				FileHandlingUtilities::CreateFile(entry._File.Data());
-
 				//Allocate the memory required for the save.
 				void *const RESTRICT save_data{ Memory::Allocate(entry._Size) };
 
 				//Set the default values.
 				entry._DefaultValuesCallback(save_data);
+
+				//Create the file.
+				FileHandlingUtilities::CreateFile(entry._File.Data());
 
 				//Write it to file.
 				BinaryFile<IOMode::Out> file{ entry._File.Data() };

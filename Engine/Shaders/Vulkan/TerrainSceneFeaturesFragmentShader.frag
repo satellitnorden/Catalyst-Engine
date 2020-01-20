@@ -9,6 +9,16 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRenderingUtilities.glsl"
 
+/*
+*	Terrain material struct definition.
+*/
+struct TerrainMaterial
+{
+	vec3 albedo;
+	vec3 normal_map;
+	vec4 material_properties;
+};
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -19,6 +29,9 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 8) float patch_size;
     layout (offset = 12) int borders;
     layout (offset = 16) int height_map_texture_index;
+    layout (offset = 20) int index_map_texture_index;
+    layout (offset = 24) int blend_map_texture_index;
+    layout (offset = 28) float map_resolution;
 };
 
 //In parameters.
@@ -46,7 +59,7 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 */
 vec3 CalculateTerrainNormal()
 {
-#define OFFSET (1.0f / 2048.0f)
+#define OFFSET (1.0f / map_resolution)
 
 	float left = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(-OFFSET, 0.0f)).x;
 	float right = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
@@ -54,6 +67,45 @@ vec3 CalculateTerrainNormal()
 	float up = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
 
 	return normalize(vec3(left - right, 2.0f, down - up));
+}
+
+/*
+*	Calculates the material.
+*/
+TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate)
+{
+	//Retrieve the 4 materials to blend between.
+	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[index_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+
+	Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
+	Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
+	Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
+	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
+
+	//Retrieve the blend.
+	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[blend_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+
+	//Blend the material.
+	TerrainMaterial material;
+
+	material.albedo = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[0]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_2.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[1]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_3.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[2]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_4.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[3];
+
+	material.normal_map =	(texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[0]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[1]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[2]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[3];
+
+	material.normal_map = normalize(material.normal_map);
+
+	material.material_properties = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[0]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_2.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[1]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_3.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[2]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_4.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[3];
+
+	return material;
 }
 
 void main()
@@ -67,37 +119,17 @@ void main()
     //Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = fragmentWorldPosition.xz * 0.25f;
 
-   	//Retrieve the material.
-	Material material = GLOBAL_MATERIALS[1];
-
-	//Sample the albedo.
-	vec3 albedo = RetrieveAlbedo(material, material_texture_coordinate);
-
-	//Sample the material properties.
-	vec4 material_properties = RetrieveMaterialProperties(material, material_texture_coordinate);
+	//Calculate the material.
+	TerrainMaterial material = CalculateMaterial(fragment_height_map_texture_coordinate, material_texture_coordinate);
 
 	//Calculate the shading normal.
-	vec3 shading_normal;
-
-	if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
-	{
-		shading_normal = tangent_space_matrix[2];
-	}
-
-	else
-	{
-		//Sample the normal map.
-		vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz;
-		shading_normal = normal_map * 2.0f - 1.0f;
-		shading_normal = tangent_space_matrix * shading_normal;
-		shading_normal = normalize(shading_normal);
-	}
+	vec3 shading_normal = normalize(tangent_space_matrix * material.normal_map);
 
     //Calculate the velocity.
     vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(albedo, float(1) / 255.0f);
+    sceneFeatures1 = vec4(material.albedo, 0.0f);
     sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, gl_FragCoord.z);
-    sceneFeatures3 = material_properties;
+    sceneFeatures3 = material.material_properties;
 }

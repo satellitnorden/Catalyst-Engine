@@ -34,13 +34,11 @@ OceanRenderPass::OceanRenderPass() NOEXCEPT
 void OceanRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
+	SetNumberOfPipelines(1);
 	AddPipeline(&_OceanGraphicsPipeline);
-	AddPipeline(&_CopyGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_OceanGraphicsPipeline.Initialize();
-	_CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1), RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -56,5 +54,4 @@ void OceanRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_OceanGraphicsPipeline.Execute();
-	_CopyGraphicsPipeline.Execute();
 }

@@ -120,6 +120,11 @@ return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																	\
 }																															\
 
 /*
+*	Given a condition and a message, if the condition is false, the message will be printed and the game will immediately crash.
+*/
+#define FATAL_ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); CRASH(); }
+
+/*
 *	Indicates to the branch predictor that an expression is expected to most times be true.
 */
 #if defined(CATALYST_MSVC)

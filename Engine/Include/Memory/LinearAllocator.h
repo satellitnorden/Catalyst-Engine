@@ -15,7 +15,7 @@ public:
 	LinearAllocator() NOEXCEPT
 	{
 		//Allocate the memory.
-		_Memory = Memory::Allocate(SIZE);
+		_Memory = malloc(SIZE);
 	}
 
 	/*
@@ -24,7 +24,7 @@ public:
 	~LinearAllocator() NOEXCEPT
 	{
 		//Free the memory.
-		Memory::Free(_Memory);
+		free(_Memory);
 	}
 
 	/*
@@ -32,7 +32,12 @@ public:
 	*/
 	RESTRICTED NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
-		ASSERT(_Index.load() + size <= SIZE, "Linear allocator overflow!");
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		if (_Index.load() + size > SIZE)
+		{
+			CRASH();
+		}
+#endif
 
 		//Just return the memory at the current index and increase the index.
 		return static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory) + _Index.fetch_add(size));

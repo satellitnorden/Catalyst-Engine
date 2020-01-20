@@ -89,9 +89,6 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 */
 void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 {
-	//There is now a height map!
-	_Properties._HasHeightMap = true;
-
 	//Copy the height map.
 	_Properties._HeightMap = height_map;
 
@@ -100,6 +97,45 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 
 	//Add the texture to the global render data.
 	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
+
+	//There is now a height map!
+	_Properties._HasHeightMap = true;
+}
+
+/*
+*	Sets the index map.
+*/
+void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT
+{
+	//Copy the index map.
+	_Properties._IndexMap = index_map;
+
+	//Create the texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::R8G8B8A8_Byte), &_Properties._IndexMapTexture);
+
+	//Add the texture to the global render data.
+	_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
+
+	//There is now an index map!
+	_Properties._HasIndexMap = true;
+}
+
+/*
+*	Sets the blend map.
+*/
+void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT
+{
+	//Copy the blend map.
+	_Properties._BlendMap = blend_map;
+
+	//Create the texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::R8G8B8A8_Byte), &_Properties._BlendMapTexture);
+
+	//Add the texture to the global render data.
+	_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
+
+	//There is now a blend map!
+	_Properties._HasBlendMap = true;
 }
 
 /*
@@ -111,7 +147,10 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 	if (_Properties._HasHeightMap)
 	{
 		//Calculate the coordinate.
-		const Vector2<float> coordinate{ (position._X + 1'024.0f) / 2'048.0f, (position._Z + 1'024.0f) / 2'048.0f };
+		const float half_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) * 0.5f };
+		const float full_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) };
+
+		const Vector2<float> coordinate{ (position._X + half_resolution) / full_resolution, (position._Z + half_resolution) / full_resolution };
 
 		//Sample the height map.
 		*height = _Properties._HeightMap.Sample(coordinate, AddressMode::ClampToEdge);
@@ -126,7 +165,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 		*height = 0.0f;
 
 		//Return that the retrieval failed.
-		return true;
+		return false;
 	}
 }
 
@@ -173,6 +212,12 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 */
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
+	//If there are no maps, just return.
+	if (!_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
+	{
+		return;
+	}
+
 	//Get the current perceiver position.
 	const Vector3<float> current_perceiver_position{ Perceiver::Instance->GetPosition() };
 

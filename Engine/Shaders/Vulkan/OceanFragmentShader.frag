@@ -11,8 +11,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define OCEAN_BASE_COLOR (vec3(0.0f, 0.125f * 0.125f, 0.125f))
-#define OCEAN_WAVE_HEIGHT (1.25f)
+#define OCEAN_BASE_COLOR (vec3(0.0f, 0.125f * 0.125f * 0.5f, 0.125f * 0.5f))
+#define OCEAN_WAVE_HEIGHT (1.0f)
 #define OCEAN_POSITION_SCALE (0.0025f)
 #define OCEAN_PERSISTENCE (0.5f)
 #define OCEAN_LACUNARITY (2.0f)
@@ -90,23 +90,29 @@ float SampleHeight(vec3 point)
 }
 
 /*
-*   Samples the density at the given point.
-*/
-float SampleDensity(vec3 point)
-{
-    return 1.0f - (clamp(point.y + SampleHeight(point), 0.0f, OCEAN_WAVE_HEIGHT) / OCEAN_WAVE_HEIGHT);
-}
-
-/*
-*   Calculates the normal at the given point.
+*   Calculates the normal.
 */
 vec3 CalculateNormal(vec3 point)
 {
-    float center = SampleHeight(point + vec3(0.0f, 0.0f, 0.0f));
-    float up = SampleHeight(point + vec3(0.0f, 0.0f, 1.0f));
-    float right = SampleHeight(point + vec3(1.0f, 0.0f, 0.0f));
+#define OFFSET (1.0f)
 
-    return normalize(vec3(center - right, 1.0f, center - up));
+    float left = SampleHeight(point + vec3(-OFFSET, 0.0f, 0.0f));
+    float right = SampleHeight(point + vec3(OFFSET, 0.0f, 0.0f));
+    float down = SampleHeight(point + vec3(0.0f, 0.0f, -OFFSET));
+    float up = SampleHeight(point + vec3(0.0f, 0.0f, OFFSET));
+
+    return normalize(vec3(left - right, 2.0f, down - up));
+}
+
+/*
+* Returns the screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+{
+  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  viewSpacePosition.xy /= viewSpacePosition.w;
+
+  return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
 void main()
@@ -117,51 +123,68 @@ void main()
     vec4 scene_features_3_sampler = texture(scene_features_3_texture, fragment_texture_coordinate);
 
 	//Calculate the world position.
-    vec3 ray_direction = CalculateRayDirection(fragment_texture_coordinate);
-	vec3 world_position = PERCEIVER_WORLD_POSITION + ray_direction * scene_features_2_sampler.w;
+	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2_sampler.w);
+    float distance_to_world_position = length(world_position - PERCEIVER_WORLD_POSITION);
+    vec3 view_direction = (world_position - PERCEIVER_WORLD_POSITION) / distance_to_world_position;
 
-    //Is the world position under water?
+    //Is the world position (possibly) under water?
     if (world_position.y <= OCEAN_WAVE_HEIGHT)
     {
-        //Do a line-plane intersection againt the ocean plane to determine the start position.
-        vec3 start;
+        //Do a line-plane intersection againt the ocean plane to determine the hit position.
+        float start_intersection_distance;
+        LinePlaneIntersection(PERCEIVER_WORLD_POSITION, view_direction, vec3(0.0f, OCEAN_WAVE_HEIGHT, 0.0f), vec3(0.0f, 1.0f, 0.0f), start_intersection_distance);
+        vec3 start = PERCEIVER_WORLD_POSITION + view_direction * start_intersection_distance;
 
-        float intersection_distance;
+        float end_intersection_distance;
+        LinePlaneIntersection(PERCEIVER_WORLD_POSITION, view_direction, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), end_intersection_distance);
+        end_intersection_distance = min(end_intersection_distance, distance_to_world_position);
+        vec3 end = PERCEIVER_WORLD_POSITION + view_direction * end_intersection_distance;
 
-        LinePlaneIntersection(PERCEIVER_WORLD_POSITION, ray_direction, vec3(0.0f, OCEAN_WAVE_HEIGHT, 0.0f), vec3(0.0f, 1.0f, 0.0f), intersection_distance);
-        start = PERCEIVER_WORLD_POSITION + ray_direction * intersection_distance;
+        //Calculate the noise texture coordinate.
+        vec2 noise_texture_coordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
-        //Remember the hit distance.
-        float hit_distance = intersection_distance;
+        //Retrieve the random sample.
+        vec4 random_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
-        //The end is just the actual world_position. (:
-        vec3 end = world_position;
-
-        //Sample the noise texture.
-        vec4 noise_texture = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-        //Sample the density.
-        float density = 0.0f;
+        //Determine the hit position and density.
+        vec3 hit_position = end;
+        float density = float(world_position.y <= 0.0f);
+        float step = (end_intersection_distance - start_intersection_distance) * 0.25f;
 
         for (int i = 0; i < 4; ++i)
         {
-            density = min(density + SampleDensity(mix(start, end, noise_texture[i])), 1.0f);
+            float sample_step = step * float(i + 1) + step * random_sample[i];
+            vec3 sample_point = start + view_direction * sample_step;
+            float sample_height = SampleHeight(sample_point);
 
-            if (density == 1.0f)
+            if (sample_point.y <= sample_height)
             {
+                hit_position = sample_point;
+                density = 1.0f;
+
                 break;
             }
         }
 
-        //Sample the ocean texture.
-        vec4 ocean_texture_sampler = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), start.xz);
+        //Calculate the albedo.
+        float distance_travelled_underwater = length(world_position - hit_position);
+        float distance_travelled_underwater_weight = min(distance_travelled_underwater / 10.0f, 1.0f);
+        vec3 underwater_color = mix(OCEAN_BASE_COLOR, OCEAN_BASE_COLOR * 0.5f, distance_travelled_underwater_weight);
+        vec3 albedo = mix(scene_features_1_sampler.rgb * 0.5f, underwater_color, distance_travelled_underwater_weight);
+
+        //Calculate the velocity.
+        vec2 velocity = CalculateScreenCoordinate(viewMatrix, hit_position) - CalculateScreenCoordinate(viewMatrixMinusOne, hit_position);
+
+        //Calculate the depth.
+        vec4 view_space_position = viewMatrix * vec4(hit_position, 1.0f);
+        float depth = view_space_position.z / view_space_position.w;
 
         //Write the fragments.
-        scene_features_1 = mix(scene_features_1_sampler, vec4(OCEAN_BASE_COLOR, 0.0f), density);
-        scene_features_2 = mix(scene_features_2_sampler, vec4(PackNormal(CalculateNormal(start)), 0.0f, 0.0f, hit_distance), density);
+        scene_features_1 = mix(scene_features_1_sampler, vec4(albedo, 0.0f), density);
+        scene_features_2 = mix(scene_features_2_sampler, vec4(PackNormal(CalculateNormal(hit_position)), velocity, depth), density);
         scene_features_3 = mix(scene_features_3_sampler, vec4(0.0f, 0.0f, 1.0f, 0.0f), density);
     }
-    
+
     //Or is it over water?
     else
     {

@@ -51,7 +51,7 @@ public:
 	/*
 	*	Returns the terrain properties.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const TerrainProperties* const RESTRICT GetTerrainProperties() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const TerrainProperties *const RESTRICT GetTerrainProperties() const NOEXCEPT
 	{
 		return &_Properties;
 	}
@@ -60,6 +60,16 @@ public:
 	*	Sets the height map.
 	*/
 	void SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT;
+
+	/*
+	*	Sets the index map.
+	*/
+	void SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT;
+
+	/*
+	*	Sets the blend map.
+	*/
+	void SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT;
 
 	/*
 	*	Returns the terrain patch informations.

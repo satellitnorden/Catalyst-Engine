@@ -32,8 +32,17 @@ public:
 	//The borders
 	int32 _Borders;
 
-	//The height texture index.
-	int32 _HeightTextureIndex;
+	//The height map texture index.
+	int32 _HeightMapTextureIndex;
+
+	//The index map texture index.
+	int32 _IndexMapTextureIndex;
+
+	//The blend map texture index.
+	int32 _BlendMapTextureIndex;
+
+	//The height map resolution
+	float _HeightMapResolution;
 
 };
 
@@ -145,7 +154,10 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
-		data._HeightTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
+		data._HeightMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
+		data._IndexMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_IndexMapTextureIndex;
+		data._BlendMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_BlendMapTextureIndex;
+		data._HeightMapResolution = static_cast<float>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(TerrainPushConstantData), &data);
 

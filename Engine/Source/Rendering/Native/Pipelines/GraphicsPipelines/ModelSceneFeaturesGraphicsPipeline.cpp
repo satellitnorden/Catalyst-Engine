@@ -126,7 +126,7 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfModelComponents == 0)
+	if (numberOfModelComponents == 0 && false)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);

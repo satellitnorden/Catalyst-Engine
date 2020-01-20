@@ -546,7 +546,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> ForwardVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(VectorConstants::FORWARD.Rotated(rotation));
+		return Vector3<float>::Normalize(Vector3<float>(0.0f, 0.0f, -1.0f).Rotated(rotation));
 	}
 
 	/*
@@ -554,7 +554,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> RightVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(VectorConstants::RIGHT.Rotated(rotation));
+		return Vector3<float>::Normalize(Vector3<float>(1.0f, 0.0f, 0.0f).Rotated(rotation));
 	}
 
 	/*
@@ -562,7 +562,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> UpVector(const Vector3<float> &rotation) NOEXCEPT
 	{
-		return Vector3<float>::Normalize(VectorConstants::UP.Rotated(rotation));
+		return Vector3<float>::Normalize(Vector3<float>(0.0f, 1.0f, 0.0f).Rotated(rotation));
 	}
 
 	/*

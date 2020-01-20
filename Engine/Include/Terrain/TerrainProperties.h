@@ -44,4 +44,28 @@ public:
 	//The height map texture index.
 	uint32 _HeightMapTextureIndex;
 
+	//Denotes whether or not an index map has been set.
+	bool _HasIndexMap{ false };
+
+	//The index map.
+	Texture2D<Vector4<uint8>> _IndexMap;
+
+	//The index map texture.
+	Texture2DHandle _IndexMapTexture;
+
+	//The index map texture index.
+	uint32 _IndexMapTextureIndex;
+
+	//Denotes whether or not a blend map has been set.
+	bool _HasBlendMap{ false };
+
+	//The blend map.
+	Texture2D<Vector4<uint8>> _BlendMap;
+
+	//The blend map texture.
+	Texture2DHandle _BlendMapTexture;
+
+	//The blend map texture index.
+	uint32 _BlendMapTextureIndex;
+
 };
