@@ -241,6 +241,7 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 		GridPoint2(current_grid_point._X + 1, current_grid_point._Y + 1)
 	};
 
+	/*
 	//If a root grid point does exist that isn't valid, remove it.
 	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 	{
@@ -267,6 +268,7 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 			RemoveRootNode(_QuadTree._RootGridPoints[i]);
 		}
 	}
+	*/
 
 	//If a valid grid point does not exist, construct a new update.
 	for (const GridPoint2 valid_grid_point : valid_grid_points)
