@@ -12,6 +12,7 @@
 #define VERTEX_BORDER_OFFSET_SECOND (1.0f / (32.0f))
 #define MINIMUM_HEIGHT (-100.0f)
 #define MAXIMUM_HEIGHT (1000.0f)
+#define STRENGTHEN_DISPLACEMENT(X) (X * X)
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -56,10 +57,10 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[blend_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
 	//Alter the blend values based on the displacement values.
-	blend_map[0] *= displacement_1;
-	blend_map[1] *= displacement_2;
-	blend_map[2] *= displacement_3;
-	blend_map[3] *= displacement_4;
+	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
+	blend_map[1] *= STRENGTHEN_DISPLACEMENT(displacement_2);
+	blend_map[2] *= STRENGTHEN_DISPLACEMENT(displacement_3);
+	blend_map[3] *= STRENGTHEN_DISPLACEMENT(displacement_4);
 
 	//Renormalize the blend map.
 	float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
