@@ -223,7 +223,7 @@ private:
 				float d_x = x - position._X;
 				float d_y = y - position._Y;
 				float distance = sqrt(d_x * d_x + d_y * d_y);
-				float w = fmax(0, 2 - distance);
+				float w = CatalystBaseMath::Maximum<float>(0, 2 - distance);
 				kernel_sum += w;
 				kernel[y - y0][x - x0] = w;
 			}
@@ -246,8 +246,8 @@ private:
 	FORCE_INLINE static Vector2<float> gradient_at(const uint32 resolution, float *const RESTRICT height_map, int32 x, int32 y)
 	{
 		int32 idx = y * resolution + x;
-		int right = idx + ((x > resolution - 2) ? 0 : 1);
-		int below = idx + ((y > resolution - 2) ? 0 : resolution);
+		int32 right = idx + ((x > static_cast<int32>(resolution) - 2) ? 0 : 1);
+		int32 below = idx + ((y > static_cast<int32>(resolution) - 2) ? 0 : resolution);
 		Vector2<float> g;
 		g._X = height_map[right] - height_map[idx];
 		g._Y = height_map[below] - height_map[idx];
