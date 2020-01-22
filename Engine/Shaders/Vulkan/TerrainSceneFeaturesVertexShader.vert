@@ -46,14 +46,34 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
 	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
 
-	//Retrieve the blend.
+	//Retrieve the 4 displacement values.
+	float displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+
+	//Retrieve the blend map.
 	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[blend_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
+	//Alter the blend values based on the displacement values.
+	blend_map[0] *= displacement_1;
+	blend_map[1] *= displacement_2;
+	blend_map[2] *= displacement_3;
+	blend_map[3] *= displacement_4;
+
+	//Renormalize the blend map.
+	float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+
+	blend_map[0] *= inverse_sum;
+	blend_map[1] *= inverse_sum;
+	blend_map[2] *= inverse_sum;
+	blend_map[3] *= inverse_sum;
+
 	//Blend the displacement.
-	return 	texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w * blend_map[0]
-			+ texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w * blend_map[1]
-			+ texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w * blend_map[2]
-			+ texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w * blend_map[3];
+	return 	displacement_1 * blend_map[0]
+			+ displacement_2 * blend_map[1]
+			+ displacement_3 * blend_map[2]
+			+ displacement_4 * blend_map[3];
 }
 
 void main()
