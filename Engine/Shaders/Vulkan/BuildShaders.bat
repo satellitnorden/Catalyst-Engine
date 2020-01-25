@@ -21,7 +21,8 @@ glslangValidator.exe -V ModelHighlightSceneFeaturesVertexShader.vert -o 		ModelH
 glslangValidator.exe -V ModelSceneFeaturesFragmentShader.frag -o 			ModelSceneFeaturesFragmentShader.spv
 glslangValidator.exe -V ModelSceneFeaturesVertexShader.vert -o 			ModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V MotionBlurFragmentShader.frag -o 				MotionBlurFragmentShader.spv
-glslangValidator.exe -V OceanFragmentShader.frag -o 					OceanFragmentShader.spv
+glslangValidator.exe -V OceanSceneFeaturesFragmentShader.frag -o 			OceanSceneFeaturesFragmentShader.spv
+glslangValidator.exe -V OceanSceneFeaturesVertexShader.vert -o 				OceanSceneFeaturesVertexShader.spv
 glslangValidator.exe -V ParticleSystemComputeShader.comp -o 				ParticleSystemComputeShader.spv
 glslangValidator.exe -V ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag -o	ParticleSystemMaskedColorSceneFeaturesFragmentShader.spv
 glslangValidator.exe -V ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom -o 	ParticleSystemMaskedColorSceneFeaturesGeometryShader.spv

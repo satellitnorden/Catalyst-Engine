@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/OceanGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/OceanSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/PassthroughGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class OceanRenderPass final : public RenderPass
@@ -22,8 +23,14 @@ public:
 
 private:
 
-	//The ocean graphics pipeline.
-	OceanGraphicsPipeline _OceanGraphicsPipeline;
+	//The scene features 1 copy graphics pipeline.
+	PassthroughGraphicsPipeline _SceneFeatures1CopyGraphicsPipeline;
+
+	//The scene features 2 copy graphics pipeline.
+	PassthroughGraphicsPipeline _SceneFeatures2CopyGraphicsPipeline;
+
+	//The ocean scene features graphics pipeline.
+	OceanSceneFeaturesGraphicsPipeline _OceanSceneFeaturesGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

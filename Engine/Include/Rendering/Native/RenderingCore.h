@@ -225,6 +225,11 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
+	Intermediate_R8G8B8A8_Byte,
+
+	/*
+	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*/
 	Intermediate_R32G32B32A32_Float_1,
 
 	/*
@@ -304,7 +309,8 @@ enum class Shader : uint8
 	ModelSceneFeaturesFragment,
 	ModelSceneFeaturesVertex,
 	MotionBlurFragment,
-	OceanFragment,
+	OceanSceneFeaturesFragment,
+	OceanSceneFeaturesVertex,
 	ParticleSystemCompute,
 	ParticleSystemMaskedColorSceneFeaturesFragmentShader,
 	ParticleSystemMaskedColorSceneFeaturesGeometryShader,

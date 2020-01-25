@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class OceanGraphicsPipeline final : public GraphicsPipeline
+class OceanSceneFeaturesGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

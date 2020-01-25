@@ -1158,9 +1158,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\OceanRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\OceanGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
@@ -1319,6 +1316,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainErosion.h">
       <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\OceanSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1673,9 +1673,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\OceanRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\OceanGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\MaterialSystem.cpp">
       <Filter>Rendering\Source\Native</Filter>
     </ClCompile>
@@ -1759,6 +1756,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\SaveSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\OceanSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
