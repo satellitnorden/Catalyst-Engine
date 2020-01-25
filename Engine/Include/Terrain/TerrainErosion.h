@@ -30,7 +30,7 @@ public:
 		uint64 _MaximumParticleLifetime{ 32 };
 
 		//The inertia.
-		float _Intertia{ 0.05f };
+		float _Intertia{ 0.5f };
 
 		//The capacity.
 		float _Capacity{ 10.0f };

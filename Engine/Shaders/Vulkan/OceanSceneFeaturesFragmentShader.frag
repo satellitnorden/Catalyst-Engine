@@ -140,7 +140,7 @@ void main()
 	vec3 original_albedo = texture(scene_features_1_texture, screen_coordinate + normal.xz * displacement_weight).rgb;
 	float original_albedo_weight = 1.0f - min(distance_to_bottom * 0.01f, 1.0f);
 
-	vec3 albedo = mix(mix(vec3(0.0f, 1.0f * 0.25f, 1.0f * 0.5f), original_albedo, original_albedo_weight), vec3(foam), foam_weight);
+	vec3 albedo = mix(mix(vec3(0.0f, 1.0f * 0.25f, 1.0f * 0.5f), original_albedo * 0.5f, original_albedo_weight), vec3(foam), foam_weight);
 
     //Calculate the velocity.
     vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_world_position);

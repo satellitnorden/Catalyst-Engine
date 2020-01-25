@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
@@ -52,23 +53,23 @@ public:
 	/*
 	*	Generates a value in the range [-1.0f, 1.0f] at the given coordinates.
 	*/
-	FORCE_INLINE static NO_DISCARD float Generate(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float Generate(const Vector2<float> &coordinate, const Vector2<float>& offset) NOEXCEPT
 	{
-		Vector2<float> seededCoordinate{ coordinate + seed };
+		Vector2<float> offset_coordinate{ coordinate + offset };
 
 		float n0, n1, n2;
 
-		float s = (seededCoordinate._X + seededCoordinate._Y) * SimplexNoiseConstants::F2; // Hairy factor for 2D
-		float xs = seededCoordinate._X + s;
-		float ys = seededCoordinate._Y + s;
+		float s = (offset_coordinate._X + offset_coordinate._Y) * SimplexNoiseConstants::F2; // Hairy factor for 2D
+		float xs = offset_coordinate._X + s;
+		float ys = offset_coordinate._Y + s;
 		int32 i = CatalystBaseMath::Floor<int32>(xs);
 		int32 j = CatalystBaseMath::Floor<int32>(ys);
 
 		float t = static_cast<float>(i + j) * SimplexNoiseConstants::G2;
 		float X0 = i - t;
 		float Y0 = j - t;
-		float x0 = seededCoordinate._X - X0;
-		float y0 = seededCoordinate._Y - Y0;
+		float x0 = offset_coordinate._X - X0;
+		float y0 = offset_coordinate._Y - Y0;
 
 		int32 i1, j1;
 
@@ -136,35 +137,35 @@ public:
 	/*
 	*	Generates a value in the range [0.0f, 1.0f] at the given coordinates.
 	*/
-	FORCE_INLINE static NO_DISCARD float GenerateNormalized(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float GenerateNormalized(const Vector2<float> &coordinate, const Vector2<float>& offset) NOEXCEPT
 	{
-		return (Generate(coordinate, seed) + 1.0f) * 0.5f;
+		return Generate(coordinate, offset) * 0.5f + 0.5f;
 	}
 
 	/*
-	*	Generates a value with derivaties in the range [-1.0f, 1.0f] at the given coordinates.
+	*	Generates a value with derivatives in the range [-1.0f, 1.0f] at the given coordinates.
 	*/
-	FORCE_INLINE static NO_DISCARD Vector3<float> GenerateDerivaties(const Vector2<float> &coordinate, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float> GenerateDerivatives(const Vector2<float> &coordinate, const Vector2<float>& offset) NOEXCEPT
 	{
 		//Define constants.,
 		constexpr float F2{ 0.366025403f };
 		constexpr float G2{ 0.211324865f };
 
-		Vector2<float> seededCoordinate{ coordinate + seed };
+		Vector2<float> offset_coordinate{ coordinate + offset };
 
 		float n0, n1, n2;
 
-		float s = (seededCoordinate._X + seededCoordinate._Y) * F2;
-		float xs = seededCoordinate._X + s;
-		float ys = seededCoordinate._Y + s;
+		float s = (offset_coordinate._X + offset_coordinate._Y) * F2;
+		float xs = offset_coordinate._X + s;
+		float ys = offset_coordinate._Y + s;
 		int32 i = CatalystBaseMath::Floor<int32>(xs);
 		int32 j = CatalystBaseMath::Floor<int32>(ys);
 
 		float t = static_cast<float>(i + j) * G2;
 		float X0 = i - t;
 		float Y0 = j - t;
-		float x0 = seededCoordinate._X - X0;
-		float y0 = seededCoordinate._Y - Y0;
+		float x0 = offset_coordinate._X - X0;
+		float y0 = offset_coordinate._Y - Y0;
 
 		int32 i1, j1;
 		if (x0 > y0) { i1 = 1; j1 = 0; }
@@ -235,9 +236,9 @@ public:
 	}
 
 	/*
-	*	Generates an IQ FBM value in the range [-1.0f, 1.0f] at the given coordinates.
+	*	Generates a value with derivatives in the range [-1.0f, 1.0f] at the given coordinates, with octaves.
 	*/
-	FORCE_INLINE static NO_DISCARD float GenerateIQFBM(const Vector2<float> &coordinates, const uint8 octaves, const float lacunarity, const float gain, const float derivative_weight, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float GenerateDerivativesOctaved(const Vector2<float> &coordinates, const ArrayProxy<Vector2<float>> &offsets, const uint8 octaves, const float lacunarity, const float gain, const float derivative_weight, const float seed = 0.0f) NOEXCEPT
 	{
 		float total{ 0.0f };
 		float maximum{ 0.0f };
@@ -248,7 +249,7 @@ public:
 
 		for (uint8 i{ 0 }; i < octaves; ++i)
 		{
-			Vector3<float> noise{ GenerateDerivaties(coordinates * frequency, seed) };
+			Vector3<float> noise{ GenerateDerivatives(coordinates * frequency, offsets.Size() > i ? offsets[i] : Vector2<float>(0.0f, 0.0f)) };
 
 			derivative_x += noise._Y;
 			derivative_y += noise._Z;
@@ -265,9 +266,9 @@ public:
 	}
 
 	/*
-	*	Generates a value in the range [0.0f, 1.0f] at the given coordinates, with octaves
+	*	Generates a value in the range [0.0f, 1.0f] at the given coordinates, with octaves.
 	*/
-	FORCE_INLINE static NO_DISCARD float GenerateNormalizedOctaves(const Vector2<float>& coordinate, const uint8 octaves, const float lacunarity = 2.0f, const float gain = 0.5f, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float GenerateNormalizedOctaves(const Vector2<float>& coordinate, const ArrayProxy<Vector2<float>>& offsets, const uint8 octaves, const float lacunarity = 2.0f, const float gain = 0.5f) NOEXCEPT
 	{
 		float noise{ 0.0f };
 		float total{ 0.0f };
@@ -276,7 +277,7 @@ public:
 
 		for (uint8 i{ 0 }; i < octaves; ++i)
 		{
-			float octave{ GenerateNormalized(coordinate * frequency, seed) };
+			float octave{ GenerateNormalized(coordinate * frequency, offsets.Size() > i ? offsets[i] : Vector2<float>(0.0f, 0.0f)) };
 
 			noise += octave * amplitude;
 			total += amplitude;
@@ -291,7 +292,7 @@ public:
 	/*
 	*	Generates a ridged value in the range [0.0f, 1.0f] at the given coordinates, with octaves
 	*/
-	FORCE_INLINE static NO_DISCARD float GenerateRidgedOctaves(const Vector2<float>& coordinate, const uint8 octaves, const float lacunarity = 2.0f, const float gain = 0.5f, const float seed = 0.0f) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float GenerateRidgedOctaves(const Vector2<float>& coordinate, const ArrayProxy<Vector2<float>>& offsets, const uint8 octaves, const float lacunarity = 2.0f, const float gain = 0.5f) NOEXCEPT
 	{
 		float noise{ 0.0f };
 		float total{ 0.0f };
@@ -300,7 +301,7 @@ public:
 
 		for (uint8 i{ 0 }; i < octaves; ++i)
 		{
-			float octave{ 1.0f - CatalystBaseMath::Absolute<float>(Generate(coordinate * frequency, seed)) };
+			float octave{ 1.0f - CatalystBaseMath::Absolute<float>(Generate(coordinate * frequency, offsets.Size() > i ? offsets[i] : Vector2<float>(0.0f, 0.0f))) };
 
 			noise += octave * amplitude;
 			total += amplitude;
