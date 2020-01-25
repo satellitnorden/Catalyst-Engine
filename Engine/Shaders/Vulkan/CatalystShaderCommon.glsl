@@ -160,7 +160,12 @@ layout (set = 0, binding = 4) uniform sampler3D CLOUD_TEXTURE;
 /*
 *   Defines the bit at the specified index.
 */
-#define BIT(index) (1 << (index))
+#define BIT(INDEX) (1 << (INDEX))
+
+/*
+*   Tests the bit of the specified bitfield
+*/
+#define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
 
 /*
 *   Calculates the average of a fragment.
