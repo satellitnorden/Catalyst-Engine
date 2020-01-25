@@ -112,9 +112,9 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 
 	//Create the bottom level acceleration structure.
 	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_VertexBuffers[0],
-																		static_cast<uint32>(data->_Vertices.Size()),
+																		static_cast<uint32>(data->_Vertices[0].Size()),
 																		model->_IndexBuffers[0],
-																		static_cast<uint32>(data->_Indices.Size()),
+																		static_cast<uint32>(data->_Indices[0].Size()),
 																		&model->_BottomLevelAccelerationStructure);
 }
 
