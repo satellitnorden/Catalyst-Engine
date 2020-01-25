@@ -130,8 +130,8 @@ void main()
 	float distance_to_bottom = length(original_world_position - fragment_world_position);
 
 	//Calculate the foam weight.
-	//float foam_weight = max((1.0f - min(distance_to_bottom * 0.1f, 1.0f)) * foam, fragment_world_position.y / OCEAN_WAVE_HEIGHT);
-	float foam_weight = fragment_world_position.y / OCEAN_WAVE_HEIGHT;
+	float foam_weight = max((1.0f - min(distance_to_bottom * 0.1f, 1.0f)) * foam, fragment_world_position.y / OCEAN_WAVE_HEIGHT);
+	//float foam_weight = fragment_world_position.y / OCEAN_WAVE_HEIGHT;
 
 	//Calculate the displacement weight.
 	float displacement_weight = distance_to_bottom * 0.1f;

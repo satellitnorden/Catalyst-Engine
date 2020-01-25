@@ -3,13 +3,9 @@
 
 //Constants.
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
-#define MAXIMUM_10_BIT_FLOAT (1023.0f)
-#define MAXIMUM_11_BIT_FLOAT (2047.0f)
-#define MAXIMUM_16_BIT_FLOAT (63535.0f)
+#define MAXIMUM_15_BIT_FLOAT (32767.0f)
 #define MAXIMUM_8_BIT_UINT (255)
-#define MAXIMUM_10_BIT_UINT (1023)
-#define MAXIMUM_11_BIT_UINT (2047)
-#define MAXIMUM_16_BIT_UINT (63535)
+#define MAXIMUM_15_BIT_UINT (32767)
 
 /*
 *   Unpacks a color into a vec4.
@@ -29,16 +25,19 @@ vec4 UnpackColor(int color)
 /*
 *   Packs a normal into one float.
 */
-float PackNormal(vec3 normal)
+float PackNormal(vec3 unpacked_normal)
 {
-    //Calculate the angles.
-    vec2 angles = (vec2(atan(normal.y, normal.x) / PI, normal.z) + 1.0f) * 0.5f;
+    //Normalize the x and z axes.
+    unpacked_normal.xz = unpacked_normal.xz * 0.5f + 0.5f;
 
-    //Construct the uint.
+    //Construct the packed normal.
     uint packed_normal = 0;
 
-    packed_normal |= uint(angles.x * MAXIMUM_16_BIT_FLOAT) << 16;
-    packed_normal |= uint(angles.y * MAXIMUM_16_BIT_FLOAT);
+    packed_normal |= uint(unpacked_normal.x * MAXIMUM_15_BIT_FLOAT) << 16;
+    packed_normal |= uint(unpacked_normal.z * MAXIMUM_15_BIT_FLOAT);
+
+    //Set the sign bit.
+    packed_normal = unpacked_normal.y >= 0.0f ? packed_normal : packed_normal | BIT(15);
 
     return float(packed_normal);
 }
@@ -46,19 +45,23 @@ float PackNormal(vec3 normal)
 /*
 *   Unpacks a normal into a vec3.
 */
-vec3 UnpackNormal(float normal)
+vec3 UnpackNormal(float packed_normal)
 {   
-    //Unpack the uint normal.
-    uint uint_normal = uint(normal);
+    //Unpack the normal.
+    uint packed_normal_uint = uint(packed_normal);
 
-    //Calculate the encoding.
-    vec2 encoding = vec2(float((uint_normal >> 16) & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT, float(uint_normal & MAXIMUM_16_BIT_UINT) / MAXIMUM_16_BIT_FLOAT);
-    encoding = encoding * 2.0f - 1.0f;
+    vec3 normal;
 
-    //Unpack the final normal.
-    vec2 scth = vec2(sin(encoding.x * PI), cos(encoding.x * PI));
-    vec2 scphi = vec2(sqrt(1.0 - encoding.y * encoding.y), encoding.y);
+    normal.x = float((packed_normal_uint >> 16) & MAXIMUM_15_BIT_UINT) / MAXIMUM_15_BIT_FLOAT;
+    normal.z = float(packed_normal_uint & MAXIMUM_15_BIT_UINT) / MAXIMUM_15_BIT_FLOAT;
 
-    return vec3(scth.y * scphi.x, scth.x * scphi.x, scphi.y);
+    normal.xz = normal.xz * 2.0f - 1.0f;
+
+    normal.y = sqrt(1.0f - dot(normal.xz, normal.xz));
+
+    //Invert the y component depending on the sign bit.
+    normal.y = TEST_BIT(packed_normal_uint, BIT(15)) ? -normal.y : normal.y;
+
+    return normal;
 }
 #endif
