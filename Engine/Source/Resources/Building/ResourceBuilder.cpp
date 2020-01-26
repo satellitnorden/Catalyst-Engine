@@ -44,21 +44,28 @@ void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParam
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
-	//Write the number of resources in the resource collection.
-	const uint64 numberOfResources{ parameters._Resources.Size() };
-	file.Write(&numberOfResources, sizeof(uint64));
+	//Count the number of resources in the folder.
+	uint64 number_of_resources{ 0 };
 
-	//Slam all resources into the resource collection.
-	for (const char *RESTRICT resource : parameters._Resources)
+	for (const auto &resource : std::filesystem::directory_iterator(std::string(parameters._Folder)))
+	{
+		++number_of_resources;
+	}
+
+	//Write the number of resources in the resource collection.
+	file.Write(&number_of_resources, sizeof(uint64));
+
+	//Iterate over all files in the folder in the folder and add them to the resource collection.
+	for (const auto &resource : std::filesystem::directory_iterator(std::string(parameters._Folder)))
 	{
 		//Open the resource file.
-		BinaryFile<IOMode::In> resourceFile{ resource };
+		BinaryFile<IOMode::In> resourceFile{ resource.path().string().c_str() };
 
 		//Get the size of the resource file.
 		const uint64 resourceFileSize{ resourceFile.Size() };
 
 		//Read the data in the resource file.
-		void *RESTRICT resourceFileData = Memory::Allocate(resourceFileSize);
+		void* RESTRICT resourceFileData = Memory::Allocate(resourceFileSize);
 		resourceFile.Read(resourceFileData, resourceFileSize);
 
 		//Write the resource file data to the resource collection file.

@@ -12,7 +12,7 @@ public:
 	//The output file.
 	const char *RESTRICT _Output;
 
-	//File paths to all resources to put in the resource collection.
-	DynamicArray<const char *RESTRICT> _Resources;
+	//The folder in which to search for resource files.
+	const char* RESTRICT _Folder;
 
 };
