@@ -8,8 +8,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
 //Rendering.
-#include <Rendering/Native/RenderingCore.h>
-#include <Rendering/Native/Vertex.h>
+#include <Rendering/Native/Mesh.h>
 
 class Model final
 {
@@ -19,16 +18,7 @@ public:
 	//The model space axis-aligned bounding box.
 	AxisAlignedBoundingBox _ModelSpaceAxisAlignedBoundingBox;
 
-	//The vertex buffers.
-	DynamicArray<BufferHandle> _VertexBuffers;
-
-	//The index buffers.
-	DynamicArray<BufferHandle> _IndexBuffers;
-
-	//The index counts.
-	DynamicArray<uint32> _IndexCounts;
-
-	//The bottom level acceleration structure.
-	AccelerationStructureHandle _BottomLevelAccelerationStructure;
+	//Container for all the meshes.
+	DynamicArray<Mesh> _Meshes;
 
 };

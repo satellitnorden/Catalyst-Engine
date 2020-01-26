@@ -38,12 +38,16 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	component._PreviousWorldTransform = model_initialization_data->_Transform;
 	component._CurrentWorldTransform = model_initialization_data->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
-	component._MaterialIndex = model_initialization_data->_MaterialIndex;
+	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
 
 	//Add the static instance. Assume this model will not move for now.
 	if (RenderingSystem::Instance->IsRayTracingSupported())
 	{
-		RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(component._PreviousWorldTransform, component._Model->_BottomLevelAccelerationStructure, 0));
+		for (const Mesh &mesh : component._Model->_Meshes)
+		{
+			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(component._PreviousWorldTransform, mesh._BottomLevelAccelerationStructure, 0));
+		}
+		
 	}
 
 	//Destroy the initialization data.

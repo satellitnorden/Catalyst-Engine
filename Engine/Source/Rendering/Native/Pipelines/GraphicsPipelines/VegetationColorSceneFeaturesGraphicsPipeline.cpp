@@ -188,29 +188,36 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Push constants.
-		VegetationVertexPushConstantData vertex_data;
+		//Draw all meshes.
+		for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+		{
+			//Cache the mesh.
+			const Mesh& mesh{ component->_Model->_Meshes[i] };
 
-		vertex_data._LargeScaleWindDisplacementFactor = component->_LargeScaleWindDisplacementFactor;
-		vertex_data._MediumScaleWindDisplacementFactor = component->_MediumScaleWindDisplacementFactor;
-		vertex_data._SmallScaleWindDisplacementFactor = component->_SmallScaleWindDisplacementFactor;
+			//Push constants.
+			VegetationVertexPushConstantData vertex_data;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData), &vertex_data);
+			vertex_data._LargeScaleWindDisplacementFactor = component->_LargeScaleWindDisplacementFactor;
+			vertex_data._MediumScaleWindDisplacementFactor = component->_MediumScaleWindDisplacementFactor;
+			vertex_data._SmallScaleWindDisplacementFactor = component->_SmallScaleWindDisplacementFactor;
 
-		VegetationFragmentPushConstantData fragment_data;
+			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData), &vertex_data);
 
-		fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
+			VegetationFragmentPushConstantData fragment_data;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
+			fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
 
-		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffers[0], &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffers[0], OFFSET);
+			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
-		//Bind the transformations buffer.
-		commandBuffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &OFFSET);
+			//Bind the vertex/inder buffer.
+			commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+			commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
 
-		commandBuffer->DrawIndexed(this, component->_Model->_IndexCounts[0], component->_NumberOfTransformations);
+			//Bind the transformations buffer.
+			commandBuffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &OFFSET);
+
+			commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], component->_NumberOfTransformations);
+		}
 	}
 
 	//End the command buffer.

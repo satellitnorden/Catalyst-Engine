@@ -152,26 +152,33 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Retrieve the component.
 		const ModelComponent& component{ ComponentManager::GetModelModelComponents()[highlighted_model._ComponentsIndex] };
 
-		//Push constants.
-		ModelHighlightSceneFeaturesVertexPushConstantData vertex_data;
+		//Draw all meshes.
+		for (uint64 i{ 0 }, size{ component._Model->_Meshes.Size() }; i < size; ++i)
+		{
+			//Cache the mesh.
+			const Mesh &mesh{ component._Model->_Meshes[i] };
 
-		vertex_data._CurrentModelMatrix = component._CurrentWorldTransform;
+			//Push constants.
+			ModelHighlightSceneFeaturesVertexPushConstantData vertex_data;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), &vertex_data);
+			vertex_data._CurrentModelMatrix = component._CurrentWorldTransform;
 
-		ModelHighlightSceneFeaturesFragmentPushConstantData fragment_data;
+			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), &vertex_data);
 
-		fragment_data._HighlightColor = highlighted_model._HighlightColor;
-		fragment_data._HighlightStrength = highlighted_model._HighlightStrength;
-		fragment_data._MaterialIndex = component._MaterialIndex;
+			ModelHighlightSceneFeaturesFragmentPushConstantData fragment_data;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
+			fragment_data._HighlightColor = highlighted_model._HighlightColor;
+			fragment_data._HighlightStrength = highlighted_model._HighlightStrength;
+			fragment_data._MaterialIndex = component._MaterialIndices[i];
 
-		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component._Model->_VertexBuffers[0], &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component._Model->_IndexBuffers[0], OFFSET);
+			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
 
-		commandBuffer->DrawIndexed(this, component._Model->_IndexCounts[0], 1);
+			//Bind the vertex/inder buffer.
+			commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+			commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+
+			commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+		}
 	}
 
 	//End the command buffer.

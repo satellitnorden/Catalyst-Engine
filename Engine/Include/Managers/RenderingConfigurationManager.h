@@ -138,7 +138,7 @@ private:
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::None };
+	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };
@@ -150,6 +150,6 @@ private:
 	float _VolumetricLightingIntensity{ 1.0f };
 
 	//The depth of field focus distance.
-	float _DepthOfFieldFocusDistance{ 0.0f };
+	float _DepthOfFieldFocusDistance{ 10.0f };
 
 };

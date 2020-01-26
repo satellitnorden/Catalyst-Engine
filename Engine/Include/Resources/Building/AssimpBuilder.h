@@ -50,7 +50,7 @@ public:
 	/*
 	*	Builds a model.
 	*/
-	FORCE_INLINE static void BuildModel(const char *const RESTRICT file, DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	FORCE_INLINE static void BuildModel(const char *const RESTRICT file, DynamicArray<DynamicArray<Vertex>> *const RESTRICT vertices, DynamicArray<DynamicArray<uint32>> *const RESTRICT indices) NOEXCEPT
 	{
 		//Load the model.
 		Assimp::Importer modelImporter;
@@ -58,6 +58,22 @@ public:
 
 		//Process the node(s).
 		ProcessModelNode(modelScene->mRootNode, modelScene, vertices, indices);
+	}
+
+	/*
+	*	Determines the number of meshes.
+	*/
+	FORCE_INLINE static NO_DISCARD uint64 DetermineNumberOfMeshes(const char* const RESTRICT file) NOEXCEPT
+	{
+		//Load the model.
+		Assimp::Importer modelImporter;
+		const aiScene* modelScene = modelImporter.ReadFile(file, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+
+		//Process the node(s).
+		uint64 number_of_meshes{ 0 };
+		DetermineNumberOfMeshesNode(modelScene->mRootNode, modelScene, &number_of_meshes);
+
+		return number_of_meshes;
 	}
 
 	/*
@@ -332,18 +348,41 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessModelNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void ProcessModelNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<DynamicArray<Vertex>> *const RESTRICT vertices, DynamicArray<DynamicArray<uint32>> *const RESTRICT indices) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
 		{
-			ProcessModelMesh(scene->mMeshes[node->mMeshes[i]], scene, vertices, indices);
+			//Add a new mesh.
+			vertices->EmplaceSlow();
+			indices->EmplaceSlow();
+
+			ProcessModelMesh(scene->mMeshes[node->mMeshes[i]], scene, &vertices->Back(), &indices->Back());
 		}
 
 		//Process all nodes.
 		for (uint32 i = 0; i < node->mNumChildren; ++i)
 		{
 			ProcessModelNode(node->mChildren[i], scene, vertices, indices);
+		}
+	}
+
+	/*
+	*	Processes a single Assimp node.
+	*/
+	static void DetermineNumberOfMeshesNode(aiNode* RESTRICT node, const aiScene* RESTRICT scene, uint64 *number_of_meshes) NOEXCEPT
+	{
+		//Process all meshes.
+		for (uint32 i = 0; i < node->mNumMeshes; ++i)
+		{
+			//Increment the number of meshes.
+			++(*number_of_meshes);
+		}
+
+		//Process all nodes.
+		for (uint32 i = 0; i < node->mNumChildren; ++i)
+		{
+			DetermineNumberOfMeshesNode(node->mChildren[i], scene, number_of_meshes);
 		}
 	}
 

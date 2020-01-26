@@ -83,39 +83,44 @@ void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const REST
 void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
 {
 	//Copy the model space axis aligned bounding box.
-	model->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBoxes[0];
+	model->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
 
-	model->_VertexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
-	model->_IndexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
-	model->_IndexCounts.UpsizeFast(data->_NumberOfLevelfDetails);
+	model->_Meshes.UpsizeSlow(data->_NumberOfMeshes);
 
-	for (uint64 i{ 0 }; i < data->_NumberOfLevelfDetails; ++i)
+	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
 	{
-		//Create the buffers.
+		model->_Meshes[i]._VertexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
+		model->_Meshes[i]._IndexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
+		model->_Meshes[i]._IndexCounts.UpsizeFast(data->_NumberOfLevelfDetails);
+
+		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
 		{
-			const void *const RESTRICT dataChunks[]{ data->_Vertices[i].Data() };
-			const uint64 dataSizes[]{ sizeof(Vertex) * data->_Vertices[i].Size() };
-			RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_VertexBuffers[i]);
-			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_VertexBuffers[i]);
+			//Create the buffers.
+			{
+				const void* const RESTRICT dataChunks[]{ data->_Vertices[i][j].Data() };
+				const uint64 dataSizes[]{ sizeof(Vertex) * data->_Vertices[i][j].Size() };
+				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_Meshes[i]._VertexBuffers[j]);
+				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_Meshes[i]._VertexBuffers[j]);
+			}
+
+			{
+				const void* const RESTRICT dataChunks[]{ data->_Indices[i][j].Data() };
+				const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices[i][j].Size() };
+				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &model->_Meshes[i]._IndexBuffers[j]);
+				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_Meshes[i]._IndexBuffers[j]);
+			}
+
+			//Write the index count.
+			model->_Meshes[i]._IndexCounts[j] = static_cast<uint32>(data->_Indices[i][j].Size());
 		}
 
-		{
-			const void *const RESTRICT dataChunks[]{ data->_Indices[i].Data() };
-			const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices[i].Size() };
-			RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &model->_IndexBuffers[i]);
-			RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_IndexBuffers[i]);
-		}
-
-		//Write the index count.
-		model->_IndexCounts[i] = static_cast<uint32>(data->_Indices[i].Size());
+		//Create the bottom level acceleration structure.
+		RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_Meshes[i]._VertexBuffers[0],
+																			static_cast<uint32>(data->_Vertices[i][0].Size()),
+																			model->_Meshes[i]._IndexBuffers[0],
+																			static_cast<uint32>(data->_Indices[i][0].Size()),
+																			&model->_Meshes[i]._BottomLevelAccelerationStructure);
 	}
-
-	//Create the bottom level acceleration structure.
-	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_VertexBuffers[0],
-																		static_cast<uint32>(data->_Vertices[0].Size()),
-																		model->_IndexBuffers[0],
-																		static_cast<uint32>(data->_Indices[0].Size()),
-																		&model->_BottomLevelAccelerationStructure);
 }
 
 /*

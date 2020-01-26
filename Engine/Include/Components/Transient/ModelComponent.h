@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Rendering.
 #include <Rendering/Native/Material.h>
@@ -24,7 +25,7 @@ public:
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material index.
-	uint32 _MaterialIndex;
+	//The material indices.
+	DynamicArray<uint32> _MaterialIndices;
 
 };

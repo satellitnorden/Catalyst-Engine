@@ -148,25 +148,32 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfModelComponents; ++i, ++component)
 	{
-		//Push constants.
-		VertexPushConstantData vertexData;
+		//Draw all meshes.
+		for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+		{
+			//Cache the mesh.
+			const Mesh& mesh{ component->_Model->_Meshes[i] };
 
-		vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
-		vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+			//Push constants.
+			VertexPushConstantData vertexData;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+			vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
+			vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
-		FragmentPushConstantData fragmentData;
+			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
-		fragmentData._MaterialIndex = component->_MaterialIndex;
+			FragmentPushConstantData fragmentData;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+			fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffers[0], &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffers[0], OFFSET);
+			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
-		commandBuffer->DrawIndexed(this, component->_Model->_IndexCounts[0], 1);
+			//Bind the vertex/inder buffer.
+			commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+			commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+
+			commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+		}
 	}
 
 	//End the command buffer.
