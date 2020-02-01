@@ -12,6 +12,13 @@
 //Systems.
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/TaskSystem.h>
+
+//Rendering reference system constants.
+namespace RenderingReferenceSystemConstants
+{
+	constexpr uint32 SLIZE_SIZE{ 32 };
+}
 
 /*
 *	Updates the rendering reference system during the render update phase.
@@ -26,27 +33,13 @@ void RenderingReferenceSystem::RenderUpdate(const UpdateContext* const RESTRICT 
 		//Is the rendering reference in progress? If so, stop it.
 		if (_RenderingReferenceInProgress)
 		{
-			_RenderingReferenceInProgress = false;
+			EndRenderingReference();
 		}
 
 		//Otherwise, start it.
 		else
 		{
-			_RenderingReferenceInProgress = true;
-
-			//Initialize the texture.
-			_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
-
-			for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
-			{
-				for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
-				{
-					_RenderingReferenceTexture.At(X, Y) = Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-			}
-
-			//Reset the iterations.
-			_Iterations = 0;
+			StartRenderingReference();
 		}
 	}
 
@@ -58,19 +51,81 @@ void RenderingReferenceSystem::RenderUpdate(const UpdateContext* const RESTRICT 
 }
 
 /*
-*	Updates the rendering reference.
+*	Starts the rendering reference.
 */
-void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
+void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 {
-	//Calculate all texels.
+	_RenderingReferenceInProgress = true;
+
+	//Initialize the texture.
+	_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
+
 	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
 	{
 		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
 		{
-			CalculateTexel(X, Y);
+			_RenderingReferenceTexture.At(X, Y) = Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
 
+	//Calculate all the synchronous data.
+	uint32 current_slice{ 0 };
+	const uint32 maximum_y{ RenderingSystem::Instance->GetScaledResolution()._Height };
+
+	for (;;)
+	{
+		//Add new asynchronous data.
+		_AsynchronousData.EmplaceSlow();
+
+		AsynchronousData& data{ _AsynchronousData.Back() };
+
+		data._Task._Function = [](void *const RESTRICT arguments)
+		{
+			RenderingSystem::Instance->GetRenderingReferenceSystem()->ExecuteAsynchronous(static_cast<const AsynchronousData* const RESTRICT>(arguments));
+		};
+		data._Task._Arguments = &data;
+		data._Task._ExecutableOnSameThread = false;
+		data._StartY = current_slice;
+		data._EndY = CatalystBaseMath::Minimum<uint32>(current_slice + RenderingReferenceSystemConstants::SLIZE_SIZE, maximum_y);
+
+		current_slice += RenderingReferenceSystemConstants::SLIZE_SIZE;
+
+		if (current_slice >= maximum_y)
+		{
+			break;
+		}
+	}
+
+	//Reset the iterations.
+	_Iterations = 0;
+}
+
+/*
+*	Ends the rendering reference.
+*/
+void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
+{
+	_RenderingReferenceInProgress = false;
+}
+
+/*
+*	Updates the rendering reference.
+*/
+void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
+{
+	//Execute all tasks.
+	for (AsynchronousData &data : _AsynchronousData)
+	{
+		TaskSystem::Instance->ExecuteTask(&data._Task);
+	}
+
+	//Wait for all tasks.
+	for (const AsynchronousData& data : _AsynchronousData)
+	{
+		data._Task.WaitFor();
+	}
+
+	//Update the number of iterations.
 	++_Iterations;
 
 	//Recreate the texture.
@@ -85,6 +140,21 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 
 	//Set the properties for the rendering reference.
 	RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceTextureIndex, _Iterations);
+}
+
+/*
+*	Executes asynchronously.
+*/
+void RenderingReferenceSystem::ExecuteAsynchronous(const AsynchronousData *const RESTRICT data) NOEXCEPT
+{
+	//Calculate all texels.
+	for (uint32 Y{ data->_StartY }; Y < data->_EndY; ++Y)
+	{
+		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
+		{
+			CalculateTexel(X, Y);
+		}
+	}
 }
 
 /*

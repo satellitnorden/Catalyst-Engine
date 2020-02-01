@@ -39,7 +39,7 @@ void main()
 	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
 
 	//Calculate the density multiplier.
-	float density_multiplier = exp(-(volumetricLightingIntensity));
+	float density_multiplier = exp(-(volumetricLightingIntensity * 0.25f));
 
 	//Calculate the volumetric lighting.
 	vec3 volumetric_lighting = vec3(0.0f);
