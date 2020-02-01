@@ -355,6 +355,9 @@
     <Filter Include="Input\Include">
       <UniqueIdentifier>{8bade1c1-fcaf-4ae8-9bc1-6d46f8eebf48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Include\Native\Shader">
+      <UniqueIdentifier>{8eee20f1-5ac2-4bcb-8f01-7243a3e8e096}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1349,6 +1352,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\SurfaceDescription.h">
       <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystToneMapping.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

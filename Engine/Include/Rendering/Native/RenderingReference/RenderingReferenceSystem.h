@@ -110,14 +110,14 @@ private:
 	NO_DISCARD Vector3<float> CastRayScene(const Ray &ray, const uint8 recursion) NOEXCEPT;
 
 	/*
-	*	Casts a ray against the volumetric particles. Returns if there was a hit.
+	*	Casts a surface ray against the volumetric particles. Returns if there was a hit.
 	*/
-	NO_DISCARD bool CastRayVolumetricParticles(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+	NO_DISCARD bool CastSurfaceRayVolumetricParticles(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
 
 	/*
-	*	Casts a ray against terrain. Returns if there was a hit.
+	*	Casts a surface ray against terrain. Returns if there was a hit.
 	*/
-	NO_DISCARD bool CastRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+	NO_DISCARD bool CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the sky. Returns the color.
@@ -127,7 +127,17 @@ private:
 	/*
 	*	Calculates the lighting.
 	*/
-	NO_DISCARD Vector3<float> CalculateLighting(const SurfaceDescription &surface_description) NOEXCEPT;
+	NO_DISCARD Vector3<float> CalculateLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription &surface_description, const uint8 recursion) NOEXCEPT;
+
+	/*
+	*	Casts a shadow ray against the scene. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastShadowRayScene(const Ray &ray) NOEXCEPT;
+
+	/*
+	*	Casts a shadow ray against the terrain. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastShadowRayTerrain(const Ray& ray) NOEXCEPT;
 
 };
 #endif
