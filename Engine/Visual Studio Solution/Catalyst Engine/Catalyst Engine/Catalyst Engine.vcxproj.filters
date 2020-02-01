@@ -34,12 +34,6 @@
     <Filter Include="Entities\Source">
       <UniqueIdentifier>{875c5ba3-f47b-4430-a434-4fa4da1bb117}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{1a5a6c01-5625-4d93-87ba-f4a8e476195e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input\Include">
-      <UniqueIdentifier>{8bade1c1-fcaf-4ae8-9bc1-6d46f8eebf48}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Managers">
       <UniqueIdentifier>{6adfa0ab-d04f-4f58-af67-afc2a1403c2f}</UniqueIdentifier>
     </Filter>
@@ -351,6 +345,15 @@
     </Filter>
     <Filter Include="File\Include\Core">
       <UniqueIdentifier>{4e537300-16d3-4362-add6-c4d2dc46de67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\Include\Writers">
+      <UniqueIdentifier>{d7a7c686-b739-489f-93e4-19f54693d134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1a5a6c01-5625-4d93-87ba-f4a8e476195e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Include">
+      <UniqueIdentifier>{8bade1c1-fcaf-4ae8-9bc1-6d46f8eebf48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1340,6 +1343,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h">
       <Filter>File\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h">
+      <Filter>File\Include\Writers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

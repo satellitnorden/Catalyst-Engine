@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 
+//File.
+#include <File/Writers/TGAWriter.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -55,6 +58,7 @@ void RenderingReferenceSystem::RenderUpdate(const UpdateContext* const RESTRICT 
 */
 void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 {
+	//Start the rendering reference progress.
 	_RenderingReferenceInProgress = true;
 
 	//Initialize the texture.
@@ -105,7 +109,20 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 */
 void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 {
+	//End the rendering reference progress.
 	_RenderingReferenceInProgress = false;
+
+	//Normalize the values in the rendering reference texture.
+	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
+	{
+		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
+		{
+			_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_Iterations);
+		}
+	}
+
+	//Write the image to file.
+	TGAWriter::Write(_RenderingReferenceTexture, "RenderingReference.tga");
 }
 
 /*
@@ -179,7 +196,7 @@ Vector3<float> RenderingReferenceSystem::CalculateRayDirection(const uint32 X, c
 {
 	//Calculate the coordinate.
 	const Vector2<float> coordinate{	(static_cast<float>(X) + 0.5f) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width),
-										1.0f - ((static_cast<float>(Y) + 0.5f) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height)) };
+										(static_cast<float>(Y) + 0.5f) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height) };
 
 	//Calculate the ray direction.
 	return RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(coordinate);
