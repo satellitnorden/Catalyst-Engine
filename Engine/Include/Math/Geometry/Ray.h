@@ -18,16 +18,24 @@ public:
 	Vector3<float> _Direction;
 
 	//The maximum hit distance.
-	float _MaximumHitDistance;
+	float _MaximumHitDistance{ FLOAT_MAXIMUM };
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE constexpr Ray() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection, const float initialMaximumHitDistance) NOEXCEPT
+	FORCE_INLINE constexpr Ray(const Vector3<float> &inital_origin, const Vector3<float> &initial_direction, const float initial_maximum_hitDistance) NOEXCEPT
 		:
-		_Origin(initalOrigin),
-		_Direction(initialDirection),
-		_MaximumHitDistance(initialMaximumHitDistance)
+		_Origin(inital_origin),
+		_Direction(initial_direction),
+		_MaximumHitDistance(initial_maximum_hitDistance)
 	{
 		
 	}

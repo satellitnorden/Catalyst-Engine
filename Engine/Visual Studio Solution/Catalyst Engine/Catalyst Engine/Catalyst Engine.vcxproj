@@ -274,6 +274,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RayTracingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceSystem.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\SurfaceDescription.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\BloomRenderPass.h" />

@@ -6,12 +6,16 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/UpdateContext.h>
 
+//Math.
+#include <Math/Geometry/Ray.h>
+
 //Multithreading.
 #include <Multithreading/Task.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/RenderingReference/SurfaceDescription.h>
 
 class RenderingReferenceSystem final
 {
@@ -99,6 +103,31 @@ private:
 	*	Calculates the ray direction.
 	*/
 	Vector3<float> CalculateRayDirection(const uint32 X, const uint32 Y) NOEXCEPT;
+
+	/*
+	*	Casts a ray against the scene. Returns the color.
+	*/
+	NO_DISCARD Vector3<float> CastRayScene(const Ray &ray, const uint8 recursion) NOEXCEPT;
+
+	/*
+	*	Casts a ray against the volumetric particles. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastRayVolumetricParticles(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+
+	/*
+	*	Casts a ray against terrain. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+
+	/*
+	*	Casts a ray against the sky. Returns the color.
+	*/
+	NO_DISCARD Vector3<float> CastRaySky(const Ray &ray) NOEXCEPT;
+
+	/*
+	*	Calculates the lighting.
+	*/
+	NO_DISCARD Vector3<float> CalculateLighting(const SurfaceDescription &surface_description) NOEXCEPT;
 
 };
 #endif

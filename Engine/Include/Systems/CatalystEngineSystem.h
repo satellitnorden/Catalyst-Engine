@@ -75,6 +75,14 @@ public:
 		return _DeltaTime;
 	}
 
+	/*
+	*	Sets the update speed.
+	*/
+	FORCE_INLINE void SetUpdateSpeed(const float update_speed) NOEXCEPT
+	{
+		_UpdateSpeed = update_speed;
+	}
+
 private:
 
 	//The project configuration.
@@ -91,5 +99,8 @@ private:
 
 	//Denotes the delta time.
 	float _DeltaTime{ 0.0f };
+
+	//The update speed.
+	float _UpdateSpeed{ 1.0f };
 
 };

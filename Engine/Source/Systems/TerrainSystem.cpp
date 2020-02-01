@@ -212,9 +212,23 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 */
 bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
-	//Temporary; Just set to zero.
-	*normal = VectorConstants::UP;
-	if (height) *height = 0.0f;
+//Calculate the normal.
+	float left;
+	float right;
+	float down;
+	float up;
+
+	GetTerrainHeightAtPosition(position + Vector3<float>(-1.0f, 0.0f, 0.0f), &left);
+	GetTerrainHeightAtPosition(position + Vector3<float>(1.0f, 0.0f, 0.0f), &right);
+	GetTerrainHeightAtPosition(position + Vector3<float>(0.0f, 0.0f, -1.0f), &down);
+	GetTerrainHeightAtPosition(position + Vector3<float>(0.0f, 0.0f, 1.0f), &up);
+
+	*normal = Vector3<float>::Normalize(Vector3<float>(left - right, 2.0f, down - up));
+
+	if (height)
+	{
+		GetTerrainHeightAtPosition(position, height);
+	}
 
 	//Return that the retrieval succeeded.
 	return true;

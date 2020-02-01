@@ -100,6 +100,11 @@ public:
 	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
 
 	/*
+	*	Returns whether or not the window is in focus.
+	*/
+	static bool IsWindowInFocus() NOEXCEPT;
+
+	/*
 	*	Hides the cursor.
 	*/
 	static void HideCursor() NOEXCEPT;

@@ -166,7 +166,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	_TotalTime += _DeltaTime;
 
 	//Update the delta time.
-	_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update();
+	_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update() * _UpdateSpeed;
 
 	//Construct the update context.
 	UpdateContext context;

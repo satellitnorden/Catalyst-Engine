@@ -5,22 +5,28 @@
 //File.
 #include <File/Writers/TGAWriter.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
+#include <Math/Geometry/Ray.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
+#include <Systems/TerrainSystem.h>
 
 //Rendering reference system constants.
 namespace RenderingReferenceSystemConstants
 {
-	constexpr uint32 SLIZE_SIZE{ 32 };
+	constexpr uint32 SLIZE_SIZE{ 16 };
 }
 
 /*
@@ -102,6 +108,9 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 	//Reset the iterations.
 	_Iterations = 0;
+
+	//Set the update speed to zero.
+	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
 }
 
 /*
@@ -123,6 +132,9 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 
 	//Write the image to file.
 	TGAWriter::Write(_RenderingReferenceTexture, "RenderingReference.tga");
+
+	//Set the update speed back to normal.
+	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
 }
 
 /*
@@ -179,14 +191,20 @@ void RenderingReferenceSystem::ExecuteAsynchronous(const AsynchronousData *const
 */
 void RenderingReferenceSystem::CalculateTexel(const uint32 X, const uint32 Y) NOEXCEPT
 {
-	//Calculate the ray direction.
-	const Vector3<float> ray_direction{ CalculateRayDirection(X, Y) };
+	//Calculate the ray.
+	Ray ray;
 
+	ray._Origin = Perceiver::Instance->GetPosition();
+	ray._Direction = CalculateRayDirection(X, Y);
+	ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
-	//Calculate the upward factor.
-	const float upward_factor{ Vector3<float>::DotProduct(ray_direction, VectorConstants::UP) };
+	//Cast a ray against the scene and determine the color.
+	const Vector4<float> color{ Vector4<float>(CastRayScene(ray, 0), 1.0f) };
 
-	_RenderingReferenceTexture.At(X, Y) += CatalystRandomMath::RandomChance(upward_factor) ? Vector4<float>(0.0f, 1.0f, 1.0f, 1.0f) : Vector4<float>(1.0f, 0.0f, 0.0f, 1.0f);
+	//Perform some post processing...
+
+	//Write the color.
+	_RenderingReferenceTexture.At(X, Y) += color;
 }
 
 /*
@@ -194,11 +212,129 @@ void RenderingReferenceSystem::CalculateTexel(const uint32 X, const uint32 Y) NO
 */
 Vector3<float> RenderingReferenceSystem::CalculateRayDirection(const uint32 X, const uint32 Y) NOEXCEPT
 {
+	//Define constants.
+	constexpr float JITTER{ 0.5f };
+
 	//Calculate the coordinate.
-	const Vector2<float> coordinate{	(static_cast<float>(X) + 0.5f) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width),
-										(static_cast<float>(Y) + 0.5f) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height) };
+	const Vector2<float> coordinate{	(static_cast<float>(X) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width),
+										(static_cast<float>(Y) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height) };
 
 	//Calculate the ray direction.
 	return RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(coordinate);
+}
+
+/*
+*	Casts a ray against the scene. Returns the color.
+*/
+NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray, const uint8 recursion) NOEXCEPT
+{
+	//Cast a rays against the scene.
+	SurfaceDescription surface_description;
+	float hit_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
+	bool has_hit{ false };
+
+	has_hit |= CastRayVolumetricParticles(ray, &surface_description, &hit_distance);
+	has_hit |= CastRayTerrain(ray, &surface_description, &hit_distance);
+
+	//Determine the color.
+	if (has_hit)
+	{
+		return CalculateLighting(surface_description);
+	}
+
+	else
+	{
+		return CastRaySky(ray);
+	}
+}
+
+/*
+*	Casts a ray against the volumetric particles.
+*/
+NO_DISCARD bool RenderingReferenceSystem::CastRayVolumetricParticles(const Ray& ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
+{
+	//Determine if a volumetric particle was hit.
+	if (CatalystRandomMath::RandomChance(0.5f))
+	{
+		//Fill in the surface description/hit distance.
+		surface_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
+		surface_description->_Normal = VectorConstants::UP;
+		*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, *hit_distance);
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+/*
+*	Casts a ray against terrain.
+*/
+NO_DISCARD bool RenderingReferenceSystem::CastRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
+{
+	//Define constants.
+	constexpr float STEP{ 1.0f };
+
+	Vector3<float> current_position{ ray._Origin };
+	float current_distance{ 0.0f };
+
+	//Offset the current position by a random amount.
+	current_position += ray._Direction * CatalystRandomMath::RandomFloatInRange(0.0f, STEP);
+
+	for (;;)
+	{
+		//Get the terrain height at the current position.
+		float terrain_height;
+
+		TerrainSystem::Instance->GetTerrainHeightAtPosition(current_position, &terrain_height);
+
+		if (current_position._Y <= terrain_height)
+		{
+			//Fill in the surface description/hit distance.
+			surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
+			TerrainSystem::Instance->GetTerrainNormalAtPosition(current_position, &surface_description->_Normal);
+			*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, *hit_distance);
+
+			return true;
+		}
+
+		//Advance the current position.
+		current_position += ray._Direction * STEP;
+		current_distance += STEP;
+
+		//Abort if the ray has reached the current view distance.
+		if (current_distance >= *hit_distance)
+		{
+			break;
+		}
+	}
+
+	//Nothing hit.
+	return false;
+}
+
+/*
+*	Casts a ray against the sky. Returns the color.
+*/
+NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRaySky(const Ray& ray) NOEXCEPT
+{
+	const Vector3<float> lower_sky_color{ EnvironmentManager::GetLowerSkyColor() };
+	const Vector3<float> upper_sky_color{ EnvironmentManager::GetUpperSkyColor() };
+
+	const float upward{ CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(ray._Direction, VectorConstants::UP), 0.0f) };
+
+	return CatalystBaseMath::LinearlyInterpolate(lower_sky_color, upper_sky_color, upward);
+}
+
+/*
+*	Calculates the lighting.
+*/
+NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const SurfaceDescription& surface_description) NOEXCEPT
+{
+	return surface_description._Albedo * Vector3<float>::DotProduct(surface_description._Normal, VectorConstants::UP);
+
 }
 #endif

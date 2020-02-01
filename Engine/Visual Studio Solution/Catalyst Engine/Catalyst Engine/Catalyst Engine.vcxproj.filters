@@ -1347,6 +1347,9 @@
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h">
       <Filter>File\Include\Writers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\SurfaceDescription.h">
+      <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

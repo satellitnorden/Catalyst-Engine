@@ -32,6 +32,9 @@ namespace CatalystWindowsData
 	//The last known cursor position.
 	Vector2<float> _LastKnownCursorPosition{ 0.5f, 0.5f };
 
+	//Denotes whether or not the window is in focus.
+	bool _IsWindowInFocus{ true };
+
 	//Denotes whether or not the cursor is shown.
 	bool _CursorShown{ true };
 
@@ -251,7 +254,8 @@ void CatalystPlatform::PostInitialize() NOEXCEPT
 */
 void CatalystPlatform::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-
+	//Determine if the window is in focus.
+	CatalystWindowsData::_IsWindowInFocus = GetFocus() == _Window;
 }
 
 /*
@@ -282,6 +286,12 @@ void CatalystPlatform::Release() NOEXCEPT
 */
 void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT
 {
+	//No need to update if the window isn't in focus.
+	if (!CatalystWindowsData::_IsWindowInFocus)
+	{
+		return;
+	}
+
 	XINPUT_STATE xInputState;
 
 	if (XInputGetState(index, &xInputState) != ERROR_SUCCESS)
@@ -371,6 +381,12 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 */
 void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT
 {
+	//No need to update if the window isn't in focus.
+	if (!CatalystWindowsData::_IsWindowInFocus)
+	{
+		return;
+	}
+
 	UpdateWindowsButton(VK_BACK, (*state)[KeyboardButton::Backspace]);
 	UpdateWindowsButton(VK_TAB, (*state)[KeyboardButton::Tab]);
 	UpdateWindowsButton(VK_CLEAR, (*state)[KeyboardButton::Clear]);
@@ -512,6 +528,12 @@ void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT sta
 */
 void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT
 {
+	//No need to update if the window isn't in focus.
+	if (!CatalystWindowsData::_IsWindowInFocus)
+	{
+		return;
+	}
+
 	//Copy the previous X and Y positions.
 	state->_PreviousX = state->_CurrentX;
 	state->_PreviousY = state->_CurrentY;
@@ -658,6 +680,14 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 	//Update the scroll wheel step.
 	state->_ScrollWheelStep = CatalystWindowsData::_ScrollWheelStep;
 	CatalystWindowsData::_ScrollWheelStep = 0;
+}
+
+/*
+*	Returns whether or not the window is in focus.
+*/
+bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
+{
+	return CatalystWindowsData::_IsWindowInFocus;
 }
 
 /*
