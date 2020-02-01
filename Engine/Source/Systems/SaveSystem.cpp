@@ -1,9 +1,9 @@
 //Header file.
 #include <Systems/SaveSystem.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
-#include <FileHandling/FileHandlingUtilities.h>
+//File.
+#include <File/BinaryFile.h>
+#include <File/FileUtilities.h>
 
 //Systems.
 #include <Systems/TaskSystem.h>
@@ -85,7 +85,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		if (entry._SaveMask & _ProcessLoadsMask)
 		{
 			//First of all, does the file exist?
-			if (!FileHandlingUtilities::DoesFileExist(entry._File.Data()))
+			if (!FileUtilities::DoesFileExist(entry._File.Data()))
 			{
 				//Allocate the memory required for the save.
 				void *const RESTRICT save_data{ Memory::Allocate(entry._Size) };
@@ -94,7 +94,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 				entry._DefaultValuesCallback(save_data);
 
 				//Create the file.
-				FileHandlingUtilities::CreateFile(entry._File.Data());
+				FileUtilities::CreateFile(entry._File.Data());
 
 				//Write it to file.
 				BinaryFile<IOMode::Out> file{ entry._File.Data() };

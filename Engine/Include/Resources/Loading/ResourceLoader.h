@@ -9,8 +9,8 @@
 #include <Animation/AnimatedModel.h>
 #include <Animation/Animation.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
+//File.
+#include <File/BinaryFile.h>
 
 //Rendering.
 #include <Rendering/Native/Font.h>

@@ -316,12 +316,6 @@
     <Filter Include="Entities\Include\Placement">
       <UniqueIdentifier>{c5bbea8d-3b3e-46c7-8734-866ae9007972}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FileHandling">
-      <UniqueIdentifier>{8dbaaef8-d5b7-4ddf-a1f2-007053125dbd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FileHandling\Include">
-      <UniqueIdentifier>{5662c6f5-5045-4e95-a15e-8bc703756368}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Terrain">
       <UniqueIdentifier>{c95c7a0e-1c97-4c2e-8ee4-39b5d082a645}</UniqueIdentifier>
     </Filter>
@@ -348,6 +342,12 @@
     </Filter>
     <Filter Include="Rendering\Include\Native\Rendering Reference">
       <UniqueIdentifier>{4c904a73-1141-4af9-ae5d-319220343d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File">
+      <UniqueIdentifier>{8dbaaef8-d5b7-4ddf-a1f2-007053125dbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\Include">
+      <UniqueIdentifier>{5662c6f5-5045-4e95-a15e-8bc703756368}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1056,9 +1056,6 @@
     <ClInclude Include="..\..\..\Include\Core\Algorithms\CompressionAlgorithms.h">
       <Filter>Core\Include\Algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\FileHandling\BinaryFile.h">
-      <Filter>FileHandling\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -1305,9 +1302,6 @@
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h">
       <Filter>Save\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\FileHandling\FileHandlingUtilities.h">
-      <Filter>FileHandling\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\ReadWriteSpinlock.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
@@ -1337,6 +1331,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\BinaryFile.h">
+      <Filter>File\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\FileUtilities.h">
+      <Filter>File\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

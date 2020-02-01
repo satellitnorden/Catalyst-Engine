@@ -5,8 +5,8 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
+//File.
+#include <File/BinaryFile.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>

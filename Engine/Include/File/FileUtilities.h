@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-namespace FileHandlingUtilities
+namespace FileUtilities
 {
 
 	/*

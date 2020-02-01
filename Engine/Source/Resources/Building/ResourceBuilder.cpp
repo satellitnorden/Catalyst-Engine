@@ -11,8 +11,8 @@
 //Animation.
 #include <Animation/AnimatedVertex.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
+//File.
+#include <File/BinaryFile.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>

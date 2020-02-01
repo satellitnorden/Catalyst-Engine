@@ -7,8 +7,8 @@
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
+//File.
+#include <File/BinaryFile.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
