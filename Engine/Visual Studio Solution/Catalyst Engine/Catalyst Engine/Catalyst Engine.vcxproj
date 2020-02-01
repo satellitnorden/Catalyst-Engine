@@ -108,8 +108,8 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
-    <ClInclude Include="..\..\..\Include\File\BinaryFile.h" />
-    <ClInclude Include="..\..\..\Include\File\FileUtilities.h" />
+    <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h" />
+    <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />

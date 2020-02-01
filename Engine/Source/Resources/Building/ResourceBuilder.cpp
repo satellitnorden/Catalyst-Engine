@@ -12,7 +12,7 @@
 #include <Animation/AnimatedVertex.h>
 
 //File.
-#include <File/BinaryFile.h>
+#include <File/Core/BinaryFile.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>

@@ -8,7 +8,7 @@
 #include <Core/General/HashString.h>
 
 //File.
-#include <File/BinaryFile.h>
+#include <File/Core/BinaryFile.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>

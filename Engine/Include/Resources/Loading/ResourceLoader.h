@@ -10,7 +10,7 @@
 #include <Animation/Animation.h>
 
 //File.
-#include <File/BinaryFile.h>
+#include <File/Core/BinaryFile.h>
 
 //Rendering.
 #include <Rendering/Native/Font.h>

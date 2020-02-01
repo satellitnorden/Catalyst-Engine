@@ -6,7 +6,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //File.
-#include <File/BinaryFile.h>
+#include <File/Core/BinaryFile.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>

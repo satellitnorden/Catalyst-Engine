@@ -349,6 +349,9 @@
     <Filter Include="File\Include">
       <UniqueIdentifier>{5662c6f5-5045-4e95-a15e-8bc703756368}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File\Include\Core">
+      <UniqueIdentifier>{4e537300-16d3-4362-add6-c4d2dc46de67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1332,11 +1335,11 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\File\BinaryFile.h">
-      <Filter>File\Include</Filter>
+    <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h">
+      <Filter>File\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\File\FileUtilities.h">
-      <Filter>File\Include</Filter>
+    <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h">
+      <Filter>File\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
