@@ -121,12 +121,18 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	//End the rendering reference progress.
 	_RenderingReferenceInProgress = false;
 
+	//Wait for all tasks to finish.
+	for (AsynchronousData& data : _AsynchronousData)
+	{
+		data._Task.WaitFor();
+	}
+
 	//Normalize the values in the rendering reference texture.
 	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
 	{
 		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
 		{
-			_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_Iterations);
+			_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_Iterations + 1);
 		}
 	}
 
@@ -142,33 +148,39 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 */
 void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 {
-	//Execute all tasks.
-	for (AsynchronousData &data : _AsynchronousData)
-	{
-		TaskSystem::Instance->ExecuteTask(&data._Task);
-	}
+	//Are all tasks executed?
+	bool all_tasks_executed{ true };
 
-	//Wait for all tasks.
 	for (const AsynchronousData& data : _AsynchronousData)
 	{
-		data._Task.WaitFor();
+		all_tasks_executed &= data._Task.IsExecuted();
 	}
 
-	//Update the number of iterations.
-	++_Iterations;
-
-	//Recreate the texture.
-	if (_RenderingReferenceTextureHandle)
+	//If so, fire off a new batch.
+	if (all_tasks_executed)
 	{
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_RenderingReferenceTextureIndex);
-		RenderingSystem::Instance->DestroyTexture2D(&_RenderingReferenceTextureHandle);
+		//Execute all tasks.
+		for (AsynchronousData& data : _AsynchronousData)
+		{
+			TaskSystem::Instance->ExecuteTask(&data._Task);
+		}
+
+		//Update the number of iterations.
+		++_Iterations;
+
+		//Recreate the texture.
+		if (_RenderingReferenceTextureHandle)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_RenderingReferenceTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_RenderingReferenceTextureHandle);
+		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceTexture), TextureFormat::R32G32B32A32_Float), &_RenderingReferenceTextureHandle);
+		_RenderingReferenceTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_RenderingReferenceTextureHandle);
+
+		//Set the properties for the rendering reference.
+		RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceTextureIndex, _Iterations);
 	}
-
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceTexture), TextureFormat::R32G32B32A32_Float), &_RenderingReferenceTextureHandle);
-	_RenderingReferenceTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_RenderingReferenceTextureHandle);
-
-	//Set the properties for the rendering reference.
-	RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceTextureIndex, _Iterations);
 }
 
 /*

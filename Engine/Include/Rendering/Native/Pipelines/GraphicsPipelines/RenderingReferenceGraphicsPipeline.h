@@ -33,10 +33,10 @@ public:
 private:
 
 	//The rendering reference texture index.
-	uint32 _RenderingReferenceTextureIndex{ INT32_MAXIMUM };
+	uint32 _RenderingReferenceTextureIndex{ 0 };
 
 	//The iterations.
-	float _Iterations;
+	float _Iterations{ 1.0f };
 
 	/*
 	*	Creates the render data table layout.
