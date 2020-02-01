@@ -85,7 +85,7 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None || true)
+	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None)
 	{
 		_VolumetricLightingGraphicsPipeline.Execute();
 		_VolumetricLightingRayTracingPipeline.SetIncludeInRender(false);

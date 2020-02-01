@@ -98,6 +98,44 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	//Add the texture to the global render data.
 	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
 
+	//Generate the terrain shadow plane.
+	DynamicArray<Vertex> vertices;
+	DynamicArray<uint32> indices;
+
+	TerrainGeneralUtilities::GenerateTerrainShadowPlane(_Properties._HeightMap,
+														&vertices,
+														&indices);
+
+	BufferHandle vertex_buffer;
+	BufferHandle index_buffer;
+
+	{
+		const void* const RESTRICT dataChunks[]{ vertices.Data() };
+		const uint64 dataSizes[]{ sizeof(Vertex) * vertices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &vertex_buffer);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &vertex_buffer);
+	}
+
+	{
+		const void* const RESTRICT dataChunks[]{ indices.Data() };
+		const uint64 dataSizes[]{ sizeof(uint32) * indices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &index_buffer);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &index_buffer);
+	}
+
+	//Create the bottom level acceleration structure.
+	AccelerationStructureHandle acceleration_structure;
+
+	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(vertex_buffer,
+																		static_cast<uint32>(vertices.Size()),
+		index_buffer,
+																		static_cast<uint32>(indices.Size()),
+																		&acceleration_structure);
+
+	//Add the acceleration structure to the static top level acceleration structure.
+	RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(MatrixConstants::IDENTITY, acceleration_structure, 0));
+
+
 	//There is now a height map!
 	_Properties._HasHeightMap = true;
 }

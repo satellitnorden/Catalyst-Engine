@@ -1,58 +1,52 @@
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/RenderingReferenceGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
-
-//Resources.
-#include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Tone mapping push constant data definition.
+*	Rendering reference push constant data definition.
 */
-class ToneMappingPushConstantData final
+class RenderingReferencePushConstantData final
 {
 
 public:
 
-	//The color grading texture index.
-	uint32 _ColorGradingTextureIndex;
+	//The rendering reference texture index.
+	uint32 _RenderingReferenceTextureIndex;
+
+	//The number of iterations.
+	float _Iterations;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void ToneMappingGraphicsPipeline::Initialize() NOEXCEPT
+void RenderingReferenceGraphicsPipeline::Initialize() NOEXCEPT
 {
-	//Create the render data table layout.
-	CreateRenderDataTableLayout();
-
-	//Create the render data table.
-	CreateRenderDataTable();
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ToneMappingFragment);
+	SetFragmentShader(Shader::RenderingReferenceFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ToneMappingPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(RenderingReferencePushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -82,9 +76,8 @@ void ToneMappingGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
+void RenderingReferenceGraphicsPipeline::Execute() NOEXCEPT
 {
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -93,15 +86,14 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
-	ToneMappingPushConstantData data;
+	RenderingReferencePushConstantData data;
 
-	//data._ColorGradingTextureIndex = ResourceLoader::GetTexture2D(HashString("Color_Grading_Lookup_Texture2D"))._Index;
-	data._ColorGradingTextureIndex = 0;
+	data._RenderingReferenceTextureIndex = _RenderingReferenceTextureIndex;
+	data._Iterations = _Iterations;
 
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ToneMappingPushConstantData), &data);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(RenderingReferencePushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
@@ -114,24 +106,11 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 }
 
 /*
-*	Creates the render data table layout.
+*	Sets the properties.
 */
-void ToneMappingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void RenderingReferenceGraphicsPipeline::SetProperties(const uint32 rendering_reference_texture_index, const uint32 iterations) NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+	_RenderingReferenceTextureIndex = rendering_reference_texture_index;
+	_Iterations = static_cast<float>(iterations);
 }
-
-/*
-*	Creates the render data table.
-*/
-void ToneMappingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
+#endif

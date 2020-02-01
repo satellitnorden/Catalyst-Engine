@@ -8,80 +8,66 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define TONE_MAPPING_ALGORITHM_BURGESS (0)
-#define TONE_MAPPING_ALGORITHM_REINHARDT (1)
-#define TONE_MAPPING_ALGORITHM_UNCHARTED_2 (2)
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS (16.0f)
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS - 1.0f)
 #define TONE_MAPPING_COLOR_GRADING_WIDTH (256.0f)
 #define TONE_MAPPING_COLOR_GRADING_HEIGHT (16.0f)
 
-#define TONE_MAPPING_ALGORITHM TONE_MAPPING_ALGORITHM_UNCHARTED_2
-
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint color_grading_texture_index;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_texture;
-layout (set = 1, binding = 1) uniform sampler2D color_grading_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-#if TONE_MAPPING_ALGORITHM == TONE_MAPPING_ALGORITHM_BURGESS
-
 /*
-*   Applies tone mapping.
+*   Applies tone mapping using the Reinhardt algorithm.
 */
-vec3 ApplyToneMapping(vec3 fragment)
+vec3 ApplyToneMapping_Reinhardt(vec3 fragment)
 {
-    vec3 x = max(vec3(0.0f), fragment - 0.004f);
+	vec3 tone_mapped = fragment / (1.0f + fragment);
 
-    return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
-}
-
-#elif TONE_MAPPING_ALGORITHM == TONE_MAPPING_ALGORITHM_REINHARDT
-
-/*
-*   Applies tone mapping.
-*/
-vec3 ApplyToneMapping(vec3 fragment)
-{
-    return pow(fragment / (1.0f + fragment), 1.0f / vec3(2.2f));
-}
-
-#elif TONE_MAPPING_ALGORITHM == TONE_MAPPING_ALGORITHM_UNCHARTED_2
-
-#define EXPOSURE_BIAS (2.0f)
-#define WHITE_SCALE (1.0f / Uncharted2ToneMap(vec3(W)))
-#define A (0.15f)
-#define B (0.50f)
-#define C (0.10f)
-#define D (0.20f)
-#define E (0.02f)
-#define F (0.30f)
-#define W (11.2f)
-
-/*
-*   Applies the Uncharted 2 tone map.
-*/
-vec3 Uncharted2ToneMap(vec3 x)
-{
-   return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+    return pow(tone_mapped, 1.0f / vec3(2.2f));
 }
 
 /*
-*   Applies tone mapping.
+*   Applies tone mapping using the ACES Narkowicz algorithm.
 */
-vec3 ApplyToneMapping(vec3 fragment)
+vec3 ApplyToneMapping_ACESNarkowicz(vec3 fragment)
 {
-    return min(pow(Uncharted2ToneMap(max(fragment * EXPOSURE_BIAS, vec3(0.0000001f))) * WHITE_SCALE, 1.0f / vec3(2.2f)), vec3(1.0f));
+	const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+
+    fragment *= 0.6f;
+
+	vec3 tone_mapped = (fragment * (a * fragment + b)) / (fragment * (c * fragment + d) + e);
+
+    return pow(tone_mapped, 1.0f / vec3(2.2f));
 }
 
-#endif
+/*
+*   Applies tone mapping using the ACES Unreal algorithm.
+*/
+vec3 ApplyToneMapping_ACESUnreal(vec3 fragment)
+{
+	vec3 tone_mapped = fragment / (fragment + 0.155f) * 1.019f;
+
+    return pow(tone_mapped, 1.0f / vec3(2.2f));
+}
 
 /*
 *   Applies color grading.
@@ -100,8 +86,8 @@ vec3 ApplyColorGrading(vec3 fragment)
     float green_offset = (0.5f / TONE_MAPPING_COLOR_GRADING_HEIGHT) + fragment.g * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
 
     //Sample the current and next color graded values.
-    vec3 current_color_graded_value = texture(color_grading_texture, vec2(current_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
-    vec3 next_colorgraded_value = texture(color_grading_texture, vec2(next_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
+    vec3 current_color_graded_value = texture(sampler2D(GLOBAL_TEXTURES[color_grading_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), vec2(current_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
+    vec3 next_colorgraded_value = texture(sampler2D(GLOBAL_TEXTURES[color_grading_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), vec2(next_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
 
     //The color graded value is a linearly interpolated value of the current and the next cells!
     return mix(current_color_graded_value, next_colorgraded_value, fract(cell));
@@ -113,10 +99,10 @@ void main()
     vec3 sceneTextureColor = texture(scene_texture, fragmentTextureCoordinate).rgb;
 
     //Apply tone mapping.
-    sceneTextureColor = ApplyToneMapping(sceneTextureColor);
+    sceneTextureColor = ApplyToneMapping_ACESNarkowicz(sceneTextureColor);
 
     //Apply color grading.
-    sceneTextureColor = ApplyColorGrading(sceneTextureColor);
+    //sceneTextureColor = ApplyColorGrading(sceneTextureColor);
 
     //Write the fragment
     fragment = vec4(sceneTextureColor, 1.0f);

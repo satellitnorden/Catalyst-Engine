@@ -6,6 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
 #include <Rendering/Native/TextureData.h>
+#include <Rendering/Native/Vertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -17,15 +18,6 @@
 
 namespace TerrainGeneralUtilities
 {
-	/*
-	*	Generates a patch identifier.
-	*/
-	FORCE_INLINE static NO_DISCARD uint64 GeneratePatchIdentifier() NOEXCEPT
-	{
-		static uint64 counter{ 0 };
-
-		return counter++;
-	}
 
 	/*
 	*	Generates the vertices and indices for a terrain plane.
@@ -120,4 +112,41 @@ namespace TerrainGeneralUtilities
 			}
 		}
 	}
+
+	/*
+	*	Generates the vertices and indices for a terrain shadow plane.
+	*/
+	FORCE_INLINE static void GenerateTerrainShadowPlane(const Texture2D<float>& height_map, DynamicArray<Vertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
+	{
+		const uint32 resolution{ height_map.GetWidth() };
+
+		vertices->Reserve(resolution * resolution);
+		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
+
+		for (uint32 Y{ 0 }; Y < resolution; ++Y)
+		{
+			for (uint32 X{ 0 }; X < resolution; ++X)
+			{
+				Vertex vertex;
+
+				vertex._Position._X = static_cast<float>(X) - static_cast<float>(resolution / 2);
+				vertex._Position._Y = height_map.At(X, Y);
+				vertex._Position._Z = static_cast<float>(Y) - static_cast<float>(resolution / 2);
+
+				vertices->EmplaceFast(vertex);
+
+				if (X != resolution - 1 && Y != resolution - 1)
+				{
+					indices->EmplaceFast((X * resolution) + Y);
+					indices->EmplaceFast((X * resolution) + Y + 1);
+					indices->EmplaceFast(((X + 1) * resolution) + Y);
+
+					indices->EmplaceFast((X * resolution) + Y + 1);
+					indices->EmplaceFast(((X + 1) * resolution) + Y + 1);
+					indices->EmplaceFast(((X + 1) * resolution) + Y);
+				}
+			}
+		}
+	}
+
 }

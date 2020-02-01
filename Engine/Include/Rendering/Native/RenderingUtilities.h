@@ -78,7 +78,7 @@ public:
 	*/
 	FORCE_INLINE static Vector3<float> CalculateRayDirectionFromScreenCoordinate(const Vector2<float>& screen_coordinate) NOEXCEPT
 	{
-		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 0.0f) };
+		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - std::numeric_limits<float>::epsilon()) };
 
 		return Vector3<float>::Normalize(world_position - Perceiver::Instance->GetPosition());
 	}

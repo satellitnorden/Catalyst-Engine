@@ -29,9 +29,9 @@ public:
 	Padding<4> _Padding;
 
 	/*
-	*	Default constructor - prohibited, must be constructed with the proper arguments.
+	*	Default constructor.
 	*/
-	Vertex() NOEXCEPT = delete;
+	Vertex() NOEXCEPT = default;
 
 	/*
 	*	Constructor taking the position, normal and the color of this vertex.

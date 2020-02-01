@@ -343,6 +343,12 @@
     <Filter Include="Save\Include">
       <UniqueIdentifier>{52ec0e34-d9d7-488f-a18d-8519d38cab0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Source\Native\Rendering Reference">
+      <UniqueIdentifier>{7d601abf-8ec4-4939-bfd0-93d148db68e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Include\Native\Rendering Reference">
+      <UniqueIdentifier>{4c904a73-1141-4af9-ae5d-319220343d3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1323,6 +1329,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Mesh.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderingReferenceGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceSystem.h">
+      <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1762,6 +1777,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\OceanSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderingReferenceGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderingReference\RenderingReferenceSystem.cpp">
+      <Filter>Rendering\Source\Native\Rendering Reference</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

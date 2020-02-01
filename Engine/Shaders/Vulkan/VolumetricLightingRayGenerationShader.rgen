@@ -7,17 +7,18 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
-#define RAY_TRACING_SHADER
-#include "CatalystModelData.glsl"
+#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRayTracingData.glsl"
+#include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
 
 //Descriptor set data.
-layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
-layout (set = 3, binding = 1, rgba32f) uniform image2D volumetricLightingImage;
+layout (set = 3, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 3, binding = 1, rgba32f) uniform image2D volumetric_lighting_image;
 
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
@@ -25,22 +26,41 @@ layout(location = 1) rayPayloadNV float visibility;
 void main() 
 {
 	//Calculate the screen coordinate.
-	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
 	//Load the scene features.
-	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, screenCoordinate);
+	vec4 scene_features_2 = texture(scene_features_2_texture, screen_coordinate);
 
 	//Retrieve all properties.
-	float hitDistance = sceneFeatures2.w;
+	vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
+	float hit_distance = length(world_position - PERCEIVER_WORLD_POSITION);
 
-	//Calculate the ray direction.
-	vec3 rayDirection = CalculateRayDirection(screenCoordinate);
+	//Generate the ray direction.
+	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
+
+	//Calculate the density multiplier.
+	float density_multiplier = exp(-(volumetricLightingIntensity));
 
 	//Calculate the volumetric lighting.
-	vec3 volumetricLighting = vec3(0.0f);
+	vec3 volumetric_lighting = vec3(0.0f);
 
 	//Add the ambient lighting.
-	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
+	volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
+
+	//Sample the noise vector.
+	vec4 noise_vector_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+	vec4 noise_vector_2 = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + 1) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+
+	float samples_offsets[8];
+
+	samples_offsets[0] = noise_vector_1[0];
+	samples_offsets[1] = noise_vector_1[1];
+	samples_offsets[2] = noise_vector_1[2];
+	samples_offsets[3] = noise_vector_1[3];
+	samples_offsets[4] = noise_vector_2[0];
+	samples_offsets[5] = noise_vector_2[1];
+	samples_offsets[6] = noise_vector_2[2];
+	samples_offsets[7] = noise_vector_2[3];
 
 	//Calculate the volumetric lighting for all lights.
 	for (int i = 0; i < numberOfLights; ++i)
@@ -52,49 +72,42 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-				for (int j = 0; j < 4; ++j)
+				for (int j = 0; j < 8; ++j)
 				{
 					//Calculate the volumetric particle hit distance.
-					float volumetricParticleHitDistance = hitDistance * randomVector[j];
+					float volumetric_particle_hit_distance = hit_distance * samples_offsets[j];
 
-					//Calculate the hit position.
-					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
+					//Calculate the volumetric particle hit position.
+					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
+
+					//Sample the cloud density.
+					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction, 3);
 
 					//Determine the visibility.
-					if (shadowsMode == SHADOWS_MODE_NONE)
-					{
-						visibility = 1.0f;
-					}
+					visibility = 0.0f;
 
-					else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
-					{
-						visibility = 0.0f;
+					traceNV(
+							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							0, 																							//missIndex
+							volumetric_particle_hit_position, 															//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light.position_or_direction,																//direction
+							CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+							1 																							//payload
+							);
 
-						traceNV(
-								topLevelAccelerationStructure, 																//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								hitPosition, 																				//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light.position_or_direction,																//direction
-								CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
-								1 																							//payload
-								);
-					}
-
-					//Add the direct lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * visibility * 0.25f;
+					//Add to the volumetric lighting.
+					volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - cloud_density) * visibility * 0.125f;
 				}
 
 				break;
 			}
 
+			/*
 			case LIGHT_TYPE_POINT:
 			{
 				//Sample the random vector.
@@ -125,7 +138,7 @@ void main()
 						visibility = 0.0f;
 
 						traceNV(
-								topLevelAccelerationStructure, 																//topLevel
+								STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
 								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 								0xff, 																						//cullMask
 								0, 																							//sbtRecordOffset
@@ -145,9 +158,10 @@ void main()
 
 				break;
 			}
+			*/
 		}
 	}
 
 	//Write to the image.
-	imageStore(volumetricLightingImage, ivec2(gl_LaunchIDNV.xy), vec4(volumetricLighting, 1.0f));
+	imageStore(volumetric_lighting_image, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, 1.0f));
 }

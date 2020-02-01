@@ -75,6 +75,9 @@ enum class RenderPassStage : uint8
 	TemporalAntiAliasing,
 	PostProcessing,
 	UserInterface,
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	RenderingReference,
+#endif
 	Screen,
 	
 	NumberOfRenderPassStages
@@ -324,6 +327,7 @@ enum class Shader : uint8
 	PathTracingRayGeneration,
 	PathTracingRayMiss,
 	PostProcessingFragment,
+	RenderingReferenceFragment,
 	ResampleFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	SeparableBlurFragment,

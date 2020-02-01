@@ -47,7 +47,7 @@ void main()
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
 	//Calculate the hit position.
-	vec3 hitPosition = CalculateWorldPosition(screenCoordinate, depth) + shadingNormal * 0.01f;
+	vec3 hitPosition = CalculateWorldPosition(screenCoordinate, depth) + shadingNormal * 0.0001f;
 
 	//Generate the ray direction.
 	vec3 rayDirection = normalize(hitPosition - PERCEIVER_WORLD_POSITION);

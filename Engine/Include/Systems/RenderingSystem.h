@@ -25,6 +25,9 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+#include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
+#endif
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
@@ -168,6 +171,16 @@ public:
 	{
 		return &_RayTracingSystem;
 	}
+
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	/*
+	*	Returns the rendering reference system.
+	*/
+	RESTRICTED NO_DISCARD RenderingReferenceSystem *const RESTRICT GetRenderingReferenceSystem() NOEXCEPT
+	{
+		return &_RenderingReferenceSystem;
+	}
+#endif
 
 	/*
 	*	Creates a bottom level acceleration structure.
@@ -361,6 +374,11 @@ private:
 
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
+
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	//The rendering reference system.
+	RenderingReferenceSystem _RenderingReferenceSystem;
+#endif
 
 	//The noise textures.
 	StaticArray<GlobalTexture2D, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;

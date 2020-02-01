@@ -10,8 +10,9 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_DENOISING_SIZE (10.0f)
+#define VOLUMETRIC_LIGHTING_DENOISING_SIZE (8.0f)
 #define VOLUMETRIC_LIGHTING_DENOISING_START_END (VOLUMETRIC_LIGHTING_DENOISING_SIZE * 0.5f)
+#define BIAS_SAMPLE_WEIGHT_DEPTH_MULTIPLIER(X) ((X) * (X) * (X) * (X) * (X))
 
 /*
 *	Scene features struct definition.
@@ -79,12 +80,16 @@ void main()
 		*	Calculate the sample weight based on certain criteria;
 		*	
 		*	1. Is the sample coordinate valid?
-		*	2. How closely aligned are the hit distances to each other?
+		*	2. How closely aligned are the depths to each other?
 		*/
 		float sampleWeight = 1.0f;
 
 		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		//sampleWeight *= 1.0f - min(abs(currentFeatures.depth - sampleFeatures.depth), 1.0f);
+
+		float sample_weight_depth_multiplier = 1.0f - min(abs(currentFeatures.depth - sampleFeatures.depth), 1.0f);
+		sample_weight_depth_multiplier = BIAS_SAMPLE_WEIGHT_DEPTH_MULTIPLIER(sample_weight_depth_multiplier);
+
+		sampleWeight *= sample_weight_depth_multiplier;
 
 		denoisedVolumetricLighting += sampleVolumetricLighting * sampleWeight;
 		volumetricLightingWeightSum += sampleWeight;

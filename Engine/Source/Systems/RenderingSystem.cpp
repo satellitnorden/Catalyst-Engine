@@ -158,6 +158,10 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 	//Update the ray tracing system.
 	_RayTracingSystem.RenderUpdate(context);
 
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	_RenderingReferenceSystem.RenderUpdate(context);
+#endif
+
 	//This shouldn't really be here, but let's have it here for now...
 	AnimationSystem::Instance->RenderUpdate(context);
 
