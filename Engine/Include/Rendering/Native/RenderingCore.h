@@ -74,10 +74,10 @@ enum class RenderPassStage : uint8
 	FastApproximateAntiAliasing,
 	TemporalAntiAliasing,
 	PostProcessing,
-	UserInterface,
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	RenderingReference,
 #endif
+	UserInterface,
 	Screen,
 	
 	NumberOfRenderPassStages

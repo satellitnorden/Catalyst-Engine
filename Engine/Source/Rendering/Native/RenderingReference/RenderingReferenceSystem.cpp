@@ -20,12 +20,19 @@
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 
+//Resources.
+#include <Resources/Loading/ResourceLoader.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
+#include <Systems/UserInterfaceSystem.h>
+
+//User interface.
+#include <UserInterface/TextUserInterfaceElementDescription.h>
 
 //Rendering reference system constants.
 namespace RenderingReferenceSystemConstants
@@ -113,6 +120,23 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	//Reset the iterations.
 	_Iterations = 0;
 
+	//Create the progress information.
+	{
+		TextUserInterfaceElementDescription description;
+
+		description._Type = UserInterfaceElementType::Text;
+		description._Minimum = Vector2<float>(0.01f, 0.01f);
+		description._Maximum = Vector2<float>(0.99f, 0.25f);
+		description._Font = &ResourceLoader::GetFont(HashString("Catalyst_Engine_Default_Font"));
+		description._Scale = 0.025f;
+		description._Text = "";
+
+		_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+	}
+
+	//Reset the number of texels calculated.
+	_TexelsCalculated.store(0);
+
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
 }
@@ -143,6 +167,9 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	//Write the image to file.
 	TGAWriter::Write(_RenderingReferenceTexture, "RenderingReference.tga");
 
+	//Destroy the progress information.
+	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_ProgressInformation);
+
 	//Set the update speed back to normal.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
 }
@@ -172,6 +199,9 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 		//Update the number of iterations.
 		++_Iterations;
 
+		//Reset the texels calculated.
+		_TexelsCalculated.store(0);
+
 		//Recreate the texture.
 		if (_RenderingReferenceTextureHandle)
 		{
@@ -185,6 +215,14 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 		//Set the properties for the rendering reference.
 		RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceTextureIndex, _Iterations);
 	}
+
+	//Update the progress information.
+	const float iteration_percent{ _TexelsCalculated.load() / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width * RenderingSystem::Instance->GetScaledResolution()._Height) * 100.0f };
+
+	char buffer[128];
+	sprintf_s(buffer, "Rendering Reference Progress: Iterations - %u - Iteration completion - %.3f%%", _Iterations, iteration_percent);
+
+	_ProgressInformation->_Text = buffer;
 }
 
 /*
@@ -197,7 +235,11 @@ void RenderingReferenceSystem::ExecuteAsynchronous(const AsynchronousData *const
 	{
 		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
 		{
+			//Calculate the texel.
 			CalculateTexel(X, Y);
+
+			//Increment the number of texels calculated.
+			++_TexelsCalculated;
 		}
 	}
 }

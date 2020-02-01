@@ -17,6 +17,9 @@
 #include <Rendering/Native/Texture2D.h>
 #include <Rendering/Native/RenderingReference/SurfaceDescription.h>
 
+//User interface.
+#include <UserInterface/TextUserInterfaceElement.h>
+
 class RenderingReferenceSystem final
 {
 
@@ -73,6 +76,12 @@ private:
 
 	//Container for all the asynchronous data.
 	DynamicArray<AsynchronousData> _AsynchronousData;
+
+	//The progress information.
+	TextUserInterfaceElement *RESTRICT _ProgressInformation;
+
+	//Keeps track of the number of texels calculated.
+	std::atomic<uint64> _TexelsCalculated;
 
 	/*
 	*	Starts the rendering reference.
