@@ -212,7 +212,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 */
 bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
-//Calculate the normal.
+	//Calculate the normal.
 	float left;
 	float right;
 	float down;

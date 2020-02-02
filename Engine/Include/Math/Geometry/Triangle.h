@@ -21,15 +21,23 @@ public:
 	Vector3<float> _Vertex3;
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE constexpr Triangle() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr Triangle(	const Vector3<float> &initialVertex1,
-						const Vector3<float> &initialVertex2,
-						const Vector3<float> &initialVertex3) NOEXCEPT
+	FORCE_INLINE constexpr Triangle(const Vector3<float> &initial_vertex_1,
+									const Vector3<float> &initial_vertex_2,
+									const Vector3<float> &initial_vertex_3) NOEXCEPT
 		:
-		_Vertex1(initialVertex1),
-		_Vertex2(initialVertex2),
-		_Vertex3(initialVertex3)
+		_Vertex1(initial_vertex_1),
+		_Vertex2(initial_vertex_2),
+		_Vertex3(initial_vertex_3)
 	{
 
 	}
