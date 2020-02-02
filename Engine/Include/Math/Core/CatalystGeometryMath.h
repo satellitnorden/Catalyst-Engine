@@ -118,7 +118,6 @@ public:
 			return false;
 		}
 
-		//All slabs succeeded!
 		if (intersection_distance)
 		{
 			*intersection_distance = minimum;
@@ -203,7 +202,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayTriangleIntersection(	const Ray &ray,
 																			const Triangle &triangle,
-																			Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+																			float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		constexpr float EPSILON{ 0.0000001f };
 
@@ -243,10 +242,7 @@ public:
 
 		if (t > EPSILON)
 		{
-			if (intersectionPoint)
-			{
-				*intersectionPoint = ray._Origin + ray._Direction * t;
-			}
+			*intersection_distance = t;
 
 			return true;
 		}
