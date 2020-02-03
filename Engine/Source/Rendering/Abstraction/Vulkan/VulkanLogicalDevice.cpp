@@ -31,7 +31,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 
 	if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
 	{
-		required_extensions.EmplaceSlow(VK_NV_RAY_TRACING_EXTENSION_NAME);
+		required_extensions.Emplace(VK_NV_RAY_TRACING_EXTENSION_NAME);
 	}
 
 	VkDeviceCreateInfo deviceCreateInfo;
@@ -80,7 +80,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.queueCount = 1;
 		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
-		deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
+		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
 	}
 }
 

@@ -202,7 +202,7 @@ public:
 	/*
 	*	Adds a render target.
 	*/
-	void AddRenderTarget(const RenderTargetHandle newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
+	void AddRenderTarget(const RenderTargetHandle newRenderTarget) NOEXCEPT { _RenderTargets.Emplace(newRenderTarget); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.
@@ -212,7 +212,7 @@ public:
 	/*
 	*	Adds a vertex input attribute description.
 	*/
-	void AddVertexInputAttributeDescription(const uint32 location, const uint32 binding, const VertexInputAttributeDescription::Format format, const uint32 offset) NOEXCEPT { _VertexInputAttributeDescriptions.EmplaceFast(location, binding, format, offset); }
+	void AddVertexInputAttributeDescription(const uint32 location, const uint32 binding, const VertexInputAttributeDescription::Format format, const uint32 offset) NOEXCEPT { _VertexInputAttributeDescriptions.Emplace(location, binding, format, offset); }
 
 	/*
 	*	Sets the number of vertex input binding descriptions.
@@ -222,7 +222,7 @@ public:
 	/*
 	*	Adds a vertex input binding description.
 	*/
-	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { _VertexInputBindingDescriptions.EmplaceFast(binding, stride, inputRate); }
+	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { _VertexInputBindingDescriptions.Emplace(binding, stride, inputRate); }
 
 	/*
 	*	Sets the render resolution.

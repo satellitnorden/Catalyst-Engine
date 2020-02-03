@@ -12,8 +12,8 @@ DynamicArray<Entity *RESTRICT> ComponentManager::_ ## ENTITY_CLASS ## Entities;	
 DynamicArray<FIRST_COMPONENT> ComponentManager::_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s;											\
 NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT				\
 {																																	\
-	_ ## ENTITY_CLASS ## Entities.EmplaceSlow(entity);																				\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EmplaceSlow();																		\
+	_ ## ENTITY_CLASS ## Entities.Emplace(entity);																					\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Emplace();																			\
 																																	\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																				\
 }																																	\
@@ -46,9 +46,9 @@ DynamicArray<FIRST_COMPONENT> ComponentManager::_ ## ENTITY_CLASS ## FIRST_COMPO
 DynamicArray<SECOND_COMPONENT> ComponentManager::_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s;										\
 NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT				\
 {																																	\
-	_ ## ENTITY_CLASS ## Entities.EmplaceSlow(entity);																				\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EmplaceSlow();																		\
-	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EmplaceSlow();																		\
+	_ ## ENTITY_CLASS ## Entities.Emplace(entity);																					\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Emplace();																			\
+	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Emplace();																			\
 																																	\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																				\
 }																																	\

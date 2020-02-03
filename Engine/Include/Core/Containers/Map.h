@@ -26,7 +26,7 @@ public:
 		//Else, create a new object and return it.
 		else
 		{
-			EmplaceSlow(key, OBJECT_TYPE());
+			Emplace(key, OBJECT_TYPE());
 
 			return *Find(key);
 		}
@@ -115,9 +115,9 @@ public:
 	/*
 	*	Emplaces a new pair into the map.
 	*/
-	FORCE_INLINE void EmplaceSlow(const KEY_TYPE newKey, const OBJECT_TYPE &newObject)
+	FORCE_INLINE void Emplace(const KEY_TYPE newKey, const OBJECT_TYPE &newObject)
 	{
-		_Map.EmplaceSlow(newKey, newObject);
+		_Map.Emplace(newKey, newObject);
 	}
 
 private:

@@ -146,7 +146,7 @@ public:
 			bufferImageCopy.imageOffset = { 0, 0, 0 };
 			bufferImageCopy.imageExtent = { width >> i, height >> i, CatalystBaseMath::Maximum<uint32>(depth >> i, 1) };
 
-			bufferImageCopies.EmplaceFast(bufferImageCopy);
+			bufferImageCopies.Emplace(bufferImageCopy);
 
 			currentOffset += (width >> i) * (height >> i) * CatalystBaseMath::Maximum<uint32>(depth >> i, 1) * 4 * sizeof(byte);
 		}

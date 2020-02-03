@@ -56,7 +56,7 @@ public:
 	FORCE_INLINE void AddTriangleData(const TriangleData &triangle_data) NOEXCEPT
 	{
 		//Add the triangle data to the root.
-		_Root._TriangleData.EmplaceSlow(triangle_data);
+		_Root._TriangleData.Emplace(triangle_data);
 	}
 
 	/*
@@ -74,10 +74,21 @@ public:
 			root_box.Expand(triangle_data._Triangle._Vertex3);
 		}
 
-		//If the root node has more than the maximum number of triangles. split it.
+		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
 		if (_Root._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			SplitNode(maximum_triangles_per_node, root_box, &_Root);
+			_NodesToBeSplit.Emplace(&_Root, root_box);
+		}
+
+		//Process all nodes to be split.
+		while (!_NodesToBeSplit.Empty())
+		{
+			Node *const RESTRICT node{ _NodesToBeSplit.Back()._First };
+			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _NodesToBeSplit.Back()._Second };
+
+			_NodesToBeSplit.PopFast();
+
+			SplitNode(maximum_triangles_per_node, axis_aligned_bounding_box, node);
 		}
 	}
 
@@ -143,6 +154,9 @@ private:
 	//The allocator.
 	PoolAllocator<sizeof(Node) * 2> _Allocator;
 
+	//The nodes to be split, and their axis aligned bounding boxes.
+	DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+
 	/*
 	*	Splits a node.
 	*/
@@ -152,35 +166,37 @@ private:
 		AxisAlignedBoundingBox first;
 		AxisAlignedBoundingBox second;
 
-		const float x_axis{ box._Maximum._X - box._Minimum._X };
-		const float y_axis{ box._Maximum._Y - box._Minimum._Y };
-		const float z_axis{ box._Maximum._Z - box._Minimum._Z };
-
-		if (x_axis > y_axis && x_axis > z_axis) //X axis is the longest.
 		{
-			first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-			first._Maximum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Maximum._Y, box._Maximum._Z);
+			const float x_axis{ box._Maximum._X - box._Minimum._X };
+			const float y_axis{ box._Maximum._Y - box._Minimum._Y };
+			const float z_axis{ box._Maximum._Z - box._Minimum._Z };
 
-			second._Minimum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Minimum._Y, box._Minimum._Z);
-			second._Maximum = Vector3<float>(box._Maximum._X , box._Maximum._Y, box._Maximum._Z);
-		}
+			if (x_axis > y_axis&& x_axis > z_axis) //X axis is the longest.
+			{
+				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Maximum._Y, box._Maximum._Z);
 
-		else if (y_axis > z_axis) //Y axis is the longest.
-		{
-			first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-			first._Maximum = Vector3<float>(box._Maximum._X, box._Minimum._Y + (y_axis * 0.5f), box._Maximum._Z);
+				second._Minimum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Minimum._Y, box._Minimum._Z);
+				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+			}
 
-			second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y + (y_axis * 0.5f), box._Minimum._Z);
-			second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
-		}
+			else if (y_axis > z_axis) //Y axis is the longest.
+			{
+				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float>(box._Maximum._X, box._Minimum._Y + (y_axis * 0.5f), box._Maximum._Z);
 
-		else //Z axis is the longest.
-		{
-			first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-			first._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Minimum._Z + (z_axis * 0.5f));
+				second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y + (y_axis * 0.5f), box._Minimum._Z);
+				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+			}
 
-			second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z + (z_axis * 0.5f));
-			second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+			else //Z axis is the longest.
+			{
+				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Minimum._Z + (z_axis * 0.5f));
+
+				second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z + (z_axis * 0.5f));
+				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+			}
 		}
 
 		//Allocate the two new nodes.
@@ -200,7 +216,7 @@ private:
 			if (first.IsInside(triangle_data._Triangle._Vertex1))
 			{
 				//Add the triangle data.
-				nodes[0]._TriangleData.EmplaceSlow(triangle_data);
+				nodes[0]._TriangleData.Emplace(triangle_data);
 
 				//Since some triangles may overlap and be in both axis aligned bounding boxes at the same time, expand it a bit with the other two vertices.
 				first.Expand(triangle_data._Triangle._Vertex2);
@@ -210,7 +226,7 @@ private:
 			else
 			{
 				//Add the triangle data.
-				nodes[1]._TriangleData.EmplaceSlow(triangle_data);
+				nodes[1]._TriangleData.Emplace(triangle_data);
 
 				//Since some triangles may overlap and be in both axis aligned bounding boxes at the same time, expand it a bit with the other two vertices.
 				second.Expand(triangle_data._Triangle._Vertex2);
@@ -231,12 +247,12 @@ private:
 		//Check if either of the two new nodes need to be split.
 		if (node->_Nodes[0]._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			SplitNode(maximum_triangles_per_node, node->_AxisAlignedBoundingBoxes[0], &node->_Nodes[0]);
+			_NodesToBeSplit.Emplace(&nodes[0], node->_AxisAlignedBoundingBoxes[0]);
 		}
 
 		if (node->_Nodes[1]._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			SplitNode(maximum_triangles_per_node, node->_AxisAlignedBoundingBoxes[1], &node->_Nodes[1]);
+			_NodesToBeSplit.Emplace(&nodes[1], node->_AxisAlignedBoundingBoxes[1]);
 		}
 	}
 

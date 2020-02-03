@@ -59,7 +59,7 @@ void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, cons
 {
 	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot enable highlight!");
 
-	_HighlightedModels.EmplaceSlow(color, entity->_ComponentsIndex, strength);
+	_HighlightedModels.Emplace(color, entity->_ComponentsIndex, strength);
 }
 
 /*

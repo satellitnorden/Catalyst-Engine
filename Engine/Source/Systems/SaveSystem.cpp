@@ -49,7 +49,7 @@ void SaveSystem::SequentialUpdate(const UpdateContext* const RESTRICT context) N
 void SaveSystem::RegisterSaveEntry(const SaveEntry &entry) NOEXCEPT
 {
 	//Add the save entry.
-	_SaveEntries.EmplaceSlow(entry);
+	_SaveEntries.Emplace(entry);
 
 	//Request a load for the new entry.
 	RequestLoad(entry._SaveMask);

@@ -1130,9 +1130,9 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 
 		for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
 		{
-			points[i].EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+			points[i].Emplace(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+								CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+								CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
 		}
 	}
 
@@ -1155,7 +1155,7 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 					for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
 					{
 						const Vector3<float> offset{ static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z) };
-						points[i].EmplaceFast(points[i][j] + offset);
+						points[i].Emplace(points[i][j] + offset);
 					}
 				}
 			}
@@ -1259,8 +1259,8 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 
 		for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
 		{
-			points[i].EmplaceSlow(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-									CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
+			points[i].Emplace(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
+								CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
 		}
 	}
 
@@ -1281,7 +1281,7 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 				for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
 				{
 					const Vector2<float> offset{ static_cast<float>(X), static_cast<float>(Y) };
-					points[i].EmplaceFast(points[i][j] + offset);
+					points[i].Emplace(points[i][j] + offset);
 				}
 			}
 		}

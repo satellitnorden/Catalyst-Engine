@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-template <typename Type>
+template <typename TYPE>
 class DynamicArray final
 {
 
@@ -24,15 +24,15 @@ public:
 	/*
 	*	Constructor taking an initializer list.
 	*/
-	FORCE_INLINE DynamicArray(const std::initializer_list<Type> &initializerList) NOEXCEPT
+	FORCE_INLINE DynamicArray(const std::initializer_list<TYPE> &initializer_list) NOEXCEPT
 		:
 		_Size(0)
 	{
-		ReserveConstruct(initializerList.size());
+		ReserveConstruct(initializer_list.size());
 
-		for (const Type &element : initializerList)
+		for (const TYPE &element : initializer_list)
 		{
-			EmplaceFast(element);
+			Emplace(element);
 		}
 	}
 
@@ -45,13 +45,11 @@ public:
 		_Size(0),
 		_Capacity(0)
 	{
-		DestroyArray();
-
 		ReserveConstruct(other._Capacity);
 
 		for (uint64 i{ 0 }; i < other._Size; ++i)
 		{
-			EmplaceFast(other._Array[i]);
+			Emplace(other._Array[i]);
 		}
 	}
 
@@ -64,8 +62,6 @@ public:
 		_Size(0),
 		_Capacity(0)
 	{
-		DestroyArray();
-
 		_Array = other._Array;
 		_Size = other._Size;
 		_Capacity = other._Capacity;
@@ -80,7 +76,7 @@ public:
 	*/
 	FORCE_INLINE ~DynamicArray() NOEXCEPT
 	{
-		DestroyArray();
+		Destroy();
 	}
 
 	/*
@@ -88,6 +84,8 @@ public:
 	*/
 	FORCE_INLINE void operator=(const DynamicArray &other) NOEXCEPT
 	{
+		Destroy();
+
 		new (this) DynamicArray(other);
 	}
 
@@ -96,13 +94,15 @@ public:
 	*/
 	FORCE_INLINE void operator=(DynamicArray &&other) NOEXCEPT
 	{
+		Destroy();
+
 		new (this) DynamicArray(std::move(other));
 	}
 
 	/*
 	*	Subscript operator overload, const.
 	*/
-	FORCE_INLINE const Type& operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE const TYPE &operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -110,7 +110,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	FORCE_INLINE Type& operator[](const uint64 index) NOEXCEPT
+	FORCE_INLINE TYPE &operator[](const uint64 index) NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -118,7 +118,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	FORCE_INLINE RESTRICTED const Type *const RESTRICT Begin() const  NOEXCEPT
+	FORCE_INLINE RESTRICTED const TYPE *const RESTRICT Begin() const  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -126,7 +126,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	FORCE_INLINE RESTRICTED Type *const RESTRICT Begin()  NOEXCEPT
+	FORCE_INLINE RESTRICTED TYPE *const RESTRICT Begin()  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -134,7 +134,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	FORCE_INLINE RESTRICTED const Type *const RESTRICT End() const NOEXCEPT
+	FORCE_INLINE RESTRICTED const TYPE *const RESTRICT End() const NOEXCEPT
 	{
 		return _Array + _Size;
 	}
@@ -142,7 +142,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	FORCE_INLINE RESTRICTED Type *const RESTRICT End() NOEXCEPT
+	FORCE_INLINE RESTRICTED TYPE *const RESTRICT End() NOEXCEPT
 	{
 		return _Array + _Size;
 	}
@@ -150,7 +150,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	FORCE_INLINE RESTRICTED const Type *const RESTRICT begin() const  NOEXCEPT
+	FORCE_INLINE RESTRICTED const TYPE *const RESTRICT begin() const  NOEXCEPT
 	{
 		return Begin();
 	}
@@ -158,7 +158,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	FORCE_INLINE RESTRICTED Type *const RESTRICT begin()  NOEXCEPT
+	FORCE_INLINE RESTRICTED TYPE *const RESTRICT begin()  NOEXCEPT
 	{
 		return Begin();
 	}
@@ -166,7 +166,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	FORCE_INLINE RESTRICTED const Type *const RESTRICT end() const NOEXCEPT
+	FORCE_INLINE RESTRICTED const TYPE *const RESTRICT end() const NOEXCEPT
 	{
 		return End();
 	}
@@ -174,7 +174,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	FORCE_INLINE RESTRICTED Type *const RESTRICT end() NOEXCEPT
+	FORCE_INLINE RESTRICTED TYPE *const RESTRICT end() NOEXCEPT
 	{
 		return End();
 	}
@@ -182,7 +182,7 @@ public:
 	/*
 	*	Returns the element at the specified index, const
 	*/
-	FORCE_INLINE const Type& At(const uint64 index) const NOEXCEPT
+	FORCE_INLINE const TYPE &At(const uint64 index) const NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -190,7 +190,7 @@ public:
 	/*
 	*	Returns the element at the specified index, non-const
 	*/
-	FORCE_INLINE Type& At(const uint64 index) NOEXCEPT
+	FORCE_INLINE TYPE &At(const uint64 index) NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -198,22 +198,31 @@ public:
 	/*
 	*	Returns the capacity of this dynamic array.
 	*/
-	FORCE_INLINE uint64 Capacity() const NOEXCEPT { return _Capacity; }
+	FORCE_INLINE uint64 Capacity() const NOEXCEPT
+	{
+		return _Capacity;
+	}
 
 	/*
 	*	Returns the size of this dynamic array.
 	*/
-	FORCE_INLINE uint64 Size() const NOEXCEPT { return _Size; }
+	FORCE_INLINE uint64 Size() const NOEXCEPT
+	{
+		return _Size;
+	}
 
 	/*
 	*	Returns whether or not this dynamic array is empty.
 	*/
-	FORCE_INLINE bool Empty() const NOEXCEPT { return _Size == 0; }
+	FORCE_INLINE bool Empty() const NOEXCEPT
+	{
+		return _Size == 0;
+	}
 
 	/*
 	*	Returns a pointer to the data of this dynamic array, const.
 	*/
-	FORCE_INLINE RESTRICTED const Type *const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED const TYPE *const RESTRICT Data() const NOEXCEPT
 	{
 		return _Array;
 	}
@@ -221,7 +230,7 @@ public:
 	/*
 	*	Returns a pointer to the data of this dynamic array, non-const.
 	*/
-	FORCE_INLINE RESTRICTED Type *const RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED TYPE *const RESTRICT Data() NOEXCEPT
 	{
 		return _Array;
 	}
@@ -229,7 +238,7 @@ public:
 	/*
 	*	Returns the back of this dynamic array, const.
 	*/
-	FORCE_INLINE const Type& Back() const NOEXCEPT
+	FORCE_INLINE const TYPE &Back() const NOEXCEPT
 	{
 		return _Array[LastIndex()];
 	}
@@ -237,7 +246,7 @@ public:
 	/*
 	*	Returns the back of this dynamic array, non-const.
 	*/
-	FORCE_INLINE Type& Back() NOEXCEPT
+	FORCE_INLINE TYPE &Back() NOEXCEPT
 	{
 		return _Array[LastIndex()];
 	}
@@ -265,33 +274,52 @@ public:
 	{
 		for (uint64 i = 0; i < _Size; ++i)
 		{
-			_Array[i].~Type();
+			_Array[i].~TYPE();
 		}
 
 		_Size = 0;
 	}
 
 	/*
-	*	Given constructor arguments for the object type, construct a new object at the back of the array.
+	*	Destroys this dynamic array.
 	*/
-	template <class... Arguments>
-	FORCE_INLINE void EmplaceSlow(Arguments&&... arguments) NOEXCEPT
+	FORCE_INLINE void Destroy() NOEXCEPT
 	{
-		if (UNLIKELY(_Size >= _Capacity))
+		//This dynamic array might have been moved from, thus we need to test the array pointer.
+		if (_Array)
 		{
-			Reserve(_Size > 0 ? _Size * 3 : 16);
-		}
+			//Call the destructor on all objects in the array.
+			for (uint64 i = 0; i < _Size; ++i)
+			{
+				_Array[i].~TYPE();
+			}
 
-		new ((void *const RESTRICT) &_Array[_Size++]) Type(std::forward<Arguments>(arguments)...);
+			//Free the memory used by the array.
+			Memory::Free(_Array);
+
+			//Set it to nullptr.
+			_Array = nullptr;
+
+			//Update the size.
+			_Size = 0;
+
+			//Update the capacity.
+			_Capacity = 0;
+		}
 	}
 
 	/*
-	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
+	*	Given constructor arguments for the object type, construct a new object at the back of the array.
 	*/
 	template <class... Arguments>
-	FORCE_INLINE void EmplaceFast(Arguments&&... arguments) NOEXCEPT
+	FORCE_INLINE void Emplace(Arguments&&... arguments) NOEXCEPT
 	{
-		new ((void *const RESTRICT) &_Array[_Size++]) Type(std::forward<Arguments>(arguments)...);
+		if (UNLIKELY(_Size >= _Capacity))
+		{
+			Reserve(_Size > 0 ? _Size * 2 : 2);
+		}
+
+		new ((void *const RESTRICT) &_Array[_Size++]) TYPE(std::forward<Arguments>(arguments)...);
 	}
 
 	/*
@@ -299,9 +327,9 @@ public:
 	*/
 	FORCE_INLINE void EraseAt(const uint64 index) NOEXCEPT
 	{
-		Type &object{ _Array[index] };
+		TYPE &object{ _Array[index] };
 
-		object.~Type();
+		object.~TYPE();
 		object = std::move(Back());
 
 		PopFast();
@@ -310,13 +338,13 @@ public:
 	/*
 	*	Finds and erases an element in the array. Does not respect order of elements.
 	*/
-	FORCE_INLINE void Erase(const Type &objectToErase) NOEXCEPT
+	FORCE_INLINE void Erase(const TYPE &element) NOEXCEPT
 	{
-		for (Type &object : *this)
+		for (TYPE &object : *this)
 		{
-			if (object == objectToErase)
+			if (object == element)
 			{
-				object.~Type();
+				object.~TYPE();
 				object = std::move(Back());
 				PopFast();
 
@@ -339,10 +367,10 @@ public:
 	FORCE_INLINE void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
+		TYPE *const RESTRICT newArray{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(TYPE) * _Size);
 
 		//Free the old array.
 		Memory::Free(_Array);
@@ -358,10 +386,10 @@ public:
 	FORCE_INLINE void UpsizeFast(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
+		TYPE *const RESTRICT newArray{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(TYPE) * _Size);
 
 		//Free the old array.
 		Memory::Free(_Array);
@@ -378,15 +406,15 @@ public:
 	FORCE_INLINE void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity)) };
+		TYPE *const RESTRICT newArray{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::Copy(newArray, _Array, sizeof(Type) * _Size);
+		Memory::Copy(newArray, _Array, sizeof(TYPE) * _Size);
 
 		//Default construct the remaining objects.
 		for (uint64 i = _Size; i < newCapacity; ++i)
 		{
-			new (&newArray[i]) Type;
+			new (&newArray[i]) TYPE;
 		}
 
 		//Free the old array.
@@ -401,7 +429,7 @@ public:
 private:
 
 	//Pointer to the current array.
-	Type *RESTRICT _Array;
+	TYPE *RESTRICT _Array;
 
 	//The current size of this dynamic array.
 	uint64 _Size;
@@ -410,40 +438,12 @@ private:
 	uint64 _Capacity;
 
 	/*
-	*	Destroys the underlying array.
-	*/
-	FORCE_INLINE void DestroyArray() NOEXCEPT
-	{
-		//This dynamic array might have been moved from, thus we need to test the array pointer.
-		if (_Array)
-		{
-			//Call the destructor on all objects in the array.
-			for (uint64 i = 0; i < _Size; ++i)
-			{
-				_Array[i].~Type();
-			}
-
-			//Free the memory used by the array.
-			Memory::Free(_Array);
-
-			//Set it to nullptr.
-			_Array = nullptr;
-
-			//Update the size.
-			_Size = 0;
-
-			//Update the capacity.
-			_Capacity = 0;
-		}
-	}
-
-	/*
 	*	Reserves a new chunk of memory, changing the array's capacity, without copying over the old array.
 	*/
 	FORCE_INLINE void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		_Array = static_cast<Type *RESTRICT>(Memory::Allocate(sizeof(Type) * newCapacity));
+		_Array = static_cast<TYPE *RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity));
 
 		//Update the capacity.
 		_Capacity = newCapacity;

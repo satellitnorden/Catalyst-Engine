@@ -691,8 +691,8 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 												node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f };
 
 		//Generate the informations.
-		_Update._PatchInformations.EmplaceSlow();
-		_Update._PatchRenderInformations.EmplaceSlow();
+		_Update._PatchInformations.Emplace();
+		_Update._PatchRenderInformations.Emplace();
 
 		TerrainPatchInformation &information{ _Update._PatchInformations.Back() };
 		TerrainPatchRenderInformation &render_information{ _Update._PatchRenderInformations.Back() };

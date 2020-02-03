@@ -109,7 +109,7 @@ public:
 
 				const BoneTransform bone_transform{ rotation, position };
 
-				animation->_Keyframes[channel_name].EmplaceSlow(static_cast<float>(rotation_key.mTime / assimp_animation->mTicksPerSecond), bone_transform);
+				animation->_Keyframes[channel_name].Emplace(static_cast<float>(rotation_key.mTime / assimp_animation->mTicksPerSecond), bone_transform);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ private:
 				{
 					if (mesh->mBones[j]->mWeights[k].mVertexId == i)
 					{
-						temporary_bone_weights.EmplaceFast(j, mesh->mBones[j]->mWeights[k].mWeight);
+						temporary_bone_weights.Emplace(j, mesh->mBones[j]->mWeights[k].mWeight);
 					}
 				}
 			}
@@ -200,7 +200,7 @@ private:
 			const Vector3<uint32> bone_indices{ temporary_bone_weights[0]._Index, temporary_bone_weights[1]._Index, temporary_bone_weights[2]._Index };
 			const Vector3<float> bone_weights{ temporary_bone_weights[0]._Weight, temporary_bone_weights[1]._Weight, temporary_bone_weights[2]._Weight };
 
-			vertices->EmplaceSlow(position, normal, tangent, bone_indices, bone_weights, texture_coordinate);
+			vertices->Emplace(position, normal, tangent, bone_indices, bone_weights, texture_coordinate);
 
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Position._X), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Position._Y), "NaN detected!");
@@ -225,7 +225,7 @@ private:
 
 			for (uint32 j = 0; j < face.mNumIndices; ++j)
 			{
-				indices->EmplaceSlow(face.mIndices[j]);
+				indices->Emplace(face.mIndices[j]);
 			}
 		}
 	}
@@ -290,7 +290,7 @@ private:
 		{
 			if (aiBone *const RESTRICT found_bone{ FindBone(scene->mRootNode, scene, node->mChildren[i]->mName) })
 			{
-				bone->_Children.EmplaceSlow();
+				bone->_Children.Emplace();
 				ConvertBone(scene->mMeshes[0], found_bone, &bone->_Children.Back());
 
 				AddChildBones(node->mChildren[i], scene, &bone->_Children.Back());
@@ -318,7 +318,7 @@ private:
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
-			vertices->EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			vertices->Emplace(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Position._X), "NaN detected!");
 			ASSERT(!CatalystBaseMath::IsNaN(vertices->Back()._Position._Y), "NaN detected!");
@@ -340,7 +340,7 @@ private:
 
 			for (uint32 j = 0; j < face.mNumIndices; ++j)
 			{
-				indices->EmplaceSlow(face.mIndices[j]);
+				indices->Emplace(face.mIndices[j]);
 			}
 		}
 	}
@@ -354,8 +354,8 @@ private:
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
 		{
 			//Add a new mesh.
-			vertices->EmplaceSlow();
-			indices->EmplaceSlow();
+			vertices->Emplace();
+			indices->Emplace();
 
 			ProcessModelMesh(scene->mMeshes[node->mMeshes[i]], scene, &vertices->Back(), &indices->Back());
 		}

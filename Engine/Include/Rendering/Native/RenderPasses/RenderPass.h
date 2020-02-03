@@ -112,7 +112,7 @@ protected:
 	*/
 	FORCE_INLINE void AddPipeline(Pipeline *const RESTRICT pipeline) NOEXCEPT
 	{
-		_Pipelines.EmplaceFast(pipeline);
+		_Pipelines.Emplace(pipeline);
 	}
 
 private:

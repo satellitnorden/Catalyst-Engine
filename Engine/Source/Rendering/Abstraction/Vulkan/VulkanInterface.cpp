@@ -248,7 +248,7 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_Vulkan2DTextures.EmplaceSlow(new2DTexture);
+	_Vulkan2DTextures.Emplace(new2DTexture);
 
 	return new2DTexture;
 }
@@ -274,7 +274,7 @@ RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(cons
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_Vulkan3DTextures.EmplaceSlow(new3DTexture);
+	_Vulkan3DTextures.Emplace(new3DTexture);
 
 	return new3DTexture;
 }
@@ -290,7 +290,7 @@ RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAc
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanAccelerationStructures.EmplaceSlow(newAccelerationStructure);
+	_VulkanAccelerationStructures.Emplace(newAccelerationStructure);
 
 	return newAccelerationStructure;
 }
@@ -316,7 +316,7 @@ RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDe
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanBuffers.EmplaceSlow(newBuffer);
+	_VulkanBuffers.Emplace(newBuffer);
 
 	return newBuffer;
 }
@@ -340,7 +340,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeComma
 	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Compute));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
-	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPools.Emplace(newCommandPool);
 
 	return newCommandPool;
 }
@@ -354,7 +354,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsComm
 	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
-	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPools.Emplace(newCommandPool);
 
 	return newCommandPool;
 }
@@ -369,7 +369,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferComm
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
 
-	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPools.Emplace(newCommandPool);
 
 	return newCommandPool;
 }
@@ -385,7 +385,7 @@ RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTe
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
+	_VulkanCubeMapTextures.Emplace(newCubeMapTexture);
 
 	return newCubeMapTexture;
 }
@@ -401,7 +401,7 @@ RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanDepthBuffers.EmplaceSlow(newDepthBuffer);
+	_VulkanDepthBuffers.Emplace(newDepthBuffer);
 
 	return newDepthBuffer;
 }
@@ -417,7 +417,7 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanDescriptorSetLayouts.EmplaceSlow(newDescriptorSetLayout);
+	_VulkanDescriptorSetLayouts.Emplace(newDescriptorSetLayout);
 
 	return newDescriptorSetLayout;
 }
@@ -433,7 +433,7 @@ RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptor
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanDescriptorSets.EmplaceSlow(newDescriptorSet);
+	_VulkanDescriptorSets.Emplace(newDescriptorSet);
 
 	return newDescriptorSet;
 }
@@ -459,7 +459,7 @@ RESTRICTED VulkanEvent *const RESTRICT VulkanInterface::CreateEvent() NOEXCEPT
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanEvents.EmplaceSlow(newEvent);
+	_VulkanEvents.Emplace(newEvent);
 
 	return newEvent;
 }
@@ -475,7 +475,7 @@ RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenc
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanFences.EmplaceSlow(newFence);
+	_VulkanFences.Emplace(newFence);
 
 	return newFence;
 }
@@ -491,7 +491,7 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanFramebuffers.EmplaceSlow(newFramebuffer);
+	_VulkanFramebuffers.Emplace(newFramebuffer);
 
 	return newFramebuffer;
 }
@@ -507,7 +507,7 @@ RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputeP
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanComputePipelines.EmplaceSlow(newPipeline);
+	_VulkanComputePipelines.Emplace(newPipeline);
 
 	return newPipeline;
 }
@@ -523,7 +523,7 @@ RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphic
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanGraphicsPipelines.EmplaceSlow(newPipeline);
+	_VulkanGraphicsPipelines.Emplace(newPipeline);
 
 	return newPipeline;
 }
@@ -539,7 +539,7 @@ RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTr
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanRayTracingPipelines.EmplaceSlow(newPipeline);
+	_VulkanRayTracingPipelines.Emplace(newPipeline);
 
 	return newPipeline;
 }
@@ -555,7 +555,7 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanRenderPasses.EmplaceSlow(newRenderPass);
+	_VulkanRenderPasses.Emplace(newRenderPass);
 
 	return newRenderPass;
 }
@@ -571,7 +571,7 @@ RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarge
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanRenderTargets.EmplaceSlow(newRenderTarget);
+	_VulkanRenderTargets.Emplace(newRenderTarget);
 
 	return newRenderTarget;
 }
@@ -587,7 +587,7 @@ RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NO
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanSemaphores.EmplaceSlow(newSemaphore);
+	_VulkanSemaphores.Emplace(newSemaphore);
 
 	return newSemaphore;
 }
@@ -603,7 +603,7 @@ RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const Vk
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanSamplers.EmplaceSlow(newSampler);
+	_VulkanSamplers.Emplace(newSampler);
 
 	return newSampler;
 }
@@ -619,7 +619,7 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanShaderModules.EmplaceSlow(newShaderModule);
+	_VulkanShaderModules.Emplace(newShaderModule);
 
 	return newShaderModule;
 }
@@ -635,7 +635,7 @@ RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuf
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanStorageBuffers.EmplaceSlow(newStorageBuffer);
+	_VulkanStorageBuffers.Emplace(newStorageBuffer);
 
 	return newStorageBuffer;
 }

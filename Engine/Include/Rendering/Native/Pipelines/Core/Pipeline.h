@@ -69,7 +69,7 @@ public:
 	*/
 	FORCE_INLINE void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT
 	{
-		_CommandBuffers.EmplaceFast(newCommandBuffer);
+		_CommandBuffers.Emplace(newCommandBuffer);
 	}
 
 	/*
@@ -118,7 +118,7 @@ protected:
 	*/
 	FORCE_INLINE void AddRenderDataTableLayout(RenderDataTableLayoutHandle newRenderDataTableLayout) NOEXCEPT
 	{
-		_RenderDataTableLayouts.EmplaceFast(newRenderDataTableLayout);
+		_RenderDataTableLayouts.Emplace(newRenderDataTableLayout);
 	}
 
 	/*
@@ -129,7 +129,7 @@ protected:
 	/*
 	*	Adds a push constant range.
 	*/
-	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.EmplaceFast(shaderStage, offset, size); }
+	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.Emplace(shaderStage, offset, size); }
 
 private:
 

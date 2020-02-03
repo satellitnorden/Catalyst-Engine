@@ -29,7 +29,7 @@ void TaskSystem::Initialize() NOEXCEPT
 
 	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
 	{
-		_TaskExecutorThreads.EmplaceFast(std::move(std::thread([](void *const RESTRICT)
+		_TaskExecutorThreads.Emplace(std::move(std::thread([](void *const RESTRICT)
 		{
 			TaskSystem::Instance->ExecuteTasks();
 		}, nullptr)));

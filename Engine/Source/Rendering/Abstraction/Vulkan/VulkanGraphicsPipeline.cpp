@@ -248,7 +248,7 @@ void VulkanGraphicsPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArr
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	
-		pipelineColorBlendAttachmentStates.EmplaceFast(newPipelineColorBlendAttachmentState);
+		pipelineColorBlendAttachmentStates.Emplace(newPipelineColorBlendAttachmentState);
 	}
 }
 

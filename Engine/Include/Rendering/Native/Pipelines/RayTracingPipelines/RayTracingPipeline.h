@@ -71,7 +71,7 @@ protected:
 	*/
 	FORCE_INLINE void AddMissShader(const Shader shader) NOEXCEPT
 	{
-		_MissShaders.EmplaceFast(shader);
+		_MissShaders.Emplace(shader);
 	}
 
 private:

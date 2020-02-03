@@ -67,7 +67,7 @@ void EntityPlacementSystem::RegisterEntityPlacementFunction(const EntityPlacemen
 	data._GridCellSize = gridCellSize;
 
 	//Put it in the container.
-	_EntityPlacementData.EmplaceSlow(data);
+	_EntityPlacementData.Emplace(data);
 }
 
 /*
@@ -124,7 +124,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 	{
 		for (int8 y{ -halfGridSize }; y <= halfGridSize; ++y)
 		{
-			wantedGridPoints.EmplaceFast(currentGridPoint + GridPoint2(x, y));
+			wantedGridPoints.Emplace(currentGridPoint + GridPoint2(x, y));
 		}
 	}
 
@@ -187,8 +187,8 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 
 		if (!gridPointExists)
 		{
-			data->_GridPoints.EmplaceSlow(EntityPlacementData::EntityGridPoint{ wantedGridPoint });
-			data->_Entities.EmplaceSlow(DynamicArray<Entity *RESTRICT>());
+			data->_GridPoints.Emplace(EntityPlacementData::EntityGridPoint{ wantedGridPoint });
+			data->_Entities.Emplace(DynamicArray<Entity *RESTRICT>());
 
 			//Calculate the axis aligned bounding box.
 			const Vector3<float> wantedGridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(wantedGridPoint, data->_GridCellSize) };

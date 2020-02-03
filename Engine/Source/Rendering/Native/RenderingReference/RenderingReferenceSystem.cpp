@@ -112,7 +112,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	for (;;)
 	{
 		//Add new asynchronous data.
-		_AsynchronousData.EmplaceSlow();
+		_AsynchronousData.Emplace();
 
 		AsynchronousData& data{ _AsynchronousData.Back() };
 
@@ -207,7 +207,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	}
 
 	//Build the terrain acceleration structure.
-	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(1'024 * 32);
+	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(1'024);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);

@@ -38,7 +38,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	{
 		SCOPED_LOCK(_AutomaticTerminationQueueLock);
 
-		_AutomaticTerminationQueue.EmplaceSlow(entity);
+		_AutomaticTerminationQueue.Emplace(entity);
 	}
 
 	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
@@ -46,7 +46,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 	{
 		SCOPED_LOCK(_AutomaticDestructionQueueLock);
 
-		_AutomaticDestructionQueue.EmplaceSlow(entity);
+		_AutomaticDestructionQueue.Emplace(entity);
 	}
 
 	//Initialize this entity.
@@ -99,7 +99,7 @@ void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, 
 	SCOPED_LOCK(_InitializationQueueLock);
 
 	//Add the data.
-	_InitializationQueue.EmplaceSlow(entity, data, force);
+	_InitializationQueue.Emplace(entity, data, force);
 }
 
 /*
@@ -114,7 +114,7 @@ void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOE
 	SCOPED_LOCK(_TerminationQueueLock);
 
 	//Add the data.
-	_TerminationQueue.EmplaceSlow(entity);
+	_TerminationQueue.Emplace(entity);
 }
 
 /*
@@ -127,7 +127,7 @@ void EntityCreationSystem::RequestDestruction(Entity *const RESTRICT entity) NOE
 	SCOPED_LOCK(_DestructionQueueLock);
 
 	//Add the data.
-	_DestructionQueue.EmplaceSlow(entity);
+	_DestructionQueue.Emplace(entity);
 }
 
 /*

@@ -64,7 +64,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Maximum = typeDescription->_Maximum;
 			element->_TextureIndex = typeDescription->_ImageTextureIndex;
 
-			_UserInterfaceElements.EmplaceSlow(element);
+			_UserInterfaceElements.Emplace(element);
 
 			return element;
 		}
@@ -81,7 +81,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Scale = typeDescription->_Scale;
 			element->_Text = std::move(typeDescription->_Text);
 
-			_UserInterfaceElements.EmplaceSlow(element);
+			_UserInterfaceElements.Emplace(element);
 
 			return element;
 		}

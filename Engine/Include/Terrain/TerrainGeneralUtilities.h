@@ -97,17 +97,17 @@ namespace TerrainGeneralUtilities
 					}
 				}
 
-				vertices->EmplaceFast(vertex);
+				vertices->Emplace(vertex);
 
 				if (i != properties._PatchResolution - 1 && j != properties._PatchResolution - 1)
 				{
-					indices->EmplaceFast((i * properties._PatchResolution) + j);
-					indices->EmplaceFast((i * properties._PatchResolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * properties._PatchResolution) + j);
+					indices->Emplace((i * properties._PatchResolution) + j);
+					indices->Emplace((i * properties._PatchResolution) + j + 1);
+					indices->Emplace(((i + 1) * properties._PatchResolution) + j);
 
-					indices->EmplaceFast((i * properties._PatchResolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * properties._PatchResolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * properties._PatchResolution) + j);
+					indices->Emplace((i * properties._PatchResolution) + j + 1);
+					indices->Emplace(((i + 1) * properties._PatchResolution) + j + 1);
+					indices->Emplace(((i + 1) * properties._PatchResolution) + j);
 				}
 			}
 		}
@@ -133,17 +133,17 @@ namespace TerrainGeneralUtilities
 				vertex._Position._Y = height_map.At(X, Y);
 				vertex._Position._Z = static_cast<float>(Y) - static_cast<float>(resolution / 2);
 
-				vertices->EmplaceFast(vertex);
+				vertices->Emplace(vertex);
 
 				if (X != resolution - 1 && Y != resolution - 1)
 				{
-					indices->EmplaceFast((X * resolution) + Y);
-					indices->EmplaceFast((X * resolution) + Y + 1);
-					indices->EmplaceFast(((X + 1) * resolution) + Y);
+					indices->Emplace((X * resolution) + Y);
+					indices->Emplace((X * resolution) + Y + 1);
+					indices->Emplace(((X + 1) * resolution) + Y);
 
-					indices->EmplaceFast((X * resolution) + Y + 1);
-					indices->EmplaceFast(((X + 1) * resolution) + Y + 1);
-					indices->EmplaceFast(((X + 1) * resolution) + Y);
+					indices->Emplace((X * resolution) + Y + 1);
+					indices->Emplace(((X + 1) * resolution) + Y + 1);
+					indices->Emplace(((X + 1) * resolution) + Y);
 				}
 			}
 		}

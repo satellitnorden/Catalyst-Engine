@@ -47,7 +47,7 @@ void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context)
 void RayTracingSystem::AddStaticInstance(const TopLevelAccelerationStructureInstanceData& instance) NOEXCEPT
 {
 	//Add the static instance.
-	_StaticInstances.EmplaceSlow(instance);
+	_StaticInstances.Emplace(instance);
 
 	//Flag that the static top level acceleration structure needs update.
 	_StaticTopLevelAccelerationStructureNeedsUpdate = true;

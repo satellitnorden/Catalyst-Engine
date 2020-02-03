@@ -169,7 +169,7 @@ namespace VulkanRenderingSystemLogic
 
 		for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
 		{
-			pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+			pipelineDescriptorSetLayouts.Emplace(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 		}
 
 		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
@@ -189,7 +189,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
 			{
-				pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+				pushConstantRanges.Emplace(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
 			}
 
 			parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
@@ -227,7 +227,7 @@ namespace VulkanRenderingSystemLogic
 			{
 				if (!uniqueAttachments.Find(renderTarget))
 				{
-					uniqueAttachments.EmplaceSlow(renderTarget, attachmentCounter++);
+					uniqueAttachments.Emplace(renderTarget, attachmentCounter++);
 				}
 			}
 
@@ -247,7 +247,7 @@ namespace VulkanRenderingSystemLogic
 
 			if (depthBuffer)
 			{
-				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
 																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
@@ -260,7 +260,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
-				attachmentDescriptions.EmplaceFast(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
 																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -268,7 +268,7 @@ namespace VulkanRenderingSystemLogic
 																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
 																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
 
-				colorAttachmentReferences.EmplaceFast(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
+				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::Screen) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
 			}
 
 			parameters._AttachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
@@ -331,7 +331,7 @@ namespace VulkanRenderingSystemLogic
 					framebufferParameters._Attachments = &swapchainImage;
 					framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-					data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+					data->_FrameBuffers.Emplace(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				}
 
 				data->_Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
@@ -350,12 +350,12 @@ namespace VulkanRenderingSystemLogic
 
 				if (depthBuffer)
 				{
-					attachments.EmplaceFast(depthBuffer->GetImageView());
+					attachments.Emplace(depthBuffer->GetImageView());
 				}
 
 				for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 				{
-					attachments.EmplaceFast(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
+					attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
 				}
 
 				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -363,7 +363,7 @@ namespace VulkanRenderingSystemLogic
 				framebufferParameters._Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
 				data->_FrameBuffers.Reserve(1);
-				data->_FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+				data->_FrameBuffers.Emplace(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				data->_Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 				data->_NumberOfAttachments = static_cast<uint32>(attachments.Size());
 				data->_RenderToScreeen = false;
@@ -390,7 +390,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
 			{
-				pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+				pipelineDescriptorSetLayouts.Emplace(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 			}
 
 			parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
@@ -410,7 +410,7 @@ namespace VulkanRenderingSystemLogic
 
 				for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
 				{
-					pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+					pushConstantRanges.Emplace(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
 				}
 
 				parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
@@ -418,11 +418,11 @@ namespace VulkanRenderingSystemLogic
 			}
 
 			parameters._ShaderModules.Reserve(5);
-			if (pipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
-			if (pipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
-			if (pipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
-			if (pipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
-			if (pipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
+			if (pipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
+			if (pipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
+			if (pipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
+			if (pipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
+			if (pipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
 			parameters._StencilTestEnable = pipeline->IsStencilTestEnabled();
 			parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilFailOperator());
 			parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilPassOperator());
@@ -440,7 +440,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (const VertexInputAttributeDescription &vertexInputAttributeDescription : pipeline->GetVertexInputAttributeDescriptions())
 			{
-				vertexInputAttributeDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
+				vertexInputAttributeDescriptions.Emplace(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
 			}
 
 			parameters._VertexInputAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
@@ -451,7 +451,7 @@ namespace VulkanRenderingSystemLogic
 
 			for (const VertexInputBindingDescription &vertexInputBindingDescription : pipeline->GetVertexInputBindingDescriptions())
 			{
-				vertexInputBindingDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
+				vertexInputBindingDescriptions.Emplace(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
 			}
 
 			parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
@@ -478,7 +478,7 @@ namespace VulkanRenderingSystemLogic
 
 		for (RenderDataTableLayoutHandle renderDataTableLayout : pipeline->GetRenderDataTableLayouts())
 		{
-			pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+			pipelineDescriptorSetLayouts.Emplace(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 		}
 
 		parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
@@ -498,23 +498,23 @@ namespace VulkanRenderingSystemLogic
 
 			for (const PushConstantRange &pushConstantRange : pipeline->GetPushConstantRanges())
 			{
-				pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+				pushConstantRanges.Emplace(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
 			}
 
 			parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
+		parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
 
 		if (pipeline->GetClosestHitShader() != Shader::None)
 		{
-			parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
+			parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
 		}
 		
 		for (const Shader shader : pipeline->GetMissShaders())
 		{
-			parameters._ShaderModules.EmplaceSlow(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(shader)]);
+			parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(shader)]);
 		}
 
 		//Create the pipeline sub stage data.
@@ -1412,7 +1412,7 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 void RenderingSystem::DestroyTopLevelAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure, *handle);
 }
 
 /*
@@ -1439,7 +1439,7 @@ void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTR
 void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer, *handle);
 }
 
 /*
@@ -1464,7 +1464,7 @@ void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBin
 	{
 		const RenderDataTableLayoutBinding &binding{ bindings[i] };
 
-		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), binding._NumberOfArrayElements, VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
+		vulkanBindings.Emplace(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), binding._NumberOfArrayElements, VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
 	}
 
 	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), numberOfBindings);
@@ -1726,7 +1726,7 @@ void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, c
 void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable, *handle);
 }
 
 /*
@@ -1786,7 +1786,7 @@ void RenderingSystem::CreateTexture3D(const TextureData& data, Texture3DHandle* 
 void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.EmplaceSlow(VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D, *handle);
 }
 
 /*

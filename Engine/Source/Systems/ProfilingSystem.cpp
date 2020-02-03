@@ -80,7 +80,7 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 
 		UserInterfaceElement *const RESTRICT element{ UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description) };
 
-		ProfilingSystemData::_UserInterfaceElements.EmplaceSlow(element);
+		ProfilingSystemData::_UserInterfaceElements.Emplace(element);
 	}
 }
 
@@ -106,5 +106,5 @@ void ProfilingSystem::PostUpdate(const UpdateContext *const RESTRICT context) NO
 void ProfilingSystem::AddProfilingEntry(const DynamicString &name, const float duration) NOEXCEPT
 {
 	//Add the profiling entry.
-	ProfilingSystemData::_ProfilingEntries.EmplaceSlow(name, duration);
+	ProfilingSystemData::_ProfilingEntries.Emplace(name, duration);
 }

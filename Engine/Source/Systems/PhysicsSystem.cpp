@@ -45,7 +45,7 @@ void PhysicsSystem::CastRay(const Ray &ray, const PhysicsChannel channels, Rayca
 void PhysicsSystem::RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT
 {
 	//Add it to the container.
-	_CharacterMovements.EmplaceSlow(movement);
+	_CharacterMovements.Emplace(movement);
 }
 
 /*

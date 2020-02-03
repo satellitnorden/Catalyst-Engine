@@ -62,7 +62,7 @@ public:
 	FORCE_INLINE TextureDataContainer(byte *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initial_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(texture_data);
+		_TextureData.Emplace(texture_data);
 		_TextureWidth = initial_width;
 		_TextureHeight = initial_height;
 		_TextureDepth = initial_depth;
@@ -77,7 +77,7 @@ public:
 	FORCE_INLINE TextureDataContainer(float *RESTRICT texture_data, const uint32 initial_width, const uint32 initial_height, const uint32 initial_depth, const uint8 initial_number_of_channels) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(texture_data);
+		_TextureData.Emplace(texture_data);
 		_TextureWidth = initial_width;
 		_TextureHeight = initial_height;
 		_TextureDepth = initial_depth;
@@ -92,7 +92,7 @@ public:
 	FORCE_INLINE TextureDataContainer(const Texture2D<TYPE> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
+		_TextureData.Emplace(reinterpret_cast<const void *RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureDepth = 1;
@@ -110,7 +110,7 @@ public:
 
 		for (const Texture2D<TYPE> &mip : texture)
 		{
-			_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(mip.Data()));
+			_TextureData.Emplace(reinterpret_cast<const void *RESTRICT>(mip.Data()));
 		}
 
 		_TextureWidth = static_cast<uint32>(texture[0].GetWidth());
@@ -127,7 +127,7 @@ public:
 	FORCE_INLINE TextureDataContainer(const Texture2D<Vector4<TYPE>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
+		_TextureData.Emplace(reinterpret_cast<const void *RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureDepth = 1;
@@ -142,7 +142,7 @@ public:
 	FORCE_INLINE TextureDataContainer(const Texture3D<TYPE>& texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(reinterpret_cast<const void* RESTRICT>(texture.Data()));
+		_TextureData.Emplace(reinterpret_cast<const void* RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureDepth = static_cast<uint32>(texture.GetDepth());
@@ -159,7 +159,7 @@ public:
 
 		for (const DynamicArray<byte> &initialTextureDataChunk : initialTextureData)
 		{
-			_TextureData.EmplaceFast(initialTextureDataChunk.Data());
+			_TextureData.Emplace(initialTextureDataChunk.Data());
 		}
 
 		_TextureWidth = initialTextureWidth;
@@ -178,7 +178,7 @@ public:
 
 		for (const DynamicArray<float> &initialTextureDataChunk : initialTextureData)
 		{
-			_TextureData.EmplaceFast(initialTextureDataChunk.Data());
+			_TextureData.Emplace(initialTextureDataChunk.Data());
 		}
 
 		_TextureWidth = initialTextureWidth;
@@ -195,7 +195,7 @@ public:
 	FORCE_INLINE TextureDataContainer(const StaticArray<Vector4<float>, NUMBER_OF_TEXELS> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
-		_TextureData.EmplaceFast(initialTextureData.Data());
+		_TextureData.Emplace(initialTextureData.Data());
 
 		_TextureWidth = initialTextureWidth;
 		_TextureHeight = initialTextureHeight;

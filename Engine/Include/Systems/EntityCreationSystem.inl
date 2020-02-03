@@ -13,7 +13,7 @@ RESTRICTED CLASS* const RESTRICT EntityCreationSystem::CreateEntity(ARGUMENTS&&.
 	CLASS *const RESTRICT newEntity{ new (memory) CLASS(std::forward<ARGUMENTS>(arguments)...) };
 
 	_EntitiesLock.Lock();
-	_Entities.EmplaceSlow(newEntity);
+	_Entities.Emplace(newEntity);
 	_EntitiesLock.Unlock();
 
 	return newEntity;

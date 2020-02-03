@@ -56,7 +56,7 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 	for (const VulkanShaderModule *const RESTRICT shaderModule : parameters._ShaderModules)
 	{
 		//Create the pipeline shader stage create info.
-		stages->EmplaceFast();
+		stages->Emplace();
 
 		VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo{ stages->Back() };
 
@@ -81,7 +81,7 @@ void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreati
 
 	for (const VulkanShaderModule* const shaderModule : parameters._ShaderModules)
 	{
-		groups->EmplaceFast();
+		groups->Emplace();
 
 		groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
 		groups->Back().pNext = nullptr;

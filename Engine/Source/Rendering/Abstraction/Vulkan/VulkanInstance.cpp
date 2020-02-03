@@ -81,13 +81,17 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.ppEnabledLayerNames = nullptr;
 #endif
 
+#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
+	extensions.Reserve(3);
+#else
 	extensions.Reserve(2);
+#endif
 
-	extensions.EmplaceFast(VK_KHR_SURFACE_EXTENSION_NAME);
-	extensions.EmplaceFast(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+	extensions.Emplace(VK_KHR_SURFACE_EXTENSION_NAME);
+	extensions.Emplace(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 
 #if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
-	extensions.EmplaceSlow(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	extensions.Emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());

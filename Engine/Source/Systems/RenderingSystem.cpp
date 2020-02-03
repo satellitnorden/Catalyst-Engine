@@ -228,7 +228,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 	//Add the global texture updates.
 	for (DynamicArray<Pair<uint32, Texture2DHandle>> &globalTextureUpdate : _GlobalRenderData._AddGlobalTextureUpdates)
 	{
-		globalTextureUpdate.EmplaceSlow(index, texture);
+		globalTextureUpdate.Emplace(index, texture);
 	}
 
 	//Unlock the global texture slots.
@@ -249,7 +249,7 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 	//Add the global texture updates.
 	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
 	{
-		globalTextureUpdate.EmplaceSlow(index);
+		globalTextureUpdate.Emplace(index);
 	}
 
 	//Mark the global texture slot as available.
