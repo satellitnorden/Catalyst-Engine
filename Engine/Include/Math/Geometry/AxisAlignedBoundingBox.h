@@ -12,10 +12,10 @@ class AxisAlignedBoundingBox final
 public:
 
 	//The minimum corner.
-	Vector3<float> _Minimum;
+	Vector3<float> _Minimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM };
 
 	//The maximum corner.
-	Vector3<float> _Maximum;
+	Vector3<float> _Maximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
 
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
@@ -55,12 +55,31 @@ public:
 	/*
 	*	Constructor taking the minimum and maximum values.
 	*/
-	FORCE_INLINE constexpr AxisAlignedBoundingBox(const Vector3<float> &initialMinimum, const Vector3<float> &initialMaximum) NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox(const Vector3<float> &initial_minimum, const Vector3<float> & initial_maximum) NOEXCEPT
 		:
-		_Minimum(initialMinimum),
-		_Maximum(initialMaximum)
+		_Minimum(initial_minimum),
+		_Maximum(initial_maximum)
 	{
 
+	}
+
+	/*
+	*	Expands this axis aligned bounding box with the position.
+	*/
+	FORCE_INLINE constexpr void Expand(const Vector3<float> &position) NOEXCEPT
+	{
+		_Minimum = Vector3<float>::Minimum(_Minimum, position);
+		_Maximum = Vector3<float>::Maximum(_Maximum, position);
+	}
+
+	/*
+	*	Returns whether or not a position is inside this axis aligned bounding box.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool IsInside(const Vector3<float> &position) NOEXCEPT
+	{
+		return	position._X >= _Minimum._X && position._X < _Maximum._X
+				&& position._Y >= _Minimum._Y && position._Y < _Maximum._Y
+				&& position._Z >= _Minimum._Z && position._Z < _Maximum._Z;
 	}
 
 #if defined(CATALYST_CONFIGURATION_DEBUG)
