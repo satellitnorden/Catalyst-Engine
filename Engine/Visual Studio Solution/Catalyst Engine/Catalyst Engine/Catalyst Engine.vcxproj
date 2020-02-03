@@ -204,6 +204,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSurface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSwapChain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\AccelerationStructure.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />

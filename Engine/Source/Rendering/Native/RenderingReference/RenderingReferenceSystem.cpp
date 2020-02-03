@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 
+//Core.
+#include <Core/General/Pair.h>
+
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -12,10 +15,12 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
+#include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/Ray.h>
 
 //Rendering.
+#include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
@@ -31,6 +36,10 @@
 #include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
+//Terrin.
+#include <Terrain/TerrainGeneralUtilities.h>
+#include <Terrain/TerrainVertex.h>
+
 //User interface.
 #include <UserInterface/TextUserInterfaceElementDescription.h>
 
@@ -38,6 +47,13 @@
 namespace RenderingReferenceSystemConstants
 {
 	constexpr uint32 SLIZE_SIZE{ 16 };
+}
+
+//Rendering reference system data.
+namespace RenderingReferenceSystemData
+{
+	//The terrain acceleration structure.
+	AccelerationStructure _TerrainAccelerationStructure;
 }
 
 /*
@@ -136,6 +152,62 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 	//Reset the number of texels calculated.
 	_TexelsCalculated.store(0);
+
+	//Prepare the terrain data.
+	{
+		//Generate the terrain vertices and indices.
+		DynamicArray<TerrainVertex> vertices;
+		DynamicArray<uint32> indices;
+
+		TerrainGeneralUtilities::GenerateTerrainPlane(	*TerrainSystem::Instance->GetTerrainProperties(),
+														&vertices,
+														&indices);
+
+		//Iterate over all terrain patches and intersect against their triangles.
+		const TerrainPatchInformation* RESTRICT patch_information{ TerrainSystem::Instance->GetTerrainPatchInformations()->Data() };
+		const TerrainPatchRenderInformation* RESTRICT patch_render_information{ TerrainSystem::Instance->GetTerrainPatchRenderInformations()->Data() };
+
+		for (uint64 i{ 0 }, size{ TerrainSystem::Instance->GetTerrainPatchInformations()->Size() }; i < size; ++i, ++patch_information, ++patch_render_information)
+		{
+			//If the axis aligned bounding box was hit, iterate over all the triangles in the terrain plane, transform then and intersect against them.
+			for (uint64 j{ 0 }; j < indices.Size(); j += 3)
+			{
+				//Construct the triangle.
+				Triangle triangle;
+
+				triangle._Vertex1._X = vertices[indices[j + 0]]._Position._X;
+				triangle._Vertex1._Y = 0.0f;
+				triangle._Vertex1._Z = vertices[indices[j + 0]]._Position._Y;
+
+				triangle._Vertex2._X = vertices[indices[j + 1]]._Position._X;
+				triangle._Vertex2._Y = 0.0f;
+				triangle._Vertex2._Z = vertices[indices[j + 1]]._Position._Y;
+
+				triangle._Vertex3._X = vertices[indices[j + 2]]._Position._X;
+				triangle._Vertex3._Y = 0.0f;
+				triangle._Vertex3._Z = vertices[indices[j + 2]]._Position._Y;
+
+				triangle._Vertex1._X = patch_render_information->_WorldPosition._X + triangle._Vertex1._X * patch_render_information->_PatchSize;
+				triangle._Vertex1._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex1._Z * patch_render_information->_PatchSize;
+
+				triangle._Vertex2._X = patch_render_information->_WorldPosition._X + triangle._Vertex2._X * patch_render_information->_PatchSize;
+				triangle._Vertex2._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex2._Z * patch_render_information->_PatchSize;
+
+				triangle._Vertex3._X = patch_render_information->_WorldPosition._X + triangle._Vertex3._X * patch_render_information->_PatchSize;
+				triangle._Vertex3._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex3._Z * patch_render_information->_PatchSize;
+
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex1, &triangle._Vertex1._Y);
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex2, &triangle._Vertex2._Y);
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex3, &triangle._Vertex3._Y);
+
+				//Add the triangle to the terrain acceleration structure.
+				RenderingReferenceSystemData::_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
+			}
+		}
+	}
+
+	//Build the terrain acceleration structure.
+	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(1'024 * 32);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
@@ -334,45 +406,25 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayVolumetricParticles(cons
 */
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
-	//Define constants.
-	constexpr float STEP{ 1.0f };
+	//Trace the terrain acceleration structure.
+	float intersection_distance{ FLOAT_MAXIMUM };
 
-	Vector3<float> current_position{ ray._Origin };
-	float current_distance{ 0.0f };
-
-	//Offset the current position by a random amount.
-	current_position += ray._Direction * CatalystRandomMath::RandomFloatInRange(0.0f, STEP);
-
-	for (;;)
+	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ RenderingReferenceSystemData::_TerrainAccelerationStructure.Trace(ray, &intersection_distance) })
 	{
-		//Get the terrain height at the current position.
-		float terrain_height;
+		//Calculate the hit position.
+		const Vector3<float> hit_position{ ray._Origin + ray._Direction * intersection_distance };
 
-		TerrainSystem::Instance->GetTerrainHeightAtPosition(current_position, &terrain_height);
+		//Fill in the surface description.
+		surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
+		TerrainSystem::Instance->GetTerrainNormalAtPosition(hit_position, &surface_description->_Normal);
 
-		if (current_position._Y <= terrain_height)
-		{
-			//Fill in the surface description/hit distance.
-			surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
-			TerrainSystem::Instance->GetTerrainNormalAtPosition(current_position, &surface_description->_Normal);
-			*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, *hit_distance);
-
-			return true;
-		}
-
-		//Advance the current position.
-		current_position += ray._Direction * STEP;
-		current_distance += STEP;
-
-		//Abort if the ray has reached the current view distance.
-		if (current_distance >= *hit_distance)
-		{
-			break;
-		}
+		return true;
 	}
 
-	//Nothing hit.
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
 /*
