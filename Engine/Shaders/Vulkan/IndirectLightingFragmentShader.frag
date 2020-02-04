@@ -12,8 +12,8 @@
 #include "CatalystRenderingUtilities.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_SAMPLES (16)
-#define INDIRECT_LIGHTING_STEP_SIZE (0.5f)
+#define INDIRECT_LIGHTING_SAMPLES (8)
+#define INDIRECT_LIGHTING_STEP_SIZE (1.0f)
 
 //The random samples.
 vec4 RANDOM_SAMPLES[64] = vec4[]
