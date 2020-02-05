@@ -33,7 +33,7 @@ public:
 		/*
 		*	Default constructor.
 		*/
-		FORCE_INLINE constexpr TriangleData() NOEXCEPT
+		FORCE_INLINE TriangleData() NOEXCEPT
 		{
 
 		}
@@ -41,7 +41,7 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE constexpr TriangleData(const Triangle& initial_triangle) NOEXCEPT
+		FORCE_INLINE TriangleData(const Triangle &initial_triangle) NOEXCEPT
 			:
 			_Triangle(initial_triangle)
 		{
@@ -69,9 +69,9 @@ public:
 
 		for (const TriangleData &triangle_data : _Root._TriangleData)
 		{
-			root_box.Expand(triangle_data._Triangle._Vertex1);
-			root_box.Expand(triangle_data._Triangle._Vertex2);
-			root_box.Expand(triangle_data._Triangle._Vertex3);
+			root_box.Expand(triangle_data._Triangle._Vertices[0]);
+			root_box.Expand(triangle_data._Triangle._Vertices[1]);
+			root_box.Expand(triangle_data._Triangle._Vertices[3]);
 		}
 
 		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
@@ -212,25 +212,20 @@ private:
 		//Start filling up the two new nodes with the triangle data.
 		for (const TriangleData &triangle_data : node->_TriangleData)
 		{
-			//Decide which axis aligned bounding box this triangle data should go into, based on the first vertex.
-			if (first.IsInside(triangle_data._Triangle._Vertex1))
+			//Calculate the center of the triangle.
+			const Vector3<float> triangle_center{ Triangle::CalculateCenter(triangle_data._Triangle) };
+
+			//Decide which axis aligned bounding box this triangle data should go into, based on the triangle center.
+			if (first.IsInside(triangle_center))
 			{
 				//Add the triangle data.
 				nodes[0]._TriangleData.Emplace(triangle_data);
-
-				//Since some triangles may overlap and be in both axis aligned bounding boxes at the same time, expand it a bit with the other two vertices.
-				first.Expand(triangle_data._Triangle._Vertex2);
-				first.Expand(triangle_data._Triangle._Vertex3);
 			}
 
 			else
 			{
 				//Add the triangle data.
 				nodes[1]._TriangleData.Emplace(triangle_data);
-
-				//Since some triangles may overlap and be in both axis aligned bounding boxes at the same time, expand it a bit with the other two vertices.
-				second.Expand(triangle_data._Triangle._Vertex2);
-				second.Expand(triangle_data._Triangle._Vertex3);
 			}
 		}
 
