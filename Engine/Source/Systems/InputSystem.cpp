@@ -18,7 +18,7 @@ void InputSystem::Initialize() NOEXCEPT
 		InputSystem::Instance->UpdateAsynchronous();
 	};
 	_UpdateTask._Arguments = nullptr;
-	_UpdateTask._ExecutableOnSameThread = false;
+	_UpdateTask._ExecutableOnSameThread = true;
 }
 
 /*
