@@ -23,9 +23,9 @@ public:
 																		const Vector3<float> &point,
 																		Vector3<float> *const RESTRICT barycentricCoordinates) NOEXCEPT
 	{
-		const Vector3<float> v0{ triangle._Vertex2 - triangle._Vertex1 };
-		const Vector3<float> v1{ triangle._Vertex3 - triangle._Vertex1 };
-		const Vector3<float> v2{ point - triangle._Vertex1 };
+		const Vector3<float> v0{ triangle._Vertices[1] - triangle._Vertices[0] };
+		const Vector3<float> v1{ triangle._Vertices[2] - triangle._Vertices[0] };
+		const Vector3<float> v2{ point - triangle._Vertices[0] };
 
 		const float d00{ Vector3<float>::DotProduct(v0, v0) };
 		const float d01{ Vector3<float>::DotProduct(v0, v1) };
@@ -209,8 +209,8 @@ public:
 		Vector3<float> edge1, edge2, h, s, q;
 		float a{ 0.0f }, f{ 0.0f }, u{ 0.0f }, v{ 0.0f };
 
-		edge1 = triangle._Vertex2 - triangle._Vertex1;
-		edge2 = triangle._Vertex3 - triangle._Vertex1;
+		edge1 = triangle._Vertices[1] - triangle._Vertices[0];
+		edge2 = triangle._Vertices[2] - triangle._Vertices[0];
 
 		h = Vector3<float>::CrossProduct(ray._Direction, edge2);
 		a = Vector3<float>::DotProduct(edge1, h);
@@ -221,7 +221,7 @@ public:
 		}
 
 		f = 1.0f / a;
-		s = ray._Origin - triangle._Vertex1;
+		s = ray._Origin - triangle._Vertices[0];
 
 		u = f * Vector3<float>::DotProduct(s, h);
 

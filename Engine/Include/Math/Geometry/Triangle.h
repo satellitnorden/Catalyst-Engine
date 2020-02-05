@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -11,19 +12,24 @@ class Triangle final
 
 public:
 
-	//The first vertex.
-	Vector3<float> _Vertex1;
+	/*
+	*	Calculates the center of a triangle.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float> CalculateCenter(const Triangle &triangle) NOEXCEPT
+	{
+		//Define constants.
+		constexpr float RECIPROCAL{ 1.0f / 3.0f };
 
-	//The second vertex.
-	Vector3<float> _Vertex2;
+		return (triangle._Vertices[0] + triangle._Vertices[1] + triangle._Vertices[2]) * RECIPROCAL;
+	}
 
-	//The third vertex.
-	Vector3<float> _Vertex3;
+	//The vertices.
+	StaticArray<Vector3<float>, 3> _Vertices;
 
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Triangle() NOEXCEPT
+	FORCE_INLINE Triangle() NOEXCEPT
 	{
 
 	}
@@ -31,13 +37,9 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr Triangle(const Vector3<float> &initial_vertex_1,
-									const Vector3<float> &initial_vertex_2,
-									const Vector3<float> &initial_vertex_3) NOEXCEPT
+	FORCE_INLINE Triangle(const StaticArray<Vector3<float>, 3> &initial_vertices) NOEXCEPT
 		:
-		_Vertex1(initial_vertex_1),
-		_Vertex2(initial_vertex_2),
-		_Vertex3(initial_vertex_3)
+		_Vertices(initial_vertices)
 	{
 
 	}
