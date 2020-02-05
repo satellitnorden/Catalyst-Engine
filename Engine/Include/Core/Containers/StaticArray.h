@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-template <typename Type, uint64 SIZE>
+template <typename TYPE, uint64 SIZE>
 class StaticArray final
 {
 
@@ -12,7 +12,9 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	constexpr StaticArray() NOEXCEPT
+	FORCE_INLINE constexpr StaticArray() NOEXCEPT
+		:
+		_Array{ }
 	{
 
 	}
@@ -21,7 +23,7 @@ public:
 	*	Constructor taking a variadic number of arguments.
 	*/
 	template <class... Arguments>
-	constexpr StaticArray(Arguments&&... arguments)
+	FORCE_INLINE constexpr StaticArray(Arguments&&... arguments)
 		:
 		_Array{ arguments... }
 	{
@@ -31,7 +33,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	constexpr const Type& operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD const TYPE& operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -39,7 +41,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	constexpr Type& operator[](const uint64 index) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD TYPE& operator[](const uint64 index) NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -47,7 +49,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED constexpr const Type *const RESTRICT Begin() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const TYPE *const RESTRICT Begin() const NOEXCEPT
 	{
 		return _Array;
 	}
@@ -55,7 +57,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED constexpr Type *const RESTRICT Begin()  NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD TYPE *const RESTRICT Begin()  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -63,7 +65,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED constexpr const Type *const RESTRICT End() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const TYPE *const RESTRICT End() const NOEXCEPT
 	{
 		return _Array + SIZE;
 	}
@@ -71,7 +73,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED constexpr Type *const RESTRICT End() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD TYPE *const RESTRICT End() NOEXCEPT
 	{
 		return _Array + SIZE;
 	}
@@ -79,7 +81,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED constexpr const Type *const RESTRICT begin() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const TYPE *const RESTRICT begin() const NOEXCEPT
 	{
 		return _Array;
 	}
@@ -87,7 +89,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED constexpr Type *const RESTRICT begin()  NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD TYPE *const RESTRICT begin()  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -95,7 +97,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED constexpr const Type *const RESTRICT end() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const TYPE *const RESTRICT end() const NOEXCEPT
 	{
 		return _Array + SIZE;
 	}
@@ -103,7 +105,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED constexpr Type *const RESTRICT end() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD TYPE *const RESTRICT end() NOEXCEPT
 	{
 		return _Array + SIZE;
 	}
@@ -111,7 +113,7 @@ public:
 	/*
 	*	Returns the element at the given index, const.
 	*/
-	constexpr const Type& At(const uint64 index) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD const TYPE& At(const uint64 index) const NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -119,7 +121,7 @@ public:
 	/*
 	*	Returns the element at the given index, non-const.
 	*/
-	constexpr Type& At(const uint64 index) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD TYPE& At(const uint64 index) NOEXCEPT
 	{
 		return _Array[index];
 	}
@@ -127,7 +129,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, const.
 	*/
-	RESTRICTED constexpr const Type *const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const TYPE *const RESTRICT Data() const NOEXCEPT
 	{
 		return _Array;
 	}
@@ -135,7 +137,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, non-const.
 	*/
-	RESTRICTED constexpr Type *const RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD TYPE *const RESTRICT Data() NOEXCEPT
 	{
 		return _Array;
 	}
@@ -143,7 +145,7 @@ public:
 	/*
 	*	Returns the size of this array.
 	*/
-	constexpr uint64 Size() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD uint64 Size() const NOEXCEPT
 	{
 		return SIZE;
 	}
@@ -151,6 +153,6 @@ public:
 private:
 
 	//The underlying array.
-	Type _Array[SIZE];
+	TYPE _Array[SIZE];
 
 };
