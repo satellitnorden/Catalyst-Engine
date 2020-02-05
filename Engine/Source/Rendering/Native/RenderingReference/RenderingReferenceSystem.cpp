@@ -64,7 +64,7 @@ void RenderingReferenceSystem::RenderUpdate(const UpdateContext* const RESTRICT 
 	//Should the rendering reference start/stop?
 	const KeyboardState *const RESTRICT state{ InputSystem::Instance->GetKeyboardState() };
 
-	if (state->GetButtonState(KeyboardButton::NumpadFive) == ButtonState::Pressed)
+	if (state->GetButtonState(KeyboardButton::F1) == ButtonState::Pressed)
 	{
 		//Is the rendering reference in progress? If so, stop it.
 		if (_RenderingReferenceInProgress)
@@ -105,9 +105,28 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		}
 	}
 
-	//Calculate all the synchronous data.
+	//Calculate how much asynchronous data is needed.
 	uint32 current_slice{ 0 };
 	const uint32 maximum_y{ RenderingSystem::Instance->GetScaledResolution()._Height };
+
+	uint32 counter{ 0 };
+
+	for (;;)
+	{
+		++counter;
+
+		current_slice += RenderingReferenceSystemConstants::SLIZE_SIZE;
+
+		if (current_slice >= maximum_y)
+		{
+			break;
+		}
+	}
+
+	_AsynchronousData.Reserve(counter);
+
+	//Calculate all the synchronous data.
+	current_slice = 0;
 
 	for (;;)
 	{
@@ -175,30 +194,30 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 				//Construct the triangle.
 				Triangle triangle;
 
-				triangle._Vertex1._X = vertices[indices[j + 0]]._Position._X;
-				triangle._Vertex1._Y = 0.0f;
-				triangle._Vertex1._Z = vertices[indices[j + 0]]._Position._Y;
+				triangle._Vertices[0]._X = vertices[indices[j + 0]]._Position._X;
+				triangle._Vertices[0]._Y = 0.0f;
+				triangle._Vertices[0]._Z = vertices[indices[j + 0]]._Position._Y;
 
-				triangle._Vertex2._X = vertices[indices[j + 1]]._Position._X;
-				triangle._Vertex2._Y = 0.0f;
-				triangle._Vertex2._Z = vertices[indices[j + 1]]._Position._Y;
+				triangle._Vertices[1]._X = vertices[indices[j + 1]]._Position._X;
+				triangle._Vertices[1]._Y = 0.0f;
+				triangle._Vertices[1]._Z = vertices[indices[j + 1]]._Position._Y;
 
-				triangle._Vertex3._X = vertices[indices[j + 2]]._Position._X;
-				triangle._Vertex3._Y = 0.0f;
-				triangle._Vertex3._Z = vertices[indices[j + 2]]._Position._Y;
+				triangle._Vertices[2]._X = vertices[indices[j + 2]]._Position._X;
+				triangle._Vertices[2]._Y = 0.0f;
+				triangle._Vertices[2]._Z = vertices[indices[j + 2]]._Position._Y;
 
-				triangle._Vertex1._X = patch_render_information->_WorldPosition._X + triangle._Vertex1._X * patch_render_information->_PatchSize;
-				triangle._Vertex1._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex1._Z * patch_render_information->_PatchSize;
+				triangle._Vertices[0]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[0]._X * patch_render_information->_PatchSize;
+				triangle._Vertices[0]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[0]._Z * patch_render_information->_PatchSize;
 
-				triangle._Vertex2._X = patch_render_information->_WorldPosition._X + triangle._Vertex2._X * patch_render_information->_PatchSize;
-				triangle._Vertex2._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex2._Z * patch_render_information->_PatchSize;
+				triangle._Vertices[1]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[1]._X * patch_render_information->_PatchSize;
+				triangle._Vertices[1]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[1]._Z * patch_render_information->_PatchSize;
 
-				triangle._Vertex3._X = patch_render_information->_WorldPosition._X + triangle._Vertex3._X * patch_render_information->_PatchSize;
-				triangle._Vertex3._Z = patch_render_information->_WorldPosition._Y + triangle._Vertex3._Z * patch_render_information->_PatchSize;
+				triangle._Vertices[2]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[2]._X * patch_render_information->_PatchSize;
+				triangle._Vertices[2]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[2]._Z * patch_render_information->_PatchSize;
 
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex1, &triangle._Vertex1._Y);
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex2, &triangle._Vertex2._Y);
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertex3, &triangle._Vertex3._Y);
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[0], &triangle._Vertices[0]._Y);
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[1], &triangle._Vertices[1]._Y);
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[2], &triangle._Vertices[2]._Y);
 
 				//Add the triangle to the terrain acceleration structure.
 				RenderingReferenceSystemData::_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
@@ -207,7 +226,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	}
 
 	//Build the terrain acceleration structure.
-	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(1'024);
+	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(4);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
