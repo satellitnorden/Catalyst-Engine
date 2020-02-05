@@ -123,6 +123,7 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &index_buffer);
 	}
 
+	/*
 	//Create the bottom level acceleration structure.
 	AccelerationStructureHandle acceleration_structure;
 
@@ -134,7 +135,7 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 
 	//Add the acceleration structure to the static top level acceleration structure.
 	RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(MatrixConstants::IDENTITY, acceleration_structure, 0));
-
+	*/
 
 	//There is now a height map!
 	_Properties._HasHeightMap = true;
