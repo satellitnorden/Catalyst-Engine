@@ -95,7 +95,7 @@ public:
 		ExecuteBuild(maximum_triangles_per_node);
 
 		//Execute the post build step.
-		//ExecutePostBuild(maximum_triangles_per_node);
+		ExecutePostBuild(maximum_triangles_per_node);
 	}
 
 	/*
@@ -228,7 +228,7 @@ private:
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
-				Refit(&_Root._Nodes[i], &_Root._Nodes[i]._AxisAlignedBoundingBoxes[i]);
+				Refit(&_Root._Nodes[i], &_Root._AxisAlignedBoundingBoxes[i]);
 			}
 		}
 	}
@@ -347,11 +347,16 @@ private:
 
 		else
 		{
+			box->Invalidate();
+
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
-				Refit(&node->_Nodes[i], &node->_Nodes[i]._AxisAlignedBoundingBoxes[i]);
+				Refit(&node->_Nodes[i], &node->_AxisAlignedBoundingBoxes[i]);
 
-				box->Expand(node->_Nodes[i]._AxisAlignedBoundingBoxes[i]);
+				if (node->_AxisAlignedBoundingBoxes[i].IsValid())
+				{
+					box->Expand(node->_AxisAlignedBoundingBoxes[i]);
+				}
 			}
 		}
 	}
