@@ -51,6 +51,30 @@ public:
 	};
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE AccelerationStructure() NOEXCEPT
+	{
+		//Create the build data.
+		_BuildData = static_cast<BuildData *RESTRICT>(Memory::Allocate(sizeof(BuildData)));
+		Memory::Set(_BuildData, 0, sizeof(BuildData));
+	}
+
+	/*
+	*	Default destructor.
+	*/
+	FORCE_INLINE ~AccelerationStructure() NOEXCEPT
+	{
+		//Destroy the build data.
+		if (_BuildData)
+		{
+			_BuildData->~BuildData();
+			Memory::Free(_BuildData);
+			_BuildData = nullptr;
+		}
+	}
+
+	/*
 	*	Adds triangle data to the acceleration structure. Must be done before building.
 	*/
 	FORCE_INLINE void AddTriangleData(const TriangleData &triangle_data) NOEXCEPT
@@ -64,32 +88,14 @@ public:
 	*/
 	FORCE_INLINE void Build(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
-		//First, calculate axis aligned bounding box for the root.
-		AxisAlignedBoundingBox root_box;
+		//Execute the pre build step.
+		ExecutePreBuild(maximum_triangles_per_node);
 
-		for (const TriangleData &triangle_data : _Root._TriangleData)
-		{
-			root_box.Expand(triangle_data._Triangle._Vertices[0]);
-			root_box.Expand(triangle_data._Triangle._Vertices[1]);
-			root_box.Expand(triangle_data._Triangle._Vertices[3]);
-		}
+		//Execute the build step.
+		ExecuteBuild(maximum_triangles_per_node);
 
-		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
-		if (_Root._TriangleData.Size() > maximum_triangles_per_node)
-		{
-			_NodesToBeSplit.Emplace(&_Root, root_box);
-		}
-
-		//Process all nodes to be split.
-		while (!_NodesToBeSplit.Empty())
-		{
-			Node *const RESTRICT node{ _NodesToBeSplit.Back()._First };
-			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _NodesToBeSplit.Back()._Second };
-
-			_NodesToBeSplit.PopFast();
-
-			SplitNode(maximum_triangles_per_node, axis_aligned_bounding_box, node);
-		}
+		//Execute the post build step.
+		//ExecutePostBuild(maximum_triangles_per_node);
 	}
 
 	/*
@@ -103,6 +109,19 @@ public:
 	}
 
 private:
+
+	/*
+	*	Build data class definition.
+	*/
+	class BuildData final
+	{
+
+	public:
+
+		//The initial triangle data.
+		DynamicArray<TriangleData> _InitialTriangleData;
+
+	};
 
 	/*
 	*	Node class definition.
@@ -148,6 +167,9 @@ private:
 
 	};
 
+	//The build data.
+	BuildData *RESTRICT _BuildData;
+
 	//The root.
 	Node _Root;
 
@@ -156,6 +178,60 @@ private:
 
 	//The nodes to be split, and their axis aligned bounding boxes.
 	DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+
+	/*
+	*	Executes the pre build step.
+	*/
+	FORCE_INLINE void ExecutePreBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
+	{
+		//First, calculate axis aligned bounding box for the root.
+		AxisAlignedBoundingBox root_box;
+
+		for (const TriangleData& triangle_data : _Root._TriangleData)
+		{
+			root_box.Expand(triangle_data._Triangle._Vertices[0]);
+			root_box.Expand(triangle_data._Triangle._Vertices[1]);
+			root_box.Expand(triangle_data._Triangle._Vertices[3]);
+		}
+
+		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
+		if (_Root._TriangleData.Size() > maximum_triangles_per_node)
+		{
+			_NodesToBeSplit.Emplace(&_Root, root_box);
+		}
+	}
+
+	/*
+	*	Executes the build step.
+	*/
+	FORCE_INLINE void ExecuteBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
+	{
+		//Process all nodes to be split.
+		while (!_NodesToBeSplit.Empty())
+		{
+			Node* const RESTRICT node{ _NodesToBeSplit.Back()._First };
+			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _NodesToBeSplit.Back()._Second };
+
+			_NodesToBeSplit.PopFast();
+
+			SplitNode(maximum_triangles_per_node, axis_aligned_bounding_box, node);
+		}
+	}
+
+	/*
+	*	Executes the post build step.
+	*/
+	FORCE_INLINE void ExecutePostBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
+	{
+		//Traverse the acceleration tree and refit all of the axis aligned bounding boxes.
+		if (!_Root._HasTriangles)
+		{
+			for (uint8 i{ 0 }; i < 2; ++i)
+			{
+				Refit(&_Root._Nodes[i], &_Root._Nodes[i]._AxisAlignedBoundingBoxes[i]);
+			}
+		}
+	}
 
 	/*
 	*	Splits a node.
@@ -252,13 +328,42 @@ private:
 	}
 
 	/*
+	*	Refit the node´s axis aligned bounding box(es).
+	*/
+	FORCE_INLINE void Refit(Node* const RESTRICT node, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	{
+		if (node->_HasTriangles)
+		{
+			box->Invalidate();
+
+			for (const TriangleData& triangle_data : node->_TriangleData)
+			{
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					box->Expand(triangle_data._Triangle._Vertices[i]);
+				}
+			}
+		}
+
+		else
+		{
+			for (uint8 i{ 0 }; i < 2; ++i)
+			{
+				Refit(&node->_Nodes[i], &node->_Nodes[i]._AxisAlignedBoundingBoxes[i]);
+
+				box->Expand(node->_Nodes[i]._AxisAlignedBoundingBoxes[i]);
+			}
+		}
+	}
+
+	/*
 	*	Traces a ray through the acceleration structure via the given node.
 	*	If an intersection is detected, it returns the intersected triangle data.
 	*	If no interseaction was found, it returns nullptr.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT Trace(const Ray& ray, const Node &node, float *const RESTRICT intersection_distance) const NOEXCEPT
 	{
-		const TriangleData *RESTRICT interscted_triangle_data{ nullptr };
+		const TriangleData *RESTRICT intersected_triangle_data{ nullptr };
 
 		if (node._HasTriangles)
 		{
@@ -269,7 +374,7 @@ private:
 				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle_data._Triangle, &intersection_distance_temporary)
 					&& intersection_distance_temporary < *intersection_distance)
 				{
-					interscted_triangle_data = &triangle_data;
+					intersected_triangle_data = &triangle_data;
 					*intersection_distance = intersection_distance_temporary;
 				}
 			}
@@ -279,14 +384,20 @@ private:
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
-				if (const TriangleData *const RESTRICT interscted_triangle_data_temporary{ Trace(ray, node._Nodes[i], intersection_distance) })
+				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+
+				if (node._AxisAlignedBoundingBoxes[i].IsValid()
+					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary))
 				{
-					interscted_triangle_data = interscted_triangle_data_temporary;
+					if (const TriangleData* const RESTRICT intersected_triangle_data_temporary{ Trace(ray, node._Nodes[i], intersection_distance) })
+					{
+						intersected_triangle_data = intersected_triangle_data_temporary;
+					}
 				}
 			}
 		}
 
-		return interscted_triangle_data;
+		return intersected_triangle_data;
 	}
 
 };
