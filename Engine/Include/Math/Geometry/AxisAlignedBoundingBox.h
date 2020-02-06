@@ -73,6 +73,15 @@ public:
 	}
 
 	/*
+*	Expands this axis aligned bounding box with the box.
+*/
+	FORCE_INLINE constexpr void Expand(const AxisAlignedBoundingBox& box) NOEXCEPT
+	{
+		Expand(box._Minimum);
+		Expand(box._Maximum);
+	}
+
+	/*
 	*	Returns whether or not a position is inside this axis aligned bounding box.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD bool IsInside(const Vector3<float> &position) NOEXCEPT
@@ -82,15 +91,22 @@ public:
 				&& position._Z >= _Minimum._Z && position._Z < _Maximum._Z;
 	}
 
-#if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*
-	*	Verifies this axis-aligned bound box.
+	*	Invalides this axis aligned bounding box.
 	*/
-	FORCE_INLINE void Verify() const NOEXCEPT
+	FORCE_INLINE constexpr void Invalidate() NOEXCEPT
 	{
-		ASSERT(_Minimum._X <= _Maximum._X, "X-axis is wrong!");
-		ASSERT(_Minimum._Y <= _Maximum._Y, "Y-axis is wrong!");
-		ASSERT(_Minimum._Z <= _Maximum._Z, "Z-axis is wrong!");
+		_Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
+		_Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
 	}
-#endif
+
+	/*
+	*	Returns if this axis aligned bounding box is valid.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsValid() const NOEXCEPT
+	{
+		return	_Minimum._X <= _Maximum._X
+				&& _Minimum._Y <= _Maximum._Y
+				&& _Minimum._Z <= _Maximum._Z;
+	}
 };
