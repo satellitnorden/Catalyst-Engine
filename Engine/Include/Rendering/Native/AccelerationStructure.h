@@ -72,6 +72,13 @@ public:
 			Memory::Free(_BuildData);
 			_BuildData = nullptr;
 		}
+
+		//Destroy the acceleration structure memory.
+		if (_AccelerationStructureMemory)
+		{
+			Memory::Free(_AccelerationStructureMemory);
+			_AccelerationStructureMemory = nullptr;
+		}
 	}
 
 	/*
@@ -111,19 +118,6 @@ public:
 private:
 
 	/*
-	*	Build data class definition.
-	*/
-	class BuildData final
-	{
-
-	public:
-
-		//The initial triangle data.
-		DynamicArray<TriangleData> _InitialTriangleData;
-
-	};
-
-	/*
 	*	Node class definition.
 	*/
 	class Node final
@@ -145,8 +139,21 @@ private:
 				Node *RESTRICT _Nodes;
 			};
 
-			//The triangle data.
-			DynamicArray<TriangleData> _TriangleData;
+			union
+			{
+				//The triangle data.
+				DynamicArray<TriangleData> _TriangleData;
+
+				struct
+				{
+					//The triangle data memory.
+					TriangleData *RESTRICT _TriangleDataMemory;
+
+					//The size of the triangle data.
+					uint64 _TriangleDataSize;
+				};
+			};
+			
 		};
 
 		/*
@@ -167,23 +174,45 @@ private:
 
 	};
 
-	//The build data.
-	BuildData *RESTRICT _BuildData;
+	/*
+	*	Build data class definition.
+	*/
+	class BuildData final
+	{
+
+	public:
+
+		//The nodes to be split, and their axis aligned bounding boxes.
+		DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+
+		//The bytes needed for the triangle data.
+		uint64 _NumberBytesNeededForTriangleData{ 0 };
+
+		//The number of bytes needed for nodes.
+		uint64 _NumberOfBytesNeededForNodes{ 0 };
+
+		//The current acceleration structure memory offset.
+		uint64 _AccelerationStructureMemoryOffset{ 0 };
+
+	};
 
 	//The root.
 	Node _Root;
 
-	//The allocator.
-	PoolAllocator<sizeof(Node) * 2> _Allocator;
+	//The acceleration structure memory.
+	void *RESTRICT _AccelerationStructureMemory{ nullptr };
 
-	//The nodes to be split, and their axis aligned bounding boxes.
-	DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+	//The build data.
+	BuildData *RESTRICT _BuildData;
 
 	/*
 	*	Executes the pre build step.
 	*/
 	FORCE_INLINE void ExecutePreBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
+		//Record the number of bytes needed for the triangle data.
+		_BuildData->_NumberBytesNeededForTriangleData = _Root._TriangleData.Size() * sizeof(TriangleData);
+
 		//First, calculate axis aligned bounding box for the root.
 		AxisAlignedBoundingBox root_box;
 
@@ -197,7 +226,7 @@ private:
 		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
 		if (_Root._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			_NodesToBeSplit.Emplace(&_Root, root_box);
+			_BuildData->_NodesToBeSplit.Emplace(&_Root, root_box);
 		}
 	}
 
@@ -207,12 +236,12 @@ private:
 	FORCE_INLINE void ExecuteBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
 		//Process all nodes to be split.
-		while (!_NodesToBeSplit.Empty())
+		while (!_BuildData->_NodesToBeSplit.Empty())
 		{
-			Node* const RESTRICT node{ _NodesToBeSplit.Back()._First };
-			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _NodesToBeSplit.Back()._Second };
+			Node* const RESTRICT node{ _BuildData->_NodesToBeSplit.Back()._First };
+			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _BuildData->_NodesToBeSplit.Back()._Second };
 
-			_NodesToBeSplit.PopFast();
+			_BuildData->_NodesToBeSplit.PopFast();
 
 			SplitNode(maximum_triangles_per_node, axis_aligned_bounding_box, node);
 		}
@@ -223,6 +252,11 @@ private:
 	*/
 	FORCE_INLINE void ExecutePostBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
+		//Allocate the acceleration structure memory.
+		_AccelerationStructureMemory = Memory::Allocate(_BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+
+		PRINT_TO_OUTPUT("Acceleration structure memory usage: " << _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+
 		//Traverse the acceleration tree and refit all of the axis aligned bounding boxes.
 		if (!_Root._HasTriangles)
 		{
@@ -231,6 +265,16 @@ private:
 				Refit(&_Root._Nodes[i], &_Root._AxisAlignedBoundingBoxes[i]);
 			}
 		}
+
+		else
+		{
+			CopyNodeToAccelerationStructureMemory(&_Root);
+		}
+
+		//Destroy the build data.
+		_BuildData->~BuildData();
+		Memory::Free(_BuildData);
+		_BuildData = nullptr;
 	}
 
 	/*
@@ -281,6 +325,9 @@ private:
 		//Initialize the new nodes.
 		Memory::Set(nodes, 0, sizeof(Node) * 2);
 
+		//Update the number of bytes needed for nodes.
+		_BuildData->_NumberOfBytesNeededForNodes += sizeof(Node) * 2;
+
 		//Set initial properties of the two new nodes.
 		nodes[0]._HasTriangles = true;
 		nodes[1]._HasTriangles = true;
@@ -318,12 +365,46 @@ private:
 		//Check if either of the two new nodes need to be split.
 		if (node->_Nodes[0]._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			_NodesToBeSplit.Emplace(&nodes[0], node->_AxisAlignedBoundingBoxes[0]);
+			_BuildData->_NodesToBeSplit.Emplace(&nodes[0], node->_AxisAlignedBoundingBoxes[0]);
 		}
 
 		if (node->_Nodes[1]._TriangleData.Size() > maximum_triangles_per_node)
 		{
-			_NodesToBeSplit.Emplace(&nodes[1], node->_AxisAlignedBoundingBoxes[1]);
+			_BuildData->_NodesToBeSplit.Emplace(&nodes[1], node->_AxisAlignedBoundingBoxes[1]);
+		}
+	}
+
+	/*
+	*	Copies a node´s data to the acceleration structure memory.
+	*/
+	FORCE_INLINE void CopyNodeToAccelerationStructureMemory(Node *const RESTRICT node) NOEXCEPT
+	{
+		byte *RESTRICT acceleration_structure_memory{ static_cast<byte *RESTRICT>(_AccelerationStructureMemory) + _BuildData->_AccelerationStructureMemoryOffset };
+
+		if (node->_HasTriangles)
+		{
+			//Copy over the old triangle data to the new triangle data memory.
+			const uint64 triangle_data_size{ node->_TriangleData.Size() };
+			Memory::Copy(acceleration_structure_memory, node->_TriangleData.Data(), triangle_data_size * sizeof(TriangleData));
+
+			node->_TriangleData.Destroy();
+
+			node->_TriangleDataMemory = static_cast<TriangleData *RESTRICT>(static_cast<void *RESTRICT>(acceleration_structure_memory));
+			node->_TriangleDataSize = triangle_data_size;
+
+			_BuildData->_AccelerationStructureMemoryOffset += triangle_data_size * sizeof(TriangleData);
+		}
+
+		else
+		{
+			//Copy over the new node data to the new node data memory.
+			Memory::Copy(acceleration_structure_memory, node->_Nodes, sizeof(Node) * 2);
+
+			Memory::Free(node->_Nodes);
+
+			node->_Nodes = static_cast<Node *RESTRICT>(static_cast<void * RESTRICT>(acceleration_structure_memory));
+
+			_BuildData->_AccelerationStructureMemoryOffset += sizeof(Node) * 2;
 		}
 	}
 
@@ -332,15 +413,17 @@ private:
 	*/
 	FORCE_INLINE void Refit(Node* const RESTRICT node, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
+		CopyNodeToAccelerationStructureMemory(node);
+
 		if (node->_HasTriangles)
 		{
 			box->Invalidate();
 
-			for (const TriangleData& triangle_data : node->_TriangleData)
+			for (uint64 i{ 0 }; i < node->_TriangleDataSize; ++i)
 			{
-				for (uint8 i{ 0 }; i < 3; ++i)
+				for (uint8 j{ 0 }; j < 3; ++j)
 				{
-					box->Expand(triangle_data._Triangle._Vertices[i]);
+					box->Expand(node->_TriangleDataMemory[i]._Triangle._Vertices[j]);
 				}
 			}
 		}
@@ -372,8 +455,10 @@ private:
 
 		if (node._HasTriangles)
 		{
-			for (const TriangleData& triangle_data : node._TriangleData)
+			for (uint64 i{ 0 }; i < node._TriangleDataSize; ++i)
 			{
+				const TriangleData& triangle_data{ node._TriangleDataMemory[i] };
+
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
 				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle_data._Triangle, &intersection_distance_temporary)
@@ -392,7 +477,8 @@ private:
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
 				if (node._AxisAlignedBoundingBoxes[i].IsValid()
-					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary))
+					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
+					&& intersection_distance_temporary < *intersection_distance)
 				{
 					if (const TriangleData* const RESTRICT intersected_triangle_data_temporary{ Trace(ray, node._Nodes[i], intersection_distance) })
 					{
