@@ -23,10 +23,10 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr Pair(const FirstType &initialFirst, const SecondType &initialSecond) NOEXCEPT
+	constexpr Pair(const FirstType &initial_first, const SecondType &initial_second) NOEXCEPT
 		:
-		_First(initialFirst),
-		_Second(initialSecond)
+		_First(initial_first),
+		_Second(initial_second)
 	{
 
 	}

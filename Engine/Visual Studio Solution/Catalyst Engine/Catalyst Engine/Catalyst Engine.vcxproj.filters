@@ -1359,6 +1359,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\AccelerationStructure.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystLighting.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

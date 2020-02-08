@@ -23,6 +23,7 @@
 #include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
+#include <Rendering/Native/Shader/CatalystLighting.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 
 //Resources.
@@ -383,7 +384,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 	float hit_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 	bool has_hit{ false };
 
-	has_hit |= CastSurfaceRayVolumetricParticles(ray, &surface_description, &hit_distance);
+	//has_hit |= CastSurfaceRayVolumetricParticles(ray, &surface_description, &hit_distance);
 	has_hit |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
 
 	//Determine the color.
@@ -487,7 +488,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 
 		Vector3<float> indirect_lighting;
 
-		if (recursion < 1 && false)
+		if (recursion < 1)
 		{
 			indirect_lighting = CastRayScene(indirect_lighting_ray, recursion + 1);
 		}
@@ -497,7 +498,15 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 			indirect_lighting = CastRaySky(indirect_lighting_ray);
 		}
 
-		lighting += surface_description._Albedo * indirect_lighting * CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(surface_description._Normal, indirect_lighting_direction), 0.0f);
+		lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
+														surface_description._Albedo,
+														surface_description._Normal,
+														1.0f,
+														0.0f,
+														1.0f,
+														1.0f,
+														-indirect_lighting_direction,
+														indirect_lighting);
 	}
 
 	//Calculate the direct lighting.
@@ -516,9 +525,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 					Ray shadow_ray;
 
 					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
-
-					TerrainSystem::Instance->GetTerrainHeightAtPosition(shadow_ray._Origin, &shadow_ray._Origin._Y);
-
 					shadow_ray._Direction = -component->_Direction;
 					shadow_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
@@ -526,7 +532,15 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 
 					if (!in_shadow)
 					{
-						lighting += surface_description._Albedo * component->_Luminance * CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(surface_description._Normal, -component->_Direction), 0.0f);
+						lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
+																		surface_description._Albedo,
+																		surface_description._Normal,
+																		1.0f,
+																		0.0f,
+																		1.0f,
+																		1.0f,
+																		component->_Direction,
+																		component->_Luminance);
 					}
 
 					break;
