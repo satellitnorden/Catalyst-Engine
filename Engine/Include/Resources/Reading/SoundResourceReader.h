@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Utilities/StringUtilities.h>
 
-//File handling.
-#include <FileHandling/BinaryFile.h>
+//File.
+#include <File/Core/BinaryFile.h>
 
 //Resources.
 #include <Resources/Reading/SoundResource.h>
@@ -94,7 +94,7 @@ public:
 						sample = sample | ~0xFFFFFF;
 					}
 
-					resource->_Samples.EmplaceFast(static_cast<float>(sample) / static_cast<float>(INT24_MAXIMUM));
+					resource->_Samples.Emplace(static_cast<float>(sample) / static_cast<float>(INT24_MAXIMUM));
 				}
 
 				break;
