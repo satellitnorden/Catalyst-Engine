@@ -226,7 +226,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	}
 
 	//Build the terrain acceleration structure.
-	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(4);
+	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(16);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
