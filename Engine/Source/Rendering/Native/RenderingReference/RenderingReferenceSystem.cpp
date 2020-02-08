@@ -381,7 +381,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 {
 	//Cast a rays against the scene.
 	SurfaceDescription surface_description;
-	float hit_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
+	float hit_distance{ FLOAT_MAXIMUM };
 	bool has_hit{ false };
 
 	//has_hit |= CastSurfaceRayVolumetricParticles(ray, &surface_description, &hit_distance);
@@ -404,13 +404,17 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 */
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayVolumetricParticles(const Ray& ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
+	//Define constants.
+	constexpr float VOLUMETRIC_PARTICLE_DISTANCE{ 2'048.0f };
+
 	//Determine if a volumetric particle was hit.
-	if (CatalystRandomMath::RandomChance(0.5f))
+	//if (CatalystRandomMath::RandomChance(0.5f))
+	if (true)
 	{
 		//Fill in the surface description/hit distance.
 		surface_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
-		surface_description->_Normal = VectorConstants::UP;
-		*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, *hit_distance);
+		surface_description->_Normal = Vector3<float>::Normalize(Vector3<float>(CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f)));
+		*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, VOLUMETRIC_PARTICLE_DISTANCE);
 
 		return true;
 	}
@@ -427,12 +431,10 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayVolumetricParticles(cons
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
 	//Trace the terrain acceleration structure.
-	float intersection_distance{ FLOAT_MAXIMUM };
-
-	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ RenderingReferenceSystemData::_TerrainAccelerationStructure.Trace(ray, &intersection_distance) })
+	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ RenderingReferenceSystemData::_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
 	{
 		//Calculate the hit position.
-		const Vector3<float> hit_position{ ray._Origin + ray._Direction * intersection_distance };
+		const Vector3<float> hit_position{ ray._Origin + ray._Direction * *hit_distance };
 
 		//Fill in the surface description.
 		surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
@@ -465,6 +467,10 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRaySky(const Ray& ray) N
 */
 NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription& surface_description, const uint8 recursion) NOEXCEPT
 {
+	//Define constants.
+	constexpr float NORMAL_OFFSET_FACTOR{ FLOAT_EPSILON * 1'024.0f * 1'024.0f };
+	constexpr float DIRECTIONAL_LIGHT_SIZE{ FLOAT_EPSILON * 1'024.0f * 16.0f };
+
 	//Calculate the lighting.
 	Vector3<float> lighting{ 0.0f, 0.0f, 0.0f };
 
@@ -482,13 +488,13 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 
 		Ray indirect_lighting_ray;
 
-		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
+		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
 		indirect_lighting_ray._Direction = indirect_lighting_direction;
 		indirect_lighting_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 		Vector3<float> indirect_lighting;
 
-		if (recursion < 1)
+		if (recursion < 2)
 		{
 			indirect_lighting = CastRayScene(indirect_lighting_ray, recursion + 1);
 		}
@@ -501,7 +507,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 		lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
 														surface_description._Albedo,
 														surface_description._Normal,
-														1.0f,
+														0.0f,
 														0.0f,
 														1.0f,
 														1.0f,
@@ -524,8 +530,8 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 					//Cast a shadow ray to determine visibility.
 					Ray shadow_ray;
 
-					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
-					shadow_ray._Direction = -component->_Direction;
+					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
+					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
 					shadow_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
@@ -535,7 +541,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 						lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
 																		surface_description._Albedo,
 																		surface_description._Normal,
-																		1.0f,
+																		0.0f,
 																		0.0f,
 																		1.0f,
 																		1.0f,
@@ -562,8 +568,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 */
 NO_DISCARD bool RenderingReferenceSystem::CastShadowRayScene(const Ray &ray) NOEXCEPT
 {
-	//return CastShadowRayTerrain(ray);
-	return false;
+	return CastShadowRayTerrain(ray);
 }
 
 /*
@@ -571,39 +576,6 @@ NO_DISCARD bool RenderingReferenceSystem::CastShadowRayScene(const Ray &ray) NOE
 */
 NO_DISCARD bool RenderingReferenceSystem::CastShadowRayTerrain(const Ray &ray) NOEXCEPT
 {
-	//Define constants.
-	constexpr float STEP{ 1.0f };
-
-	Vector3<float> current_position{ ray._Origin };
-	float current_distance{ 0.0f };
-
-	//Offset the current position by a random amount.
-	current_position += ray._Direction * CatalystRandomMath::RandomFloatInRange(0.0f, STEP);
-
-	for (;;)
-	{
-		//Get the terrain height at the current position.
-		float terrain_height;
-
-		TerrainSystem::Instance->GetTerrainHeightAtPosition(current_position, &terrain_height);
-
-		if (current_position._Y <= terrain_height)
-		{
-			return true;
-		}
-
-		//Advance the current position.
-		current_position += ray._Direction * STEP;
-		current_distance += STEP;
-
-		//Abort if the ray has reached the current view distance.
-		if (current_distance >= 2'048.0f)
-		{
-			break;
-		}
-	}
-
-	//Nothing hit.
-	return false;
+	return RenderingReferenceSystemData::_TerrainAccelerationStructure.TraceShadow(ray);
 }
 #endif

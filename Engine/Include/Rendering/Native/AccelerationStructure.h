@@ -106,13 +106,23 @@ public:
 	}
 
 	/*
-	*	Traces a ray through the acceleration structure.
+	*	Traces a surface ray through the acceleration structure.
 	*	If an intersection is detected, it returns the intersected triangle data.
 	*	If no interseaction was found, it returns nullptr.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT Trace(const Ray& ray, float *const RESTRICT intersection_distance) const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT TraceSurface(const Ray& ray, float *const RESTRICT intersection_distance) const NOEXCEPT
 	{
-		return Trace(ray, _Root, intersection_distance);
+		return TraceSurface(ray, _Root, intersection_distance);
+	}
+
+	/*
+	*	Traces a shadow ray through the acceleration structure.
+	*	If an intersection is detected, it returns true
+	*	If no interseaction was found, it returns false.
+	*/
+	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray& ray) const NOEXCEPT
+	{
+		return TraceShadow(ray, _Root);
 	}
 
 private:
@@ -445,11 +455,11 @@ private:
 	}
 
 	/*
-	*	Traces a ray through the acceleration structure via the given node.
+	*	Traces a surface ray through the acceleration structure via the given node.
 	*	If an intersection is detected, it returns the intersected triangle data.
 	*	If no interseaction was found, it returns nullptr.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT Trace(const Ray& ray, const Node &node, float *const RESTRICT intersection_distance) const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT TraceSurface(const Ray& ray, const Node &node, float *const RESTRICT intersection_distance) const NOEXCEPT
 	{
 		const TriangleData *RESTRICT intersected_triangle_data{ nullptr };
 
@@ -480,7 +490,7 @@ private:
 					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
 					&& intersection_distance_temporary < *intersection_distance)
 				{
-					if (const TriangleData* const RESTRICT intersected_triangle_data_temporary{ Trace(ray, node._Nodes[i], intersection_distance) })
+					if (const TriangleData* const RESTRICT intersected_triangle_data_temporary{ TraceSurface(ray, node._Nodes[i], intersection_distance) })
 					{
 						intersected_triangle_data = intersected_triangle_data_temporary;
 					}
@@ -489,6 +499,48 @@ private:
 		}
 
 		return intersected_triangle_data;
+	}
+
+	/*
+	*	Traces a shadow ray through the acceleration structure.
+	*	If an intersection is detected, it returns true
+	*	If no interseaction was found, it returns false.
+	*/
+	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray &ray, const Node &node) const NOEXCEPT
+	{
+		if (node._HasTriangles)
+		{
+			for (uint64 i{ 0 }; i < node._TriangleDataSize; ++i)
+			{
+				const TriangleData& triangle_data{ node._TriangleDataMemory[i] };
+
+				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+
+				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle_data._Triangle, &intersection_distance_temporary))
+				{
+					return true;
+				}
+			}
+		}
+
+		else
+		{
+			for (uint8 i{ 0 }; i < 2; ++i)
+			{
+				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+
+				if (node._AxisAlignedBoundingBoxes[i].IsValid()
+					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary))
+				{
+					if (TraceShadow(ray, node._Nodes[i]))
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 };
