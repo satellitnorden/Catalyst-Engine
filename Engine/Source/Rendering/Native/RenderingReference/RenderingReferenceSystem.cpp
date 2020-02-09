@@ -227,7 +227,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	}
 
 	//Build the terrain acceleration structure.
-	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(16);
+	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(4);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
@@ -380,17 +380,24 @@ Vector3<float> RenderingReferenceSystem::CalculateRayDirection(const uint32 X, c
 NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray, const uint8 recursion) NOEXCEPT
 {
 	//Cast a rays against the scene.
+	VolumetricDescription volumetric_description;
 	SurfaceDescription surface_description;
 	float hit_distance{ FLOAT_MAXIMUM };
-	bool has_hit{ false };
+	bool has_hit_volumetric{ false };
+	bool has_hit_surface{ false };
 
-	//has_hit |= CastSurfaceRayVolumetricParticles(ray, &surface_description, &hit_distance);
-	has_hit |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
+	has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
+	has_hit_surface |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
 
 	//Determine the color.
-	if (has_hit)
+	if (has_hit_surface)
 	{
-		return CalculateLighting(ray, hit_distance, surface_description, recursion);
+		return CalculateSurfaceLighting(ray, hit_distance, surface_description, recursion);
+	}
+
+	else if (has_hit_volumetric)
+	{
+		return CalculateVolumetricLighting(ray, hit_distance, volumetric_description, recursion);
 	}
 
 	else
@@ -400,21 +407,22 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 }
 
 /*
-*	Casts a surface ray against the volumetric particles.
+*	Casts a surface ray against the volumetric particles. Returns if there was a hit.
 */
-NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayVolumetricParticles(const Ray& ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
+NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray, VolumetricDescription *const RESTRICT volumetric_description, float* const RESTRICT hit_distance) NOEXCEPT
 {
 	//Define constants.
 	constexpr float VOLUMETRIC_PARTICLE_DISTANCE{ 2'048.0f };
 
 	//Determine if a volumetric particle was hit.
-	//if (CatalystRandomMath::RandomChance(0.5f))
-	if (true)
+	if (true || CatalystRandomMath::RandomChance(1.0f))
 	{
 		//Fill in the surface description/hit distance.
-		surface_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
-		surface_description->_Normal = Vector3<float>::Normalize(Vector3<float>(CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f)));
-		*hit_distance = CatalystRandomMath::RandomFloatInRange(0.0f, VOLUMETRIC_PARTICLE_DISTANCE);
+		volumetric_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
+
+		const float hit_distance_alpha{ pow(CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f), 8.0f) };
+
+		*hit_distance = CatalystBaseMath::LinearlyInterpolate(0.0f, VOLUMETRIC_PARTICLE_DISTANCE, hit_distance_alpha);
 
 		return true;
 	}
@@ -439,6 +447,7 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 		//Fill in the surface description.
 		surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
 		TerrainSystem::Instance->GetTerrainNormalAtPosition(hit_position, &surface_description->_Normal);
+		surface_description->_Roughness = 1.0f;
 
 		return true;
 	}
@@ -463,9 +472,9 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRaySky(const Ray& ray) N
 }
 
 /*
-*	Calculates the lighting.
+*	Calculates the surface lighting.
 */
-NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription& surface_description, const uint8 recursion) NOEXCEPT
+NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription& surface_description, const uint8 recursion) NOEXCEPT
 {
 	//Define constants.
 	constexpr float NORMAL_OFFSET_FACTOR{ FLOAT_EPSILON * 1'024.0f * 1'024.0f };
@@ -547,6 +556,88 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateLighting(const Ray 
 																		1.0f,
 																		component->_Direction,
 																		component->_Luminance);
+					}
+
+					break;
+				}
+
+				case LightType::POINT:
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	return lighting;
+}
+
+/*
+*	Calculates the volumetric lighting.
+*/
+NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(const Ray &incoming_ray, const float hit_distance, const VolumetricDescription &volumetric_description, const uint8 recursion) NOEXCEPT
+{
+	//Define constants.
+	constexpr float DIRECTIONAL_LIGHT_SIZE{ FLOAT_EPSILON * 1'024.0f * 16.0f };
+
+	//Calculate the lighting.
+	Vector3<float> lighting{ 0.0f, 0.0f, 0.0f };
+
+	//Calculate the indirect lighting.
+	{
+		Vector3<float> indirect_lighting_direction;
+
+		indirect_lighting_direction._X = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
+		indirect_lighting_direction._Y = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
+		indirect_lighting_direction._Z = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
+
+		indirect_lighting_direction.Normalize();
+
+		Ray indirect_lighting_ray;
+
+		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
+		indirect_lighting_ray._Direction = indirect_lighting_direction;
+		indirect_lighting_ray._MaximumHitDistance = FLOAT_MAXIMUM;
+
+		Vector3<float> indirect_lighting;
+
+		if (recursion < 2)
+		{
+			indirect_lighting = CastRayScene(indirect_lighting_ray, recursion + 1);
+		}
+
+		else
+		{
+			indirect_lighting = CastRaySky(indirect_lighting_ray);
+		}
+
+		lighting += volumetric_description._Albedo * indirect_lighting;
+	}
+
+	//Calculate the direct lighting.
+	{
+		//Iterate over all light components and calculate their lighting.
+		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i = 0; i < number_of_light_components; ++i, ++component)
+		{
+			switch (static_cast<LightType>(component->_LightType))
+			{
+				case LightType::DIRECTIONAL:
+				{
+					//Cast a shadow ray to determine visibility.
+					Ray shadow_ray;
+
+					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
+					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
+					shadow_ray._MaximumHitDistance = FLOAT_MAXIMUM;
+
+					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
+
+					if (!in_shadow)
+					{
+						lighting += volumetric_description._Albedo * component->_Luminance;
 					}
 
 					break;

@@ -16,6 +16,7 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
 #include <Rendering/Native/RenderingReference/SurfaceDescription.h>
+#include <Rendering/Native/RenderingReference/VolumetricDescription.h>
 
 //User interface.
 #include <UserInterface/TextUserInterfaceElement.h>
@@ -121,7 +122,7 @@ private:
 	/*
 	*	Casts a surface ray against the volumetric particles. Returns if there was a hit.
 	*/
-	NO_DISCARD bool CastSurfaceRayVolumetricParticles(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+	NO_DISCARD bool CastVolumetricRayScene(const Ray &ray, VolumetricDescription *const RESTRICT volumetric_description, float *const RESTRICT hit_distance) NOEXCEPT;
 
 	/*
 	*	Casts a surface ray against terrain. Returns if there was a hit.
@@ -134,9 +135,14 @@ private:
 	NO_DISCARD Vector3<float> CastRaySky(const Ray &ray) NOEXCEPT;
 
 	/*
-	*	Calculates the lighting.
+	*	Calculates the surface lighting.
 	*/
-	NO_DISCARD Vector3<float> CalculateLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription &surface_description, const uint8 recursion) NOEXCEPT;
+	NO_DISCARD Vector3<float> CalculateSurfaceLighting(const Ray &incoming_ray, const float hit_distance, const SurfaceDescription &surface_description, const uint8 recursion) NOEXCEPT;
+
+	/*
+	*	Calculates the volumetric lighting.
+	*/
+	NO_DISCARD Vector3<float> CalculateVolumetricLighting(const Ray& incoming_ray, const float hit_distance, const VolumetricDescription &volumetric_description, const uint8 recursion) NOEXCEPT;
 
 	/*
 	*	Casts a shadow ray against the scene. Returns if there was a hit.
