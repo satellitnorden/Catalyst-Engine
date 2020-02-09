@@ -1362,6 +1362,9 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\VolumetricDescription.h">
+      <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
