@@ -5,6 +5,9 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+#include <Rendering/Native/Texture2D.h>
+#endif
 
 class Texture2DResource final
 {
@@ -16,5 +19,10 @@ public:
 
 	//The index into the global array of texture 2D's.
 	uint32 _Index{ UINT32_MAXIMUM };
+
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	//The texture 2D.
+	Texture2D<Vector4<float>> _Texture2D;
+#endif
 
 };
