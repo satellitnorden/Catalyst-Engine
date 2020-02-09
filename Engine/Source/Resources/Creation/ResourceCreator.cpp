@@ -151,10 +151,12 @@ void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Textur
 	{
 		for (uint32 X{ 0 }; X < data->_Width; ++X)
 		{
-			texture->_Texture2D.At(X, Y)._X = static_cast<float>(data->_Data[0][X + (Y * data->_Width) + 0]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._Y = static_cast<float>(data->_Data[0][X + (Y * data->_Width) + 1]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._Z = static_cast<float>(data->_Data[0][X + (Y * data->_Width) + 2]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._W = static_cast<float>(data->_Data[0][X + (Y * data->_Width) + 3]) / 255.0f;
+			uint64 source_texture_index{ (X + (Y * data->_Width)) * 4 };
+
+			texture->_Texture2D.At(X, Y)._X = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._Y = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._Z = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._W = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
 		}
 	}
 #endif
