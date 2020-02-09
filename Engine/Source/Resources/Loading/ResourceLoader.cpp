@@ -23,7 +23,7 @@ Map<HashString, Font> ResourceLoader::_Fonts;
 Map<HashString, Model> ResourceLoader::_Models;
 Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
 Map<HashString, TextureCubeHandle> ResourceLoader::_TextureCubes;
-Map<HashString, GlobalTexture2D> ResourceLoader::_Texture2Ds;
+Map<HashString, Texture2DResource> ResourceLoader::_Texture2Ds;
 Map<HashString, Texture3DHandle> ResourceLoader::_Texture3Ds;
 
 /*

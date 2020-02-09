@@ -10,7 +10,7 @@
 //Resources.
 #include <Resources/Reading/SoundResource.h>
 
-class SoundResourceReader final
+class WAVReader final
 {
 
 public:
@@ -18,12 +18,12 @@ public:
 	/*
 	*	Reads the sound resource at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char* const RESTRICT file_path, SoundResource* const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundResource *const RESTRICT resource) NOEXCEPT
 	{
-		ASSERT(resource, "SoundResourceReader::Read - Invalid resource passed!");
+		ASSERT(resource, "WAVReader::Read - Invalid resource passed!");
 
 		//Open the file.
-		BinaryFile<IOMode::In> file{ file_path };
+		BinaryFile<IOMode::In> input{ file };
 
 		if (!file)
 		{
@@ -34,27 +34,28 @@ public:
 
 		//Read the header.
 		WAVHeader header;
-		file.Read(&header._ChunkID, sizeof(char) * 4);
-		file.Read(&header._ChunkSize, sizeof(uint32));
-		file.Read(&header._Format, sizeof(char) * 4);
-		file.Read(&header._SubChunk1ID, sizeof(char) * 4);
-		file.Read(&header._SubChunk1Size, sizeof(uint32));
-		file.Read(&header._AudioFormat, sizeof(uint16));
-		file.Read(&header._NumberOfChannels, sizeof(uint16));
-		file.Read(&header._SampleRate, sizeof(uint32));
-		file.Read(&header._ByteRate, sizeof(uint32));
-		file.Read(&header._BlockAlign, sizeof(uint16));
-		file.Read(&header._BitsPerSample, sizeof(uint16));
-		file.Read(&header._SubChunk2ID, sizeof(char) * 4);
-		file.Read(&header._SubChunk2Size, sizeof(uint32));
+
+		input.Read(&header._ChunkID, sizeof(char) * 4);
+		input.Read(&header._ChunkSize, sizeof(uint32));
+		input.Read(&header._Format, sizeof(char) * 4);
+		input.Read(&header._SubChunk1ID, sizeof(char) * 4);
+		input.Read(&header._SubChunk1Size, sizeof(uint32));
+		input.Read(&header._AudioFormat, sizeof(uint16));
+		input.Read(&header._NumberOfChannels, sizeof(uint16));
+		input.Read(&header._SampleRate, sizeof(uint32));
+		input.Read(&header._ByteRate, sizeof(uint32));
+		input.Read(&header._BlockAlign, sizeof(uint16));
+		input.Read(&header._BitsPerSample, sizeof(uint16));
+		input.Read(&header._SubChunk2ID, sizeof(char) * 4);
+		input.Read(&header._SubChunk2Size, sizeof(uint32));
 
 		//It's possible we didn't reach the data chunk, just skip if that's the case.
 		while (!StringUtilities::IsEqual(header._SubChunk2ID, "data", 4))
 		{
-			file.Skip(header._SubChunk2Size);
+			input.Skip(header._SubChunk2Size);
 
-			file.Read(&header._SubChunk2ID, sizeof(char) * 4);
-			file.Read(&header._SubChunk2Size, sizeof(uint32));
+			input.Read(&header._SubChunk2ID, sizeof(char) * 4);
+			input.Read(&header._SubChunk2Size, sizeof(uint32));
 		}
 
 		//Set the sample rate.
@@ -85,7 +86,7 @@ public:
 
 				for (uint64 i{ 0 }; i < number_of_samples; ++i)
 				{
-					file.Read(&temporary, sizeof(uint8) * 3);
+					input.Read(&temporary, sizeof(uint8) * 3);
 
 					int32 sample{ (temporary[2] << 16) | (temporary[1] << 8) | temporary[0] };
 
@@ -115,10 +116,10 @@ public:
 			}
 		}
 
-		ASSERT(file.HasReachedEndOfFile(), "There are still data left to read!");
+		ASSERT(input.HasReachedEndOfFile(), "There are still data left to read!");
 
 		//Close the file.
-		file.Close();
+		input.Close();
 
 		return true;
 	}

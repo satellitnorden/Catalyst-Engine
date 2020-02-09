@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
-#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/MaterialSystem.h>
@@ -28,6 +27,9 @@
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 #endif
+
+//Resources.
+#include <Resources/Core/Texture2DResource.h>
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
@@ -381,7 +383,7 @@ private:
 #endif
 
 	//The noise textures.
-	StaticArray<GlobalTexture2D, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
+	StaticArray<Texture2DResource, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
 
 	//The active noise texture index.
 	uint8 _ActiveNoiseTextureIndex{ 0 };
