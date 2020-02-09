@@ -313,6 +313,18 @@ public:
 	}
 
 	/*
+	*	Normalize the vector to a unit vector. Accounts for the case where length is zero.
+	*/
+	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
+	{
+		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT_EPSILON) };
+		const float inverseLength{ 1.0f / length };
+
+		_X *= inverseLength;
+		_Y *= inverseLength;
+	}
+
+	/*
 	*	Given an amount, rotate the vector.
 	*/
 	FORCE_INLINE constexpr void Rotate(const float amount) NOEXCEPT
@@ -871,6 +883,19 @@ public:
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
 		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		_X *= inverseLength;
+		_Y *= inverseLength;
+		_Z *= inverseLength;
+	}
+
+	/*
+	*	Normalize the vector to a unit vector. Accounts for the case where length is zero.
+	*/
+	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
+	{
+		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT_EPSILON) };
 		const float inverseLength{ 1.0f / length };
 
 		_X *= inverseLength;

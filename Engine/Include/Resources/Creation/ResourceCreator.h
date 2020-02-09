@@ -8,11 +8,11 @@
 
 //Rendering.
 #include <Rendering/Native/Font.h>
-#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
+#include <Resources/Core/Texture2DResource.h>
 #include <Resources/Data/AnimatedModelData.h>
 #include <Resources/Data/AnimationData.h>
 #include <Resources/Data/FontData.h>
@@ -54,7 +54,7 @@ public:
 	/*
 	*	Creates a texture 2D.
 	*/
-	static void CreateTexture2D(Texture2DData *const RESTRICT data, GlobalTexture2D *const RESTRICT texture) NOEXCEPT;
+	static void CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Creates a texture 3D.

@@ -110,6 +110,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h" />
+    <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
@@ -210,7 +211,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
@@ -326,6 +326,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\AnimationData.h" />
@@ -336,9 +337,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture3DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Reading\ImageResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResource.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResourceReader.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />

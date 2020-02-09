@@ -135,13 +135,31 @@ void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, Te
 /*
 *	Creates a texture 2D.
 */
-void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, GlobalTexture2D *const RESTRICT texture) NOEXCEPT
+void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT texture) NOEXCEPT
 {
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::R8G8B8A8_Byte), &texture->_Texture2D);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::R8G8B8A8_Byte), &texture->_Texture2DHandle);
 
 	//Add the texture to the global render data.
-	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2D);
+	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2DHandle);
+
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+	//Create the texture 2D.
+	texture->_Texture2D.Initialize(data->_Width, data->_Height);
+
+	for (uint32 Y{ 0 }; Y < data->_Height; ++Y)
+	{
+		for (uint32 X{ 0 }; X < data->_Width; ++X)
+		{
+			uint64 source_texture_index{ (X + (Y * data->_Width)) * 4 };
+
+			texture->_Texture2D.At(X, Y)._X = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._Y = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._Z = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			texture->_Texture2D.At(X, Y)._W = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+		}
+	}
+#endif
 }
 
 /*

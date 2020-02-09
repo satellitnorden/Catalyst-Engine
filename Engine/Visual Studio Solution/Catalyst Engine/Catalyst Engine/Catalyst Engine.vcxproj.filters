@@ -358,6 +358,9 @@
     <Filter Include="Rendering\Include\Native\Shader">
       <UniqueIdentifier>{8eee20f1-5ac2-4bcb-8f01-7243a3e8e096}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File\Include\Readers">
+      <UniqueIdentifier>{ea15b939-ef8a-4037-89f2-6defa00b67c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -837,9 +840,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalTexture2D.h">
-      <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
@@ -1197,13 +1197,7 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Reading\ImageResource.h">
-      <Filter>Resources\Include\Reading</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResource.h">
-      <Filter>Resources\Include\Reading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResourceReader.h">
       <Filter>Resources\Include\Reading</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h">
@@ -1361,6 +1355,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystLighting.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h">
+      <Filter>File\Include\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h">
+      <Filter>Resources\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

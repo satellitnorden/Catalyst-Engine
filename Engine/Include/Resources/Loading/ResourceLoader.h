@@ -14,11 +14,11 @@
 
 //Rendering.
 #include <Rendering/Native/Font.h>
-#include <Rendering/Native/GlobalTexture2D.h>
 #include <Rendering/Native/Model.h>
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
+#include <Resources/Core/Texture2DResource.h>
 
 //Sound.
 #include <Sound/Native/SoundCore.h>
@@ -66,7 +66,7 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding texture 2D.
 	*/
-	static const GlobalTexture2D& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
+	static const Texture2DResource& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding texture 3D.
@@ -94,7 +94,7 @@ private:
 	static Map<HashString, TextureCubeHandle> _TextureCubes;
 
 	//Container for all texture 2Ds.
-	static Map<HashString, GlobalTexture2D> _Texture2Ds;
+	static Map<HashString, Texture2DResource> _Texture2Ds;
 
 	//Container for all texture 3Ds.
 	static Map<HashString, Texture3DHandle> _Texture3Ds;
