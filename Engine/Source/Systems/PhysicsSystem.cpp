@@ -70,7 +70,7 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 	{
 		//Cache relevant data.
 		const Texture2D<float> &height_map{ TerrainSystem::Instance->GetTerrainProperties()->_HeightMap };
-		const float height_map_half_resolution{ static_cast<float>(height_map.GetWidth()) * 0.5f };
+		const float height_map_resolution{ static_cast<float>(height_map.GetWidth()) };
 
 		//Generate the terrain vertices and indices.
 		DynamicArray<TerrainVertex> vertices;
@@ -87,17 +87,17 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 			//Construct the triangle.
 			Triangle triangle;
 
-			triangle._Vertices[0]._X = vertices[indices[i] + 0]._Position._X * height_map_half_resolution;
+			triangle._Vertices[0]._X = vertices[indices[i + 0]]._Position._X * height_map_resolution;
 			triangle._Vertices[0]._Y = 0.0f;
-			triangle._Vertices[0]._Z = vertices[indices[i] + 0]._Position._Y * height_map_half_resolution;
+			triangle._Vertices[0]._Z = vertices[indices[i + 0]]._Position._Y * height_map_resolution;
 
-			triangle._Vertices[1]._X = vertices[indices[i] + 1]._Position._X * height_map_half_resolution;
+			triangle._Vertices[1]._X = vertices[indices[i + 1]]._Position._X * height_map_resolution;
 			triangle._Vertices[1]._Y = 0.0f;
-			triangle._Vertices[1]._Z = vertices[indices[i] + 1]._Position._Y * height_map_half_resolution;
+			triangle._Vertices[1]._Z = vertices[indices[i + 1]]._Position._Y * height_map_resolution;
 
-			triangle._Vertices[2]._X = vertices[indices[i] + 2]._Position._X * height_map_half_resolution;
+			triangle._Vertices[2]._X = vertices[indices[i + 2]]._Position._X * height_map_resolution;
 			triangle._Vertices[2]._Y = 0.0f;
-			triangle._Vertices[2]._Z = vertices[indices[i] + 2]._Position._Y * height_map_half_resolution;
+			triangle._Vertices[2]._Z = vertices[indices[i + 2]]._Position._Y * height_map_resolution;
 
 			TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[0], &triangle._Vertices[0]._Y);
 			TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[1], &triangle._Vertices[1]._Y);
