@@ -22,22 +22,22 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	FORCE_INLINE static void GenerateTerrainPlane(const TerrainProperties &properties, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
 	{
-		vertices->Reserve(properties._PatchResolution * properties._PatchResolution);
-		indices->Reserve((properties._PatchResolution - 1) * (properties._PatchResolution - 1) * 6);
+		vertices->Reserve(resolution * resolution);
+		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
 
 		uint32 x{ 0 };
 		uint32 y{ 0 };
 
-		for (uint32 i{ 0 }; i < properties._PatchResolution; ++i, x = x < 3 ? x + 1 : 0)
+		for (uint32 i{ 0 }; i < resolution; ++i, x = x < 3 ? x + 1 : 0)
 		{
-			for (uint32 j{ 0 }; j < properties._PatchResolution; ++j, y = y < 3 ? y + 1 : 0)
+			for (uint32 j{ 0 }; j < resolution; ++j, y = y < 3 ? y + 1 : 0)
 			{
 				TerrainVertex vertex;
 
-				vertex._Position._X = static_cast<float>(i) / static_cast<float>(properties._PatchResolution - 1) - 0.5f;
-				vertex._Position._Y = static_cast<float>(j) / static_cast<float>(properties._PatchResolution - 1) - 0.5f;
+				vertex._Position._X = static_cast<float>(i) / static_cast<float>(resolution - 1) - 0.5f;
+				vertex._Position._Y = static_cast<float>(j) / static_cast<float>(resolution - 1) - 0.5f;
 
 				vertex._Borders = 0;
 
@@ -56,7 +56,7 @@ namespace TerrainGeneralUtilities
 				}
 
 				//Right.
-				else if (i == properties._PatchResolution - 1)
+				else if (i == resolution - 1)
 				{
 					if (y == 1 || y == 3)
 					{
@@ -84,7 +84,7 @@ namespace TerrainGeneralUtilities
 				}
 
 				//Lower.
-				else if (j == properties._PatchResolution - 1)
+				else if (j == resolution - 1)
 				{
 					if (x == 1 || x == 3)
 					{
@@ -99,15 +99,15 @@ namespace TerrainGeneralUtilities
 
 				vertices->Emplace(vertex);
 
-				if (i != properties._PatchResolution - 1 && j != properties._PatchResolution - 1)
+				if (i != resolution - 1 && j != resolution - 1)
 				{
-					indices->Emplace((i * properties._PatchResolution) + j);
-					indices->Emplace((i * properties._PatchResolution) + j + 1);
-					indices->Emplace(((i + 1) * properties._PatchResolution) + j);
+					indices->Emplace((i * resolution) + j);
+					indices->Emplace((i * resolution) + j + 1);
+					indices->Emplace(((i + 1) * resolution) + j);
 
-					indices->Emplace((i * properties._PatchResolution) + j + 1);
-					indices->Emplace(((i + 1) * properties._PatchResolution) + j + 1);
-					indices->Emplace(((i + 1) * properties._PatchResolution) + j);
+					indices->Emplace((i * resolution) + j + 1);
+					indices->Emplace(((i + 1) * resolution) + j + 1);
+					indices->Emplace(((i + 1) * resolution) + j);
 				}
 			}
 		}

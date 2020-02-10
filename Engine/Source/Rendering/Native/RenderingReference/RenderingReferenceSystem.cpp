@@ -180,6 +180,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		DynamicArray<uint32> indices;
 
 		TerrainGeneralUtilities::GenerateTerrainPlane(	*TerrainSystem::Instance->GetTerrainProperties(),
+														TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution,
 														&vertices,
 														&indices);
 

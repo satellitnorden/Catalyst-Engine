@@ -41,6 +41,7 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	DynamicArray<uint32> indices;
 
 	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties,
+													_Properties._PatchResolution,
 													&vertices,
 													&indices);
 
