@@ -43,6 +43,11 @@ public:
 	*/
 	void RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT;
 
+	/*
+	*	Callback for when terrain has been initialized.
+	*/
+	void OnTerrainInitialized() NOEXCEPT;
+
 private:
 
 	//Container for all character movements.

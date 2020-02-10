@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/Pair.h>
 
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>

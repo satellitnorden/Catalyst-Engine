@@ -8,6 +8,7 @@
 #include <Core/General/Perceiver.h>
 
 //Systems.
+#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
@@ -140,6 +141,12 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 
 	//There is now a height map!
 	_Properties._HasHeightMap = true;
+
+	//Call the necessary callbacks.
+	if (_Properties._HasHeightMap && _Properties._HasIndexMap && _Properties._HasBlendMap)
+	{
+		PhysicsSystem::Instance->OnTerrainInitialized();
+	}
 }
 
 /*
@@ -158,6 +165,12 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 
 	//There is now an index map!
 	_Properties._HasIndexMap = true;
+
+	//Call the necessary callbacks.
+	if (_Properties._HasHeightMap && _Properties._HasIndexMap && _Properties._HasBlendMap)
+	{
+		PhysicsSystem::Instance->OnTerrainInitialized();
+	}
 }
 
 /*
@@ -176,6 +189,12 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 
 	//There is now a blend map!
 	_Properties._HasBlendMap = true;
+
+	//Call the necessary callbacks.
+	if (_Properties._HasHeightMap && _Properties._HasIndexMap && _Properties._HasBlendMap)
+	{
+		PhysicsSystem::Instance->OnTerrainInitialized();
+	}
 }
 
 /*

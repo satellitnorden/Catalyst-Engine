@@ -6,10 +6,27 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+class TerrainRaycastResult final
+{
+
+public:
+
+	//Empty. (:
+
+};
+
 class RaycastResult final
 {
 
 public:
+
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		NONE,
+
+		TERRAIN
+	};
 
 	//Denotes whether or not there was a hit.
 	bool _HasHit;
@@ -17,7 +34,13 @@ public:
 	//The hit distance.
 	float _HitDistance;
 
-	//The hit entity.
-	Entity *RESTRICT _HitEntity;
+	//Denotes the type of entity hit.
+	Type _Type;
+
+	union
+	{
+		//The terrain raycast result, if terrain was hit.
+		TerrainRaycastResult _TerrainRaycastResult;
+	};
 
 };
