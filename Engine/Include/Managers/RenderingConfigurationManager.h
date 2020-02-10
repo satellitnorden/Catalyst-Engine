@@ -132,13 +132,13 @@ public:
 private:
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
 
 	//The motion blur mode mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::RayTraced };
+	ShadowsMode _ShadowsMode{ ShadowsMode::None };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };

@@ -346,7 +346,6 @@ void RenderingReferenceSystem::CalculateTexel(const uint32 X, const uint32 Y) NO
 
 	ray._Origin = Perceiver::Instance->GetPosition();
 	ray._Direction = CalculateRayDirection(X, Y);
-	ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 	//Cast a ray against the scene and determine the color.
 	Vector3<float> color{ CastRayScene(ray, 0) };
@@ -499,7 +498,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
 		indirect_lighting_ray._Direction = indirect_lighting_direction;
-		indirect_lighting_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 		Vector3<float> indirect_lighting;
 
@@ -541,7 +539,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
 					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
-					shadow_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
 
@@ -597,7 +594,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 
 		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
 		indirect_lighting_ray._Direction = indirect_lighting_direction;
-		indirect_lighting_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 		Vector3<float> indirect_lighting;
 
@@ -631,7 +627,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 
 					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
 					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
-					shadow_ray._MaximumHitDistance = FLOAT_MAXIMUM;
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
 

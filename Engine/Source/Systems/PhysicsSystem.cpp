@@ -53,6 +53,7 @@ void PhysicsSystem::RegisterCharacterMovement(CharacterMovement* const RESTRICT 
 */
 void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
 {
+	/*
 	//Ray march until the ray has hit the terrain.
 	const uint32 number_of_steps{ static_cast<uint32>(ray._MaximumHitDistance) + 1 };
 
@@ -80,6 +81,7 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT
 			return;
 		}
 	}
+	*/
 }
 
 /*
