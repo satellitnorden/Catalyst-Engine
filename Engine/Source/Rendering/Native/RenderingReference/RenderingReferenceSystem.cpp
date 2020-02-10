@@ -415,7 +415,7 @@ NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray,
 	constexpr float VOLUMETRIC_PARTICLE_DISTANCE{ 2'048.0f };
 
 	//Determine if a volumetric particle was hit.
-	if (true || CatalystRandomMath::RandomChance(1.0f))
+	if (true || CatalystRandomMath::RandomChance(0.5f))
 	{
 		//Fill in the surface description/hit distance.
 		volumetric_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
