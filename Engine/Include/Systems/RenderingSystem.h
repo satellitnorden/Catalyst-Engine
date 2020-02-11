@@ -383,7 +383,7 @@ private:
 #endif
 
 	//The noise textures.
-	StaticArray<Texture2DResource, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
+	StaticArray<const Texture2DResource *RESTRICT, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
 
 	//The active noise texture index.
 	uint8 _ActiveNoiseTextureIndex{ 0 };

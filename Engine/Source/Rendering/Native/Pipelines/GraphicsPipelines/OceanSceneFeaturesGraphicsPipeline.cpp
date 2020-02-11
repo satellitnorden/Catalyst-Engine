@@ -46,7 +46,7 @@ public:
 void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Cache the ocean texture index.
-	_OceanTextureIndex = ResourceLoader::GetTexture2D(HashString("Ocean_Texture2D"))._Index;
+	_OceanTextureIndex = ResourceLoader::GetTexture2DResource(HashString("Ocean_Texture2D"))._Index;
 
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();

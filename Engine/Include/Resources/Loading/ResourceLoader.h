@@ -34,44 +34,132 @@ public:
 	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
-	*	Given a resource ID, return the corresponding animated model.
+	*	Returns all animated model resources.
 	*/
-	static const AnimatedModel& GetAnimatedModel(const HashString resourceID) { return _AnimatedModels[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Map<HashString, AnimatedModel> &GetAllAnimatedModelResources() NOEXCEPT
+	{
+		return _AnimatedModels;
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding animation.
+	*	Given a resource ID, return the corresponding animated model resource.
 	*/
-	static const Animation& GetAnimation(const HashString resourceID) { return _Animations[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const AnimatedModel &GetAnimatedModelResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _AnimatedModels[resource_ID];
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding font.
+	*	Returns all animation resources.
 	*/
-	static const Font& GetFont(const HashString resourceID) { return _Fonts[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Map<HashString, Animation> &GetAllAnimationResources() NOEXCEPT
+	{
+		return _Animations;
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding model.
+	*	Given a resource ID, return the corresponding animation resource.
 	*/
-	static const Model& GetModel(const HashString resourceID) { return _Models[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Animation &GetAnimationResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _Animations[resource_ID];
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding sound bank.
+	*	Returns all font resources.
 	*/
-	static const SoundBankHandle& GetSoundBank(const HashString resourceID) { return _SoundBanks[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Map<HashString, Font> &GetAllFontResources() NOEXCEPT
+	{
+		return _Fonts;
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding texture cube.
+	*	Given a resource ID, return the corresponding font resource.
 	*/
-	static const TextureCubeHandle& GetTextureCube(const HashString resourceID) { return _TextureCubes[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Font &GetFontResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _Fonts[resource_ID];
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding texture 2D.
+	*	Returns all model resources.
 	*/
-	static const Texture2DResource& GetTexture2D(const HashString resourceID) { return _Texture2Ds[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Map<HashString, Model> &GetAllModelResources() NOEXCEPT
+	{
+		return _Models;
+	}
 
 	/*
-	*	Given a resource ID, return the corresponding texture 3D.
+	*	Given a resource ID, return the corresponding model resource.
 	*/
-	static const Texture3DHandle& GetTexture3D(const HashString resourceID) { return _Texture3Ds[resourceID]; }
+	FORCE_INLINE static NO_DISCARD const Model &GetModelResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _Models[resource_ID];
+	}
+
+	/*
+	*	Returns all sound bank resources.
+	*/
+	FORCE_INLINE static NO_DISCARD const Map<HashString, SoundBankHandle>& GetAllSoundBankResources() NOEXCEPT
+	{
+		return _SoundBanks;
+	}
+
+	/*
+	*	Given a resource ID, return the corresponding sound bank resource.
+	*/
+	FORCE_INLINE static NO_DISCARD const SoundBankHandle &GetSoundBankResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _SoundBanks[resource_ID];
+	}
+
+	/*
+	*	Returns all texture cube resources.
+	*/
+	FORCE_INLINE static NO_DISCARD const Map<HashString, TextureCubeHandle> &GetAllTextureCubeResources() NOEXCEPT
+	{
+		return _TextureCubes;
+	}
+
+	/*
+	*	Given a resource ID, return the corresponding texture cube resource.
+	*/
+	FORCE_INLINE static NO_DISCARD const TextureCubeHandle &GetTextureCubeResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _TextureCubes[resource_ID];
+	}
+
+	/*
+	*	Returns all texture 2D resources.
+	*/
+	FORCE_INLINE static NO_DISCARD const Map<HashString, Texture2DResource> &GetAllTexture2DResources() NOEXCEPT
+	{
+		return _Texture2Ds;
+	}
+
+	/*
+	*	Given a resource ID, return the corresponding texture 2D resource.
+	*/
+	FORCE_INLINE static NO_DISCARD const Texture2DResource &GetTexture2DResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _Texture2Ds[resource_ID];
+	}
+
+	/*
+	*	Returns all texture 3D resources.
+	*/
+	FORCE_INLINE static NO_DISCARD const Map<HashString, Texture3DHandle> &GetAllTexture3DResources() NOEXCEPT
+	{
+		return _Texture3Ds;
+	}
+
+	/*
+	*	Given a resource ID, return the corresponding texture 3D resource.
+	*/
+	FORCE_INLINE static NO_DISCARD const Texture3DHandle& GetTexture3DResource(const HashString resource_ID) NOEXCEPT
+	{
+		return _Texture3Ds[resource_ID];
+	}
 
 private:
 

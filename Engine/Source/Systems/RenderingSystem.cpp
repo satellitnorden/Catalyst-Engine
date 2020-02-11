@@ -394,70 +394,70 @@ void RenderingSystem::InitializeDefaultTexture() NOEXCEPT
 void RenderingSystem::InitializeNoiseTextures() NOEXCEPT
 {
 	//Add all the noise textures.
-	_NoiseTextures[0] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_0_Texture2D"));
-	_NoiseTextures[1] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_1_Texture2D"));
-	_NoiseTextures[2] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_2_Texture2D"));
-	_NoiseTextures[3] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_3_Texture2D"));
-	_NoiseTextures[4] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_4_Texture2D"));
-	_NoiseTextures[5] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_5_Texture2D"));
-	_NoiseTextures[6] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_6_Texture2D"));
-	_NoiseTextures[7] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_7_Texture2D"));
-	_NoiseTextures[8] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_8_Texture2D"));
-	_NoiseTextures[9] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_9_Texture2D"));
-	_NoiseTextures[10] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_10_Texture2D"));
-	_NoiseTextures[11] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_11_Texture2D"));
-	_NoiseTextures[12] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_12_Texture2D"));
-	_NoiseTextures[13] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_13_Texture2D"));
-	_NoiseTextures[14] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_14_Texture2D"));
-	_NoiseTextures[15] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_15_Texture2D"));
-	_NoiseTextures[16] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_16_Texture2D"));
-	_NoiseTextures[17] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_17_Texture2D"));
-	_NoiseTextures[18] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_18_Texture2D"));
-	_NoiseTextures[19] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_19_Texture2D"));
-	_NoiseTextures[20] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_20_Texture2D"));
-	_NoiseTextures[21] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_21_Texture2D"));
-	_NoiseTextures[22] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_22_Texture2D"));
-	_NoiseTextures[23] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_23_Texture2D"));
-	_NoiseTextures[24] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_24_Texture2D"));
-	_NoiseTextures[25] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_25_Texture2D"));
-	_NoiseTextures[26] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_26_Texture2D"));
-	_NoiseTextures[27] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_27_Texture2D"));
-	_NoiseTextures[28] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_28_Texture2D"));
-	_NoiseTextures[29] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_29_Texture2D"));
-	_NoiseTextures[30] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_30_Texture2D"));
-	_NoiseTextures[31] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_31_Texture2D"));
-	_NoiseTextures[32] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_32_Texture2D"));
-	_NoiseTextures[33] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_33_Texture2D"));
-	_NoiseTextures[34] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_34_Texture2D"));
-	_NoiseTextures[35] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_35_Texture2D"));
-	_NoiseTextures[36] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_36_Texture2D"));
-	_NoiseTextures[37] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_37_Texture2D"));
-	_NoiseTextures[38] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_38_Texture2D"));
-	_NoiseTextures[39] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_39_Texture2D"));
-	_NoiseTextures[40] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_40_Texture2D"));
-	_NoiseTextures[41] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_41_Texture2D"));
-	_NoiseTextures[42] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_42_Texture2D"));
-	_NoiseTextures[43] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_43_Texture2D"));
-	_NoiseTextures[44] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_44_Texture2D"));
-	_NoiseTextures[45] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_45_Texture2D"));
-	_NoiseTextures[46] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_46_Texture2D"));
-	_NoiseTextures[47] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_47_Texture2D"));
-	_NoiseTextures[48] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_48_Texture2D"));
-	_NoiseTextures[49] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_49_Texture2D"));
-	_NoiseTextures[50] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_50_Texture2D"));
-	_NoiseTextures[51] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_51_Texture2D"));
-	_NoiseTextures[52] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_52_Texture2D"));
-	_NoiseTextures[53] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_53_Texture2D"));
-	_NoiseTextures[54] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_54_Texture2D"));
-	_NoiseTextures[55] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_55_Texture2D"));
-	_NoiseTextures[56] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_56_Texture2D"));
-	_NoiseTextures[57] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_57_Texture2D"));
-	_NoiseTextures[58] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_58_Texture2D"));
-	_NoiseTextures[59] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_59_Texture2D"));
-	_NoiseTextures[60] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_60_Texture2D"));
-	_NoiseTextures[61] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_61_Texture2D"));
-	_NoiseTextures[62] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_62_Texture2D"));
-	_NoiseTextures[63] = ResourceLoader::GetTexture2D(HashString("Blue_Noise_63_Texture2D"));
+	_NoiseTextures[0] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_0_Texture2D"));
+	_NoiseTextures[1] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_1_Texture2D"));
+	_NoiseTextures[2] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_2_Texture2D"));
+	_NoiseTextures[3] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_3_Texture2D"));
+	_NoiseTextures[4] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_4_Texture2D"));
+	_NoiseTextures[5] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_5_Texture2D"));
+	_NoiseTextures[6] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_6_Texture2D"));
+	_NoiseTextures[7] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_7_Texture2D"));
+	_NoiseTextures[8] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_8_Texture2D"));
+	_NoiseTextures[9] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_9_Texture2D"));
+	_NoiseTextures[10] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_10_Texture2D"));
+	_NoiseTextures[11] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_11_Texture2D"));
+	_NoiseTextures[12] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_12_Texture2D"));
+	_NoiseTextures[13] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_13_Texture2D"));
+	_NoiseTextures[14] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_14_Texture2D"));
+	_NoiseTextures[15] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_15_Texture2D"));
+	_NoiseTextures[16] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_16_Texture2D"));
+	_NoiseTextures[17] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_17_Texture2D"));
+	_NoiseTextures[18] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_18_Texture2D"));
+	_NoiseTextures[19] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_19_Texture2D"));
+	_NoiseTextures[20] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_20_Texture2D"));
+	_NoiseTextures[21] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_21_Texture2D"));
+	_NoiseTextures[22] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_22_Texture2D"));
+	_NoiseTextures[23] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_23_Texture2D"));
+	_NoiseTextures[24] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_24_Texture2D"));
+	_NoiseTextures[25] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_25_Texture2D"));
+	_NoiseTextures[26] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_26_Texture2D"));
+	_NoiseTextures[27] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_27_Texture2D"));
+	_NoiseTextures[28] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_28_Texture2D"));
+	_NoiseTextures[29] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_29_Texture2D"));
+	_NoiseTextures[30] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_30_Texture2D"));
+	_NoiseTextures[31] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_31_Texture2D"));
+	_NoiseTextures[32] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_32_Texture2D"));
+	_NoiseTextures[33] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_33_Texture2D"));
+	_NoiseTextures[34] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_34_Texture2D"));
+	_NoiseTextures[35] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_35_Texture2D"));
+	_NoiseTextures[36] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_36_Texture2D"));
+	_NoiseTextures[37] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_37_Texture2D"));
+	_NoiseTextures[38] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_38_Texture2D"));
+	_NoiseTextures[39] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_39_Texture2D"));
+	_NoiseTextures[40] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_40_Texture2D"));
+	_NoiseTextures[41] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_41_Texture2D"));
+	_NoiseTextures[42] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_42_Texture2D"));
+	_NoiseTextures[43] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_43_Texture2D"));
+	_NoiseTextures[44] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_44_Texture2D"));
+	_NoiseTextures[45] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_45_Texture2D"));
+	_NoiseTextures[46] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_46_Texture2D"));
+	_NoiseTextures[47] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_47_Texture2D"));
+	_NoiseTextures[48] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_48_Texture2D"));
+	_NoiseTextures[49] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_49_Texture2D"));
+	_NoiseTextures[50] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_50_Texture2D"));
+	_NoiseTextures[51] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_51_Texture2D"));
+	_NoiseTextures[52] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_52_Texture2D"));
+	_NoiseTextures[53] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_53_Texture2D"));
+	_NoiseTextures[54] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_54_Texture2D"));
+	_NoiseTextures[55] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_55_Texture2D"));
+	_NoiseTextures[56] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_56_Texture2D"));
+	_NoiseTextures[57] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_57_Texture2D"));
+	_NoiseTextures[58] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_58_Texture2D"));
+	_NoiseTextures[59] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_59_Texture2D"));
+	_NoiseTextures[60] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_60_Texture2D"));
+	_NoiseTextures[61] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_61_Texture2D"));
+	_NoiseTextures[62] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_62_Texture2D"));
+	_NoiseTextures[63] = &ResourceLoader::GetTexture2DResource(HashString("Blue_Noise_63_Texture2D"));
 }
 
 /*
@@ -481,7 +481,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Bind the cloud texture.
-		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], ResourceLoader::GetTexture3D(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], ResourceLoader::GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 	}
 }
 
@@ -584,7 +584,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	_DynamicUniformData._DepthOfFieldFocusDistance = RenderingConfigurationManager::Instance->GetDepthOfFieldFocusDistance();
 
-	_DynamicUniformData._ActiveBlueNoiseTextureIndex = _NoiseTextures[_ActiveNoiseTextureIndex]._Index;
+	_DynamicUniformData._ActiveBlueNoiseTextureIndex = _NoiseTextures[_ActiveNoiseTextureIndex]->_Index;
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetX = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetY = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
 	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;

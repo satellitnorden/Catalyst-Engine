@@ -71,7 +71,7 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 		description._Type = UserInterfaceElementType::Text;
 		description._Minimum = Vector2<float>(0.01f, 0.89f);
 		description._Maximum = Vector2<float>(0.99f, 0.99f);
-		description._Font = &ResourceLoader::GetFont(HashString("Catalyst_Engine_Default_Font"));
+		description._Font = &ResourceLoader::GetFontResource(HashString("Catalyst_Engine_Default_Font"));
 
 		char buffer[64];
 		sprintf_s(buffer, " - %f milliseconds", entry._Duration);
