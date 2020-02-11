@@ -1,45 +1,24 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-
-/*
-*	Push constant data definition.
-*/
-class PushConstantData final
-{
-
-public:
-
-	//The sky light view direction.
-	Vector3<float> _SkyLightViewDirection;
-
-	//Padding.
-	Padding<4> _Padding1;
-
-	//The sky light luminance.
-	Vector3<float> _SkyLightLuminance;
-
-	//Padding.
-	Padding<4> _Padding2;
-
-};
+#include <Systems/WorldSystem.h>
 
 /*
 *	Initializes this graphics pipeline.
 */
 void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
@@ -55,12 +34,9 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -93,42 +69,44 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 void SkyGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-
-	//Push constants.
-	PushConstantData data;
-
-	//Pick the first directional light.
-	data._SkyLightViewDirection = VectorConstants::UP;
-	data._SkyLightLuminance = VectorConstants::ZERO;
-
-	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
-	{
-		const LightComponent& component{ ComponentManager::GetLightLightComponents()[i] };
-
-		if (static_cast<LightType>(component._LightType) == LightType::DIRECTIONAL)
-		{
-			data._SkyLightViewDirection = component._Direction;
-			data._SkyLightLuminance = component._Luminance;
-
-			break;
-		}
-	}
-
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
-	commandBuffer->Draw(this, 3, 1);
+	command_buffer->Draw(this, 3, 1);
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void SkyGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void SkyGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, WorldSystem::Instance->GetSkySystem()->GetSkyTexture(), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

@@ -78,9 +78,18 @@ void SkyRenderPass::Initialize() NOEXCEPT
 */
 void SkyRenderPass::Execute() NOEXCEPT
 {
+	_SkyComputePipeline.Execute();
 	_SkyGraphicsPipeline.Execute();
+
+	_CloudsGraphicsPipeline.SetIncludeInRender(false);
+	_CloudsBlurGraphicsPipelines[0].SetIncludeInRender(false);
+	_CloudsBlurGraphicsPipelines[1].SetIncludeInRender(false);
+	_CloudsApplicationGraphicsPipeline.SetIncludeInRender(false);
+
+	/*
 	_CloudsGraphicsPipeline.Execute();
 	_CloudsBlurGraphicsPipelines[0].Execute();
 	_CloudsBlurGraphicsPipelines[1].Execute();
 	_CloudsApplicationGraphicsPipeline.Execute();
+	*/
 }

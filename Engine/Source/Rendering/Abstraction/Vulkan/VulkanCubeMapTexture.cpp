@@ -17,7 +17,7 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	_VulkanFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 
 	//Set the image layout.
-	_VulkanImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	_VulkanImageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
 	//Calculate the image size and the side size.
 	const VkDeviceSize layerSize{ width * height * 4 * sizeof(float) };
@@ -48,7 +48,7 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	VulkanUtilities::CopyBufferToImage(stagingBuffer, _VulkanImage, 1, 6, width, height, 1);
 
 	//Transition the Vulkan image to the correct layout for reading.
-	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, 6, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, _VulkanImage);
+	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, 1, 6, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, _VulkanImage);
 
 	//Clean up the staging buffer.
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);

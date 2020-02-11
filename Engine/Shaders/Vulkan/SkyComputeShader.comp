@@ -7,8 +7,21 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
+//Define constants.
+#define SKY_UPPER_COLOR (vec3(0.5f, 0.75f, 1.0f))
+#define SKY_LOWER_COLOR (vec3(0.125f, 0.25f, 0.5f))
+#define SKY_CLOUDS_UPPER_PLANE (1000.0f)
+
 //Layout specification.
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) vec3 sky_light_direction;
+	layout (offset = 16) vec3 sky_light_luminance;
+	layout (offset = 32) uint resolution;
+};
 
 //Descriptor set data.
 layout (set = 1, binding = 0, rgba32f) uniform imageCube sky_image;
@@ -17,9 +30,82 @@ layout (set = 1, binding = 0, rgba32f) uniform imageCube sky_image;
 *	Calculates and returns the direction associated with this texel.
 */
 vec3 CalculateDirection()
+{	
+	vec2 normalized_coordinates = (vec2(gl_GlobalInvocationID.xy) / (resolution + 1)) * 2.0f - 1.0f;
+
+	switch (gl_GlobalInvocationID.z)
+	{
+		case 0:
+		{
+			return normalize(vec3(-normalized_coordinates.x, -normalized_coordinates.y, 1.0f));
+		}
+
+		case 1:
+		{
+			return normalize(vec3(normalized_coordinates.x, -normalized_coordinates.y, -1.0f));
+		}
+
+		case 2:
+		{
+			return normalize(vec3(normalized_coordinates.y, 1.0f, normalized_coordinates.x));
+		}
+
+		case 3:
+		{
+			return normalize(vec3(-normalized_coordinates.y, -1.0f, normalized_coordinates.x));
+		}
+
+		case 4:
+		{
+			return normalize(vec3(1.0f, -normalized_coordinates.y, normalized_coordinates.x));
+		}
+
+		case 5:
+		{
+			return normalize(vec3(-1.0f, -normalized_coordinates.y, -normalized_coordinates.x));
+		}
+	}
+}
+
+/*
+*	Calculates the clouds.
+*/
+vec4 CalculateClouds(vec3 direction)
 {
-	//gl_GlobalInvocationID.xyz
-	return vec3(0.0f, 1.0f, 0.0f);
+	//Sample all of the noise samples.
+	vec2 noise_texture_index = vec2(gl_GlobalInvocationID.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
+
+	vec4 noise_sample_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+	vec4 noise_sample_2 = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + 1) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+
+	float noise_samples[8];
+
+	noise_samples[0] = noise_sample_1[0];
+	noise_samples[1] = noise_sample_1[1];
+	noise_samples[2] = noise_sample_1[2];
+	noise_samples[3] = noise_sample_1[3];
+	noise_samples[4] = noise_sample_2[0];
+	noise_samples[5] = noise_sample_2[1];
+	noise_samples[6] = noise_sample_2[2];
+	noise_samples[7] = noise_sample_2[3];
+
+	//Do a line-plane intersection against the upper plane.
+	float intersection_distance;
+
+    LinePlaneIntersection(vec3(0.0f, 0.0f, 0.0f), direction, vec3(0.0f, SKY_CLOUDS_UPPER_PLANE, 0.0f), vec3(0.0f, -1.0f, 0.0f), intersection_distance);
+    vec3 end = direction * intersection_distance;
+
+    //Retrieve the cloud density at a "random" point.
+    float cloud_density = 0.0f;
+
+    for (int i = 0; i < 8; i += 2)
+    {
+    	vec3 sample_point = mix(vec3(0.0f, 0.0f, 0.0f), end, noise_samples[i]);
+
+    	cloud_density += SampleCloudDensity(sample_point, 3);
+    }
+
+    return vec4(vec3(1.0f, 1.0f, 1.0f), 1.0f - exp(-cloud_density));
 }
 
 void main() 
@@ -28,8 +114,36 @@ void main()
 	vec3 direction = CalculateDirection();
 
 	//Calculate the upward factor.
-	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f));
+	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f;
+
+	//Calculate the base sky color.
+	vec3 base_sky_color = mix(SKY_LOWER_COLOR, SKY_UPPER_COLOR, upward_factor);
+
+	//Calculate the sky light factor.
+	float sky_light_factor = dot(direction, -sky_light_direction) * 0.5f + 0.5f;
+
+	//Calculate the sky light color.
+	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.1f);
+
+	//Bias the sky light factor a bit.
+	sky_light_factor = pow(sky_light_factor, 4096.0f);
+
+	//Calculate the final sky color.
+	vec3 final_sky_color = mix(base_sky_color, sky_light_luminance, sky_light_factor);
+
+	//Calculate the clouds.
+	vec4 clouds;
+
+	if (upward_factor > 0.5f)
+	{
+		clouds = CalculateClouds(direction);
+	}
+
+	else
+	{
+		clouds = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
 
 	//Write to the image.
-	imageStore(sky_image, ivec3(gl_GlobalInvocationID), mix(vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f), upward_factor));
+	imageStore(sky_image, ivec3(gl_GlobalInvocationID), vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f));
 }

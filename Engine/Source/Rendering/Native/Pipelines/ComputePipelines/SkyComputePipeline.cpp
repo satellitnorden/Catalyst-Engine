@@ -1,12 +1,40 @@
 //Header file.
 #include <Rendering/Native/Pipelines/ComputePipelines/SkyComputePipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
+
+/*
+*	Sky push constant data definition.
+*/
+class SkyPushConstantData final
+{
+
+public:
+
+	//The sky light direction.
+	Vector3<float> _SkyLightDirection;
+
+	//Padding.
+	Padding<4> _Padding1;
+
+	//The sky light luminance.
+	Vector3<float> _SkyLightLuminance;
+
+	//Padding.
+	Padding<4> _Padding2;
+
+	//The resolution.
+	uint32 _Resolution;
+
+};
 
 /*
 *	Initializes this compute pipeline.
@@ -26,6 +54,10 @@ void SkyComputePipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Compute, 0, sizeof(SkyPushConstantData));
 }
 
 /*
@@ -43,8 +75,31 @@ void SkyComputePipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
+	//Push constants.
+	SkyPushConstantData data;
+
+	//Pick the first directional light.
+	data._SkyLightDirection = VectorConstants::UP;
+	data._SkyLightLuminance = VectorConstants::ZERO;
+	data._Resolution = WorldSystem::Instance->GetSkySystem()->GetSkyTextureResolution();
+
+	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
+	{
+		const LightComponent& component{ ComponentManager::GetLightLightComponents()[i] };
+
+		if (static_cast<LightType>(component._LightType) == LightType::DIRECTIONAL)
+		{
+			data._SkyLightDirection = component._Direction;
+			data._SkyLightLuminance = component._Luminance;
+
+			break;
+		}
+	}
+
+	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
+
 	//Dispatch!
-	command_buffer->Dispatch(this, 32, 32, 6);
+	command_buffer->Dispatch(this, data._Resolution, data._Resolution, 6);
 
 	//End the command buffer.
 	command_buffer->End(this);
