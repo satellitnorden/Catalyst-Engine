@@ -21,6 +21,9 @@ namespace PhysicsSystemData
 {
 	//The terrain acceleration structure.
 	AccelerationStructure _TerrainAccelerationStructure;
+
+	//Denotes if the terrain acceleration structure has been built.
+	bool _TerrainAccelerationStructureBuilt{ false };
 }
 
 /*
@@ -77,7 +80,7 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 		DynamicArray<uint32> indices;
 
 		TerrainGeneralUtilities::GenerateTerrainPlane(	*TerrainSystem::Instance->GetTerrainProperties(),
-														TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution,
+														height_map.GetWidth(),
 														&vertices,
 														&indices);
 
@@ -109,6 +112,9 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 
 		//Build the terrain acceleration structure.
 		PhysicsSystemData::_TerrainAccelerationStructure.Build(4);
+
+		//Signal that the terrain acceleration structure has been built.
+		PhysicsSystemData::_TerrainAccelerationStructureBuilt = true;
 	}
 }
 
@@ -117,6 +123,12 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 */
 void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
 {
+	//Can´t trace against the terrain acceleration structure if it hasn´t been built.
+	if (!PhysicsSystemData::_TerrainAccelerationStructureBuilt)
+	{
+		return;
+	}
+
 	//Trace the terrain acceleration structure.
 	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ PhysicsSystemData::_TerrainAccelerationStructure.TraceSurface(ray, &result->_HitDistance) })
 	{

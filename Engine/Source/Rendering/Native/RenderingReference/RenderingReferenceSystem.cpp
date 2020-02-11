@@ -412,17 +412,19 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray, VolumetricDescription *const RESTRICT volumetric_description, float* const RESTRICT hit_distance) NOEXCEPT
 {
 	//Define constants.
-	constexpr float VOLUMETRIC_PARTICLE_DISTANCE{ 2'048.0f };
+	constexpr float VOLUMETRIC_LIGHTING_DISTANCE{ 2048.0f };
+	constexpr float VOLUMETRIC_LIGHTING_INTENSITY{ 0.5f };
+	constexpr float VOLUMETRIC_LIGHTING_THICKNESS{ 4.0f };
 
 	//Determine if a volumetric particle was hit.
-	if (true || CatalystRandomMath::RandomChance(0.5f))
+	if (CatalystRandomMath::RandomChance(VOLUMETRIC_LIGHTING_INTENSITY))
 	{
 		//Fill in the surface description/hit distance.
 		volumetric_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
 
-		const float hit_distance_alpha{ pow(CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f), 8.0f) };
+		const float hit_distance_alpha{ pow(CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f), VOLUMETRIC_LIGHTING_THICKNESS) };
 
-		*hit_distance = CatalystBaseMath::LinearlyInterpolate(0.0f, VOLUMETRIC_PARTICLE_DISTANCE, hit_distance_alpha);
+		*hit_distance = CatalystBaseMath::LinearlyInterpolate(0.0f, VOLUMETRIC_LIGHTING_DISTANCE, hit_distance_alpha);
 
 		return true;
 	}
@@ -491,7 +493,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 		indirect_lighting_direction._Y = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 		indirect_lighting_direction._Z = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 
-		indirect_lighting_direction.Normalize();
+		indirect_lighting_direction.NormalizeSafe();
 
 		indirect_lighting_direction = Vector3<float>::DotProduct(surface_description._Normal, indirect_lighting_direction) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
 
@@ -589,7 +591,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 		indirect_lighting_direction._Y = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 		indirect_lighting_direction._Z = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 
-		indirect_lighting_direction.Normalize();
+		indirect_lighting_direction.NormalizeSafe();
 
 		Ray indirect_lighting_ray;
 
