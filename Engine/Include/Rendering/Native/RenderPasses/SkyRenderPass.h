@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/ComputePipelines/SkyComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
@@ -25,6 +26,9 @@ public:
 	SkyRenderPass() NOEXCEPT;
 
 private:
+
+	//The sky compute pipeline.
+	SkyComputePipeline _SkyComputePipeline;
 
 	//The sky graphics pipeline.
 	SkyGraphicsPipeline _SkyGraphicsPipeline;

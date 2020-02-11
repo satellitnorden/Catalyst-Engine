@@ -361,6 +361,15 @@
     <Filter Include="File\Include\Readers">
       <UniqueIdentifier>{ea15b939-ef8a-4037-89f2-6defa00b67c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{b711212f-e604-40b1-b6a7-d7380e4274c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Include">
+      <UniqueIdentifier>{d086c0fe-3311-4e57-8346-7bdb91ff8831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Source">
+      <UniqueIdentifier>{44123c22-0af3-48d1-9db0-0440ed857e1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1365,6 +1374,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\VolumetricDescription.h">
       <Filter>Rendering\Include\Native\Rendering Reference</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\SkySystem.h">
+      <Filter>World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1813,6 +1828,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\SkySystem.cpp">
+      <Filter>World\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

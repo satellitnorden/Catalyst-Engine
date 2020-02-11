@@ -105,7 +105,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 /*
 *	Post initializes the rendering system.
 */
-void RenderingSystem::PostInitializeSystem()
+void RenderingSystem::PostInitializeSystem() NOEXCEPT
 {
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();

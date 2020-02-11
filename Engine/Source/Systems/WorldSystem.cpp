@@ -14,6 +14,15 @@
 DEFINE_SINGLETON(WorldSystem);
 
 /*
+*	Post-initializes the world system.
+*/
+void WorldSystem::PostInitialize() NOEXCEPT
+{
+	//Post-initialize the sky system.
+	_SkySystem.PostInitialize();
+}
+
+/*
 *	Updates the world system during the pre update phase.
 */
 void WorldSystem::PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT

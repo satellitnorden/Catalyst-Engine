@@ -73,7 +73,7 @@ public:
 	/*
 	*	Post initializes the rendering system.
 	*/
-	void PostInitializeSystem();
+	void PostInitializeSystem() NOEXCEPT;
 
 	/*
 	*	Updates the rendering system during the pre update phase.

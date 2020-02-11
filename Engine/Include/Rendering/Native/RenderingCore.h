@@ -331,6 +331,7 @@ enum class Shader : uint8
 	ResampleFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	SeparableBlurFragment,
+	SkyCompute,
 	SkyFragment,
 	TemporalAntiAliasingFragment,
 	TerrainSceneFeaturesFragment,

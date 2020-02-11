@@ -1003,6 +1003,16 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 

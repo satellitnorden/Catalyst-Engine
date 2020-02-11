@@ -80,7 +80,7 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 		DynamicArray<uint32> indices;
 
 		TerrainGeneralUtilities::GenerateTerrainPlane(	*TerrainSystem::Instance->GetTerrainProperties(),
-														height_map.GetWidth(),
+														height_map.GetWidth() / 4,
 														&vertices,
 														&indices);
 

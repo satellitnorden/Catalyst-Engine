@@ -141,6 +141,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitializeSystem();
+	WorldSystem::Instance->PostInitialize();
 
 	//Post-initialize the platform.
 	CatalystPlatform::PostInitialize();

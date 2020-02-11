@@ -40,7 +40,8 @@ void SkyRenderPass::Initialize() NOEXCEPT
 	constexpr float CLOUDS_BLUR_SIZE{ 8.0f };
 
 	//Add the pipelines.
-	SetNumberOfPipelines(5);
+	SetNumberOfPipelines(6);
+	AddPipeline(&_SkyComputePipeline);
 	AddPipeline(&_SkyGraphicsPipeline);
 	AddPipeline(&_CloudsGraphicsPipeline);
 	AddPipeline(&_CloudsBlurGraphicsPipelines[0]);
@@ -48,6 +49,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_CloudsApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
+	_SkyComputePipeline.Initialize();
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 	_CloudsGraphicsPipeline.Initialize();
 	_CloudsBlurGraphicsPipelines[0].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,

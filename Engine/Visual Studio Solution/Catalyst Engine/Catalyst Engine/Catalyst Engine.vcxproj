@@ -221,6 +221,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.h" />
@@ -380,6 +381,7 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
+    <ClInclude Include="..\..\..\Include\World\SkySystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
@@ -434,6 +436,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp" />
@@ -531,6 +534,7 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\World\SkySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />

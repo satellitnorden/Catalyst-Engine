@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//World.
+#include <World/SkySystem.h>
+
 class WorldSystem final
 {
 
@@ -20,6 +23,11 @@ public:
 	}
 
 	/*
+	*	Post-initializes the world system.
+	*/
+	void PostInitialize() NOEXCEPT;
+
+	/*
 	*	Updates the world system during the pre update phase.
 	*/
 	void PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
@@ -28,6 +36,14 @@ public:
 	*	Updates the world system during the logic update phase.
 	*/
 	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Returns the sky system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const SkySystem *const RESTRICT GetSkySystem() const NOEXCEPT
+	{
+		return &_SkySystem;
+	}
 
 	/*
 	*	Returns the wetness.
@@ -46,6 +62,9 @@ public:
 	}
 
 private:
+
+	//The sky system.
+	SkySystem _SkySystem;
 
 	//The wetness.
 	float _Wetness{ 0.0f };

@@ -1,0 +1,35 @@
+//Version declaration.
+#version 460
+
+//Extensions.
+#extension GL_GOOGLE_include_directive : enable
+
+//Includes.
+#include "CatalystShaderCommon.glsl"
+
+//Layout specification.
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+//Descriptor set data.
+layout (set = 1, binding = 0, rgba32f) uniform imageCube sky_image;
+
+/*
+*	Calculates and returns the direction associated with this texel.
+*/
+vec3 CalculateDirection()
+{
+	//gl_GlobalInvocationID.xyz
+	return vec3(0.0f, 1.0f, 0.0f);
+}
+
+void main() 
+{
+	//Calculate the direction.
+	vec3 direction = CalculateDirection();
+
+	//Calculate the upward factor.
+	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f));
+
+	//Write to the image.
+	imageStore(sky_image, ivec3(gl_GlobalInvocationID), mix(vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f), upward_factor));
+}
