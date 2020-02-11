@@ -343,6 +343,10 @@ private:
 		nodes[0]._HasTriangles = true;
 		nodes[1]._HasTriangles = true;
 
+		//Preallocate for the worst case to avoid many rellocations later.
+		nodes[0]._TriangleData.Reserve(node->_TriangleData.Size());
+		nodes[1]._TriangleData.Reserve(node->_TriangleData.Size());
+
 		//Start filling up the two new nodes with the triangle data.
 		for (const TriangleData &triangle_data : node->_TriangleData)
 		{
@@ -362,6 +366,10 @@ private:
 				nodes[1]._TriangleData.Emplace(triangle_data);
 			}
 		}
+
+		//Shrink the allocated size to fit.
+		nodes[0]._TriangleData.Reserve(nodes[0]._TriangleData.Size());
+		nodes[1]._TriangleData.Reserve(nodes[1]._TriangleData.Size());
 
 		//Destroy the original nodes triangles.
 		node->_HasTriangles = false;
