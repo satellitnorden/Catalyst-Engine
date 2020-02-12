@@ -22,6 +22,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 16) vec3 sky_light_luminance;
 	layout (offset = 32) uint resolution;
 	layout (offset = 36) uint current_iteration;
+	layout (offset = 40) float parameters_difference;
 };
 
 //Descriptor set data.
@@ -160,7 +161,7 @@ void main()
 	vec4 new_color = vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f);
 
 	//Calculate the final color.
-	vec4 final_color = mix(old_color, new_color, 0.01f);
+	vec4 final_color = mix(new_color, old_color, 0.99f * (1.0f - parameters_difference));
 
 	//Write to the image.
 	imageStore(sky_image, ivec3(coordinate), final_color);

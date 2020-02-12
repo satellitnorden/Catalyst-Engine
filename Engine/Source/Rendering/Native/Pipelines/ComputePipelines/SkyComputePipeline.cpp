@@ -37,6 +37,9 @@ public:
 	//The current iteration.
 	uint32 _CurrentIteration;
 
+	//The parameters difference.
+	float _ParametersDifference;
+
 };
 
 /*
@@ -100,6 +103,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 
 	data._Resolution = WorldSystem::Instance->GetSkySystem()->GetSkyTextureResolution();
 	data._CurrentIteration = _CurrentIteration;
+	data._ParametersDifference = CalculateParametersDifference();
 
 	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
 
@@ -137,4 +141,17 @@ void SkyComputePipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, WorldSystem::Instance->GetSkySystem()->GetSkyTexture());
+}
+
+/*
+*	Calculates the parameters difference.
+*/
+NO_DISCARD float SkyComputePipeline::CalculateParametersDifference() NOEXCEPT
+{
+	static float yes{ 1.0f };
+
+	float value = yes;
+	yes *= 0.1f;
+
+	return value;
 }

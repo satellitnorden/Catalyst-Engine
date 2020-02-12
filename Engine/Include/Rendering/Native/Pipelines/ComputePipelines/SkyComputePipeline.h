@@ -42,4 +42,9 @@ private:
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
 
+	/*
+	*	Calculates the parameters difference.
+	*/
+	NO_DISCARD float CalculateParametersDifference() NOEXCEPT;
+
 };
