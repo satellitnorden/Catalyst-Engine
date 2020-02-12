@@ -346,7 +346,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 6> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
@@ -359,9 +359,12 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			
 			//Global materials.
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayGeneration | ShaderStage::Vertex),
-			
+
 			//Cloud texture.
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayGeneration),
+			
+			//Sky texture.
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment | ShaderStage::RayGeneration),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -465,7 +468,6 @@ void RenderingSystem::InitializeNoiseTextures() NOEXCEPT
 */
 void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 {
-	
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
@@ -482,6 +484,9 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 
 		//Bind the cloud texture.
 		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], ResourceLoader::GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+
+		//Bind the sky texture.
+		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 	}
 }
 
