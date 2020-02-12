@@ -88,7 +88,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	if (true)
+	if (false)
 	{
 		SetEnabled(false);
 
@@ -96,23 +96,20 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (true)
-	{
-		_IndirectLightingGraphicsPipeline.Execute();
-		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
-	}
-	
-	else
-	{
-		_IndirectLightingRayTracingPipeline.Execute();
-		_IndirectLightingGraphicsPipeline.SetIncludeInRender(false);
-	}
+	_IndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+	_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 	{
-		pipeline.Execute();
+		pipeline.SetIncludeInRender(false);
 	}
 
+	for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
+	{
+		pipeline.SetIncludeInRender(false);
+	}
+
+	/*
 	//Execute the current buffer, don't include the rest.
 	for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 	{
@@ -129,6 +126,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+	*/
 
 	_IndirectLightingApplicationGraphicsPipeline.Execute();
 }

@@ -148,5 +148,5 @@ void main()
     //Write the fragments.
     scene_features_1 = vec4(albedo, 0.0f);
     scene_features_2 = vec4(PackNormal(normal), velocity, gl_FragCoord.z);
-    scene_features_3 = mix(vec4(1.0f, 0.0f, 1.0f, 0.0f), vec4(1.0f, 0.0f, 1.0f, 0.0f), foam_weight);
+    scene_features_3 = mix(vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(1.0f, 0.0f, 1.0f, 0.0f), foam_weight);
 }

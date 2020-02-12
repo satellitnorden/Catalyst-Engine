@@ -19,7 +19,6 @@ struct SceneFeatures
 	vec3 albedo;
 	vec3 normal;
 	vec3 view_direction;
-	vec3 indirect_lighting;
 	float roughness;
 	float metallic;
 	float ambientOcclusion;
@@ -50,7 +49,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	vec4 scene_features_2 = texture(scene_features_2_texture, coordinate);
 	vec4 scene_features_3 = texture(scene_features_3_texture, coordinate);
 	vec4 ambient_occlusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : Upsample(ambient_occlusion_texture, coordinate);
-	vec4 indirect_lighting = texture(indirect_lighting_texture, coordinate);
 
 	SceneFeatures features;
 
@@ -58,7 +56,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	features.normal = UnpackNormal(scene_features_2.x);
 	vec3 world_position = CalculateWorldPosition(coordinate, scene_features_2.w);
 	features.view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
-	features.indirect_lighting = indirect_lighting.rgb;
 	features.roughness = scene_features_3.x;
 	features.metallic = scene_features_3.y;
 	features.ambientOcclusion = pow(scene_features_3.z * pow(ambient_occlusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
@@ -66,10 +63,32 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
+/*
+*	Samples the indirect lighting.
+*/
+vec3 SampleIndirectLighting(vec3 view_direction, vec3 normal, float roughness, float metallic)
+{
+	//Calculate the reflection vector.
+	vec3 reflection_vector = reflect(view_direction, normal);
+
+	//Calculate the indices for the sky textures.
+	float float_index = roughness * (1.0f - metallic) * float(NUMBER_OF_SKY_TEXTURES - 1);
+
+	uint first_index = uint(float_index);
+	uint second_index = first_index + 1;
+
+	float alpha = fract(float_index);
+
+	return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
+}
+
 void main()
 {
 	//Sample the current features.
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
+
+	//Sample the indirect lighting.
+	vec3 indirect_lighting_sample = SampleIndirectLighting(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
 
 	//Calculate the indirect lighting.
 	vec3 indirect_lighting = CalculateIndirectLighting(	current_features.view_direction,
@@ -78,7 +97,7 @@ void main()
 														current_features.roughness,
 														current_features.metallic,
 														current_features.ambientOcclusion,
-														current_features.indirect_lighting);
+														indirect_lighting_sample);
 
 	//Write the fragment.
 	scene = vec4(indirect_lighting, 1.0f);
