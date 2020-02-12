@@ -68,11 +68,8 @@ void main()
 					//Calculate the volumetric particle hit position.
 					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
 
-					//Sample the cloud density.
-					float cloud_density = SampleCloudDensityInDirection(volumetric_particle_hit_position, -light.position_or_direction, 3);
-
 					//Add the volumetric lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - cloud_density) * 0.25f;
+					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - CLOUD_DENSITY) * 0.25f;
 				}
 
 				break;

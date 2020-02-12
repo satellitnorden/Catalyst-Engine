@@ -10,7 +10,7 @@
 //Sky system constants.
 namespace SkySystemConstants
 {
-	constexpr uint32 SKY_TEXTURE_RESOLUTION{ 512 };
+	constexpr uint32 SKY_TEXTURE_RESOLUTION{ 1024 };
 }
 
 /*

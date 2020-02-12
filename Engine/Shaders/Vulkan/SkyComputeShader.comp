@@ -75,19 +75,7 @@ vec4 CalculateClouds(vec3 direction)
 	//Sample all of the noise samples.
 	vec2 noise_texture_index = vec2(gl_GlobalInvocationID.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
-	vec4 noise_sample_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
-	vec4 noise_sample_2 = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + 1) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
-
-	float noise_samples[8];
-
-	noise_samples[0] = noise_sample_1[0];
-	noise_samples[1] = noise_sample_1[1];
-	noise_samples[2] = noise_sample_1[2];
-	noise_samples[3] = noise_sample_1[3];
-	noise_samples[4] = noise_sample_2[0];
-	noise_samples[5] = noise_sample_2[1];
-	noise_samples[6] = noise_sample_2[2];
-	noise_samples[7] = noise_sample_2[3];
+	vec4 noise_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
 
 	//Do a line-plane intersection against the upper plane.
 	float intersection_distance;
@@ -97,15 +85,29 @@ vec4 CalculateClouds(vec3 direction)
 
     //Retrieve the cloud density at a "random" point.
     float cloud_density = 0.0f;
+    float cloud_density_in_direction = 0.0f;
 
-    for (int i = 0; i < 8; i += 2)
+    for (int i = 0; i < 4; i += 2)
     {
-    	vec3 sample_point = mix(vec3(0.0f, 0.0f, 0.0f), end, noise_samples[i]);
+    	vec3 sample_point = mix(vec3(0.0f, 0.0f, 0.0f), end, noise_sample[i + 0]);
 
-    	cloud_density += SampleCloudDensity(sample_point, 3);
+    	cloud_density += SampleCloudDensity(sample_point, 3) * 2.0f;
+
+    	vec3 sample_point_in_direction = sample_point + -sky_light_direction * SKY_CLOUDS_UPPER_PLANE * noise_sample[i + 1];
+
+    	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction, 3) * 4.0f;
     }
 
-    return vec4(vec3(1.0f, 1.0f, 1.0f), 1.0f - exp(-cloud_density));
+    //Calculate the cloud color.
+    vec3 cloud_color = vec3(0.0f, 0.0f, 0.0f);
+
+    //Start with some ambient lighting.
+    cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() * 0.25f;
+
+    //Proceed with the sky light lighting.
+	cloud_color += CLOUD_BASE_COLOR * (sky_light_luminance * 0.1f) * exp(-cloud_density_in_direction);
+
+    return vec4(cloud_color, 1.0f - exp(-cloud_density));
 }
 
 void main() 
@@ -144,6 +146,15 @@ void main()
 		clouds = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
+	//Load the old color.
+	vec4 old_color = imageLoad(sky_image, ivec3(gl_GlobalInvocationID));
+
+	//Calculate the new color.
+	vec4 new_color = vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f);
+
+	//Calculate the final color.
+	vec4 final_color = mix(old_color, new_color, 0.01f);
+
 	//Write to the image.
-	imageStore(sky_image, ivec3(gl_GlobalInvocationID), vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f));
+	imageStore(sky_image, ivec3(gl_GlobalInvocationID), final_color);
 }
