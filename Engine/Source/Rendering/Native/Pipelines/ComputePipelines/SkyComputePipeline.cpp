@@ -34,6 +34,9 @@ public:
 	//The resolution.
 	uint32 _Resolution;
 
+	//The current iteration.
+	uint32 _CurrentIteration;
+
 };
 
 /*
@@ -81,7 +84,6 @@ void SkyComputePipeline::Execute() NOEXCEPT
 	//Pick the first directional light.
 	data._SkyLightDirection = VectorConstants::UP;
 	data._SkyLightLuminance = VectorConstants::ZERO;
-	data._Resolution = WorldSystem::Instance->GetSkySystem()->GetSkyTextureResolution();
 
 	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
 	{
@@ -96,16 +98,22 @@ void SkyComputePipeline::Execute() NOEXCEPT
 		}
 	}
 
+	data._Resolution = WorldSystem::Instance->GetSkySystem()->GetSkyTextureResolution();
+	data._CurrentIteration = _CurrentIteration;
+
 	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
 
 	//Dispatch!
-	command_buffer->Dispatch(this, data._Resolution, data._Resolution, 6);
+	command_buffer->Dispatch(this, data._Resolution >> 1, data._Resolution >> 1, 6);
 
 	//End the command buffer.
 	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+
+	//Update the current iteration.
+	_CurrentIteration = (_CurrentIteration + 1) & 3;
 }
 
 /*
