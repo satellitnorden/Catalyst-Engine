@@ -27,11 +27,6 @@ public:
 		return _SkyTextures[index];
 	}
 
-	/*
-	*	Returns the sky texture resolution.
-	*/
-	NO_DISCARD uint32 GetSkyTextureResolution() const NOEXCEPT;
-
 private:
 
 	//Denotes if the sky textures are initialized.

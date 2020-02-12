@@ -88,7 +88,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	if (false)
+	if (true)
 	{
 		SetEnabled(false);
 

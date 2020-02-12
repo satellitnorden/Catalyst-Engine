@@ -31,9 +31,6 @@ public:
 	//Padding.
 	Padding<4> _Padding2;
 
-	//The resolution.
-	uint32 _Resolution;
-
 	//The current iteration.
 	uint32 _CurrentIteration;
 
@@ -93,14 +90,13 @@ void SkyComputePipeline::Execute() NOEXCEPT
 		}
 	}
 
-	data._Resolution = WorldSystem::Instance->GetSkySystem()->GetSkyTextureResolution();
 	data._CurrentIteration = _CurrentIteration;
 	data._ParametersDifference = CalculateParametersDifference();
 
 	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
 
 	//Dispatch!
-	command_buffer->Dispatch(this, data._Resolution >> 1, data._Resolution >> 1, 6);
+	command_buffer->Dispatch(this, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> 1, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> 1, 6);
 
 	//End the command buffer.
 	command_buffer->End(this);

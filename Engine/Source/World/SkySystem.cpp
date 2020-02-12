@@ -7,12 +7,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Sky system constants.
-namespace SkySystemConstants
-{
-	constexpr uint32 SKY_TEXTURE_RESOLUTION{ 1024 };
-}
-
 /*
 *	Post-initializes the sky system.
 */
@@ -20,14 +14,6 @@ void SkySystem::PostInitialize() NOEXCEPT
 {
 	//Initialize the sky textures.
 	InitializeSkyTextures();
-}
-
-/*
-*	Returns the sky texture resolution.
-*/
-NO_DISCARD uint32 SkySystem::GetSkyTextureResolution() const NOEXCEPT
-{
-	return SkySystemConstants::SKY_TEXTURE_RESOLUTION;
 }
 
 /*
@@ -40,7 +26,7 @@ void SkySystem::InitializeSkyTextures() NOEXCEPT
 		for (uint32 i{ 0 }; i < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++i)
 		{
 			//Calculate the resolution.
-			const uint32 resolution{ SkySystemConstants::SKY_TEXTURE_RESOLUTION >> i };
+			const uint32 resolution{ CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> i };
 
 			//Create the sky texture.
 			TextureCubeData data;

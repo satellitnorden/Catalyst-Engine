@@ -40,8 +40,9 @@ void SkyRenderPass::Initialize() NOEXCEPT
 	constexpr float CLOUDS_BLUR_SIZE{ 8.0f };
 
 	//Add the pipelines.
-	SetNumberOfPipelines(6);
+	SetNumberOfPipelines(7);
 	AddPipeline(&_SkyComputePipeline);
+	AddPipeline(&_SkyDownsampleComputePipeline);
 	AddPipeline(&_SkyGraphicsPipeline);
 	AddPipeline(&_CloudsGraphicsPipeline);
 	AddPipeline(&_CloudsBlurGraphicsPipelines[0]);
@@ -50,6 +51,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_SkyComputePipeline.Initialize();
+	_SkyDownsampleComputePipeline.Initialize();
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 	_CloudsGraphicsPipeline.Initialize();
 	_CloudsBlurGraphicsPipelines[0].Initialize(	SeparableBlurGraphicsPipeline::Direction::Horizontal,
@@ -79,6 +81,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	_SkyComputePipeline.Execute();
+	_SkyDownsampleComputePipeline.Execute();
 	_SkyGraphicsPipeline.Execute();
 
 	_CloudsGraphicsPipeline.SetIncludeInRender(false);

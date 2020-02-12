@@ -432,7 +432,7 @@ float CalculateCloudDensityMultipluer(float hit_distance)
 */
 float SampleCloudDensity(vec3 point, int level)
 {
-    vec3 cloud_offset = -vec3(totalTime, totalTime * 0.1f, totalTime);
+    vec3 cloud_offset = -vec3(totalTime, totalTime * 0.1f, totalTime) * 2.0f;
 
     vec3 sample_point;
     float density_sample;
