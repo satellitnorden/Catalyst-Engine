@@ -25,9 +25,6 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 40) float parameters_difference;
 };
 
-//Descriptor set data.
-layout (set = 1, binding = 0, rgba32f) uniform imageCube sky_image;
-
 /*
 *	Calculates and returns the direction associated with this texel.
 */
@@ -155,7 +152,7 @@ void main()
 	}
 
 	//Load the old color.
-	vec4 old_color = imageLoad(sky_image, ivec3(coordinate));
+	vec4 old_color = imageLoad(SKY_IMAGES[0], ivec3(coordinate));
 
 	//Calculate the new color.
 	vec4 new_color = vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f);
@@ -164,5 +161,5 @@ void main()
 	vec4 final_color = mix(new_color, old_color, 0.99f * (1.0f - parameters_difference));
 
 	//Write to the image.
-	imageStore(sky_image, ivec3(coordinate), final_color);
+	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);
 }

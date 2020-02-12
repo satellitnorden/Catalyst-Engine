@@ -157,8 +157,11 @@ layout (std140, set = 0, binding = 3) uniform GlobalMaterials
 //The cloud texture.
 layout (set = 0, binding = 4) uniform sampler3D CLOUD_TEXTURE;
 
-//The sky texture.
-layout (set = 0, binding = 5) uniform samplerCube SKY_TEXTURE;
+//The sky textures.
+layout (set = 0, binding = 5, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
+
+//The sky textures.
+layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
 
 /*
 *   Defines the bit at the specified index.

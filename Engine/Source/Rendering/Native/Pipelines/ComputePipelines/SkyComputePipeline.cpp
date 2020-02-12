@@ -47,19 +47,12 @@ public:
 */
 void SkyComputePipeline::Initialize() NOEXCEPT
 {
-	//Create the render data table layout.
-	CreateRenderDataTableLayout();
-
-	//Create the render data table.
-	CreateRenderDataTable();
-
 	//Set the shader.
 	SetShader(Shader::SkyCompute);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -79,7 +72,6 @@ void SkyComputePipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
 	SkyPushConstantData data;
@@ -118,29 +110,6 @@ void SkyComputePipeline::Execute() NOEXCEPT
 
 	//Update the current iteration.
 	_CurrentIteration = (_CurrentIteration + 1) & 3;
-}
-
-/*
-*	Creates the render data table layout.
-*/
-void SkyComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::Compute)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void SkyComputePipeline::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, WorldSystem::Instance->GetSkySystem()->GetSkyTexture());
 }
 
 /*

@@ -346,7 +346,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 6> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 7> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
@@ -363,8 +363,11 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			//Cloud texture.
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayGeneration),
 			
-			//Sky texture.
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment | ShaderStage::RayGeneration),
+			//Sky images.
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Compute),
+
+			//Sky textures.
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -485,8 +488,17 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		//Bind the cloud texture.
 		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], ResourceLoader::GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 
-		//Bind the sky texture.
-		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		//Bind the sky images.
+		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
+		{
+			BindStorageImageToRenderDataTable(5, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j));
+		}
+
+		//Bind the sky textures.
+		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(6, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		}
 	}
 }
 

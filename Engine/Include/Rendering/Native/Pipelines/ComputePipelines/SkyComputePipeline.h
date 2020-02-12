@@ -23,24 +23,8 @@ public:
 
 private:
 
-	//The render data table layout.
-	RenderDataTableLayoutHandle _RenderDataTableLayout;
-
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
-
 	//Keeps track of the current iteration.
 	uint32 _CurrentIteration{ 0 };
-
-	/*
-	*	Creates the render data table layout.
-	*/
-	void CreateRenderDataTableLayout() NOEXCEPT;
-
-	/*
-	*	Creates the render data table.
-	*/
-	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Calculates the parameters difference.

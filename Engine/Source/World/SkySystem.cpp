@@ -18,8 +18,8 @@ namespace SkySystemConstants
 */
 void SkySystem::PostInitialize() NOEXCEPT
 {
-	//Initialize the sky texture.
-	InitializeSkyTexture();
+	//Initialize the sky textures.
+	InitializeSkyTextures();
 }
 
 /*
@@ -31,22 +31,28 @@ NO_DISCARD uint32 SkySystem::GetSkyTextureResolution() const NOEXCEPT
 }
 
 /*
-*	Initializes the sky texture.
+*	Initializes the sky textures.
 */
-void SkySystem::InitializeSkyTexture() NOEXCEPT
+void SkySystem::InitializeSkyTextures() NOEXCEPT
 {
-	if (!_SkyTextureInitialized)
+	if (!_SkyTexturesInitialized)
 	{
-		//Create the sky texture.
-		TextureCubeData data;
+		for (uint32 i{ 0 }; i < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++i)
+		{
+			//Calculate the resolution.
+			const uint32 resolution{ SkySystemConstants::SKY_TEXTURE_RESOLUTION >> i };
 
-		data._Resolution = SkySystemConstants::SKY_TEXTURE_RESOLUTION;
-		data._Data.UpsizeFast(SkySystemConstants::SKY_TEXTURE_RESOLUTION * SkySystemConstants::SKY_TEXTURE_RESOLUTION * 4 * 6);
+			//Create the sky texture.
+			TextureCubeData data;
 
-		Memory::Set(data._Data.Data(), 0, sizeof(float) * SkySystemConstants::SKY_TEXTURE_RESOLUTION * SkySystemConstants::SKY_TEXTURE_RESOLUTION * 4 * 6);
+			data._Resolution = resolution;
+			data._Data.UpsizeFast(resolution * resolution * 4 * 6);
 
-		RenderingSystem::Instance->CreateTextureCube(data, &_SkyTexture);
+			Memory::Set(data._Data.Data(), 0, sizeof(float) * resolution * resolution * 4 * 6);
 
-		_SkyTextureInitialized = true;
+			RenderingSystem::Instance->CreateTextureCube(data, &_SkyTextures[i]);
+		}
+
+		_SkyTexturesInitialized = true;
 	}
 }

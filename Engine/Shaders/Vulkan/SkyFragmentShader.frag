@@ -23,5 +23,5 @@ void main()
    vec3 view_direction = CalculateRayDirection(fragment_texture_coordinate);
 
    //Write the fragment.
-   fragment = texture(SKY_TEXTURE, view_direction);
+   fragment = texture(SKY_TEXTURES[0], view_direction);
 }
