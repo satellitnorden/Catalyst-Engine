@@ -1,0 +1,31 @@
+#if !defined(CATALYST_SHADER_CORE)
+#define CATALYST_SHADER_CORE
+
+#if defined(CATALYST_SHADER_LANGUAGE_CXX)
+	
+#include <Core/Essential/CatalystEssential.h>
+
+	#define CATALYST_SHADER_CONSTANT_UINT(NAME, VALUE)	\
+	constexpr uint32 NAME{ VALUE };
+
+	#define CATALYST_SHADER_NAMESPACE_BEGIN(NAMESPACE)	\
+	namespace NAMESPACE									\
+	{
+
+	#define CATALYST_SHADER_NAMESPACE_END()	\
+	}
+
+#endif
+
+#if defined(CATALYST_SHADER_LANGUAGE_GLSL)
+
+	#define CATALYST_SHADER_CONSTANT_UINT(NAME, VALUE)	\
+	const uint NAME = VALUE;
+
+	#define CATALYST_SHADER_NAMESPACE_BEGIN(NAMESPACE)
+
+	#define CATALYST_SHADER_NAMESPACE_END()
+
+#endif
+
+#endif

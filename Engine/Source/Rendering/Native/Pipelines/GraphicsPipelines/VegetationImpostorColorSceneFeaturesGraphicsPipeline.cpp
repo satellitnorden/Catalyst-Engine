@@ -165,7 +165,7 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Need a correct material index to render.
-		if (component->_ImpostorMaterialIndex >= RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS)
+		if (component->_ImpostorMaterialIndex >= CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS)
 		{
 			continue;
 		}

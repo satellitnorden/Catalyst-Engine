@@ -7,6 +7,9 @@
 #extension GL_NV_ray_tracing : require
 
 //Includes.
+#define CATALYST_SHADER_LANGUAGE_GLSL
+#include "..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
+
 #include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
 
@@ -46,9 +49,6 @@
 #define RENDER_TARGET_INTERMEDIATE_EIGHTH_R32G32B32A32_FLOAT_INDEX  (13)
 #define RENDER_TARGET_SCREEN_INDEX                                  (14)
 #define RENDER_TARGET_NUMBER_OF_RENDER_TARGETS                      (15)
-
-#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (1024)
-#define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (255)
 
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX    (0)
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX           (1)

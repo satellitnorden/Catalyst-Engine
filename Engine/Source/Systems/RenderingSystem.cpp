@@ -211,7 +211,7 @@ uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 	//Find the first available index and store it.
 	uint32 index{ UINT32_MAXIMUM };
 
-	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
 	{
 		//If this is available, grab it!
 		if (!_GlobalRenderData._GlobalTextureSlots[i])
@@ -295,7 +295,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	}
 
 	//Mark all global texture slots as free.
-	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
 	{
 		_GlobalRenderData._GlobalTextureSlots[i] = false;
 	}
@@ -352,7 +352,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
 			
 			//Global textures.
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
 			
 			//Global samplers.
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
@@ -471,7 +471,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
-		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
+		for (uint32 j{ 0 }; j < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
 			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
 		}

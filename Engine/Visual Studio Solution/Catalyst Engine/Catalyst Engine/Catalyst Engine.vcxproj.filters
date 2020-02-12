@@ -1380,6 +1380,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

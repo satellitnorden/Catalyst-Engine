@@ -43,7 +43,7 @@ public:
 private:
 
 	//The global materials.
-	StaticArray<Material, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _GlobalMaterials;
+	StaticArray<Material, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _GlobalMaterials;
 
 	//The global material uniform buffers.
 	DynamicArray<BufferHandle> _GlobalMaterialUniformBuffers;

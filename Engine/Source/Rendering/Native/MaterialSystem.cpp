@@ -16,7 +16,7 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 
 	for (BufferHandle &buffer : _GlobalMaterialUniformBuffers)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS,
+		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS,
 												BufferUsage::UniformBuffer,
 												MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
 												&buffer);
@@ -30,7 +30,7 @@ void MaterialSystem::RenderUpdate(const UpdateContext *const RESTRICT context) N
 {
 	//Update the current global material uniform buffer.
 	const void *const RESTRICT data_chunks[]{ _GlobalMaterials.Data() };
-	const uint64 data_sizes[]{ sizeof(Material) * RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS };
+	const uint64 data_sizes[]{ sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS };
 	BufferHandle &current_buffer{ _GlobalMaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_buffer);
@@ -41,7 +41,7 @@ void MaterialSystem::RenderUpdate(const UpdateContext *const RESTRICT context) N
 */
 void MaterialSystem::RegisterGlobalMaterial(const uint32 index, const Material &material) NOEXCEPT
 {
-	ASSERT(index < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS, "Index cannot be higher or equal to the maximum amount of global materials!");
+	ASSERT(index < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS, "Index cannot be higher or equal to the maximum amount of global materials!");
 
 	Memory::Copy(&_GlobalMaterials[index], &material, sizeof(Material));
 }
