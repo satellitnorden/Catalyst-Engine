@@ -10,6 +10,11 @@
 //Define constants.
 #define SKY_UPPER_COLOR (vec3(0.5f, 0.75f, 1.0f))
 #define SKY_LOWER_COLOR (vec3(0.125f, 0.25f, 0.5f))
+#define SKY_STAR_STRENGTH (0.0f)
+//#define SKY_UPPER_COLOR (vec3(0.5f, 0.75f, 1.0f) * 0.025f)
+//#define SKY_LOWER_COLOR (vec3(0.125f, 0.25f, 0.5f) * 0.025f)
+//#define SKY_STAR_STRENGTH (1.0f)
+
 #define SKY_CLOUDS_LOWER_PLANE (1024.0f * 2.0f)
 #define SKY_CLOUDS_UPPER_PLANE (1024.0f * 8.0f)
 #define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (1024.0f)
@@ -69,6 +74,58 @@ vec3 CalculateDirection(uvec3 coordinate)
 }
 
 /*
+*	Calculates the sky.	
+*/
+vec3 CalculateSky(vec3 direction)
+{
+	//Calculate the upward factor.
+	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f;
+
+	//Calculate the base sky color.
+	vec3 base_sky_color = mix(SKY_LOWER_COLOR, SKY_UPPER_COLOR, upward_factor);
+
+	//Calculate the sky light factor.
+	float sky_light_factor = dot(direction, -sky_light_direction) * 0.5f + 0.5f;
+
+	//Calculate the sky light color.
+	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.1f);
+
+	//Bias the sky light factor a bit.
+	sky_light_factor = pow(sky_light_factor, 4096.0f);
+
+	//Calculate the final sky color.
+	vec3 final_sky_color = mix(sky_light_color, sky_light_luminance, sky_light_factor);
+
+	return final_sky_color;
+}
+
+/*
+*	Calculates the stars.	
+*/
+vec4 CalculateStars(vec3 direction)
+{
+	if (SKY_STAR_STRENGTH > 0.0f)
+	{
+#if 1
+		uint hash = floatBitsToUint(direction.x) ^ floatBitsToUint(direction.y) ^ floatBitsToUint(direction.z);
+
+		float star_weight = float((hash & 511) == 511);
+#else
+		float random = RandomFloat(direction.xy, direction.z);
+
+		float star_weight = float(random >= 0.99f);
+#endif
+
+        return vec4(vec3(1.0f), star_weight);
+	}
+	
+	else
+	{
+		return vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+}
+
+/*
 *	Calculates the clouds.
 */
 vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
@@ -117,7 +174,7 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 	//Calculate the cloud density multiplier.
 	float cloud_density_multiplier = 1.0f - clamp((lower_plane_intersection_distance - SKY_CLOUDS_LOWER_PLANE) / SKY_CLOUDS_MAXIMUM_DISTANCE, 0.0f, 1.0f);
 
-    return vec4(cloud_color, (1.0f - exp(-cloud_density)) * cloud_density_multiplier);
+    return vec4(cloud_color, min(cloud_density, 1.0f) * cloud_density_multiplier);
 }
 
 void main() 
@@ -131,28 +188,18 @@ void main()
 	//Calculate the direction.
 	vec3 direction = CalculateDirection(coordinate);
 
-	//Calculate the upward factor.
-	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f;
+	//Calculate the sky color.
+	vec3 sky_color = CalculateSky(direction);
 
-	//Calculate the base sky color.
-	vec3 base_sky_color = mix(SKY_LOWER_COLOR, SKY_UPPER_COLOR, upward_factor);
+	//Calculate the stars and blend them in.
+	vec4 stars = CalculateStars(direction);
 
-	//Calculate the sky light factor.
-	float sky_light_factor = dot(direction, -sky_light_direction) * 0.5f + 0.5f;
-
-	//Calculate the sky light color.
-	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.1f);
-
-	//Bias the sky light factor a bit.
-	sky_light_factor = pow(sky_light_factor, 4096.0f);
-
-	//Calculate the final sky color.
-	vec3 final_sky_color = mix(base_sky_color, sky_light_luminance, sky_light_factor);
+	sky_color = mix(sky_color, stars.rgb, stars.a);
 
 	//Calculate the clouds.
 	vec4 clouds;
 
-	if (upward_factor > 0.5f)
+	if (direction.y > 0.0f)
 	{
 		clouds = CalculateClouds(coordinate, direction);
 	}
@@ -166,10 +213,10 @@ void main()
 	vec4 old_color = imageLoad(SKY_IMAGES[0], ivec3(coordinate));
 
 	//Calculate the new color.
-	vec4 new_color = vec4(mix(final_sky_color, clouds.rgb, clouds.a), 1.0f);
+	vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
 
 	//Calculate the final color.
-	vec4 final_color = mix(new_color, old_color, 0.99f * (1.0f - parameters_difference));
+	vec4 final_color = mix(new_color, old_color, 0.9f * (1.0f - parameters_difference));
 
 	//Write to the image.
 	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);
