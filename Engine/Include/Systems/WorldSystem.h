@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //World.
-#include <World/SkySystem.h>
+#include <World/Core/SkySystem.h>
+#include <World/Core/TimeOfDaySystem.h>
 
 class WorldSystem final
 {
@@ -40,9 +41,17 @@ public:
 	/*
 	*	Returns the sky system.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const SkySystem *const RESTRICT GetSkySystem() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD SkySystem *const RESTRICT GetSkySystem() NOEXCEPT
 	{
 		return &_SkySystem;
+	}
+
+	/*
+	*	Returns the time of day system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD TimeOfDaySystem *const RESTRICT GetTimeOfDaySystem() NOEXCEPT
+	{
+		return &_TimeOfDaySystem;
 	}
 
 	/*
@@ -65,6 +74,9 @@ private:
 
 	//The sky system.
 	SkySystem _SkySystem;
+
+	//The time of day system.
+	TimeOfDaySystem _TimeOfDaySystem;
 
 	//The wetness.
 	float _Wetness{ 0.0f };

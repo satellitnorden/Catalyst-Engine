@@ -1,5 +1,5 @@
 //Header file.
-#include <World/SkySystem.h>
+#include <World/Core/SkySystem.h>
 
 //Resources.
 #include <Resources/Data/TextureCubeData.h>

@@ -384,7 +384,9 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
-    <ClInclude Include="..\..\..\Include\World\SkySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
@@ -538,7 +540,8 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\World\SkySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />

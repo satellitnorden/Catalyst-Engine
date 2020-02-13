@@ -370,6 +370,15 @@
     <Filter Include="World\Source">
       <UniqueIdentifier>{44123c22-0af3-48d1-9db0-0440ed857e1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Include\Core">
+      <UniqueIdentifier>{58de39d5-cbbc-4f6d-9649-72041f2608ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Source\Core">
+      <UniqueIdentifier>{586247fb-f354-4aa5-8f26-bdd36cd655b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Include\Time Of Day">
+      <UniqueIdentifier>{0ac8e9a8-7c33-4fc6-b46e-465102771623}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1374,9 +1383,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\VolumetricDescription.h">
       <Filter>Rendering\Include\Native\Rendering Reference</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\World\SkySystem.h">
-      <Filter>World\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
@@ -1388,6 +1394,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyDownsampleComputePipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h">
+      <Filter>World\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h">
+      <Filter>World\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h">
+      <Filter>World\Include\Time Of Day</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1838,14 +1853,17 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\World\SkySystem.cpp">
-      <Filter>World\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyDownsampleComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp">
+      <Filter>World\Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp">
+      <Filter>World\Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
