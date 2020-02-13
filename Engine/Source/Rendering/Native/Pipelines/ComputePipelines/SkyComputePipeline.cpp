@@ -49,6 +49,9 @@ public:
 	//The parameters difference.
 	float _ParametersDifference;
 
+	//The star intensity.
+	float _StarIntensity;
+
 };
 
 /*
@@ -108,6 +111,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 
 	data._CurrentIteration = _CurrentIteration;
 	data._ParametersDifference = CalculateParametersDifference();
+	data._StarIntensity = WorldSystem::Instance->GetSkySystem()->GetCurrentStarIntensity();
 
 	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
 
@@ -132,7 +136,7 @@ NO_DISCARD float SkyComputePipeline::CalculateParametersDifference() NOEXCEPT
 	static float yes{ 1.0f };
 
 	float value = yes;
-	//yes *= 0.1f;
+	yes *= 0.1f;
 
 	return value;
 }

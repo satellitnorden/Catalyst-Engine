@@ -8,9 +8,6 @@
 #include "CatalystShaderCommon.glsl"
 
 //Define constants.
-#define SKY_STAR_STRENGTH (0.0f)
-//#define SKY_STAR_STRENGTH (1.0f)
-
 #define SKY_CLOUDS_LOWER_PLANE (1024.0f * 2.0f)
 #define SKY_CLOUDS_UPPER_PLANE (1024.0f * 8.0f)
 #define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (1024.0f)
@@ -28,6 +25,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 48) vec3 sky_light_luminance;
 	layout (offset = 64) uint current_iteration;
 	layout (offset = 68) float parameters_difference;
+	layout (offset = 72) float star_intensity;
 };
 
 /*
@@ -102,17 +100,11 @@ vec3 CalculateSky(vec3 direction)
 */
 vec4 CalculateStars(vec3 direction)
 {
-	if (SKY_STAR_STRENGTH > 0.0f)
+	if (star_intensity > 0.0f)
 	{
-#if 1
-		uint hash = floatBitsToUint(direction.x) ^ floatBitsToUint(direction.y) ^ floatBitsToUint(direction.z);
+		uint hash = Hash3(uvec3(floatBitsToUint(direction.x), floatBitsToUint(direction.y), floatBitsToUint(direction.z)));
 
-		float star_weight = float((hash & 511) == 511);
-#else
-		float random = RandomFloat(direction.xy, direction.z);
-
-		float star_weight = float(random >= 0.99f);
-#endif
+		float star_weight = float((hash & 127) == 127) * star_intensity;
 
         return vec4(vec3(1.0f), star_weight);
 	}
@@ -164,7 +156,7 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     vec3 cloud_color = vec3(0.0f, 0.0f, 0.0f);
 
     //Start with some ambient lighting.
-    cloud_color += CLOUD_BASE_COLOR * CalculateAmbientIlluminationIntensity() * 0.25f;
+    cloud_color += CLOUD_BASE_COLOR * upper_sky_color * 0.125f + CLOUD_BASE_COLOR * lower_sky_color * 0.125f;
 
     //Proceed with the sky light lighting.
 	cloud_color += CLOUD_BASE_COLOR * (sky_light_luminance * 0.1f) * exp(-cloud_density_in_direction);

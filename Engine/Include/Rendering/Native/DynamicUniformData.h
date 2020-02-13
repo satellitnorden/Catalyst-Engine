@@ -32,7 +32,7 @@ public:
 	Vector2<float> _CurrentFrameJitter;
 
 	float _DeltaTime;
-	float _StarStrength;
+	float _UNUSEDZ;
 	float _GlobalRandomSeed1;
 	float _GlobalRandomSeed2;
 	float _GlobalRandomSeed3;

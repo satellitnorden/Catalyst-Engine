@@ -108,7 +108,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 552) vec2 currentFrameJitter;
 
     layout (offset = 560) float DELTA_TIME;
-    layout (offset = 564) float star_strength;
+    layout (offset = 564) float UNUSED_Z;
     layout (offset = 568) float globalRandomSeed1;
     layout (offset = 572) float globalRandomSeed2;
     layout (offset = 576) float globalRandomSeed3;

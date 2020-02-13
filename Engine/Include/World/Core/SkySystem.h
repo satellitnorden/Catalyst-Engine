@@ -33,7 +33,12 @@ public:
 	/*
 	*	Returns the current sky gradient.
 	*/
-	NO_DISCARD SkyGradient GetCurrentSkyGradient() NOEXCEPT;
+	NO_DISCARD SkyGradient GetCurrentSkyGradient() const NOEXCEPT;
+
+	/*
+	*	Returns the current star intensity.
+	*/
+	NO_DISCARD float GetCurrentStarIntensity() const NOEXCEPT;
 
 private:
 

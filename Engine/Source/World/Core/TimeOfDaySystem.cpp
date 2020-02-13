@@ -52,7 +52,7 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 		data->_Properties = EntityInitializationData::Property::None;
 		data->_LightType = LightType::DIRECTIONAL;
 		data->_Direction = VectorConstants::DOWN;
-		data->_Luminance = VectorConstants::ONE;
+		data->_Luminance = VectorConstants::ZERO;
 		data->_Size = 0.0f;
 
 		EntityCreationSystem::Instance->RequestInitialization(_SkyLight, data, false);
