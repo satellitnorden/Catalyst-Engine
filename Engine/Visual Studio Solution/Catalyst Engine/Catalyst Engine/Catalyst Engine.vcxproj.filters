@@ -379,6 +379,9 @@
     <Filter Include="World\Include\Time Of Day">
       <UniqueIdentifier>{0ac8e9a8-7c33-4fc6-b46e-465102771623}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Include\Sky">
+      <UniqueIdentifier>{eced5027-6296-4ed6-8df7-2fbb61f8e5e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1403,6 +1406,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h">
       <Filter>World\Include\Time Of Day</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h">
+      <Filter>World\Include\Sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

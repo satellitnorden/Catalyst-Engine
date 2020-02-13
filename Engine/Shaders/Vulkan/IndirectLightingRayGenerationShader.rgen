@@ -143,7 +143,7 @@ vec3 Irradiance(vec3 origin, vec3 direction)
 			);
 
 	//There was no hit - just return the sky color.
-	return SkyColor(direction, true) * visibility + vec3(1.0f, 0.0f, 0.0f) * (1.0f - visibility);
+	return vec3(0.0f);
 }
 
 /*

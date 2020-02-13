@@ -386,6 +386,7 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />
   </ItemGroup>
   <ItemGroup>

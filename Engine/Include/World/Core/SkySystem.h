@@ -7,6 +7,9 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
+//World.
+#include <World/Sky/SkyGradient.h>
+
 class SkySystem final
 {
 
@@ -26,6 +29,11 @@ public:
 
 		return _SkyTextures[index];
 	}
+
+	/*
+	*	Returns the current sky gradient.
+	*/
+	NO_DISCARD SkyGradient GetCurrentSkyGradient() NOEXCEPT;
 
 private:
 

@@ -8,11 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Define constants.
-#define SKY_UPPER_COLOR (vec3(0.5f, 0.75f, 1.0f))
-#define SKY_LOWER_COLOR (vec3(0.125f, 0.25f, 0.5f))
 #define SKY_STAR_STRENGTH (0.0f)
-//#define SKY_UPPER_COLOR (vec3(0.5f, 0.75f, 1.0f) * 0.025f)
-//#define SKY_LOWER_COLOR (vec3(0.125f, 0.25f, 0.5f) * 0.025f)
 //#define SKY_STAR_STRENGTH (1.0f)
 
 #define SKY_CLOUDS_LOWER_PLANE (1024.0f * 2.0f)
@@ -26,10 +22,12 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 sky_light_direction;
-	layout (offset = 16) vec3 sky_light_luminance;
-	layout (offset = 32) uint current_iteration;
-	layout (offset = 36) float parameters_difference;
+	layout (offset = 0) vec3 upper_sky_color;
+	layout (offset = 16) vec3 lower_sky_color;
+	layout (offset = 32) vec3 sky_light_direction;
+	layout (offset = 48) vec3 sky_light_luminance;
+	layout (offset = 64) uint current_iteration;
+	layout (offset = 68) float parameters_difference;
 };
 
 /*
@@ -82,7 +80,7 @@ vec3 CalculateSky(vec3 direction)
 	float upward_factor = dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f;
 
 	//Calculate the base sky color.
-	vec3 base_sky_color = mix(SKY_LOWER_COLOR, SKY_UPPER_COLOR, upward_factor);
+	vec3 base_sky_color = mix(lower_sky_color, upper_sky_color, upward_factor);
 
 	//Calculate the sky light factor.
 	float sky_light_factor = dot(direction, -sky_light_direction) * 0.5f + 0.5f;
@@ -96,7 +94,7 @@ vec3 CalculateSky(vec3 direction)
 	//Calculate the final sky color.
 	vec3 final_sky_color = mix(sky_light_color, sky_light_luminance, sky_light_factor);
 
-	return final_sky_color;
+	return base_sky_color;
 }
 
 /*

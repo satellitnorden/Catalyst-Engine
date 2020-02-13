@@ -559,7 +559,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	//Update matrices.
 	_DynamicUniformData._ViewMatrixMinusOne = _DynamicUniformData._ViewMatrix;
-	_DynamicUniformData._UNUSED1;
 	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
 	_DynamicUniformData._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
 	_DynamicUniformData._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
@@ -567,9 +566,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.
-	_DynamicUniformData._UpperSkyColor = EnvironmentManager::GetUpperSkyColor();
-	_DynamicUniformData._LowerSkyColor = EnvironmentManager::GetLowerSkyColor();
-	_DynamicUniformData._UNUSED6;
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 

@@ -20,8 +20,8 @@ public:
 	Matrix4 _ProjectionMatrix;
 	Matrix4 _ViewMatrix;
 
-	Vector4<float> _UpperSkyColor;
-	Vector4<float> _LowerSkyColor;
+	Vector4<float> _UNUSEDX;
+	Vector4<float> _UNUSEDY;
 	Vector4<float> _UNUSED6;
 	Vector4<float> _PerceiverForwardVector;
 	Vector4<float> _PerceiverWorldPosition;

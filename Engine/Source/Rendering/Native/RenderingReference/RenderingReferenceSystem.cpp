@@ -36,6 +36,7 @@
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Terrin.
 #include <Terrain/TerrainGeneralUtilities.h>
@@ -465,8 +466,9 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 */
 NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRaySky(const Ray& ray) NOEXCEPT
 {
-	const Vector3<float> lower_sky_color{ EnvironmentManager::GetLowerSkyColor() };
-	const Vector3<float> upper_sky_color{ EnvironmentManager::GetUpperSkyColor() };
+	const SkyGradient current_sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetCurrentSkyGradient() };
+	const Vector3<float> lower_sky_color{ current_sky_gradient._LowerSkyColor };
+	const Vector3<float> upper_sky_color{ current_sky_gradient._UpperSkyColor };
 
 	const float upward{ CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(ray._Direction, VectorConstants::UP), 0.0f) };
 
