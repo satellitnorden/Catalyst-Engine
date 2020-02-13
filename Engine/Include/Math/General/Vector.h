@@ -1004,6 +1004,20 @@ public:
 	}
 
 	/*
+	*	Given an arbitrary axis and an angle, rotates this vector.
+	*/
+	FORCE_INLINE void Rotate(const Vector3 axis, const float angle) NOEXCEPT
+	{
+		const float dot{ DotProduct(*this, axis) };
+
+		const Vector3 X{ CatalystBaseMath::Cosine(angle) * (*this - dot * axis) };
+		const Vector3 Y{ CatalystBaseMath::Sine(angle) * CrossProduct(axis, *this) };
+		const Vector3 Z{ dot * axis };
+
+		*this *= X + Y + Z;
+	}
+
+	/*
 	*	Returns a rotate copy of this vector.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT

@@ -14,10 +14,10 @@
 float SampleOceanHeight(vec3 point, int ocean_texture_index)
 {
     //Set up all variables.
-    vec3 offset_1 = vec3(totalTime, 0.0f, totalTime) * SQUARE_ROOT_OF_TWO;
-    vec3 offset_2 = vec3(totalTime, 0.0f, totalTime) * HALF_PI;
-    vec3 offset_3 = vec3(totalTime, 0.0f, totalTime) * PHI;
-    vec3 offset_4 = vec3(totalTime, 0.0f, totalTime) * EULERS_NUMBER;
+    vec3 offset_1 = vec3(totalTime, 0.0f, totalTime) * 2.0f * SQUARE_ROOT_OF_TWO;
+    vec3 offset_2 = vec3(totalTime, 0.0f, totalTime) * 2.0f * HALF_PI;
+    vec3 offset_3 = vec3(totalTime, 0.0f, totalTime) * 2.0f * PHI;
+    vec3 offset_4 = vec3(totalTime, 0.0f, totalTime) * 2.0f * EULERS_NUMBER;
 
     vec3 sample_point;
     float height_sample;

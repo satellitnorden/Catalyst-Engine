@@ -77,7 +77,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 */
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
-	if (true)
+	if (false)
 	{
 		SetEnabled(false);
 

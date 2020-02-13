@@ -10,8 +10,8 @@
 //Define constants.
 #define SKY_CLOUDS_LOWER_PLANE (1024.0f * 2.0f)
 #define SKY_CLOUDS_UPPER_PLANE (1024.0f * 8.0f)
-#define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (1024.0f)
-#define SKY_CLOUDS_MAXIMUM_DISTANCE (1024.0f * 64.0f)
+#define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (512.0f)
+#define SKY_CLOUDS_MAXIMUM_DISTANCE (1024.0f * 128.0f)
 
 //Layout specification.
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
@@ -81,10 +81,10 @@ vec3 CalculateSky(vec3 direction)
 	vec3 base_sky_color = mix(lower_sky_color, upper_sky_color, upward_factor);
 
 	//Calculate the sky light factor.
-	float sky_light_factor = dot(direction, -sky_light_direction) * 0.5f + 0.5f;
+	float sky_light_factor = max(dot(direction, -sky_light_direction) * 0.5f + 0.5f, 0.0f);
 
 	//Calculate the sky light color.
-	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.1f);
+	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.01f);
 
 	//Bias the sky light factor a bit.
 	sky_light_factor = pow(sky_light_factor, 4096.0f);
@@ -92,7 +92,7 @@ vec3 CalculateSky(vec3 direction)
 	//Calculate the final sky color.
 	vec3 final_sky_color = mix(sky_light_color, sky_light_luminance, sky_light_factor);
 
-	return base_sky_color;
+	return final_sky_color;
 }
 
 /*
@@ -123,7 +123,19 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 	//Sample all of the noise samples.
 	vec2 noise_texture_index = vec2(coordinate.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
-	vec4 noise_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+	vec4 noise_sample_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+	vec4 noise_sample_2 = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + 1) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+
+	float noise_samples[8];
+
+	noise_samples[0] = noise_sample_1[0];
+	noise_samples[1] = noise_sample_1[1];
+	noise_samples[2] = noise_sample_1[2];
+	noise_samples[3] = noise_sample_1[3];
+	noise_samples[4] = noise_sample_2[0];
+	noise_samples[5] = noise_sample_2[1];
+	noise_samples[6] = noise_sample_2[2];
+	noise_samples[7] = noise_sample_2[3];
 
 	//Do a line-plane intersection against the lower plane.
 	float lower_plane_intersection_distance;
@@ -141,13 +153,13 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     float cloud_density = 0.0f;
     float cloud_density_in_direction = 0.0f;
 
-    for (int i = 0; i < 4; i += 2)
+    for (int i = 0; i < 8; i += 2)
     {
-    	vec3 sample_point = mix(start, end, noise_sample[i + 0]);
+    	vec3 sample_point = mix(start, end, noise_samples[i + 0]);
 
     	cloud_density += SampleCloudDensity(sample_point, 3) * 4.0f;
 
-    	vec3 sample_point_in_direction = sample_point + -sky_light_direction * SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE * noise_sample[i + 1];
+    	vec3 sample_point_in_direction = sample_point + -sky_light_direction * SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE * noise_samples[i + 1];
 
     	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction, 3);
     }

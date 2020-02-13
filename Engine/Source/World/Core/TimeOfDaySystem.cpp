@@ -27,7 +27,7 @@ void TimeOfDaySystem::PreUpdate(const UpdateContext* const RESTRICT context) NOE
 	}
 
 	//Update the sky light.
-	//UpdateSkyLight();
+	UpdateSkyLight();
 }
 
 /*
@@ -52,7 +52,7 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 		data->_Properties = EntityInitializationData::Property::None;
 		data->_LightType = LightType::DIRECTIONAL;
 		data->_Direction = VectorConstants::DOWN;
-		data->_Luminance = VectorConstants::ZERO;
+		data->_Luminance = VectorConstants::ONE;
 		data->_Size = 0.0f;
 
 		EntityCreationSystem::Instance->RequestInitialization(_SkyLight, data, false);
@@ -64,28 +64,34 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 */
 void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
+	//Define constants.
+	constexpr float NIGHT_SKY_INTENSITY{ 2.5f };
+	constexpr float DAY_SKY_INTENSITY{ 10.0f };
+	constexpr Vector3<float> NIGHT_SKY_LUMINANCE{ 0.8f, 0.9f, 1.0f };
+	constexpr Vector3<float> DAY_SKY_LUMINANCE{ 1.0f, 0.9f, 0.8f };
+
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
 	{
 		return;
 	}
 
-	//Calculate the direction alpha.
-	float direction_alpha;
+	//Calculate the time of day alpha.
+	float time_of_day_alpha;
 
 	if (_CurrentTimeOfDay >= 18.0f)
 	{
-		direction_alpha = (_CurrentTimeOfDay - 18.0f) / 12.0f;
+		time_of_day_alpha = (_CurrentTimeOfDay - 18.0f) / 12.0f;
 	}
 
 	else if (_CurrentTimeOfDay < 6.0f)
 	{
-		direction_alpha = (_CurrentTimeOfDay + 6.0f) / 12.0f;
+		time_of_day_alpha = (_CurrentTimeOfDay + 6.0f) / 12.0f;
 	}
 
 	else
 	{
-		direction_alpha = (_CurrentTimeOfDay - 6.0f) / 12.0f;
+		time_of_day_alpha = (_CurrentTimeOfDay - 6.0f) / 12.0f;
 	}
 
 	//Calculate the sky light direction.
@@ -95,26 +101,60 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	{
 		Vector3<float> rotation;
 
-		rotation._X = CatalystBaseMath::DegreesToRadians(45.0f);
-		rotation._Y = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-90.0f), CatalystBaseMath::DegreesToRadians(90.0f), direction_alpha);
-		rotation._Z = 0.0f;
+		rotation._X = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
+		rotation._Y = 0.0f;
+		rotation._Z = CatalystBaseMath::DegreesToRadians(22.5f);
 
-		sky_light_direction = -VectorConstants::FORWARD.Rotated(rotation);
+		sky_light_direction = Vector3<float>::Normalize(VectorConstants::DOWN.Rotated(rotation));
 	}
 	
 	else
 	{
 		Vector3<float> rotation;
 
-		rotation._X = CatalystBaseMath::DegreesToRadians(45.0f);
-		rotation._Y = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-90.0f), CatalystBaseMath::DegreesToRadians(90.0f), direction_alpha);
-		rotation._Z = 0.0f;
+		rotation._X = CatalystBaseMath::DegreesToRadians(22.5f);
+		rotation._Y = 0.0f;
+		rotation._Z = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 
-		sky_light_direction = -VectorConstants::FORWARD.Rotated(rotation);
+		sky_light_direction = Vector3<float>::Normalize(VectorConstants::DOWN.Rotated(rotation));
 	}
-
-	ASSERT(!CatalystBaseMath::IsNaN(sky_light_direction._X) && !CatalystBaseMath::IsNaN(sky_light_direction._Y) && !CatalystBaseMath::IsNaN(sky_light_direction._Z), "oh no");
 
 	//Set the sky light direction.
 	_SkyLight->SetDirection(sky_light_direction);
+
+	//Update the sky light luminance.
+	{
+		//Calculate the sky luminance alpha.
+		float sky_luminance_alpha;
+
+		if (_CurrentTimeOfDay < 6.0f)
+		{
+			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>(1.0f - (_CurrentTimeOfDay / 6.0f));
+		}
+
+		else if (_CurrentTimeOfDay < 12.0f)
+		{
+			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>((_CurrentTimeOfDay - 6.0f) / 6.0f);
+		}
+
+		else if (_CurrentTimeOfDay < 18.0f)
+		{
+			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>(1.0f - ((_CurrentTimeOfDay - 12.0f) / 6.0f));
+		}
+
+		else
+		{
+			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>((_CurrentTimeOfDay - 18.0f) / 6.0f);
+		}
+
+		if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
+		{
+			_SkyLight->SetLuminance(NIGHT_SKY_LUMINANCE * NIGHT_SKY_INTENSITY * sky_luminance_alpha);
+		}
+
+		else
+		{
+			_SkyLight->SetLuminance(DAY_SKY_LUMINANCE * DAY_SKY_INTENSITY * sky_luminance_alpha);
+		}
+	}
 }
