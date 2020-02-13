@@ -27,6 +27,9 @@ void WorldSystem::PostInitialize() NOEXCEPT
 */
 void WorldSystem::PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
 {
+	//Update the time of day system.
+	_TimeOfDaySystem.PreUpdate(context);
+
 	//Update all particle systems.
 	UpdateParticleSystems(context);
 }

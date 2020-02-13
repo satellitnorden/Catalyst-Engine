@@ -19,17 +19,29 @@ class SkyPushConstantData final
 
 public:
 
+	//The upper sky color.
+	Vector3<float> _UpperSkyColor;
+
+	//Padding.
+	Padding<4> _Padding1;
+
+	//The lower sky color.
+	Vector3<float> _LowerSkyColor;
+
+	//Padding.
+	Padding<4> _Padding2;
+
 	//The sky light direction.
 	Vector3<float> _SkyLightDirection;
 
 	//Padding.
-	Padding<4> _Padding1;
+	Padding<4> _Padding3;
 
 	//The sky light luminance.
 	Vector3<float> _SkyLightLuminance;
 
 	//Padding.
-	Padding<4> _Padding2;
+	Padding<4> _Padding4;
 
 	//The current iteration.
 	uint32 _CurrentIteration;
@@ -72,6 +84,10 @@ void SkyComputePipeline::Execute() NOEXCEPT
 
 	//Push constants.
 	SkyPushConstantData data;
+
+	const SkyGradient current_sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetCurrentSkyGradient() };
+	data._UpperSkyColor = current_sky_gradient._UpperSkyColor;
+	data._LowerSkyColor = current_sky_gradient._LowerSkyColor;
 
 	//Pick the first directional light.
 	data._SkyLightDirection = VectorConstants::UP;
@@ -116,7 +132,7 @@ NO_DISCARD float SkyComputePipeline::CalculateParametersDifference() NOEXCEPT
 	static float yes{ 1.0f };
 
 	float value = yes;
-	yes *= 0.1f;
+	//yes *= 0.1f;
 
 	return value;
 }
