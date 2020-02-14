@@ -37,34 +37,40 @@ vec3 CalculateDirection(uvec3 coordinate)
 
 	switch (coordinate.z)
 	{
+		//Front.
 		case 0:
 		{
-			return normalize(vec3(-normalized_coordinates.x, -normalized_coordinates.y, 1.0f));
+			return normalize(vec3(1.0f, -normalized_coordinates.y, -normalized_coordinates.x));
 		}
 
+		//Back.
 		case 1:
 		{
-			return normalize(vec3(normalized_coordinates.x, -normalized_coordinates.y, -1.0f));
+			return normalize(vec3(-1.0f, -normalized_coordinates.y, normalized_coordinates.x));
 		}
 
+		//Up.
 		case 2:
 		{
-			return normalize(vec3(normalized_coordinates.y, 1.0f, normalized_coordinates.x));
+			return normalize(vec3(normalized_coordinates.x, 1.0f, normalized_coordinates.y));
 		}
 
+		//Down.
 		case 3:
 		{
-			return normalize(vec3(-normalized_coordinates.y, -1.0f, normalized_coordinates.x));
+			return normalize(vec3(normalized_coordinates.x, -1.0f, -normalized_coordinates.y));
 		}
 
+		//Right.
 		case 4:
 		{
-			return normalize(vec3(1.0f, -normalized_coordinates.y, normalized_coordinates.x));
+			return normalize(vec3(normalized_coordinates.x, -normalized_coordinates.y, 1.0f));
 		}
 
+		//Left.
 		case 5:
 		{
-			return normalize(vec3(-1.0f, -normalized_coordinates.y, -normalized_coordinates.x));
+			return normalize(vec3(-normalized_coordinates.x, -normalized_coordinates.y, -1.0f));
 		}
 	}
 }
