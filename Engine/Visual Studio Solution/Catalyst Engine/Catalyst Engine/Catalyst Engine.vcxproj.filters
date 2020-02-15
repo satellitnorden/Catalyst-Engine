@@ -1224,9 +1224,6 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\CloudsGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
@@ -1244,9 +1241,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan3DTexture.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\CloudsApplicationGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Data\Texture3DData.h">
       <Filter>Resources\Include\Data</Filter>
@@ -1784,9 +1778,6 @@
     <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\CloudsGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
@@ -1795,9 +1786,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\CloudsApplicationGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>

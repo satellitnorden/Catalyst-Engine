@@ -7,9 +7,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/ComputePipelines/SkyComputePipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/SkyDownsampleComputePipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsApplicationGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/CloudsGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SeparableBlurGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -36,15 +33,6 @@ private:
 
 	//The sky graphics pipeline.
 	SkyGraphicsPipeline _SkyGraphicsPipeline;
-
-	//The clouds graphics pipeline.
-	CloudsGraphicsPipeline _CloudsGraphicsPipeline;
-
-	//The clouds blur pipelines.
-	StaticArray<SeparableBlurGraphicsPipeline, 2> _CloudsBlurGraphicsPipelines;
-
-	//The clouds application graphics pipeline.
-	CloudsApplicationGraphicsPipeline _CloudsApplicationGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

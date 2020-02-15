@@ -10,7 +10,13 @@
 //Define constants.
 #define SKY_CLOUDS_LOWER_PLANE (1024.0f * 2.0f)
 #define SKY_CLOUDS_UPPER_PLANE (1024.0f * 8.0f)
-#define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (512.0f)
+#define SKY_CLOUDS_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
+#define SKY_CLOUDS_POSITION_SCALE (0.00001f)
+#define SKY_CLOUDS_PERSISTENCE (0.5f) //0.025f step.
+#define SKY_CLOUDS_LACUNARITY (3.75f) //0.25f step.
+#define SKY_CLOUDS_MINIMUM_DENSITY (0.125f) //0.025f step.
+#define SKY_CLOUDS_MAXIMUM_DENSITY (0.625f) //0.025f step.
+#define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (256.0f)
 #define SKY_CLOUDS_MAXIMUM_DISTANCE (1024.0f * 128.0f)
 
 //Layout specification.
@@ -122,6 +128,56 @@ vec4 CalculateStars(vec3 direction)
 }
 
 /*
+*  Samples the cloud density at the given point.
+*/
+float SampleCloudDensity(vec3 point)
+{
+    //vec3 cloud_offset = -vec3(totalTime, totalTime * 0.1f, totalTime) * 16.0f;
+    vec3 cloud_offset = vec3(0.0f, 0.0f, 0.0f);
+
+    vec3 sample_point;
+    float density_sample;
+    float amplitude = 1.0f;
+    float frequency = 1.0f;
+    float total = 0.0f;
+    float density = 0.0f;
+
+    sample_point = ((point + (cloud_offset * SQUARE_ROOT_OF_TWO)) * frequency * SQUARE_ROOT_OF_TWO) * SKY_CLOUDS_POSITION_SCALE;
+    density_sample = texture(CLOUD_TEXTURE, sample_point).x;
+    density += density_sample * amplitude;
+    total += amplitude;
+    amplitude *= SKY_CLOUDS_PERSISTENCE;
+    frequency *= SKY_CLOUDS_LACUNARITY;
+
+    sample_point = ((point + (cloud_offset * HALF_PI)) * frequency * HALF_PI) * SKY_CLOUDS_POSITION_SCALE;
+    density_sample = texture(CLOUD_TEXTURE, sample_point).y;
+    density += density_sample * amplitude;
+    total += amplitude;
+    amplitude *= SKY_CLOUDS_PERSISTENCE;
+    frequency *= SKY_CLOUDS_LACUNARITY;
+
+    sample_point = ((point + (cloud_offset * PHI)) * frequency * PHI) * SKY_CLOUDS_POSITION_SCALE;
+    density_sample = texture(CLOUD_TEXTURE, sample_point).z;
+    density += density_sample * amplitude;
+    total += amplitude;
+    amplitude *= SKY_CLOUDS_PERSISTENCE;
+    frequency *= SKY_CLOUDS_LACUNARITY;
+
+    sample_point = ((point + (cloud_offset * EULERS_NUMBER)) * frequency * EULERS_NUMBER) * SKY_CLOUDS_POSITION_SCALE;
+    density_sample = texture(CLOUD_TEXTURE, sample_point).w;
+    density += density_sample * amplitude;
+    total += amplitude;
+    amplitude *= SKY_CLOUDS_PERSISTENCE;
+    frequency *= SKY_CLOUDS_LACUNARITY;
+
+    density /= total;
+
+    density = max(density - (1.0f - mix(SKY_CLOUDS_MINIMUM_DENSITY, SKY_CLOUDS_MAXIMUM_DENSITY, CLOUD_DENSITY)), 0.0f);
+
+    return density;
+}
+
+/*
 *	Calculates the clouds.
 */
 vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
@@ -163,21 +219,21 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     {
     	vec3 sample_point = mix(start, end, noise_samples[i + 0]);
 
-    	cloud_density += SampleCloudDensity(sample_point, 3) * 4.0f;
+    	cloud_density += SampleCloudDensity(sample_point) * 8.0f;
 
     	vec3 sample_point_in_direction = sample_point + -sky_light_direction * SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE * noise_samples[i + 1];
 
-    	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction, 3);
+    	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction) * 16.0f;
     }
 
     //Calculate the cloud color.
     vec3 cloud_color = vec3(0.0f, 0.0f, 0.0f);
 
     //Start with some ambient lighting.
-    cloud_color += CLOUD_BASE_COLOR * upper_sky_color * 0.125f + CLOUD_BASE_COLOR * lower_sky_color * 0.125f;
+    cloud_color += SKY_CLOUDS_BASE_COLOR * upper_sky_color * 0.125f + SKY_CLOUDS_BASE_COLOR * lower_sky_color * 0.125f;
 
     //Proceed with the sky light lighting.
-	cloud_color += CLOUD_BASE_COLOR * (sky_light_luminance * 0.1f) * exp(-cloud_density_in_direction);
+	cloud_color += SKY_CLOUDS_BASE_COLOR * (sky_light_luminance * 0.1f) * exp(-cloud_density_in_direction);
 
 	//Calculate the cloud density multiplier.
 	float cloud_density_multiplier = 1.0f - clamp((lower_plane_intersection_distance - SKY_CLOUDS_LOWER_PLANE) / SKY_CLOUDS_MAXIMUM_DISTANCE, 0.0f, 1.0f);
@@ -224,7 +280,7 @@ void main()
 	vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
 
 	//Calculate the final color.
-	vec4 final_color = mix(new_color, old_color, 0.9f * (1.0f - parameters_difference));
+	vec4 final_color = mix(new_color, old_color, 0.99f * (1.0f - parameters_difference));
 
 	//Write to the image.
 	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);

@@ -68,18 +68,21 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 */
 vec3 SampleIndirectLighting(vec3 view_direction, vec3 normal, float roughness, float metallic)
 {
+	//Calculate the diffuseness.
+	float diffuseness = roughness * (1.0f - metallic);
+
 	//Calculate the reflection vector.
 	vec3 reflection_vector = reflect(view_direction, normal);
 
 	//Calculate the indices for the sky textures.
-	float float_index = roughness * (1.0f - metallic) * float(NUMBER_OF_SKY_TEXTURES - 1);
+	float float_index = diffuseness * float(NUMBER_OF_SKY_TEXTURES - 1);
 
 	uint first_index = uint(float_index);
 	uint second_index = first_index + 1;
 
 	float alpha = fract(float_index);
 
-	return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
+	return mix(mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha), mix(texture(SKY_TEXTURES[first_index], normal).rgb, texture(SKY_TEXTURES[second_index], normal).rgb, alpha), diffuseness);
 }
 
 void main()
