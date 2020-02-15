@@ -11,9 +11,6 @@
 //File.
 #include <File/Writers/TGAWriter.h>
 
-//Managers.
-#include <Managers/EnvironmentManager.h>
-
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>

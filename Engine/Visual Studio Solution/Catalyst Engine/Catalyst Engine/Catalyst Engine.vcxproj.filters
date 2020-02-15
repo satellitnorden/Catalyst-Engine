@@ -1203,9 +1203,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SkyRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h">
-      <Filter>Managers\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorDepthSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>

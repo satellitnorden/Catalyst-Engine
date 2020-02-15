@@ -40,6 +40,22 @@ public:
 	*/
 	NO_DISCARD float GetCurrentStarIntensity() const NOEXCEPT;
 
+	/*
+	*	Returns the cloud density.
+	*/
+	FORCE_INLINE NO_DISCARD float GetCloudDensity() const NOEXCEPT
+	{
+		return _CloudDensity;
+	}
+
+	/*
+	*	Sets the cloud density.
+	*/
+	FORCE_INLINE void SetCloudDensity(const float cloud_density) NOEXCEPT
+	{
+		_CloudDensity = cloud_density;
+	}
+
 private:
 
 	//Denotes if the sky textures are initialized.
@@ -47,6 +63,9 @@ private:
 
 	//The sky textures.
 	StaticArray<TextureCubeHandle, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES> _SkyTextures;
+
+	//The cloud density.
+	float _CloudDensity{ 0.5f };
 
 	/*
 	*	Initializes the sky textures.

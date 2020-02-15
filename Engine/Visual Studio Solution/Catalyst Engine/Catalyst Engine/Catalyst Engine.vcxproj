@@ -120,7 +120,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
-    <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
