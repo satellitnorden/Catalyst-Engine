@@ -84,11 +84,14 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		//Does this save entry need to be loaded?
 		if (entry._SaveMask & _ProcessLoadsMask)
 		{
-			//First of all, does the file exist?
+			//Determine the size required for the save.
+			const uint64 size{ entry._SizeCallback() };
+
+			//Does the file exist?
 			if (!FileUtilities::DoesFileExist(entry._File.Data()))
 			{
 				//Allocate the memory required for the save.
-				void *const RESTRICT save_data{ Memory::Allocate(entry._Size) };
+				void *const RESTRICT save_data{ Memory::Allocate(size) };
 
 				//Set the default values.
 				entry._DefaultValuesCallback(save_data);
@@ -98,7 +101,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 
 				//Write it to file.
 				BinaryFile<IOMode::Out> file{ entry._File.Data() };
-				file.Write(save_data, entry._Size);
+				file.Write(save_data, size);
 				file.Close();
 
 				//Call the load callback.
@@ -111,11 +114,11 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 			else
 			{
 				//Allocate the memory required for the save.
-				void *const RESTRICT save_data{ Memory::Allocate(entry._Size) };
+				void *const RESTRICT save_data{ Memory::Allocate(size) };
 
 				//Read it from file.
 				BinaryFile<IOMode::In> file{ entry._File.Data() };
-				file.Read(save_data, entry._Size);
+				file.Read(save_data, size);
 				file.Close();
 
 				//Call the load callback.
@@ -129,15 +132,18 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		//Does this save entry need to be saved?
 		if (entry._SaveMask & _ProcessSavesMask)
 		{
+			//Determine the size required for the save.
+			const uint64 size{ entry._SizeCallback() };
+
 			//Allocate the memory required for the save.
-			void *const RESTRICT save_data{ Memory::Allocate(entry._Size) };
+			void *const RESTRICT save_data{ Memory::Allocate(size) };
 
 			//Call the save callback.
 			entry._SaveCallback(save_data);
 
 			//Write it to file.
 			BinaryFile<IOMode::Out> file{ entry._File.Data() };
-			file.Write(save_data, entry._Size);
+			file.Write(save_data, size);
 			file.Close();
 
 			//Free the memory.

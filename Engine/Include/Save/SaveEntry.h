@@ -15,8 +15,11 @@ public:
 	//The file to the save that will be read from/written to disk.
 	DynamicString _File;
 
-	//The size in bytes of the save.
-	uint64 _Size;
+	//The save mask. This is used to determine which saves should be saved.
+	uint64 _SaveMask;
+
+	//The size callback. This will be called to determine how large the save file should be when saving.
+	SizeCallback _SizeCallback;
 
 	//The default values callback. This will be called when no save file was present and default values needs to be filled in.
 	DefaultValuesCallback _DefaultValuesCallback;
@@ -26,8 +29,5 @@ public:
 
 	//The load callback. This will be called whenever this save is loaded.
 	LoadCallback _LoadCallback;
-
-	//The save mask. This is used to determine which saves should be saved.
-	uint64 _SaveMask;
 
 };
