@@ -155,6 +155,7 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
+    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />

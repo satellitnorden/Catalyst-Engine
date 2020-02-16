@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/Map.h>
 #include <Core/General/UpdateContext.h>
 
 //Math.
@@ -9,6 +10,7 @@
 
 //Physics.
 #include <Physics/CharacterMovement.h>
+#include <Physics/ModelCollisionData.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RaycastResult.h>
 
@@ -44,6 +46,16 @@ public:
 	void RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT;
 
 	/*
+	*	Registers model collision data.
+	*/
+	void RegisterModelCollisionData(const uint64 entity_identifier, const ModelCollisionData &data) NOEXCEPT;
+
+	/*
+	*	Unregisters model collision data.
+	*/
+	void UnregisterModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
+
+	/*
 	*	Callback for when terrain has been initialized.
 	*/
 	void OnTerrainInitialized() NOEXCEPT;
@@ -52,6 +64,14 @@ private:
 
 	//Container for all character movements.
 	DynamicArray<CharacterMovement *RESTRICT> _CharacterMovements;
+
+	//Container for all model collision data.
+	Map<uint64, ModelCollisionData> _ModelCollisionData;
+
+	/*
+	*	Casts a ray against models.
+	*/
+	void CastRayModels(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the terrain.

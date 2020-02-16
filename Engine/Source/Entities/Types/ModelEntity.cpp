@@ -12,6 +12,7 @@
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>
+#include <Systems/PhysicsSystem.h>
 
 /*
 *	Default constructor.
@@ -48,6 +49,12 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(component._PreviousWorldTransform, mesh._BottomLevelAccelerationStructure, 0));
 		}
 		
+	}
+
+	//Register the model collision data, if there is one.
+	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->RegisterModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
 	}
 
 	//Destroy the initialization data.

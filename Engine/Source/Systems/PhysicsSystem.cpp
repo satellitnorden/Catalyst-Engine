@@ -48,6 +48,12 @@ void PhysicsSystem::CastRay(const Ray &ray, const PhysicsChannel channels, Rayca
 	result->_HitDistance = FLOAT_MAXIMUM;
 	result->_Type = RaycastResult::Type::NONE;
 
+	//Raycast against models.
+	if (TEST_BIT(channels, PhysicsChannel::MODEL))
+	{
+		CastRayModels(ray, result);
+	}
+
 	//Raycast against the terrain.
 	if (TEST_BIT(channels, PhysicsChannel::TERRAIN))
 	{
@@ -62,6 +68,22 @@ void PhysicsSystem::RegisterCharacterMovement(CharacterMovement* const RESTRICT 
 {
 	//Add it to the container.
 	_CharacterMovements.Emplace(movement);
+}
+
+/*
+*	Registers model collision data.
+*/
+void PhysicsSystem::RegisterModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT
+{
+	_ModelCollisionData[entity_identifier] = data;
+}
+
+/*
+*	Unregisters model collision data.
+*/
+void PhysicsSystem::UnregisterModelCollisionData(const uint64 entity_identifer) NOEXCEPT
+{
+	
 }
 
 /*
@@ -119,6 +141,33 @@ void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
 }
 
 /*
+*	Casts a ray against models.
+*/
+void PhysicsSystem::CastRayModels(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
+{
+	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
+	{
+		switch (data._Second._Type)
+		{
+			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
+			{
+				float intersection_distance{ FLOAT_MAXIMUM };
+
+				if (CatalystGeometryMath::RayBoxIntersection(ray, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox, &intersection_distance)
+					&& result->_HitDistance > intersection_distance)
+				{
+					result->_HasHit = true;
+					result->_HitDistance = intersection_distance;
+					result->_Type = RaycastResult::Type::MODEL;
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
 *	Casts a ray against the terrain.
 */
 void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
@@ -130,7 +179,7 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT
 	}
 
 	//Trace the terrain acceleration structure.
-	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ PhysicsSystemData::_TerrainAccelerationStructure.TraceSurface(ray, &result->_HitDistance) })
+	if (const AccelerationStructure::TriangleData *const RESTRICT triangle_data{ PhysicsSystemData::_TerrainAccelerationStructure.TraceSurface(ray, &result->_HitDistance) })
 	{
 		result->_HasHit = true;
 		result->_Type = RaycastResult::Type::TERRAIN;

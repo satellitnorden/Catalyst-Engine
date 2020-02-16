@@ -6,6 +6,15 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+class ModelRaycastResult final
+{
+
+public:
+
+	//Empty. (:
+
+};
+
 class TerrainRaycastResult final
 {
 
@@ -25,6 +34,7 @@ public:
 	{
 		NONE,
 
+		MODEL,
 		TERRAIN
 	};
 
@@ -39,7 +49,10 @@ public:
 
 	union
 	{
-		//The terrain raycast result, if terrain was hit.
+		//The model raycast result, if a model was hit.
+		ModelRaycastResult _ModelRaycastResult;
+
+		//The terrain raycast result, if the terrain was hit.
 		TerrainRaycastResult _TerrainRaycastResult;
 	};
 

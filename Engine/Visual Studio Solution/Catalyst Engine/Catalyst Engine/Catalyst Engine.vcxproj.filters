@@ -1401,6 +1401,9 @@
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h">
       <Filter>World\Include\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

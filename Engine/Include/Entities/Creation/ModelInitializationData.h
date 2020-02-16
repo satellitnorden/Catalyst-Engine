@@ -9,6 +9,10 @@
 //Math.
 #include <Math/General/Matrix.h>
 
+//Physics.
+#include <Physics/ModelCollisionData.h>
+#include <Physics/PhysicsCore.h>
+
 //Rendering.
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/Model.h>
@@ -26,5 +30,8 @@ public:
 
 	//The material indices.
 	DynamicArray<uint32> _MaterialIndices;
+
+	//The model collision data.
+	ModelCollisionData _ModelCollisionData;
 
 };
