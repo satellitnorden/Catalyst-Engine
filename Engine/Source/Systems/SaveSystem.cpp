@@ -44,6 +44,18 @@ void SaveSystem::SequentialUpdate(const UpdateContext* const RESTRICT context) N
 }
 
 /*
+*	Pre-terminates the save system.
+*/
+void SaveSystem::PreTerminate() NOEXCEPT
+{
+	//Save all save entries.
+	_ProcessLoadsMask = 0;
+	_ProcessSavesMask = UINT64_MAXIMUM;
+
+	ProcessSaves();
+}
+
+/*
 *	Registers a save entry.
 */
 void SaveSystem::RegisterSaveEntry(const SaveEntry &entry) NOEXCEPT
@@ -84,12 +96,12 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		//Does this save entry need to be loaded?
 		if (entry._SaveMask & _ProcessLoadsMask)
 		{
-			//Determine the size required for the save.
-			const uint64 size{ entry._SizeCallback() };
-
 			//Does the file exist?
 			if (!FileUtilities::DoesFileExist(entry._File.Data()))
-			{
+			{			
+				//Determine the size required for the save.
+				const uint64 size{ entry._SaveSizeCallback() };
+
 				//Allocate the memory required for the save.
 				void *const RESTRICT save_data{ Memory::Allocate(size) };
 
@@ -105,7 +117,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 				file.Close();
 
 				//Call the load callback.
-				entry._LoadCallback(save_data);
+				entry._LoadCallback(size, save_data);
 
 				//Free the memory.
 				Memory::Free(save_data);
@@ -113,16 +125,18 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 
 			else
 			{
-				//Allocate the memory required for the save.
-				void *const RESTRICT save_data{ Memory::Allocate(size) };
-
-				//Read it from file.
+				//Open the file.
 				BinaryFile<IOMode::In> file{ entry._File.Data() };
-				file.Read(save_data, size);
+
+				//Allocate the memory required for the save.
+				void* const RESTRICT save_data{ Memory::Allocate(file.Size()) };
+
+				//Read the saved data.
+				file.Read(save_data, file.Size());
 				file.Close();
 
 				//Call the load callback.
-				entry._LoadCallback(save_data);
+				entry._LoadCallback(file.Size(), save_data);
 
 				//Free the memory.
 				Memory::Free(save_data);
@@ -133,7 +147,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		if (entry._SaveMask & _ProcessSavesMask)
 		{
 			//Determine the size required for the save.
-			const uint64 size{ entry._SizeCallback() };
+			const uint64 size{ entry._SaveSizeCallback() };
 
 			//Allocate the memory required for the save.
 			void *const RESTRICT save_data{ Memory::Allocate(size) };

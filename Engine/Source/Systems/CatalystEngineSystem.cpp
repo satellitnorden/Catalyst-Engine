@@ -239,6 +239,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 */
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
+	//Pre-terminate all systems.
+	SaveSystem::Instance->PreTerminate();
+
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
 

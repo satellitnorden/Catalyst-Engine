@@ -38,6 +38,11 @@ public:
 	void SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Pre-terminates the save system.
+	*/
+	void PreTerminate() NOEXCEPT;
+
+	/*
 	*	Registers a save entry.
 	*/
 	void RegisterSaveEntry(const SaveEntry &entry) NOEXCEPT;
