@@ -20,10 +20,10 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr Plane(const Vector3<float> &initialPosition, const Vector3<float> &initialNormal) NOEXCEPT
+	FORCE_INLINE constexpr Plane(const Vector3<float> &initial_position, const Vector3<float> &initial_normal) NOEXCEPT
 		:
-		_Position(initialPosition),
-		_Normal(initialNormal)
+		_Position(initial_position),
+		_Normal(initial_normal)
 	{
 
 	}

@@ -189,8 +189,11 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT
 /*
 *	Updates one character movement.
 */
-void PhysicsSystem::UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT
+void PhysicsSystem::UpdateCharacterMovement(const UpdateContext *const RESTRICT context, CharacterMovement *const RESTRICT movement) NOEXCEPT
 {
+	//Cache the character capsule.
+	Capsule capsule{ movement->_Position, movement->_Position + Vector3<float>(0.0f, movement->_Height, 0.0f), movement->_Radius };
+
 	//Apply different logic based on whether or not the character is jumping or not.
 	if (movement->_IsJumping)
 	{
@@ -239,12 +242,31 @@ void PhysicsSystem::UpdateCharacterMovement(const UpdateContext* const RESTRICT 
 
 			movement->_Position._Y = terrain_height;
 
-			//Apply some ground damping when walking on terrain.
-			movement->_Velocity *= 0.01f;
+			//Reset the velocity.
+			movement->_Velocity = VectorConstants::ZERO;
 		}
 	}
 
 	//Reset the inputs.
 	movement->_MovementInput = VectorConstants::ZERO;
 	movement->_JumpInput = 0.0f;
+
+	/*
+	//Resolve collisions.
+	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
+	{
+		switch (data._Second._Type)
+		{
+			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
+			{
+				if (data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox.IsInsideXZ(movement->_Position))
+				{
+					movement->_Position._Y = CatalystBaseMath::Maximum<float>(movement->_Position._Y, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox._Maximum._Y);
+				}
+
+				break;
+			}
+		}
+	}
+	*/
 }

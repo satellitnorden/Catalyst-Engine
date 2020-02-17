@@ -1404,6 +1404,9 @@
     <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

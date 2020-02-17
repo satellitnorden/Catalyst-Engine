@@ -4,8 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/Capsule.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
 #include <Math/Geometry/Sphere.h>
