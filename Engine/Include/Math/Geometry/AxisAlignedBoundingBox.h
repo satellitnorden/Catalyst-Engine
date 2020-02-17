@@ -84,10 +84,37 @@ public:
 	/*
 	*	Returns whether or not a position is inside this axis aligned bounding box.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool IsInside(const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool IsInside(const Vector3<float> &position) const NOEXCEPT
 	{
 		return	position._X >= _Minimum._X && position._X < _Maximum._X
 				&& position._Y >= _Minimum._Y && position._Y < _Maximum._Y
+				&& position._Z >= _Minimum._Z && position._Z < _Maximum._Z;
+	}
+
+	/*
+	*	Returns whether or not a position is inside this axis aligned bounding box on the X and Y axis.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool IsInsideXY(const Vector3<float> &position) const NOEXCEPT
+	{
+		return	position._X >= _Minimum._X && position._X < _Maximum._X
+				&& position._Y >= _Minimum._Y && position._Y < _Maximum._Y;
+	}
+
+	/*
+	*	Returns whether or not a position is inside this axis aligned bounding boxon the X and Z axis.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool IsInsideXZ(const Vector3<float> &position) const NOEXCEPT
+	{
+		return	position._X >= _Minimum._X && position._X < _Maximum._X
+				&& position._Z >= _Minimum._Z && position._Z < _Maximum._Z;
+	}
+
+	/*
+	*	Returns whether or not a position is inside this axis aligned bounding box on the Y and Z axis.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool IsInsideYZ(const Vector3<float> &position) const NOEXCEPT
+	{
+		return	position._Y >= _Minimum._Y && position._Y < _Maximum._Y
 				&& position._Z >= _Minimum._Z && position._Z < _Maximum._Z;
 	}
 
