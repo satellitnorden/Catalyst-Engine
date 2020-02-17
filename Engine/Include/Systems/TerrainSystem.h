@@ -62,14 +62,29 @@ public:
 	void SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT;
 
 	/*
+	*	Updates the height map.
+	*/
+	RESTRICTED NO_DISCARD Texture2D<float> *const RESTRICT UpdateHeightMap() NOEXCEPT;
+
+	/*
 	*	Sets the index map.
 	*/
 	void SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT;
 
 	/*
+	*	Updates the index map.
+	*/
+	RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT UpdateIndexMap() NOEXCEPT;
+
+	/*
 	*	Sets the blend map.
 	*/
 	void SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT;
+
+	/*
+	*	Updates the blend map.
+	*/
+	RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT UpdateBlendMap() NOEXCEPT;
 
 	/*
 	*	Returns the terrain patch informations.
@@ -86,6 +101,11 @@ public:
 	{
 		return &_PatchRenderInformations;
 	}
+
+	/*
+	*	Returns the terrain map coordinate at the given position.
+	*/
+	NO_DISCARD Vector2<float> GetTerrainMapCoordinateAtPosition(const Vector3<float> &position) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain height at the given position.
@@ -123,6 +143,15 @@ private:
 
 	//The update.
 	TerrainUpdate _Update;
+
+	//Denotes if the height map was updated.
+	bool _HeightMapUpdated{ false };
+
+	//Denotes if the index map was updated.
+	bool _IndexMapUpdated{ false };
+
+	//Denotes if the blend map was updated.
+	bool _BlendMapUpdated{ false };
 
 	/*
 	*	Processes the update.

@@ -113,40 +113,4 @@ namespace TerrainGeneralUtilities
 		}
 	}
 
-	/*
-	*	Generates the vertices and indices for a terrain shadow plane.
-	*/
-	FORCE_INLINE static void GenerateTerrainShadowPlane(const Texture2D<float>& height_map, DynamicArray<Vertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
-	{
-		const uint32 resolution{ height_map.GetWidth() };
-
-		vertices->Reserve(resolution * resolution);
-		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
-
-		for (uint32 Y{ 0 }; Y < resolution; ++Y)
-		{
-			for (uint32 X{ 0 }; X < resolution; ++X)
-			{
-				Vertex vertex;
-
-				vertex._Position._X = static_cast<float>(X) - static_cast<float>(resolution / 2);
-				vertex._Position._Y = height_map.At(X, Y);
-				vertex._Position._Z = static_cast<float>(Y) - static_cast<float>(resolution / 2);
-
-				vertices->Emplace(vertex);
-
-				if (X != resolution - 1 && Y != resolution - 1)
-				{
-					indices->Emplace((X * resolution) + Y);
-					indices->Emplace((X * resolution) + Y + 1);
-					indices->Emplace(((X + 1) * resolution) + Y);
-
-					indices->Emplace((X * resolution) + Y + 1);
-					indices->Emplace(((X + 1) * resolution) + Y + 1);
-					indices->Emplace(((X + 1) * resolution) + Y);
-				}
-			}
-		}
-	}
-
 }

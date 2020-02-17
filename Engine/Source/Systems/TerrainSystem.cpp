@@ -84,6 +84,51 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
+
+	//Was the height map updated?
+	if (_HeightMapUpdated)
+	{
+		_HeightMapUpdated = false;
+
+		if (_Properties._HeightMapTexture)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
+		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R32_Float), &_Properties._HeightMapTexture);
+		_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
+	}
+
+	//Was the index map updated?
+	if (_IndexMapUpdated)
+	{
+		_IndexMapUpdated = false;
+
+		if (_Properties._IndexMapTexture)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
+		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::R8G8B8A8_Byte), &_Properties._IndexMapTexture);
+		_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
+	}
+
+	//Was the blend map updated?
+	if (_BlendMapUpdated)
+	{
+		_BlendMapUpdated = false;
+
+		if (_Properties._BlendMapTexture)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
+		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::R8G8B8A8_Byte), &_Properties._BlendMapTexture);
+		_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
+	}
 }
 
 /*
@@ -100,45 +145,6 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	//Add the texture to the global render data.
 	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
 
-	//Generate the terrain shadow plane.
-	DynamicArray<Vertex> vertices;
-	DynamicArray<uint32> indices;
-
-	TerrainGeneralUtilities::GenerateTerrainShadowPlane(_Properties._HeightMap,
-														&vertices,
-														&indices);
-
-	BufferHandle vertex_buffer;
-	BufferHandle index_buffer;
-
-	{
-		const void* const RESTRICT dataChunks[]{ vertices.Data() };
-		const uint64 dataSizes[]{ sizeof(Vertex) * vertices.Size() };
-		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &vertex_buffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &vertex_buffer);
-	}
-
-	{
-		const void* const RESTRICT dataChunks[]{ indices.Data() };
-		const uint64 dataSizes[]{ sizeof(uint32) * indices.Size() };
-		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &index_buffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &index_buffer);
-	}
-
-	/*
-	//Create the bottom level acceleration structure.
-	AccelerationStructureHandle acceleration_structure;
-
-	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(vertex_buffer,
-																		static_cast<uint32>(vertices.Size()),
-		index_buffer,
-																		static_cast<uint32>(indices.Size()),
-																		&acceleration_structure);
-
-	//Add the acceleration structure to the static top level acceleration structure.
-	RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(MatrixConstants::IDENTITY, acceleration_structure, 0));
-	*/
-
 	//There is now a height map!
 	_Properties._HasHeightMap = true;
 
@@ -147,6 +153,18 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	{
 		PhysicsSystem::Instance->OnTerrainInitialized();
 	}
+}
+
+/*
+*	Updates the height map.
+*/
+RESTRICTED NO_DISCARD Texture2D<float> *const RESTRICT TerrainSystem::UpdateHeightMap() NOEXCEPT
+{
+	//Remember that the height map was updated.
+	_HeightMapUpdated = true;
+
+	//Return the height map.
+	return &_Properties._HeightMap;
 }
 
 /*
@@ -174,6 +192,18 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 }
 
 /*
+*	Updates the index map.
+*/
+RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT TerrainSystem::UpdateIndexMap() NOEXCEPT
+{
+	//Remember that the index map was updated.
+	_IndexMapUpdated = true;
+
+	//Return the index map.
+	return &_Properties._IndexMap;
+}
+
+/*
 *	Sets the blend map.
 */
 void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT
@@ -198,6 +228,46 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 }
 
 /*
+*	Updates the blend map.
+*/
+RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT TerrainSystem::UpdateBlendMap() NOEXCEPT
+{
+	//Remember that the blend map was updated.
+	_BlendMapUpdated = true;
+
+	//Return the index map.
+	return &_Properties._BlendMap;
+}
+
+/*
+*	Returns the terrain map coordinate at the given position.
+*/
+NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float> &position) const NOEXCEPT
+{
+	//Need that height map.
+	if (_Properties._HasHeightMap)
+	{
+		//Calculate the coordinate. Assume that all maps has the same resolution.
+		const float half_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) * 0.5f };
+		const float full_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) };
+
+		Vector2<float> coordinate{ (position._X + half_resolution) / full_resolution, (position._Z + half_resolution) / full_resolution };
+
+		//Clamp the coordinate.
+		coordinate._X = CatalystBaseMath::Clamp<float>(coordinate._X, 0.0f, 1.0f - FLOAT_EPSILON);
+		coordinate._Y = CatalystBaseMath::Clamp<float>(coordinate._Y, 0.0f, 1.0f - FLOAT_EPSILON);
+
+		//Return the coordinate.
+		return coordinate;
+	}
+
+	else
+	{
+		return Vector2<float>(0.0f, 0.0f);
+	}
+}
+
+/*
 *	Returns the terrain height at the given position.
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
@@ -206,10 +276,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 	if (_Properties._HasHeightMap)
 	{
 		//Calculate the coordinate.
-		const float half_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) * 0.5f };
-		const float full_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) };
-
-		const Vector2<float> coordinate{ (position._X + half_resolution) / full_resolution, (position._Z + half_resolution) / full_resolution };
+		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
 
 		//Sample the height map.
 		*height = _Properties._HeightMap.Sample(coordinate, AddressMode::ClampToEdge);
