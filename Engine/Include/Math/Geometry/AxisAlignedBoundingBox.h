@@ -64,6 +64,14 @@ public:
 	}
 
 	/*
+	*	Addition by Vector3<float> operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD AxisAlignedBoundingBox operator+(const Vector3<float>& vector) NOEXCEPT
+	{
+		return AxisAlignedBoundingBox(_Minimum + vector, _Maximum + vector);
+	}
+
+	/*
 	*	Expands this axis aligned bounding box with the position.
 	*/
 	FORCE_INLINE constexpr void Expand(const Vector3<float> &position) NOEXCEPT
