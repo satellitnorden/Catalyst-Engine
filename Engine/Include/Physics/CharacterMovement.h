@@ -27,10 +27,10 @@ public:
 	float _Mass{ 100.0f };
 
 	//The height, denoted in meters.
-	float _Height{ 1.75f };
+	float _Height{ 2.0f };
 
 	//The radius, denoted in meters.
-	float _Radius{ 0.5f };
+	float _Radius{ 0.25f };
 
 	//Denotes whether or not character movement is enabled.
 	bool _Enabled{ true };
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Adds movement input.
 	*/
-	void AddMovementInput(const Vector3<float> & input) NOEXCEPT
+	void AddMovementInput(const Vector3<float> &input) NOEXCEPT
 	{
 		_MovementInput += input;
 	}
