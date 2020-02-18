@@ -7,6 +7,9 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
 
+//Resources.
+#include<Resources/Loading/ResourceLoader.h>
+
 //User interface.
 #include <UserInterface/TextUserInterfaceElement.h>
 
@@ -41,7 +44,7 @@ public:
 	Texture2DHandle _RenderingReferenceTextureHandle{ EMPTY_HANDLE };
 
 	//The rendering reference texture index.
-	uint32 _RenderingReferenceTextureIndex;
+	uint32 _RenderingReferenceTextureIndex{ UINT32_MAXIMUM };
 
 	//The number of iterations.
 	uint32 _Iterations{ 0 };
@@ -50,17 +53,24 @@ public:
 	DynamicArray<AsynchronousData> _AsynchronousData;
 
 	//Keeps track of the number of texels calculated.
-	std::atomic<uint64> _TexelsCalculated;
+	std::atomic<uint64> _TexelsCalculated{ 0 };
 
 	//The progress information.
 	TextUserInterfaceElement *RESTRICT _ProgressInformation;
+
+	//The textures.
+	StaticArray<const Texture2DResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _Textures;
 
 	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE RenderingReferenceData() NOEXCEPT
 	{
-	
+		//Fill in the textures.
+		for (const Pair<HashString, Texture2DResource> &texture_2d_resource : ResourceLoader::GetAllTexture2DResources())
+		{
+			_Textures[texture_2d_resource._Second._Index] = &texture_2d_resource._Second;
+		}
 	}
 
 };

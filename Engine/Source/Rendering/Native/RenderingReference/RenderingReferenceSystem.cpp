@@ -155,9 +155,6 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		}
 	}
 
-	//Reset the iterations.
-	_RenderingReferenceData->_Iterations = 0;
-
 	//Create the progress information.
 	{
 		TextUserInterfaceElementDescription description;
@@ -171,9 +168,6 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 		_RenderingReferenceData->_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
 	}
-
-	//Reset the number of texels calculated.
-	_RenderingReferenceData->_TexelsCalculated.store(0);
 
 	//Prepare the terrain data.
 	{
