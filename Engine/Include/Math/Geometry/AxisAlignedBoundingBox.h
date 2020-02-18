@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -11,11 +12,20 @@ class AxisAlignedBoundingBox final
 
 public:
 
-	//The minimum corner.
-	Vector3<float> _Minimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM };
+	union
+	{
+		struct
+		{
+			//The minimum corner.
+			Vector3<float> _Minimum;
 
-	//The maximum corner.
-	Vector3<float> _Maximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+			//The maximum corner.
+			Vector3<float> _Maximum;
+		};
+
+		//The corners.
+		StaticArray<Vector3<float>, 2> _Corners;
+	};
 
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
@@ -48,6 +58,9 @@ public:
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr AxisAlignedBoundingBox() NOEXCEPT
+		:
+		_Minimum(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM),
+		_Maximum(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM)
 	{
 
 	}
@@ -64,11 +77,47 @@ public:
 	}
 
 	/*
+	*	Copy constructor.
+	*/
+	FORCE_INLINE constexpr AxisAlignedBoundingBox(const AxisAlignedBoundingBox &other) NOEXCEPT
+		:
+		_Minimum(other._Minimum),
+		_Maximum(other._Maximum)
+	{
+		
+	}
+
+	/*
 	*	Addition by Vector3<float> operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD AxisAlignedBoundingBox operator+(const Vector3<float> &vector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD AxisAlignedBoundingBox operator+(const Vector3<float> &vector) const NOEXCEPT
 	{
 		return AxisAlignedBoundingBox(_Minimum + vector, _Maximum + vector);
+	}
+
+	/*
+	*	Assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator=(const AxisAlignedBoundingBox &other) NOEXCEPT
+	{
+		_Minimum = other._Minimum;
+		_Maximum = other._Maximum;
+	}
+
+	/*
+	*	Subscript operator overload, const.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD const Vector3<float> &operator[](const uint64 index) const NOEXCEPT
+	{
+		return _Corners[index];
+	}
+
+	/*
+	*	Subscript operator overload, non-const.
+	*/
+	FORCE_INLINE constexpr  Vector3<float> &operator[](const uint64 index) NOEXCEPT
+	{
+		return _Corners[index];
 	}
 
 	/*
@@ -138,10 +187,11 @@ public:
 	/*
 	*	Returns if this axis aligned bounding box is valid.
 	*/
-	FORCE_INLINE NO_DISCARD bool IsValid() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool IsValid() const NOEXCEPT
 	{
 		return	_Minimum._X <= _Maximum._X
 				&& _Minimum._Y <= _Maximum._Y
 				&& _Minimum._Z <= _Maximum._Z;
 	}
+
 };

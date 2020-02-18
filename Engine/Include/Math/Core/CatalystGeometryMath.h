@@ -66,16 +66,8 @@ public:
 		float maximum{ FLOAT_MAXIMUM };
 
 		//Test the X-axis slab.
-		float minimumX{ (box._Minimum._X - ray._Origin._X) * ray._Reciprocals._X };
-		float maximumX{ (box._Maximum._X - ray._Origin._X) * ray._Reciprocals._X };
-
-		if (minimumX > maximumX)
-		{
-			Swap(&minimumX, &maximumX);
-		}
-
-		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumX);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumX);
+		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
 
 		if (minimum > maximum)
 		{
@@ -83,16 +75,8 @@ public:
 		}
 
 		//Test the Y-axis slab.
-		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * ray._Reciprocals._Y };
-		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * ray._Reciprocals._Y };
-
-		if (minimumY > maximumY)
-		{
-			Swap(&minimumY, &maximumY);
-		}
-
-		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumY);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumY);
+		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
 
 		if (minimum > maximum)
 		{
@@ -100,22 +84,15 @@ public:
 		}
 
 		//Test the Z-axis slab.
-		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * ray._Reciprocals._Z };
-		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * ray._Reciprocals._Z };
-
-		if (minimumZ > maximumZ)
-		{
-			Swap(&minimumZ, &maximumZ);
-		}
-
-		minimum = CatalystBaseMath::Maximum<float>(minimum, minimumZ);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, maximumZ);
+		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
+		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
 
 		if (minimum > maximum)
 		{
 			return false;
 		}
 
+		//All slabs succeeded!
 		if (intersection_distance)
 		{
 			*intersection_distance = minimum;
