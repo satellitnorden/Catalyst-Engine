@@ -275,6 +275,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RayTracingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\SurfaceDescription.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\VolumetricDescription.h" />

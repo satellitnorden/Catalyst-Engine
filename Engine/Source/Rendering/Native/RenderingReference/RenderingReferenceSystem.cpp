@@ -93,14 +93,18 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	//Start the rendering reference progress.
 	_RenderingReferenceInProgress = true;
 
+	//Create the rendering reference data.
+	_RenderingReferenceData = static_cast<RenderingReferenceData *const RESTRICT>(Memory::Allocate(sizeof(RenderingReferenceData)));
+	new (_RenderingReferenceData) RenderingReferenceData();
+
 	//Initialize the texture.
-	_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
+	_RenderingReferenceData->_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
 
 	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
 	{
 		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
 		{
-			_RenderingReferenceTexture.At(X, Y) = Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f);
+			_RenderingReferenceData->_RenderingReferenceTexture.At(X, Y) = Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
 
@@ -122,7 +126,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		}
 	}
 
-	_AsynchronousData.Reserve(counter);
+	_RenderingReferenceData->_AsynchronousData.Reserve(counter);
 
 	//Calculate all the synchronous data.
 	current_slice = 0;
@@ -130,13 +134,13 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	for (;;)
 	{
 		//Add new asynchronous data.
-		_AsynchronousData.Emplace();
+		_RenderingReferenceData->_AsynchronousData.Emplace();
 
-		AsynchronousData& data{ _AsynchronousData.Back() };
+		RenderingReferenceData::AsynchronousData& data{ _RenderingReferenceData->_AsynchronousData.Back() };
 
 		data._Task._Function = [](void *const RESTRICT arguments)
 		{
-			RenderingSystem::Instance->GetRenderingReferenceSystem()->ExecuteAsynchronous(static_cast<const AsynchronousData* const RESTRICT>(arguments));
+			RenderingSystem::Instance->GetRenderingReferenceSystem()->ExecuteAsynchronous(static_cast<const RenderingReferenceData::AsynchronousData *const RESTRICT>(arguments));
 		};
 		data._Task._Arguments = &data;
 		data._Task._ExecutableOnSameThread = false;
@@ -152,7 +156,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	}
 
 	//Reset the iterations.
-	_Iterations = 0;
+	_RenderingReferenceData->_Iterations = 0;
 
 	//Create the progress information.
 	{
@@ -165,11 +169,11 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		description._Scale = 0.025f;
 		description._Text = "";
 
-		_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_RenderingReferenceData->_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
 	}
 
 	//Reset the number of texels calculated.
-	_TexelsCalculated.store(0);
+	_RenderingReferenceData->_TexelsCalculated.store(0);
 
 	//Prepare the terrain data.
 	{
@@ -241,7 +245,7 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	_RenderingReferenceInProgress = false;
 
 	//Wait for all tasks to finish.
-	for (AsynchronousData& data : _AsynchronousData)
+	for (RenderingReferenceData::AsynchronousData& data : _RenderingReferenceData->_AsynchronousData)
 	{
 		data._Task.WaitFor();
 	}
@@ -251,18 +255,22 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	{
 		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
 		{
-			_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_Iterations + 1);
+			_RenderingReferenceData->_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_RenderingReferenceData->_Iterations + 1);
 		}
 	}
 
 	//Write the image to file.
-	TGAWriter::Write(_RenderingReferenceTexture, "RenderingReference.tga");
+	TGAWriter::Write(_RenderingReferenceData->_RenderingReferenceTexture, "RenderingReference.tga");
 
 	//Destroy the progress information.
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_ProgressInformation);
+	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_RenderingReferenceData->_ProgressInformation);
 
 	//Set the update speed back to normal.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
+
+	//Destroy the rendering reference data.
+	_RenderingReferenceData->~RenderingReferenceData();
+	Memory::Free(_RenderingReferenceData);
 }
 
 /*
@@ -273,7 +281,7 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 	//Are all tasks executed?
 	bool all_tasks_executed{ true };
 
-	for (const AsynchronousData& data : _AsynchronousData)
+	for (const RenderingReferenceData::AsynchronousData& data : _RenderingReferenceData->_AsynchronousData)
 	{
 		all_tasks_executed &= data._Task.IsExecuted();
 	}
@@ -282,44 +290,44 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 	if (all_tasks_executed)
 	{
 		//Execute all tasks.
-		for (AsynchronousData& data : _AsynchronousData)
+		for (RenderingReferenceData::AsynchronousData& data : _RenderingReferenceData->_AsynchronousData)
 		{
 			TaskSystem::Instance->ExecuteTask(&data._Task);
 		}
 
 		//Update the number of iterations.
-		++_Iterations;
+		++_RenderingReferenceData->_Iterations;
 
 		//Reset the texels calculated.
-		_TexelsCalculated.store(0);
+		_RenderingReferenceData->_TexelsCalculated.store(0);
 
 		//Recreate the texture.
-		if (_RenderingReferenceTextureHandle)
+		if (_RenderingReferenceData->_RenderingReferenceTextureHandle)
 		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_RenderingReferenceTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_RenderingReferenceTextureHandle);
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_RenderingReferenceData->_RenderingReferenceTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_RenderingReferenceData->_RenderingReferenceTextureHandle);
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceTexture), TextureFormat::R32G32B32A32_Float), &_RenderingReferenceTextureHandle);
-		_RenderingReferenceTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_RenderingReferenceTextureHandle);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceData->_RenderingReferenceTexture), TextureFormat::R32G32B32A32_Float), &_RenderingReferenceData->_RenderingReferenceTextureHandle);
+		_RenderingReferenceData->_RenderingReferenceTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_RenderingReferenceData->_RenderingReferenceTextureHandle);
 
 		//Set the properties for the rendering reference.
-		RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceTextureIndex, _Iterations);
+		RenderingReferenceRenderPass::Instance->SetProperties(_RenderingReferenceData->_RenderingReferenceTextureIndex, _RenderingReferenceData->_Iterations);
 	}
 
 	//Update the progress information.
-	const float iteration_percent{ _TexelsCalculated.load() / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width * RenderingSystem::Instance->GetScaledResolution()._Height) * 100.0f };
+	const float iteration_percent{ _RenderingReferenceData->_TexelsCalculated.load() / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width * RenderingSystem::Instance->GetScaledResolution()._Height) * 100.0f };
 
 	char buffer[128];
-	sprintf_s(buffer, "Rendering Reference Progress: Iterations - %u - Iteration completion - %.3f%%", _Iterations, iteration_percent);
+	sprintf_s(buffer, "Rendering Reference Progress: Iterations - %u - Iteration completion - %.3f%%", _RenderingReferenceData->_Iterations, iteration_percent);
 
-	_ProgressInformation->_Text = buffer;
+	_RenderingReferenceData->_ProgressInformation->_Text = buffer;
 }
 
 /*
 *	Executes asynchronously.
 */
-void RenderingReferenceSystem::ExecuteAsynchronous(const AsynchronousData *const RESTRICT data) NOEXCEPT
+void RenderingReferenceSystem::ExecuteAsynchronous(const RenderingReferenceData::AsynchronousData *const RESTRICT data) NOEXCEPT
 {
 	//Calculate all texels.
 	for (uint32 Y{ data->_StartY }; Y < data->_EndY; ++Y)
@@ -330,7 +338,7 @@ void RenderingReferenceSystem::ExecuteAsynchronous(const AsynchronousData *const
 			CalculateTexel(X, Y);
 
 			//Increment the number of texels calculated.
-			++_TexelsCalculated;
+			++_RenderingReferenceData->_TexelsCalculated;
 		}
 	}
 }
@@ -353,7 +361,7 @@ void RenderingReferenceSystem::CalculateTexel(const uint32 X, const uint32 Y) NO
 	color = CatalystToneMapping::ApplyToneMapping(color);
 
 	//Write the color.
-	_RenderingReferenceTexture.At(X, Y) += Vector4<float>(color, 1.0f);
+	_RenderingReferenceData->_RenderingReferenceTexture.At(X, Y) += Vector4<float>(color, 1.0f);
 }
 
 /*

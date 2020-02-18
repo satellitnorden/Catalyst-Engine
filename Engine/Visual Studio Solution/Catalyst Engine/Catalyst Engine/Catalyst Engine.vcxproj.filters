@@ -1407,6 +1407,9 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceData.h">
+      <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
