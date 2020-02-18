@@ -384,8 +384,10 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h" />
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />
   </ItemGroup>

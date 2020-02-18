@@ -49,7 +49,7 @@ public:
 	float _UNUSED2;
 	float _BloomIntensity;
 	float _ChromaticAberrationIntensity;
-	float _VolumetricLightingIntensity;
+	float _UNUSEDW;
 
 	float _DepthOfFieldFocusDistance;
 

@@ -39,13 +39,13 @@ void main()
 	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
 
 	//Calculate the density multiplier.
-	float density_multiplier = exp(-(volumetricLightingIntensity * 0.25f));
+	float density_multiplier = exp(-(1.0f * 0.25f));
 
 	//Calculate the volumetric lighting.
 	vec3 volumetric_lighting = vec3(0.0f);
 
 	//Add the ambient lighting.
-	volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * CalculateAmbientIlluminationIntensity();
+	volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb;
 
 	//Sample the noise vector.
 	vec4 noise_vector_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));

@@ -382,6 +382,9 @@
     <Filter Include="World\Include\Sky">
       <UniqueIdentifier>{eced5027-6296-4ed6-8df7-2fbb61f8e5e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Include\Environment">
+      <UniqueIdentifier>{b668d10e-4d2f-449c-a696-cde3f30a86fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1409,6 +1412,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceData.h">
       <Filter>Rendering\Include\Native\Rendering Reference</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h">
+      <Filter>World\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h">
+      <Filter>World\Include\Environment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

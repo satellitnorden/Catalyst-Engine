@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //World.
+#include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
 #include <World/Core/TimeOfDaySystem.h>
 
@@ -39,6 +40,14 @@ public:
 	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Returns the environment system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EnvironmentSystem *const RESTRICT GetEnvironmentSystem() NOEXCEPT
+	{
+		return &_EnvironmentSystem;
+	}
+
+	/*
 	*	Returns the sky system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD SkySystem *const RESTRICT GetSkySystem() NOEXCEPT
@@ -71,6 +80,9 @@ public:
 	}
 
 private:
+
+	//The environment system.
+	EnvironmentSystem _EnvironmentSystem;
 
 	//The sky system.
 	SkySystem _SkySystem;

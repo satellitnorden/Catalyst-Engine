@@ -125,7 +125,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 612) float UNUSED_2;
     layout (offset = 616) float bloomIntensity;
     layout (offset = 620) float chromaticAberrationIntensity;
-    layout (offset = 624) float volumetricLightingIntensity;
+    layout (offset = 624) float UNUSED_W;
 
     layout (offset = 628) float depthOfFieldFocusDistance;
 
@@ -353,13 +353,5 @@ bool ValidCoordinate(vec2 coordinate)
             && coordinate.x < 1.0f
             && coordinate.y >= 0.0f
             && coordinate.y < 1.0f;
-}
-
-/*
-*   Calculates the ambient illumination intensity.
-*/
-float CalculateAmbientIlluminationIntensity()
-{
-    return 0.01f;
 }
 #endif

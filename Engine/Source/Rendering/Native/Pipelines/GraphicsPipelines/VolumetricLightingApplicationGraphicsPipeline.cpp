@@ -6,6 +6,26 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/WorldSystem.h>
+
+/*
+*	Volumetric lighting application push constant data definition.
+*/
+class VolumetricLightingApplicationPushConstantData final
+{
+
+public:
+
+	//The volumetric lighting distance.
+	float _VolumetricLightingDistance;
+
+	//The volumetric lighting height.
+	float _VolumetricLightingHeight;
+
+	//The volumetric lighting thickness.
+	float _VolumetricLightingThickness;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -33,6 +53,10 @@ void VolumetricLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(VolumetricLightingApplicationPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -73,6 +97,15 @@ void VolumetricLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	VolumetricLightingApplicationPushConstantData data;
+
+	data._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
+	data._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
+	data._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VolumetricLightingApplicationPushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);
