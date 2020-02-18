@@ -131,7 +131,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RaySphereIntersection(	const Ray &ray,
 																			const Sphere &sphere,
-																			Vector3<float> *const RESTRICT intersectionPoint) NOEXCEPT
+																			float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		const Vector3<float> L{ ray._Origin - sphere._Position };
 		float B = Vector3<float>::DotProduct(ray._Direction, L) * 2.0f;
@@ -159,9 +159,9 @@ public:
 
 		float T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
 
-		if (intersectionPoint)
+		if (intersection_distance)
 		{
-			*intersectionPoint = ray._Origin + T * ray._Direction;
+			*intersection_distance = T;
 		}
 
 		return true;
