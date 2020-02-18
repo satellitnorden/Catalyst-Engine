@@ -345,8 +345,8 @@ void RenderingReferenceSystem::CalculateTexel(const uint32 X, const uint32 Y) NO
 	//Calculate the ray.
 	Ray ray;
 
-	ray._Origin = Perceiver::Instance->GetPosition();
-	ray._Direction = CalculateRayDirection(X, Y);
+	ray.SetOrigin(Perceiver::Instance->GetPosition());
+	ray.SetDirection(CalculateRayDirection(X, Y));
 
 	//Cast a ray against the scene and determine the color.
 	Vector3<float> color{ CastRayScene(ray, 0) };
@@ -500,8 +500,8 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 		Ray indirect_lighting_ray;
 
-		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
-		indirect_lighting_ray._Direction = indirect_lighting_direction;
+		indirect_lighting_ray.SetOrigin(incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR);
+		indirect_lighting_ray.SetDirection(indirect_lighting_direction);
 
 		Vector3<float> indirect_lighting;
 
@@ -541,8 +541,8 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 					//Cast a shadow ray to determine visibility.
 					Ray shadow_ray;
 
-					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR;
-					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
+					shadow_ray.SetOrigin(incoming_ray._Origin + incoming_ray._Direction * hit_distance + surface_description._Normal * NORMAL_OFFSET_FACTOR);
+					shadow_ray.SetDirection(Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE))));
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
 
@@ -596,8 +596,8 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 
 		Ray indirect_lighting_ray;
 
-		indirect_lighting_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
-		indirect_lighting_ray._Direction = indirect_lighting_direction;
+		indirect_lighting_ray.SetOrigin(incoming_ray._Origin + incoming_ray._Direction * hit_distance);
+		indirect_lighting_ray.SetDirection(indirect_lighting_direction);
 
 		Vector3<float> indirect_lighting;
 
@@ -629,8 +629,8 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 					//Cast a shadow ray to determine visibility.
 					Ray shadow_ray;
 
-					shadow_ray._Origin = incoming_ray._Origin + incoming_ray._Direction * hit_distance;
-					shadow_ray._Direction = Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE)));
+					shadow_ray.SetOrigin(incoming_ray._Origin + incoming_ray._Direction * hit_distance);
+					shadow_ray.SetDirection(Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE))));
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
 

@@ -61,16 +61,13 @@ public:
 																		const AxisAlignedBoundingBox &box,
 																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
-		//Pre-calculate the reciprocal of the direction of the ray to avoid costly divisions later on.
-		const Vector3<float> direction_reciprocal{ Vector3<float>(1.0f) / ray._Direction };
-
 		//Find the minimum/maximum.
 		float minimum{ -FLOAT_MAXIMUM };
 		float maximum{ FLOAT_MAXIMUM };
 
 		//Test the X-axis slab.
-		float minimumX{ (box._Minimum._X - ray._Origin._X) * direction_reciprocal._X };
-		float maximumX{ (box._Maximum._X - ray._Origin._X) * direction_reciprocal._X };
+		float minimumX{ (box._Minimum._X - ray._Origin._X) * ray._Reciprocals._X };
+		float maximumX{ (box._Maximum._X - ray._Origin._X) * ray._Reciprocals._X };
 
 		if (minimumX > maximumX)
 		{
@@ -86,8 +83,8 @@ public:
 		}
 
 		//Test the Y-axis slab.
-		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * direction_reciprocal._Y };
-		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * direction_reciprocal._Y };
+		float minimumY{ (box._Minimum._Y - ray._Origin._Y) * ray._Reciprocals._Y };
+		float maximumY{ (box._Maximum._Y - ray._Origin._Y) * ray._Reciprocals._Y };
 
 		if (minimumY > maximumY)
 		{
@@ -103,8 +100,8 @@ public:
 		}
 
 		//Test the Z-axis slab.
-		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * direction_reciprocal._Z };
-		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * direction_reciprocal._Z };
+		float minimumZ{ (box._Minimum._Z - ray._Origin._Z) * ray._Reciprocals._Z };
+		float maximumZ{ (box._Maximum._Z - ray._Origin._Z) * ray._Reciprocals._Z };
 
 		if (minimumZ > maximumZ)
 		{
