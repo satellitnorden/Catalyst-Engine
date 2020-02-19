@@ -73,7 +73,7 @@ void ModelEntity::Terminate() NOEXCEPT
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD Matrix4 *const RESTRICT ModelEntity::GetWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT ModelEntity::GetWorldTransform() NOEXCEPT
 {
 	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }

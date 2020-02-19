@@ -21,7 +21,7 @@ public:
 	const char *RESTRICT _File{ nullptr };
 
 	//The transformation.
-	Matrix4 _Transformation{ };
+	Matrix4x4 _Transformation{ };
 
 	//The texture coordinate multiplier.
 	float _TextureCoordinateMultiplier{ 1.0f };

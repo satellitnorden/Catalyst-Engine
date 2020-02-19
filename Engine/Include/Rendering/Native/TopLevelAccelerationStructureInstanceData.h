@@ -15,7 +15,7 @@ class TopLevelAccelerationStructureInstanceData final
 public:
 
 	//The transform.
-	Matrix4 _Transform{ MatrixConstants::IDENTITY };
+	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
 	//The bottom level acceleration structure.
 	AccelerationStructureHandle _BottomLevelAccelerationStructure{ EMPTY_HANDLE };
@@ -34,7 +34,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(const Matrix4 &initialTransform, const AccelerationStructureHandle &initialBottomLevelAccelerationStructure, const uint64 initialIndex) NOEXCEPT
+	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(const Matrix4x4 &initialTransform, const AccelerationStructureHandle &initialBottomLevelAccelerationStructure, const uint64 initialIndex) NOEXCEPT
 		:
 		_Transform(initialTransform),
 		_BottomLevelAccelerationStructure(initialBottomLevelAccelerationStructure),

@@ -23,7 +23,7 @@ class ModelInitializationData final : public EntityInitializationData
 public:
 
 	//The transform.
-	Matrix4 _Transform{ MatrixConstants::IDENTITY };
+	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };

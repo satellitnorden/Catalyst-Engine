@@ -49,6 +49,6 @@ public:
 	float _SmallScaleWindDisplacementFactor;
 
 	//The transformations.
-	DynamicArray<Matrix4> _Transformations;
+	DynamicArray<Matrix4x4> _Transformations;
 
 };

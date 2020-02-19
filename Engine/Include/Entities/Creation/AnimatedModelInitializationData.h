@@ -22,7 +22,7 @@ class AnimatedModelInitializationData final : public EntityInitializationData
 public:
 
 	//The transform.
-	Matrix4 _Transform{ MatrixConstants::IDENTITY };
+	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
 	//The model.
 	const AnimatedModel *RESTRICT _Model{ nullptr };

@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 #include <Math/General/Quaternion.h>
 
-class Matrix2 final
+class Matrix2x2 final
 {
 
 public:
@@ -18,12 +18,17 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	constexpr Matrix2() NOEXCEPT;
+	FORCE_INLINE constexpr Matrix2x2() NOEXCEPT
+		:
+		_Matrix{ { 1.0f, 0.0f }, { 0.0f, 1.0f } }
+	{
+
+	}
 
 	/*
 	*	Constructor taking all floats as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix2(const float X1, const float Y1, const float X2, const float Y2) NOEXCEPT
+	FORCE_INLINE constexpr Matrix2x2(const float X1, const float Y1, const float X2, const float Y2) NOEXCEPT
 		:
 		_Matrix{ { X1, Y1 }, { X2, Y2 } }
 	{
@@ -48,7 +53,7 @@ public:
 
 };
 
-class Matrix3 final
+class Matrix3x3 final
 {
 
 public:
@@ -59,9 +64,9 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Matrix3() NOEXCEPT
+	FORCE_INLINE constexpr Matrix3x3() NOEXCEPT
 		:
-		_Matrix{ {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} }
+		_Matrix{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } }
 	{
 
 	}
@@ -69,7 +74,7 @@ public:
 	/*
 	*	Constructor taking the three vectors as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
+	FORCE_INLINE constexpr Matrix3x3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
 		:
 		_Matrix{ first, second, third }
 	{
@@ -81,26 +86,26 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3<float> operator*(const Vector3<float> &vector) const NOEXCEPT
 	{
-		Vector3<float> multipliedVector{ vector };
+		Vector3<float> multiplied_vector{ vector };
 
-		multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z);
-		multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z);
-		multipliedVector._Z = (_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z);
+		multiplied_vector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z);
+		multiplied_vector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z);
+		multiplied_vector._Z = (_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z);
 
-		return multipliedVector;
+		return multiplied_vector;
 	}
 
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	FORCE_INLINE RESTRICTED constexpr float* Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD float *Data() NOEXCEPT
 	{
 		return &(_Matrix[0]._X);
 	}
 
 };
 
-class Matrix4 final
+class Matrix4x4 final
 {
 
 public:
@@ -111,13 +116,13 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
 	{
 		Vector3<float> F{ Vector3<float>::Normalize(direction - position) };
 		Vector3<float> S{ Vector3<float>::CrossProduct(F, up) };
 		Vector3<float> U{ Vector3<float>::CrossProduct(S, F) };
 
-		Matrix4 result;
+		Matrix4x4 result;
 
 		result._Matrix[0]._X = S._X;
 		result._Matrix[1]._X = S._Y;
@@ -141,11 +146,11 @@ public:
 	/*
 	*	Given a normal and an up vector, constructs a rotation matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4 Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Matrix4x4 Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
 	{
 		if (normal == up)
 		{
-			return Matrix4();
+			return Matrix4x4();
 		}
 
 		const Vector3<float> rotationAxis{ Vector3<float>::CrossProduct(up, normal) };
@@ -158,7 +163,7 @@ public:
 		Vector3<float> axis{ Vector3<float>::Normalize(rotationAxis) };
 		Vector3<float> temp{ (1.0f - c) * axis };
 
-		Matrix4 rotate;
+		Matrix4x4 rotate;
 
 		rotate._Matrix[0]._X = c + temp._X * axis._X;
 		rotate._Matrix[0]._Y = temp._X * axis._Y + s * axis._Z;
@@ -172,9 +177,9 @@ public:
 		rotate._Matrix[2]._Y = temp._Z * axis._Y - s * axis._X;
 		rotate._Matrix[2]._Z = c + temp._Z * axis._Z;
 
-		Matrix4 identity;
+		Matrix4x4 identity;
 
-		Matrix4 result;
+		Matrix4x4 result;
 
 		result._Matrix[0] = identity._Matrix[0] * rotate._Matrix[0]._X + identity._Matrix[1] * rotate._Matrix[0]._Y + identity._Matrix[2] * rotate._Matrix[0]._Z;
 		result._Matrix[1] = identity._Matrix[0] * rotate._Matrix[1]._X + identity._Matrix[1] * rotate._Matrix[1]._Y + identity._Matrix[2] * rotate._Matrix[1]._Z;
@@ -187,9 +192,9 @@ public:
 	/*
 	*	Calculates an ortographic projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
 	{
-		Matrix4 result;
+		Matrix4x4 result;
 
 		result._Matrix[0]._X = 2.0f / (right - left);
 		result._Matrix[1]._Y = 2.0f / (top - bottom);
@@ -206,9 +211,9 @@ public:
 	/*
 	*	Calculates a perspective projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
 	{
-		Matrix4 result{ 0.0f };
+		Matrix4x4 result{ 0.0f };
 
 		result._Matrix[0]._X = fov;
 		result._Matrix[1]._Y = -aspectRatio;
@@ -222,9 +227,9 @@ public:
 	/*
 	*	Calculates a reverse perspective projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
 	{
-		Matrix4 result{ 0.0f };
+		Matrix4x4 result{ 0.0f };
 
 		result._Matrix[0]._X = fov;
 		result._Matrix[1]._Y = -aspectRatio;
@@ -238,7 +243,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Matrix4() NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4() NOEXCEPT
 		:
 		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 	{
@@ -248,7 +253,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	FORCE_INLINE constexpr Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Matrix4x4 &otherMatrix) NOEXCEPT
 		:
 		_Matrix{ otherMatrix._Matrix[0], otherMatrix._Matrix[1], otherMatrix._Matrix[2], otherMatrix._Matrix[3] }
 	{
@@ -258,7 +263,7 @@ public:
 	/*
 	*	Constructor taking a scalar.
 	*/
-	FORCE_INLINE constexpr Matrix4(const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const float scalar) NOEXCEPT
 		:
 		_Matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
 	{
@@ -268,7 +273,7 @@ public:
 	/*
 	*	Constructor taking the four vectors as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
 		:
 		_Matrix{ vector1, vector2, vector3, vector4 }
 	{
@@ -278,7 +283,7 @@ public:
 	/*
 	*	Constructor taking position, rotation and scale as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
 		:
 		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },
 				 { 0.0f, scale._Y, 0.0f, 0.0f },
@@ -292,7 +297,7 @@ public:
 	/*
 	*	Constructor taking position and a rotation quaternion as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4(const Vector3<float> &position, const Quaternion &rotation) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float> &position, const Quaternion &rotation) NOEXCEPT
 		:
 		_Matrix{ { 1.0f - 2.0f * (rotation._Y * rotation._Y) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._X * rotation._Y + 2.0f * rotation._W * rotation._Z, 2.0f * rotation._X * rotation._Z - 2.0f * rotation._W * rotation._Y, 0.0f },
 				 { 2.0f * rotation._X * rotation._Y - 2.0f * rotation._W * rotation._Z, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._Y * rotation._Z - 2.0f * rotation._W * rotation._X, 0.0f },
@@ -305,7 +310,7 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Matrix4 &other) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Matrix4x4 &other) const NOEXCEPT
 	{
 		return	_Matrix[0] == other._Matrix[0]
 				&& _Matrix[1] == other._Matrix[1]
@@ -316,7 +321,7 @@ public:
 	/*
 	*	Inequality operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Matrix4 &other) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Matrix4x4 &other) const NOEXCEPT
 	{
 		return !(operator==(other));
 	}
@@ -324,9 +329,9 @@ public:
 	/*
 	*	Matrix4 by Matrix4 multiplication overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Matrix4x4 operator*(const Matrix4x4 &otherMatrix) const NOEXCEPT
 	{
-		Matrix4 multipliedMatrix{ otherMatrix };
+		Matrix4x4 multipliedMatrix{ otherMatrix };
 
 		multipliedMatrix._Matrix[0]._X = (_Matrix[0]._X * otherMatrix._Matrix[0]._X) + (_Matrix[1]._X * otherMatrix._Matrix[0]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[0]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[0]._W);
 		multipliedMatrix._Matrix[1]._X = (_Matrix[0]._X * otherMatrix._Matrix[1]._X) + (_Matrix[1]._X * otherMatrix._Matrix[1]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[1]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[1]._W);
@@ -528,7 +533,7 @@ public:
 
 		Vector4<float> SignA(+1, -1, +1, -1);
 		Vector4<float> SignB(-1, +1, -1, +1);
-		Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+		Matrix4x4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
 
 		Vector4<float> Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
 
@@ -558,7 +563,7 @@ public:
 			const float xSine = CatalystBaseMath::Sine(rotation._X);
 			const float xCosine = CatalystBaseMath::Cosine(rotation._X);
 
-			const Matrix4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
+			const Matrix4x4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 			*this = *this * xRotationMatrix;
 		}
@@ -569,7 +574,7 @@ public:
 			const float ySine = CatalystBaseMath::Sine(rotation._Y);
 			const float yCosine = CatalystBaseMath::Cosine(rotation._Y);
 
-			const Matrix4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
+			const Matrix4x4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 			*this = *this * yRotationMatrix;
 		}
@@ -580,7 +585,7 @@ public:
 			const float zSine = CatalystBaseMath::Sine(rotation._Z);
 			const float zCosine = CatalystBaseMath::Cosine(rotation._Z);
 
-			const Matrix4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
+			const Matrix4x4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 			*this = *this * zRotationMatrix;
 		}
@@ -639,5 +644,5 @@ public:
 //Matrix constants.
 namespace MatrixConstants
 {
-	constexpr Matrix4 IDENTITY{  };
+	constexpr Matrix4x4 IDENTITY{  };
 }

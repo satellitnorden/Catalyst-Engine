@@ -25,10 +25,10 @@ public:
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
 
 	//The previous world transform.
-	Matrix4 _PreviousWorldTransform;
+	Matrix4x4 _PreviousWorldTransform;
 
 	//The current world transform.
-	Matrix4 _CurrentWorldTransform;
+	Matrix4x4 _CurrentWorldTransform;
 
 	//The current animation.
 	const Animation *RESTRICT _CurrentAnimation{ nullptr };

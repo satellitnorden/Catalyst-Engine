@@ -305,7 +305,7 @@ private:
 	{
 		out->_Name = HashString(in->mName.C_Str());
 		out->_Index = FindBoneIndex(mesh, in->mName);
-		Memory::Copy(&out->_BindTransform, &in->mOffsetMatrix, sizeof(Matrix4));
+		Memory::Copy(&out->_BindTransform, &in->mOffsetMatrix, sizeof(Matrix4x4));
 		out->_InverseBindTransform = out->_BindTransform;
 		out->_InverseBindTransform.Inverse();
 	}

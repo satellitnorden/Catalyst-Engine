@@ -25,7 +25,7 @@ public:
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
-	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4x4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
 		float extent{ CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._X) };
 		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Y));
@@ -46,7 +46,7 @@ public:
 
 		float largest_scale{ -FLOAT_MAXIMUM };
 
-		for (const Matrix4 &transformation : transformations)
+		for (const Matrix4x4 &transformation : transformations)
 		{
 			const Vector3<float> position{ transformation.GetTranslation() };
 			const Vector3<float> scale{ transformation.GetScale() };
@@ -86,7 +86,7 @@ public:
 	/*
 	*	Calculates the screen coordinate of a position.
 	*/
-	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4& view_matrix, const Vector3<float>& position) NOEXCEPT
+	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4x4 &view_matrix, const Vector3<float>& position) NOEXCEPT
 	{
 		Vector4<float> view_space_coordinate{ view_matrix * Vector4<float>(position, 1.0f) };
 
@@ -118,10 +118,10 @@ public:
 	/*
 	*	Creates a transformations buffer.
 	*/
-	FORCE_INLINE static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, BufferHandle *const RESTRICT buffer) NOEXCEPT
+	FORCE_INLINE static void CreateTransformationsBuffer(const DynamicArray<Matrix4x4> &transformations, BufferHandle *const RESTRICT buffer) NOEXCEPT
 	{
 		const void *RESTRICT data[]{ transformations.Data() };
-		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
+		const uint64 dataSizes[]{ sizeof(Matrix4x4) * transformations.Size() };
 		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, buffer);
 		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, buffer);
 	}
@@ -179,7 +179,7 @@ public:
 	/*
 	*	Transforms an axis aligned bounding box from one space to another.
 	*/
-	FORCE_INLINE static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox &originalBox, const Matrix4 &transformation, AxisAlignedBoundingBox *const RESTRICT newBox) NOEXCEPT
+	FORCE_INLINE static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox &originalBox, const Matrix4x4 &transformation, AxisAlignedBoundingBox *const RESTRICT newBox) NOEXCEPT
 	{
 		const Vector3<float> xMinimum{ transformation.GetRight() * originalBox._Minimum._X };
 		const Vector3<float> xMaximum{ transformation.GetRight() * originalBox._Maximum._X };

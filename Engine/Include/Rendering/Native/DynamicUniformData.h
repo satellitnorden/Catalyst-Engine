@@ -12,13 +12,13 @@ class DynamicUniformData final
 
 public:
 
-	Matrix4 _ViewMatrixMinusOne;
-	Matrix4 _UNUSED1;
-	Matrix4 _InversePerceiverMatrix;
-	Matrix4 _InverseProjectionMatrix;
-	Matrix4 _PerceiverMatrix;
-	Matrix4 _ProjectionMatrix;
-	Matrix4 _ViewMatrix;
+	Matrix4x4 _ViewMatrixMinusOne;
+	Matrix4x4 _UNUSED1;
+	Matrix4x4 _InversePerceiverMatrix;
+	Matrix4x4 _InverseProjectionMatrix;
+	Matrix4x4 _PerceiverMatrix;
+	Matrix4x4 _ProjectionMatrix;
+	Matrix4x4 _ViewMatrix;
 
 	Vector4<float> _UNUSEDX;
 	Vector4<float> _UNUSEDY;

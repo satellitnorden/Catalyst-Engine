@@ -34,7 +34,7 @@ void Perceiver::CheckUpdates() NOEXCEPT
 void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
-	_ProjectionMatrix = Matrix4::ReversePerspective(_FieldOfView, static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height), _NearPlane, _FarPlane);
+	_ProjectionMatrix = Matrix4x4::ReversePerspective(_FieldOfView, static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height), _NearPlane, _FarPlane);
 
 	//Apply the jitter.
 	_ProjectionMatrix._Matrix[2]._X += _ProjectionMatrixJitter._X;
@@ -57,7 +57,7 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 {
 	//Update the perceiver matrix.
-	_PerceiverMatrix = Matrix4::LookAt(_Position, _Position + Vector3<float>::ForwardVector(_Rotation), Vector3<float>::UpVector(_Rotation));
+	_PerceiverMatrix = Matrix4x4::LookAt(_Position, _Position + Vector3<float>::ForwardVector(_Rotation), Vector3<float>::UpVector(_Rotation));
 
 	//Update the inverse perceiver matrix.
 	_InversePerceiverMatrix = _PerceiverMatrix;

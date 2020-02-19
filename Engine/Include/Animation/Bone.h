@@ -20,10 +20,10 @@ public:
 	uint32 _Index;
 
 	//The bind transform.
-	Matrix4 _BindTransform;
+	Matrix4x4 _BindTransform;
 
 	//The inverse bind transform.
-	Matrix4 _InverseBindTransform;
+	Matrix4x4 _InverseBindTransform;
 
 	//The children.
 	DynamicArray<Bone> _Children;

@@ -22,8 +22,8 @@ class VertexPushConstantData final
 
 public:
 
-	Matrix4 _PreviousModelMatrix;
-	Matrix4 _CurrentModelMatrix;
+	Matrix4x4 _PreviousModelMatrix;
+	Matrix4x4 _CurrentModelMatrix;
 
 };
 

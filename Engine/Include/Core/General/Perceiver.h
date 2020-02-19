@@ -202,7 +202,7 @@ public:
 	/*
 	*	Returns the projection matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
+	RESTRICTED const Matrix4x4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -214,7 +214,7 @@ public:
 	/*
 	*	Returns the inverse projection matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
+	RESTRICTED const Matrix4x4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -226,7 +226,7 @@ public:
 	/*
 	*	Returns the perceiver matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
+	RESTRICTED const Matrix4x4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -238,7 +238,7 @@ public:
 	/*
 	*	Returns the inverse perceiver matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
+	RESTRICTED const Matrix4x4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -250,7 +250,7 @@ public:
 	/*
 	*	Returns the view matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
+	RESTRICTED const Matrix4x4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -304,20 +304,21 @@ private:
 	bool _FrustumPlanesDirty{ true };
 
 	//The projection matrix.
-	Matrix4 _ProjectionMatrix;
+	Matrix4x4 _ProjectionMatrix;
 
 	//The inverse projection matrix.
-	Matrix4 _InverseProjectionMatrix;
+	Matrix4x4 _InverseProjectionMatrix;
 
 	//The perceiver matrix.
-	Matrix4 _PerceiverMatrix;
+	Matrix4x4 _PerceiverMatrix;
 
 	//The inverse perceiver matrix.
-	Matrix4 _InversePerceiverMatrix;
+	Matrix4x4 _InversePerceiverMatrix;
 
 	//The view matrix.
-	Matrix4 _ViewMatrix;
+	Matrix4x4 _ViewMatrix;
 
+	//The frustum planes.
 	StaticArray<Vector4<float>, 6> _FrustumPlanes;
 
 	/*

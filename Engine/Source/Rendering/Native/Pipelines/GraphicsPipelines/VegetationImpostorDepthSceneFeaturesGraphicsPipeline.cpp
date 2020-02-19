@@ -68,23 +68,23 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Dept
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[0]));
+										offsetof(Matrix4x4, _Matrix[0]));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[1]));
+										offsetof(Matrix4x4, _Matrix[1]));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[2]));
+										offsetof(Matrix4x4, _Matrix[2]));
 	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[3]));
+										offsetof(Matrix4x4, _Matrix[3]));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
-	AddVertexInputBindingDescription(0, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
+	AddVertexInputBindingDescription(0, sizeof(Matrix4x4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());

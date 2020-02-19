@@ -53,7 +53,7 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	if (RenderingSystem::Instance->IsRayTracingSupported()
 		&& RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component._GlobalMaterialIndex)._Type == Material::Type::Opaque)
 	{
-		for (const Matrix4 &transformation : vegetation_initialization_data->_Transformations)
+		for (const Matrix4x4 &transformation : vegetation_initialization_data->_Transformations)
 		{
 			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(transformation, component._Model->_Meshes[0]._BottomLevelAccelerationStructure, 0));
 		}

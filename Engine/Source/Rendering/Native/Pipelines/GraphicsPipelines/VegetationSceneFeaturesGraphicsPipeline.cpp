@@ -94,24 +94,24 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 	AddVertexInputAttributeDescription(	4,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[0]));
+										offsetof(Matrix4x4, _Matrix[0]));
 	AddVertexInputAttributeDescription(	5,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[1]));
+										offsetof(Matrix4x4, _Matrix[1]));
 	AddVertexInputAttributeDescription(	6,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[2]));
+										offsetof(Matrix4x4, _Matrix[2]));
 	AddVertexInputAttributeDescription(	7,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										offsetof(Matrix4, _Matrix[3]));
+										offsetof(Matrix4x4, _Matrix[3]));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);
 	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
-	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
+	AddVertexInputBindingDescription(1, sizeof(Matrix4x4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());

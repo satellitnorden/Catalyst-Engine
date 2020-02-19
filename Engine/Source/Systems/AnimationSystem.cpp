@@ -50,7 +50,7 @@ void AnimationSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 */
 void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT context, AnimatedModelComponent *const RESTRICT component) NOEXCEPT
 {
-	StaticArray<Matrix4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> bone_transforms;
+	StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> bone_transforms;
 
 	if (component->_CurrentAnimation)
 	{
@@ -78,7 +78,7 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 
 					if (FindBoneIndex(&component->_Model->_Skeleton._RootBone, keyframes._First, &bone_index))
 					{
-						bone_transforms[bone_index] = Matrix4(keyframe._BoneTransform._Position, keyframe._BoneTransform._Rotation);
+						bone_transforms[bone_index] = Matrix4x4(keyframe._BoneTransform._Position, keyframe._BoneTransform._Rotation);
 					}
 
 					break;
@@ -88,7 +88,7 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 	}
 
 	const void *const RESTRICT dataChunks[]{ bone_transforms.Data() };
-	const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
+	const uint64 dataSizes[]{ sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
 
 	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &component->_AnimationDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 }

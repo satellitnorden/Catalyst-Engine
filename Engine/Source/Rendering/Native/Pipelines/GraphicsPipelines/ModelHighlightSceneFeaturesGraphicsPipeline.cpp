@@ -19,7 +19,7 @@ class ModelHighlightSceneFeaturesVertexPushConstantData final
 
 public:
 
-	Matrix4 _CurrentModelMatrix;
+	Matrix4x4 _CurrentModelMatrix;
 
 };
 

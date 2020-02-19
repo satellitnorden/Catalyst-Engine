@@ -21,6 +21,6 @@ public:
 	const char *RESTRICT _File{ nullptr };
 
 	//The transformation.
-	Matrix4 _Transformation{ };
+	Matrix4x4 _Transformation{ };
 
 };

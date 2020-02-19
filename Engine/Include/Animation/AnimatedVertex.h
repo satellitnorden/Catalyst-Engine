@@ -61,7 +61,7 @@ public:
 	/*
 	*	Transforms this animated vertex.
 	*/
-	FORCE_INLINE constexpr void Transform(const Matrix4 &transformation, const float textureCoordinateRotation) NOEXCEPT
+	FORCE_INLINE constexpr void Transform(const Matrix4x4 &transformation, const float textureCoordinateRotation) NOEXCEPT
 	{
 		//Transform the position.
 		const Vector4<float> transformedPosition{ transformation * Vector4<float>(_Position, 1.0f) };

@@ -204,7 +204,7 @@ public:
 	static void GetVulkanGeometryInstance(const TopLevelAccelerationStructureInstanceData &data, VulkanGeometryInstance *const RESTRICT geometryInstance)
 	{
 		//Transpose and copy the transform.
-		Matrix4 transposedTransform{ data._Transform };
+		Matrix4x4 transposedTransform{ data._Transform };
 		transposedTransform.Transpose();
 
 		Memory::Copy(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));

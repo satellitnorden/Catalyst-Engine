@@ -53,12 +53,12 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 
 	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &animated_model_component._AnimationDataBuffers[i]);
+		RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &animated_model_component._AnimationDataBuffers[i]);
 
-		StaticArray<Matrix4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
+		StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
 
 		const void *const RESTRICT dataChunks[]{ initial_bone_transforms.Data() };
-		const uint64 dataSizes[]{ sizeof(Matrix4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
+		const uint64 dataSizes[]{ sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
 
 		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &animated_model_component._AnimationDataBuffers[i]);
 
@@ -83,7 +83,7 @@ void AnimatedModelEntity::Terminate() NOEXCEPT
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD Matrix4 *const RESTRICT AnimatedModelEntity::GetWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT AnimatedModelEntity::GetWorldTransform() NOEXCEPT
 {
 	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
