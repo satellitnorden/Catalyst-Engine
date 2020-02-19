@@ -387,18 +387,18 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 	bool has_hit_volumetric{ false };
 	bool has_hit_surface{ false };
 
-	//has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
 	has_hit_surface |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
+	has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
 
 	//Determine the color.
-	if (has_hit_surface)
-	{
-		return CalculateSurfaceLighting(ray, hit_distance, surface_description, recursion);
-	}
-
-	else if (has_hit_volumetric)
+	if (has_hit_volumetric)
 	{
 		return CalculateVolumetricLighting(ray, hit_distance, volumetric_description, recursion);
+	}
+
+	else if (has_hit_surface)
+	{
+		return CalculateSurfaceLighting(ray, hit_distance, surface_description, recursion);
 	}
 
 	else
@@ -412,20 +412,32 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 */
 NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray, VolumetricDescription *const RESTRICT volumetric_description, float* const RESTRICT hit_distance) NOEXCEPT
 {
-	//Define constants.
-	constexpr float VOLUMETRIC_LIGHTING_DISTANCE{ 2048.0f };
-	constexpr float VOLUMETRIC_LIGHTING_INTENSITY{ 0.5f };
-	constexpr float VOLUMETRIC_LIGHTING_THICKNESS{ 4.0f };
+	//Randomize the distance weight.
+	float distance_weight{ CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f) };
+
+	//Modify the distance weight based on the thickness.
+	distance_weight = 1.0f - pow(1.0f - distance_weight, WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness);
+
+	//Calculate the volumetric hit distance.
+	const float volumetric_hit_distance{ CatalystBaseMath::Minimum<float>(*hit_distance, WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance) * distance_weight };
+
+	//Calculate the hit position.
+	const Vector3<float> hit_position{ ray._Origin + ray._Direction * volumetric_hit_distance };
+
+	//Calculate the opacity.
+	const float opacity{ CatalystVolumetricLighting::CalculateVolumetricLightingOpacity(volumetric_hit_distance,
+																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance,
+																						hit_position._Y,
+																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height,
+																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness) };
 
 	//Determine if a volumetric particle was hit.
-	if (CatalystRandomMath::RandomChance(VOLUMETRIC_LIGHTING_INTENSITY))
+	if (CatalystRandomMath::RandomChance(opacity))
 	{
 		//Fill in the surface description/hit distance.
 		volumetric_description->_Albedo = Vector3<float>(0.5f, 0.75f, 1.0f);
 
-		const float hit_distance_alpha{ pow(CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f), VOLUMETRIC_LIGHTING_THICKNESS) };
-
-		*hit_distance = CatalystBaseMath::LinearlyInterpolate(0.0f, VOLUMETRIC_LIGHTING_DISTANCE, hit_distance_alpha);
+		*hit_distance = volumetric_hit_distance;
 
 		return true;
 	}
@@ -504,7 +516,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 {
 	//Define constants.
 	constexpr float NORMAL_OFFSET_FACTOR{ FLOAT_EPSILON * 1'024.0f * 1'024.0f };
-	constexpr float DIRECTIONAL_LIGHT_SIZE{ FLOAT_EPSILON * 1'024.0f * 16.0f };
+	constexpr float DIRECTIONAL_LIGHT_SIZE{ FLOAT_EPSILON * 1'024.0f * 32.0f };
 
 	//Calculate the lighting.
 	Vector3<float> lighting{ 0.0f, 0.0f, 0.0f };
@@ -601,9 +613,6 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 */
 NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(const Ray &incoming_ray, const float hit_distance, const VolumetricDescription &volumetric_description, const uint8 recursion) NOEXCEPT
 {
-	//Define constants.
-	constexpr float DIRECTIONAL_LIGHT_SIZE{ FLOAT_EPSILON * 1'024.0f * 16.0f };
-
 	//Calculate the lighting.
 	Vector3<float> lighting{ 0.0f, 0.0f, 0.0f };
 
@@ -653,7 +662,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 					Ray shadow_ray;
 
 					shadow_ray.SetOrigin(incoming_ray._Origin + incoming_ray._Direction * hit_distance);
-					shadow_ray.SetDirection(Vector3<float>::Normalize(-component->_Direction + Vector3<float>(CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE), CatalystRandomMath::RandomFloatInRange(-DIRECTIONAL_LIGHT_SIZE, DIRECTIONAL_LIGHT_SIZE))));
+					shadow_ray.SetDirection(-component->_Direction);
 
 					const bool in_shadow{ CastShadowRayScene(shadow_ray) };
 

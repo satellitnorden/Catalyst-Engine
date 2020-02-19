@@ -66,7 +66,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
 	constexpr float NIGHT_SKY_INTENSITY{ 2.5f };
-	constexpr float DAY_SKY_INTENSITY{ 10.0f };
+	constexpr float DAY_SKY_INTENSITY{ 25.0f };
 	constexpr Vector3<float> NIGHT_SKY_LUMINANCE{ 0.8f, 0.9f, 1.0f };
 	constexpr Vector3<float> DAY_SKY_LUMINANCE{ 1.0f, 0.9f, 0.8f };
 
