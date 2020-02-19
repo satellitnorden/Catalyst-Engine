@@ -386,7 +386,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 	bool has_hit_volumetric{ false };
 	bool has_hit_surface{ false };
 
-	has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
+	//has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
 	has_hit_surface |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
 
 	//Determine the color.
@@ -444,10 +444,32 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ RenderingReferenceSystemData::_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
 	{
 		//Calculate the hit position.
-		const Vector3<float> hit_position{ ray._Origin + ray._Direction * *hit_distance };
+		const Vector3<float> hit_position{ ray._Origin + ray._Direction * *hit_distance };	
 
-		//Fill in the surface description.
-		surface_description->_Albedo = Vector3<float>(0.0f, 1.0f, 0.0f);
+		//Retrieve the terrain material at the hit position.
+		Vector4<uint8> terrain_material_indices;
+		Vector4<float> terrain_material_blend;
+
+		TerrainSystem::Instance->GetTerrainMaterialAtPosition(hit_position, &terrain_material_indices, &terrain_material_blend);
+
+		//Retrieve the materials referenced by the terrain material indices.
+		StaticArray<Material, 4> materials;
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			materials[i] = RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(terrain_material_indices[i]);
+		}
+
+		//Fill in the surface descipription.
+		Memory::Set(&surface_description->_Albedo, 0, sizeof(Vector3<float>));
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			const Vector4<float> sample{ _RenderingReferenceData->_Textures[materials[i]._AlbedoTextureIndex]->_Texture2D.Sample(Vector2<float>(hit_position._X, hit_position._Z) * 0.25f, AddressMode::Repeat) };
+
+			surface_description->_Albedo += Vector3<float>(sample._R, sample._G, sample._B) * terrain_material_blend[i];
+		}
+
 		TerrainSystem::Instance->GetTerrainNormalAtPosition(hit_position, &surface_description->_Normal);
 		surface_description->_Roughness = 1.0f;
 
