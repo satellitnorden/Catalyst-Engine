@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
 
 //Constants.
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS (16.0f)
@@ -31,9 +32,7 @@ layout (set = 1, binding = 0) uniform sampler2D scene_texture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-/*
-*   Applies tone mapping using the Reinhardt algorithm.
-*/
+/* REFERENCE IMPLEMENTATIONS.
 vec3 ApplyToneMapping_Reinhardt(vec3 fragment)
 {
 	vec3 tone_mapped = fragment / (1.0f + fragment);
@@ -41,9 +40,6 @@ vec3 ApplyToneMapping_Reinhardt(vec3 fragment)
     return pow(tone_mapped, 1.0f / vec3(2.2f));
 }
 
-/*
-*   Applies tone mapping using the ACES Narkowicz algorithm.
-*/
 vec3 ApplyToneMapping_ACESNarkowicz(vec3 fragment)
 {
 	const float a = 2.51;
@@ -59,15 +55,13 @@ vec3 ApplyToneMapping_ACESNarkowicz(vec3 fragment)
     return pow(tone_mapped, 1.0f / vec3(2.2f));
 }
 
-/*
-*   Applies tone mapping using the ACES Unreal algorithm.
-*/
 vec3 ApplyToneMapping_ACESUnreal(vec3 fragment)
 {
 	vec3 tone_mapped = fragment / (fragment + 0.155f) * 1.019f;
 
     return pow(tone_mapped, 1.0f / vec3(2.2f));
 }
+*/
 
 /*
 *   Applies color grading.
@@ -99,7 +93,7 @@ void main()
     vec3 sceneTextureColor = texture(scene_texture, fragmentTextureCoordinate).rgb;
 
     //Apply tone mapping.
-    sceneTextureColor = ApplyToneMapping_ACESNarkowicz(sceneTextureColor);
+    sceneTextureColor = ApplyToneMapping(sceneTextureColor);
 
     //Apply color grading.
     //sceneTextureColor = ApplyColorGrading(sceneTextureColor);

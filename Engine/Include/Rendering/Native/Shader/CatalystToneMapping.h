@@ -1,35 +1,42 @@
-#pragma once
+#if !defined(CATALYST_TONE_MAPPING)
+#define CATALYST_TONE_MAPPING
 
-//Core.
-#include <Core/Essential/CatalystEssential.h>
+#if defined(CATALYST_SHADER_LANGUAGE_CXX)
+	#include "CatalystShaderCore.h"
+#endif
 
-//Math.
-#include <Math/General/Vector.h>
+#if defined(CATALYST_SHADER_LANGUAGE_GLSL)
+	#include "..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h"
+#endif
 
-namespace CatalystToneMapping
-{
+CATALYST_SHADER_NAMESPACE_BEGIN(CatalystToneMapping)
 
 	/*
 	*	Applies tone mapping.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float> ApplyToneMapping(Vector3<float> color) NOEXCEPT
+	CATALYST_SHADER_FUNCTION_RETURN_ARGUMENTS(vec3, ApplyToneMapping, vec3 color)
 	{
-		constexpr float GAMMA{ 1.0f / 2.2f };
-		constexpr float A{ 2.51f };
-		constexpr float B{ 0.03f };
-		constexpr float C{ 2.43f };
-		constexpr float D{ 0.59f };
-		constexpr float E{ 0.14f };
+		//Define constants.
+		CATALYST_SHADER_CONSTANT(float, GAMMA, 1.0f / 2.2f);
+		CATALYST_SHADER_CONSTANT(float, A, 2.51f);
+		CATALYST_SHADER_CONSTANT(float, B, 0.03f);
+		CATALYST_SHADER_CONSTANT(float, C, 2.43f);
+		CATALYST_SHADER_CONSTANT(float, D, 0.59f);
+		CATALYST_SHADER_CONSTANT(float, E, 0.14f);
 
+		//Apply color mapping.
 		color *= 0.6f;
 
-		Vector3<float> tone_mapped{ (color * (A * color + B)) / (color * (C * color + D) + E) };
+		//Calculate the tone mapped color.
+		vec3 tone_mapped = (color * (A * color + B)) / (color * (C * color + D) + E);
 
-		tone_mapped._R = pow(tone_mapped._R, GAMMA);
-		tone_mapped._G = pow(tone_mapped._G, GAMMA);
-		tone_mapped._B = pow(tone_mapped._B, GAMMA);
+		tone_mapped[0] = pow(tone_mapped[0], GAMMA);
+		tone_mapped[1] = pow(tone_mapped[1], GAMMA);
+		tone_mapped[2] = pow(tone_mapped[2], GAMMA);
 
 		return tone_mapped;
 	}
 
-}
+CATALYST_SHADER_NAMESPACE_END()
+
+#endif
