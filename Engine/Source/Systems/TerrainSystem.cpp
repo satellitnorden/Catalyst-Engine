@@ -324,17 +324,37 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, V
 
 /*
 *	Returns the terrain material at the given position.
-*	Can optionally retrieve the height and the normal at the same time.
 */
-bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float>& position, uint8* const RESTRICT material, float* const RESTRICT height, Vector3<float>* const RESTRICT normal, const void* const RESTRICT context) const NOEXCEPT
+bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position, Vector4<uint8> *const RESTRICT indices, Vector4<float> *const RESTRICT blend, const void *const RESTRICT context) const NOEXCEPT
 {
-	//Temporary; Just set to zero.
-	*material = 0;
-	if (normal) *normal = VectorConstants::UP;
-	if (height) *height = 0.0f;
+	//If there's a index and blend map, sample them.
+	if (_Properties._HasIndexMap && _Properties._HasBlendMap)
+	{
+		//Calculate the coordinate.
+		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
 
-	//Return that the retrieval succeeded.
-	return true;
+		//Sample the index map.
+		const uint32 x_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float>(_Properties._IndexMap.GetWidth())) };
+		const uint32 y_coordinate{ static_cast<uint32>(coordinate._Y * static_cast<float>(_Properties._IndexMap.GetWidth())) };
+
+		*indices = _Properties._IndexMap.At(x_coordinate, y_coordinate);
+
+		//Sample the blend map.
+		const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::ClampToEdge) };
+		*blend = Vector4<float>(static_cast<float>(blend_map_sample._X) / static_cast<float>(UINT8_MAXIMUM),
+								static_cast<float>(blend_map_sample._Y) / static_cast<float>(UINT8_MAXIMUM),
+								static_cast<float>(blend_map_sample._Z) / static_cast<float>(UINT8_MAXIMUM),
+								static_cast<float>(blend_map_sample._W) / static_cast<float>(UINT8_MAXIMUM));
+
+		//Return that the retrieval succeeded.
+		return true;
+	}
+
+	else
+	{
+		//Return that the retrieval failed.
+		return false;
+	}
 }
 
 /*

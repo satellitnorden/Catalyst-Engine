@@ -120,9 +120,8 @@ public:
 
 	/*
 	*	Returns the terrain material at the given position.
-	*	Can optionally retrieve the height and the normal at the same time.
 	*/
-	bool GetTerrainMaterialAtPosition(const Vector3<float>& position, uint8* const RESTRICT material, float* const RESTRICT height = nullptr, Vector3<float>* const RESTRICT normal = nullptr, const void* const RESTRICT context = nullptr) const NOEXCEPT;
+	bool GetTerrainMaterialAtPosition(const Vector3<float> &position, Vector4<uint8> *const RESTRICT indices, Vector4<float> *const RESTRICT blend, const void *const RESTRICT context = nullptr) const NOEXCEPT;
 
 private:
 
