@@ -7,6 +7,7 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 /*
 *	Scene features struct definition.
@@ -61,19 +62,9 @@ void main()
 	//Sample the current volumetric lighting.
 	vec3 current_volumetric_lighting = Upsample(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
 
-	//Calculate the distance weight.
-	float volumetric_lighting_distance_weight = min(current_features.hit_distance / volumetric_lighting_distance, 1.0f);
-
-	//Calculate the height weight.
-	//float volumetric_lighting_height_weight = max(1.0f - clamp(PERCEIVER_WORLD_POSITION.y / volumetric_lighting_height, 0.0f, 1.0f), 1.0f - clamp(current_features.hit_position.y / volumetric_lighting_height, 0.0f, 1.0f));
-	float volumetric_lighting_height_weight = 1.0f - clamp(current_features.hit_position.y / volumetric_lighting_height, 0.0f, 1.0f);
-
-	//Calculate the volumetric lighting weight.
-	float volumetric_lighting_weight = volumetric_lighting_distance_weight * volumetric_lighting_height_weight;
-
-	//Apply the thickness.
-	volumetric_lighting_weight = 1.0f - pow(1.0f - volumetric_lighting_weight, volumetric_lighting_thickness);
+	//Calculate the volumetric lighting opacity.
+	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness);
 
 	//Write the fragment.
-	fragment = vec4(current_volumetric_lighting, volumetric_lighting_weight);
+	fragment = vec4(current_volumetric_lighting, volumetric_lighting_opacity);
 }

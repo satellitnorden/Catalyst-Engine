@@ -1419,6 +1419,9 @@
     <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h">
       <Filter>World\Include\Environment</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

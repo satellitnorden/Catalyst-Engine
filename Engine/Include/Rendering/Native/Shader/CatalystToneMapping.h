@@ -14,7 +14,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystToneMapping)
 	/*
 	*	Applies tone mapping.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_ARGUMENTS(vec3, ApplyToneMapping, vec3 color)
+	CATALYST_SHADER_FUNCTION_RETURN_ONE_ARGUMENT(vec3, ApplyToneMapping, vec3 color)
 	{
 		//Define constants.
 		CATALYST_SHADER_CONSTANT(float, GAMMA, 1.0f / 2.2f);
