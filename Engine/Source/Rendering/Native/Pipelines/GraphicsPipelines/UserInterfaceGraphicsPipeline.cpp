@@ -166,32 +166,43 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					//Cache the chartacter.
 					const char character{ typeElement->_Text[i] };
 
-					//Push constants.
-					UserInterfaceVertexPushConstantData vertexData;
+					//Only draw if it´s a valid character.
+					if (character != '\n')
+					{
+						//Push constants.
+						UserInterfaceVertexPushConstantData vertexData;
 
-					vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * typeElement->_Scale;
-					vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * typeElement->_Scale;
+						vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * typeElement->_Scale;
+						vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * typeElement->_Scale;
 
-					vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * typeElement->_Scale;
-					vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * typeElement->_Scale;
+						vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * typeElement->_Scale;
+						vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * typeElement->_Scale;
 
-					commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
+						commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
-					UserInterfaceFragmentPushConstantData fragmentData;
+						UserInterfaceFragmentPushConstantData fragmentData;
 
-					fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Text);
-					fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
+						fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Text);
+						fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
 
-					commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
+						commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
 
-					//Draw!
-					commandBuffer->Draw(this, 4, 1);
+						//Draw!
+						commandBuffer->Draw(this, 4, 1);
+					}
+
+					//Should the text wrap around?
+					bool shouldWrapAround{ false };
+
+					//It should wrap around if a line break is specified.
+					if (character == '\n')
+					{
+						shouldWrapAround = true;
+					}
 
 					//If this character is a space, look ahead toward the next space to see if the line should wrap around.
-					if (character == ' ')
+					else if (character == ' ')
 					{
-						bool shouldWrapAround{ false };
-
 						float temporaryOffsetX{ currentOffsetX };
 
 						for (uint64 j{ i + 1 }; j < length && typeElement->_Text[j] != ' '; ++j)
@@ -206,18 +217,15 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 							}
 						}
 
-						if (shouldWrapAround)
-						{
-							currentOffsetX = 0.0f;
-							currentOffsetY -= typeElement->_Scale;
-						}
-
-						else
-						{
-							currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * typeElement->_Scale;
-						}
 					}
 					
+					//Perform the wrap around, if necessary.
+					if (shouldWrapAround)
+					{
+						currentOffsetX = 0.0f;
+						currentOffsetY -= typeElement->_Scale;
+					}
+
 					else
 					{
 						currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * typeElement->_Scale;
