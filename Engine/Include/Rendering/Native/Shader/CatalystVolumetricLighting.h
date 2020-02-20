@@ -20,7 +20,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystVolumetricLighting)
 		float volumetric_lighting_distance_weight = CATALYST_SHADER_FUNCTION_MINIMUM(hit_distance / volumetric_lighting_distance, 1.0f);
 
 		//Calculate the height weight.
-		float volumetric_lighting_height_weight = 1.0f - CATALYST_SHADER_FUNCTION_CLAMP(hit_height / volumetric_lighting_height, 0.0f, 1.0f);
+		float volumetric_lighting_height_weight = CATALYST_SHADER_FUNCTION_SQUARE(1.0f - CATALYST_SHADER_FUNCTION_CLAMP(hit_height / volumetric_lighting_height, 0.0f, 1.0f));
 
 		//Calculate the volumetric lighting opacity.
 		float volumetric_lighting_opacity = volumetric_lighting_distance_weight * volumetric_lighting_height_weight;

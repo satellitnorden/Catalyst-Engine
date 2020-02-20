@@ -15,6 +15,6 @@ public:
 	float _Height{ 1'024.0f };
 
 	//The thickness.
-	float _Thickness{ 4.0f };
+	float _Thickness{ 1.0f };
 
 };

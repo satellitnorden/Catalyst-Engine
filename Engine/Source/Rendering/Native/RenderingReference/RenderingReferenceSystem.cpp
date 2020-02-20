@@ -425,7 +425,7 @@ NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray,
 	const Vector3<float> hit_position{ ray._Origin + ray._Direction * volumetric_hit_distance };
 
 	//Calculate the opacity.
-	const float opacity{ CatalystVolumetricLighting::CalculateVolumetricLightingOpacity(volumetric_hit_distance,
+	const float opacity{ CatalystVolumetricLighting::CalculateVolumetricLightingOpacity(CatalystBaseMath::Minimum<float>(*hit_distance, WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance),
 																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance,
 																						hit_position._Y,
 																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height,

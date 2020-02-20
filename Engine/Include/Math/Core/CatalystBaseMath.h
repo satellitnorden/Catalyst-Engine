@@ -352,6 +352,14 @@ public:
 	}
 
 	/*
+	*	Given a number, returns the square of that number.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float Square(const float number) NOEXCEPT
+	{
+		return number * number;
+	}
+
+	/*
 	*	Given a number, returns the square root.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float SquareRoot(float number) NOEXCEPT

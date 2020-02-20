@@ -48,8 +48,17 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.hit_position = CalculateWorldPosition(fragment_texture_coordinate, sceneFeatures2.w);
-	features.hit_distance = length(features.hit_position - PERCEIVER_WORLD_POSITION);
+	if (sceneFeatures2.w == 0.0f)
+	{
+		features.hit_position = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragment_texture_coordinate) * volumetric_lighting_distance;
+		features.hit_distance = volumetric_lighting_distance;
+	}
+
+	else
+	{
+		features.hit_position = CalculateWorldPosition(fragment_texture_coordinate, sceneFeatures2.w);
+		features.hit_distance = length(features.hit_position - PERCEIVER_WORLD_POSITION);
+	}
 
 	return features;
 }

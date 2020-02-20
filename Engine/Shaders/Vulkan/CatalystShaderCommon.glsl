@@ -330,6 +330,14 @@ vec3 SmootherStep(vec3 vector)
 }
 
 /*
+*   Given a number, returns the square of that number.
+*/
+ float Square(float number)
+{
+    return number * number;
+}
+
+/*
 *   Upsamples a texture.
 */
 vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)

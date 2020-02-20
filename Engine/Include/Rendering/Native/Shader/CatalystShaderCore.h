@@ -42,6 +42,18 @@
 	CatalystBaseMath::Maximum(ARGUMENT_1, ARGUMENT_2)
 
 	/*
+	*	Calls the smoothstep function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SMOOTHSTEP(ARGUMENT) \
+	CatalystBaseMath::SmoothStep<1>(ARGUMENT)
+
+	/*
+	*	Calls the square function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SQUARE(ARGUMENT) \
+	CatalystBaseMath::Square(ARGUMENT)
+
+	/*
 	*	Defines a function with a return value and one argument.
 	*/
 	#define CATALYST_SHADER_FUNCTION_RETURN_ONE_ARGUMENT(RETURN_TYPE, FUNCTION_NAME, ARGUMENT_1) \
@@ -111,6 +123,18 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_MAXIMUM(ARGUMENT_1, ARGUMENT_2) \
 	max(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the smoothstep function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SMOOTHSTEP(ARGUMENT) \
+	SmoothStep(ARGUMENT)
+
+	/*
+	*	Calls the square function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SQUARE(ARGUMENT) \
+	Square(ARGUMENT)
 
 	/*
 	*	Defines a function with a return value and one argument.
