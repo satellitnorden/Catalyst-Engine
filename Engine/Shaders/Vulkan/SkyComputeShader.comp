@@ -280,7 +280,7 @@ void main()
 	vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
 
 	//Calculate the final color.
-	vec4 final_color = mix(new_color, old_color, 0.99f * (1.0f - parameters_difference));
+	vec4 final_color = mix(new_color, old_color, 0.9f * (1.0f - parameters_difference));
 
 	//Write to the image.
 	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);
