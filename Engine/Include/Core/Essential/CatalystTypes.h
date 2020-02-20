@@ -15,6 +15,9 @@ using int64 = long long int;
 
 using byte = uint8;
 
+/*
+*	Float types.
+*/
 using float32 = float;
 using float64 = double;
 

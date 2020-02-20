@@ -17,7 +17,6 @@
 
 //Catalyst core.
 #include <Core/Essential/CatalystDefines.h>
-#include <Core/Essential/CatalystFunctions.h>
 #include <Core/Essential/CatalystMacros.h>
 #include <Core/Essential/CatalystTypes.h>
 
@@ -26,6 +25,9 @@
 
 //Memory.
 #include <Memory/Memory.h>
+
+//Functions.
+#include <Core/Essential/CatalystFunctions.h>
 
 //Enumeration covering all update phases.
 enum class UpdatePhase : uint8
