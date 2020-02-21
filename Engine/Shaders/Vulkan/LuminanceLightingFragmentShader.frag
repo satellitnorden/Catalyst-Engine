@@ -17,6 +17,7 @@
 struct SceneFeatures
 {
 	vec3 albedo;
+	uint material_index;
 	float luminance;
 };
 
@@ -44,6 +45,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.albedo = sceneFeatures1.rgb;
+	features.material_index = uint(sceneFeatures1.w * 255.0f);
 	features.luminance = sceneFeatures3.w;
 
 	return features;
@@ -52,10 +54,10 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void main()
 {
 	//Sample the current features.
-	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
+	SceneFeatures features = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Calculate the luminance lighting.
-	vec3 luminanceLighting = currentFeatures.albedo * currentFeatures.luminance;
+	vec3 luminanceLighting = features.albedo * features.luminance * GLOBAL_MATERIALS[features.material_index].luminance_multiplier;
 
 	//Write the fragment.
 	scene = vec4(luminanceLighting, 1.0f);
