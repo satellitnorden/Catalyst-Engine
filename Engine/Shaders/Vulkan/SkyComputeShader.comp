@@ -18,6 +18,10 @@
 #define SKY_CLOUDS_MAXIMUM_DENSITY (0.625f) //0.025f step.
 #define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (256.0f)
 #define SKY_CLOUDS_MAXIMUM_DISTANCE (1024.0f * 128.0f)
+#define SKY_CLOUDS_SKY_LIGHT_LUMINANCE_MULTIPLIER (0.225f) //0.025f step.
+#define SKY_CLOUDS_DENSITY_MULTIPLIER (16.0f) //0.25f step.
+
+#define SKY_FEEDBACK_FACTOR (0.925f) //0.025f step.
 
 //Layout specification.
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
@@ -219,11 +223,11 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     {
     	vec3 sample_point = mix(start, end, noise_samples[i + 0]);
 
-    	cloud_density += SampleCloudDensity(sample_point) * 8.0f;
+    	cloud_density += SampleCloudDensity(sample_point) * SKY_CLOUDS_DENSITY_MULTIPLIER;
 
     	vec3 sample_point_in_direction = sample_point + -sky_light_direction * SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE * noise_samples[i + 1];
 
-    	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction) * 16.0f;
+    	cloud_density_in_direction += SampleCloudDensity(sample_point_in_direction) * SKY_CLOUDS_DENSITY_MULTIPLIER;
     }
 
     //Calculate the cloud color.
@@ -233,7 +237,7 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     cloud_color += SKY_CLOUDS_BASE_COLOR * upper_sky_color * 0.125f + SKY_CLOUDS_BASE_COLOR * lower_sky_color * 0.125f;
 
     //Proceed with the sky light lighting.
-	cloud_color += SKY_CLOUDS_BASE_COLOR * (sky_light_luminance * 0.1f) * exp(-cloud_density_in_direction);
+	cloud_color += SKY_CLOUDS_BASE_COLOR * (sky_light_luminance * SKY_CLOUDS_SKY_LIGHT_LUMINANCE_MULTIPLIER) * exp(-cloud_density_in_direction);
 
 	//Calculate the cloud density multiplier.
 	float cloud_density_multiplier = 1.0f - clamp((lower_plane_intersection_distance - SKY_CLOUDS_LOWER_PLANE) / SKY_CLOUDS_MAXIMUM_DISTANCE, 0.0f, 1.0f);
@@ -280,7 +284,7 @@ void main()
 	vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
 
 	//Calculate the final color.
-	vec4 final_color = mix(new_color, old_color, 0.9f * (1.0f - parameters_difference));
+	vec4 final_color = mix(new_color, old_color, SKY_FEEDBACK_FACTOR * (1.0f - parameters_difference));
 
 	//Write to the image.
 	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);
