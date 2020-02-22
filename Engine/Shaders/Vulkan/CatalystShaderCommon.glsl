@@ -58,6 +58,8 @@
 #define GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX         (5)
 #define GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS                                            (6)
 
+#define FLOAT_MAXIMUM (3.402823466e+38F)
+
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)
