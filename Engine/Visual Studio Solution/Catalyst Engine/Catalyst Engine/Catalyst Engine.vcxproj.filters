@@ -1422,6 +1422,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

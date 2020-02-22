@@ -12,6 +12,7 @@
 #include <Physics/CharacterMovement.h>
 #include <Physics/ModelCollisionData.h>
 #include <Physics/PhysicsCore.h>
+#include <Physics/RaycastConfiguration.h>
 #include <Physics/RaycastResult.h>
 
 class PhysicsSystem final
@@ -38,7 +39,7 @@ public:
 	/*
 	*	Casts a ray.
 	*/
-	void CastRay(const Ray &ray, const PhysicsChannel channels, RaycastResult *const RESTRICT result) NOEXCEPT;
+	void CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Registers a character movement.
@@ -55,11 +56,6 @@ public:
 	*/
 	void UnregisterModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
 
-	/*
-	*	Callback for when terrain has been initialized.
-	*/
-	void OnTerrainInitialized() NOEXCEPT;
-
 private:
 
 	//Container for all character movements.
@@ -71,12 +67,12 @@ private:
 	/*
 	*	Casts a ray against models.
 	*/
-	void CastRayModels(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT;
+	void CastRayModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the terrain.
 	*/
-	void CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT;
+	void CastRayTerrain(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Updates one character movement.

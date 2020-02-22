@@ -4,9 +4,6 @@
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
-//Rendering.
-#include <Rendering/Native/AccelerationStructure.h>
-
 //Systems.
 #include <Systems/TerrainSystem.h>
 
@@ -15,16 +12,6 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(PhysicsSystem);
-
-//Physics system data.
-namespace PhysicsSystemData
-{
-	//The terrain acceleration structure.
-	AccelerationStructure _TerrainAccelerationStructure;
-
-	//Denotes if the terrain acceleration structure has been built.
-	bool _TerrainAccelerationStructureBuilt{ false };
-}
 
 /*
 *	Updates the physics system during the physics update phase.
@@ -41,23 +28,23 @@ void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) N
 /*
 *	Casts a ray.
 */
-void PhysicsSystem::CastRay(const Ray &ray, const PhysicsChannel channels, RaycastResult *const RESTRICT result) NOEXCEPT
+void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
 	//Set the default properties of the result.
 	result->_HasHit = false;
-	result->_HitDistance = FLOAT_MAXIMUM;
+	result->_HitDistance = configuration._MaximumHitDistance;
 	result->_Type = RaycastResult::Type::NONE;
 
 	//Raycast against models.
-	if (TEST_BIT(channels, PhysicsChannel::MODEL))
+	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::MODEL))
 	{
-		CastRayModels(ray, result);
+		CastRayModels(ray, configuration, result);
 	}
 
 	//Raycast against the terrain.
-	if (TEST_BIT(channels, PhysicsChannel::TERRAIN))
+	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::TERRAIN))
 	{
-		CastRayTerrain(ray, result);
+		CastRayTerrain(ray, configuration, result);
 	}
 }
 
@@ -87,63 +74,9 @@ void PhysicsSystem::UnregisterModelCollisionData(const uint64 entity_identifer) 
 }
 
 /*
-*	Callback for when terrain has been initialized.
-*/
-void PhysicsSystem::OnTerrainInitialized() NOEXCEPT
-{
-	//Build the terrain acceleration structure.
-	{
-		//Cache relevant data.
-		const Texture2D<float> &height_map{ TerrainSystem::Instance->GetTerrainProperties()->_HeightMap };
-		const float height_map_resolution{ static_cast<float>(height_map.GetWidth()) };
-
-		//Generate the terrain vertices and indices.
-		DynamicArray<TerrainVertex> vertices;
-		DynamicArray<uint32> indices;
-
-		TerrainGeneralUtilities::GenerateTerrainPlane(	*TerrainSystem::Instance->GetTerrainProperties(),
-														height_map.GetWidth() / 4,
-														&vertices,
-														&indices);
-
-		//Construct all triangles.
-		for (uint64 i{ 0 }, size{ indices.Size() }; i < size; i += 3)
-		{
-			//Construct the triangle.
-			Triangle triangle;
-
-			triangle._Vertices[0]._X = vertices[indices[i + 0]]._Position._X * height_map_resolution;
-			triangle._Vertices[0]._Y = 0.0f;
-			triangle._Vertices[0]._Z = vertices[indices[i + 0]]._Position._Y * height_map_resolution;
-
-			triangle._Vertices[1]._X = vertices[indices[i + 1]]._Position._X * height_map_resolution;
-			triangle._Vertices[1]._Y = 0.0f;
-			triangle._Vertices[1]._Z = vertices[indices[i + 1]]._Position._Y * height_map_resolution;
-
-			triangle._Vertices[2]._X = vertices[indices[i + 2]]._Position._X * height_map_resolution;
-			triangle._Vertices[2]._Y = 0.0f;
-			triangle._Vertices[2]._Z = vertices[indices[i + 2]]._Position._Y * height_map_resolution;
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[0], &triangle._Vertices[0]._Y);
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[1], &triangle._Vertices[1]._Y);
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[2], &triangle._Vertices[2]._Y);
-
-			//Add the triangle to the terrain acceleration structure.
-			PhysicsSystemData::_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
-		}
-
-		//Build the terrain acceleration structure.
-		PhysicsSystemData::_TerrainAccelerationStructure.Build(4);
-
-		//Signal that the terrain acceleration structure has been built.
-		PhysicsSystemData::_TerrainAccelerationStructureBuilt = true;
-	}
-}
-
-/*
 *	Casts a ray against models.
 */
-void PhysicsSystem::CastRayModels(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
+void PhysicsSystem::CastRayModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
 	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
 	{
@@ -170,19 +103,34 @@ void PhysicsSystem::CastRayModels(const Ray &ray, RaycastResult *const RESTRICT 
 /*
 *	Casts a ray against the terrain.
 */
-void PhysicsSystem::CastRayTerrain(const Ray &ray, RaycastResult *const RESTRICT result) NOEXCEPT
+void PhysicsSystem::CastRayTerrain(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	//Can´t trace against the terrain acceleration structure if it hasn´t been built.
-	if (!PhysicsSystemData::_TerrainAccelerationStructureBuilt)
-	{
-		return;
-	}
+	//Ray march the terrain until there is a hit.
+	float current_step{ 0.0f };
 
-	//Trace the terrain acceleration structure.
-	if (const AccelerationStructure::TriangleData *const RESTRICT triangle_data{ PhysicsSystemData::_TerrainAccelerationStructure.TraceSurface(ray, &result->_HitDistance) })
+	while (current_step < result->_HitDistance)
 	{
-		result->_HasHit = true;
-		result->_Type = RaycastResult::Type::TERRAIN;
+		//Calculate the sample position.
+		const Vector3<float> sample_position{ ray._Origin + ray._Direction * current_step };
+
+		//Retrieve the sample height.
+		float sample_height;
+
+		if (TerrainSystem::Instance->GetTerrainHeightAtPosition(sample_position, &sample_height))
+		{
+			//If the sample height is higher than the sample positions height, there was a hit!
+			if (sample_height >= sample_position._Y)
+			{
+				result->_HasHit = true;
+				result->_HitDistance = current_step;
+				result->_Type = RaycastResult::Type::TERRAIN;
+
+				return;
+			}
+		}
+
+		//Advance the current step.
+		current_step += configuration._TerrainRayMarchStep;
 	}
 }
 

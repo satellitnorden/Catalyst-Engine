@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
