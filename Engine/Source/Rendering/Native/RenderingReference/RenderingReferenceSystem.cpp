@@ -172,6 +172,9 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 	//Prepare the terrain data.
 	{
+		//Define constants.
+		constexpr StaticArray<float, 2> VERTEX_BORDER_OFFSETS{ 1.0f / 64.0f, 1.0f / 32.0f };
+
 		//Generate the terrain vertices and indices.
 		DynamicArray<TerrainVertex> vertices;
 		DynamicArray<uint32> indices;
@@ -190,33 +193,56 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 			//If the axis aligned bounding box was hit, iterate over all the triangles in the terrain plane, transform then and intersect against them.
 			for (uint64 j{ 0 }; j < indices.Size(); j += 3)
 			{
+				//Cache relevant data.
+				const int32 patch_borders{ patch_render_information->_Borders };
+
 				//Construct the triangle.
 				Triangle triangle;
 
-				triangle._Vertices[0]._X = vertices[indices[j + 0]]._Position._X;
-				triangle._Vertices[0]._Y = 0.0f;
-				triangle._Vertices[0]._Z = vertices[indices[j + 0]]._Position._Y;
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					//Calculate the base position.
+					triangle._Vertices[i]._X = vertices[indices[j + i]]._Position._X;
+					triangle._Vertices[i]._Y = 0.0f;
+					triangle._Vertices[i]._Z = vertices[indices[j + i]]._Position._Y;
 
-				triangle._Vertices[1]._X = vertices[indices[j + 1]]._Position._X;
-				triangle._Vertices[1]._Y = 0.0f;
-				triangle._Vertices[1]._Z = vertices[indices[j + 1]]._Position._Y;
+					//Apply the border offsets.
+					{
+						//Cache relevant data.
+						const int32 vertex_borders{ vertices[indices[j + i]]._Borders };
 
-				triangle._Vertices[2]._X = vertices[indices[j + 2]]._Position._X;
-				triangle._Vertices[2]._Y = 0.0f;
-				triangle._Vertices[2]._Z = vertices[indices[j + 2]]._Position._Y;
+						//Calculate the horizontal border offset multiplier.
+						float32 is_upper_multiplier{ static_cast<float>((vertex_borders & BIT(0)) & (patch_borders & BIT(0))) };
+						float32 is_lower_multiplier{ static_cast<float>((vertex_borders & BIT(4)) & (patch_borders & BIT(4))) };
+						float32 horizontal_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f) };
 
-				triangle._Vertices[0]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[0]._X * patch_render_information->_PatchSize;
-				triangle._Vertices[0]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[0]._Z * patch_render_information->_PatchSize;
+						//Calculate the vertical border offset multiplier.
+						float32 is_right_multiplier{ static_cast<float>((vertex_borders & BIT(2)) & (patch_borders & BIT(2))) };
+						float32 is_left_multiplier{ static_cast<float>((vertex_borders & BIT(6)) & (patch_borders & BIT(6))) };
+						float32 vertical_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f) };
 
-				triangle._Vertices[1]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[1]._X * patch_render_information->_PatchSize;
-				triangle._Vertices[1]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[1]._Z * patch_render_information->_PatchSize;
+						triangle._Vertices[i]._X -= VERTEX_BORDER_OFFSETS[0] * horizontal_border_offset_weight;
+						triangle._Vertices[i]._Z -= VERTEX_BORDER_OFFSETS[0] * vertical_border_offset_weight;
 
-				triangle._Vertices[2]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[2]._X * patch_render_information->_PatchSize;
-				triangle._Vertices[2]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[2]._Z * patch_render_information->_PatchSize;
+						//Calculate the horizontal border offset multiplier.
+						is_upper_multiplier = static_cast<float>((vertex_borders & BIT(1)) & (patch_borders & BIT(1)));
+						is_lower_multiplier = static_cast<float>((vertex_borders & BIT(5)) & (patch_borders & BIT(5)));
+						horizontal_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f);
 
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[0], &triangle._Vertices[0]._Y);
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[1], &triangle._Vertices[1]._Y);
-				TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[2], &triangle._Vertices[2]._Y);
+						//Calculate the vertical border offset multiplier.
+						is_right_multiplier = static_cast<float>((vertex_borders & BIT(3)) & (patch_borders & BIT(3)));
+						is_left_multiplier = static_cast<float>((vertex_borders & BIT(7)) & (patch_borders & BIT(7)));
+						vertical_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f);
+
+						triangle._Vertices[i]._X -= VERTEX_BORDER_OFFSETS[1] * horizontal_border_offset_weight;
+						triangle._Vertices[i]._Z -= VERTEX_BORDER_OFFSETS[1] * vertical_border_offset_weight;
+					}
+
+					triangle._Vertices[i]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[i]._X * patch_render_information->_PatchSize;
+					triangle._Vertices[i]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[i]._Z * patch_render_information->_PatchSize;
+
+					TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[i], &triangle._Vertices[i]._Y);
+				}
 
 				//Add the triangle to the terrain acceleration structure.
 				RenderingReferenceSystemData::_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));

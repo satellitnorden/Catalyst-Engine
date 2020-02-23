@@ -10,8 +10,6 @@
 //Constants.
 #define VERTEX_BORDER_OFFSET_FIRST (1.0f / (64.0f))
 #define VERTEX_BORDER_OFFSET_SECOND (1.0f / (32.0f))
-#define MINIMUM_HEIGHT (-100.0f)
-#define MAXIMUM_HEIGHT (1000.0f)
 #define STRENGTHEN_DISPLACEMENT(X) (X * X)
 
 //Push constant data.
