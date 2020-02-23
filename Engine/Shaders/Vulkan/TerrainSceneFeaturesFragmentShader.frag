@@ -58,18 +58,23 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 }
 
 /*
-*	Calculates the terrain normal.
+*	Calculates the terrain tangent space matrix.
 */
-vec3 CalculateTerrainNormal()
+mat3 CalculateTerrainTangentSpaceMatrix()
 {
 #define OFFSET (1.0f / map_resolution)
 
-	float left = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(-OFFSET, 0.0f)).x;
+	float center = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
 	float right = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
-	float down = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, -OFFSET)).x;
 	float up = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
 
-	return normalize(vec3(left - right, 2.0f, down - up));
+	vec3 tangent = normalize(vec3(1.0f, right, 0.0f) - vec3(0.0f, center, 0.0f));
+	vec3 bitangent = normalize(vec3(0.0f, up, 1.0f) - vec3(0.0f, center, 0.0f));
+	vec3 normal = normalize(cross(tangent, bitangent));
+
+	normal = dot(normal, vec3(0.0f, 1.0f, 0.0f)) >= 0.0f ? normal : -normal;
+
+	return mat3(tangent, bitangent, normal);
 }
 
 /*
@@ -133,11 +138,11 @@ TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 mater
 
 void main()
 {
-	//Calculate the terrain normal.
-	vec3 terrain_normal = CalculateTerrainNormal();
-
 	//Calculate the tangent space matrix.
-	mat3 tangent_space_matrix = CalculateTangentSpaceMatrix(terrain_normal);
+	mat3 tangent_space_matrix = CalculateTerrainTangentSpaceMatrix();
+
+	//Retrieve the terrain normal.
+	vec3 terrain_normal = tangent_space_matrix[2];
 
     //Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = fragmentWorldPosition.xz * 0.25f;
