@@ -11,7 +11,7 @@
 #include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
 //Constants.
-#define STRENGTHEN_DISPLACEMENT(X) (X * X)
+#define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
 
 /*
 *	Terrain material struct definition.

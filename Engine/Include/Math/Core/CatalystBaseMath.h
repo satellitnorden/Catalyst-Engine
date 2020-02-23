@@ -174,6 +174,14 @@ public:
 	}
 
 	/*
+	*	Given a number, returns the inverse square of that number.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float InverseSquare(const float number) NOEXCEPT
+	{
+		return 1.0f - Square(1.0f - number);
+	}
+
+	/*
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <typename TYPE>
