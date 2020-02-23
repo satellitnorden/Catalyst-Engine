@@ -18,6 +18,33 @@
 	using vec4 = Vector4<float>;
 
 	/*
+	*	Cross product helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD TYPE CrossProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	{
+		return TYPE::CrossProduct(value_1, value_2);
+	}
+
+	/*
+	*	Dot product helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD float32 DotProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	{
+		return TYPE::DotProduct(value_1, value_2);
+	}
+
+	/*
+	*	Normalize helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD TYPE NormalizeHelper(const TYPE value) NOEXCEPT
+	{
+		return TYPE::Normalize(value);
+	}
+
+	/*
 	*	Defines a constant value of the given type. with the given name and value.
 	*/
 	#define CATALYST_SHADER_CONSTANT(TYPE, NAME, VALUE)	\
@@ -30,6 +57,18 @@
 	CatalystBaseMath::Clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
 
 	/*
+	*	Calls the cross product function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
+	CrossProductHelper(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the dot product function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_DOT_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
+	DotProductHelper(ARGUMENT_1, ARGUMENT_2)
+
+	/*
 	*	Calls the minimum function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_MINIMUM(ARGUMENT_1, ARGUMENT_2) \
@@ -40,6 +79,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_MAXIMUM(ARGUMENT_1, ARGUMENT_2) \
 	CatalystBaseMath::Maximum(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the normalize function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
+	NormalizeHelper(ARGUMENT_1)
 
 	/*
 	*	Calls the smoothstep function.
@@ -113,6 +158,18 @@
 	clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
 
 	/*
+	*	Calls the cross product function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
+	cross(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the dot product function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_DOT_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
+	dot(ARGUMENT_1, ARGUMENT_2)
+
+	/*
 	*	Calls the minimum function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_MINIMUM(ARGUMENT_1, ARGUMENT_2) \
@@ -123,6 +180,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_MAXIMUM(ARGUMENT_1, ARGUMENT_2) \
 	max(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the normalize function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
+	normalize(ARGUMENT_1)
 
 	/*
 	*	Calls the smoothstep function.

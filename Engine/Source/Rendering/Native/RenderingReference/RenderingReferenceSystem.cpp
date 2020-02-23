@@ -21,6 +21,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
 #include <Rendering/Native/Shader/CatalystLighting.h>
+#include <Rendering/Native/Shader/CatalystTerrain.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 #include <Rendering/Native/Shader/CatalystVolumetricLighting.h>
 

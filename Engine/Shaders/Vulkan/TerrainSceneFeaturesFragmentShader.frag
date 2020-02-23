@@ -8,6 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRenderingUtilities.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
 //Constants.
 #define STRENGTHEN_DISPLACEMENT(X) (X * X)
@@ -55,26 +56,6 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
-}
-
-/*
-*	Calculates the terrain tangent space matrix.
-*/
-mat3 CalculateTerrainTangentSpaceMatrix()
-{
-#define OFFSET (1.0f / map_resolution)
-
-	float center = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
-	float right = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
-	float up = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
-
-	vec3 tangent = normalize(vec3(1.0f, right, 0.0f) - vec3(0.0f, center, 0.0f));
-	vec3 bitangent = normalize(vec3(0.0f, up, 1.0f) - vec3(0.0f, center, 0.0f));
-	vec3 normal = normalize(cross(tangent, bitangent));
-
-	normal = dot(normal, vec3(0.0f, 1.0f, 0.0f)) >= 0.0f ? normal : -normal;
-
-	return mat3(tangent, bitangent, normal);
 }
 
 /*
@@ -138,8 +119,15 @@ TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 mater
 
 void main()
 {
+	//Calculate the surrounding heights.
+#define OFFSET (1.0f / map_resolution)
+
+	float center_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
+	float right_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
+	float up_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
+
 	//Calculate the tangent space matrix.
-	mat3 tangent_space_matrix = CalculateTerrainTangentSpaceMatrix();
+	mat3 tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
 
 	//Retrieve the terrain normal.
 	vec3 terrain_normal = tangent_space_matrix[2];

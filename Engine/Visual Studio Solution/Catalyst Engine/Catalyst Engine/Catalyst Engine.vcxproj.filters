@@ -1425,6 +1425,9 @@
     <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
