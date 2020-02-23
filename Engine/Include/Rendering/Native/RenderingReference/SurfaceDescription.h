@@ -20,4 +20,10 @@ public:
 	//The roughness.
 	float _Roughness;
 
+	//The metallic.
+	float _Metallic;
+
+	//The ambient occlusion.
+	float _AmbientOcclusion;
+
 };

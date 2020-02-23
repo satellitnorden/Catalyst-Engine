@@ -501,17 +501,47 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 		}
 
 		//Fill in the surface descipription.
-		Memory::Set(&surface_description->_Albedo, 0, sizeof(Vector3<float>));
-
-		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			const Vector4<float> sample{ _RenderingReferenceData->_Textures[materials[i]._AlbedoTextureIndex]->_Texture2D.Sample(Vector2<float>(hit_position._X, hit_position._Z) * 0.25f, AddressMode::Repeat) };
+			//Fill in the albedo.
+			Memory::Set(&surface_description->_Albedo, 0, sizeof(Vector3<float>));
 
-			surface_description->_Albedo += Vector3<float>(sample._R, sample._G, sample._B) * terrain_material_blend[i];
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				const Vector4<float> sample{ _RenderingReferenceData->_Textures[materials[i]._AlbedoTextureIndex]->_Texture2D.Sample(Vector2<float>(hit_position._X, hit_position._Z) * 0.25f, AddressMode::Repeat) };
+
+				surface_description->_Albedo += Vector3<float>(sample._R, sample._G, sample._B) * terrain_material_blend[i];
+			}
+		}
+
+		{
+			//Fill in the normal.
+			Memory::Set(&surface_description->_Normal, 0, sizeof(Vector3<float>));
+
+			//Calculate the terrain tangent space matrix.
+			float center_height;
+			float right_height;
+			float up_height;
+
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(hit_position, &center_height);
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(hit_position + Vector3<float>(1.0f, 0.0f, 0.0f), &right_height);
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(hit_position + Vector3<float>(0.0f, 0.0f, 1.0f), &up_height);
+
+			const Matrix3x3 terrain_tangent_space_matrix{ CatalystTerrain::CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height) };
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				const Vector4<float> sample{ _RenderingReferenceData->_Textures[materials[i]._NormalMapTextureIndex]->_Texture2D.Sample(Vector2<float>(hit_position._X, hit_position._Z) * 0.25f, AddressMode::Repeat) };
+
+				surface_description->_Normal += (Vector3<float>(sample._R, sample._G, sample._B) * 2.0f - 1.0f) * terrain_material_blend[i];
+			}
+
+			surface_description->_Normal = terrain_tangent_space_matrix * Vector3<float>::Normalize(surface_description->_Normal);
 		}
 
 		TerrainSystem::Instance->GetTerrainNormalAtPosition(hit_position, &surface_description->_Normal);
 		surface_description->_Roughness = 1.0f;
+		surface_description->_Metallic = 0.0f;
+		surface_description->_AmbientOcclusion = 0.0f;
 
 		return true;
 	}
