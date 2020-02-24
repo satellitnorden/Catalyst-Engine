@@ -36,6 +36,32 @@
 #endif
 
 /*
+*	Turns optimizations off.
+*/
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#if defined(CATALYST_MSVC)
+		#define OPTIMIZATIONS_OFF __pragma optimize("", off)
+	#else
+		#define OPTIMIZATIONS_OFF
+	#endif
+#else
+	#define OPTIMIZATIONS_OFF
+#endif
+
+/*
+*	Turns optimizations on.
+*/
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#if defined(CATALYST_MSVC)
+		#define OPTIMIZATIONS_ON __pragma optimize("", on)
+	#else
+		#define OPTIMIZATIONS_ON
+	#endif
+#else
+	#define OPTIMIZATIONS_ON
+#endif
+
+/*
 *	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
 */
 #if defined(CATALYST_MSVC)
