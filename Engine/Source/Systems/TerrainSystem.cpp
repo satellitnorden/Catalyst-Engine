@@ -223,20 +223,20 @@ RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT TerrainSystem::U
 /*
 *	Returns the terrain map coordinate at the given position.
 */
-NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float> &position) const NOEXCEPT
+NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
 {
 	//Need that height map.
 	if (_Properties._HasHeightMap)
 	{
 		//Calculate the coordinate. Assume that all maps has the same resolution.
-		const float half_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) * 0.5f };
-		const float full_resolution{ static_cast<float>(_Properties._HeightMap.GetWidth()) };
+		const float half_resolution{ static_cast<float32>(_Properties._HeightMap.GetWidth()) * 0.5f };
+		const float full_resolution{ static_cast<float32>(_Properties._HeightMap.GetWidth()) };
 
-		Vector2<float> coordinate{ (position._X + half_resolution) / full_resolution, (position._Z + half_resolution) / full_resolution };
+		Vector2<float32> coordinate{ (position._X - 0.5f + half_resolution) / full_resolution, (position._Z - 0.5f + half_resolution) / full_resolution };
 
 		//Clamp the coordinate.
-		coordinate._X = CatalystBaseMath::Clamp<float>(coordinate._X, 0.0f, 1.0f - FLOAT_EPSILON);
-		coordinate._Y = CatalystBaseMath::Clamp<float>(coordinate._Y, 0.0f, 1.0f - FLOAT_EPSILON);
+		coordinate._X = CatalystBaseMath::Clamp<float32>(coordinate._X, 0.0f, 1.0f - FLOAT_EPSILON);
+		coordinate._Y = CatalystBaseMath::Clamp<float32>(coordinate._Y, 0.0f, 1.0f - FLOAT_EPSILON);
 
 		//Return the coordinate.
 		return coordinate;
