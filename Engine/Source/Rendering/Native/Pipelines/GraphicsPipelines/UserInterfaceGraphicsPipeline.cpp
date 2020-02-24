@@ -128,7 +128,12 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 		//Render differently based on the type.
 		switch (element->_Type)
 		{
-			case UserInterfaceElementType::Image:
+			case UserInterfaceElementType::BUTTON:
+			{
+				break;
+			}
+
+			case UserInterfaceElementType::IMAGE:
 			{
 				const ImageUserInterfaceElement *const RESTRICT typeElement{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
 
@@ -142,7 +147,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 				UserInterfaceFragmentPushConstantData fragmentData;
 
-				fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Image);
+				fragmentData._Type = static_cast<int32>(UserInterfaceElementType::IMAGE);
 				fragmentData._TextureIndex = typeElement->_TextureIndex;
 
 				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
@@ -153,7 +158,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				break;
 			}
 
-			case UserInterfaceElementType::Text:
+			case UserInterfaceElementType::TEXT:
 			{
 				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
 
@@ -182,7 +187,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 						UserInterfaceFragmentPushConstantData fragmentData;
 
-						fragmentData._Type = static_cast<int32>(UserInterfaceElementType::Text);
+						fragmentData._Type = static_cast<int32>(UserInterfaceElementType::TEXT);
 						fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
 
 						commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);

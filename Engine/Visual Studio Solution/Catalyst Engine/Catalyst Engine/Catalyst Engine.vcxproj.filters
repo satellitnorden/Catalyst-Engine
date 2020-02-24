@@ -1428,6 +1428,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElement.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

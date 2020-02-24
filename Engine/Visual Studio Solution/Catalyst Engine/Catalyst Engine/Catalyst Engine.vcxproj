@@ -380,6 +380,8 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElement.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h" />

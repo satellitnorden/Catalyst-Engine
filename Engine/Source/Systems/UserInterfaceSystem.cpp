@@ -5,6 +5,8 @@
 #include <Components/Core/ComponentManager.h>
 
 //User interface.
+#include <UserInterface/ButtonUserInterfaceElement.h>
+#include <UserInterface/ButtonUserInterfaceElementDescription.h>
 #include <UserInterface/ImageUserInterfaceElement.h>
 #include <UserInterface/ImageUserInterfaceElementDescription.h>
 #include <UserInterface/TextUserInterfaceElement.h>
@@ -23,14 +25,21 @@ void UserInterfaceSystem::Terminate() NOEXCEPT
 	{
 		switch (element->_Type)
 		{
-			case UserInterfaceElementType::Image:
+			case UserInterfaceElementType::BUTTON:
+			{
+				Memory::GlobalPoolDeAllocate<sizeof(ButtonUserInterfaceElement)>(element);
+
+				break;
+			}
+
+			case UserInterfaceElementType::IMAGE:
 			{
 				Memory::GlobalPoolDeAllocate<sizeof(ImageUserInterfaceElement)>(element);
 
 				break;
 			}
 
-			case UserInterfaceElementType::Text:
+			case UserInterfaceElementType::TEXT:
 			{
 				Memory::GlobalPoolDeAllocate<sizeof(TextUserInterfaceElement)>(element);
 
@@ -54,32 +63,53 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 {
 	switch (description->_Type)
 	{
-		case UserInterfaceElementType::Image:
+		case UserInterfaceElementType::BUTTON:
 		{
-			ImageUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(ImageUserInterfaceElement)>()) ImageUserInterfaceElement() };
-			const ImageUserInterfaceElementDescription *const RESTRICT typeDescription{ static_cast<const ImageUserInterfaceElementDescription *const RESTRICT>(description) };
+			ButtonUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(ButtonUserInterfaceElement)>()) ButtonUserInterfaceElement() };
+			const ButtonUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ButtonUserInterfaceElementDescription* const RESTRICT>(description) };
 
-			element->_Type = UserInterfaceElementType::Image;
-			element->_Minimum = typeDescription->_Minimum;
-			element->_Maximum = typeDescription->_Maximum;
-			element->_TextureIndex = typeDescription->_ImageTextureIndex;
+			element->_Type = UserInterfaceElementType::IMAGE;
+			element->_Minimum = type_description->_Minimum;
+			element->_Maximum = type_description->_Maximum;
+			element->_StartHoveredCallback = type_description->_StartHoveredCallback;
+			element->_StopHoveredCallback = type_description->_StopHoveredCallback;
+			element->_StartPressedCallback = type_description->_StartPressedCallback;
+			element->_StopPressedCallback = type_description->_StopPressedCallback;
+			element->_IdleTextureIndex = type_description->_IdleTextureIndex;
+			element->_HoveredTextureIndex = type_description->_HoveredTextureIndex;
+			element->_PressedTextureIndex = type_description->_PressedTextureIndex;
 
 			_UserInterfaceElements.Emplace(element);
 
 			return element;
 		}
 
-		case UserInterfaceElementType::Text:
+		case UserInterfaceElementType::IMAGE:
+		{
+			ImageUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(ImageUserInterfaceElement)>()) ImageUserInterfaceElement() };
+			const ImageUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ImageUserInterfaceElementDescription *const RESTRICT>(description) };
+
+			element->_Type = UserInterfaceElementType::IMAGE;
+			element->_Minimum = type_description->_Minimum;
+			element->_Maximum = type_description->_Maximum;
+			element->_TextureIndex = type_description->_ImageTextureIndex;
+
+			_UserInterfaceElements.Emplace(element);
+
+			return element;
+		}
+
+		case UserInterfaceElementType::TEXT:
 		{
 			TextUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(TextUserInterfaceElement)>()) TextUserInterfaceElement() };
-			const TextUserInterfaceElementDescription *const RESTRICT typeDescription{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
+			const TextUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
 
-			element->_Type = UserInterfaceElementType::Text;
-			element->_Minimum = typeDescription->_Minimum;
-			element->_Maximum = typeDescription->_Maximum;
-			element->_Font = typeDescription->_Font;
-			element->_Scale = typeDescription->_Scale;
-			element->_Text = std::move(typeDescription->_Text);
+			element->_Type = UserInterfaceElementType::TEXT;
+			element->_Minimum = type_description->_Minimum;
+			element->_Maximum = type_description->_Maximum;
+			element->_Font = type_description->_Font;
+			element->_Scale = type_description->_Scale;
+			element->_Text = std::move(type_description->_Text);
 
 			_UserInterfaceElements.Emplace(element);
 

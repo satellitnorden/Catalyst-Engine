@@ -161,7 +161,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	{
 		TextUserInterfaceElementDescription description;
 
-		description._Type = UserInterfaceElementType::Text;
+		description._Type = UserInterfaceElementType::TEXT;
 		description._Minimum = Vector2<float>(0.01f, 0.01f);
 		description._Maximum = Vector2<float>(0.99f, 0.25f);
 		description._Font = &ResourceLoader::GetFontResource(HashString("Catalyst_Engine_Default_Font"));

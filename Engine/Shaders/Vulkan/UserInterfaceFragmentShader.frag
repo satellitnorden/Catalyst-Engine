@@ -8,8 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define USER_INTERFACE_ELEMENT_TYPE_IMAGE (0)
-#define USER_INTERFACE_ELEMENT_TYPE_TEXT (1)
+#define USER_INTERFACE_ELEMENT_TYPE_BUTTON (0)
+#define USER_INTERFACE_ELEMENT_TYPE_IMAGE (1)
+#define USER_INTERFACE_ELEMENT_TYPE_TEXT (2)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -31,6 +32,14 @@ void main()
 {
 	switch (type)
 	{
+		case USER_INTERFACE_ELEMENT_TYPE_BUTTON:
+		{
+			//Write the fragment.
+			//fragment = texture(sampler2D(GLOBAL_TEXTURES[textureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate);
+
+			break;
+		}
+
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
