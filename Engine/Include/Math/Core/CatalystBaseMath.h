@@ -70,7 +70,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE constexpr static NO_DISCARD TYPE Ceiling(const float number) NOEXCEPT
 	{
-		return static_cast<TYPE>(number + 1.0f);
+		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number + 1.0f)) : static_cast<TYPE>(static_cast<int32>(number));
 	}
 
 	/*
