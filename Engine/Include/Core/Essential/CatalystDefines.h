@@ -40,7 +40,7 @@
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	#if defined(CATALYST_MSVC)
-		#define OPTIMIZATIONS_OFF __pragma optimize("", off)
+		#define OPTIMIZATIONS_OFF __pragma(optimize("", off))
 	#else
 		#define OPTIMIZATIONS_OFF
 	#endif
@@ -53,7 +53,7 @@
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	#if defined(CATALYST_MSVC)
-		#define OPTIMIZATIONS_ON __pragma optimize("", on)
+		#define OPTIMIZATIONS_ON __pragma(optimize("", on))
 	#else
 		#define OPTIMIZATIONS_ON
 	#endif
