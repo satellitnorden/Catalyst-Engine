@@ -50,13 +50,6 @@ namespace RenderingReferenceSystemConstants
 	constexpr uint32 SLIZE_SIZE{ 16 };
 }
 
-//Rendering reference system data.
-namespace RenderingReferenceSystemData
-{
-	//The terrain acceleration structure.
-	AccelerationStructure _TerrainAccelerationStructure;
-}
-
 /*
 *	Updates the rendering reference system during the render update phase.
 */
@@ -246,13 +239,13 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 				}
 
 				//Add the triangle to the terrain acceleration structure.
-				RenderingReferenceSystemData::_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
+				_RenderingReferenceData->_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
 			}
 		}
 	}
 
 	//Build the terrain acceleration structure.
-	RenderingReferenceSystemData::_TerrainAccelerationStructure.Build(4);
+	_RenderingReferenceData->_TerrainAccelerationStructure.Build(4);
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
@@ -481,7 +474,7 @@ NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray,
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
 	//Trace the terrain acceleration structure.
-	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ RenderingReferenceSystemData::_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
+	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ _RenderingReferenceData->_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
 	{
 		//Calculate the hit position.
 		const Vector3<float> hit_position{ ray._Origin + ray._Direction * *hit_distance };	
@@ -538,10 +531,21 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 			surface_description->_Normal = terrain_tangent_space_matrix * Vector3<float>::Normalize(surface_description->_Normal);
 		}
 
-		TerrainSystem::Instance->GetTerrainNormalAtPosition(hit_position, &surface_description->_Normal);
-		surface_description->_Roughness = 1.0f;
-		surface_description->_Metallic = 0.0f;
-		surface_description->_AmbientOcclusion = 0.0f;
+		{
+			//Fill in the material properties.
+			Memory::Set(&surface_description->_Roughness, 0, sizeof(float32));
+			Memory::Set(&surface_description->_Metallic, 0, sizeof(float32));
+			Memory::Set(&surface_description->_AmbientOcclusion, 0, sizeof(float32));
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				const Vector4<float> sample{ _RenderingReferenceData->_Textures[materials[i]._MaterialPropertiesTextureIndex]->_Texture2D.Sample(Vector2<float>(hit_position._X, hit_position._Z) * 0.25f, AddressMode::Repeat) };
+
+				surface_description->_Roughness += sample._X * terrain_material_blend[i];
+				surface_description->_Metallic += sample._Y * terrain_material_blend[i];
+				surface_description->_AmbientOcclusion += sample._Z * terrain_material_blend[i];
+			}
+		}
 
 		return true;
 	}
@@ -755,6 +759,6 @@ NO_DISCARD bool RenderingReferenceSystem::CastShadowRayScene(const Ray &ray) NOE
 */
 NO_DISCARD bool RenderingReferenceSystem::CastShadowRayTerrain(const Ray &ray) NOEXCEPT
 {
-	return RenderingReferenceSystemData::_TerrainAccelerationStructure.TraceShadow(ray);
+	return _RenderingReferenceData->_TerrainAccelerationStructure.TraceShadow(ray);
 }
 #endif

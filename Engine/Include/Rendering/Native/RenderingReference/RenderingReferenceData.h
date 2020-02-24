@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
 
@@ -60,6 +61,9 @@ public:
 
 	//The textures.
 	StaticArray<const Texture2DResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _Textures;
+
+	//The terrain acceleration structure.
+	AccelerationStructure _TerrainAccelerationStructure;
 
 	/*
 	*	Default constructor.
