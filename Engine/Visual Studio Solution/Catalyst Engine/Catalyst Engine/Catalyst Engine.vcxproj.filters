@@ -1434,6 +1434,9 @@
     <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Noise\HammersleySequence.h">
+      <Filter>Math\Include\Noise</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

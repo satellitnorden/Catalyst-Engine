@@ -84,7 +84,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
-		pipeline.Execute();
-		//pipeline.SetIncludeInRender(false);
+		//pipeline.Execute();
+		pipeline.SetIncludeInRender(false);
 	}
 }

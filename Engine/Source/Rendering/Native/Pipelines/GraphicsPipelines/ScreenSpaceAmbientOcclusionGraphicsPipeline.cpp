@@ -2,7 +2,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 
 //Math.
-#include <Math/Noise/HaltonSequence.h>
+#include <Math/Noise/HammersleySequence.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -20,20 +20,13 @@ void PrintSamples()
 {
 	//Define constants.
 	constexpr uint32 NUMBER_OF_SAMPLES{ 64 };
+	constexpr uint32 NUMBER_OF_SAMPLES_DOUBLE{ NUMBER_OF_SAMPLES * 2 };
 
-	uint32 counter{ 0 };
-
-	for (uint32 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
+	for (uint32 i{ 1 }; i < NUMBER_OF_SAMPLES_DOUBLE + 1; i += 2)
 	{
-		Vector3<float> direction;
+		const Vector3<float32> direction{ HammerslySequence::CalculateCoordinateHemisphere(i, NUMBER_OF_SAMPLES_DOUBLE) };
 
-		direction._X = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
-		direction._Y = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
-		direction._Z = HaltonSequence::Generate(counter++, 3) * 2.0f - 1.0f;
-
-		direction.Normalize();
-
-		const float length{ HaltonSequence::Generate(counter++, 3) };
+		const float32 length{ HammerslySequence::RadicalInverse(i + 1) };
 
 		PRINT_TO_OUTPUT("vec4(" << direction._X << "f, " << direction._Y << "f, " << direction._Z << "f, " << length << "f),");
 	}
