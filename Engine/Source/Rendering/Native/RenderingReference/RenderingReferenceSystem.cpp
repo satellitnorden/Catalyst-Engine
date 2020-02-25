@@ -164,6 +164,9 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		_RenderingReferenceData->_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
 	}
 
+	//Keep track of the indices offset.
+	uint32 indices_offset{ 0 };
+
 	//Prepare the terrain data.
 	{
 		//Define constants.
@@ -184,63 +187,69 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 		for (uint64 i{ 0 }, size{ TerrainSystem::Instance->GetTerrainPatchInformations()->Size() }; i < size; ++i, ++patch_information, ++patch_render_information)
 		{
-			//If the axis aligned bounding box was hit, iterate over all the triangles in the terrain plane, transform then and intersect against them.
-			for (uint64 j{ 0 }; j < indices.Size(); j += 3)
+			//Cache relevant data.
+			const int32 patch_borders{ patch_render_information->_Borders };
+
+			//Add all vertex data.
+			for (const TerrainVertex &vertex : vertices)
 			{
-				//Cache relevant data.
-				const int32 patch_borders{ patch_render_information->_Borders };
+				//Calculate the position.
+				Vector3<float32> position;
 
-				//Construct the triangle.
-				Triangle triangle;
+				position._X = vertex._Position._X;
+				position._Y = 0.0f;
+				position._Z = vertex._Position._Y;
 
-				for (uint8 i{ 0 }; i < 3; ++i)
+				//Apply the border offsets.
 				{
-					//Calculate the base position.
-					triangle._Vertices[i]._X = vertices[indices[j + i]]._Position._X;
-					triangle._Vertices[i]._Y = 0.0f;
-					triangle._Vertices[i]._Z = vertices[indices[j + i]]._Position._Y;
+					//Cache relevant data.
+					const int32 vertex_borders{ vertex._Borders };
 
-					//Apply the border offsets.
-					{
-						//Cache relevant data.
-						const int32 vertex_borders{ vertices[indices[j + i]]._Borders };
+					//Calculate the horizontal border offset multiplier.
+					float32 is_upper_multiplier{ static_cast<float>((vertex_borders & BIT(0)) & (patch_borders & BIT(0))) };
+					float32 is_lower_multiplier{ static_cast<float>((vertex_borders & BIT(4)) & (patch_borders & BIT(4))) };
+					float32 horizontal_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f) };
 
-						//Calculate the horizontal border offset multiplier.
-						float32 is_upper_multiplier{ static_cast<float>((vertex_borders & BIT(0)) & (patch_borders & BIT(0))) };
-						float32 is_lower_multiplier{ static_cast<float>((vertex_borders & BIT(4)) & (patch_borders & BIT(4))) };
-						float32 horizontal_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f) };
+					//Calculate the vertical border offset multiplier.
+					float32 is_right_multiplier{ static_cast<float>((vertex_borders& BIT(2))& (patch_borders& BIT(2))) };
+					float32 is_left_multiplier{ static_cast<float>((vertex_borders& BIT(6))& (patch_borders& BIT(6))) };
+					float32 vertical_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f) };
 
-						//Calculate the vertical border offset multiplier.
-						float32 is_right_multiplier{ static_cast<float>((vertex_borders & BIT(2)) & (patch_borders & BIT(2))) };
-						float32 is_left_multiplier{ static_cast<float>((vertex_borders & BIT(6)) & (patch_borders & BIT(6))) };
-						float32 vertical_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f) };
+					position._X -= VERTEX_BORDER_OFFSETS[0] * horizontal_border_offset_weight;
+					position._Z -= VERTEX_BORDER_OFFSETS[0] * vertical_border_offset_weight;
 
-						triangle._Vertices[i]._X -= VERTEX_BORDER_OFFSETS[0] * horizontal_border_offset_weight;
-						triangle._Vertices[i]._Z -= VERTEX_BORDER_OFFSETS[0] * vertical_border_offset_weight;
+					//Calculate the horizontal border offset multiplier.
+					is_upper_multiplier = static_cast<float>((vertex_borders& BIT(1))& (patch_borders& BIT(1)));
+					is_lower_multiplier = static_cast<float>((vertex_borders& BIT(5))& (patch_borders& BIT(5)));
+					horizontal_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f);
 
-						//Calculate the horizontal border offset multiplier.
-						is_upper_multiplier = static_cast<float>((vertex_borders & BIT(1)) & (patch_borders & BIT(1)));
-						is_lower_multiplier = static_cast<float>((vertex_borders & BIT(5)) & (patch_borders & BIT(5)));
-						horizontal_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f);
+					//Calculate the vertical border offset multiplier.
+					is_right_multiplier = static_cast<float>((vertex_borders& BIT(3))& (patch_borders& BIT(3)));
+					is_left_multiplier = static_cast<float>((vertex_borders& BIT(7))& (patch_borders& BIT(7)));
+					vertical_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f);
 
-						//Calculate the vertical border offset multiplier.
-						is_right_multiplier = static_cast<float>((vertex_borders & BIT(3)) & (patch_borders & BIT(3)));
-						is_left_multiplier = static_cast<float>((vertex_borders & BIT(7)) & (patch_borders & BIT(7)));
-						vertical_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f);
-
-						triangle._Vertices[i]._X -= VERTEX_BORDER_OFFSETS[1] * horizontal_border_offset_weight;
-						triangle._Vertices[i]._Z -= VERTEX_BORDER_OFFSETS[1] * vertical_border_offset_weight;
-					}
-
-					triangle._Vertices[i]._X = patch_render_information->_WorldPosition._X + triangle._Vertices[i]._X * patch_render_information->_PatchSize;
-					triangle._Vertices[i]._Z = patch_render_information->_WorldPosition._Y + triangle._Vertices[i]._Z * patch_render_information->_PatchSize;
-
-					TerrainSystem::Instance->GetTerrainHeightAtPosition(triangle._Vertices[i], &triangle._Vertices[i]._Y);
+					position._X -= VERTEX_BORDER_OFFSETS[1] * horizontal_border_offset_weight;
+					position._Z -= VERTEX_BORDER_OFFSETS[1] * vertical_border_offset_weight;
 				}
 
-				//Add the triangle to the terrain acceleration structure.
-				_RenderingReferenceData->_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(triangle));
+				position._X = patch_render_information->_WorldPosition._X + position._X * patch_render_information->_PatchSize;
+				position._Z = patch_render_information->_WorldPosition._Y + position._Z * patch_render_information->_PatchSize;
+
+				TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y);
+
+				//Add the vertex data to the terrain acceleration structure.
+				_RenderingReferenceData->_TerrainAccelerationStructure.AddVertexData(AccelerationStructure::VertexData(position));
 			}
+
+			//Add all triangle data.
+			for (uint64 j{ 0 }; j < indices.Size(); j += 3)
+			{
+				//Add the triangle to the terrain acceleration structure.
+				_RenderingReferenceData->_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
+			}
+
+			//Update the indices offset.
+			indices_offset += static_cast<uint32>(vertices.Size());
 		}
 	}
 

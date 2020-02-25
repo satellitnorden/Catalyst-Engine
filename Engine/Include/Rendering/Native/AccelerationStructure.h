@@ -28,8 +28,8 @@ public:
 
 	public:
 
-		//The triangle.
-		Triangle _Triangle;
+		//The indices.
+		StaticArray<uint32, 3> _Indices;
 
 		/*
 		*	Default constructor.
@@ -42,9 +42,40 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE TriangleData(const Triangle &initial_triangle) NOEXCEPT
+		FORCE_INLINE TriangleData(const StaticArray<uint32, 3> &initial_indices) NOEXCEPT
 			:
-			_Triangle(initial_triangle)
+			_Indices(initial_indices)
+		{
+
+		}
+
+	};
+
+	/*
+	*	Vertex data class definition.
+	*/
+	class VertexData final
+	{
+
+	public:
+
+		//The position.
+		Vector3<float32> _Position;
+
+		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE VertexData() NOEXCEPT
+		{
+
+		}
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE VertexData(const Vector3<float32> &initial_position) NOEXCEPT
+			:
+			_Position(initial_position)
 		{
 
 		}
@@ -59,6 +90,9 @@ public:
 		//Create the build data.
 		_BuildData = static_cast<BuildData *RESTRICT>(Memory::Allocate(sizeof(BuildData)));
 		Memory::Set(_BuildData, 0, sizeof(BuildData));
+
+		//Reset the triangle data.
+		Memory::Set(&_Root._TriangleData, 0, sizeof(DynamicArray<TriangleData>));
 	}
 
 	/*
@@ -89,6 +123,15 @@ public:
 	{
 		//Add the triangle data to the root.
 		_Root._TriangleData.Emplace(triangle_data);
+	}
+
+	/*
+	*	Adds vertex data to the acceleration structure. Must be done before building.
+	*/
+	FORCE_INLINE void AddVertexData(const VertexData &vertex_data) NOEXCEPT
+	{
+		//Add the vertex data to the acceleration structure.
+		_BuildData->_VertexData.Emplace(vertex_data);
 	}
 
 	/*
@@ -193,8 +236,14 @@ private:
 
 	public:
 
+		//The vertex data.
+		DynamicArray<VertexData> _VertexData;
+
 		//The nodes to be split, and their axis aligned bounding boxes.
 		DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+
+		//The bytes needed for the vertex data.
+		uint64 _NumberBytesNeededForVertexData{ 0 };
 
 		//The bytes needed for the triangle data.
 		uint64 _NumberBytesNeededForTriangleData{ 0 };
@@ -213,6 +262,9 @@ private:
 	//The acceleration structure memory.
 	void *RESTRICT _AccelerationStructureMemory{ nullptr };
 
+	//The vertex data memory.
+	VertexData* RESTRICT _VertexDataMemory;
+
 	//The build data.
 	BuildData *RESTRICT _BuildData;
 
@@ -221,6 +273,9 @@ private:
 	*/
 	FORCE_INLINE void ExecutePreBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
+		//Record the number of bytes needed for the vertex data.
+		_BuildData->_NumberBytesNeededForVertexData = _BuildData->_VertexData.Size() * sizeof(VertexData);
+
 		//Record the number of bytes needed for the triangle data.
 		_BuildData->_NumberBytesNeededForTriangleData = _Root._TriangleData.Size() * sizeof(TriangleData);
 
@@ -229,9 +284,9 @@ private:
 
 		for (const TriangleData& triangle_data : _Root._TriangleData)
 		{
-			root_box.Expand(triangle_data._Triangle._Vertices[0]);
-			root_box.Expand(triangle_data._Triangle._Vertices[1]);
-			root_box.Expand(triangle_data._Triangle._Vertices[3]);
+			root_box.Expand(_BuildData->_VertexData[triangle_data._Indices[0]]._Position);
+			root_box.Expand(_BuildData->_VertexData[triangle_data._Indices[1]]._Position);
+			root_box.Expand(_BuildData->_VertexData[triangle_data._Indices[2]]._Position);
 		}
 
 		//If the root node has more than the maximum number of triangles, add it to the nodes to be split.
@@ -264,9 +319,17 @@ private:
 	FORCE_INLINE void ExecutePostBuild(const uint64 maximum_triangles_per_node) NOEXCEPT
 	{
 		//Allocate the acceleration structure memory.
-		_AccelerationStructureMemory = Memory::Allocate(_BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+		_AccelerationStructureMemory = Memory::Allocate(_BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
 
-		PRINT_TO_OUTPUT("Acceleration structure memory usage: " << _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+		PRINT_TO_OUTPUT("Acceleration structure memory usage: " << _BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+
+		//Copy the vertex data to the acceleration structure memory.
+		Memory::Copy(_AccelerationStructureMemory, _BuildData->_VertexData.Data(), _BuildData->_NumberBytesNeededForVertexData);
+
+		_VertexDataMemory = static_cast<VertexData *const RESTRICT>(_AccelerationStructureMemory);
+
+		//Update the acceleration structure memory offset.
+		_BuildData->_AccelerationStructureMemoryOffset += _BuildData->_NumberBytesNeededForVertexData;
 
 		//Traverse the acceleration tree and refit all of the axis aligned bounding boxes.
 		if (!_Root._HasTriangles)
@@ -350,8 +413,15 @@ private:
 		//Start filling up the two new nodes with the triangle data.
 		for (const TriangleData &triangle_data : node->_TriangleData)
 		{
+			//Cache the triangle.
+			Triangle triangle;
+
+			triangle._Vertices[0] = _BuildData->_VertexData[triangle_data._Indices[0]]._Position;
+			triangle._Vertices[1] = _BuildData->_VertexData[triangle_data._Indices[1]]._Position;
+			triangle._Vertices[2] = _BuildData->_VertexData[triangle_data._Indices[2]]._Position;
+
 			//Calculate the center of the triangle.
-			const Vector3<float> triangle_center{ Triangle::CalculateCenter(triangle_data._Triangle) };
+			const Vector3<float> triangle_center{ Triangle::CalculateCenter(triangle) };
 
 			//Decide which axis aligned bounding box this triangle data should go into, based on the triangle center.
 			if (first.IsInside(triangle_center))
@@ -442,7 +512,7 @@ private:
 			{
 				for (uint8 j{ 0 }; j < 3; ++j)
 				{
-					box->Expand(node->_TriangleDataMemory[i]._Triangle._Vertices[j]);
+					box->Expand(_VertexDataMemory[node->_TriangleDataMemory[i]._Indices[j]]._Position);
 				}
 			}
 		}
@@ -480,7 +550,14 @@ private:
 
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
-				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle_data._Triangle, &intersection_distance_temporary)
+				//Cache the triangle.
+				Triangle triangle;
+
+				triangle._Vertices[0] = _VertexDataMemory[triangle_data._Indices[0]]._Position;
+				triangle._Vertices[1] = _VertexDataMemory[triangle_data._Indices[1]]._Position;
+				triangle._Vertices[2] = _VertexDataMemory[triangle_data._Indices[2]]._Position;
+
+				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance_temporary)
 					&& intersection_distance_temporary < *intersection_distance)
 				{
 					intersected_triangle_data = &triangle_data;
@@ -525,7 +602,14 @@ private:
 
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
-				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle_data._Triangle, &intersection_distance_temporary))
+				//Cache the triangle.
+				Triangle triangle;
+
+				triangle._Vertices[0] = _VertexDataMemory[triangle_data._Indices[0]]._Position;
+				triangle._Vertices[1] = _VertexDataMemory[triangle_data._Indices[1]]._Position;
+				triangle._Vertices[2] = _VertexDataMemory[triangle_data._Indices[2]]._Position;
+
+				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance_temporary))
 				{
 					return true;
 				}
