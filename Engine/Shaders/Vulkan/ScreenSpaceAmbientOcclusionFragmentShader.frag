@@ -126,7 +126,7 @@ void main()
 	//Calculate the random rotation matrix.
 	vec4 random_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
-	vec3 random_normal = random_sample.xyz * 2.0f - 1.0f;
+	vec3 random_normal = vec3(random_sample.x * 2.0f - 1.0f, random_sample.y * 2.0f - 1.0f, 0.0f);
 	vec3 random_tangent = normalize(random_normal - normal * dot(random_normal, normal));
 	vec3 random_bitangent = cross(random_normal, random_tangent);
 
