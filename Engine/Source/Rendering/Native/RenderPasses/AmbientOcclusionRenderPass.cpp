@@ -52,12 +52,12 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize();
 	_AmbientOcclusionDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Horizontal,
-																2.0f,
+																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half));
 
 	_AmbientOcclusionDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionDenoisingGraphicsPipeline::Direction::Vertical,
-																2.0f,
+																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize();
