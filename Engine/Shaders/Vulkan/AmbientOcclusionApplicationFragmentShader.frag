@@ -7,6 +7,9 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
+//Defines.
+#define BIAS_AMBIENT_OCCLUSION(X) (X * X * X)
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -31,6 +34,6 @@ void main()
 	//Write the fragment.
 	scene_features_3 = vec4(scene_features_3_texture_sampler.x,
 							scene_features_3_texture_sampler.y,
-							scene_features_3_texture_sampler.z * pow(ambient_occlusion_texture_sampler.x, AMBIENT_OCCLUSION_POWER),
+							scene_features_3_texture_sampler.z * BIAS_AMBIENT_OCCLUSION(ambient_occlusion_texture_sampler.x),
 							scene_features_3_texture_sampler.w);
 }
