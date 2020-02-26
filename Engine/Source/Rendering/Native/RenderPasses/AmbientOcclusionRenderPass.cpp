@@ -39,13 +39,15 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _AmbientOcclusionDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(1 + _AmbientOcclusionDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
+
+	AddPipeline(&_AmbientOcclusionApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize();
@@ -58,6 +60,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 																2.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
+	_AmbientOcclusionApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -87,4 +90,6 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 		//pipeline.Execute();
 		pipeline.SetIncludeInRender(false);
 	}
+
+	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
 }

@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -29,6 +30,9 @@ private:
 
 	//The ambient occlusion denoising graphics pipelines.
 	StaticArray<AmbientOcclusionDenoisingGraphicsPipeline, 2> _AmbientOcclusionDenoisingGraphicsPipelines;
+
+	//The ambient occlusion application graphics pipeline.
+	AmbientOcclusionApplicationGraphicsPipeline _AmbientOcclusionApplicationGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.
