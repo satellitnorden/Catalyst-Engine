@@ -251,7 +251,7 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
 	*/
-	Intermediate_R8_Byte,
+	Intermediate_R8_Byte_Half,
 
 	/*
 	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.

@@ -64,7 +64,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direc
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
@@ -110,7 +110,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::CreateRenderDataTable(const Rend
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2_Half), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
 
 /*
