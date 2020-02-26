@@ -36,6 +36,7 @@ glslangValidator.exe -V PathTracingRayMissShader.rmiss -o 				PathTracingRayMiss
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
 glslangValidator.exe -V RenderingReferenceFragmentShader.frag -o 			RenderingReferenceFragmentShader.spv
 glslangValidator.exe -V ResampleFragmentShader.frag -o 					ResampleFragmentShader.spv
+glslangValidator.exe -V SceneFeaturesDownsampleFragmentShader.frag -o 			SceneFeaturesDownsampleFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V SeparableBlurFragmentShader.frag -o 				SeparableBlurFragmentShader.spv
 glslangValidator.exe -V SkyComputeShader.comp -o 					SkyComputeShader.spv

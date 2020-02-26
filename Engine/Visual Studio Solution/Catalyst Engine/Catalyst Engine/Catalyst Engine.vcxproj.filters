@@ -1437,6 +1437,12 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\HammersleySequence.h">
       <Filter>Math\Include\Noise</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\PostSceneFeaturesRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesDownsampleGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1891,6 +1897,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp">
       <Filter>World\Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\SceneFeaturesDownsampleGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\PostSceneFeaturesRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -60,6 +60,7 @@ enum class RenderPassStage : uint8
 #if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SceneFeatures,
 	Ocean,
+	PostSceneFeatures,
 	AmbientOcclusion,
 	LuminanceLighting,
 	DirectLighting,
@@ -198,6 +199,11 @@ enum class RenderTarget : uint8
 	SceneFeatures3,
 
 	/*
+	*	Contains the scene features 2 data in half resolution.
+	*/
+	SceneFeatures2_Half,
+
+	/*
 	*	Contains the ambient occlusion.
 	*/
 	AmbientOcclusion,
@@ -329,6 +335,7 @@ enum class Shader : uint8
 	PostProcessingFragment,
 	RenderingReferenceFragment,
 	ResampleFragment,
+	SceneFeaturesDownsampleFragment,
 	ScreenSpaceAmbientOcclusionFragment,
 	SeparableBlurFragment,
 	SkyCompute,
