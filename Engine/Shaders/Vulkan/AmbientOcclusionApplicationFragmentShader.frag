@@ -26,7 +26,7 @@ void main()
 	vec4 scene_features_3_texture_sampler = texture(scene_features_3_texture, fragment_texture_coordinate);
 
 	//Sample the ambient occlusion texture.
-	vec4 ambient_occlusion_texture_sampler = texture(ambient_occlusion_texture, fragment_texture_coordinate);
+	vec4 ambient_occlusion_texture_sampler = Upsample(ambient_occlusion_texture, fragment_texture_coordinate);
 
 	//Write the fragment.
 	scene_features_3 = vec4(scene_features_3_texture_sampler.x,

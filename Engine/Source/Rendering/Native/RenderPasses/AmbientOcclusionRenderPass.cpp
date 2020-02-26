@@ -39,10 +39,15 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _AmbientOcclusionDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + _AmbientOcclusionDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
+	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -60,6 +65,10 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 																1.0f,
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half),
 																RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1));
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2));
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -87,9 +96,26 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	for (AmbientOcclusionDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionDenoisingGraphicsPipelines)
 	{
-		//pipeline.Execute();
-		pipeline.SetIncludeInRender(false);
+		pipeline.Execute();
+		//pipeline.SetIncludeInRender(false);
 	}
+
+	//Execute the current buffer, don't include the rest.
+	for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+	{
+		if (i == _CurrentTemporalBufferIndex)
+		{
+			_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+		}
+
+		else
+		{
+			_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+	}
+
+	//Update the current buffer index.
+	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
 }

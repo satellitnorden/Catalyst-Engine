@@ -214,6 +214,16 @@ enum class RenderTarget : uint8
 	Scene,
 
 	/*
+	*	Contains the first temporal ambient occlusion buffer.
+	*/
+	TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1,
+
+	/*
+	*	Contains the second temporal ambient occlusion buffer.
+	*/
+	TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2,
+
+	/*
 	*	Contains the first temporal indirect lighting buffer.
 	*/
 	TemporalIndirectLightingBuffer1,
@@ -299,6 +309,7 @@ enum class Shader : uint8
 {
 	AmbientOcclusionApplicationFragment,
 	AmbientOcclusionDenoisingFragment,
+	AMBIENT_OCCLUSION_TEMPORAL_DENOISING_FRAGMENT,
 	AnimatedModelSceneFeaturesFragment,
 	AnimatedModelSceneFeaturesVertex,
 	BloomIsolationFragment,
