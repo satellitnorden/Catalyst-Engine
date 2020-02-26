@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -29,7 +29,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -48,7 +48,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direc
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AmbientOcclusionDenoisingFragment);
+	SetFragmentShader(Shader::AMBIENT_OCCLUSION_SPATIAL_DENOISING_FRAGMENT);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -91,7 +91,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::Initialize(const Direction direc
 /*
 *	Creates the render data table layout.
 */
-void AmbientOcclusionDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -105,7 +105,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NO
 /*
 *	Creates the render data table.
 */
-void AmbientOcclusionDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -116,7 +116,7 @@ void AmbientOcclusionDenoisingGraphicsPipeline::CreateRenderDataTable(const Rend
 /*
 *	Executes this graphics pipeline.
 */
-void AmbientOcclusionDenoisingGraphicsPipeline::Execute() NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

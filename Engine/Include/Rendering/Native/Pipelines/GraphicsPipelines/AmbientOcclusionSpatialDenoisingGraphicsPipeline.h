@@ -3,13 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class AmbientOcclusionDenoisingGraphicsPipeline final : public GraphicsPipeline
+class AmbientOcclusionSpatialDenoisingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
