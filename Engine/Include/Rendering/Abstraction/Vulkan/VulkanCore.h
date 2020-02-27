@@ -11,10 +11,19 @@
 /*
 *	Turns Vulkan debugging on/off.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#define VULKAN_DEBUGGING true
 #else
 	#define VULKAN_DEBUGGING false
+#endif
+
+/*
+*	Turns Vulkan timestamps on/off.
+*/
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#define VULKAN_TIMESTAMPS_ENABLED true
+#else
+	#define VULKAN_TIMESTAMPS_ENABLED false
 #endif
 
 #if VULKAN_DEBUGGING

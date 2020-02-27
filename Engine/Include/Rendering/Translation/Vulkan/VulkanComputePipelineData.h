@@ -7,8 +7,9 @@
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanComputePipeline.h>
+#include <Rendering/Translation/Vulkan/VulkanPipelineData.h>
 
-class VulkanComputePipelineData final
+class VulkanComputePipelineData final : public VulkanPipelineData
 {
 
 public:
