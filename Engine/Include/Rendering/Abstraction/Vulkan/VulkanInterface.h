@@ -28,6 +28,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanRayTracingPipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPhysicalDevice.h>
+#include <Rendering/Abstraction/Vulkan/VulkanQueryPool.h>
 #include <Rendering/Abstraction/Vulkan/VulkanQueue.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPass.h>
 #include <Rendering/Abstraction/Vulkan/VulkanRenderPassCreationParameters.h>
@@ -35,7 +36,6 @@
 #include <Rendering/Abstraction/Vulkan/VulkanSampler.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSemaphore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanShaderModule.h>
-#include <Rendering/Abstraction/Vulkan/VulkanStorageBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
 
@@ -246,6 +246,11 @@ public:
 	RESTRICTED VulkanRayTracingPipeline *const RESTRICT CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Creates and returns a query pool.
+	*/
+	RESTRICTED VulkanQueryPool *const RESTRICT CreateQueryPool(const VkQueryType query_type, const uint32 query_count) NOEXCEPT;
+
+	/*
 	*	Creates and returns a render pass.
 	*/
 	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
@@ -269,11 +274,6 @@ public:
 	*	Creates and returns a shader module.
 	*/
 	RESTRICTED VulkanShaderModule *const RESTRICT CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
-
-	/*
-	*	Creates and returns a storage buffer.
-	*/
-	RESTRICTED VulkanStorageBuffer *const RESTRICT CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT;
 
 private:
 
@@ -343,6 +343,9 @@ private:
 	//Container for all Vulkan ray tracing pipelines.
 	DynamicArray<VulkanRayTracingPipeline *RESTRICT> _VulkanRayTracingPipelines;
 
+	//Container for all Vulkan query pools.
+	DynamicArray<VulkanQueryPool *RESTRICT> _VulkanQueryPools;
+
 	//Container for all Vulkan render passes.
 	DynamicArray<VulkanRenderPass *RESTRICT> _VulkanRenderPasses;
 
@@ -357,9 +360,6 @@ private:
 
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> _VulkanShaderModules;
-
-	//Container for all Vulkan storage buffers.
-	DynamicArray<VulkanStorageBuffer *RESTRICT> _VulkanStorageBuffers;
 
 };
 #endif

@@ -181,6 +181,13 @@ void VulkanInterface::Release() NOEXCEPT
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanRayTracingPipeline)>(vulkanRayTracingPipeline);
 	}
 
+	//Release all Vulkan query pools.
+	for (VulkanQueryPool *const RESTRICT vulkan_query_pool : _VulkanQueryPools)
+	{
+		vulkan_query_pool->Release();
+		Memory::GlobalPoolDeAllocate<sizeof(VulkanQueryPool)>(vulkan_query_pool);
+	}
+
 	//Release all Vulkan render passes.
 	for (VulkanRenderPass *const RESTRICT vulkanRenderPass : _VulkanRenderPasses)
 	{
@@ -207,13 +214,6 @@ void VulkanInterface::Release() NOEXCEPT
 	{
 		vulkanShaderModule->Release();
 		Memory::GlobalPoolDeAllocate<sizeof(VulkanShaderModule)>(vulkanShaderModule);
-	}
-
-	//Release all Vulkan storage buffers.
-	for (VulkanStorageBuffer *const RESTRICT vulkanStorageBuffer : _VulkanStorageBuffers)
-	{
-		vulkanStorageBuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanStorageBuffer)>(vulkanStorageBuffer);
 	}
 
 	//Release the Vulkan descriptor pool.
@@ -545,6 +545,22 @@ RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTr
 }
 
 /*
+*	Creates and returns a query pool.
+*/
+RESTRICTED VulkanQueryPool *const RESTRICT VulkanInterface::CreateQueryPool(const VkQueryType query_type, const uint32 query_count) NOEXCEPT
+{
+	VulkanQueryPool *const RESTRICT new_query_pool{ new (Memory::GlobalPoolAllocate<sizeof(VulkanQueryPool)>()) VulkanQueryPool() };
+	new_query_pool->Initialize(query_type, query_count);
+
+	static Spinlock lock;
+	SCOPED_LOCK(lock);
+
+	_VulkanQueryPools.Emplace(new_query_pool);
+
+	return new_query_pool;
+}
+
+/*
 *	Creates and returns a render pass.
 */
 RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT
@@ -622,21 +638,5 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 	_VulkanShaderModules.Emplace(newShaderModule);
 
 	return newShaderModule;
-}
-
-/*
-*	Creates and returns a storage buffer.
-*/
-RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
-{
-	VulkanStorageBuffer *const RESTRICT newStorageBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanStorageBuffer)>()) VulkanStorageBuffer() };
-	newStorageBuffer->Initialize(initialStorageBufferSize);
-
-	static Spinlock lock;
-	SCOPED_LOCK(lock);
-
-	_VulkanStorageBuffers.Emplace(newStorageBuffer);
-
-	return newStorageBuffer;
 }
 #endif

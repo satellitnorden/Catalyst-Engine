@@ -753,9 +753,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanShaderModule.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.h">
-      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSurface.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
     </ClInclude>
@@ -1449,6 +1446,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionSpatialDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanQueryPool.h">
+      <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1516,9 +1516,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp">
       <Filter>Lighting\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp">
-      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
@@ -1915,6 +1912,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionSpatialDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueryPool.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

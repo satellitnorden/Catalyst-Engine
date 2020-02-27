@@ -195,6 +195,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanInterface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanLogicalDevice.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanQueryPool.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanQueue.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanRayTracingPipelineCreationParameters.h" />
@@ -204,7 +205,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSampler.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSemaphore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanShaderModule.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSurface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSwapChain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h" />
@@ -439,6 +439,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanInterface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanLogicalDevice.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanPhysicalDevice.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueryPool.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueue.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanRenderPass.cpp" />
@@ -446,7 +447,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSampler.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSemaphore.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanStorageBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\LightingSystem.cpp" />
