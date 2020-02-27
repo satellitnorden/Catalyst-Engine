@@ -7,7 +7,7 @@
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Vector.h>
 
-class HammerslySequence final
+class HammersleySequence final
 {
 
 public:

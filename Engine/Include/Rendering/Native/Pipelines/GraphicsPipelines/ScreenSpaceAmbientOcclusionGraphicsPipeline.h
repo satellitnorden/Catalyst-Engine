@@ -26,11 +26,19 @@ public:
 
 private:
 
+	//The samples uniform buffer.
+	BufferHandle _SamplesUniformBuffer;
+
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
+
+	/*
+	*	Creates the samples uniform buffer.
+	*/
+	void CreateSamplesUniformBuffer() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

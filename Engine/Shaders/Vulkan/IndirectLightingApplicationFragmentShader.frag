@@ -101,6 +101,6 @@ void main()
 														indirect_lighting_sample);
 
 	//Write the fragment.
-	scene = vec4(indirect_lighting, 1.0f);
-	//scene = vec4(vec3(current_features.ambientOcclusion), 1.0f);
+	//scene = vec4(indirect_lighting, 1.0f);
+	scene = vec4(vec3(current_features.ambientOcclusion), 1.0f);
 }

@@ -10,38 +10,13 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-#define PRINT_SAMPLES (false)
-
-#if PRINT_SAMPLES
-/*
-*	Prints the samples.
-*/
-void PrintSamples()
-{
-	//Define constants.
-	constexpr uint32 NUMBER_OF_SAMPLES{ 64 };
-	constexpr uint32 NUMBER_OF_SAMPLES_DOUBLE{ NUMBER_OF_SAMPLES * 2 };
-
-	for (uint32 i{ 1 }; i < NUMBER_OF_SAMPLES_DOUBLE + 1; i += 2)
-	{
-		const Vector3<float32> direction{ HammerslySequence::CalculateCoordinateHemisphere(i, NUMBER_OF_SAMPLES_DOUBLE) };
-
-		const float32 length{ HammerslySequence::RadicalInverse(i + 1) };
-
-		PRINT_TO_OUTPUT("vec4(" << direction._X << "f, " << direction._Y << "f, " << direction._Z << "f, " << length << "f),");
-	}
-}
-#endif
-
 /*
 *	Initializes this graphics pipeline.
 */
 void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
 {
-#if PRINT_SAMPLES
-	//Print the samples.
-	PrintSamples();
-#endif
+	//Create the samples uniform buffer.
+	CreateSamplesUniformBuffer();
 
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -116,13 +91,41 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Execute() NOEXCEPT
 }
 
 /*
+*	Creates the samples uniform buffer.
+*/
+void ScreenSpaceAmbientOcclusionGraphicsPipeline::CreateSamplesUniformBuffer() NOEXCEPT
+{
+	//Calculate the hemisphere samples.
+	StaticArray<Vector4<float32>, 64> hemisphere_samples;
+
+	uint8 counter{ 0 };
+
+	for (uint8 i{ 0 }; i < 8; ++i)
+	{
+		for (uint8 j{ 0 }; j < 8; ++j)
+		{
+			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphere(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
+
+			++counter;
+		}
+	}
+
+	//Create the buffer and upload the data.
+	const void* const RESTRICT data_chunks[]{ hemisphere_samples.Data() };
+	const uint64 data_sizes[]{ hemisphere_samples.Size() * sizeof(Vector4<float32>) };
+	RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_SamplesUniformBuffer);
+	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_SamplesUniformBuffer);
+}
+
+/*
 *	Creates the render data table layout.
 */
 void ScreenSpaceAmbientOcclusionGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -135,5 +138,6 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::CreateRenderDataTable() NOEXCE
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 	
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2_Half), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &_RenderDataTable, _SamplesUniformBuffer);
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2_Half), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
