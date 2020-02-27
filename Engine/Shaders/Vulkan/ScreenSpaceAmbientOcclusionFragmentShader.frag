@@ -48,9 +48,9 @@ void SampleHemisphere(uint index, out vec3 direction, out float length)
 /*
 *	The probability density function.
 */
-float ProbabilityDensityFunction()
+float ProbabilityDensityFunction(vec3 pre_rotation_hemisphere_direction, vec2 sample_screen_coordinate)
 {
-	return 1.0f;
+	return max(dot(pre_rotation_hemisphere_direction, vec3(0.0f, 0.0f, 1.0f)), 0.0f) * float(ValidCoordinate(sample_screen_coordinate));
 }
 
 void main()
@@ -118,7 +118,7 @@ void main()
 		float distance_falloff = SmoothStep(1.0f - min(abs(expected_view_distance - sample_view_distance), 1.0f));
 
 		//Calculate the sample weight.
-		float sample_weight = ProbabilityDensityFunction();
+		float sample_weight = ProbabilityDensityFunction(pre_rotation_hemisphere_direction, sample_screen_coordinate);
 
 		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
 		occlusion += float(expected_view_distance < sample_view_distance) * distance_falloff * sample_weight;
@@ -126,7 +126,7 @@ void main()
 	}
 
 	//Normalize the ambient occlusion.
-	occlusion = 1.0f - (occlusion / total_weight);
+	occlusion = total_weight != 0.0f ? 1.0f - (occlusion / total_weight) : 1.0f;
 
     //Write the fragment
     fragment = vec4(vec3(occlusion), 1.0f);

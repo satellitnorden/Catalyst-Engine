@@ -39,7 +39,7 @@ float CalculateNeighborhoodSampleWeight(float minimum, float maximum, float prev
 	weight *= 1.0f - max(previous - maximum, 0.0f);
 
 	//Bias the weight.
-	weight = weight * weight;
+	weight = weight * weight * weight;
 
 	//Return the weight.
 	return weight;
