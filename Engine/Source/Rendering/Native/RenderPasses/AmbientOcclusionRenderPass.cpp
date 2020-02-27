@@ -103,7 +103,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	//Execute the current buffer, don't include the rest.
 	for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 	{
-		if (i == _CurrentTemporalBufferIndex && false)
+		if (i == _CurrentTemporalBufferIndex)
 		{
 			_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
 		}

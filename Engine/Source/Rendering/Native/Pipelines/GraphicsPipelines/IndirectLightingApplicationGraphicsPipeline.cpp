@@ -39,7 +39,7 @@ void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
-	SetBlendEnabled(false);
+	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);
 	SetBlendFactorSourceAlpha(BlendFactor::One);

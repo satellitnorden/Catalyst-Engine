@@ -21,9 +21,26 @@ public:
 	}
 
 	/*
-	*	Calculates the hemisphere coordinate given the parameters.
+	*	Calculates the cosinus hemisphere coordinate given the parameters.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphere(const uint32 index, const uint32 maximum) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereCosinus(const uint32 index, const uint32 maximum) NOEXCEPT
+	{
+		//Calculate the 2D coordinate.
+		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };
+
+		//Map the 2D coordinate onto the hemisphere.
+		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 cos_theta{ CatalystBaseMath::SquareRoot(1.0f - coordinate._X) };
+		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+
+		//Return the cosinus hemisphere coordinate.
+		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+	}
+
+	/*
+	*	Calculates the uniform hemisphere coordinate given the parameters.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereUniform(const uint32 index, const uint32 maximum) NOEXCEPT
 	{
 		//Calculate the 2D coordinate.
 		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };
@@ -33,7 +50,7 @@ public:
 		const float32 cos_theta{ 1.0f - coordinate._X };
 		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
-		//Return the hemisphere coordinate.
+		//Return the cosinus hemisphere coordinate.
 		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
 	}
 

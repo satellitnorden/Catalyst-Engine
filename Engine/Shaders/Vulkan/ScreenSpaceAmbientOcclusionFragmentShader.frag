@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (8)
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MINIMUM_BIAS (0.001f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MAXIMUM_BIAS (0.01f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
@@ -48,10 +48,8 @@ void SampleHemisphere(uint index, out vec3 direction, out float length)
 /*
 *	The probability density function.
 */
-float ProbabilityDensityFunction(vec3 original_normal, vec3 sample_normal, vec2 sample_screen_coordinate)
+float ProbabilityDensityFunction()
 {
-	//return dot(original_normal, sample_normal) * float(ValidCoordinate(sample_screen_coordinate));
-	//return float(ValidCoordinate(sample_screen_coordinate));
 	return 1.0f;
 }
 
@@ -92,13 +90,16 @@ void main()
 	for (uint i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
 	{
 		//Sample the random direction and length.
-		vec3 random_direction;
+		vec3 pre_rotation_hemisphere_direction;
 		float random_length;
 
-		SampleHemisphere(random_hemisphere_sample_start_index + i, random_direction, random_length);
+		SampleHemisphere(random_hemisphere_sample_start_index + i, pre_rotation_hemisphere_direction, random_length);
 
 		//Rotate the random direction.
-		random_direction = random_rotation * random_direction;
+		vec3 random_direction = random_rotation * pre_rotation_hemisphere_direction;
+
+		//Flip the direction, if needed.
+		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
 		//Calculate the sample position.
 		vec3 sample_position = world_position + random_direction * random_length * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS;
@@ -117,8 +118,7 @@ void main()
 		float distance_falloff = SmoothStep(1.0f - min(abs(expected_view_distance - sample_view_distance), 1.0f));
 
 		//Calculate the sample weight.
-		float sample_weight = ProbabilityDensityFunction(normal, random_direction, sample_screen_coordinate);
-		//float sample_weight = 1.0f;
+		float sample_weight = ProbabilityDensityFunction();
 
 		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
 		occlusion += float(expected_view_distance < sample_view_distance) * distance_falloff * sample_weight;

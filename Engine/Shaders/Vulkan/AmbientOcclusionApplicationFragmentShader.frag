@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Defines.
-#define BIAS_AMBIENT_OCCLUSION(X) (X * X * X)
+#define BIAS_AMBIENT_OCCLUSION(X) (X * X * X * X)
 
 //Layout specification.
 layout (early_fragment_tests) in;

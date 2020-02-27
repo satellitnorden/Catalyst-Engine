@@ -104,7 +104,7 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::CreateSamplesUniformBuffer() N
 	{
 		for (uint8 j{ 0 }; j < 8; ++j)
 		{
-			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphere(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
+			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereCosinus(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
 
 			++counter;
 		}
