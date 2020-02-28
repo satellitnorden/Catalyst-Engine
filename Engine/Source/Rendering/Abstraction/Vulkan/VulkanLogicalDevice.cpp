@@ -17,7 +17,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	FindQueueFamilyIndices();
 
 	//Create the device queue create info.
-	constexpr float QUEUE_PRIORITIES{ 0.0f };
+	constexpr float QUEUE_PRIORITIES{ 1.0f };
 
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
 	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, &QUEUE_PRIORITIES);
