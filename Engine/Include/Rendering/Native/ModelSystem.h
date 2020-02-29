@@ -68,6 +68,11 @@ public:
 	void SetHighlightColor(const ModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT;
 
 	/*
+	*	Sets the highlight strength on a model entity.
+	*/
+	void SetHighlightStrength(const ModelEntity *const RESTRICT entity, const float32 strength) NOEXCEPT;
+
+	/*
 	*	Disables highlight on a model entity.
 	*/
 	void DisableHighlight(const ModelEntity *const RESTRICT entity) NOEXCEPT;

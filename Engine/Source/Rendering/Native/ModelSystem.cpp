@@ -81,6 +81,24 @@ void ModelSystem::SetHighlightColor(const ModelEntity *const RESTRICT entity, co
 }
 
 /*
+*	Sets the highlight strength on a model entity.
+*/
+void ModelSystem::SetHighlightStrength(const ModelEntity* const RESTRICT entity, const float32 strength) NOEXCEPT
+{
+	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot set highlight strength!");
+
+	for (uint64 i{ 0 }, size{ _HighlightedModels.Size() }; i < size; ++i)
+	{
+		if (_HighlightedModels[i]._ComponentsIndex == entity->_ComponentsIndex)
+		{
+			_HighlightedModels[i]._HighlightStrength = strength;
+
+			break;
+		}
+	}
+}
+
+/*
 *	Disables highlight on a model entity.
 */
 void ModelSystem::DisableHighlight(const ModelEntity* const RESTRICT entity) NOEXCEPT

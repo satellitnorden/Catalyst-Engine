@@ -57,7 +57,7 @@ public:
 	/*
 	*	Enables highlight on this model entity.
 	*/
-	void EnableHighlight(const Vector3<float> &color, const float strength) NOEXCEPT;
+	void EnableHighlight(const Vector3<float> &color, const float32 strength) NOEXCEPT;
 
 	/*
 	*	Returns if this model entity is highlighted or not.
@@ -68,6 +68,11 @@ public:
 	*	Sets the highlight color on this model entity.
 	*/
 	void SetHighlightColor(const Vector3<float> &color) NOEXCEPT;
+
+	/*
+	*	Sets the highlight strength on this model entity.
+	*/
+	void SethighlightStrength(const float32 strength) NOEXCEPT;
 
 	/*
 	*	Disables highlight on this model entity.

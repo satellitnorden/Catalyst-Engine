@@ -61,11 +61,11 @@ void main()
 	vec3 view_direction = normalize(fragment_current_world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the highlight weight.
-	float highlight_weight = 0.1f + 0.9f * (1.0f - max(dot(shading_normal, -view_direction), 0.0f));
+	float highlight_weight = (1.0f - max(dot(shading_normal, -view_direction), 0.0f)) * highlight_strength;
 
 	//Apply the highlight properties.
 	albedo = mix(albedo, highlight_color, highlight_weight);
-	material_properties = mix(material_properties, vec4(material_properties.x, material_properties.y, material_properties.z, highlight_strength), highlight_weight);
+	material_properties = mix(material_properties, vec4(material_properties.x, material_properties.y, material_properties.z, 1.0f), highlight_weight);
 
     //Write the fragments.
     scene_features_1 = vec4(albedo, float(material_index) / 255.0f);

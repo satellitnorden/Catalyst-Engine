@@ -127,6 +127,14 @@ void ModelEntity::SetHighlightColor(const Vector3<float> &color) NOEXCEPT
 }
 
 /*
+*	Sets the highlight strength on this model entity.
+*/
+void ModelEntity::SethighlightStrength(const float32 strength) NOEXCEPT
+{
+	RenderingSystem::Instance->GetModelSystem()->SetHighlightStrength(this, strength);
+}
+
+/*
 *	Disables highlight on this model entity.
 */
 void ModelEntity::DisableHighlight() NOEXCEPT
