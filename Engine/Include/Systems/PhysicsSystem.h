@@ -79,4 +79,9 @@ private:
 	*/
 	void UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT;
 
+	/*
+	*	Checks collision for character movement. Returns whether or not a collision occured.
+	*/
+	NO_DISCARD bool CheckCharacterMovementCollision(const CharacterMovement *const RESTRICT movement, Vector3<float32> *const RESTRICT collision_position) NOEXCEPT;
+
 };

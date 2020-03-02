@@ -36,9 +36,9 @@ public:
 	}
 
 	/*
-	*	Calcules the closest point on an axis-aligned bounding box relative to the specified position.
+	*	Calcules the closest point inside an axis-aligned bounding box relative to the specified position.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> GetClosestPoint(const AxisAlignedBoundingBox &box, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> GetClosestPointInside(const AxisAlignedBoundingBox &box, const Vector3<float> &position) NOEXCEPT
 	{
 		return Vector3<float>(	CatalystBaseMath::Clamp<float>(position._X, box._Minimum._X, box._Maximum._X),
 								CatalystBaseMath::Clamp<float>(position._Y, box._Minimum._Y, box._Maximum._Y),

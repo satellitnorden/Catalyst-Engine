@@ -139,8 +139,16 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, const RaycastConfiguration &c
 */
 void PhysicsSystem::UpdateCharacterMovement(const UpdateContext *const RESTRICT context, CharacterMovement *const RESTRICT movement) NOEXCEPT
 {
-	//Cache the character capsule.
-	Capsule capsule{ movement->_Position, movement->_Position + Vector3<float>(0.0f, movement->_Height, 0.0f), movement->_Radius };
+	//Apply the jump input.
+	if (!movement->_IsJumping && movement->_JumpInput > 0.0f)
+	{
+		//Apply the movement input to the velocity.
+		movement->_Velocity += movement->_MovementInput;
+		movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
+
+		movement->_IsJumping = true;
+	}
+
 
 	//Apply different logic based on whether or not the character is jumping or not.
 	if (movement->_IsJumping)
@@ -150,71 +158,81 @@ void PhysicsSystem::UpdateCharacterMovement(const UpdateContext *const RESTRICT 
 
 		//Apply the velocity to the position.
 		movement->_Position += movement->_Velocity * context->_DeltaTime;
-
-		//Clamp the position to the terrain height.
-		float terrain_height{ 0.0f };
-
-		TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
-
-		if (movement->_Position._Y <= terrain_height)
-		{
-			movement->_Position._Y = terrain_height;
-
-			//Signal that this character is no longer jumping.
-			movement->_IsJumping = false;
-		}
 	}
 
 	else
 	{
-		//Apply the movement input to the velocity.
-		movement->_Velocity += movement->_MovementInput;
-
-		//Apply the jump input to the velocity.
-		if (movement->_JumpInput > 0.0f)
-		{
-			movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
-
-			movement->_IsJumping = true;
-		}
+		//Apply gravity.
+		movement->_Velocity._Y -= PhysicsConstants::GRAVITY * context->_DeltaTime;
 
 		//Apply the velocity to the position.
 		movement->_Position += movement->_Velocity * context->_DeltaTime;
 
-		//Clamp the position to the terrain height.
-		if (!movement->_IsJumping)
-		{
-			float terrain_height{ 0.0f };
+		//Apply the movement input to the position.
+		movement->_Position += movement->_MovementInput * context->_DeltaTime;
 
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height);
-
-			movement->_Position._Y = terrain_height;
-
-			//Reset the velocity.
-			movement->_Velocity = VectorConstants::ZERO;
-		}
+		//Apply friction to the X and Z axes of the velocity.
+		movement->_Velocity._X *= 0.1f;
+		movement->_Velocity._Z *= 0.1f;
 	}
 
 	//Reset the inputs.
 	movement->_MovementInput = VectorConstants::ZERO;
 	movement->_JumpInput = 0.0f;
 
-	/*
-	//Resolve collisions.
+	//Check collision.
+	Vector3<float32> collision_position;
+
+	if (CheckCharacterMovementCollision(movement, &collision_position))
+	{
+		//Resolve collision.
+		movement->_Position = collision_position;
+		movement->_Velocity = VectorConstants::ZERO;
+		movement->_IsJumping = false;
+	}
+}
+
+/*
+*	Checks collision for character movement. Returns whether or not a collision occured.
+*/
+NO_DISCARD bool PhysicsSystem::CheckCharacterMovementCollision(const CharacterMovement *const RESTRICT movement, Vector3<float32> *const RESTRICT collision_position) NOEXCEPT
+{
+	//Check collision against the terrain.
+	float32 terrain_height;
+
+	if (TerrainSystem::Instance->GetTerrainHeightAtPosition(movement->_Position, &terrain_height))
+	{
+		if (movement->_Position._Y <= terrain_height)
+		{
+			//Collision was found!
+			*collision_position = Vector3<float32>(movement->_Position._X, terrain_height, movement->_Position._Z);
+
+			return true;
+		}
+	}
+
+	//Check collision against models.
 	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
 	{
 		switch (data._Second._Type)
 		{
 			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
 			{
-				if (data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox.IsInsideXZ(movement->_Position))
+				const AxisAlignedBoundingBox &box{ data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox };
+
+				if (box.IsInside(movement->_Position))
 				{
-					movement->_Position._Y = CatalystBaseMath::Maximum<float>(movement->_Position._Y, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox._Maximum._Y);
+					//Collision was found!
+					*collision_position = Vector3<float32>(movement->_Position._X, box._Maximum._Y, movement->_Position._Z);
+
+					return true;
 				}
 
 				break;
 			}
 		}
 	}
-	*/
+
+	//No collision was found!
+	return false;
 }
