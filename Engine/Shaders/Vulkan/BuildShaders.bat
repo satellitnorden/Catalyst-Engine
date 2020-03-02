@@ -40,6 +40,7 @@ glslangValidator.exe -V RenderingReferenceFragmentShader.frag -o 			RenderingRef
 glslangValidator.exe -V ResampleFragmentShader.frag -o 					ResampleFragmentShader.spv
 glslangValidator.exe -V SceneFeaturesDownsampleFragmentShader.frag -o 			SceneFeaturesDownsampleFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
+glslangValidator.exe -V ScreenSpaceIndirectLightingFragmentShader.frag -o 		ScreenSpaceIndirectLightingFragmentShader.spv
 glslangValidator.exe -V SeparableBlurFragmentShader.frag -o 				SeparableBlurFragmentShader.spv
 glslangValidator.exe -V SkyComputeShader.comp -o 					SkyComputeShader.spv
 glslangValidator.exe -V SkyDownsampleComputeShader.comp -o 				SkyDownsampleComputeShader.spv

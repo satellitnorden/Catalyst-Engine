@@ -349,6 +349,7 @@ enum class Shader : uint8
 	ResampleFragment,
 	SceneFeaturesDownsampleFragment,
 	ScreenSpaceAmbientOcclusionFragment,
+	SCREEN_SPACE_INDIRECT_LIGHTING_FRAGMENT,
 	SeparableBlurFragment,
 	SkyCompute,
 	SkyDownsampleCompute,

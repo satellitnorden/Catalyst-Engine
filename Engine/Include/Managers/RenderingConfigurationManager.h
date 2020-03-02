@@ -15,6 +15,13 @@ public:
 		ScreenSpace
 	};
 
+	//Enumeration covering all indirect lighting modes.
+	enum class IndirectLightingMode : uint8
+	{
+		NONE,
+		SCREEN_SPACE
+	};
+
 	//Enumeration covering all motion blur modes.
 	enum class MotionBlurMode : uint8
 	{
@@ -47,6 +54,14 @@ public:
 	AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
 	{
 		return _AmbientOcclusionMode;
+	}
+
+	/*
+	*	Returns the indirect lighting mode.
+	*/
+	IndirectLightingMode GetIndirectLightingMode() const NOEXCEPT
+	{
+		return _IndirectLightingMode;
 	}
 
 	/*
@@ -118,7 +133,10 @@ private:
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
 
-	//The motion blur mode mode.
+	//The indirect lighting mode.
+	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
+
+	//The motion blur mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The shadows mode.
