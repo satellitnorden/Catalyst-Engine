@@ -11,6 +11,7 @@
 
 //Physics.
 #include <Physics/ModelCollisionData.h>
+#include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 
 //Rendering.

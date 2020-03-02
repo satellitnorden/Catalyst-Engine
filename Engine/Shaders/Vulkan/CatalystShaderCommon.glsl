@@ -165,6 +165,12 @@ layout (set = 0, binding = 5, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SK
 //The sky textures.
 layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
 
+//Hammersley hemisphere uniform buffer
+layout (std140, set = 0, binding = 7) uniform HammersleyHemisphereSamples
+{
+    layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
+};
+
 /*
 *   Defines the bit at the specified index.
 */
@@ -181,6 +187,17 @@ layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEX
 float CalculateAverage(vec3 fragment)
 {
     return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(random_tilt, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
 }
 
 /*
@@ -289,6 +306,17 @@ float RandomFloat(vec2 coordinate, float seed)
     return r2 - 1.0f;
     
 #endif
+}
+
+/*
+*   Samples a Hammersley hemisphere sample. 
+*/
+void SampleHammersleyHemisphereSample(uint index, out vec3 direction, out float length)
+{
+    vec4 hemisphere_sample = HAMMERSLEY_HEMISPHERE_SAMPLES[index & 63];
+
+    direction = hemisphere_sample.xyz;
+    length = hemisphere_sample.w;
 }
 
 /*

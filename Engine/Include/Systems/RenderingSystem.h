@@ -388,6 +388,9 @@ private:
 	//The active noise texture index.
 	uint8 _ActiveNoiseTextureIndex{ 0 };
 
+	//The Hammersley hemisphere samples uniform buffer.
+	BufferHandle _HammersleyHemisphereSamplesUniformBuffer;
+
 	/*
 	*	Pre-initializes the rendering system.
 	*/
@@ -442,6 +445,11 @@ private:
 	*	Initializes the default texture.
 	*/
 	void InitializeDefaultTexture() NOEXCEPT;
+
+	/*
+	*	Initializes the Hammersley hemisphere samples uniform buffer.
+	*/
+	void InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXCEPT;
 
 	/*
 	*	Initializes the noise textures.

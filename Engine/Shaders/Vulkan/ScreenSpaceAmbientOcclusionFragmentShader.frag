@@ -22,28 +22,11 @@ layout (early_fragment_tests) in;
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Samples uniform buffer
-layout (std140, set = 1, binding = 0) uniform SamplesUniformBuffer
-{
-    layout (offset = 0) vec4 HEMISPHERE_SAMPLES[64];
-};
-
 //Texture samplers.
-layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-
-/*
-*	Samples the hemisphere.	
-*/
-void SampleHemisphere(uint index, out vec3 direction, out float length)
-{
-	vec4 hemisphere_sample = HEMISPHERE_SAMPLES[(index + uint(gl_FragCoord.x) + uint(gl_FragCoord.y)) & 63];
-
-	direction = hemisphere_sample.xyz;
-	length = hemisphere_sample.w;
-}
 
 /*
 *	The probability density function.
@@ -72,11 +55,8 @@ void main()
 	//Sample the noise texture.
 	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
-	vec3 random_normal = noise_texture_sample.xyz * 2.0f - 1.0f;
-	vec3 random_tangent = normalize(random_normal - normal * dot(random_normal, normal));
-	vec3 random_bitangent = cross(random_normal, random_tangent);
-
-	mat3 random_rotation = mat3(random_tangent, random_bitangent, normal);
+	//Calculate the random rotation matrix.
+	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
 
 	//Calculate the random hemisphere sample start index.
 	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
@@ -93,7 +73,7 @@ void main()
 		vec3 pre_rotation_hemisphere_direction;
 		float random_length;
 
-		SampleHemisphere(random_hemisphere_sample_start_index + i, pre_rotation_hemisphere_direction, random_length);
+		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + i + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), pre_rotation_hemisphere_direction, random_length);
 
 		//Rotate the random direction.
 		vec3 random_direction = random_rotation * pre_rotation_hemisphere_direction;

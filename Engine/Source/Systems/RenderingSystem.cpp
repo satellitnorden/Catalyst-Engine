@@ -16,6 +16,7 @@
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/Noise/HaltonSequence.h>
+#include <Math/Noise/HammersleySequence.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -93,6 +94,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Initialize the default texture.
 	InitializeDefaultTexture();
+
+	//Initialize the Hammersley hemisphere samples uniform buffer.
+	InitializeHammersleyHemisphereSamplesUniformBuffer();
 
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
@@ -348,7 +352,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 7> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
@@ -370,6 +374,9 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 			//Sky textures.
 			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Fragment),
+
+			//Hammersley hemisphere samples uniform buffer.
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -394,6 +401,33 @@ void RenderingSystem::InitializeDefaultTexture() NOEXCEPT
 	//Create the default texture 2D.
 	StaticArray<byte, 4> default_texture_2d_data{ static_cast<byte>(255), static_cast<byte>(0), static_cast<byte>(0), static_cast<byte>(255) };
 	CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::R8G8B8A8_Byte), &_DefaultTexture2D);
+}
+
+/*
+*	Initializes the Hammersley hemisphere samples uniform buffer.
+*/
+void RenderingSystem::InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXCEPT
+{
+	//Calculate the hemisphere samples.
+	StaticArray<Vector4<float32>, 64> hemisphere_samples;
+
+	uint8 counter{ 0 };
+
+	for (uint8 i{ 0 }; i < 8; ++i)
+	{
+		for (uint8 j{ 0 }; j < 8; ++j)
+		{
+			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereCosinus(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
+
+			++counter;
+		}
+	}
+
+	//Create the buffer and upload the data.
+	const void* const RESTRICT data_chunks[]{ hemisphere_samples.Data() };
+	const uint64 data_sizes[]{ hemisphere_samples.Size() * sizeof(Vector4<float32>) };
+	CreateBuffer(data_sizes[0], BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_HammersleyHemisphereSamplesUniformBuffer);
+	UploadDataToBuffer(data_chunks, data_sizes, 1, &_HammersleyHemisphereSamplesUniformBuffer);
 }
 
 /*
@@ -501,6 +535,9 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		{
 			BindCombinedImageSamplerToRenderDataTable(6, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 		}
+
+		//Bind the Hammersley hemisphere samples uniform buffer.
+		BindUniformBufferToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
 	}
 }
 
