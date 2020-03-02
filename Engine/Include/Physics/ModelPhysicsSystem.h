@@ -9,6 +9,7 @@
 
 //Physics.
 #include <Physics/ModelCollisionData.h>
+#include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RaycastConfiguration.h>
 #include <Physics/RaycastResult.h>
@@ -34,6 +35,16 @@ public:
 	void UnregisterModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
 
 	/*
+	*	Registers model physics simulation data.
+	*/
+	void RegisterModelPhysicsSimulationData(const uint64 entity_identifier, const ModelPhysicsSimulationData &data) NOEXCEPT;
+
+	/*
+	*	Unregisters model physics simulation data.
+	*/
+	void UnregisterModelPhysicsSimulationData(const uint64 entity_identifier) NOEXCEPT;
+
+	/*
 	*	Casts a ray against models.
 	*/
 	void CastRayModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
@@ -42,5 +53,13 @@ private:
 
 	//Container for all model collision data.
 	Map<uint64, ModelCollisionData> _ModelCollisionData;
+
+	//Container for all model physics simulation data.
+	Map<uint64, ModelPhysicsSimulationData> _ModelPhysicsSimulationData;
+
+	/*
+	*	Simulates physics for one model.
+	*/
+	void SimulatePhysics(const UpdateContext *const RESTRICT context, Pair<uint64, ModelPhysicsSimulationData> *const RESTRICT data) NOEXCEPT;
 
 };

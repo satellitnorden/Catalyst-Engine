@@ -18,6 +18,9 @@ DEFINE_SINGLETON(PhysicsSystem);
 */
 void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Update the model physics system.
+	_ModelPhysicsSystem.PhysicsUpdate(context);
+
 	//Update all character movements.
 	for (CharacterMovement *const RESTRICT movement : _CharacterMovements)
 	{

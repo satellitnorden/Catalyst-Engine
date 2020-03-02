@@ -57,6 +57,12 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
 	}
 
+	//Register the model physics simulation data, if physics should be simulated.
+	if (model_initialization_data->_SimulatePhysics)
+	{
+		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelPhysicsSimulationData(_ComponentsIndex, model_initialization_data->_ModelPhysicsSimulationData);
+	}
+
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<ModelInitializationData>(data);
 }

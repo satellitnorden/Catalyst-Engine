@@ -34,4 +34,10 @@ public:
 	//The model collision data.
 	ModelCollisionData _ModelCollisionData;
 
+	//Denotes whether or not to simulate physics.
+	bool _SimulatePhysics;
+
+	//The model physics simulation data.
+	ModelPhysicsSimulationData _ModelPhysicsSimulationData;
+
 };

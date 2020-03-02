@@ -1458,6 +1458,9 @@
     <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSimulationData.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
