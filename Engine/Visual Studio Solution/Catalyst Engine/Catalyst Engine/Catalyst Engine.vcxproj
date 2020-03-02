@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h" />
+    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
@@ -415,6 +416,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />

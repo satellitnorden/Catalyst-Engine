@@ -385,6 +385,9 @@
     <Filter Include="World\Include\Environment">
       <UniqueIdentifier>{b668d10e-4d2f-449c-a696-cde3f30a86fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Source">
+      <UniqueIdentifier>{45214598-a754-4dc1-bb78-c1a2617f0021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1452,6 +1455,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1918,6 +1924,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueryPool.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp">
+      <Filter>Physics\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

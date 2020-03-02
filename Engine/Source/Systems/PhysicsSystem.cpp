@@ -38,7 +38,7 @@ void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configur
 	//Raycast against models.
 	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::MODEL))
 	{
-		CastRayModels(ray, configuration, result);
+		_ModelPhysicsSystem.CastRayModels(ray, configuration, result);
 	}
 
 	//Raycast against the terrain.
@@ -55,49 +55,6 @@ void PhysicsSystem::RegisterCharacterMovement(CharacterMovement* const RESTRICT 
 {
 	//Add it to the container.
 	_CharacterMovements.Emplace(movement);
-}
-
-/*
-*	Registers model collision data.
-*/
-void PhysicsSystem::RegisterModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT
-{
-	_ModelCollisionData[entity_identifier] = data;
-}
-
-/*
-*	Unregisters model collision data.
-*/
-void PhysicsSystem::UnregisterModelCollisionData(const uint64 entity_identifer) NOEXCEPT
-{
-	
-}
-
-/*
-*	Casts a ray against models.
-*/
-void PhysicsSystem::CastRayModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
-{
-	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
-	{
-		switch (data._Second._Type)
-		{
-			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
-			{
-				float intersection_distance{ FLOAT_MAXIMUM };
-
-				if (CatalystGeometryMath::RayBoxIntersection(ray, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox, &intersection_distance)
-					&& result->_HitDistance > intersection_distance)
-				{
-					result->_HasHit = true;
-					result->_HitDistance = intersection_distance;
-					result->_Type = RaycastResult::Type::MODEL;
-				}
-
-				break;
-			}
-		}
-	}
 }
 
 /*
@@ -211,6 +168,7 @@ NO_DISCARD bool PhysicsSystem::CheckCharacterMovementCollision(const CharacterMo
 		}
 	}
 
+	/*
 	//Check collision against models.
 	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
 	{
@@ -232,6 +190,7 @@ NO_DISCARD bool PhysicsSystem::CheckCharacterMovementCollision(const CharacterMo
 			}
 		}
 	}
+	*/
 
 	//No collision was found!
 	return false;
