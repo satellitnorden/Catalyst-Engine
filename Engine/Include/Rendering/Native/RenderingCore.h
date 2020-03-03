@@ -321,7 +321,6 @@ enum class Shader : uint8
 	FireflyReductionFragment,
 	IndirectLightingApplicationFragment,
 	IndirectLightingDenoisingFragment,
-	IndirectLightingFragment,
 	IndirectLightingRayGeneration,
 	IndirectLightingTemporalDenoisingFragment,
 	LuminanceLightingFragment,

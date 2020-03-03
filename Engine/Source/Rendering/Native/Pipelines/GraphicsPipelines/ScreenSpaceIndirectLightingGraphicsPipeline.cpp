@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceIndirectLightingGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -10,7 +10,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
+void ScreenSpaceIndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -23,11 +23,11 @@ void IndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::IndirectLightingFragment);
+	SetFragmentShader(Shader::SCREEN_SPACE_INDIRECT_LIGHTING_FRAGMENT);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -35,13 +35,13 @@ void IndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
 	SetBlendEnabled(false);
-	SetBlendFactorSourceColor(BlendFactor::One);
-	SetBlendFactorDestinationColor(BlendFactor::One);
+	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
+	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
@@ -62,7 +62,7 @@ void IndirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void IndirectLightingGraphicsPipeline::Execute() NOEXCEPT
+void ScreenSpaceIndirectLightingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -87,7 +87,7 @@ void IndirectLightingGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void IndirectLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void ScreenSpaceIndirectLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
@@ -102,11 +102,11 @@ void IndirectLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void IndirectLightingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void ScreenSpaceIndirectLightingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2_Half), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

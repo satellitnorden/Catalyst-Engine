@@ -1248,9 +1248,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\IndirectLightingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
@@ -1460,6 +1457,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSimulationData.h">
       <Filter>Physics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceIndirectLightingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1838,9 +1838,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\IndirectLightingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
@@ -1930,6 +1927,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp">
       <Filter>Physics\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceIndirectLightingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

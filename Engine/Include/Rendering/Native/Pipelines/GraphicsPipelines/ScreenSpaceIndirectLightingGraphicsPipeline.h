@@ -3,13 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class IndirectLightingGraphicsPipeline final : public GraphicsPipeline
+class ScreenSpaceIndirectLightingGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

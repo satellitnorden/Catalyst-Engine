@@ -7,8 +7,8 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingTemporalDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceIndirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/IndirectLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -27,8 +27,8 @@ public:
 
 private:
 
-	//The indirect lighting graphics pipeline.
-	IndirectLightingGraphicsPipeline _IndirectLightingGraphicsPipeline;
+	//The screen space indirect lighting graphics pipeline.
+	ScreenSpaceIndirectLightingGraphicsPipeline _ScreenSpaceIndirectLightingGraphicsPipeline;
 
 	//The indirect lighting ray tracing pipeline.
 	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;

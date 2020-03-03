@@ -74,14 +74,6 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 	return false;
 }
 
-/*
-*	Casts a ray against the sky.
-*/
-vec3 CastRaySky(vec3 ray_direction, float roughness, float metallic)
-{
-	return vec3(0.0f);
-}
-
 void main()
 {
 	//Sample the scene features.
@@ -109,11 +101,8 @@ void main()
 	//Calculate the indirect lighting.
 	vec3 indirect_lighting;
 
-	if (!CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting))
-	{
-		indirect_lighting = CastRaySky(normalize(mix(ray_direction, normal, roughness * (1.0f - metallic))), roughness, metallic);
-	}
+	bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting);
 	
     //Write the fragment
-    fragment = vec4(indirect_lighting, 1.0f);
+    fragment = vec4(indirect_lighting, float(hit));
 }

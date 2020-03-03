@@ -62,9 +62,9 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 }
 
 /*
-*	Samples the indirect lighting.
+*	Samples the sky.
 */
-vec3 SampleIndirectLighting(vec3 view_direction, vec3 normal, float roughness, float metallic)
+vec3 SampleSky(vec3 view_direction, vec3 normal, float roughness, float metallic)
 {
 	//Calculate the diffuseness.
 	float diffuseness = roughness * (1.0f - metallic);
@@ -89,7 +89,13 @@ void main()
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample the indirect lighting.
-	vec3 indirect_lighting_sample = SampleIndirectLighting(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
+	vec4 indirect_lighting_sample = texture(indirect_lighting_texture, fragment_texture_coordinate);
+
+	//Sample the sky.
+	vec3 sky_sample = SampleSky(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
+
+	//Calculate the blended indirect lighting.
+	vec3 blended_indirect_lighting = mix(sky_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
 	//Calculate the indirect lighting.
 	vec3 indirect_lighting = CalculateIndirectLighting(	current_features.view_direction,
@@ -98,7 +104,7 @@ void main()
 														current_features.roughness,
 														current_features.metallic,
 														current_features.ambientOcclusion,
-														indirect_lighting_sample);
+														blended_indirect_lighting);
 
 	//Write the fragment.
 	scene = vec4(indirect_lighting, 1.0f);

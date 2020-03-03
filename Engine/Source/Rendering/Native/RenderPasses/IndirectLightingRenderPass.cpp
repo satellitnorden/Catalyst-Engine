@@ -41,7 +41,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + 1 + _IndirectLightingDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
-	AddPipeline(&_IndirectLightingGraphicsPipeline);
+	AddPipeline(&_ScreenSpaceIndirectLightingGraphicsPipeline);
 	AddPipeline(&_IndirectLightingRayTracingPipeline);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
@@ -57,7 +57,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_IndirectLightingApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_IndirectLightingGraphicsPipeline.Initialize();
+	_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize();
 	_IndirectLightingRayTracingPipeline.Initialize();
 	_IndirectLightingDenoisingGraphicsPipelines[0].Initialize(	IndirectLightingDenoisingGraphicsPipeline::Direction::Horizontal,
 																2.0f,
@@ -96,7 +96,16 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	_IndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::NONE)
+	{
+		_ScreenSpaceIndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+	}
+
+	else
+	{
+		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
+	}
+	
 	_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
@@ -104,29 +113,33 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		pipeline.SetIncludeInRender(false);
 	}
 
-	for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
+	//Execute the current buffer, don't include the rest.
+	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE)
 	{
-		pipeline.SetIncludeInRender(false);
+		for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+		{
+			if (i == _CurrentTemporalBufferIndex && false)
+			{
+				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].Execute();
+			}
+
+			else
+			{
+				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			}
+		}
 	}
 
-	/*
-	//Execute the current buffer, don't include the rest.
-	for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+	else
 	{
-		if (i == _CurrentTemporalBufferIndex)
+		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
 		{
-			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].Execute();
-		}
-
-		else
-		{
-			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			pipeline.SetIncludeInRender(false);
 		}
 	}
 
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
-	*/
 
 	_IndirectLightingApplicationGraphicsPipeline.Execute();
 }

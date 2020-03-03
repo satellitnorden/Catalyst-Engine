@@ -12,7 +12,6 @@ glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		Fast
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 			FireflyReductionFragmentShader.spv
 glslangValidator.exe -V IndirectLightingApplicationFragmentShader.frag -o 		IndirectLightingApplicationFragmentShader.spv
 glslangValidator.exe -V IndirectLightingDenoisingFragmentShader.frag -o 		IndirectLightingDenoisingFragmentShader.spv
-glslangValidator.exe -V IndirectLightingFragmentShader.frag -o 			IndirectLightingFragmentShader.spv
 glslangValidator.exe -V IndirectLightingRayGenerationShader.rgen -o 			IndirectLightingRayGenerationShader.spv
 glslangValidator.exe -V IndirectLightingTemporalDenoisingFragmentShader.frag -o 		IndirectLightingTemporalDenoisingFragmentShader.spv
 glslangValidator.exe -V LuminanceLightingFragmentShader.frag -o 			LuminanceLightingFragmentShader.spv
