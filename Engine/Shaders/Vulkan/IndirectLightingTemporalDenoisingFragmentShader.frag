@@ -9,7 +9,7 @@
 
 //Constants.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.99f)
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (5.0f)
+#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END ((INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
 //Layout specification.
@@ -32,7 +32,7 @@ layout (location = 1) out vec4 indirect_lighting;
 */
 vec3 Constrain(vec3 minimum, vec3 maximum, vec3 point)
 {
-#if 0 //Clamp instead of clip.
+#if 1 //Clamp instead of clip.
 
 	//return clamp(point, minimum, maximum);
 	return point;
@@ -99,9 +99,10 @@ void main()
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
 
 	//Blend the previous and the current indirect lighting.
-	vec3 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler.rgb, previous_indirect_lighting_texture_sampler.rgb, INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);
+	//vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);
+	vec4 blended_indirect_lighting = current_indirect_lighting_texture_sampler;
 
 	//Write the fragments.
-	current_indirect_lighting = vec4(blended_indirect_lighting, 1.0f);
-	indirect_lighting = vec4(blended_indirect_lighting, 1.0f);
+	current_indirect_lighting = vec4(blended_indirect_lighting.rgb, float(blended_indirect_lighting.a > 0.5f));
+	indirect_lighting = vec4(blended_indirect_lighting.rgb, float(blended_indirect_lighting.a > 0.5f));
 }
