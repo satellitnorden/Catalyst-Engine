@@ -65,6 +65,15 @@ public:
 	}
 
 	/*
+	*	Given a value in the range [0.0f, 1.0f] and a bias in the range [0.0f, 1.0f],
+	*	biases the value either towards 0.0f if bias is < 0.5f or towards 1.0f if bias is >= 0.5f.
+	*/
+	FORCE_INLINE static NO_DISCARD float Bias(const float value, const float bias) NOEXCEPT
+	{
+		return bias >= 0.5f ? LinearlyInterpolate(value, InverseSquare(value), (bias - 0.5f) * 2.0f) : LinearlyInterpolate(value, Square(value), bias * 2.0f);
+	}
+
+	/*
 	*	Rounds a number up to the nearest integer.
 	*/
 	template <typename TYPE>
