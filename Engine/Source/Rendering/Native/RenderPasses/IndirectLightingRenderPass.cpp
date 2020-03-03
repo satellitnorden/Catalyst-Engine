@@ -99,14 +99,14 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::NONE)
 	{
 		_ScreenSpaceIndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	else
+	else if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
+		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
-	
-	_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 
 	for (IndirectLightingDenoisingGraphicsPipeline &pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 	{
@@ -118,7 +118,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	{
 		for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{
-			if (i == _CurrentTemporalBufferIndex && false)
+			if (i == _CurrentTemporalBufferIndex)
 			{
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].Execute();
 			}

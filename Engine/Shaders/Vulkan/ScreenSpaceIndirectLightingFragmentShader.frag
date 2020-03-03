@@ -71,6 +71,42 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(vec3 view_direction, ve
 */
 bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 {
+	//Perform the raycast.
+	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES; ++i)
+	{
+		//Calculate the sample position.
+		vec3 sample_position = ray_origin + ray_direction * float(i);
+
+		//Calculate the sample screen coordinate.
+		vec4 sample_view_space_position = viewMatrix * vec4(sample_position, 1.0f);
+		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
+		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
+
+		//If the sample screen coordinate goes outisde of the screen, there can't be a hit.
+		if (!ValidCoordinate(sample_screen_coordinate))
+		{
+			return false;
+		}
+
+		//Calculate the expected view distance.
+		float expected_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
+
+		//Sample the sample scene features.
+		vec4 sample_scene_features = texture(scene_features_2_texture, sample_screen_coordinate);
+		float sample_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_scene_features.w).z;
+
+		//If the expected hit distance is greater then the sample hit distance, there is a hit!
+		if (expected_view_distance < sample_view_distance)
+		{
+			//Sample the scene at the sample screen coordinate.
+			hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
+
+			//Return that there was a hit.
+			return true;
+		}
+	}
+
+	//There was no hit.
 	return false;
 }
 
@@ -99,10 +135,10 @@ void main()
 	CalculateIndirectLightingRayDirectionAndStartOffset(view_direction, normal, roughness, metallic, ray_direction, start_offset);
 
 	//Calculate the indirect lighting.
-	vec3 indirect_lighting;
+	vec3 indirect_lighting = vec3(0.0f);
 
 	bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting);
-	
+
     //Write the fragment
     fragment = vec4(indirect_lighting, float(hit));
 }
