@@ -135,10 +135,10 @@ void main()
 	CalculateIndirectLightingRayDirectionAndStartOffset(view_direction, normal, roughness, metallic, ray_direction, start_offset);
 
 	//Calculate the indirect lighting.
-	vec3 indirect_lighting = vec3(0.0f);
+	vec3 indirect_lighting;
 
 	bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting);
 
     //Write the fragment
-    fragment = vec4(indirect_lighting, float(hit));
+    fragment = vec4(hit ? indirect_lighting : vec3(0.0f), hit ? 1.0f : 0.0f);
 }

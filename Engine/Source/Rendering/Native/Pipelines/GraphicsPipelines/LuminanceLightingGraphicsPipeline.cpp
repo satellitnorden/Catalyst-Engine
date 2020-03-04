@@ -38,7 +38,7 @@ void LuminanceLightingGraphicsPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetShouldClear(true);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

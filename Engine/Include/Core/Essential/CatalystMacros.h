@@ -20,7 +20,7 @@
 /*
 *	Sets a breakpoint in the code in non-final builds.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#if defined(CATALYST_MSVC)
 		#define BREAKPOINT() { __debugbreak(); }
 	#elif defined(CATALYST_CLANG)
