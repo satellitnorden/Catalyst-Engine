@@ -12,6 +12,7 @@
 
 //Constants.
 #define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (16)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RANDOM_SAMPLE_WEIGHT (0.975f) //0.025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -39,7 +40,7 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(vec3 view_direction, ve
 	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
 	//Calculate the random rotation matrix.
-	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, mix(vec3(1.0f, 1.0f, 1.0f), noise_texture_sample.xyz * 2.0f - 1.0f, SCREEN_SPACE_INDIRECT_LIGHTING_RANDOM_SAMPLE_WEIGHT));
 
 	//Calculate the random hemisphere sample start index.
 	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);

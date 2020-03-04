@@ -109,5 +109,5 @@ void main()
 	//Write the fragment.
 	scene = vec4(max(indirect_lighting, vec3(0.0f)), 1.0f);
 	//scene = vec4(vec3(current_features.ambientOcclusion), 1.0f);
-	//scene = vec4(indirect_lighting_sample.rgb, 1.0f);
+	//scene = vec4(max(current_features.normal * 0.5f + 0.5f, vec3(0.0f)), 1.0f);
 }

@@ -33,13 +33,13 @@ float PackNormal(vec3 unpacked_normal)
     //Construct the packed normal.
     uint packed_normal = 0;
 
-    packed_normal |= uint(unpacked_normal.x * MAXIMUM_15_BIT_FLOAT) << 16;
-    packed_normal |= uint(unpacked_normal.z * MAXIMUM_15_BIT_FLOAT);
+    packed_normal |= (uint(unpacked_normal.x * MAXIMUM_15_BIT_FLOAT) & MAXIMUM_15_BIT_UINT) << 16;
+    packed_normal |= (uint(unpacked_normal.z * MAXIMUM_15_BIT_FLOAT) & MAXIMUM_15_BIT_UINT);
 
     //Set the sign bit.
     packed_normal = unpacked_normal.y >= 0.0f ? packed_normal : packed_normal | BIT(15);
 
-    return float(packed_normal);
+    return uintBitsToFloat(packed_normal);
 }
 
 /*
@@ -48,7 +48,7 @@ float PackNormal(vec3 unpacked_normal)
 vec3 UnpackNormal(float packed_normal)
 {   
     //Unpack the normal.
-    uint packed_normal_uint = uint(packed_normal);
+    uint packed_normal_uint = floatBitsToUint(packed_normal);
 
     vec3 normal;
 

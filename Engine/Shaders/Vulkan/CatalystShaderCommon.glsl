@@ -195,7 +195,7 @@ float CalculateAverage(vec3 fragment)
 mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 {
     vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
-    vec3 random_bitangent = cross(random_tilt, random_tangent);
+    vec3 random_bitangent = cross(normal, random_tangent);
 
     return mat3(random_tangent, random_bitangent, normal);
 }
