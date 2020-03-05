@@ -54,7 +54,7 @@ public:
 	{
 		//Load the model.
 		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(file, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const aiScene *modelScene = modelImporter.ReadFile(file, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_FixInfacingNormals);
 
 		//Process the node(s).
 		ProcessModelNode(modelScene->mRootNode, modelScene, vertices, indices);
