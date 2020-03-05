@@ -101,7 +101,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE && false)
+	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE)
 	{
 		for (IndirectLightingDenoisingGraphicsPipeline& pipeline : _IndirectLightingDenoisingGraphicsPipelines)
 		{

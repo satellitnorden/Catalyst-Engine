@@ -20,7 +20,7 @@
 #define SKY_CLOUDS_SKY_LIGHT_LUMINANCE_MULTIPLIER (0.3f) //0.025f step.
 #define SKY_CLOUDS_DENSITY_MULTIPLIER (16.0f) //0.25f step.
 
-#define SKY_FEEDBACK_FACTOR (0.9775f) //0.0025f step.
+#define SKY_FEEDBACK_FACTOR (0.98f) //0.0025f step.
 
 //Layout specification.
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
@@ -202,17 +202,9 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 	noise_samples[6] = noise_sample_2[2];
 	noise_samples[7] = noise_sample_2[3];
 
-	//Do a line-plane intersection against the lower plane.
-	float lower_plane_intersection_distance;
-
-    LinePlaneIntersection(vec3(0.0f, 0.0f, 0.0f), direction, vec3(0.0f, SKY_CLOUDS_LOWER_PLANE, 0.0f), vec3(0.0f, -1.0f, 0.0f), lower_plane_intersection_distance);
-    vec3 start = direction * lower_plane_intersection_distance;
-
-	//Do a line-plane intersection against the upper plane.
-	float upper_plane_intersection_distance;
-
-    LinePlaneIntersection(vec3(0.0f, 0.0f, 0.0f), direction, vec3(0.0f, SKY_CLOUDS_UPPER_PLANE, 0.0f), vec3(0.0f, -1.0f, 0.0f), upper_plane_intersection_distance);
-    vec3 end = direction * upper_plane_intersection_distance;
+	//Calculate the start and end
+    vec3 start = direction * SKY_CLOUDS_LOWER_PLANE;
+    vec3 end = direction * SKY_CLOUDS_UPPER_PLANE;
 
     //Retrieve the cloud density at some random points.
     float cloud_density = 0.0f;
@@ -261,17 +253,7 @@ void main()
 	sky_color = mix(sky_color, stars.rgb, stars.a);
 
 	//Calculate the clouds.
-	vec4 clouds;
-
-	if (direction.y > 0.0f)
-	{
-		clouds = CalculateClouds(coordinate, direction);
-	}
-
-	else
-	{
-		clouds = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-	}
+	vec4 clouds = CalculateClouds(coordinate, direction);
 
 	//Load the old color.
 	vec4 old_color = imageLoad(SKY_IMAGES[0], ivec3(coordinate));
