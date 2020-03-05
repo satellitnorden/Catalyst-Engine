@@ -31,12 +31,12 @@ layout (location = 0) in vec3 fragment_world_position;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_features_1_texture;
 layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
-layout (set = 1, binding = 2) uniform sampler2D scene_features_3_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_1;
 layout (location = 1) out vec4 scene_features_2;
 layout (location = 2) out vec4 scene_features_3;
+layout (location = 3) out vec4 scene_features_4;
 
 /*
 *   Calculates the normal.
@@ -147,6 +147,7 @@ void main()
 
     //Write the fragments.
     scene_features_1 = vec4(albedo, 0.0f);
-    scene_features_2 = vec4(PackNormal(normal), velocity, gl_FragCoord.z);
+    scene_features_2 = vec4(normal, gl_FragCoord.z);
     scene_features_3 = mix(vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(1.0f, 0.0f, 1.0f, 0.0f), foam_weight);
+    scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }

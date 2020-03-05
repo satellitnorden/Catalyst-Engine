@@ -15,7 +15,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Out parameters
-layout (location = 0) out vec4 scene_features_2;
+layout (location = 0) out vec4 scene_features_4;
 
 /*
 *	Returns the screen coordinate with the given view matrix and world position.
@@ -34,5 +34,5 @@ void main()
    vec3 worldPosition = CalculateWorldPosition(fragmentTextureCoordinate, 0.0f);
 
     //Write the fragments.
-    scene_features_2 = vec4(0.0f, CalculateScreenCoordinate(viewMatrix, worldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, worldPosition), 0.0f);
+    scene_features_4 = vec4(CalculateScreenCoordinate(viewMatrix, worldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, worldPosition), 0.0f, 0.0f);
 }

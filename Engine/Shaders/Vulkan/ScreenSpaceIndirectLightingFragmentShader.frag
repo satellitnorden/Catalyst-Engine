@@ -118,7 +118,7 @@ void main()
 	vec4 scene_features_3 = texture(scene_features_3_texture, fragment_texture_coordinate);
 
 	//Unpack the scene features.
-	vec3 normal = UnpackNormal(scene_features_2.x);
+	vec3 normal = scene_features_2.xyz;
 	float depth = scene_features_2.w;
 	float roughness = scene_features_3.x;
 	float metallic = scene_features_3.y;

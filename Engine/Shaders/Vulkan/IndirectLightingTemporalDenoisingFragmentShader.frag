@@ -19,7 +19,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
 layout (set = 1, binding = 1) uniform sampler2D previous_indirect_lighting_texture;
 layout (set = 1, binding = 2) uniform sampler2D current_indirect_lighting_texture;
 
@@ -42,9 +42,6 @@ float NeighborhoodWeight(vec3 minimum, vec3 maximum, vec3 previous)
 	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
 	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
 
-	//Bias the weight.
-	weight = weight;
-
 	//Return the weight.
 	return 1.0f;
 }
@@ -65,7 +62,7 @@ void main()
 	{
 		for (float y = -INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; y <= INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; ++y)
 		{
-			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution;
+			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution * 2.0f;
 		
 			vec3 neighbordhood_sample = texture(current_indirect_lighting_texture, sample_coordinate).rgb;
 
@@ -75,7 +72,7 @@ void main()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(scene_features_2_texture, unjittered_screen_coordinate).yz;
+	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(scene_features_4_texture, unjittered_screen_coordinate).xy;
 
 	//Sample the previous indirect lighting texture.
 	vec4 previous_indirect_lighting_texture_sampler = texture(previous_indirect_lighting_texture, previous_screen_coordinate);

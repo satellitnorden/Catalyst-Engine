@@ -41,7 +41,7 @@ void main()
 {
 	//Sample the scene features.
 	vec4 scene_features = texture(scene_features_2_texture, fragment_texture_coordinate);
-	vec3 normal = UnpackNormal(scene_features.x);
+	vec3 normal = scene_features.xyz;
 	float depth = scene_features.w;
 
 	//Calculate the world position at this fragment.

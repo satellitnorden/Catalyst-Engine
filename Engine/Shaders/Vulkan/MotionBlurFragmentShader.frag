@@ -18,7 +18,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
 layout (set = 1, binding = 1) uniform sampler2D scene_texture;
 
 //Out parameters.
@@ -29,7 +29,7 @@ layout (location = 0) out vec4 fragment;
 */
 vec2 GetVelocity()
 {
-	return texture(scene_features_2_texture, fragmentTextureCoordinate).yz;
+	return texture(scene_features_4_texture, fragmentTextureCoordinate).xy;
 }
 
 void main()

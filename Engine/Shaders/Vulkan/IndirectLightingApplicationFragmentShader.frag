@@ -51,7 +51,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	SceneFeatures features;
 
 	features.albedo = scene_features_1.rgb;
-	features.normal = UnpackNormal(scene_features_2.x);
+	features.normal = scene_features_2.xyz;
 	vec3 world_position = CalculateWorldPosition(coordinate, scene_features_2.w);
 	features.view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 	features.roughness = scene_features_3.x;

@@ -19,7 +19,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
 layout (set = 1, binding = 1) uniform sampler2D previousFrameTexture;
 layout (set = 1, binding = 2) uniform sampler2D currentFrameTexture;
 
@@ -80,7 +80,7 @@ void main()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(scene_features_2_texture, unjitteredScreenCoordinate).yz;
+	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
 
 	//Sample the previous frame texture.
 	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previousScreenCoordinate);

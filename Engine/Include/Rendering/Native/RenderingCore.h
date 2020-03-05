@@ -189,7 +189,7 @@ enum class RenderTarget : uint8
 	SceneFeatures1,
 
 	/*
-	*	Contains the geometry normal in the R channel, the shading normal in the B channel, the luminance multiplier in the G channel and the hit distance in the A channel.
+	*	Contains the shading normal in the RGB channels and the depth in the A channel.
 	*/
 	SceneFeatures2,
 
@@ -197,6 +197,11 @@ enum class RenderTarget : uint8
 	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
 	*/
 	SceneFeatures3,
+
+	/*
+	*	Contains the velocity in the RG channels.
+	*/
+	SceneFeatures4,
 
 	/*
 	*	Contains the scene features 2 data in half resolution.

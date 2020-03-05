@@ -24,6 +24,7 @@ layout (location = 2) in vec2 fragment_texture_coordinate;
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
+layout (location = 3) out vec4 scene_features_4;
 
 /*
 * Returns the screen coordinate with the given view matrix and world position.
@@ -76,6 +77,7 @@ void main()
 
     //Write the fragments.
     sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
-    sceneFeatures2 = vec4(PackNormal(shading_normal), velocity, gl_FragCoord.z);
+    sceneFeatures2 = vec4(shading_normal, gl_FragCoord.z);
     sceneFeatures3 = material_properties;
+    scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }

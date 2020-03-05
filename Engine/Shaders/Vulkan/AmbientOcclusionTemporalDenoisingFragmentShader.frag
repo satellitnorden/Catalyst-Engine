@@ -19,7 +19,7 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
 layout (set = 1, binding = 1) uniform sampler2D previous_ambient_occlusion_texture;
 layout (set = 1, binding = 2) uniform sampler2D current_ambient_occlusion_texture;
 
@@ -71,7 +71,7 @@ void main()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(scene_features_2_texture, unjittered_screen_coordinate).yz;
+	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(scene_features_4_texture, unjittered_screen_coordinate).xy;
 
 	//Sample the previous ambient occlusion texture.
 	vec4 previous_ambient_occlusion_texture_sampler = texture(previous_ambient_occlusion_texture, previous_screen_coordinate);

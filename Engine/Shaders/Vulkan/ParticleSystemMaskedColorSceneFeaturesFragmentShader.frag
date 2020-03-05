@@ -25,6 +25,7 @@ layout (location = 3) in vec2 fragment_texture_coordinate;
 layout (location = 0) out vec4 sceneFeatures1;
 layout (location = 1) out vec4 sceneFeatures2;
 layout (location = 2) out vec4 sceneFeatures3;
+layout (location = 3) out vec4 scene_features_4;
 
 /*
 * Returns the screen coordinate with the given view matrix and world position.
@@ -49,11 +50,12 @@ void main()
 	vec4 materialProperties = RetrieveMaterialProperties(material, fragment_texture_coordinate);
 
 	//Calculate the velocity.
-  	//vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_current_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_previous_world_position);
-  	vec2 velocity = vec2(0.0f);
+  //vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_current_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_previous_world_position);
+  vec2 velocity = vec2(0.0f);
 
-    //Write the fragments.
-    sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
-    sceneFeatures2 = vec4(PackNormal(fragment_normal), velocity, gl_FragCoord.z);
-    sceneFeatures3 = materialProperties;
+  //Write the fragments.
+  sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
+  sceneFeatures2 = vec4(fragment_normal, gl_FragCoord.z);
+  sceneFeatures3 = materialProperties;
+  scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }

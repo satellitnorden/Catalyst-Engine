@@ -38,7 +38,7 @@ void main()
 	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
 	float depth = sceneFeatures2.w;
-	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
+	vec3 shadingNormal = sceneFeatures2.xyz;
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
 	float ambientOcclusion = sceneFeatures3.z;
