@@ -99,11 +99,21 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 		//If the expected hit distance is greater then the sample hit distance, there is a hit!
 		if (expected_view_distance < sample_view_distance)
 		{
-			//Sample the scene at the sample screen coordinate.
-			hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
+			//Test the normal of the hit surface against the ray direction - if not within the hemisphere, then there is no hit.
+			if (dot(sample_scene_features.xyz, ray_direction) <= 0.0f)
+			{
+				//Sample the scene at the sample screen coordinate.
+				hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
 
-			//Return that there was a hit.
-			return true;
+				//Return that there was a hit.
+				return true;
+			}
+			
+			else
+			{
+				//The hit was rejected.
+				return false;
+			}
 		}
 	}
 
