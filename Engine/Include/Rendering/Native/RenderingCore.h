@@ -209,6 +209,16 @@ enum class RenderTarget : uint8
 	SceneFeatures2_Half,
 
 	/*
+	*	Contains the scene features 3 data in half resolution.
+	*/
+	SceneFeatures3_Half,
+
+	/*
+	*	Contains the scene features 4 data in half resolution.
+	*/
+	SceneFeatures4_Half,
+
+	/*
 	*	Contains the ambient occlusion.
 	*/
 	AmbientOcclusion,
