@@ -43,7 +43,7 @@ float NeighborhoodWeight(vec3 minimum, vec3 maximum, vec3 previous)
 	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
 
 	//Return the weight.
-	return 1.0f;
+	return weight;
 }
 
 void main()
