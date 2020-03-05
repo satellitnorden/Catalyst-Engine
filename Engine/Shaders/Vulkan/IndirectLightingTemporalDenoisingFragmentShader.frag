@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.99f)
+#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.9f) //0.025f step.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END ((INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
@@ -82,13 +82,11 @@ void main()
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
 	*	2. How far apart is the color from the minimum/maximum neighborhood?
-	*	3. Was something actually hit?
 	*/
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	previous_sample_weight *= NeighborhoodWeight(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
-	previous_sample_weight *= previous_indirect_lighting_texture_sampler.a;
+	previous_sample_weight *= NeighborhoodWeight(minimum, maximum, previous_indirect_lighting_texture_sampler.rgb);
 
 	//Blend the previous and the current indirect lighting.
 	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);

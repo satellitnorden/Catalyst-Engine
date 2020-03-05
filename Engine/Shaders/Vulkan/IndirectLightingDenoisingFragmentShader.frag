@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_DENOISING_SIZE (8.0f)
+#define INDIRECT_LIGHTING_DENOISING_SIZE (2.0f)
 #define INDIRECT_LIGHTING_DENOISING_START_END (INDIRECT_LIGHTING_DENOISING_SIZE * 0.5f)
 
 /*
@@ -59,21 +59,21 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void main()
 {
 	//Sample the indirect lighting features at the current fragment.
-	vec3 current_indirect_lighting = texture(indirect_lighting_texture, fragment_texture_coordinate).rgb;
+	vec4 current_indirect_lighting = texture(indirect_lighting_texture, fragment_texture_coordinate);
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Calculate the start/end.
 	float start_and_end = INDIRECT_LIGHTING_DENOISING_START_END * stride;
 
 	//Sample neighboring fragments.
-	vec3 denoised_indirect_lighting = vec3(0.0f);
+	vec4 denoised_indirect_lighting = vec4(0.0f);
 	float indirect_lighting_weight_sum = 0.0f;
 
 	for (float x = -start_and_end; x <= start_and_end; x += stride)
 	{
 		vec2 sample_coordinate = fragment_texture_coordinate + vec2(x, x) * direction;
 
-		vec3 sample_indirect_lighting = texture(indirect_lighting_texture, sample_coordinate).rgb;
+		vec4 sample_indirect_lighting = texture(indirect_lighting_texture, sample_coordinate);
 		SceneFeatures sample_features = SampleSceneFeatures(sample_coordinate);
 
 		/*
@@ -95,5 +95,5 @@ void main()
 	denoised_indirect_lighting = indirect_lighting_weight_sum == 0.0f ? current_indirect_lighting : denoised_indirect_lighting / indirect_lighting_weight_sum;
 
 	//Write the fragment.
-	fragment = vec4(denoised_indirect_lighting, 1.0f);
+	fragment = denoised_indirect_lighting;
 }

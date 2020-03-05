@@ -131,7 +131,7 @@ public:
 private:
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
