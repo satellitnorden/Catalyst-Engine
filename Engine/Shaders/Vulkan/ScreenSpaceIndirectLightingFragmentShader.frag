@@ -98,11 +98,11 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 		}
 
 		//Calculate the expected view distance.
-		float expected_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
+		float expected_view_distance = CalculateViewSpacePosition(sample_screen_coordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
 
 		//Sample the sample scene features.
 		vec4 sample_scene_features = texture(scene_features_2_texture, sample_screen_coordinate);
-		float sample_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_scene_features.w).z;
+		float sample_view_distance = CalculateViewSpacePosition(sample_screen_coordinate, sample_scene_features.w).z;
 
 		//If the expected hit distance is greater then the sample hit distance, there is a hit!
 		if (expected_view_distance < sample_view_distance)
@@ -110,17 +110,19 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 			//Test the normal of the hit surface against the ray direction - if not within the hemisphere, then there is no hit.
 			if (dot(sample_scene_features.xyz, ray_direction) <= 0.0f)
 			{
-				//Sample the scene at the sample screen coordinate.
-				hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
+				//Test the direction to the hit position against the ray direction - they must match somewhat for this to be considered a valid hit.
+				vec3 sample_world_position = CalculateWorldPosition(sample_screen_coordinate, sample_scene_features.w);
 
-				//Return that there was a hit.
-				return true;
-			}
-			
-			else
-			{
-				//The hit was rejected.
-				return false;
+				vec3 direction_to_hit_position = normalize(sample_world_position - ray_origin);
+
+				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
+				{
+					//Sample the scene at the sample screen coordinate.
+					hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
+
+					//Return that there was a hit.
+					return true;
+				}
 			}
 		}
 	}
