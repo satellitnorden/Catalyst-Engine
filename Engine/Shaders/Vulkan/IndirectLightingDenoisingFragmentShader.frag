@@ -59,14 +59,14 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void main()
 {
 	//Sample the indirect lighting features at the current fragment.
-	vec4 current_indirect_lighting = texture(indirect_lighting_texture, fragment_texture_coordinate);
+	vec3 current_indirect_lighting = texture(indirect_lighting_texture, fragment_texture_coordinate).rgb;
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Calculate the start/end.
 	float start_and_end = INDIRECT_LIGHTING_DENOISING_START_END * stride;
 
 	//Sample neighboring fragments.
-	vec4 denoised_indirect_lighting = vec4(0.0f);
+	vec3 denoised_indirect_lighting = vec3(0.0f);
 	float indirect_lighting_weight_sum = 0.0f;
 
 	for (float x = -start_and_end; x <= start_and_end; x += stride)
@@ -81,13 +81,15 @@ void main()
 		*	
 		*	1. Is the sample coordinate valid?
 		*	2. How closely aligned are the depths to each other?
+		*	3. What is the weight of the indirect lighting sample itself?
 		*/
 		float sample_weight = 1.0f;
 
 		sample_weight *= float(ValidCoordinate(sample_coordinate));
 		sample_weight *= 1.0f - min(abs(current_features.view_distance - sample_features.view_distance), 1.0f);
+		sample_weight *= sample_indirect_lighting.a;
 
-		denoised_indirect_lighting += sample_indirect_lighting * sample_weight;
+		denoised_indirect_lighting += sample_indirect_lighting.rgb * sample_weight;
 		indirect_lighting_weight_sum += sample_weight;
 	}
 
@@ -95,5 +97,5 @@ void main()
 	denoised_indirect_lighting = indirect_lighting_weight_sum == 0.0f ? current_indirect_lighting : denoised_indirect_lighting / indirect_lighting_weight_sum;
 
 	//Write the fragment.
-	fragment = denoised_indirect_lighting;
+	fragment = vec4(denoised_indirect_lighting, indirect_lighting_weight_sum == 0.0f ? 0.0f : 1.0f);
 }
