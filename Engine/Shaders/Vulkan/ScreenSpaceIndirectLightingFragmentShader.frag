@@ -29,6 +29,14 @@ layout (set = 1, binding = 2) uniform sampler2D scene_texture;
 layout (location = 0) out vec4 fragment;
 
 /*
+*	The probability density function.	
+*/
+float ProbabilityDensityFunction(vec3 normal, vec3 ray_direction)
+{
+	return max(dot(normal, ray_direction), 0.0f);
+}
+
+/*
 *	Calculates the indirect lighting ray direction and start offset.
 */
 void CalculateIndirectLightingRayDirectionAndStartOffset(vec3 view_direction, vec3 normal, float roughness, float metallic, out vec3 ray_direction, out float start_offset)
@@ -150,6 +158,9 @@ void main()
 
 	bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting);
 
+	//Calculate the probability density.
+	float probability_density = ProbabilityDensityFunction(normal, ray_direction);
+
     //Write the fragment
-    fragment = vec4(hit ? indirect_lighting : vec3(0.0f), hit ? 1.0f : 0.0f);
+    fragment = vec4(hit ? indirect_lighting : vec3(0.0f), (hit ? 1.0f : 0.0f) * probability_density);
 }
