@@ -27,6 +27,12 @@ struct SceneFeatures
 //Layout specification.
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) bool INDIRECT_LIGHTING_ENABLED;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
@@ -89,7 +95,7 @@ void main()
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample the indirect lighting.
-	vec4 indirect_lighting_sample = texture(indirect_lighting_texture, fragment_texture_coordinate);
+	vec4 indirect_lighting_sample = INDIRECT_LIGHTING_ENABLED ? texture(indirect_lighting_texture, fragment_texture_coordinate) : vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Sample the sky.
 	vec3 sky_sample = SampleSky(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);

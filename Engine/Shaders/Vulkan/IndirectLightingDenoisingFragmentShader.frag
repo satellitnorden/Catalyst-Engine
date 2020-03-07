@@ -11,7 +11,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_DENOISING_SIZE (2.0f)
+#define INDIRECT_LIGHTING_DENOISING_SIZE (4.0f)
 #define INDIRECT_LIGHTING_DENOISING_START_END (INDIRECT_LIGHTING_DENOISING_SIZE * 0.5f)
 
 /*
@@ -97,5 +97,5 @@ void main()
 	denoised_indirect_lighting = indirect_lighting_weight_sum == 0.0f ? current_indirect_lighting : denoised_indirect_lighting / indirect_lighting_weight_sum;
 
 	//Write the fragment.
-	fragment = vec4(denoised_indirect_lighting, indirect_lighting_weight_sum == 0.0f ? 0.0f : 1.0f);
+	fragment = vec4(denoised_indirect_lighting, min(indirect_lighting_weight_sum, 1.0f));
 }
