@@ -620,7 +620,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 			indirect_lighting = CastRaySky(indirect_lighting_ray);
 		}
 
-		lighting += CatalystLighting::CalculateDirectLighting(	-incoming_ray._Direction,
+		lighting += CatalystLighting::CalculateIndirectLighting(-incoming_ray._Direction,
 																surface_description._Albedo,
 																surface_description._Normal,
 																surface_description._Roughness,
