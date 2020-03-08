@@ -134,7 +134,7 @@ private:
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
 
 	//The indirect lighting mode.
-	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
+	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
 
 	//The motion blur mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };

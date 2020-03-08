@@ -11,7 +11,7 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -61,21 +61,22 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				directLighting += CalculateDirectLight(	-view_direction,
-														-light.position_or_direction,
-														albedo,
-														shadingNormal,
-														roughness,
-														metallic,
-														ambientOcclusion,
-														material.thickness,
-														light.luminance) * (1.0f - CLOUD_DENSITY);
+				directLighting += CalculateDirectLighting(	-view_direction,
+															albedo,
+															shadingNormal,
+															roughness,
+															metallic,
+															ambientOcclusion,
+															material.thickness,
+															light.position_or_direction,
+															light.luminance) * (1.0f - CLOUD_DENSITY);
 
 				break;
 			}
 
 			case LIGHT_TYPE_POINT:
 			{
+				/*
 				float lengthToLight = length(light.position_or_direction - world_position);
 				vec3 lightDirection = vec3(light.position_or_direction - world_position) / lengthToLight;
 
@@ -91,6 +92,7 @@ void main()
 														ambientOcclusion,
 														material.thickness,
 														light.luminance) * attenuation;
+				*/
 
 				break;
 			}

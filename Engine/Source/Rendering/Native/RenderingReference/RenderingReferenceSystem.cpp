@@ -620,15 +620,15 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 			indirect_lighting = CastRaySky(indirect_lighting_ray);
 		}
 
-		lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
-														surface_description._Albedo,
-														surface_description._Normal,
-														surface_description._Roughness,
-														surface_description._Metallic,
-														surface_description._AmbientOcclusion,
-														1.0f,
-														-indirect_lighting_direction,
-														indirect_lighting);
+		lighting += CatalystLighting::CalculateDirectLighting(	-incoming_ray._Direction,
+																surface_description._Albedo,
+																surface_description._Normal,
+																surface_description._Roughness,
+																surface_description._Metallic,
+																surface_description._AmbientOcclusion,
+																1.0f,
+																-indirect_lighting_direction,
+																indirect_lighting);
 	}
 
 	//Calculate the direct lighting.
@@ -653,15 +653,15 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 					if (!in_shadow)
 					{
-						lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
-																		surface_description._Albedo,
-																		surface_description._Normal,
-																		surface_description._Roughness,
-																		surface_description._Metallic,
-																		surface_description._AmbientOcclusion,
-																		1.0f,
-																		component->_Direction,
-																		component->_Luminance);
+						lighting += CatalystLighting::CalculateDirectLighting(	-incoming_ray._Direction,
+																				surface_description._Albedo,
+																				surface_description._Normal,
+																				surface_description._Roughness,
+																				surface_description._Metallic,
+																				surface_description._AmbientOcclusion,
+																				1.0f,
+																				component->_Direction,
+																				component->_Luminance);
 					}
 
 					break;

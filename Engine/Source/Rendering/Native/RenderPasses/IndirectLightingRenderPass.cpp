@@ -88,6 +88,13 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
+	if (false)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::NONE)
 	{
