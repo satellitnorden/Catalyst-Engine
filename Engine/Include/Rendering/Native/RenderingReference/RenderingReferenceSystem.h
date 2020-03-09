@@ -89,6 +89,11 @@ private:
 	NO_DISCARD bool CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
 
 	/*
+	*	Casts a surface ray against models. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastSurfaceRayModels(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT;
+
+	/*
 	*	Casts a ray against the sky. Returns the color.
 	*/
 	NO_DISCARD Vector3<float> CastRaySky(const Ray &ray) NOEXCEPT;
@@ -112,6 +117,11 @@ private:
 	*	Casts a shadow ray against the terrain. Returns if there was a hit.
 	*/
 	NO_DISCARD bool CastShadowRayTerrain(const Ray& ray) NOEXCEPT;
+
+	/*
+	*	Casts a shadow ray against tmodels. Returns if there was a hit.
+	*/
+	NO_DISCARD bool CastShadowRayModels(const Ray &ray) NOEXCEPT;
 
 };
 #endif

@@ -61,15 +61,15 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				directLighting += CalculateDirectLighting(	-view_direction,
-															albedo,
-															shadingNormal,
-															roughness,
-															metallic,
-															ambientOcclusion,
-															material.thickness,
-															light.position_or_direction,
-															light.luminance) * (1.0f - CLOUD_DENSITY);
+				directLighting += CalculateLighting(-view_direction,
+													albedo,
+													shadingNormal,
+													roughness,
+													metallic,
+													ambientOcclusion,
+													material.thickness,
+													light.position_or_direction,
+													light.luminance) * (1.0f - CLOUD_DENSITY);
 
 				break;
 			}

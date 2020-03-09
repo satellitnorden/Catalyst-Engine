@@ -164,11 +164,11 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		_RenderingReferenceData->_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
 	}
 
-	//Keep track of the indices offset.
-	uint32 indices_offset{ 0 };
-
 	//Prepare the terrain data.
 	{
+		//Keep track of the indices offset.
+		uint32 indices_offset{ 0 };
+
 		//Define constants.
 		constexpr StaticArray<float, 2> VERTEX_BORDER_OFFSETS{ 1.0f / 64.0f, 1.0f / 32.0f };
 
@@ -238,23 +238,65 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 				TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y);
 
 				//Add the vertex data to the terrain acceleration structure.
-				_RenderingReferenceData->_TerrainAccelerationStructure.AddVertexData(AccelerationStructure::VertexData(position));
+				_RenderingReferenceData->_TerrainAccelerationStructure.AddVertexData(AccelerationStructure<byte>::VertexData(position, 0));
 			}
 
 			//Add all triangle data.
 			for (uint64 j{ 0 }; j < indices.Size(); j += 3)
 			{
 				//Add the triangle to the terrain acceleration structure.
-				_RenderingReferenceData->_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
+				_RenderingReferenceData->_TerrainAccelerationStructure.AddTriangleData(AccelerationStructure<byte>::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
 			}
 
 			//Update the indices offset.
 			indices_offset += static_cast<uint32>(vertices.Size());
 		}
+
+		//Build the terrain acceleration structure.
+		_RenderingReferenceData->_TerrainAccelerationStructure.Build(4);
 	}
 
-	//Build the terrain acceleration structure.
-	_RenderingReferenceData->_TerrainAccelerationStructure.Build(4);
+	//Prepare the models data.
+	{
+		//Iterate over all model components and add their data to the models acceleration structure.
+		const uint64 number_of_model_components{ ComponentManager::GetNumberOfModelComponents() };
+		ModelComponent* RESTRICT component{ ComponentManager::GetModelModelComponents() };
+		uint32 indices_offset{ 0 };
+
+		for (uint64 i{ 0 }; i < number_of_model_components; ++i, ++component)
+		{
+			for (const Mesh &mesh : component->_Model->_Meshes)
+			{
+				//Make local copies of the vertices and indices.
+				DynamicArray<Vertex> vertices{ mesh._Vertices };
+				DynamicArray<uint32> indices{ mesh._Indices };
+
+				//Transform all vertices.
+				for (Vertex &vertex : vertices)
+				{
+					vertex.Transform(component->_CurrentWorldTransform, 0.0f);
+				}
+
+				//Add all vertices.
+				for (Vertex &vertex : vertices)
+				{
+					_RenderingReferenceData->_ModelsAccelerationStructure.AddVertexData(AccelerationStructure<uint64>::VertexData(vertex._Position, i));
+				}
+
+				//Add all indices.
+				for (uint64 j{ 0 }, size{ indices.Size() }; j < size; j += 3)
+				{
+					_RenderingReferenceData->_ModelsAccelerationStructure.AddTriangleData(AccelerationStructure<uint64>::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
+				}
+
+				//Update the indices offset.
+				indices_offset += static_cast<uint32>(vertices.Size());
+			}
+		}
+
+		//Build the models acceleration structure.
+		_RenderingReferenceData->_ModelsAccelerationStructure.Build(128);
+	}
 
 	//Set the update speed to zero.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
@@ -417,6 +459,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRayScene(const Ray& ray,
 	bool has_hit_surface{ false };
 
 	has_hit_surface |= CastSurfaceRayTerrain(ray, &surface_description, &hit_distance);
+	has_hit_surface |= CastSurfaceRayModels(ray, &surface_description, &hit_distance);
 	has_hit_volumetric |= CastVolumetricRayScene(ray, &volumetric_description, &hit_distance);
 
 	//Determine the color.
@@ -483,7 +526,7 @@ NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray,
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
 	//Trace the terrain acceleration structure.
-	if (const AccelerationStructure::TriangleData* const RESTRICT triangle_data{ _RenderingReferenceData->_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
+	if (const AccelerationStructure<byte>::TriangleData *const RESTRICT triangle_data{ _RenderingReferenceData->_TerrainAccelerationStructure.TraceSurface(ray, hit_distance) })
 	{
 		//Calculate the hit position.
 		const Vector3<float> hit_position{ ray._Origin + ray._Direction * *hit_distance };	
@@ -566,6 +609,30 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 }
 
 /*
+*	Casts a surface ray against models. Returns if there was a hit.
+*/
+NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayModels(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
+{
+	//Trace the models acceleration structure.
+	if (const AccelerationStructure<uint64>::TriangleData *const RESTRICT triangle_data{ _RenderingReferenceData->_ModelsAccelerationStructure.TraceSurface(ray, hit_distance) })
+	{
+		//Fill in the surface description.
+		surface_description->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
+		surface_description->_Normal = VectorConstants::UP;
+		surface_description->_Roughness = 0.1f;
+		surface_description->_Metallic = 0.9f;
+		surface_description->_AmbientOcclusion = 1.0f;
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+/*
 *	Casts a ray against the sky. Returns the color.
 */
 NO_DISCARD Vector3<float> RenderingReferenceSystem::CastRaySky(const Ray& ray) NOEXCEPT
@@ -593,12 +660,19 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 	//Calculate the indirect lighting.
 	{
+		//Calculate the diffuseness of the surface.
+		const float32 surface_diffuseness{ surface_description._Roughness * (1.0f - surface_description._Metallic) };
+
+		//Calculate the indirect lighting direction.
 		Vector3<float> indirect_lighting_direction;
 
 		indirect_lighting_direction._X = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 		indirect_lighting_direction._Y = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 		indirect_lighting_direction._Z = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
 
+		const Vector3<float32> reflection_vector{ Vector3<float32>::Reflect(incoming_ray._Direction, surface_description._Normal) };
+
+		indirect_lighting_direction = CatalystBaseMath::LinearlyInterpolate(reflection_vector, indirect_lighting_direction, surface_diffuseness);
 		indirect_lighting_direction.NormalizeSafe();
 
 		indirect_lighting_direction = Vector3<float>::DotProduct(surface_description._Normal, indirect_lighting_direction) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
@@ -620,7 +694,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 			indirect_lighting = CastRaySky(indirect_lighting_ray);
 		}
 
-		lighting += CatalystLighting::CalculateIndirectLighting(-incoming_ray._Direction,
+		lighting += CatalystLighting::CalculateLighting(-incoming_ray._Direction,
 																surface_description._Albedo,
 																surface_description._Normal,
 																surface_description._Roughness,
@@ -653,7 +727,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 
 					if (!in_shadow)
 					{
-						lighting += CatalystLighting::CalculateDirectLighting(	-incoming_ray._Direction,
+						lighting += CatalystLighting::CalculateLighting(	-incoming_ray._Direction,
 																				surface_description._Albedo,
 																				surface_description._Normal,
 																				surface_description._Roughness,
@@ -760,7 +834,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 */
 NO_DISCARD bool RenderingReferenceSystem::CastShadowRayScene(const Ray &ray) NOEXCEPT
 {
-	return CastShadowRayTerrain(ray);
+	return CastShadowRayTerrain(ray) || CastShadowRayModels(ray);
 }
 
 /*
@@ -769,5 +843,13 @@ NO_DISCARD bool RenderingReferenceSystem::CastShadowRayScene(const Ray &ray) NOE
 NO_DISCARD bool RenderingReferenceSystem::CastShadowRayTerrain(const Ray &ray) NOEXCEPT
 {
 	return _RenderingReferenceData->_TerrainAccelerationStructure.TraceShadow(ray);
+}
+
+/*
+*	Casts a shadow ray against models. Returns if there was a hit.
+*/
+NO_DISCARD bool RenderingReferenceSystem::CastShadowRayModels(const Ray &ray) NOEXCEPT
+{
+	return _RenderingReferenceData->_ModelsAccelerationStructure.TraceShadow(ray);
 }
 #endif

@@ -15,6 +15,7 @@
 //Memory.
 #include <Memory/PoolAllocator.h>
 
+template <typename TYPE>
 class AccelerationStructure final
 {
 
@@ -62,6 +63,9 @@ public:
 		//The position.
 		Vector3<float32> _Position;
 
+		//The user data.
+		TYPE _UserData;
+
 		/*
 		*	Default constructor.
 		*/
@@ -73,9 +77,10 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE VertexData(const Vector3<float32> &initial_position) NOEXCEPT
+		FORCE_INLINE VertexData(const Vector3<float32> &initial_position, const TYPE &initial_user_data) NOEXCEPT
 			:
-			_Position(initial_position)
+			_Position(initial_position),
+			_UserData(initial_user_data)
 		{
 
 		}

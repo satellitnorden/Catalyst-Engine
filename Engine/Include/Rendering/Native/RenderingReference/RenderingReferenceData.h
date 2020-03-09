@@ -63,7 +63,10 @@ public:
 	StaticArray<const Texture2DResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _Textures;
 
 	//The terrain acceleration structure.
-	AccelerationStructure _TerrainAccelerationStructure;
+	AccelerationStructure<byte> _TerrainAccelerationStructure;
+
+	//The models acceleration structure.
+	AccelerationStructure<uint64> _ModelsAccelerationStructure;
 
 	/*
 	*	Default constructor.

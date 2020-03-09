@@ -131,7 +131,7 @@ public:
 private:
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::None };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
@@ -143,7 +143,7 @@ private:
 	ShadowsMode _ShadowsMode{ ShadowsMode::None };
 
 	//The bloom intensity.
-	float _BloomIntensity{ 0.0f };
+	float _BloomIntensity{ 0.1f };
 
 	//The chromatic aberration intensity.
 	float _ChromaticAberrationIntensity{ 0.0025f };

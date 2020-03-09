@@ -120,6 +120,12 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 																			model->_Meshes[i]._IndexBuffers[0],
 																			static_cast<uint32>(data->_Indices[i][0].Size()),
 																			&model->_Meshes[i]._BottomLevelAccelerationStructure);
+	
+#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
+		//Copy the vertices and indices.
+		model->_Meshes[i]._Vertices = data->_Vertices[i][0];
+		model->_Meshes[i]._Indices = data->_Indices[i][0];
+#endif
 	}
 }
 
