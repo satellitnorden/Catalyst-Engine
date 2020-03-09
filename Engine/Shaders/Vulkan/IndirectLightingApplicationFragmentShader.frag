@@ -68,28 +68,30 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 }
 
 /*
-*	Samples the sky.
+*	Samples the sky diffuse.
 */
-vec3 SampleSky(vec3 view_direction, vec3 normal, float roughness, float metallic)
+vec3 SampleSkyDiffuse(vec3 normal)
 {
-	//Calculate the diffuseness.
-	float diffuseness = roughness * (1.0f - metallic);
+	return texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], normal).rgb;
+}
 
+/*
+*	Samples the sky specular.
+*/
+vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness)
+{
 	//Calculate the reflection vector.
 	vec3 reflection_vector = reflect(view_direction, normal);
 
-	//Calculate the indirect lighting direction.
-	vec3 indirect_lighting_direction = normalize(mix(reflection_vector, normal, diffuseness));
-
 	//Calculate the indices for the sky textures.
-	float float_index = diffuseness * float(NUMBER_OF_SKY_TEXTURES - 1);
+	float float_index = roughness * float(NUMBER_OF_SKY_TEXTURES - 1);
 
 	uint first_index = uint(float_index);
 	uint second_index = first_index + 1;
 
 	float alpha = fract(float_index);
 
-	return mix(texture(SKY_TEXTURES[first_index], indirect_lighting_direction).rgb, texture(SKY_TEXTURES[second_index], indirect_lighting_direction).rgb, alpha);
+	return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
 }
 
 void main()
@@ -101,10 +103,11 @@ void main()
 	vec4 indirect_lighting_sample = INDIRECT_LIGHTING_ENABLED ? texture(indirect_lighting_texture, fragment_texture_coordinate) : vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Sample the sky.
-	vec3 sky_sample = SampleSky(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
+	vec3 sky_diffuse_sample = SampleSkyDiffuse(current_features.normal);
+	vec3 sky_specular_sample = SampleSkySpecular(current_features.view_direction, current_features.normal, current_features.roughness);
 
-	//Calculate the blended indirect lighting.
-	vec3 blended_indirect_lighting = mix(sky_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
+	//Calculate the blended specular irradiance
+	vec3 blended_specular_irradiance = mix(sky_specular_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
 	//Calculate the indirect lighting.
 	vec3 indirect_lighting = CalculatePrecomputedLighting(	-current_features.view_direction,
@@ -114,7 +117,9 @@ void main()
 															current_features.metallic,
 															current_features.ambientOcclusion,
 															1.0f,
-															blended_indirect_lighting);
+															sky_diffuse_sample,
+															blended_specular_irradiance,
+															vec2(1.0f, 0.0f));
 
 	//Write the fragment.
 	scene = vec4(max(indirect_lighting, vec3(0.0f)), 1.0f);

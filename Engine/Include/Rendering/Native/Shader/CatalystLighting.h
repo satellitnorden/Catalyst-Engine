@@ -376,7 +376,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		return CalculateFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, irradiance_direction, irradiance);
 	}
 
-	CATALYST_SHADER_FUNCTION_RETURN_EIGHT_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
 													CalculatePrecomputedFresnel,
 													vec3 outgoing_direction,
 													vec3 albedo,
@@ -385,7 +385,9 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float metallic,
 													float ambient_occlusion,
 													float thickness,
-													vec3 irradiance);
+													vec3 diffuse_irradiance,
+													vec3 specular_irradiance,
+													vec2 specular_bias);
 
 	/*
 	*	Calculates precomputed lighting. Returns the radiance transmitted from the surface in the outgoing direction.
@@ -401,7 +403,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	*	- thickness: The thickness of the surface point being shaded.
 	*	- irradiance: The incoming irradiance towards the surface point being shaded.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_EIGHT_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
 													CalculatePrecomputedLighting,
 													vec3 outgoing_direction,
 													vec3 albedo,
@@ -410,16 +412,18 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float metallic,
 													float ambient_occlusion,
 													float thickness,
-													vec3 irradiance)
+													vec3 diffuse_irradiance,
+													vec3 specular_irradiance,
+													vec2 specular_bias)
 	{
-		vec3 specular_component = CalculatePrecomputedFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, irradiance);
+		vec3 specular_component = CalculatePrecomputedFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, diffuse_irradiance, specular_irradiance, specular_bias);
 		vec3 diffuse_component = vec3(1.0f, 1.0f, 1.0f) - specular_component;
 		diffuse_component *= 1.0f - metallic;
 
-		vec3 diffuse_irradiance = irradiance * albedo;
-		vec3 specular_irradiance = irradiance;
+		vec3 diffuse_irradiance_computed = diffuse_irradiance * albedo * diffuse_component;
+		vec3 specular_irradiance_computed = specular_irradiance * (specular_component * specular_bias[0] + vec3(specular_bias[1], specular_bias[1], specular_bias[1]));
 
-		return (diffuse_irradiance * diffuse_component + specular_irradiance * specular_component) * ambient_occlusion;
+		return (diffuse_irradiance_computed + specular_irradiance_computed) * ambient_occlusion;
 	}
 
 	/*
@@ -427,7 +431,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	*	
 	*	Calculated using the cook-torrance algorithm.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_EIGHT_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
 													CalculatePrecomputedFresnel,
 													vec3 outgoing_direction,
 													vec3 albedo,
@@ -436,7 +440,9 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float metallic,
 													float ambient_occlusion,
 													float thickness,
-													vec3 irradiance)
+													vec3 diffuse_irradiance,
+													vec3 specular_irradiance,
+													vec2 specular_bias)
 	{
 		//Calculate the surface color.
 		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);

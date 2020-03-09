@@ -14,6 +14,7 @@
 	using mat3 = Matrix3x3;
 	using mat4 = Matrix4x4;
 	using uint = unsigned int;
+	using vec2 = Vector2<float>;
 	using vec3 = Vector3<float>;
 	using vec4 = Vector4<float>;
 
