@@ -6,20 +6,26 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystLightingData.glsl"
-#define RAY_TRACING_SHADER
-#include "CatalystModelData.glsl"
 #include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
+#include "CatalystRayTracingData.glsl"
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 layout(location = 1) rayPayloadInNV float visibility;
-hitAttributeNV vec3 hitAttribute;
+hitAttributeNV vec3 hit_attribute;
 
 void main()
 {
+	//TEMP.
+	vec3 temp = vec3(hit_attribute.x, hit_attribute.y, 1.0f - hit_attribute.x - hit_attribute.y);
+
+	//Write to the ray payload.
+	path_tracing_ray_payload.radiance 				= temp;
+	path_tracing_ray_payload.albedo 				= temp;
+	path_tracing_ray_payload.shading_normal 		= vec3(0.0f, 1.0f, 0.0f);
+	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;
+	path_tracing_ray_payload.material_properties 	= vec4(1.0f, 0.0f, 1.0f, 0.0f);
+
 	/*
 	//Store the current recursion depth.
 	int currentRecursionDepth = rayPayload.currentRecursionDepth;

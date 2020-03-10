@@ -30,7 +30,7 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
@@ -52,9 +52,9 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 void PathTracingRayTracingPipeline::Execute() NOEXCEPT
 {
 	//No need to fire rays if there's nothing to fire against.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
+	const uint64 number_of_model_components{ ComponentManager::GetNumberOfModelComponents() };
 
-	if (numberOfModelComponents == 0)
+	if (number_of_model_components == 0)
 	{
 		SetIncludeInRender(false);
 
@@ -69,7 +69,7 @@ void PathTracingRayTracingPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 

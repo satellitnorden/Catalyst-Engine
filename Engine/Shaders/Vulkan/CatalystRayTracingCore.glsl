@@ -6,29 +6,15 @@
 #define CATALYST_RAY_TRACING_T_MAXIMUM (1000.0f)
 
 /*
-*	Primary ray payload struct definition.
-*/
-struct PrimaryRayPayload
-{
-	vec3 directLighting;
-};
-
-/*
-*	Diffuse irradiance payload struct definition.
-*/
-struct DiffuseIrradianceRayPayload
-{
-	vec4 randomVector;
-	vec3 directLighting;
-};
-
-/*
 *	Path tracing ray payload struct definition.
 */
 struct PathTracingRayPayload
 {
+	//Input data.
 	uint current_recursion_depth;
 	vec4 random_noise;
+
+	//Output data.
 	vec3 radiance;
 	vec3 albedo;
 	vec3 shading_normal;

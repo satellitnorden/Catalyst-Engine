@@ -48,9 +48,9 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
 {
 	//No need to fire rays if there's nothing to fire against.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
+	const uint64 number_of_model_components{ ComponentManager::GetNumberOfModelComponents() };
 
-	if (numberOfModelComponents == 0)
+	if (number_of_model_components == 0)
 	{
 		SetIncludeInRender(false);
 

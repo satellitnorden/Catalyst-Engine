@@ -6,12 +6,8 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystLightingData.glsl"
-#define RAY_TRACING_SHADER
-#include "CatalystModelData.glsl"
 #include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
+#include "CatalystRayTracingData.glsl"
 
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	scene_image;
@@ -25,16 +21,42 @@ layout(location = 0) rayPayloadNV PathTracingRayPayload path_tracing_ray_payload
 
 void main() 
 {
-	//TEMP!
-	imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f));
-	imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(1.0f, 0.0f, 0.0f), 0.0f));
-	imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), 0.0f));
-	imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(1.0f, 0.0f, 1.0f, 0.0f));
+	//Calculate the screen coordinate.
+	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Generate the ray direction.
+	vec3 ray_direction = CalculateRayDirection(screen_coordinate);
+
+	//Sample the noise texture.
+	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
+	path_tracing_ray_payload.random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+
+	//Denote that this is the first recursion depth.
+	path_tracing_ray_payload.current_recursion_depth = 0;
+
+	//Fire the ray!
+	traceNV(
+				STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				PERCEIVER_WORLD_POSITION, 					//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				ray_direction, 								//direction
+				VIEW_DISTANCE, 								//Tmax
+				0 											//payload
+				);
+
+	//Write to the images.
+	imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.radiance, 1.0f));
+	imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.albedo, 0.0f));
+	imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.shading_normal, 0.0f));
+	imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), path_tracing_ray_payload.material_properties);
 	imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec2(0.0f, 0.0f), 0.0f, 0.0f));
 
 	/*
-	//Calculate the screen coordinate.
-	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
 	//Accumulate values.
 	vec3 radiance = vec3(0.0f);
@@ -52,9 +74,6 @@ void main()
 	{
 		//Jitter the screen coordinate a bit for some anti aliasing.
 		vec2 jitteredScreenCoordinate = screenCoordinate + PATH_TRACING_JITTER_SAMPLES[i] * inverseScaledResolution;
-
-		//Generate the ray direction.
-		vec3 rayDirection = CalculateRayDirection(jitteredScreenCoordinate);
 
 		//Denote that this is the first recursion depth.
 		rayPayload.currentRecursionDepth = 0;

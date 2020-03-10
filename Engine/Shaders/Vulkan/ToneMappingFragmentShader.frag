@@ -24,44 +24,13 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-
-/* REFERENCE IMPLEMENTATIONS.
-vec3 ApplyToneMapping_Reinhardt(vec3 fragment)
-{
-	vec3 tone_mapped = fragment / (1.0f + fragment);
-
-    return pow(tone_mapped, 1.0f / vec3(2.2f));
-}
-
-vec3 ApplyToneMapping_ACESNarkowicz(vec3 fragment)
-{
-	const float a = 2.51;
-    const float b = 0.03;
-    const float c = 2.43;
-    const float d = 0.59;
-    const float e = 0.14;
-
-    fragment *= 0.6f;
-
-	vec3 tone_mapped = (fragment * (a * fragment + b)) / (fragment * (c * fragment + d) + e);
-
-    return pow(tone_mapped, 1.0f / vec3(2.2f));
-}
-
-vec3 ApplyToneMapping_ACESUnreal(vec3 fragment)
-{
-	vec3 tone_mapped = fragment / (fragment + 0.155f) * 1.019f;
-
-    return pow(tone_mapped, 1.0f / vec3(2.2f));
-}
-*/
 
 /*
 *   Applies color grading.
@@ -90,14 +59,16 @@ vec3 ApplyColorGrading(vec3 fragment)
 void main()
 {
     //Sample the scene texture.
-    vec3 sceneTextureColor = texture(scene_texture, fragmentTextureCoordinate).rgb;
+    vec4 scene_texture_sampler = texture(scene_texture, fragment_texture_coordinate);
 
     //Apply tone mapping.
-    sceneTextureColor = ApplyToneMapping(sceneTextureColor);
+    vec3 tone_mapped = ApplyToneMapping(scene_texture_sampler.rgb);
 
     //Apply color grading.
     //sceneTextureColor = ApplyColorGrading(sceneTextureColor);
 
     //Write the fragment
-    fragment = vec4(sceneTextureColor, 1.0f);
+    if (isnan(tone_mapped.r) || isnan(tone_mapped.g) || isnan(tone_mapped.b)) fragment = vec4(vec3(0.0f, 0.0f, 1.0f), 1.0f);
+    else fragment = vec4(tone_mapped, 1.0f);
+    //fragment = vec4(tone_mapped, 1.0f);
 }

@@ -192,7 +192,7 @@ void RenderingSystem::Release() NOEXCEPT
 */
 NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 {
-	return RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RayTraced;
+	return RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::PATH_TRACING || RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RayTraced;
 }
 
 /*
@@ -358,7 +358,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
 		{
 			//Global uniform data.
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::RayMiss | ShaderStage::Vertex),
 			
 			//Global textures.
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
@@ -376,7 +376,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Compute),
 
 			//Sky textures.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Fragment | ShaderStage::RayGeneration),
 
 			//Hammersley hemisphere samples uniform buffer.
 			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
