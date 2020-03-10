@@ -16,9 +16,7 @@ DEFINE_SINGLETON(IndirectLightingRenderPass);
 IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::IndirectLighting);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

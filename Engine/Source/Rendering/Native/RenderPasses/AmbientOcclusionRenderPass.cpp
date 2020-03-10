@@ -16,9 +16,7 @@ DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::AmbientOcclusion);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

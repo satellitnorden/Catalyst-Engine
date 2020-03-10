@@ -57,7 +57,6 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class RenderPassStage : uint8
 {
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SceneFeatures,
 	Ocean,
 	PostSceneFeatures,
@@ -67,9 +66,7 @@ enum class RenderPassStage : uint8
 	IndirectLighting,
 	Sky,
 	VolumetricLighting,
-#else
 	PathTracing,
-#endif
 	DepthOfField,
 	MotionBlur,
 	Bloom,

@@ -13,9 +13,7 @@ DEFINE_SINGLETON(LuminanceLightingRenderPass);
 LuminanceLightingRenderPass::LuminanceLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::LuminanceLighting);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

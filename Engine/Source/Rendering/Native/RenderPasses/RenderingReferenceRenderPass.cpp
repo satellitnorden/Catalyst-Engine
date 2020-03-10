@@ -14,9 +14,7 @@ DEFINE_SINGLETON(RenderingReferenceRenderPass);
 RenderingReferenceRenderPass::RenderingReferenceRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::RenderingReference);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

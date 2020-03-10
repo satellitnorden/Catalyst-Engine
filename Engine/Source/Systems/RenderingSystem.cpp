@@ -590,12 +590,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	};
 
 	//Jitter the projection matrix a bit.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	Vector2<float> current_frame_jitter{ JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution };
 	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
-#else
-	Vector2<float> current_frame_jitter{ 0.0f, 0.0f };
-#endif
 
 	//Update matrices.
 	_DynamicUniformData._ViewMatrixMinusOne = _DynamicUniformData._ViewMatrix;

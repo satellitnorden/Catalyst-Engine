@@ -13,9 +13,7 @@ DEFINE_SINGLETON(SceneFeaturesRenderPass);
 SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 {
 	//Set the stage.
-#if !defined(CATALYST_ENABLE_PATH_TRACING)
 	SetStage(RenderPassStage::SceneFeatures);
-#endif
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
