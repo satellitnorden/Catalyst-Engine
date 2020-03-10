@@ -180,10 +180,54 @@ bool VulkanPhysicalDevice::HasExtension(const VkPhysicalDevice &device, const ch
 /*
 *	Given a list of suitable physical devices, return most suitable physical device.
 */
-VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const NOEXCEPT
+VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitable_physical_devices) const NOEXCEPT
 {
+	//If there's only one suitable physical device, then go with that one.
+	if (suitable_physical_devices.Size() == 1)
+	{
+		return suitable_physical_devices[0];
+	}
+
+	//Calculate the score for all suitable physical devices.
+	DynamicArray<uint64> suitable_physical_device_scores;
+	suitable_physical_device_scores.UpsizeFast(suitable_physical_devices.Size());
+
+	for (uint64 i{ 0 }, size{ suitable_physical_devices.Size() }; i < size; ++i)
+	{
+		//Get the physical device features.
+		VkPhysicalDeviceFeatures physical_device_features;
+		vkGetPhysicalDeviceFeatures(suitable_physical_devices[i], &physical_device_features);
+
+		//Get the physical device memory properties.
+		VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
+		vkGetPhysicalDeviceMemoryProperties(suitable_physical_devices[i], &physical_device_memory_properties);
+
+		//Get the physical device properties.
+		VkPhysicalDeviceProperties physical_device_properties;
+		vkGetPhysicalDeviceProperties(suitable_physical_devices[i], &physical_device_properties);
+
+		//Start off at zero.
+		suitable_physical_device_scores[i] = 0;
+
+		//Discrete GPU's are preferred.
+		suitable_physical_device_scores[i] += physical_device_properties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? 1 : 0;
+	}
+
+	//Find the highest scoring physical device.
+	uint64 highest_score{ 0 };
+	const VkPhysicalDevice *RESTRICT most_suitable_physical_device{ nullptr };
+
+	for (uint64 i{ 0 }, size{ suitable_physical_devices.Size() }; i < size; ++i)
+	{
+		if (highest_score < suitable_physical_device_scores[i])
+		{
+			highest_score = suitable_physical_device_scores[i];
+			most_suitable_physical_device = &suitable_physical_devices[i];
+		}
+	}
+
 	//For now just return the first one.
-	return suitablePhysicalDevices[0];
+	return *most_suitable_physical_device;
 }
 
 /*

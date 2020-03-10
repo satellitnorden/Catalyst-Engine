@@ -27,18 +27,13 @@ struct DiffuseIrradianceRayPayload
 */
 struct PathTracingRayPayload
 {
-	int currentRecursionDepth;
-	vec4 randomVector;
+	uint current_recursion_depth;
+	vec4 random_noise;
 	vec3 radiance;
 	vec3 albedo;
-	vec3 geometryNormal;
-	float hitDistance;
-	vec3 shadingNormal;
-	int materialProperties;
-	float roughness;
-	float metallic;
-	float ambientOcclusion;
-	float luminance;
+	vec3 shading_normal;
+	float hit_distance;
+	vec4 material_properties;
 };
 
 /*

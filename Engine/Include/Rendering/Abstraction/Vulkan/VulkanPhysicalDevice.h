@@ -118,7 +118,7 @@ private:
 	/*
 	*	Given a list of suitable physical devices, return most suitable physical device.
 	*/
-	VkPhysicalDevice GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const NOEXCEPT;
+	VkPhysicalDevice GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitable_physical_devices) const NOEXCEPT;
 
 	/*
 	*	Given a physical device and a surface, returns the most optimal surface format.

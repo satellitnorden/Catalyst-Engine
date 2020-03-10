@@ -9,10 +9,11 @@
 #include "CatalystRayTracingCore.glsl"
 
 //In parameters.
-layout(location = 0) rayPayloadInNV PathTracingRayPayload rayPayload;
+layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 
 void main()
 {
+	/*
 	//Write to the ray payload.
 	rayPayload.radiance = vec3(0.0f);
 	rayPayload.albedo = vec3(0.0f);
@@ -24,4 +25,5 @@ void main()
 	rayPayload.metallic = 0.0f;
 	rayPayload.ambientOcclusion = 1.0f;
 	rayPayload.luminance = 0.0f;	
+	*/
 }

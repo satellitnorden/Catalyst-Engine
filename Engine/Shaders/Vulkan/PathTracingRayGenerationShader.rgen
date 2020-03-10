@@ -13,29 +13,26 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
-//Constants.
-#define PATH_TRACING_SAMPLES (4)
-
-vec2 PATH_TRACING_JITTER_SAMPLES[4] = vec2[]
-(
-	vec2(-0.5f, -0.5f),
-	vec2(-0.5f, 0.5f),
-	vec2(0.5f, -0.5f),
-	vec2(0.5f, 0.5f)
-);
-
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba32f) uniform image2D sceneImage;
-layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures1Image;
-layout (set = 3, binding = 2, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 3, binding = 3, rgba32f) uniform image2D sceneFeatures3Image;
-layout (set = 3, binding = 4, rgba8) uniform image2D sceneFeatures4Image;
+layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	scene_image;
+layout (set = 3, binding = 1, rgba8) 	uniform image2D 	scene_features_1_image;
+layout (set = 3, binding = 2, rgba32f) 	uniform image2D 	scene_features_2_image;
+layout (set = 3, binding = 3, rgba8) 	uniform image2D 	scene_features_3_image;
+layout (set = 3, binding = 4, rg32f) 	uniform image2D 	scene_features_4_image;
 
 //In parameters.
-layout(location = 0) rayPayloadNV PathTracingRayPayload rayPayload;
+layout(location = 0) rayPayloadNV PathTracingRayPayload path_tracing_ray_payload;
 
 void main() 
 {
+	//TEMP!
+	imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f));
+	imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(1.0f, 0.0f, 0.0f), 0.0f));
+	imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), 0.0f));
+	imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(1.0f, 0.0f, 1.0f, 0.0f));
+	imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec2(0.0f, 0.0f), 0.0f, 0.0f));
+
+	/*
 	//Calculate the screen coordinate.
 	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
@@ -103,4 +100,5 @@ void main()
 	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(geometryNormal, hitDistance));
 	imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(shadingNormal, intBitsToFloat(materialProperties)));
 	imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
+	*/
 }

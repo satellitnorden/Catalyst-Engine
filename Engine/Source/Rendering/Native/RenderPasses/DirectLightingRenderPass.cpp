@@ -36,14 +36,6 @@ DirectLightingRenderPass::DirectLightingRenderPass() NOEXCEPT
 */
 void DirectLightingRenderPass::Initialize() NOEXCEPT
 {	
-	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Add the pipelines.
 	SetNumberOfPipelines(2);
 	AddPipeline(&_DirectLightingGraphicsPipeline);
@@ -65,7 +57,8 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void DirectLightingRenderPass::Execute() NOEXCEPT
 {
-	if (false)
+	//Selectively enable this rendering path.
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 

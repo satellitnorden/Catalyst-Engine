@@ -13,16 +13,14 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
-//Constants.
-#define VOLUMETRIC_LIGHTING_DENSITY (0.0f)
-
 //In parameters.
-layout(location = 0) rayPayloadInNV PathTracingRayPayload rayPayload;
+layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hitAttribute;
 
 void main()
 {
+	/*
 	//Store the current recursion depth.
 	int currentRecursionDepth = rayPayload.currentRecursionDepth;
 
@@ -228,4 +226,5 @@ void main()
 		rayPayload.ambientOcclusion = ambientOcclusion;
 		rayPayload.luminance = luminance;
 	}
+	*/
 }
