@@ -28,30 +28,25 @@ layout (location = 0) out vec4 currentFrame;
 layout (location = 1) out vec4 scene;
 
 /*
-*	Constrains the point within the minimum/maximum.
+*	Calculates the neighborhood weight.
 */
-vec3 Constrain(vec3 minimum, vec3 maximum, vec3 point)
+float NeighborhoodWeight(vec3 minimum, vec3 maximum, vec3 previous)
 {
-#if 0 //Clamp instead of clip.
+	//Calculate the weight.
+	float weight = 1.0f;
 
-	return clamp(point, minimum, maximum);
+	weight *= 1.0f - clamp(minimum.x - previous.x, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(minimum.y - previous.y, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(minimum.z - previous.z, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.x - maximum.x, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
 
-#else
+	//Bias the weight.
+	weight = weight * weight * weight * weight;
 
-	vec3 p_clip = 0.5f * (maximum + minimum);
-	vec3 e_clip = 0.5f * (maximum - minimum);
-
-	vec3 v_clip = point - p_clip;
-	vec3 v_unit = v_clip / e_clip;
-	vec3 a_unit = abs(v_unit);
-	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
-
-	if (ma_unit > 1.0f)
-		return p_clip + v_clip / ma_unit;
-	else
-		return point;
-
-#endif
+	//Return the weight.
+	return weight;
 }
 
 void main()
@@ -80,27 +75,25 @@ void main()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previousScreenCoordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
+	vec2 previous_screen_coordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
 
 	//Sample the previous frame texture.
-	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previousScreenCoordinate);
-
-	//Constrain the previous frame sample.
-	previousFrameTextureSampler.rgb = Constrain(minimum, maximum, previousFrameTextureSampler.rgb);
+	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previous_screen_coordinate);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
-	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
+	*	2. How far apart is the color from the minimum/maximum neighborhood?
 	*/
-	float previousSampleWeight = 1.0f;
+	float previous_sample_weight = 1.0f;
 
-	previousSampleWeight *= float(ValidCoordinate(previousScreenCoordinate));
+	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
+	previous_sample_weight *= NeighborhoodWeight(minimum, maximum, previousFrameTextureSampler.rgb);
 
 	//Blend the previous and the current frame.
-	vec3 blendedFrame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previousSampleWeight);
+	vec3 blended_frame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight);
 
 	//Write the fragments.
-	currentFrame = vec4(blendedFrame, 1.0f);
-	scene = vec4(blendedFrame, 1.0f);
+	currentFrame = vec4(blended_frame, 1.0f);
+	scene = vec4(blended_frame, 1.0f);
 }

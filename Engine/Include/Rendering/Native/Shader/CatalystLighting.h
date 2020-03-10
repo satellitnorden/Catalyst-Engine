@@ -130,7 +130,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float weakening_factor = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(-irradiance_direction, normal), 0.0f);
 
 		//Calculate the lighting.
-		return bidirectional_reflectance_distribution * irradiance * weakening_factor;
+		return bidirectional_reflectance_distribution * irradiance * weakening_factor * ambient_occlusion;
 	}
 
 	/*
