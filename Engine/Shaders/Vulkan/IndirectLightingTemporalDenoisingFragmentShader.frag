@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.9f) //0.025f step.
+#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.99f) //0.025f step.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END ((INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
@@ -42,6 +42,9 @@ float NeighborhoodWeight(vec3 minimum, vec3 maximum, vec3 previous)
 	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
 	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
 
+	//Bias the weight.
+	weight = weight * weight;
+
 	//Return the weight.
 	return weight;
 }
@@ -64,10 +67,10 @@ void main()
 		{
 			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution * 2.0f;
 		
-			vec3 neighbordhood_sample = texture(current_indirect_lighting_texture, sample_coordinate).rgb;
+			vec4 neighbordhood_sample = texture(current_indirect_lighting_texture, sample_coordinate);
 
-			minimum = min(minimum, neighbordhood_sample);
-			maximum = max(maximum, neighbordhood_sample);
+			minimum = mix(minimum, min(minimum, neighbordhood_sample.rgb), neighbordhood_sample.a);
+			maximum = mix(maximum, max(maximum, neighbordhood_sample.rgb), neighbordhood_sample.a);
 		}
 	}
 
