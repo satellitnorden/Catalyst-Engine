@@ -199,9 +199,9 @@ public:
 	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
-	*	Destroys a top level acceleration structure.
+	*	Destroys an acceleration structure.
 	*/
-	void DestroyTopLevelAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
+	void DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Creates a buffer.

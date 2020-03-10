@@ -1437,9 +1437,9 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 }
 
 /*
-*	Destroys a top level acceleration structure.
+*	Destroys an acceleration structure.
 */
-void RenderingSystem::DestroyTopLevelAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure, *handle);

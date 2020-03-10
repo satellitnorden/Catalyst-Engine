@@ -346,6 +346,15 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	//Just copy the updated informations over.
 	_PatchInformations = std::move(_Update._PatchInformations);
 	_PatchRenderInformations = std::move(_Update._PatchRenderInformations);
+
+	if (RenderingSystem::Instance->IsRayTracingActive())
+	{
+		//Update the terrain top level acceleration structure.
+		RenderingSystem::Instance->GetRayTracingSystem()->SetTerrainTopLevelAccelerationStructure(_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+	
+		//Update the current buffer index.
+		_TerrainRayTracingData._CurrentBufferIndex ^= static_cast<uint8>(1);
+	}
 }
 
 /*
@@ -473,6 +482,9 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 
 		GeneratePatchInformations(&_QuadTree._RootNodes[i]);
 	}
+
+	//Update the terrain ray tracing data.
+	UpdateTerrainRayTracingData();
 }
 
 /*
@@ -792,4 +804,152 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 		render_information._Borders = node->_Borders;
 		render_information._Visibility = false;
 	}
+}
+
+/*
+*	Updates the terrain ray tracing data.
+*/
+void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
+{
+	//No need to update if ray tracing isn't active.
+	if (!RenderingSystem::Instance->IsRayTracingActive())
+	{
+		return;
+	}
+
+	//Define constants.
+	constexpr StaticArray<float, 2> VERTEX_BORDER_OFFSETS{ 1.0f / 64.0f, 1.0f / 32.0f };
+
+	//Destroy the current data.
+	if (_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex])
+	{
+		RenderingSystem::Instance->DestroyBuffer(&_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	if (_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex])
+	{
+		RenderingSystem::Instance->DestroyBuffer(&_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	if (_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex])
+	{
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	if (_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex])
+	{
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	//Keep track of the indices offset.
+	uint32 indices_offset{ 0 };
+
+	//Generate the terrain vertices and indices.
+	DynamicArray<TerrainVertex> vertices;
+	DynamicArray<uint32> indices;
+
+	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties,
+													_Properties._PatchResolution,
+													&vertices,
+													&indices);
+
+	//Iterate over all terrain patches and add their data.
+	DynamicArray<Vertex> master_vertices;
+	DynamicArray<uint32> master_indices;
+
+	const TerrainPatchInformation* RESTRICT patch_information{ _Update._PatchInformations.Data() };
+	const TerrainPatchRenderInformation* RESTRICT patch_render_information{ _Update._PatchRenderInformations.Data() };
+
+	for (uint64 i{ 0 }, size{ _Update._PatchInformations.Size() }; i < size; ++i, ++patch_information, ++patch_render_information)
+	{
+		//Cache relevant data.
+		const int32 patch_borders{ patch_render_information->_Borders };
+
+		//Add all vertex data.
+		for (const TerrainVertex& vertex : vertices)
+		{
+			//Calculate the position.
+			Vector3<float32> position;
+
+			position._X = vertex._Position._X;
+			position._Y = 0.0f;
+			position._Z = vertex._Position._Y;
+
+			//Apply the border offsets.
+			{
+				//Cache relevant data.
+				const int32 vertex_borders{ vertex._Borders };
+
+				//Calculate the horizontal border offset multiplier.
+				float32 is_upper_multiplier{ static_cast<float>((vertex_borders & BIT(0)) & (patch_borders & BIT(0))) };
+				float32 is_lower_multiplier{ static_cast<float>((vertex_borders & BIT(4)) & (patch_borders & BIT(4))) };
+				float32 horizontal_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f) };
+
+				//Calculate the vertical border offset multiplier.
+				float32 is_right_multiplier{ static_cast<float>((vertex_borders & BIT(2)) & (patch_borders & BIT(2))) };
+				float32 is_left_multiplier{ static_cast<float>((vertex_borders & BIT(6)) & (patch_borders & BIT(6))) };
+				float32 vertical_border_offset_weight{ CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f) };
+
+				position._X -= VERTEX_BORDER_OFFSETS[0] * horizontal_border_offset_weight;
+				position._Z -= VERTEX_BORDER_OFFSETS[0] * vertical_border_offset_weight;
+
+				//Calculate the horizontal border offset multiplier.
+				is_upper_multiplier = static_cast<float>((vertex_borders& BIT(1))& (patch_borders& BIT(1)));
+				is_lower_multiplier = static_cast<float>((vertex_borders& BIT(5))& (patch_borders& BIT(5)));
+				horizontal_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_upper_multiplier + is_lower_multiplier, 1.0f);
+
+				//Calculate the vertical border offset multiplier.
+				is_right_multiplier = static_cast<float>((vertex_borders& BIT(3))& (patch_borders& BIT(3)));
+				is_left_multiplier = static_cast<float>((vertex_borders& BIT(7))& (patch_borders& BIT(7)));
+				vertical_border_offset_weight = CatalystBaseMath::Minimum<float32>(is_right_multiplier + is_left_multiplier, 1.0f);
+
+				position._X -= VERTEX_BORDER_OFFSETS[1] * horizontal_border_offset_weight;
+				position._Z -= VERTEX_BORDER_OFFSETS[1] * vertical_border_offset_weight;
+			}
+
+			position._X = patch_render_information->_WorldPosition._X + position._X * patch_render_information->_PatchSize;
+			position._Z = patch_render_information->_WorldPosition._Y + position._Z * patch_render_information->_PatchSize;
+
+			TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y);
+
+			//Add the vertex.
+			master_vertices.Emplace(position, VectorConstants::UP, VectorConstants::RIGHT, Vector2<float>(0.0f, 0.0f));
+
+		}
+
+		//Add the indices
+		for (uint64 j{ 0 }; j < indices.Size(); ++j)
+		{
+			master_indices.Emplace(indices[j] + indices_offset);
+		}
+
+		//Update the indices offset.
+		indices_offset += static_cast<uint32>(vertices.Size());
+	}
+
+	//Create the buffers.
+	{
+		const void *const RESTRICT dataChunks[]{ master_vertices.Data() };
+		const uint64 dataSizes[]{ sizeof(Vertex) * master_vertices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	{
+		const void *const RESTRICT dataChunks[]{ master_indices.Data() };
+		const uint64 dataSizes[]{ sizeof(uint32) * master_indices.Size() };
+		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+	}
+
+	//Create the bottom level acceleration structure.
+	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex],
+																		static_cast<uint32>(master_vertices.Size()),
+																		_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex],
+																		static_cast<uint32>(master_indices.Size()),
+																		&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+
+	//Create the top level acceleration structure.
+	const TopLevelAccelerationStructureInstanceData instance{ MatrixConstants::IDENTITY, _TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex], 0 };
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instance), &_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 }

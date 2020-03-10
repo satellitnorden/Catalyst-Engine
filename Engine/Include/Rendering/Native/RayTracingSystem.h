@@ -41,11 +41,19 @@ public:
 	}
 
 	/*
+	*	Sets the terrain top level acceleration structure.
+	*/
+	void SetTerrainTopLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
+
+	/*
 	*	Adds a static instance.
 	*/
 	void AddStaticInstance(const TopLevelAccelerationStructureInstanceData& instance) NOEXCEPT;
 
 private:
+
+	//The empty top level acceleration structure.
+	AccelerationStructureHandle _EmptyTopLevelAccelerationStructure;
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
@@ -53,14 +61,25 @@ private:
 	//The render data tabls.
 	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
 
+	//The terrain top level acceleration structure.
+	AccelerationStructureHandle _TerrainTopAccelerationStructure{ EMPTY_HANDLE };
+
 	//All static instances.
 	DynamicArray<TopLevelAccelerationStructureInstanceData> _StaticInstances;
+
+	//Defines if the terrain top level acceleration structure needs update.
+	bool _TerrainTopLevelAccelerationStructureNeedsUpdate{ false };
 
 	//Defines if the static top level acceleration structure needs update.
 	bool _StaticTopLevelAccelerationStructureNeedsUpdate{ false };
 
 	//The static top level acceleration structure.
 	AccelerationStructureHandle _StaticTopLevelAccelerationStructure{ EMPTY_HANDLE };
+
+	/*
+	*	Creates the empty top level acceleration structure.
+	*/
+	void CreateEmptyTopLevelAccelerationStructure() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

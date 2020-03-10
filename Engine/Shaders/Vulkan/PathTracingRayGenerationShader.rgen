@@ -36,7 +36,7 @@ void main()
 
 	//Fire the ray!
 	traceNV(
-				STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+				TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
 				gl_RayFlagsOpaqueNV, 						//rayFlags
 				0xff, 										//cullMask
 				0, 											//sbtRecordOffset

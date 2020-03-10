@@ -9,6 +9,9 @@
 */
 void RayTracingSystem::PostInitialize()
 {
+	//Create the empty top level acceleration structure.
+	CreateEmptyTopLevelAccelerationStructure();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 }
@@ -29,7 +32,7 @@ void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context)
 		//Rebuild the static top level acceleration structure.
 		if (_StaticTopLevelAccelerationStructure)
 		{
-			RenderingSystem::Instance->DestroyTopLevelAccelerationStructure(&_StaticTopLevelAccelerationStructure);
+			RenderingSystem::Instance->DestroyAccelerationStructure(&_StaticTopLevelAccelerationStructure);
 		}
 
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_StaticInstances), &_StaticTopLevelAccelerationStructure);
@@ -39,6 +42,22 @@ void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context)
 
 		_StaticTopLevelAccelerationStructureNeedsUpdate = false;
 	}
+
+	if (_TerrainTopLevelAccelerationStructureNeedsUpdate)
+	{
+		CreateRenderDataTable();
+
+		_TerrainTopLevelAccelerationStructureNeedsUpdate = false;
+	}
+}
+
+/*
+*	Sets the terrain top level acceleration structure.
+*/
+void RayTracingSystem::SetTerrainTopLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT
+{
+	_TerrainTopAccelerationStructure = handle;
+	_TerrainTopLevelAccelerationStructureNeedsUpdate = true;
 }
 
 /*
@@ -54,14 +73,23 @@ void RayTracingSystem::AddStaticInstance(const TopLevelAccelerationStructureInst
 }
 
 /*
+*	Creates the empty top level acceleration structure.
+*/
+void RayTracingSystem::CreateEmptyTopLevelAccelerationStructure() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(), &_EmptyTopLevelAccelerationStructure);
+}
+
+/*
 *	Creates the render data table layout.
 */
 void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -82,5 +110,6 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	//Bind the static top level acceleration structure to it.
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &_RenderDataTable, _StaticTopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &_RenderDataTable, _TerrainTopAccelerationStructure ? _TerrainTopAccelerationStructure : _EmptyTopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, _StaticTopLevelAccelerationStructure ? _StaticTopLevelAccelerationStructure : _EmptyTopLevelAccelerationStructure);
 }

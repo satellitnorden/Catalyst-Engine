@@ -20,6 +20,7 @@
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainQuadTree.h>
+#include <Terrain/TerrainRayTracingData.h>
 #include <Terrain/TerrainUpdate.h>
 
 class TerrainSystem final
@@ -152,6 +153,9 @@ private:
 	//Denotes if the blend map was updated.
 	bool _BlendMapUpdated{ false };
 
+	//The terrain ray tracing data.
+	TerrainRayTracingData _TerrainRayTracingData;
+
 	/*
 	*	Processes the update.
 	*/
@@ -211,5 +215,10 @@ private:
 	*	Generates the patch informations.
 	*/
 	void GeneratePatchInformations(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Updates the terrain ray tracing data.
+	*/
+	void UpdateTerrainRayTracingData() NOEXCEPT;
 
 };

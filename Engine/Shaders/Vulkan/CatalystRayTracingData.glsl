@@ -2,6 +2,7 @@
 #define CATALYST_RAY_TRACING_DATA
 
 //Render data table data.
-layout (set = 1, binding = 0) uniform accelerationStructureNV STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 1, binding = 0) uniform accelerationStructureNV TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 1, binding = 1) uniform accelerationStructureNV STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE;
 
 #endif
