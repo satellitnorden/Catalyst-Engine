@@ -83,7 +83,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
-	//Nothing to do here if specular irradiance isn't enabled.
+	//Nothing to do here if ambient occlusion isn't enabled.
 	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::None)
 	{
 		SetEnabled(false);
@@ -92,12 +92,14 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
-
+	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::ScreenSpace)
+	{
+		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
+	}
+	
 	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{
-		//pipeline.Execute();
-		pipeline.SetIncludeInRender(false);
+		pipeline.Execute();
 	}
 
 	//Execute the current buffer, don't include the rest.

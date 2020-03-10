@@ -14,7 +14,6 @@
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (16)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MINIMUM_BIAS (0.001f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MAXIMUM_BIAS (0.01f)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_SAMPLE_WEIGHT (0.975f) //0.025f step.
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
 
 //Layout specification.
@@ -57,7 +56,7 @@ void main()
 	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
 	//Calculate the random rotation matrix.
-	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, mix(vec3(1.0f, 1.0f, 1.0f), noise_texture_sample.xyz * 2.0f - 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_SAMPLE_WEIGHT));
+	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
 
 	//Calculate the random hemisphere sample start index.
 	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);

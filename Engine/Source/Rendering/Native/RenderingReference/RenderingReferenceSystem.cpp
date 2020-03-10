@@ -295,7 +295,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		}
 
 		//Build the models acceleration structure.
-		_RenderingReferenceData->_ModelsAccelerationStructure.Build(128);
+		_RenderingReferenceData->_ModelsAccelerationStructure.Build(4);
 	}
 
 	//Set the update speed to zero.

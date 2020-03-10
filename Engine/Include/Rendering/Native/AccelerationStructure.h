@@ -435,10 +435,25 @@ private:
 				nodes[0]._TriangleData.Emplace(triangle_data);
 			}
 
-			else
+			else if (second.IsInside(triangle_center))
 			{
 				//Add the triangle data.
 				nodes[1]._TriangleData.Emplace(triangle_data);
+			}
+
+			else
+			{
+				if (nodes[0]._TriangleData.Size() < nodes[1]._TriangleData.Size())
+				{
+					//Add the triangle data.
+					nodes[0]._TriangleData.Emplace(triangle_data);
+				}
+
+				else
+				{
+					//Add the triangle data.
+					nodes[1]._TriangleData.Emplace(triangle_data);
+				}
 			}
 		}
 
