@@ -7,8 +7,6 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
-#include "CatalystModelData.glsl"
-#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"

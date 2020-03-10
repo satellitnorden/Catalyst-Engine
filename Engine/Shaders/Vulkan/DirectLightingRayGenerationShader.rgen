@@ -7,53 +7,47 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
-#include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba8) uniform image2D sceneFeatures1Image;
-layout (set = 3, binding = 1, rgba32f) uniform image2D sceneFeatures2Image;
-layout (set = 3, binding = 2, rgba8) uniform image2D sceneFeatures3Image;
-layout (set = 3, binding = 3, r8) uniform image2D ambientOcclusionImage;
-layout (set = 3, binding = 4, rgba32f) uniform image2D sceneImage;
+layout (set = 3, binding = 0, rgba8) uniform image2D scene_features_1_image;
+layout (set = 3, binding = 1, rgba32f) uniform image2D scene_features_2_image;
+layout (set = 3, binding = 2, rgba8) uniform image2D scene_features_3_image;
+layout (set = 3, binding = 3, rgba32f) uniform image2D scene_image;
 
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
 
 void main() 
 {
+	//Calculate the screen coordinate.
+	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
 	//Retrieve the scene features.
-	vec4 sceneFeatures1 = imageLoad(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy));
-	vec4 sceneFeatures2 = imageLoad(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy));
-	vec4 sceneFeatures3 = imageLoad(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy));
-	vec4 ambient_occlusion = ambientOcclusionMode == AMBIENT_OCCLUSION_MODE_NONE ? vec4(1.0f) : imageLoad(ambientOcclusionImage, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures1 = imageLoad(scene_features_1_image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures2 = imageLoad(scene_features_2_image, ivec2(gl_LaunchIDNV.xy));
+	vec4 sceneFeatures3 = imageLoad(scene_features_3_image, ivec2(gl_LaunchIDNV.xy));
 
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
 	vec3 albedo = sceneFeatures1.rgb;
 	float depth = sceneFeatures2.w;
-	vec3 shadingNormal = UnpackNormal(sceneFeatures2.x);
+	vec3 shadingNormal = sceneFeatures2.xyz;
 	float roughness = sceneFeatures3.x;
 	float metallic = sceneFeatures3.y;
-	float ambientOcclusion = pow(sceneFeatures3.z * pow(ambient_occlusion.x, AMBIENT_OCCLUSION_POWER), AMBIENT_OCCLUSION_POWER);
-
-	//Retrieve the current scene.
-	vec3 currentScene = imageLoad(sceneImage, ivec2(gl_LaunchIDNV.xy)).rgb;
-
-	//Calculate the screen coordinate.
-	vec2 screenCoordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+	float ambientOcclusion = sceneFeatures3.z;
 
 	//Calculate the hit position.
-	vec3 hitPosition = CalculateWorldPosition(screenCoordinate, depth) + shadingNormal * 0.0001f;
+	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
 
-	//Generate the ray direction.
-	vec3 rayDirection = normalize(hitPosition - PERCEIVER_WORLD_POSITION);
+	//Generate the view direction.
+	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the direct lighting.
-	vec3 directLighting = vec3(0.0f);
+	vec3 direct_lighting = vec3(0.0f);
 
 	//Calculate all lights.
 	for (int i = 0; i < numberOfLights; ++i)
@@ -74,21 +68,21 @@ void main()
 						0, 																							//sbtRecordOffset
 						0, 																							//sbtRecordStride
 						0, 																							//missIndex
-						hitPosition, 																				//origin
+						world_position, 																			//origin
 						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 						-light.position_or_direction,																//direction
 						VIEW_DISTANCE,																				//Tmax
 						1 																							//payload
 						);
 
-				directLighting += CalculateDirectLight(	-rayDirection,
-														-light.position_or_direction,
+				direct_lighting += CalculateLighting(	-view_direction,
 														albedo,
 														shadingNormal,
 														roughness,
 														metallic,
 														ambientOcclusion,
 														material.thickness,
+														light.position_or_direction,
 														light.luminance) * (1.0f - CLOUD_DENSITY) * visibility;
 
 				break;
@@ -96,30 +90,14 @@ void main()
 
 			case LIGHT_TYPE_POINT:
 			{
-				float lengthToLight = length(light.position_or_direction - hitPosition);
-				vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;
+				/*
+				float lengthToLight = length(light.position_or_direction - world_position);
+				vec3 lightDirection = vec3(light.position_or_direction - world_position) / lengthToLight;
 
 				//Calculate the attenuation.
 				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
 
-				//Trace the visibility.
-				visibility = 0.0f;
-
-				traceNV(
-						STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-						0xff, 																						//cullMask
-						0, 																							//sbtRecordOffset
-						0, 																							//sbtRecordStride
-						0, 																							//missIndex
-						hitPosition, 																				//origin
-						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-						lightDirection,																				//direction
-						lengthToLight,																				//Tmax
-						1 																							//payload
-						);
-
-				directLighting += CalculateDirectLight(	-rayDirection,
+				directLighting += CalculateDirectLight(	-view_direction,
 														lightDirection,
 														albedo,
 														shadingNormal,
@@ -127,7 +105,8 @@ void main()
 														metallic,
 														ambientOcclusion,
 														material.thickness,
-														light.luminance) * attenuation * visibility;
+														light.luminance) * attenuation;
+				*/
 
 				break;
 			}
@@ -135,5 +114,5 @@ void main()
 	}
 
 	//Write to the image.
-	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(currentScene + directLighting, 1.0f));
+	imageStore(scene_image, ivec2(gl_LaunchIDNV.xy), vec4(imageLoad(scene_image, ivec2(gl_LaunchIDNV.xy)).rgb + direct_lighting, 1.0f));
 }
