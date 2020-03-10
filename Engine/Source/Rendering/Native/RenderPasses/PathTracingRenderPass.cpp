@@ -1,16 +1,19 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/PathTracingRayTracingRenderPass.h>
+#include <Rendering/Native/RenderPasses/PathTracingRenderPass.h>
+
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(PathTracingRayTracingRenderPass);
+DEFINE_SINGLETON(PathTracingRenderPass);
 
 /*
 *	Default constructor.
 */
-PathTracingRayTracingRenderPass::PathTracingRayTracingRenderPass() NOEXCEPT
+PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::PathTracing);
@@ -18,20 +21,20 @@ PathTracingRayTracingRenderPass::PathTracingRayTracingRenderPass() NOEXCEPT
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		PathTracingRayTracingRenderPass::Instance->Initialize();
+		PathTracingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		PathTracingRayTracingRenderPass::Instance->Execute();
+		PathTracingRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
+void PathTracingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
@@ -50,9 +53,10 @@ void PathTracingRayTracingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void PathTracingRayTracingRenderPass::Execute() NOEXCEPT
+void PathTracingRenderPass::Execute() NOEXCEPT
 {
-	if (true)
+	//Selectively enable this rendering path.
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::PATH_TRACING)
 	{
 		SetEnabled(false);
 

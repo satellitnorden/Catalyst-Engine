@@ -8,18 +8,18 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/PathTracingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class PathTracingRayTracingRenderPass final : public RenderPass
+class PathTracingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(PathTracingRayTracingRenderPass);
+	DECLARE_SINGLETON(PathTracingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	PathTracingRayTracingRenderPass() NOEXCEPT;
+	PathTracingRenderPass() NOEXCEPT;
 
 private:
 

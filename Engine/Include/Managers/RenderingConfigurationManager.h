@@ -8,6 +8,13 @@ class RenderingConfigurationManager final
 
 public:
 
+	//Enumeration covering all rendering paths.
+	enum class RenderingPath : uint8
+	{
+		MAIN,
+		PATH_TRACING
+	};
+
 	//Enumeration covering all ambient occlusion modes.
 	enum class AmbientOcclusionMode : uint8
 	{
@@ -49,9 +56,17 @@ public:
 	}
 
 	/*
+	*	Returns the rendering path.
+	*/
+	FORCE_INLINE NO_DISCARD RenderingPath GetRenderingPath() const NOEXCEPT
+	{
+		return _RenderingPath;
+	}
+
+	/*
 	*	Returns the ambient occlusion mode.
 	*/
-	AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
 	{
 		return _AmbientOcclusionMode;
 	}
@@ -59,7 +74,7 @@ public:
 	/*
 	*	Returns the indirect lighting mode.
 	*/
-	IndirectLightingMode GetIndirectLightingMode() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD IndirectLightingMode GetIndirectLightingMode() const NOEXCEPT
 	{
 		return _IndirectLightingMode;
 	}
@@ -67,7 +82,7 @@ public:
 	/*
 	*	Returns the motion blur mode.
 	*/
-	MotionBlurMode GetMotionBlurMode() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD MotionBlurMode GetMotionBlurMode() const NOEXCEPT
 	{
 		return _MotionBlurMode;
 	}
@@ -75,7 +90,7 @@ public:
 	/*
 	*	Returns the shadows mode.
 	*/
-	ShadowsMode GetShadowsMode() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD ShadowsMode GetShadowsMode() const NOEXCEPT
 	{
 		return _ShadowsMode;
 	}
@@ -129,6 +144,9 @@ public:
 	}
 
 private:
+
+	//The rendering path.
+	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };

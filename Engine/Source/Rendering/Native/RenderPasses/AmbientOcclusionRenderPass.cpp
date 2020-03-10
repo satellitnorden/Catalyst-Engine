@@ -81,6 +81,14 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
+	//Selectively enable this rendering path.
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Nothing to do here if ambient occlusion isn't enabled.
 	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::None)
 	{

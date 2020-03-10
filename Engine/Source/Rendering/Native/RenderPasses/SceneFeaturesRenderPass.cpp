@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -81,6 +84,14 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 */
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
+	//Selectively enable this rendering path.
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	_ParticleSystemComputePipeline.Execute();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();

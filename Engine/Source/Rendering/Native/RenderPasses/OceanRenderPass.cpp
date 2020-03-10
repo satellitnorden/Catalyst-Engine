@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/OceanRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
@@ -59,6 +62,14 @@ void OceanRenderPass::Initialize() NOEXCEPT
 */
 void OceanRenderPass::Execute() NOEXCEPT
 {
+	//Selectively enable this rendering path.
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
 	//Execute all pipelines.
 	_SceneFeatures1CopyGraphicsPipeline.Execute();
 	_SceneFeatures2CopyGraphicsPipeline.Execute();
