@@ -1421,19 +1421,27 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 */
 void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
-	//Create the Vulkan geometry instance structres.
-	DynamicArray<VulkanGeometryInstance> geometryInstances;
-	geometryInstances.UpsizeFast(instanceData.Size());
-
-	for (uint64 i{ 0 }, size{ instanceData.Size() }; i < size; ++i)
+	if (IsRayTracingSupported())
 	{
-		VulkanTranslationUtilities::GetVulkanGeometryInstance(instanceData[i], &geometryInstances[i]);
-	}
+		//Create the Vulkan geometry instance structres.
+		DynamicArray<VulkanGeometryInstance> geometryInstances;
+		geometryInstances.UpsizeFast(instanceData.Size());
 
-	//Create the acceleration structure.
-	*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
-																		ArrayProxy<VulkanGeometryInstance>(geometryInstances),
-																		ArrayProxy<VkGeometryNV>());
+		for (uint64 i{ 0 }, size{ instanceData.Size() }; i < size; ++i)
+		{
+			VulkanTranslationUtilities::GetVulkanGeometryInstance(instanceData[i], &geometryInstances[i]);
+		}
+
+		//Create the acceleration structure.
+		*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
+																			ArrayProxy<VulkanGeometryInstance>(geometryInstances),
+																			ArrayProxy<VkGeometryNV>());
+	}
+	
+	else
+	{
+		*handle = nullptr;
+	}
 }
 
 /*
