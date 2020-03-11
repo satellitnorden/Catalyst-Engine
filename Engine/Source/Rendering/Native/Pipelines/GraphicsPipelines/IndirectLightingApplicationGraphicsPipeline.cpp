@@ -21,6 +21,9 @@ public:
 	//Denotes whether or not indirect lighting is enabled
 	int32 _IndirectLightingEnabled;
 
+	//The specular bias lookup texture index.
+	uint32 _SpecularBiasLookupTextureIndex;
+
 };
 
 /*
@@ -28,6 +31,9 @@ public:
 */
 void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Create the specular bias lookup texture.
+	CreateSpecularBiasLookupTexture();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -98,6 +104,7 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 	IndirectLightingApplicationPushConstantData data;
 
 	data._IndirectLightingEnabled = RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE;
+	data._SpecularBiasLookupTextureIndex = _SpecularBiasLookupTextureIndex;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(IndirectLightingApplicationPushConstantData), &data);
 
@@ -109,6 +116,29 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Creates the specular bias lookup texture.
+*/
+void IndirectLightingApplicationGraphicsPipeline::CreateSpecularBiasLookupTexture() NOEXCEPT
+{
+	//Define constants.
+	constexpr uint32 SIZE{ 512 };
+
+	//Open the file.
+	BinaryFile<IOMode::In> file{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\SpecularBiasLookupTextureData.cr" };
+
+	//Load the data into the texture.
+	Texture2D<Vector2<float32>> texture{ SIZE };
+	file.Read(texture.Data(), sizeof(Vector2<float32>) * SIZE * SIZE);
+
+	//Create the texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(texture), TextureFormat::R32G32_Float), &_SpecularBiasLookupTexture);
+
+	//Add the texture to the global render data.
+	_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);
+
 }
 
 /*

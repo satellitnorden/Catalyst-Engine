@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Specular Bias Lookup Texture Generator", "Specular Bias Lookup Texture Generator\Specular Bias Lookup Texture Generator.vcxproj", "{28046F0A-4BFF-41C7-AEF7-B54CE7A8E942}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|64-Bit = Debug|64-Bit
+		Final|64-Bit = Final|64-Bit
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28046F0A-4BFF-41C7-AEF7-B54CE7A8E942}.Debug|64-Bit.ActiveCfg = Debug|x64
+		{28046F0A-4BFF-41C7-AEF7-B54CE7A8E942}.Debug|64-Bit.Build.0 = Debug|x64
+		{28046F0A-4BFF-41C7-AEF7-B54CE7A8E942}.Final|64-Bit.ActiveCfg = Final|x64
+		{28046F0A-4BFF-41C7-AEF7-B54CE7A8E942}.Final|64-Bit.Build.0 = Final|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B82ED2E-1777-43DA-B45B-B6885DDDD49B}
+	EndGlobalSection
+EndGlobal

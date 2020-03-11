@@ -31,6 +31,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) bool INDIRECT_LIGHTING_ENABLED;
+	layout (offset = 4) uint SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX;
 };
 
 //In parameters.
@@ -109,6 +110,10 @@ void main()
 	//Calculate the blended specular irradiance
 	vec3 blended_specular_irradiance = mix(sky_specular_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
+	//Calculate the specular bias.
+	vec2 specular_bias_texture_coordinate = vec2(max(dot(current_features.normal, -current_features.view_direction), 0.0f), 1.0f - current_features.roughness);
+	vec2 specular_bias = texture(sampler2D(GLOBAL_TEXTURES[SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), specular_bias_texture_coordinate).xy;	
+
 	//Calculate the indirect lighting.
 	vec3 indirect_lighting = CalculatePrecomputedLighting(	-current_features.view_direction,
 															current_features.albedo,
@@ -119,10 +124,11 @@ void main()
 															1.0f,
 															sky_diffuse_sample,
 															blended_specular_irradiance,
-															vec2(1.0f, 0.0f));
+															specular_bias);
 
 	//Write the fragment.
 	scene = vec4(max(indirect_lighting, vec3(0.0f)), 1.0f);
 	//scene = vec4(vec3(current_features.ambientOcclusion), 1.0f);
 	//scene = vec4(indirect_lighting_sample.rgb, 1.0f);
+	//scene = vec4(texture(sampler2D(GLOBAL_TEXTURES[SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb, 1.0f);
 }

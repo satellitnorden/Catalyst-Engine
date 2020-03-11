@@ -2,13 +2,13 @@ Engine/Visual Studio Solution/Catalyst Engine/.vs/*
 Engine/Visual Studio Solution/Catalyst Engine/x64/*
 Engine/Visual Studio Solution/Catalyst Engine/Catalyst Engine/x64/*
 
-Tools/Resource Creator/Visual Studio Solution/Resource Creator/.vs/*
-Tools/Resource Creator/Visual Studio Solution/Resource Creator/x64/*
-Tools/Resource Creator/Visual Studio Solution/Resource Creator/Resource Creator/x64/*
-
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/.vs/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/x64/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/Microbenchmarker/x64/*
+
+Tools/Specular Bias Lookup Texture Generator/Visual Studio Solution/Specular Bias Lookup Texture Generator/.vs/*
+Tools/Specular Bias Lookup Texture Generator/Visual Studio Solution/Specular Bias Lookup Texture Generator/x64/*
+Tools/Specular Bias Lookup Texture Generator/Visual Studio Solution/Specular Bias Lookup Texture Generator/Specular Bias Lookup Texture Generator/x64/*
 
 Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/.vs/*
 Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/x64/*

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine Source">
+      <UniqueIdentifier>{13ceee56-e02b-45b6-84fd-af91c23897c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Specular Bias Lookup Texture Generator Code">
+      <UniqueIdentifier>{2eb8f8d8-1774-45e5-aeca-e432cfb407f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Specular Bias Lookup Texture Generator Code\Source">
+      <UniqueIdentifier>{f270c94b-bd35-4f87-aa4a-18e503a4c290}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Code\Source\Main.cpp">
+      <Filter>Specular Bias Lookup Texture Generator Code\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
