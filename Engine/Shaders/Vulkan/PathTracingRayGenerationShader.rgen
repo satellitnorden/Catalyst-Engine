@@ -34,27 +34,62 @@ void main()
 	//Denote that this is the first recursion depth.
 	path_tracing_ray_payload.current_recursion_depth = 0;
 
-	//Fire the ray!
+	//Fire the ray(s)!
+	bool has_hit = false;
+	float closest_hit_distance = VIEW_DISTANCE;
+
 	traceNV(
-				TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
-				gl_RayFlagsOpaqueNV, 						//rayFlags
-				0xff, 										//cullMask
-				0, 											//sbtRecordOffset
-				0, 											//sbtRecordStride
-				0, 											//missIndex
-				PERCEIVER_WORLD_POSITION, 					//origin
-				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-				ray_direction, 								//direction
-				VIEW_DISTANCE, 								//Tmax
-				0 											//payload
-				);
+			TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+			gl_RayFlagsOpaqueNV, 						//rayFlags
+			0xff, 										//cullMask
+			0, 											//sbtRecordOffset
+			0, 											//sbtRecordStride
+			0, 											//missIndex
+			PERCEIVER_WORLD_POSITION, 					//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+			ray_direction, 								//direction
+			closest_hit_distance, 						//Tmax
+			0 											//payload
+			);
+
+	has_hit = has_hit ? true : path_tracing_ray_payload.hit_distance < VIEW_DISTANCE;
+	closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
+
+	traceNV(
+			STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+			gl_RayFlagsOpaqueNV, 						//rayFlags
+			0xff, 										//cullMask
+			0, 											//sbtRecordOffset
+			0, 											//sbtRecordStride
+			0, 											//missIndex
+			PERCEIVER_WORLD_POSITION, 					//origin
+			CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+			ray_direction, 								//direction
+			closest_hit_distance, 						//Tmax
+			0 											//payload
+			);
+
+	has_hit = has_hit ? true : path_tracing_ray_payload.hit_distance < VIEW_DISTANCE;
+	closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
 
 	//Write to the images.
-	imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.radiance, 1.0f));
-	imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.albedo, 0.0f));
-	imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.shading_normal, 0.0f));
-	imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), path_tracing_ray_payload.material_properties);
-	imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec2(0.0f, 0.0f), 0.0f, 0.0f));
+	if (has_hit)
+	{
+		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.radiance, 1.0f));
+		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.albedo, 0.0f));
+		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(path_tracing_ray_payload.shading_normal, 0.0f));
+		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), path_tracing_ray_payload.material_properties);
+		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec2(0.0f, 0.0f), 0.0f, 0.0f));
+	}
+	
+	else
+	{
+		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(texture(SKY_TEXTURES[0], ray_direction).rgb, 1.0f));
+		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 0.0f, 0.0f), 0.0f));
+		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), 0.0f));
+		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(0.0f, 0.0f, 0.0f, 0.0f));
+		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec2(0.0f, 0.0f), 0.0f, 0.0f));
+	}
 
 	/*
 

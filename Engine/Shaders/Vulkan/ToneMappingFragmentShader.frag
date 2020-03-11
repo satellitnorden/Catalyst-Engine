@@ -59,14 +59,14 @@ vec3 ApplyColorGrading(vec3 fragment)
 void main()
 {
     //Sample the scene texture.
-    vec4 scene_texture_sampler = texture(scene_texture, fragment_texture_coordinate);
+    vec3 sceneTextureColor = texture(scene_texture, fragment_texture_coordinate).rgb;
 
     //Apply tone mapping.
-    vec3 tone_mapped = ApplyToneMapping(scene_texture_sampler.rgb);
+    sceneTextureColor = ApplyToneMapping(sceneTextureColor);
 
     //Apply color grading.
     //sceneTextureColor = ApplyColorGrading(sceneTextureColor);
 
     //Write the fragment
-    fragment = vec4(tone_mapped, 1.0f);
+    fragment = vec4(sceneTextureColor, 1.0f);
 }
