@@ -39,7 +39,7 @@ void main()
 	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
 
 	//Calculate the density multiplier.
-	float density_multiplier = exp(-(1.0f * 0.25f));
+	float density_multiplier = exp(-(1.0f));
 
 	//Calculate the volumetric lighting.
 	vec3 volumetric_lighting = vec3(0.0f);
@@ -81,10 +81,12 @@ void main()
 					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
 
 					//Determine the visibility.
+					bool hit_anything = false;
+
 					visibility = 0.0f;
 
 					traceNV(
-							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+							TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
 							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 							0xff, 																						//cullMask
 							0, 																							//sbtRecordOffset
@@ -93,12 +95,37 @@ void main()
 							volumetric_particle_hit_position, 															//origin
 							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 							-light.position_or_direction,																//direction
-							CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+							VIEW_DISTANCE,																				//Tmax
 							1 																							//payload
 							);
 
+					hit_anything = visibility < 1.0f;
+
+					if (!hit_anything)
+					{
+						visibility = 0.0f;
+
+						traceNV(
+								STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								volumetric_particle_hit_position, 															//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light.position_or_direction,																//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
+
+						hit_anything = visibility < 1.0f;
+					}
+
+					hit_anything = visibility < 1.0f;
+
 					//Add to the volumetric lighting.
-					volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - CLOUD_DENSITY) * visibility * 0.125f;
+					volumetric_lighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - CLOUD_DENSITY) * 0.25f * float(!hit_anything);
 				}
 
 				break;
