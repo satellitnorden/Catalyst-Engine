@@ -174,6 +174,14 @@ public:
 		return TraceShadow(ray, _Root);
 	}
 
+	/*
+	*	Returns the vertex data at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD const VertexData &GetVertexData(const uint64 index) NOEXCEPT
+	{
+		return _VertexDataMemory[index];
+	}
+
 private:
 
 	/*

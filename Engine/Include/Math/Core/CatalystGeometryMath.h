@@ -20,9 +20,7 @@ public:
 	/*
 	*	Calculates the barycentric coordinates for a point in a triangle.
 	*/
-	FORCE_INLINE constexpr static void CalculateBarycentricCoordinates(	const Triangle &triangle,
-																		const Vector3<float> &point,
-																		Vector3<float> *const RESTRICT barycentricCoordinates) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateBarycentricCoordinates(const Triangle &triangle, const Vector3<float> &point) NOEXCEPT
 	{
 		const Vector3<float> v0{ triangle._Vertices[1] - triangle._Vertices[0] };
 		const Vector3<float> v1{ triangle._Vertices[2] - triangle._Vertices[0] };
@@ -36,9 +34,13 @@ public:
 
 		const float denom{ 1.0f / (d00 * d11 - d01 * d01) };
 
-		barycentricCoordinates->_Y = (d11 * d20 - d01 * d21) * denom;
-		barycentricCoordinates->_Z = (d00 * d21 - d01 * d20) * denom;
-		barycentricCoordinates->_X = 1.0f - barycentricCoordinates->_Y - barycentricCoordinates->_Z;
+		Vector3<float32> output;
+
+		output._Y = (d11 * d20 - d01 * d21) * denom;
+		output._Z = (d00 * d21 - d01 * d20) * denom;
+		output._X = 1.0f - output._Y - output._Z;
+
+		return output;
 	}
 
 	/*

@@ -280,13 +280,13 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 				//Add all vertices.
 				for (Vertex &vertex : vertices)
 				{
-					_RenderingReferenceData->_ModelsAccelerationStructure.AddVertexData(AccelerationStructure<uint64>::VertexData(vertex._Position, i));
+					_RenderingReferenceData->_ModelsAccelerationStructure.AddVertexData(AccelerationStructure<Vertex>::VertexData(vertex._Position, vertex));
 				}
 
 				//Add all indices.
 				for (uint64 j{ 0 }, size{ indices.Size() }; j < size; j += 3)
 				{
-					_RenderingReferenceData->_ModelsAccelerationStructure.AddTriangleData(AccelerationStructure<uint64>::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
+					_RenderingReferenceData->_ModelsAccelerationStructure.AddTriangleData(AccelerationStructure<Vertex>::TriangleData(StaticArray<uint32, 3>(indices[j + 0] + indices_offset, indices[j + 1] + indices_offset, indices[j + 2] + indices_offset)));
 				}
 
 				//Update the indices offset.
@@ -614,11 +614,45 @@ NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayTerrain(const Ray &ray, 
 NO_DISCARD bool RenderingReferenceSystem::CastSurfaceRayModels(const Ray &ray, SurfaceDescription *const RESTRICT surface_description, float *const RESTRICT hit_distance) NOEXCEPT
 {
 	//Trace the models acceleration structure.
-	if (const AccelerationStructure<uint64>::TriangleData *const RESTRICT triangle_data{ _RenderingReferenceData->_ModelsAccelerationStructure.TraceSurface(ray, hit_distance) })
-	{
+	if (const AccelerationStructure<Vertex>::TriangleData *const RESTRICT triangle_data{ _RenderingReferenceData->_ModelsAccelerationStructure.TraceSurface(ray, hit_distance) })
+	{	
+		//Calculate the hit position.
+		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * *hit_distance };
+
+		//Retrieve the vertex data.
+		const AccelerationStructure<Vertex>::VertexData &vertex_data_1{ _RenderingReferenceData->_ModelsAccelerationStructure.GetVertexData(triangle_data->_Indices[0]) };
+		const AccelerationStructure<Vertex>::VertexData &vertex_data_2{ _RenderingReferenceData->_ModelsAccelerationStructure.GetVertexData(triangle_data->_Indices[1]) };
+		const AccelerationStructure<Vertex>::VertexData &vertex_data_3{ _RenderingReferenceData->_ModelsAccelerationStructure.GetVertexData(triangle_data->_Indices[2]) };
+
+		//Reconstruct the triangle.
+		Triangle triangle;
+
+		triangle._Vertices[0] = vertex_data_1._Position;
+		triangle._Vertices[1] = vertex_data_2._Position;
+		triangle._Vertices[2] = vertex_data_3._Position;
+
+		//Calculate the barycentri coordinates.
+		const Vector3<float32> barycentric_coordinates{ CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position) };
+
+		//Calculate the normal.
+		const Vector3<float32> normal{	Vector3<float32>::Normalize(vertex_data_1._UserData._Normal * barycentric_coordinates[0]
+																	+ vertex_data_2._UserData._Normal * barycentric_coordinates[1]
+																	+ vertex_data_3._UserData._Normal * barycentric_coordinates[2]) };
+
+
+		//Calculate the tangent.
+		const Vector3<float32> tangent{	Vector3<float32>::Normalize(vertex_data_1._UserData._Tangent * barycentric_coordinates[0]
+																	+ vertex_data_2._UserData._Tangent * barycentric_coordinates[1]
+																	+ vertex_data_3._UserData._Tangent * barycentric_coordinates[2]) };
+
+		//Calculate the texture coordinate.
+		const Vector2<float32> texture_coordinate{	vertex_data_1._UserData._TextureCoordinate * barycentric_coordinates[0]
+													+ vertex_data_2._UserData._TextureCoordinate * barycentric_coordinates[1]
+													+ vertex_data_3._UserData._TextureCoordinate * barycentric_coordinates[2] };
+
 		//Fill in the surface description.
 		surface_description->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
-		surface_description->_Normal = VectorConstants::UP;
+		surface_description->_Normal = normal;
 		surface_description->_Roughness = 0.1f;
 		surface_description->_Metallic = 0.9f;
 		surface_description->_AmbientOcclusion = 1.0f;

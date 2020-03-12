@@ -66,7 +66,7 @@ public:
 	AccelerationStructure<byte> _TerrainAccelerationStructure;
 
 	//The models acceleration structure.
-	AccelerationStructure<uint64> _ModelsAccelerationStructure;
+	AccelerationStructure<Vertex> _ModelsAccelerationStructure;
 
 	/*
 	*	Default constructor.
