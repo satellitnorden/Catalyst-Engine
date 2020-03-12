@@ -2,8 +2,11 @@
 #define CATALYST_RAY_TRACING_CORE
 
 //Preprocessor defines.
-#define CATALYST_RAY_TRACING_T_MINIMUM (0.0f)
+#define CATALYST_RAY_TRACING_T_MINIMUM (0.01f)
 #define CATALYST_RAY_TRACING_T_MAXIMUM (1000.0f)
+
+#define CATALYST_PATH_TRACING_TYPE_TERRAIN (0)
+#define CATALYST_PATH_TRACING_TYPE_STATIC_MODELS (1)
 
 /*
 *	Path tracing ray payload struct definition.
@@ -11,6 +14,7 @@
 struct PathTracingRayPayload
 {
 	//Input data.
+	uint type;
 	uint current_recursion_depth;
 	vec4 random_noise;
 

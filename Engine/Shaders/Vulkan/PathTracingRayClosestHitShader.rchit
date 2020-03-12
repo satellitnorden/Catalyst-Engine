@@ -17,11 +17,28 @@ hitAttributeNV vec3 hit_attribute;
 void main()
 {
 	//TEMP.
-	vec3 temp = vec3(hit_attribute.x, hit_attribute.y, 1.0f - hit_attribute.x - hit_attribute.y);
+	vec3 color;
+
+	switch (path_tracing_ray_payload.type)
+	{
+		case CATALYST_PATH_TRACING_TYPE_TERRAIN:
+		{
+			color = vec3(1.0f, 0.0f, 0.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+
+			break;
+		}
+
+		case CATALYST_PATH_TRACING_TYPE_STATIC_MODELS:
+		{
+			color = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+
+			break;
+		}
+	}
 
 	//Write to the ray payload.
-	path_tracing_ray_payload.radiance 				= temp;
-	path_tracing_ray_payload.albedo 				= temp;
+	path_tracing_ray_payload.radiance 				= color;
+	path_tracing_ray_payload.albedo 				= color;
 	path_tracing_ray_payload.shading_normal 		= vec3(0.0f, 1.0f, 0.0f);
 	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;
 	path_tracing_ray_payload.material_properties 	= vec4(1.0f, 0.0f, 1.0f, 0.0f);

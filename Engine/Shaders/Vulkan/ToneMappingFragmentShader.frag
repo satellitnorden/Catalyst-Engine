@@ -65,8 +65,9 @@ void main()
     sceneTextureColor = ApplyToneMapping(sceneTextureColor);
 
     //Apply color grading.
-    //sceneTextureColor = ApplyColorGrading(sceneTextureColor);
+    sceneTextureColor = ApplyColorGrading(sceneTextureColor);
 
     //Write the fragment
-    fragment = vec4(sceneTextureColor, 1.0f);
+    if (isnan(sceneTextureColor.r) || isnan(sceneTextureColor.g) || isnan(sceneTextureColor.b)) fragment = vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f);
+    else fragment = vec4(sceneTextureColor, 1.0f);
 }

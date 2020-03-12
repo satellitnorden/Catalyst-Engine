@@ -14,5 +14,5 @@ layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_paylo
 void main()
 {
 	//Write to the ray payload.
-	path_tracing_ray_payload.hit_distance 			= VIEW_DISTANCE;
+	path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
 }

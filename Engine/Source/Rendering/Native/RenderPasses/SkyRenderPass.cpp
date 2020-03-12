@@ -62,16 +62,17 @@ void SkyRenderPass::Initialize() NOEXCEPT
 */
 void SkyRenderPass::Execute() NOEXCEPT
 {
-	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Execute all pipelines.
 	_SkyComputePipeline.Execute();
 	_SkyDownsampleComputePipeline.Execute();
-	_SkyGraphicsPipeline.Execute();
+
+	if (RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::MAIN)
+	{
+		_SkyGraphicsPipeline.Execute();
+	}
+
+	else
+	{
+		_SkyGraphicsPipeline.SetIncludeInRender(false);
+	}
 }
