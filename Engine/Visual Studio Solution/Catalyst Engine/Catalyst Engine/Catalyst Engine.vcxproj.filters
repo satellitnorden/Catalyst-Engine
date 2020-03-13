@@ -1125,15 +1125,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Transient\ModelComponent.h">
-      <Filter>Components\Include\Transient</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Creation\ModelInitializationData.h">
-      <Filter>Entities\Include\Creation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Types\ModelEntity.h">
-      <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1464,6 +1455,24 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainRayTracingData.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1787,9 +1796,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Types\ModelEntity.cpp">
-      <Filter>Entities\Source\Types</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -1930,6 +1936,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\PathTracingRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

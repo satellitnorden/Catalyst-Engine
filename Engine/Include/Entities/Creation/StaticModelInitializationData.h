@@ -11,14 +11,12 @@
 
 //Physics.
 #include <Physics/ModelCollisionData.h>
-#include <Physics/ModelPhysicsSimulationData.h>
-#include <Physics/PhysicsCore.h>
 
 //Rendering.
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/Model.h>
 
-class ModelInitializationData final : public EntityInitializationData
+class StaticModelInitializationData final : public EntityInitializationData
 {
 
 public:
@@ -35,10 +33,5 @@ public:
 	//The model collision data.
 	ModelCollisionData _ModelCollisionData;
 
-	//Denotes whether or not to simulate physics.
-	bool _SimulatePhysics;
-
-	//The model physics simulation data.
-	ModelPhysicsSimulationData _ModelPhysicsSimulationData;
 
 };

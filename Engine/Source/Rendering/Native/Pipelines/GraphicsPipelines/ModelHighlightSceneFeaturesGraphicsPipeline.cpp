@@ -145,12 +145,10 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Draw all models.
-	const ModelComponent *RESTRICT component{ ComponentManager::GetModelModelComponents() };
-
 	for (const HighlightedModel &highlighted_model : *highlighted_models)
 	{
 		//Retrieve the component.
-		const ModelComponent& component{ ComponentManager::GetModelModelComponents()[highlighted_model._ComponentsIndex] };
+		const DynamicModelComponent& component{ ComponentManager::GetDynamicModelDynamicModelComponents()[highlighted_model._ComponentsIndex] };
 
 		//Draw all meshes.
 		for (uint64 i{ 0 }, size{ component._Model->_Meshes.Size() }; i < size; ++i)

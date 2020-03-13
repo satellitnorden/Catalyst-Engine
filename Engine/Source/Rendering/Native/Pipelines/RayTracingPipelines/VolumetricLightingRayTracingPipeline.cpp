@@ -48,9 +48,9 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 void VolumetricLightingRayTracingPipeline::Execute() NOEXCEPT
 {
 	//No need to fire rays if there's nothing to fire against.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
+	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 
-	if (numberOfModelComponents == 0)
+	if (number_of_components == 0)
 	{
 		SetIncludeInRender(false);
 

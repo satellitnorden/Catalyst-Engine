@@ -123,18 +123,6 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
-	//Iterate over all model components and draw them all.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
-
-	//If there's none to render - render none.
-	if (numberOfModelComponents == 0 && false)
-	{
-		//Don't include this render pass in the final render.
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -144,36 +132,77 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw all models.
-	const ModelComponent *RESTRICT component{ ComponentManager::GetModelModelComponents() };
-
-	for (uint64 i = 0; i < numberOfModelComponents; ++i, ++component)
+	//Draw static models
 	{
-		//Draw all meshes.
-		for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
-			//Cache the mesh.
-			const Mesh& mesh{ component->_Model->_Meshes[i] };
+			//Draw all meshes.
+			for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+			{
+				//Cache the mesh.
+				const Mesh& mesh{ component->_Model->_Meshes[i] };
 
-			//Push constants.
-			VertexPushConstantData vertexData;
+				//Push constants.
+				VertexPushConstantData vertexData;
 
-			vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
-			vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+				vertexData._PreviousModelMatrix = component->_WorldTransform;
+				vertexData._CurrentModelMatrix = component->_WorldTransform;
 
-			commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
-			FragmentPushConstantData fragmentData;
+				FragmentPushConstantData fragmentData;
 
-			fragmentData._MaterialIndex = component->_MaterialIndices[i];
+				fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-			commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
-			//Bind the vertex/inder buffer.
-			commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-			commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+				//Bind the vertex/inder buffer.
+				commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+				commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
 
-			commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+				commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+			}
+		}
+	}
+
+	//Draw dynamic models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Draw all meshes.
+			for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+			{
+				//Cache the mesh.
+				const Mesh& mesh{ component->_Model->_Meshes[i] };
+
+				//Push constants.
+				VertexPushConstantData vertexData;
+
+				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
+				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+
+				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+				FragmentPushConstantData fragmentData;
+
+				fragmentData._MaterialIndex = component->_MaterialIndices[i];
+
+				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+
+				//Bind the vertex/inder buffer.
+				commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+				commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+
+				commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+			}
 		}
 	}
 

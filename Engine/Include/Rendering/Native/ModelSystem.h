@@ -6,7 +6,7 @@
 #include <Core/General/UpdateContext.h>
 
 //Entities.
-#include <Entities/Types/ModelEntity.h>
+#include <Entities/Types/DynamicModelEntity.h>
 
 //Rendering.
 #include <Rendering/Native/HighlightedModel.h>
@@ -60,22 +60,22 @@ public:
 	/*
 	*	Enables highlight on a model entity.
 	*/
-	void EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT;
+	void EnableHighlight(const DynamicModelEntity *const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT;
 
 	/*
 	*	Sets the highlight color on a model entity.
 	*/
-	void SetHighlightColor(const ModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT;
+	void SetHighlightColor(const DynamicModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT;
 
 	/*
 	*	Sets the highlight strength on a model entity.
 	*/
-	void SetHighlightStrength(const ModelEntity *const RESTRICT entity, const float32 strength) NOEXCEPT;
+	void SetHighlightStrength(const DynamicModelEntity *const RESTRICT entity, const float32 strength) NOEXCEPT;
 
 	/*
 	*	Disables highlight on a model entity.
 	*/
-	void DisableHighlight(const ModelEntity *const RESTRICT entity) NOEXCEPT;
+	void DisableHighlight(const DynamicModelEntity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Returns the highlighted models.

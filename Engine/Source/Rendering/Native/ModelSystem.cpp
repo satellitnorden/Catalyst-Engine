@@ -25,8 +25,8 @@ void ModelSystem::PostInitialize() NOEXCEPT
 void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Store the previous world transform for all model entities.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfModelComponents() };
-	ModelComponent *RESTRICT modelComponent{ ComponentManager::GetModelModelComponents() };
+	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	DynamicModelComponent *RESTRICT modelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 	for (uint64 i{ 0 }; i < numberOfModelComponents; ++i, ++modelComponent)
 	{
@@ -55,7 +55,7 @@ RenderDataTableHandle ModelSystem::GetCurrentModelDataRenderDataTable() const NO
 /*
 *	Enables highlight on a model entity.
 */
-void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT
+void ModelSystem::EnableHighlight(const DynamicModelEntity *const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT
 {
 	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot enable highlight!");
 
@@ -65,7 +65,7 @@ void ModelSystem::EnableHighlight(const ModelEntity* const RESTRICT entity, cons
 /*
 *	Sets the highlight color on a model entity.
 */
-void ModelSystem::SetHighlightColor(const ModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT
+void ModelSystem::SetHighlightColor(const DynamicModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT
 {
 	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot set highlight color!");
 
@@ -83,7 +83,7 @@ void ModelSystem::SetHighlightColor(const ModelEntity *const RESTRICT entity, co
 /*
 *	Sets the highlight strength on a model entity.
 */
-void ModelSystem::SetHighlightStrength(const ModelEntity* const RESTRICT entity, const float32 strength) NOEXCEPT
+void ModelSystem::SetHighlightStrength(const DynamicModelEntity *const RESTRICT entity, const float32 strength) NOEXCEPT
 {
 	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot set highlight strength!");
 
@@ -101,7 +101,7 @@ void ModelSystem::SetHighlightStrength(const ModelEntity* const RESTRICT entity,
 /*
 *	Disables highlight on a model entity.
 */
-void ModelSystem::DisableHighlight(const ModelEntity* const RESTRICT entity) NOEXCEPT
+void ModelSystem::DisableHighlight(const DynamicModelEntity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(entity->_Initialized, "Model entity is not initialized yet - cannot disable highlight!");
 

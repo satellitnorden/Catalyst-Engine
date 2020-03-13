@@ -1,11 +1,11 @@
 //Header file.
-#include <Entities/Types/ModelEntity.h>
+#include <Entities/Types/DynamicModelEntity.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
 
 //Entities.
-#include <Entities/Creation/ModelInitializationData.h>
+#include <Entities/Creation/DynamicModelInitializationData.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -17,39 +17,29 @@
 /*
 *	Default constructor.
 */
-ModelEntity::ModelEntity() NOEXCEPT
+DynamicModelEntity::DynamicModelEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_Type = EntityType::Model;
+	_Type = EntityType::DynamicModel;
 }
 
 /*
 *	Initializes this entity.
 */
-void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
+void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for this entity.
-	_ComponentsIndex = ComponentManager::GetNewModelComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewDynamicModelComponentsIndex(this);
 
 	//Copy the data.
-	const ModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const ModelInitializationData *const RESTRICT>(data) };
-	ModelComponent& component{ ComponentManager::GetModelModelComponents()[_ComponentsIndex] };
+	const DynamicModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const DynamicModelInitializationData *const RESTRICT>(data) };
+	DynamicModelComponent& component{ ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex] };
 
 	component._Model = model_initialization_data->_Model;
 	component._PreviousWorldTransform = model_initialization_data->_Transform;
 	component._CurrentWorldTransform = model_initialization_data->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
-
-	//Add the static instance. Assume this model will not move for now.
-	if (RenderingSystem::Instance->IsRayTracingSupported())
-	{
-		for (const Mesh &mesh : component._Model->_Meshes)
-		{
-			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(component._PreviousWorldTransform, mesh._BottomLevelAccelerationStructure, 0));
-		}
-		
-	}
 
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
@@ -64,46 +54,46 @@ void ModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	}
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<ModelInitializationData>(data);
+	EntityCreationSystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
 }
 
 /*
 *	Terminates this entity.
 */
-void ModelEntity::Terminate() NOEXCEPT
+void DynamicModelEntity::Terminate() NOEXCEPT
 {
 	//Return this entitiy's components index.
-	ComponentManager::ReturnModelComponentsIndex(_ComponentsIndex);
+	ComponentManager::ReturnDynamicModelComponentsIndex(_ComponentsIndex);
 }
 
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT ModelEntity::GetWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::GetWorldTransform() NOEXCEPT
 {
-	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
 
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
-	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
 }
 
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT ModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
-	return &ComponentManager::GetModelModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }
 
 /*
 *	Enables highlight on this model entity.
 */
-void ModelEntity::EnableHighlight(const Vector3<float>& color, const float strength) NOEXCEPT
+void DynamicModelEntity::EnableHighlight(const Vector3<float>& color, const float strength) NOEXCEPT
 {
 	RenderingSystem::Instance->GetModelSystem()->EnableHighlight(this, color, strength);
 }
@@ -111,7 +101,7 @@ void ModelEntity::EnableHighlight(const Vector3<float>& color, const float stren
 /*
 *	Returns if this model entity is highlighted or not.
 */
-NO_DISCARD bool ModelEntity::IsHighlighted() const NOEXCEPT
+NO_DISCARD bool DynamicModelEntity::IsHighlighted() const NOEXCEPT
 {
 	for (const HighlightedModel &highlighted_model : *RenderingSystem::Instance->GetModelSystem()->GetHighlightedModels())
 	{
@@ -127,7 +117,7 @@ NO_DISCARD bool ModelEntity::IsHighlighted() const NOEXCEPT
 /*
 *	Sets the highlight color on this model entity.
 */
-void ModelEntity::SetHighlightColor(const Vector3<float> &color) NOEXCEPT
+void DynamicModelEntity::SetHighlightColor(const Vector3<float> &color) NOEXCEPT
 {
 	RenderingSystem::Instance->GetModelSystem()->SetHighlightColor(this, color);
 }
@@ -135,7 +125,7 @@ void ModelEntity::SetHighlightColor(const Vector3<float> &color) NOEXCEPT
 /*
 *	Sets the highlight strength on this model entity.
 */
-void ModelEntity::SethighlightStrength(const float32 strength) NOEXCEPT
+void DynamicModelEntity::SethighlightStrength(const float32 strength) NOEXCEPT
 {
 	RenderingSystem::Instance->GetModelSystem()->SetHighlightStrength(this, strength);
 }
@@ -143,7 +133,7 @@ void ModelEntity::SethighlightStrength(const float32 strength) NOEXCEPT
 /*
 *	Disables highlight on this model entity.
 */
-void ModelEntity::DisableHighlight() NOEXCEPT
+void DynamicModelEntity::DisableHighlight() NOEXCEPT
 {
 	RenderingSystem::Instance->GetModelSystem()->DisableHighlight(this);
 }

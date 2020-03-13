@@ -259,8 +259,8 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	//Prepare the models data.
 	{
 		//Iterate over all model components and add their data to the models acceleration structure.
-		const uint64 number_of_model_components{ ComponentManager::GetNumberOfModelComponents() };
-		ModelComponent* RESTRICT component{ ComponentManager::GetModelModelComponents() };
+		const uint64 number_of_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		StaticModelComponent* RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 		uint32 indices_offset{ 0 };
 
 		for (uint64 i{ 0 }; i < number_of_model_components; ++i, ++component)
@@ -274,7 +274,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 				//Transform all vertices.
 				for (Vertex &vertex : vertices)
 				{
-					vertex.Transform(component->_CurrentWorldTransform, 0.0f);
+					vertex.Transform(component->_WorldTransform, 0.0f);
 				}
 
 				//Add all vertices.

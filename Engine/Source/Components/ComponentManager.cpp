@@ -79,8 +79,9 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(DistanceTrigger, DistanceTriggerComponent);
+DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(DynamicModel, DynamicModelComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Model, ModelComponent);
+DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Vegetation, VegetationComponent);

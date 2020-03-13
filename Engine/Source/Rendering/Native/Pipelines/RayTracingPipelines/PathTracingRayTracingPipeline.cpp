@@ -52,9 +52,9 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 void PathTracingRayTracingPipeline::Execute() NOEXCEPT
 {
 	//No need to fire rays if there's nothing to fire against.
-	const uint64 number_of_model_components{ ComponentManager::GetNumberOfModelComponents() };
+	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 
-	if (number_of_model_components == 0)
+	if (number_of_components == 0)
 	{
 		SetIncludeInRender(false);
 
