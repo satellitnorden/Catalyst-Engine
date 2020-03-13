@@ -31,6 +31,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/TerrainSystem.h>
 #include <Systems/WorldSystem.h>
 
 //Singleton definition.
@@ -639,6 +640,10 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
 	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
+	_DynamicUniformData._TerrainHeightMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
+	_DynamicUniformData._TerrainIndexMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_IndexMapTextureIndex;
+	_DynamicUniformData._TerrainBlendMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_BlendMapTextureIndex;
+	_DynamicUniformData._TerrainMapResolution = static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };

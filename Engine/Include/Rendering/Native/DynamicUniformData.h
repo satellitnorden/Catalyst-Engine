@@ -62,6 +62,11 @@ public:
 	float _NearPlane;
 	float _FarPlane;
 
+	uint32 _TerrainHeightMapTextureIndex;
+	uint32 _TerrainIndexMapTextureIndex;
+	uint32 _TerrainBlendMapTextureIndex;
+	float32 _TerrainMapResolution;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 664, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 680, "Size of dynamic uniform data is wrong!");

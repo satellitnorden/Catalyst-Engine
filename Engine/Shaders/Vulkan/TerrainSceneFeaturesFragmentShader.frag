@@ -32,10 +32,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 0) vec2 world_position;
     layout (offset = 8) float patch_size;
     layout (offset = 12) int borders;
-    layout (offset = 16) int height_map_texture_index;
-    layout (offset = 20) int index_map_texture_index;
-    layout (offset = 24) int blend_map_texture_index;
-    layout (offset = 28) float map_resolution;
 };
 
 //In parameters.
@@ -65,7 +61,7 @@ vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
 TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate)
 {
 	//Retrieve the 4 materials to blend between.
-	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[index_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
 	Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
 	Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
@@ -79,7 +75,7 @@ TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 mater
 	float displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
 
 	//Retrieve the blend map.
-	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[blend_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
 	//Alter the blend values based on the displacement values.
 	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
@@ -121,11 +117,11 @@ TerrainMaterial CalculateMaterial(vec2 height_map_texture_coordinate, vec2 mater
 void main()
 {
 	//Calculate the surrounding heights.
-#define OFFSET (1.0f / map_resolution)
+#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
 
-	float center_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
-	float right_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
-	float up_height = texture(sampler2D(GLOBAL_TEXTURES[height_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
+	float center_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
+	float right_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
+	float up_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
 
 	//Calculate the tangent space matrix.
 	mat3 tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);

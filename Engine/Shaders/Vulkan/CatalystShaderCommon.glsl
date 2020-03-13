@@ -141,7 +141,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 656) float NEAR_PLANE;
     layout (offset = 660) float FAR_PLANE;
 
-    //Total size; 664
+    layout (offset = 664) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 668) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 672) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 676) float TERRAIN_MAP_RESOLUTION;
+
+    //Total size; 680
 };
 
 //The global textures.
