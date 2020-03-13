@@ -6,42 +6,224 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
+
+//Constants.
+#define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
+
+/*
+*	Surface properties struct definition.
+*/
+struct SurfaceProperties
+{
+	vec3 albedo;
+	vec3 shading_normal;
+	vec4 material_properties;
+};
+
+/*
+*	Terrain material struct definition.
+*/
+struct TerrainMaterial
+{
+	vec3 albedo;
+	vec3 normal_map;
+	vec4 material_properties;
+};
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hit_attribute;
 
+/*
+*	Calculates the terrain material.
+*/
+TerrainMaterial CalculateTerrainMaterial(vec2 terrain_map_texture_coordinate, vec2 material_texture_coordinate)
+{
+	//Retrieve the 4 materials to blend between.
+	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate);
+
+	Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
+	Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
+	Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
+	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
+
+	//Retrieve the 4 displacement values.
+	float displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+
+	//Retrieve the blend map.
+	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate);
+
+	//Alter the blend values based on the displacement values.
+	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
+	blend_map[1] *= STRENGTHEN_DISPLACEMENT(displacement_2);
+	blend_map[2] *= STRENGTHEN_DISPLACEMENT(displacement_3);
+	blend_map[3] *= STRENGTHEN_DISPLACEMENT(displacement_4);
+
+	//Renormalize the blend map.
+	float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+
+	blend_map[0] *= inverse_sum;
+	blend_map[1] *= inverse_sum;
+	blend_map[2] *= inverse_sum;
+	blend_map[3] *= inverse_sum;
+
+	//Blend the material.
+	TerrainMaterial material;
+
+	material.albedo = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[0]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_2.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[1]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_3.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[2]
+						+ texture(sampler2D(GLOBAL_TEXTURES[material_4.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[3];
+
+	material.normal_map =	(texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[0]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[1]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[2]
+							+ (texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[3];
+
+	material.normal_map = normalize(material.normal_map);
+
+	material.material_properties = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[0]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_2.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[1]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_3.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[2]
+									+ texture(sampler2D(GLOBAL_TEXTURES[material_4.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[3];
+
+	return material;
+}
+
 void main()
 {
-	//TEMP.
-	vec3 color;
+	//Calculate the hit position.
+	vec3 hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
+
+	//Gather the surface properties.
+	SurfaceProperties surface_properties;
 
 	switch (path_tracing_ray_payload.type)
 	{
 		case CATALYST_PATH_TRACING_TYPE_TERRAIN:
 		{
-			color = vec3(1.0f, 0.0f, 0.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+			//Calculate the terrain map texture coordinate.
+			vec2 terrain_map_texture_coordinate = (hit_position.xz + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
+
+			 //Calculate the material texture coordinate.
+			vec2 material_texture_coordinate = hit_position.xz * 0.25f;
+
+			//Calculate the terrain material.
+			TerrainMaterial terrain_material = CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
+
+			//Calculate the surrounding heights.
+			#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
+
+			float center_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate).x;
+			float right_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
+			float up_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
+
+			//Calculate the terrain tangent space matrix.
+			mat3 terrain_tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
+
+			//Fill in the surface properties.
+			surface_properties.albedo = terrain_material.albedo;
+			surface_properties.shading_normal = normalize(terrain_tangent_space_matrix * terrain_material.normal_map);
+			surface_properties.material_properties = terrain_material.material_properties;
 
 			break;
 		}
 
 		case CATALYST_PATH_TRACING_TYPE_STATIC_MODELS:
 		{
-			color = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+			//Fill in the surface properties.
+			surface_properties.albedo = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+			surface_properties.shading_normal = vec3(0.0f, 1.0f, 0.0f);
+			surface_properties.material_properties = vec4(1.0f, 0.0f, 1.0f, 0.0f);
 
 			break;
 		}
 	}
 
+	//Calculate the direct lighting.
+	vec3 direct_lighting = vec3(0.0f);
+
+	//Calculate all lights.
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		switch (light.type)
+		{
+			case LIGHT_TYPE_DIRECTIONAL:
+			{
+				//Trace the visibility.
+				bool hit_anything = false;
+
+				visibility = 0.0f;
+
+				traceNV(
+						TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+						0xff, 																						//cullMask
+						0, 																							//sbtRecordOffset
+						0, 																							//sbtRecordStride
+						1, 																							//missIndex
+						hit_position + surface_properties.shading_normal * 0.01f, 									//origin
+						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+						-light.position_or_direction,																//direction
+						VIEW_DISTANCE,																				//Tmax
+						1 																							//payload
+						);
+
+				hit_anything = visibility < 1.0f;
+
+				if (!hit_anything)
+				{
+					visibility = 0.0f;
+
+					traceNV(
+							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							1, 																							//missIndex
+							hit_position + surface_properties.shading_normal * 0.01f, 									//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light.position_or_direction,																//direction
+							VIEW_DISTANCE,																				//Tmax
+							1 																							//payload
+							);
+
+					hit_anything = visibility < 1.0f;
+				}
+
+				direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
+														surface_properties.albedo,
+														surface_properties.shading_normal,
+														surface_properties.material_properties[0],
+														surface_properties.material_properties[1],
+														surface_properties.material_properties[2],
+														1.0f,
+														light.position_or_direction,
+														light.luminance) * (1.0f - CLOUD_DENSITY) * float(!hit_anything);
+
+				break;
+			}
+		}
+	}
+
 	//Write to the ray payload.
-	path_tracing_ray_payload.radiance 				= color;
-	path_tracing_ray_payload.albedo 				= color;
-	path_tracing_ray_payload.shading_normal 		= vec3(0.0f, 1.0f, 0.0f);
+	path_tracing_ray_payload.radiance 				= direct_lighting;
+	path_tracing_ray_payload.albedo 				= surface_properties.albedo;
+	path_tracing_ray_payload.shading_normal 		= surface_properties.shading_normal;
 	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;
-	path_tracing_ray_payload.material_properties 	= vec4(1.0f, 0.0f, 1.0f, 0.0f);
+	path_tracing_ray_payload.material_properties 	= surface_properties.material_properties;
 
 	/*
 	//Store the current recursion depth.
