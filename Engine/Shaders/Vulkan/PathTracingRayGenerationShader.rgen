@@ -43,6 +43,14 @@ void main()
 	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 	path_tracing_ray_payload.random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
+	//Sample the random hemisphere sample.
+	vec3 random_hemisphere_direction;
+	float random_length;
+
+	SampleHammersleyHemisphereSample(uint(path_tracing_ray_payload.random_noise.w * 64.0f) + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y), random_hemisphere_direction, random_length);
+
+	path_tracing_ray_payload.random_hemisphere_sample = vec4(random_hemisphere_direction, random_length);
+
 	//Keep track of the output data.
 	vec3 radiance = vec3(0.0f, 0.0f, 0.0f);
 	vec3 albedo = vec3(0.0f, 0.0f, 0.0f);

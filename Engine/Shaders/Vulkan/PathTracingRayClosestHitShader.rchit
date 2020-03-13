@@ -12,9 +12,6 @@
 #include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
-//Constants.
-#define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
-
 /*
 *	Surface properties struct definition.
 */
@@ -63,6 +60,8 @@ TerrainMaterial CalculateTerrainMaterial(vec2 terrain_map_texture_coordinate, ve
 	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate);
 
 	//Alter the blend values based on the displacement values.
+	#define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
+
 	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
 	blend_map[1] *= STRENGTHEN_DISPLACEMENT(displacement_2);
 	blend_map[2] *= STRENGTHEN_DISPLACEMENT(displacement_3);
@@ -99,8 +98,189 @@ TerrainMaterial CalculateTerrainMaterial(vec2 terrain_map_texture_coordinate, ve
 	return material;
 }
 
+/*
+*	Calculates terrain surface properties.
+*/
+SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
+{
+	//Gather the surface properties.
+	SurfaceProperties surface_properties;
+
+	//Calculate the terrain map texture coordinate.
+	vec2 terrain_map_texture_coordinate = (hit_position.xz + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
+
+	//Calculate the material texture coordinate.
+	vec2 material_texture_coordinate = hit_position.xz * 0.25f;
+
+	//Calculate the terrain material.
+	TerrainMaterial terrain_material = CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
+
+	//Calculate the surrounding heights.
+	#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
+
+	float center_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate).x;
+	float right_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
+	float up_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
+
+	//Calculate the terrain tangent space matrix.
+	mat3 terrain_tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
+
+	//Fill in the surface properties.
+	surface_properties.albedo = terrain_material.albedo;
+	surface_properties.shading_normal = normalize(terrain_tangent_space_matrix * terrain_material.normal_map);
+	surface_properties.material_properties = terrain_material.material_properties;
+
+	return surface_properties;
+}
+
+/*
+*	Calculates static model surface properties.
+*/
+SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
+{
+	//Gather the surface properties.
+	SurfaceProperties surface_properties;
+
+	//Fill in the surface properties.
+	surface_properties.albedo = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
+	surface_properties.shading_normal = vec3(0.0f, 1.0f, 0.0f);
+	surface_properties.material_properties = vec4(0.75f, 0.25f, 1.0f, 0.0f);
+
+	return surface_properties;
+}
+
+/*
+*	Calculates indirect lighting.
+*/
+vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, vec3 shading_normal, SurfaceProperties surface_properties)
+{
+	//Calculate the indirect lighting direction.
+	vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
+
+	//Flip the direction, if needed.
+	indirect_lighting_direction = dot(indirect_lighting_direction, shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
+
+	//Calculate the reflection direction.
+	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, shading_normal);
+
+	//Blend the random hemisphere direction and the reflection direction based on the material properties.
+	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0]));
+
+	if (current_recursion_depth < 1)
+	{
+		//Fire the ray(s)!
+		bool has_hit = false;
+		float closest_hit_distance = VIEW_DISTANCE;
+
+		//Terrain.
+		{
+			//Reset the payload.
+			path_tracing_ray_payload.type = CATALYST_PATH_TRACING_TYPE_TERRAIN;
+			path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
+			path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+			//Fire the ray!
+			traceNV(
+					TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+					gl_RayFlagsOpaqueNV, 						//rayFlags
+					0xff, 										//cullMask
+					0, 											//sbtRecordOffset
+					0, 											//sbtRecordStride
+					0, 											//missIndex
+					hit_position, 								//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+					indirect_lighting_direction, 				//direction
+					closest_hit_distance, 						//Tmax
+					0 											//payload
+					);
+
+			closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
+
+			//Keep track of whether or not there was a hit.
+			if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
+			{
+				has_hit = true;
+			}
+		}
+
+		//Static models.
+		{
+			//Reset the payload.
+			path_tracing_ray_payload.type = CATALYST_PATH_TRACING_TYPE_STATIC_MODELS;
+			path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
+			path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+			//Fire the ray!
+			traceNV(
+					STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+					gl_RayFlagsOpaqueNV, 						//rayFlags
+					0xff, 										//cullMask
+					0, 											//sbtRecordOffset
+					0, 											//sbtRecordStride
+					0, 											//missIndex
+					hit_position, 								//origin
+					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+					indirect_lighting_direction, 				//direction
+					closest_hit_distance, 						//Tmax
+					0 											//payload
+					);
+
+			closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
+
+			//Keep track of whether or not there was a hit.
+			if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
+			{
+				has_hit = true;
+			}
+		}
+
+		//Was there a hit?
+		if (has_hit)
+		{
+			return CalculateLighting(	-gl_WorldRayDirectionNV,
+										surface_properties.albedo,
+										surface_properties.shading_normal,
+										surface_properties.material_properties[0],
+										surface_properties.material_properties[1],
+										surface_properties.material_properties[2],
+										1.0f,
+										-indirect_lighting_direction,
+										path_tracing_ray_payload.radiance);
+		}
+
+		else
+		{
+			return CalculateLighting(	-gl_WorldRayDirectionNV,
+										surface_properties.albedo,
+										surface_properties.shading_normal,
+										surface_properties.material_properties[0],
+										surface_properties.material_properties[1],
+										surface_properties.material_properties[2],
+										1.0f,
+										-indirect_lighting_direction,
+										texture(SKY_TEXTURES[0], indirect_lighting_direction).rgb);
+		}
+	}
+	
+	else
+	{
+		return CalculateLighting(	-gl_WorldRayDirectionNV,
+									surface_properties.albedo,
+									surface_properties.shading_normal,
+									surface_properties.material_properties[0],
+									surface_properties.material_properties[1],
+									surface_properties.material_properties[2],
+									1.0f,
+									-indirect_lighting_direction,
+									texture(SKY_TEXTURES[0], indirect_lighting_direction).rgb);
+	}
+}
+
 void main()
 {
+	//Remember the current recursion depth.
+	uint current_recursion_depth = path_tracing_ray_payload.current_recursion_depth;
+
 	//Calculate the hit position.
 	vec3 hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
 
@@ -111,43 +291,21 @@ void main()
 	{
 		case CATALYST_PATH_TRACING_TYPE_TERRAIN:
 		{
-			//Calculate the terrain map texture coordinate.
-			vec2 terrain_map_texture_coordinate = (hit_position.xz + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
-
-			 //Calculate the material texture coordinate.
-			vec2 material_texture_coordinate = hit_position.xz * 0.25f;
-
-			//Calculate the terrain material.
-			TerrainMaterial terrain_material = CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
-
-			//Calculate the surrounding heights.
-			#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
-
-			float center_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate).x;
-			float right_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
-			float up_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
-
-			//Calculate the terrain tangent space matrix.
-			mat3 terrain_tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
-
-			//Fill in the surface properties.
-			surface_properties.albedo = terrain_material.albedo;
-			surface_properties.shading_normal = normalize(terrain_tangent_space_matrix * terrain_material.normal_map);
-			surface_properties.material_properties = terrain_material.material_properties;
+			surface_properties = CalculateTerrainSurfaceProperties(hit_position);
 
 			break;
 		}
 
 		case CATALYST_PATH_TRACING_TYPE_STATIC_MODELS:
 		{
-			//Fill in the surface properties.
-			surface_properties.albedo = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
-			surface_properties.shading_normal = vec3(0.0f, 1.0f, 0.0f);
-			surface_properties.material_properties = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+			surface_properties = CalculateStaticModelSurfaceProperties(hit_position);
 
 			break;
 		}
 	}
+
+	//Calculate the lighting.
+	vec3 lighting = vec3(0.0f);
 
 	//Calculate the direct lighting.
 	vec3 direct_lighting = vec3(0.0f);
@@ -161,6 +319,9 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
+				//Alter the direction a bit to simulare soft shadows.
+				vec3 light_direction = normalize(light.position_or_direction + vec3(path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * 0.01f);
+
 				//Trace the visibility.
 				bool hit_anything = false;
 
@@ -175,7 +336,7 @@ void main()
 						1, 																							//missIndex
 						hit_position + surface_properties.shading_normal * 0.01f, 									//origin
 						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-						-light.position_or_direction,																//direction
+						-light_direction,																			//direction
 						VIEW_DISTANCE,																				//Tmax
 						1 																							//payload
 						);
@@ -195,7 +356,7 @@ void main()
 							1, 																							//missIndex
 							hit_position + surface_properties.shading_normal * 0.01f, 									//origin
 							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light.position_or_direction,																//direction
+							-light_direction,																			//direction
 							VIEW_DISTANCE,																				//Tmax
 							1 																							//payload
 							);
@@ -203,23 +364,32 @@ void main()
 					hit_anything = visibility < 1.0f;
 				}
 
-				direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
-														surface_properties.albedo,
-														surface_properties.shading_normal,
-														surface_properties.material_properties[0],
-														surface_properties.material_properties[1],
-														surface_properties.material_properties[2],
-														1.0f,
-														light.position_or_direction,
-														light.luminance) * (1.0f - CLOUD_DENSITY) * float(!hit_anything);
+				if (!hit_anything)
+				{
+					direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
+															surface_properties.albedo,
+															surface_properties.shading_normal,
+															surface_properties.material_properties[0],
+															surface_properties.material_properties[1],
+															surface_properties.material_properties[2],
+															1.0f,
+															light_direction,
+															light.luminance) * (1.0f - CLOUD_DENSITY);
+				}
+				
 
 				break;
 			}
 		}
 	}
 
+	lighting += direct_lighting;
+
+	//Calculate the indirect lighting.
+	lighting += CalculateIndirectLighting(current_recursion_depth, hit_position, surface_properties.shading_normal, surface_properties);
+
 	//Write to the ray payload.
-	path_tracing_ray_payload.radiance 				= direct_lighting;
+	path_tracing_ray_payload.radiance 				= lighting;
 	path_tracing_ray_payload.albedo 				= surface_properties.albedo;
 	path_tracing_ray_payload.shading_normal 		= surface_properties.shading_normal;
 	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;

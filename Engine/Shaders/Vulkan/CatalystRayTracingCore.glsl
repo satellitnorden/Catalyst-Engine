@@ -17,6 +17,7 @@ struct PathTracingRayPayload
 	uint type;
 	uint current_recursion_depth;
 	vec4 random_noise;
+	vec4 random_hemisphere_sample;
 
 	//Output data.
 	vec3 radiance;
