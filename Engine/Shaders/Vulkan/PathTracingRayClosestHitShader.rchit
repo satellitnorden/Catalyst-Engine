@@ -9,6 +9,7 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
+#include "CatalystRenderingUtilities.glsl"
 #include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
@@ -158,15 +159,49 @@ SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 	final_vertex.normal = normalize(gl_ObjectToWorldNV * vec4(final_vertex.normal, 0.0f));
 	final_vertex.tangent = normalize(gl_ObjectToWorldNV * vec4(final_vertex.tangent, 0.0f));
 
+	//Retrieve the material.
+	Material material = GLOBAL_MATERIALS[UnpackStaticModelMaterialindex(gl_InstanceCustomIndexNV)];
+
+	//Sample the albedo.
+	vec3 albedo = RetrieveAlbedo(material, final_vertex.texture_coordinate);
+
+	//Sample the material properties.
+	vec4 material_properties = RetrieveMaterialProperties(material, final_vertex.texture_coordinate);
+
+	//Calculate the shading normal.
+	vec3 shading_normal;
+
+	if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
+	{
+		shading_normal = final_vertex.normal;
+	}
+
+	else
+	{
+		//Sample the normal map.
+		vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_vertex.texture_coordinate).xyz;
+		shading_normal = normal_map * 2.0f - 1.0f;
+		shading_normal = mat3(final_vertex.tangent, cross(final_vertex.normal, final_vertex.tangent), final_vertex.normal) * shading_normal;
+		shading_normal = normalize(shading_normal);
+	}
+
 	//Gather the surface properties.
 	SurfaceProperties surface_properties;
 
 	//Fill in the surface properties.
-	surface_properties.albedo = vec3(0.5f, 0.5f, 0.5f);
-	surface_properties.shading_normal = final_vertex.normal;
-	surface_properties.material_properties = vec4(0.1f, 0.9f, 1.0f, 0.0f);
+	surface_properties.albedo = albedo;
+	surface_properties.shading_normal = shading_normal;
+	surface_properties.material_properties = material_properties;
 
 	return surface_properties;
+}
+
+/*
+*	Calculates luminance lighting.
+*/
+vec3 CalculateLuminanceLighting(SurfaceProperties surface_properties)
+{
+	return surface_properties.albedo * surface_properties.material_properties[3] * GLOBAL_MATERIALS[UnpackStaticModelMaterialindex(gl_InstanceCustomIndexNV)].luminance_multiplier;
 }
 
 /*
@@ -410,6 +445,9 @@ void main()
 
 	//Calculate the lighting.
 	vec3 lighting = vec3(0.0f);
+
+	//Calculate the luminance lighting.
+	lighting += CalculateLuminanceLighting(surface_properties);
 
 	//Calculate the direct lighting.
 	lighting += CalculateDirectLighting(hit_position, surface_properties);

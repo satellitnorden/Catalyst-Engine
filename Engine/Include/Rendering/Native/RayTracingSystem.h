@@ -66,17 +66,20 @@ private:
 	//The render data tabls.
 	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
 
+	//Defines if the terrain needs update.
+	bool _TerrainNeedsUpdate{ false };
+
 	//The terrain top level acceleration structure.
 	AccelerationStructureHandle _TerrainTopAccelerationStructure{ EMPTY_HANDLE };
+
+	//Defines if the static models top level acceleration structure needs update.
+	bool _StaticModelsNeedsUpdate{ false };
 
 	//The static models top level acceleration structure.
 	AccelerationStructureHandle _StaticModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
 
-	//Defines if the terrain needs update.
-	bool _TerrainNeedsUpdate{ false };
-
-	//Defines if the static models top level acceleration structure needs update.
-	bool _StaticModelsNeedsUpdate{ false };
+	//The static models material uniform buffer.
+	BufferHandle _StaticModelsMaterialUniformBuffer{ EMPTY_HANDLE };
 
 	/*
 	*	Creates the empty top level acceleration structure.

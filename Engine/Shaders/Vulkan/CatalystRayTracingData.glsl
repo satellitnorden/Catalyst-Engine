@@ -13,14 +13,19 @@ struct Vertex
 	vec2 texture_coordinate;
 };
 
-//Render data table data.
+//Terrain render data table data.
 layout (set = 1, binding = 0) uniform accelerationStructureNV TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE;
+//Static models render data table data.
 layout (set = 1, binding = 1) uniform accelerationStructureNV STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE;
 layout (set = 1, binding = 2) buffer STATIC_MODEL_VERTEX_DATA_BUFFER { vec4 STATIC_MODEL_VERTEX_DATA[]; } STATIC_MODEL_VERTEX_BUFFERS[MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS];
 layout (set = 1, binding = 3) buffer STATIC_MODEL_INDEX_DATA_BUFFER { uint STATIC_MODEL_INDEX_DATA[]; } STATIC_MODEL_INDEX_BUFFERS[MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS];
+layout (std140, set = 1, binding = 4) uniform STATIC_MODEL_UNIFORM_DATA
+{
+    layout (offset = 0) uvec4[MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS / 4] STATIC_MODEL_MATERIAL_INDICES;
+};
 
 /*
-* Unpacks the static model vertex at the given index.
+*	Unpacks the static model vertex at the given index.
 */
 Vertex UnpackStaticModelVertex(uint instance_index, uint vertex_index)
 {
@@ -36,5 +41,13 @@ Vertex UnpackStaticModelVertex(uint instance_index, uint vertex_index)
 	vertex.texture_coordinate = vec2(vertex_data_3.y, vertex_data_3.z);
 
 	return vertex;
+}
+
+/*
+*	Unpacks the static model material index at the given instance index.
+*/
+uint UnpackStaticModelMaterialindex(uint instance_index)
+{
+	return STATIC_MODEL_MATERIAL_INDICES[instance_index / 4][instance_index & 3];
 }
 #endif

@@ -20,7 +20,7 @@
 #define SKY_CLOUDS_SKY_LIGHT_LUMINANCE_MULTIPLIER (0.3f) //0.025f step.
 #define SKY_CLOUDS_DENSITY_MULTIPLIER (16.0f) //0.25f step.
 
-#define SKY_FEEDBACK_FACTOR (0.98f) //0.0025f step.
+#define SKY_FEEDBACK_FACTOR (0.9825f) //0.0025f step.
 
 //Layout specification.
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
