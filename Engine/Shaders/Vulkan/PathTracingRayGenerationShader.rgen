@@ -39,9 +39,13 @@ void main()
 	//Generate the ray direction.
 	vec3 ray_direction = CalculateRayDirection(screen_coordinate);
 
+	//Calculate if this coordinate should generate random numbers.
+	//bool should_generate_random_numbers = CalculateStaleScreenCoordinate(uvec2(gl_LaunchIDNV.xy)) != uvec2(gl_LaunchIDNV.xy);
+	bool should_generate_random_numbers = true;
+
 	//Sample the noise texture.
-	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-	path_tracing_ray_payload.random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY) * float(should_generate_random_numbers);
+	path_tracing_ray_payload.random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex * uint(should_generate_random_numbers)], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
 	//Sample the random hemisphere sample.
 	vec3 random_hemisphere_direction;
@@ -140,12 +144,16 @@ void main()
 	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * closest_hit_distance;
 	vec2 velocity = CalculateScreenCoordinate(viewMatrix, hit_position) - CalculateScreenCoordinate(viewMatrixMinusOne, hit_position);
 
+	//Calculate the depth.
+	vec4 clip_space_position = viewMatrix * vec4(hit_position, 1.0f);
+	float depth = clip_space_position.z / clip_space_position.w;
+
 	//Write to the images.
 	if (has_hit)
 	{
 		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
 		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(albedo, 0.0f));
-		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(shading_normal, 0.0f));
+		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(shading_normal, depth));
 		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), material_properties);
 		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
 	}
@@ -154,7 +162,7 @@ void main()
 	{
 		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(texture(SKY_TEXTURES[0], ray_direction).rgb, 1.0f));
 		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 0.0f, 0.0f), 0.0f));
-		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), 0.0f));
+		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), depth));
 		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(0.0f, 0.0f, 0.0f, 0.0f));
 		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
 	}
