@@ -11,7 +11,8 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
-#define CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
+#define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -37,14 +38,16 @@ void main()
 	//Calculate the ray direction.
 	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
 
-	//Calculate the density multiplier.
-	float density_multiplier = exp(-(1.0f));
-
 	//Calculate the volumetric lighting.
-	vec3 volumetricLighting = vec3(0.0f);
+	vec3 volumetric_lighting = vec3(0.0f);
 
 	//Add the ambient lighting.
-	volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
 
 	//Sample the noise vector.
 	vec4 noise_vector = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
@@ -68,7 +71,7 @@ void main()
 					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
 
 					//Add the volumetric lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * density_multiplier * (1.0f - CLOUD_DENSITY) * 0.25f;
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * (1.0f - CLOUD_DENSITY) * 0.25f;
 				}
 
 				break;
@@ -94,7 +97,7 @@ void main()
 					float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 1.5f);
 
 					//Add the direct lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * attenuation * density_multiplier * 0.25f;
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * attenuation * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
 				}
 
 				break;
@@ -103,5 +106,5 @@ void main()
 	}
 
 	//Write the fragment.
-	fragment = vec4(volumetricLighting, 1.0f);
+	fragment = vec4(volumetric_lighting, 1.0f);
 }

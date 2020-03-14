@@ -50,7 +50,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	if (sceneFeatures2.w == 0.0f)
 	{
-		features.hit_position = PERCEIVER_WORLD_POSITION + CalculateRayDirection(fragment_texture_coordinate) * volumetric_lighting_distance;
+		features.hit_position = CalculateRayDirection(fragment_texture_coordinate) * volumetric_lighting_distance;
 		features.hit_distance = volumetric_lighting_distance;
 	}
 
@@ -72,7 +72,7 @@ void main()
 	vec3 current_volumetric_lighting = Upsample(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
 
 	//Calculate the volumetric lighting opacity.
-	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness);
+	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness, PERCEIVER_WORLD_POSITION.y);
 
 	//Write the fragment.
 	fragment = vec4(current_volumetric_lighting, volumetric_lighting_opacity);

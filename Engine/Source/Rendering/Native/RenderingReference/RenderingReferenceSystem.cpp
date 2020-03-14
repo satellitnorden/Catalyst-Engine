@@ -501,7 +501,8 @@ NO_DISCARD bool RenderingReferenceSystem::CastVolumetricRayScene(const Ray& ray,
 																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance,
 																						hit_position._Y,
 																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height,
-																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness) };
+																						WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness,
+																						Perceiver::Instance->GetPosition()._Y) };
 
 	//Determine if a volumetric particle was hit.
 	if (CatalystRandomMath::RandomChance(opacity))

@@ -112,7 +112,7 @@ void main()
 	//Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = fragmentWorldPosition.xz * 0.25f;
 
-	//Calculate the material.
+	//Calculate the displacement.
 	float first_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate, material_texture_coordinate);
 	float second_displacement	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(0.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
 	float third_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(1.0f, 0.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
