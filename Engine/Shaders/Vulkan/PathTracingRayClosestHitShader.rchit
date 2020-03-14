@@ -10,6 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
+#include "CatalystTerrainUtilities.glsl"
 #include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
@@ -23,81 +24,10 @@ struct SurfaceProperties
 	vec4 material_properties;
 };
 
-/*
-*	Terrain material struct definition.
-*/
-struct TerrainMaterial
-{
-	vec3 albedo;
-	vec3 normal_map;
-	vec4 material_properties;
-};
-
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 layout(location = 1) rayPayloadInNV float visibility;
 hitAttributeNV vec3 hit_attribute;
-
-/*
-*	Calculates the terrain material.
-*/
-TerrainMaterial CalculateTerrainMaterial(vec2 terrain_map_texture_coordinate, vec2 material_texture_coordinate)
-{
-	//Retrieve the 4 materials to blend between.
-	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate);
-
-	Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
-	Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
-	Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
-	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
-
-	//Retrieve the 4 displacement values.
-	float displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-
-	//Retrieve the blend map.
-	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate);
-
-	//Alter the blend values based on the displacement values.
-	#define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
-
-	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
-	blend_map[1] *= STRENGTHEN_DISPLACEMENT(displacement_2);
-	blend_map[2] *= STRENGTHEN_DISPLACEMENT(displacement_3);
-	blend_map[3] *= STRENGTHEN_DISPLACEMENT(displacement_4);
-
-	//Renormalize the blend map.
-	float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
-
-	blend_map[0] *= inverse_sum;
-	blend_map[1] *= inverse_sum;
-	blend_map[2] *= inverse_sum;
-	blend_map[3] *= inverse_sum;
-
-	//Blend the material.
-	TerrainMaterial material;
-
-	material.albedo = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[0]
-						+ texture(sampler2D(GLOBAL_TEXTURES[material_2.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[1]
-						+ texture(sampler2D(GLOBAL_TEXTURES[material_3.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[2]
-						+ texture(sampler2D(GLOBAL_TEXTURES[material_4.albedo_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).rgb * blend_map[3];
-
-	material.normal_map =	(texture(sampler2D(GLOBAL_TEXTURES[material_1.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[0]
-							+ (texture(sampler2D(GLOBAL_TEXTURES[material_2.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[1]
-							+ (texture(sampler2D(GLOBAL_TEXTURES[material_3.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[2]
-							+ (texture(sampler2D(GLOBAL_TEXTURES[material_4.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).xyz * 2.0f - 1.0f) * blend_map[3];
-
-	material.normal_map = normalize(material.normal_map);
-
-	material.material_properties = 	texture(sampler2D(GLOBAL_TEXTURES[material_1.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[0]
-									+ texture(sampler2D(GLOBAL_TEXTURES[material_2.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[1]
-									+ texture(sampler2D(GLOBAL_TEXTURES[material_3.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[2]
-									+ texture(sampler2D(GLOBAL_TEXTURES[material_4.material_properties_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate) * blend_map[3];
-
-	return material;
-}
 
 /*
 *	Calculates terrain surface properties.
@@ -113,8 +43,18 @@ SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
 	//Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = hit_position.xz * 0.25f;
 
-	//Calculate the terrain material.
-	TerrainMaterial terrain_material = CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
+	//Calculate the material.
+	TerrainMaterial first_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
+	TerrainMaterial second_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(0.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
+	TerrainMaterial third_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 0.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
+	TerrainMaterial fourth_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
+
+	TerrainMaterial blend_1 = BlendTerrainMaterial(first_material, second_material, fract(terrain_map_texture_coordinate.y * TERRAIN_MAP_RESOLUTION));
+	TerrainMaterial blend_2 = BlendTerrainMaterial(third_material, fourth_material, fract(terrain_map_texture_coordinate.y * TERRAIN_MAP_RESOLUTION));
+
+	TerrainMaterial final_terrain_material = BlendTerrainMaterial(blend_1, blend_2, fract(terrain_map_texture_coordinate.x * TERRAIN_MAP_RESOLUTION));
+
+	final_terrain_material.normal_map = normalize(final_terrain_material.normal_map);
 
 	//Calculate the surrounding heights.
 	#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
@@ -127,9 +67,9 @@ SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
 	mat3 terrain_tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
 
 	//Fill in the surface properties.
-	surface_properties.albedo = terrain_material.albedo;
-	surface_properties.shading_normal = normalize(terrain_tangent_space_matrix * terrain_material.normal_map);
-	surface_properties.material_properties = terrain_material.material_properties;
+	surface_properties.albedo = final_terrain_material.albedo;
+	surface_properties.shading_normal = normalize(terrain_tangent_space_matrix * final_terrain_material.normal_map);
+	surface_properties.material_properties = final_terrain_material.material_properties;
 
 	return surface_properties;
 }
