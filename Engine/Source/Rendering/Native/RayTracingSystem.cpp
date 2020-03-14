@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RayTracingSystem.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -27,27 +30,26 @@ void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context)
 		return;
 	}
 
-	if (_StaticTopLevelAccelerationStructureNeedsUpdate)
+	//Perform updates.
+	if (_TerrainNeedsUpdate)
 	{
-		//Rebuild the static top level acceleration structure.
-		if (_StaticTopLevelAccelerationStructure)
-		{
-			RenderingSystem::Instance->DestroyAccelerationStructure(&_StaticTopLevelAccelerationStructure);
-		}
+		UpdateTerrain();
+	}
 
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(_StaticInstances), &_StaticTopLevelAccelerationStructure);
+	if (_StaticModelsNeedsUpdate)
+	{
+		UpdateStaticModels();
+	}
 
+	//Does the render data table need to be updated?
+	if (_TerrainNeedsUpdate || _StaticModelsNeedsUpdate)
+	{
 		//Rebuild the render data table.
 		CreateRenderDataTable();
 
-		_StaticTopLevelAccelerationStructureNeedsUpdate = false;
-	}
-
-	if (_TerrainTopLevelAccelerationStructureNeedsUpdate)
-	{
-		CreateRenderDataTable();
-
-		_TerrainTopLevelAccelerationStructureNeedsUpdate = false;
+		//Reset the state.
+		_TerrainNeedsUpdate = false;
+		_StaticModelsNeedsUpdate = false;
 	}
 }
 
@@ -57,19 +59,23 @@ void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context)
 void RayTracingSystem::SetTerrainTopLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT
 {
 	_TerrainTopAccelerationStructure = handle;
-	_TerrainTopLevelAccelerationStructureNeedsUpdate = true;
+	_TerrainNeedsUpdate = true;
 }
 
 /*
-*	Adds a static instance.
+*	Notifies the ray tracing system that a static model was initialized.
 */
-void RayTracingSystem::AddStaticInstance(const TopLevelAccelerationStructureInstanceData& instance) NOEXCEPT
+void RayTracingSystem::NofityStaticModelInitialized() NOEXCEPT
 {
-	//Add the static instance.
-	_StaticInstances.Emplace(instance);
+	_StaticModelsNeedsUpdate = true;
+}
 
-	//Flag that the static top level acceleration structure needs update.
-	_StaticTopLevelAccelerationStructureNeedsUpdate = true;
+/*
+*	Notifies the ray tracing system that a static model was terminated.
+*/
+void RayTracingSystem::NofityStaticModelTerminated() NOEXCEPT
+{
+	_StaticModelsNeedsUpdate = true;
 }
 
 /*
@@ -86,10 +92,12 @@ void RayTracingSystem::CreateEmptyTopLevelAccelerationStructure() NOEXCEPT
 void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, ShaderStage::RayClosestHit)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -109,7 +117,68 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 	//Create the render data table.
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	//Bind the static top level acceleration structure to it.
+	//Bind the top level acceleration structures to the render data tables.
 	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &_RenderDataTable, _TerrainTopAccelerationStructure ? _TerrainTopAccelerationStructure : _EmptyTopLevelAccelerationStructure);
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, _StaticTopLevelAccelerationStructure ? _StaticTopLevelAccelerationStructure : _EmptyTopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(1, 0, &_RenderDataTable, _StaticModelsTopLevelAccelerationStructure ? _StaticModelsTopLevelAccelerationStructure : _EmptyTopLevelAccelerationStructure);
+
+	//Bind all the static model vertex/index buffers.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		uint32 mesh_counter{ 0 };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		{
+			for (const Mesh &mesh : component->_Model->_Meshes)
+			{
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, mesh_counter, &_RenderDataTable, mesh._VertexBuffers[0]);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, mesh_counter, &_RenderDataTable, mesh._IndexBuffers[0]);
+
+				++mesh_counter;
+			}
+			
+		}
+	}
+}
+
+/*
+*	Updates terrain.
+*/
+void RayTracingSystem::UpdateTerrain() NOEXCEPT
+{
+	//Nothing to do here right now.
+}
+
+/*
+*	Updates static models.
+*/
+void RayTracingSystem::UpdateStaticModels() NOEXCEPT
+{
+	//Rebuild the static top level acceleration structure.
+	if (_StaticModelsTopLevelAccelerationStructure)
+	{
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_StaticModelsTopLevelAccelerationStructure);
+	}
+
+	//Recreate the instances.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
+
+	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+	const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+	uint32 mesh_counter{ 0 };
+
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+	{
+		for (const Mesh &mesh : component->_Model->_Meshes)
+		{
+			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
+
+			++mesh_counter;
+		}
+	}
+
+	//Create the top level acceleration structure.
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_StaticModelsTopLevelAccelerationStructure);
 }

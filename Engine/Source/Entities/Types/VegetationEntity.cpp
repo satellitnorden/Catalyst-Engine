@@ -49,16 +49,6 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	RenderingUtilities::CreateTransformationsBuffer(vegetation_initialization_data->_Transformations, &component._TransformationsBuffer);
 	component._NumberOfTransformations = static_cast<uint32>(vegetation_initialization_data->_Transformations.Size());
 
-	//Add the static instances.
-	if (RenderingSystem::Instance->IsRayTracingSupported()
-		&& RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component._GlobalMaterialIndex)._Type == Material::Type::Opaque)
-	{
-		for (const Matrix4x4 &transformation : vegetation_initialization_data->_Transformations)
-		{
-			RenderingSystem::Instance->GetRayTracingSystem()->AddStaticInstance(TopLevelAccelerationStructureInstanceData(transformation, component._Model->_Meshes[0]._BottomLevelAccelerationStructure, 0));
-		}
-	}
-
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<VegetationInitializationData>(data);
 }

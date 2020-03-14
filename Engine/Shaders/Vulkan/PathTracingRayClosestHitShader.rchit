@@ -138,13 +138,33 @@ SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
 */
 SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 {
+	//Unpack the vertices making up the triangle.
+	Vertex vertex_1 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3]);
+	Vertex vertex_2 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 1]);
+	Vertex vertex_3 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 2]);
+
+	//Calculate the final vertex using the barycentric coordinates.
+	vec3 barycentric_coordinates = vec3(1.0f - hit_attribute.x - hit_attribute.y, hit_attribute.x, hit_attribute.y);
+
+	Vertex final_vertex;
+
+	final_vertex.position = vertex_1.position * barycentric_coordinates.x + vertex_2.position * barycentric_coordinates.y + vertex_3.position * barycentric_coordinates.z;
+	final_vertex.normal = vertex_1.normal * barycentric_coordinates.x + vertex_2.normal * barycentric_coordinates.y + vertex_3.normal * barycentric_coordinates.z;
+	final_vertex.tangent = vertex_1.tangent * barycentric_coordinates.x + vertex_2.tangent * barycentric_coordinates.y + vertex_3.tangent * barycentric_coordinates.z;
+	final_vertex.texture_coordinate = vertex_1.texture_coordinate * barycentric_coordinates.x + vertex_2.texture_coordinate * barycentric_coordinates.y + vertex_3.texture_coordinate * barycentric_coordinates.z;
+
+	//Transform the final vertex into world space.
+	final_vertex.position = gl_ObjectToWorldNV * vec4(final_vertex.position, 1.0f);
+	final_vertex.normal = normalize(gl_ObjectToWorldNV * vec4(final_vertex.normal, 0.0f));
+	final_vertex.tangent = normalize(gl_ObjectToWorldNV * vec4(final_vertex.tangent, 0.0f));
+
 	//Gather the surface properties.
 	SurfaceProperties surface_properties;
 
 	//Fill in the surface properties.
-	surface_properties.albedo = vec3(0.0f, 1.0f, 1.0f) * float(!(hit_attribute.x < 0.1f || hit_attribute.y < 0.1f || (1.0f - hit_attribute.x - hit_attribute.y) < 0.1f));
-	surface_properties.shading_normal = vec3(0.0f, 1.0f, 0.0f);
-	surface_properties.material_properties = vec4(0.75f, 0.25f, 1.0f, 0.0f);
+	surface_properties.albedo = vec3(0.5f, 0.5f, 0.5f);
+	surface_properties.shading_normal = final_vertex.normal;
+	surface_properties.material_properties = vec4(0.1f, 0.9f, 1.0f, 0.0f);
 
 	return surface_properties;
 }

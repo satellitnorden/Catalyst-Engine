@@ -46,9 +46,14 @@ public:
 	void SetTerrainTopLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
 
 	/*
-	*	Adds a static instance.
+	*	Notifies the ray tracing system that a static model was initialized.
 	*/
-	void AddStaticInstance(const TopLevelAccelerationStructureInstanceData& instance) NOEXCEPT;
+	void NofityStaticModelInitialized() NOEXCEPT;
+
+	/*
+	*	Notifies the ray tracing system that a static model was terminated.
+	*/
+	void NofityStaticModelTerminated() NOEXCEPT;
 
 private:
 
@@ -64,17 +69,14 @@ private:
 	//The terrain top level acceleration structure.
 	AccelerationStructureHandle _TerrainTopAccelerationStructure{ EMPTY_HANDLE };
 
-	//All static instances.
-	DynamicArray<TopLevelAccelerationStructureInstanceData> _StaticInstances;
+	//The static models top level acceleration structure.
+	AccelerationStructureHandle _StaticModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
 
-	//Defines if the terrain top level acceleration structure needs update.
-	bool _TerrainTopLevelAccelerationStructureNeedsUpdate{ false };
+	//Defines if the terrain needs update.
+	bool _TerrainNeedsUpdate{ false };
 
-	//Defines if the static top level acceleration structure needs update.
-	bool _StaticTopLevelAccelerationStructureNeedsUpdate{ false };
-
-	//The static top level acceleration structure.
-	AccelerationStructureHandle _StaticTopLevelAccelerationStructure{ EMPTY_HANDLE };
+	//Defines if the static models top level acceleration structure needs update.
+	bool _StaticModelsNeedsUpdate{ false };
 
 	/*
 	*	Creates the empty top level acceleration structure.
@@ -90,5 +92,15 @@ private:
 	*	Creates the render data table.
 	*/
 	void CreateRenderDataTable() NOEXCEPT;
+
+	/*
+	*	Updates terrain.
+	*/
+	void UpdateTerrain() NOEXCEPT;
+
+	/*
+	*	Updates static models.
+	*/
+	void UpdateStaticModels() NOEXCEPT;
 
 };
