@@ -170,18 +170,102 @@ SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 }
 
 /*
+*	Calculates direct lighting.
+*/
+vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_properties)
+{
+	//Calculate the direct lighting.
+	vec3 direct_lighting = vec3(0.0f);
+
+	//Calculate all lights.
+	for (int i = 0; i < numberOfLights; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		switch (light.type)
+		{
+			case LIGHT_TYPE_DIRECTIONAL:
+			{
+				//Alter the direction a bit to simulare soft shadows.
+				vec3 light_direction = normalize(light.position_or_direction + vec3(path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * 0.01f);
+
+				//Trace the visibility.
+				bool hit_anything = false;
+
+				visibility = 0.0f;
+
+				traceNV(
+						TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+						0xff, 																						//cullMask
+						0, 																							//sbtRecordOffset
+						0, 																							//sbtRecordStride
+						1, 																							//missIndex
+						hit_position, 																				//origin
+						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+						-light_direction,																			//direction
+						VIEW_DISTANCE,																				//Tmax
+						1 																							//payload
+						);
+
+				hit_anything = visibility < 1.0f;
+
+				if (!hit_anything)
+				{
+					visibility = 0.0f;
+
+					traceNV(
+							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							1, 																							//missIndex
+							hit_position, 																				//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light_direction,																			//direction
+							VIEW_DISTANCE,																				//Tmax
+							1 																							//payload
+							);
+
+					hit_anything = visibility < 1.0f;
+				}
+
+				if (!hit_anything)
+				{
+					direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
+															surface_properties.albedo,
+															surface_properties.shading_normal,
+															surface_properties.material_properties[0],
+															surface_properties.material_properties[1],
+															surface_properties.material_properties[2],
+															1.0f,
+															light_direction,
+															light.luminance) * (1.0f - CLOUD_DENSITY);
+				}
+				
+
+				break;
+			}
+		}
+	}
+
+	return direct_lighting;
+}
+
+/*
 *	Calculates indirect lighting.
 */
-vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, vec3 shading_normal, SurfaceProperties surface_properties)
+vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, SurfaceProperties surface_properties)
 {
 	//Calculate the indirect lighting direction.
-	vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
+	vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(surface_properties.shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
 
 	//Flip the direction, if needed.
-	indirect_lighting_direction = dot(indirect_lighting_direction, shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
+	indirect_lighting_direction = dot(indirect_lighting_direction, surface_properties.shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
 
 	//Calculate the reflection direction.
-	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, shading_normal);
+	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, surface_properties.shading_normal);
 
 	//Blend the random hemisphere direction and the reflection direction based on the material properties.
 	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0]));
@@ -328,85 +412,10 @@ void main()
 	vec3 lighting = vec3(0.0f);
 
 	//Calculate the direct lighting.
-	vec3 direct_lighting = vec3(0.0f);
-
-	//Calculate all lights.
-	for (int i = 0; i < numberOfLights; ++i)
-	{
-		Light light = UnpackLight(i);
-
-		switch (light.type)
-		{
-			case LIGHT_TYPE_DIRECTIONAL:
-			{
-				//Alter the direction a bit to simulare soft shadows.
-				vec3 light_direction = normalize(light.position_or_direction + vec3(path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * 0.01f);
-
-				//Trace the visibility.
-				bool hit_anything = false;
-
-				visibility = 0.0f;
-
-				traceNV(
-						TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-						0xff, 																						//cullMask
-						0, 																							//sbtRecordOffset
-						0, 																							//sbtRecordStride
-						1, 																							//missIndex
-						hit_position + surface_properties.shading_normal * 0.01f, 									//origin
-						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-						-light_direction,																			//direction
-						VIEW_DISTANCE,																				//Tmax
-						1 																							//payload
-						);
-
-				hit_anything = visibility < 1.0f;
-
-				if (!hit_anything)
-				{
-					visibility = 0.0f;
-
-					traceNV(
-							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							1, 																							//missIndex
-							hit_position + surface_properties.shading_normal * 0.01f, 									//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light_direction,																			//direction
-							VIEW_DISTANCE,																				//Tmax
-							1 																							//payload
-							);
-
-					hit_anything = visibility < 1.0f;
-				}
-
-				if (!hit_anything)
-				{
-					direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
-															surface_properties.albedo,
-															surface_properties.shading_normal,
-															surface_properties.material_properties[0],
-															surface_properties.material_properties[1],
-															surface_properties.material_properties[2],
-															1.0f,
-															light_direction,
-															light.luminance) * (1.0f - CLOUD_DENSITY);
-				}
-				
-
-				break;
-			}
-		}
-	}
-
-	lighting += direct_lighting;
+	lighting += CalculateDirectLighting(hit_position, surface_properties);
 
 	//Calculate the indirect lighting.
-	lighting += CalculateIndirectLighting(current_recursion_depth, hit_position, surface_properties.shading_normal, surface_properties);
+	lighting += CalculateIndirectLighting(current_recursion_depth, hit_position, surface_properties);
 
 	//Write to the ray payload.
 	path_tracing_ray_payload.radiance 				= lighting;
