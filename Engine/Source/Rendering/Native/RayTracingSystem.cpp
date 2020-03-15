@@ -182,6 +182,8 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 				instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
 
 				++mesh_counter;
+
+				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, "Increase maximum number of raytraced static meshes!");
 			}
 		}
 
@@ -212,6 +214,8 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 				material_indices[mesh_counter] = material_index;
 
 				++mesh_counter;
+
+				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, "Increase maximum number of raytraced static meshes!");
 			}
 		}
 

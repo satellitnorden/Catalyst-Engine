@@ -6,7 +6,7 @@
 /*
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#define ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
 #else
 	#define ASSERT(condition, message) 
