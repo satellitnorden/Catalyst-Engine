@@ -1281,9 +1281,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingApplicationGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingDenoisingGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1472,6 +1469,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h">
       <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1874,9 +1874,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingApplicationGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingDenoisingGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -1942,6 +1939,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp">
       <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

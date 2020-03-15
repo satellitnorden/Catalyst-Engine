@@ -18,27 +18,24 @@ class PushConstantData final
 
 public:
 
-	//The direction.
-	Vector2<float> _Direction;
+	//The inverse resolution.
+	Vector2<float32> _InverseResolution;
 
 	//The stride.
-	float _Stride;
+	uint32 _Stride;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
 	CreateRenderDataTable(source);
-
-	//Set the direction.
-	_Direction = direction;
 
 	//Set the stride.
 	_Stride = stride;
@@ -131,16 +128,7 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	if (_Direction == Direction::Horizontal)
-	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), 0.0f);
-	}
-
-	else
-	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
-	}
-
+	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
 	data._Stride = _Stride;
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);

@@ -10,10 +10,6 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 
-//Constants.
-#define AMBIENT_OCCLUSION_DENOISING_SIZE (7.0f)
-#define AMBIENT_OCCLUSION_DENOISING_START_END ((AMBIENT_OCCLUSION_DENOISING_SIZE - 1.0f) * 0.5f)
-
 /*
 *	Scene features struct definition.
 */
@@ -28,8 +24,8 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec2 direction;
-	layout (offset = 8) float stride;
+	layout (offset = 0) vec2 INVERSE_RESOLUTION;
+	layout (offset = 8) uint STRIDE;
 };
 
 //In parameters.
@@ -62,35 +58,35 @@ void main()
 	vec3 currentAmbientOcclusion = texture(ambientOcclusionTexture, fragmentTextureCoordinate).rgb;
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
-	//Calculate the start/end.
-	float startAndEnd = AMBIENT_OCCLUSION_DENOISING_START_END * stride;
-
 	//Sample neighboring fragments.
 	vec3 denoisedAmbientOcclusion = vec3(0.0f);
 	float ambientOcclusionWeightSum = 0.0f;
 
-	for (float x = -startAndEnd; x <= startAndEnd; x += stride)
+	for (uint y = -STRIDE; y <= STRIDE; y += STRIDE)
 	{
-		vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(x, x) * direction;
+		for (uint x = -STRIDE; x <= STRIDE; x += STRIDE)
+		{
+			vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 
-		vec3 sampleAmbientOcclusion = texture(ambientOcclusionTexture, sampleCoordinate).rgb;
-		SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
+			vec3 sampleAmbientOcclusion = texture(ambientOcclusionTexture, sampleCoordinate).rgb;
+			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
 
-		/*
-		*	Calculate the sample weight based on certain criteria;
-		*	
-		*	1. Is the sample coordinate valid?
-		*	2. How closely aligned are the depths to each other?
-		*/
-		float sampleWeight = 1.0f;
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. Is the sample coordinate valid?
+			*	2. How closely aligned are the depths to each other?
+			*/
+			float sampleWeight = 1.0f;
 
-		sampleWeight *= float(ValidCoordinate(sampleCoordinate));
-		sampleWeight *= pow(1.0f - min(abs(currentFeatures.view_distance - sampleFeatures.view_distance), 1.0f), 2.0f);
+			sampleWeight *= float(ValidCoordinate(sampleCoordinate));
+			sampleWeight *= pow(1.0f - min(abs(currentFeatures.view_distance - sampleFeatures.view_distance), 1.0f), 2.0f);
 
-		denoisedAmbientOcclusion += sampleAmbientOcclusion * sampleWeight;
-		ambientOcclusionWeightSum += sampleWeight;
+			denoisedAmbientOcclusion += sampleAmbientOcclusion * sampleWeight;
+			ambientOcclusionWeightSum += sampleWeight;
+		}
 	}
-
+	
 	//Normalize the denoised ambient occlusion. 
 	denoisedAmbientOcclusion = ambientOcclusionWeightSum == 0.0f ? currentAmbientOcclusion : denoisedAmbientOcclusion / ambientOcclusionWeightSum;
 

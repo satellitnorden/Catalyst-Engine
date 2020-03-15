@@ -28,21 +28,11 @@ layout (location = 0) out vec4 current_ambient_occlusion;
 layout (location = 1) out vec4 ambient_occlusion;
 
 /*
-*	Calculates the neighborhood sample weight
+*	Constrains the previous sample.
 */
-float CalculateNeighborhoodSampleWeight(float minimum, float maximum, float previous)
+float Constrain(float previous, float minimum, float maximum)
 {
-	//Calculate the weight.
-	float weight = 1.0f;
-
-	weight *= 1.0f - max(minimum - previous, 0.0f);
-	weight *= 1.0f - max(previous - maximum, 0.0f);
-
-	//Bias the weight.
-	weight = weight * weight;
-
-	//Return the weight.
-	return weight;
+	return clamp(previous, minimum, maximum);
 }
 
 void main()
@@ -61,7 +51,7 @@ void main()
 	{
 		for (float y = -AMBIENT_OCCLUSION_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; y <= AMBIENT_OCCLUSION_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; ++y)
 		{
-			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution;
+			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution * 2.0f;
 		
 			float neighbordhood_sample = texture(current_ambient_occlusion_texture, sample_coordinate).x;
 
@@ -76,16 +66,17 @@ void main()
 	//Sample the previous ambient occlusion texture.
 	vec4 previous_ambient_occlusion_texture_sampler = texture(previous_ambient_occlusion_texture, previous_screen_coordinate);
 
+	//Constrain the previous sample.
+	previous_ambient_occlusion_texture_sampler.x = Constrain(previous_ambient_occlusion_texture_sampler.x, minimum, maximum);
+
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
-	*	2. How far off is the previous ambient occlusion from the minimum/maximum in the neighborhood?
 	*/
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	previous_sample_weight *= CalculateNeighborhoodSampleWeight(minimum, maximum, previous_ambient_occlusion_texture_sampler.x);
 
 
 	//Blend the previous and the current ambient occlusion.

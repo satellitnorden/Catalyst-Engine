@@ -6,7 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingApplicationGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceIndirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/IndirectLightingRayTracingPipeline.h>
@@ -33,8 +33,8 @@ private:
 	//The indirect lighting ray tracing pipeline.
 	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;
 
-	//The indirect lighting denoising graphics pipelines.
-	StaticArray<IndirectLightingDenoisingGraphicsPipeline, 2> _IndirectLightingDenoisingGraphicsPipelines;
+	//The indirect lighting spatial denoising graphics pipelines.
+	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 6> _IndirectLightingSpatialDenoisingGraphicsPipelines;
 
 	//The indirect lighting temporal denoising graphics pipelines.
 	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 2> _IndirectLightingTemporalDenoisingGraphicsPipelines;

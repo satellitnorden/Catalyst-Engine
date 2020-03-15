@@ -697,7 +697,11 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
 		}
 
 		{
@@ -707,11 +711,7 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-
-			if (RenderingSystem::Instance->IsRayTracingSupported())
-			{
-				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
-			}
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingSpatialDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{

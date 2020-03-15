@@ -125,8 +125,8 @@ void ModelSystem::CreateRenderDataTableLayout() NOEXCEPT
 	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayGeneration | ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, RenderingConstants::MAXIMUM_NUMBER_OF_MODELS, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit)
 	};
 

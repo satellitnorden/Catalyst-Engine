@@ -54,13 +54,16 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize();
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	AmbientOcclusionSpatialDenoisingGraphicsPipeline::Direction::Horizontal,
-																		1.0f,
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half));
-
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	AmbientOcclusionSpatialDenoisingGraphicsPipeline::Direction::Vertical,
-																		1.0f,
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	2,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[2].Initialize(	3,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half));
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[3].Initialize(	4,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion));
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),

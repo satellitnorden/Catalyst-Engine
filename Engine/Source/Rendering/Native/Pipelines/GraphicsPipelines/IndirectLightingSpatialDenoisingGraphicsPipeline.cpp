@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingSpatialDenoisingGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -11,34 +11,31 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Push constant data definition.
+*	Indirect lighting spatial denoising push constant data definition.
 */
-class PushConstantData final
+class IndirectLightingSpatialDenoisingPushConstantData final
 {
 
 public:
 
-	//The direction.
-	Vector2<float> _Direction;
+	//The inverse resolution.
+	Vector2<float32> _InverseResolution;
 
 	//The stride.
-	float _Stride;
+	uint32 _Stride;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const uint32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
 	CreateRenderDataTable(source);
-
-	//Set the direction.
-	_Direction = direction;
 
 	//Set the stride.
 	_Stride = stride;
@@ -48,7 +45,7 @@ void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direc
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::IndirectLightingDenoisingFragment);
+	SetFragmentShader(Shader::IndirectLightingSpatialDenoisingFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -61,7 +58,7 @@ void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direc
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
@@ -91,7 +88,7 @@ void IndirectLightingDenoisingGraphicsPipeline::Initialize(const Direction direc
 /*
 *	Creates the render data table layout.
 */
-void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void IndirectLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -105,7 +102,7 @@ void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NO
 /*
 *	Creates the render data table.
 */
-void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void IndirectLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -116,7 +113,7 @@ void IndirectLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const Rend
 /*
 *	Executes this graphics pipeline.
 */
-void IndirectLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
+void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -129,21 +126,12 @@ void IndirectLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
-	PushConstantData data;
+	IndirectLightingSpatialDenoisingPushConstantData data;
 
-	if (_Direction == Direction::Horizontal)
-	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 0.0f);
-	}
-
-	else
-	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
-	}
-
+	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
 	data._Stride = _Stride;
 
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

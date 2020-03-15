@@ -28,25 +28,23 @@ layout (location = 0) out vec4 currentFrame;
 layout (location = 1) out vec4 scene;
 
 /*
-*	Calculates the neighborhood weight.
+*	Constrains the previous sample.
 */
-float NeighborhoodWeight(vec3 minimum, vec3 maximum, vec3 previous)
+vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
 {
-	//Calculate the weight.
-	float weight = 1.0f;
+	vec3 p_clip = 0.5f * (maximum + minimum);
+	vec3 e_clip = 0.5f * (maximum - minimum);
 
-	weight *= 1.0f - clamp(minimum.x - previous.x, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(minimum.y - previous.y, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(minimum.z - previous.z, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.x - maximum.x, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
+	vec3 v_clip = previous - p_clip;
+	vec3 v_unit = v_clip / e_clip;
+	vec3 a_unit = abs(v_unit);
 
-	//Bias the weight.
-	weight = weight * weight * weight * weight;
+	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
 
-	//Return the weight.
-	return weight;
+	if (ma_unit > 1.0f)
+		return p_clip + v_clip / ma_unit;
+	else
+		return previous;
 }
 
 void main()
@@ -80,15 +78,17 @@ void main()
 	//Sample the previous frame texture.
 	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previous_screen_coordinate);
 
+	//Constrain the previous sample.
+	previousFrameTextureSampler.rgb = Constrain(previousFrameTextureSampler.rgb, minimum, maximum);
+
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
-	*	2. How far apart is the color from the minimum/maximum neighborhood?
+	*	1. Is the sample coordinate valid?
 	*/
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	previous_sample_weight *= NeighborhoodWeight(minimum, maximum, previousFrameTextureSampler.rgb);
 
 	//Blend the previous and the current frame.
 	vec3 blended_frame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight);
