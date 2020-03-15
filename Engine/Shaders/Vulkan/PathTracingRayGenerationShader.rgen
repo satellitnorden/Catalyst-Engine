@@ -140,6 +140,43 @@ void main()
 		}
 	}
 
+	//Dynamic models.
+	{
+		//Reset the payload.
+		path_tracing_ray_payload.type = CATALYST_PATH_TRACING_TYPE_DYNAMIC_MODELS;
+		path_tracing_ray_payload.current_recursion_depth = 0;
+		path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+		//Fire the ray!
+		traceNV(
+				DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				PERCEIVER_WORLD_POSITION, 					//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				ray_direction, 								//direction
+				closest_hit_distance, 						//Tmax
+				0 											//payload
+				);
+
+		closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
+
+		//Keep track of the output data.
+		if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
+		{
+			has_hit = true;
+			
+			radiance = path_tracing_ray_payload.radiance;
+			albedo = path_tracing_ray_payload.albedo;
+			shading_normal = path_tracing_ray_payload.shading_normal;
+			hit_distance = path_tracing_ray_payload.hit_distance;
+			material_properties = path_tracing_ray_payload.material_properties;
+		}
+	}
+
 	//Calculate the velocity.
 	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * closest_hit_distance;
 	vec2 velocity = CalculateScreenCoordinate(viewMatrix, hit_position) - CalculateScreenCoordinate(viewMatrixMinusOne, hit_position);

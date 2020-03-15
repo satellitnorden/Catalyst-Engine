@@ -55,6 +55,21 @@ public:
 	*/
 	void NofityStaticModelTerminated() NOEXCEPT;
 
+	/*
+	*	Notifies the ray tracing system that a dynamic model was initialized.
+	*/
+	void NofityDynamicModelInitialized() NOEXCEPT;
+
+	/*
+	*	Notifies the ray tracing system that a dynamic model was modified.
+	*/
+	void NofityDynamicModelModified() NOEXCEPT;
+
+	/*
+	*	Notifies the ray tracing system that a dynamic model was terminated.
+	*/
+	void NofityDynamicModelTerminated() NOEXCEPT;
+
 private:
 
 	//The empty top level acceleration structure.
@@ -81,6 +96,15 @@ private:
 	//The static models material uniform buffer.
 	BufferHandle _StaticModelsMaterialUniformBuffer{ EMPTY_HANDLE };
 
+	//Defines if the dynamic models top level acceleration structure needs update.
+	bool _DynamicModelsNeedsUpdate{ false };
+
+	//The dynamic models top level acceleration structure.
+	AccelerationStructureHandle _DynamicModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
+
+	//The dynamic models material uniform buffer.
+	BufferHandle _DynamicModelsMaterialUniformBuffer{ EMPTY_HANDLE };
+
 	/*
 	*	Creates the empty top level acceleration structure.
 	*/
@@ -105,5 +129,10 @@ private:
 	*	Updates static models.
 	*/
 	void UpdateStaticModels() NOEXCEPT;
+
+	/*
+	*	Updates dynamic models.
+	*/
+	void UpdateDynamicModels() NOEXCEPT;
 
 };

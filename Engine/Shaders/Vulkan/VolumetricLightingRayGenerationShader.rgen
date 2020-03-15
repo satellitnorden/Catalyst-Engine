@@ -118,12 +118,31 @@ void main()
 								);
 
 						hit_anything = visibility < 1.0f;
+
+						if (!hit_anything)
+						{
+							visibility = 0.0f;
+
+							traceNV(
+									DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+									0xff, 																						//cullMask
+									0, 																							//sbtRecordOffset
+									0, 																							//sbtRecordStride
+									1, 																							//missIndex
+									volumetric_particle_hit_position, 																//origin
+									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+									-light.position_or_direction,																//direction
+									VIEW_DISTANCE,																				//Tmax
+									1 																							//payload
+									);
+
+							hit_anything = visibility < 1.0f;
+						}
 					}
 
-					hit_anything = visibility < 1.0f;
-
 					//Add to the volumetric lighting.
-					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * (1.0f - CLOUD_DENSITY) * 0.25f * float(!hit_anything);
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f * float(!hit_anything);
 				}
 
 				break;

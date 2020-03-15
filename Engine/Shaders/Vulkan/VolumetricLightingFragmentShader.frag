@@ -71,7 +71,7 @@ void main()
 					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
 
 					//Add the volumetric lighting.
-					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * (1.0f - CLOUD_DENSITY) * 0.25f;
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
 				}
 
 				break;

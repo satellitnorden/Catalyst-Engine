@@ -70,7 +70,7 @@ void main()
 						0, 																							//sbtRecordOffset
 						0, 																							//sbtRecordStride
 						0, 																							//missIndex
-						world_position + shadingNormal * 0.01f, 													//origin
+						world_position, 																			//origin
 						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 						-light.position_or_direction,																//direction
 						VIEW_DISTANCE,																				//Tmax
@@ -90,7 +90,7 @@ void main()
 							0, 																							//sbtRecordOffset
 							0, 																							//sbtRecordStride
 							0, 																							//missIndex
-							world_position + shadingNormal * 0.01f, 													//origin
+							world_position, 																			//origin
 							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 							-light.position_or_direction,																//direction
 							VIEW_DISTANCE,																				//Tmax
@@ -98,19 +98,41 @@ void main()
 							);
 
 					hit_anything = visibility < 1.0f;
+
+					if (!hit_anything)
+					{
+						visibility = 0.0f;
+
+						traceNV(
+								DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light.position_or_direction,																//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
+
+						hit_anything = visibility < 1.0f;
+					}
 				}
 
-				hit_anything = visibility < 1.0f;
-
-				direct_lighting += CalculateLighting(	-view_direction,
-														albedo,
-														shadingNormal,
-														roughness,
-														metallic,
-														ambientOcclusion,
-														material.thickness,
-														light.position_or_direction,
-														light.luminance) * (1.0f - CLOUD_DENSITY) * float(!hit_anything);
+				if (!hit_anything)
+				{
+					direct_lighting += CalculateLighting(	-view_direction,
+															albedo,
+															shadingNormal,
+															roughness,
+															metallic,
+															ambientOcclusion,
+															material.thickness,
+															light.position_or_direction,
+															light.luminance);
+				}
 
 				break;
 			}

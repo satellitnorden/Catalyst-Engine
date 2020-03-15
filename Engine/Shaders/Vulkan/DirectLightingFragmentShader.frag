@@ -67,7 +67,7 @@ void main()
 													ambientOcclusion,
 													material.thickness,
 													light.position_or_direction,
-													light.luminance) * (1.0f - CLOUD_DENSITY);
+													light.luminance);
 
 				break;
 			}

@@ -137,11 +137,73 @@ SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 }
 
 /*
+*	Calculates dynamic model surface properties.
+*/
+SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
+{
+	//Unpack the vertices making up the triangle.
+	Vertex vertex_1 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3]);
+	Vertex vertex_2 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 1]);
+	Vertex vertex_3 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 2]);
+
+	//Calculate the final vertex using the barycentric coordinates.
+	vec3 barycentric_coordinates = vec3(1.0f - hit_attribute.x - hit_attribute.y, hit_attribute.x, hit_attribute.y);
+
+	Vertex final_vertex;
+
+	final_vertex.position = vertex_1.position * barycentric_coordinates.x + vertex_2.position * barycentric_coordinates.y + vertex_3.position * barycentric_coordinates.z;
+	final_vertex.normal = vertex_1.normal * barycentric_coordinates.x + vertex_2.normal * barycentric_coordinates.y + vertex_3.normal * barycentric_coordinates.z;
+	final_vertex.tangent = vertex_1.tangent * barycentric_coordinates.x + vertex_2.tangent * barycentric_coordinates.y + vertex_3.tangent * barycentric_coordinates.z;
+	final_vertex.texture_coordinate = vertex_1.texture_coordinate * barycentric_coordinates.x + vertex_2.texture_coordinate * barycentric_coordinates.y + vertex_3.texture_coordinate * barycentric_coordinates.z;
+
+	//Transform the final vertex into world space.
+	final_vertex.position = gl_ObjectToWorldNV * vec4(final_vertex.position, 1.0f);
+	final_vertex.normal = normalize(gl_ObjectToWorldNV * vec4(final_vertex.normal, 0.0f));
+	final_vertex.tangent = normalize(gl_ObjectToWorldNV * vec4(final_vertex.tangent, 0.0f));
+
+	//Retrieve the material.
+	Material material = GLOBAL_MATERIALS[UnpackDynamicModelMaterialindex(gl_InstanceCustomIndexNV)];
+
+	//Sample the albedo.
+	vec3 albedo = RetrieveAlbedo(material, final_vertex.texture_coordinate);
+
+	//Sample the material properties.
+	vec4 material_properties = RetrieveMaterialProperties(material, final_vertex.texture_coordinate);
+
+	//Calculate the shading normal.
+	vec3 shading_normal;
+
+	if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
+	{
+		shading_normal = final_vertex.normal;
+	}
+
+	else
+	{
+		//Sample the normal map.
+		vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_vertex.texture_coordinate).xyz;
+		shading_normal = normal_map * 2.0f - 1.0f;
+		shading_normal = mat3(final_vertex.tangent, cross(final_vertex.normal, final_vertex.tangent), final_vertex.normal) * shading_normal;
+		shading_normal = normalize(shading_normal);
+	}
+
+	//Gather the surface properties.
+	SurfaceProperties surface_properties;
+
+	//Fill in the surface properties.
+	surface_properties.albedo = albedo;
+	surface_properties.shading_normal = shading_normal;
+	surface_properties.material_properties = material_properties;
+
+	return surface_properties;
+}
+
+/*
 *	Calculates luminance lighting.
 */
 vec3 CalculateLuminanceLighting(SurfaceProperties surface_properties)
 {
-	return surface_properties.albedo * surface_properties.material_properties[3] * GLOBAL_MATERIALS[UnpackStaticModelMaterialindex(gl_InstanceCustomIndexNV)].luminance_multiplier;
+	return surface_properties.albedo * surface_properties.material_properties[3];
 }
 
 /*
@@ -204,6 +266,27 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 							);
 
 					hit_anything = visibility < 1.0f;
+
+					if (!hit_anything)
+					{
+						visibility = 0.0f;
+
+						traceNV(
+								DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								1, 																							//missIndex
+								hit_position, 																				//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light_direction,																			//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
+
+						hit_anything = visibility < 1.0f;
+					}
 				}
 
 				if (!hit_anything)
@@ -216,7 +299,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 															surface_properties.material_properties[2],
 															1.0f,
 															light_direction,
-															light.luminance) * (1.0f - CLOUD_DENSITY);
+															light.luminance);
 				}
 				
 
@@ -378,6 +461,13 @@ void main()
 		case CATALYST_PATH_TRACING_TYPE_STATIC_MODELS:
 		{
 			surface_properties = CalculateStaticModelSurfaceProperties(hit_position);
+
+			break;
+		}
+
+		case CATALYST_PATH_TRACING_TYPE_DYNAMIC_MODELS:
+		{
+			surface_properties = CalculateDynamicModelSurfaceProperties(hit_position);
 
 			break;
 		}

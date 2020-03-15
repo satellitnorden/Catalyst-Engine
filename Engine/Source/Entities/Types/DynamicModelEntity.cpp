@@ -53,6 +53,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelPhysicsSimulationData(_ComponentsIndex, model_initialization_data->_ModelPhysicsSimulationData);
 	}
 
+	//Notify the ray tracing system that this dynamic model was initialized.
+	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelInitialized();
+
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
 }
@@ -62,6 +65,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 */
 void DynamicModelEntity::Terminate() NOEXCEPT
 {
+	//Notify the ray tracing system that this dynamic model was terminated.
+	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelTerminated();
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDynamicModelComponentsIndex(_ComponentsIndex);
 }
@@ -69,8 +75,19 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::GetWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT
 {
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
+}
+
+/*
+*	Returns the world transform. Assumes the world transform will be modified, and will notify relevant systems.
+*/
+RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::ModifyWorldTransform() NOEXCEPT
+{
+	//Notify the ray tracing system that this dynamic model was modified.
+	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelModified();
+
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
 

@@ -7,6 +7,7 @@
 
 #define CATALYST_PATH_TRACING_TYPE_TERRAIN (0)
 #define CATALYST_PATH_TRACING_TYPE_STATIC_MODELS (1)
+#define CATALYST_PATH_TRACING_TYPE_DYNAMIC_MODELS (2)
 
 /*
 *	Path tracing ray payload struct definition.
