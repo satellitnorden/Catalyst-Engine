@@ -28,11 +28,21 @@ layout (location = 0) out vec4 current_ambient_occlusion;
 layout (location = 1) out vec4 ambient_occlusion;
 
 /*
-*	Constrains the previous sample.
+*	Calculates the neighborhood weight.
 */
-float Constrain(float previous, float minimum, float maximum)
+float NeighborhoodWeight(float previous, float minimum, float maximum)
 {
-	return clamp(previous, minimum, maximum);
+	//Calculate the weight.
+	float weight = 1.0f;
+
+	weight *= 1.0f - clamp(minimum - previous, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous - maximum, 0.0f, 1.0f);
+
+	//Bias the weight.
+	weight = weight * weight;
+
+	//Return the weight.
+	return weight;
 }
 
 void main()
@@ -66,17 +76,16 @@ void main()
 	//Sample the previous ambient occlusion texture.
 	vec4 previous_ambient_occlusion_texture_sampler = texture(previous_ambient_occlusion_texture, previous_screen_coordinate);
 
-	//Constrain the previous sample.
-	previous_ambient_occlusion_texture_sampler.x = Constrain(previous_ambient_occlusion_texture_sampler.x, minimum, maximum);
-
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
+	*	2. How closely are the previous sample in the neighborhood of the current sample?
 	*/
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
+	previous_sample_weight *= NeighborhoodWeight(previous_ambient_occlusion_texture_sampler.x, minimum, maximum);
 
 
 	//Blend the previous and the current ambient occlusion.

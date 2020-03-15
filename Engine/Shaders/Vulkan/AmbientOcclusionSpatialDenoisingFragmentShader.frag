@@ -25,7 +25,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 INVERSE_RESOLUTION;
-	layout (offset = 8) uint STRIDE;
+	layout (offset = 8) int STRIDE;
 };
 
 //In parameters.
@@ -62,9 +62,9 @@ void main()
 	vec3 denoisedAmbientOcclusion = vec3(0.0f);
 	float ambientOcclusionWeightSum = 0.0f;
 
-	for (uint y = -STRIDE; y <= STRIDE; y += STRIDE)
+	for (int y = -STRIDE; y <= STRIDE; y += STRIDE)
 	{
-		for (uint x = -STRIDE; x <= STRIDE; x += STRIDE)
+		for (int x = -STRIDE; x <= STRIDE; x += STRIDE)
 		{
 			vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 

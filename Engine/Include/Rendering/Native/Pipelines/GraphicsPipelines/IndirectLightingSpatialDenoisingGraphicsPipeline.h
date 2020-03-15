@@ -17,7 +17,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const int32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -33,7 +33,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	//The stride.
-	uint32 _Stride;
+	int32 _Stride;
 
 	/*
 	*	Creates the render data table layout.

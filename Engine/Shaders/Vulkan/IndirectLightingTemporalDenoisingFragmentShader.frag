@@ -28,23 +28,25 @@ layout (location = 0) out vec4 current_indirect_lighting;
 layout (location = 1) out vec4 indirect_lighting;
 
 /*
-*	Constrains the previous sample.
+*	Calculates the neighborhood weight.
 */
-vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
+float NeighborhoodWeight(vec3 previous, vec3 minimum, vec3 maximum)
 {
-	vec3 p_clip = 0.5f * (maximum + minimum);
-	vec3 e_clip = 0.5f * (maximum - minimum);
+	//Calculate the weight.
+	float weight = 1.0f;
 
-	vec3 v_clip = previous - p_clip;
-	vec3 v_unit = v_clip / e_clip;
-	vec3 a_unit = abs(v_unit);
+	weight *= 1.0f - clamp(minimum.x - previous.x, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(minimum.y - previous.y, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(minimum.z - previous.z, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.x - maximum.x, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
 
-	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
+	//Bias the weight.
+	weight = weight * weight * weight;
 
-	if (ma_unit > 1.0f)
-		return p_clip + v_clip / ma_unit;
-	else
-		return previous;
+	//Return the weight.
+	return weight;
 }
 
 void main()
@@ -78,17 +80,16 @@ void main()
 	//Sample the previous indirect lighting texture.
 	vec4 previous_indirect_lighting_texture_sampler = texture(previous_indirect_lighting_texture, previous_screen_coordinate);
 
-	//Constrain the previous sample.
-	previous_indirect_lighting_texture_sampler.rgb = Constrain(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
-
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
+	*	2. How closely are the previous sample in the neighborhood of the current sample?
 	*/
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
+	previous_sample_weight *= NeighborhoodWeight(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
 
 	//Blend the previous and the current indirect lighting.
 	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);

@@ -22,14 +22,14 @@ public:
 	Vector2<float32> _InverseResolution;
 
 	//The stride.
-	uint32 _Stride;
+	int32 _Stride;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const int32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();

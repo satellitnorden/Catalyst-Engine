@@ -25,7 +25,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 INVERSE_RESOLUTION;
-	layout (offset = 8) uint STRIDE;
+	layout (offset = 8) int STRIDE;
 };
 
 //In parameters.
@@ -62,9 +62,9 @@ void main()
 	vec3 denoised_indirect_lighting = vec3(0.0f);
 	float indirect_lighting_weight_sum = 0.0f;
 
-	for (uint y = -STRIDE; y <= STRIDE; y += STRIDE)
+	for (int y = -STRIDE; y <= STRIDE; y += STRIDE)
 	{
-		for (uint x = -STRIDE; x <= STRIDE; x += STRIDE)
+		for (int x = -STRIDE; x <= STRIDE; x += STRIDE)
 		{
 			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 
@@ -93,5 +93,5 @@ void main()
 	denoised_indirect_lighting = indirect_lighting_weight_sum == 0.0f ? current_indirect_lighting.rgb : denoised_indirect_lighting / indirect_lighting_weight_sum;
 
 	//Write the fragment.
-	fragment = vec4(denoised_indirect_lighting, indirect_lighting_weight_sum == 0.0f ? current_indirect_lighting.a : min(indirect_lighting_weight_sum, 1.0f));
+	fragment = vec4(denoised_indirect_lighting, min(indirect_lighting_weight_sum, 1.0f));
 }
