@@ -11,10 +11,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES (2)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MINIMUM_BIAS (0.001f)
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_MAXIMUM_BIAS (0.01f)
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS (2.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -67,7 +65,7 @@ void main()
 	//Calculate the occlusion.
 	float occlusion = 0.0f;
 
-	for (uint i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
+	for (uint i = 0; i < AMBIENT_OCCLUSION_NUMBER_OF_SAMPLES; ++i)
 	{
 		//Sample the random direction and length.
 		vec3 pre_rotation_hemisphere_direction;
@@ -82,7 +80,7 @@ void main()
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
 		//Calculate the sample position.
-		vec3 sample_position = world_position + random_direction * random_length * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS;
+		vec3 sample_position = world_position + random_direction * random_length * AMBIENT_OCCLUSION_RADIUS;
 
 		//Calculate the sample screen coordinate.
 		vec4 sample_view_space_position = viewMatrix * vec4(sample_position, 1.0f);

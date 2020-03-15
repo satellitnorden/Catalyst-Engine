@@ -18,8 +18,9 @@ public:
 	//Enumeration covering all ambient occlusion modes.
 	enum class AmbientOcclusionMode : uint8
 	{
-		None,
-		ScreenSpace
+		NONE,
+		SCREEN_SPACE,
+		RAY_TRACED
 	};
 
 	//Enumeration covering all indirect lighting modes.
@@ -149,7 +150,7 @@ private:
 	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::ScreenSpace };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };

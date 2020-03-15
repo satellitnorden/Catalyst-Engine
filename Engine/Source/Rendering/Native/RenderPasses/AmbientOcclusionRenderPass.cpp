@@ -93,7 +93,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Nothing to do here if ambient occlusion isn't enabled.
-	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::None)
+	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::NONE)
 	{
 		SetEnabled(false);
 
@@ -101,7 +101,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::ScreenSpace)
+	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
 	}
