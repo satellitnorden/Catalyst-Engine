@@ -25,14 +25,14 @@ public:
 	void PhysicsUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Registers model collision data.
+	*	Registers static model collision data.
 	*/
-	void RegisterModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT;
+	void RegisterStaticModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT;
 
 	/*
-	*	Unregisters model collision data.
+	*	Unregisters static model collision data.
 	*/
-	void UnregisterModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
+	void UnregisterStaticModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
 
 	/*
 	*	Registers model physics simulation data.
@@ -49,10 +49,18 @@ public:
 	*/
 	void CastRayModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
 
+	/*
+	*	Returns the static model collision data.
+	*/
+	FORCE_INLINE NO_DISCARD const Map<uint64, ModelCollisionData> &GetStaticModelCollisionData() const NOEXCEPT
+	{
+		return _StaticModelCollisionData;
+	}
+
 private:
 
-	//Container for all model collision data.
-	Map<uint64, ModelCollisionData> _ModelCollisionData;
+	//Container for all static model collision data.
+	Map<uint64, ModelCollisionData> _StaticModelCollisionData;
 
 	//Container for all model physics simulation data.
 	Map<uint64, ModelPhysicsSimulationData> _ModelPhysicsSimulationData;

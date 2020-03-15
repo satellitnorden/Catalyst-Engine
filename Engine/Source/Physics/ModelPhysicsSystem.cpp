@@ -17,17 +17,17 @@ void ModelPhysicsSystem::PhysicsUpdate(const UpdateContext* const RESTRICT conte
 }
 
 /*
-*	Registers model collision data.
+*	Registers static model collision data.
 */
-void ModelPhysicsSystem::RegisterModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT
+void ModelPhysicsSystem::RegisterStaticModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT
 {
-	_ModelCollisionData[entity_identifier] = data;
+	_StaticModelCollisionData[entity_identifier] = data;
 }
 
 /*
-*	Unregisters model collision data.
+*	Unregisters static model collision data.
 */
-void ModelPhysicsSystem::UnregisterModelCollisionData(const uint64 entity_identifer) NOEXCEPT
+void ModelPhysicsSystem::UnregisterStaticModelCollisionData(const uint64 entity_identifer) NOEXCEPT
 {
 
 }
@@ -53,7 +53,7 @@ void ModelPhysicsSystem::UnregisterModelPhysicsSimulationData(const uint64 entit
 */
 void ModelPhysicsSystem::CastRayModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	for (const Pair<uint64, ModelCollisionData>& data : _ModelCollisionData)
+	for (const Pair<uint64, ModelCollisionData>& data : _StaticModelCollisionData)
 	{
 		switch (data._Second._Type)
 		{

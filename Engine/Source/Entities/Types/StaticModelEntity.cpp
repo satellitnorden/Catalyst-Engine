@@ -46,7 +46,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
 	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
+		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterStaticModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
 	}
 
 	//Destroy the initialization data.

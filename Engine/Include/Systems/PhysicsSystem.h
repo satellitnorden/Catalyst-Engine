@@ -8,7 +8,7 @@
 #include <Math/Geometry/Ray.h>
 
 //Physics.
-#include <Physics/CharacterMovement.h>
+#include <Physics/CharacterPhysicsSystem.h>
 #include <Physics/ModelPhysicsSystem.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RaycastConfiguration.h>
@@ -36,6 +36,14 @@ public:
 	void PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Returns the character physics system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD CharacterPhysicsSystem *const RESTRICT GetCharacterPhysicsSystem() NOEXCEPT
+	{
+		return &_CharacterPhysicsSystem;
+	}
+
+	/*
 	*	Returns the model physics system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD ModelPhysicsSystem *const RESTRICT GetModelPhysicsSystem() NOEXCEPT
@@ -48,32 +56,17 @@ public:
 	*/
 	void CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
 
-	/*
-	*	Registers a character movement.
-	*/
-	void RegisterCharacterMovement(CharacterMovement* const RESTRICT movement) NOEXCEPT;
-
 private:
+
+	//The character physics system.
+	CharacterPhysicsSystem _CharacterPhysicsSystem;
 
 	//The model physics system.
 	ModelPhysicsSystem _ModelPhysicsSystem;
-
-	//Container for all character movements.
-	DynamicArray<CharacterMovement *RESTRICT> _CharacterMovements;
 
 	/*
 	*	Casts a ray against the terrain.
 	*/
 	void CastRayTerrain(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
-
-	/*
-	*	Updates one character movement.
-	*/
-	void UpdateCharacterMovement(const UpdateContext* const RESTRICT context, CharacterMovement* const RESTRICT movement) NOEXCEPT;
-
-	/*
-	*	Checks collision for character movement. Returns whether or not a collision occured.
-	*/
-	NO_DISCARD bool CheckCharacterMovementCollision(const CharacterMovement *const RESTRICT movement, Vector3<float32> *const RESTRICT collision_position) NOEXCEPT;
 
 };

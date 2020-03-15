@@ -69,12 +69,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	_IndirectLightingSpatialDenoisingGraphicsPipelines[3].Initialize(	4,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1));
-	_IndirectLightingSpatialDenoisingGraphicsPipelines[4].Initialize(	5,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2));
-	_IndirectLightingSpatialDenoisingGraphicsPipelines[5].Initialize(	6,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1));
 	_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer2),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1));
 	_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1),
