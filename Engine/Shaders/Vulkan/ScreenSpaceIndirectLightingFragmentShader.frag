@@ -11,7 +11,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (16)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (2)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_SAMPLES (16)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -38,13 +39,13 @@ float ProbabilityDensityFunction(vec3 normal, vec3 ray_direction)
 /*
 *	Calculates the indirect lighting ray direction and start offset.
 */
-void CalculateIndirectLightingRayDirectionAndStartOffset(vec3 view_direction, vec3 normal, float roughness, float metallic, out vec3 ray_direction, out float start_offset)
+void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_direction, vec3 normal, float roughness, float metallic, out vec3 ray_direction, out float start_offset)
 {
 	//Calculate the noise texture coordinate.
 	vec2 noise_texture_coordinate = gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
 	//Sample the noise texture.
-	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + index) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
 	//Calculate the random rotation matrix.
 	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
@@ -80,7 +81,7 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(vec3 view_direction, ve
 bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 {
 	//Perform the raycast.
-	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES; ++i)
+	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_RAY_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
 		vec3 sample_position = ray_origin + ray_direction * float(i);
@@ -148,20 +149,34 @@ void main()
 	//Calculate the view direction.
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 
-	//Calculate the ray direction and start offset.
-	vec3 ray_direction;
-	float start_offset;
+	//Fire all rays.
+	vec3 indirect_lighting = vec3(0.0f);
+	float total_weight = 0.0f;
 
-	CalculateIndirectLightingRayDirectionAndStartOffset(view_direction, normal, roughness, metallic, ray_direction, start_offset);
+	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES; ++i)
+	{
+		//Calculate the ray direction and start offset.
+		vec3 ray_direction;
+		float start_offset;
 
-	//Calculate the indirect lighting.
-	vec3 indirect_lighting;
+		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, normal, roughness, metallic, ray_direction, start_offset);
 
-	bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, indirect_lighting);
+		//Calculate the indirect lighting.
+		vec3 sample_indirect_lighting;
 
-	//Calculate the probability density.
-	float probability_density = ProbabilityDensityFunction(normal, ray_direction);
+		bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, sample_indirect_lighting);
+
+		//Calculate the sample weight.
+		float sample_weight = ProbabilityDensityFunction(normal, ray_direction) * float(hit);
+
+		//Accumulate.
+		indirect_lighting += hit ? sample_indirect_lighting * sample_weight : vec3(0.0f);
+		total_weight += sample_weight;
+	}
+
+	//Normalize the indirect lighting.
+	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
 
     //Write the fragment
-    fragment = vec4(hit ? indirect_lighting : vec3(0.0f), (hit ? 1.0f : 0.0f) * probability_density);
+    fragment = vec4(indirect_lighting, min(total_weight, 1.0f));
 }
