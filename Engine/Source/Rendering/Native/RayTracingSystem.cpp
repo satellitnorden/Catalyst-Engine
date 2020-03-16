@@ -221,13 +221,27 @@ void RayTracingSystem::UpdateTerrain() NOEXCEPT
 */
 void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 {
+	//Destroy the old data.
+	if (_StaticModelsTopLevelAccelerationStructure)
+	{
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_StaticModelsTopLevelAccelerationStructure);
+		_StaticModelsTopLevelAccelerationStructure = EMPTY_HANDLE;
+	}
+
+	if (_StaticModelsMaterialUniformBuffer)
+	{
+		RenderingSystem::Instance->DestroyBuffer(&_StaticModelsMaterialUniformBuffer);
+		_StaticModelsMaterialUniformBuffer = EMPTY_HANDLE;
+	}
+
+	//If there's no static models left, no need to do anything.
+	if (ComponentManager::GetNumberOfStaticModelComponents() == 0)
+	{
+		return;
+	}
+
 	//Rebuild the static top level acceleration structure.
 	{
-		if (_StaticModelsTopLevelAccelerationStructure)
-		{
-			RenderingSystem::Instance->DestroyAccelerationStructure(&_StaticModelsTopLevelAccelerationStructure);
-		}
-
 		//Recreate the instances.
 		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
 
@@ -254,11 +268,6 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 	//Rebuild the static models material uniform buffer.
 	{
-		if (_StaticModelsMaterialUniformBuffer)
-		{
-			RenderingSystem::Instance->DestroyBuffer(&_StaticModelsMaterialUniformBuffer);
-		}
-
 		RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialUniformBuffer);
 
 		StaticArray<uint32, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS> material_indices;
@@ -291,13 +300,27 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 */
 void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 {
+	//Destroy the old data.
+	if (_DynamicModelsTopLevelAccelerationStructure)
+	{
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_DynamicModelsTopLevelAccelerationStructure);
+		_DynamicModelsTopLevelAccelerationStructure = EMPTY_HANDLE;
+	}
+
+	if (_DynamicModelsMaterialUniformBuffer)
+	{
+		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialUniformBuffer);
+		_DynamicModelsMaterialUniformBuffer = EMPTY_HANDLE;
+	}
+
+	//If there's no dynamic models left, no need to do anything.
+	if (ComponentManager::GetNumberOfDynamicModelComponents() == 0)
+	{
+		return;
+	}
+
 	//Rebuild the dynamic top level acceleration structure.
 	{
-		if (_DynamicModelsTopLevelAccelerationStructure)
-		{
-			RenderingSystem::Instance->DestroyAccelerationStructure(&_DynamicModelsTopLevelAccelerationStructure);
-		}
-
 		//Recreate the instances.
 		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
 
@@ -324,11 +347,6 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 	//Rebuild the dynamic models material uniform buffer.
 	{
-		if (_DynamicModelsMaterialUniformBuffer)
-		{
-			RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialUniformBuffer);
-		}
-
 		RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialUniformBuffer);
 
 		StaticArray<uint32, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS> material_indices;
