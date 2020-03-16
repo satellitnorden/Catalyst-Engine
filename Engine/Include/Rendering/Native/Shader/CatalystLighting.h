@@ -219,6 +219,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance)
 	{
 		//Define constants.
+		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
 		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_PI, 3.141592f);
 
 		//Calculate the halfway vector.
@@ -235,7 +236,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float halfway_vector_coefficient_squared = halfway_vector_coefficient * halfway_vector_coefficient;
 		float denominator_coefficient = halfway_vector_coefficient_squared * (roughness_squared - 1.0f) + 1.0f;
 
-		float denominator = CATALYST_LIGHTING_PI * denominator_coefficient * denominator_coefficient;
+		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_LIGHTING_PI * denominator_coefficient * denominator_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
 
 		//Calculate the normal distribution.
 		return vec3(numerator / denominator);
