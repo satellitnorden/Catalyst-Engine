@@ -65,7 +65,7 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
-	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::None)
+	if (RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::NONE)
 	{
 		_DirectLightingGraphicsPipeline.Execute();
 		_DirectLightingRayTracingPipeline.SetIncludeInRender(false);

@@ -41,8 +41,8 @@ public:
 	//Enumeration covering all shadows modes.
 	enum class ShadowsMode : uint8
 	{
-		None,
-		RayTraced
+		NONE,
+		RAY_TRACED
 	};
 
 	//Singleton declaration.
@@ -153,13 +153,13 @@ private:
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
 
 	//The indirect lighting mode.
-	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
+	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
 
 	//The motion blur mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::None };
+	ShadowsMode _ShadowsMode{ ShadowsMode::NONE };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };

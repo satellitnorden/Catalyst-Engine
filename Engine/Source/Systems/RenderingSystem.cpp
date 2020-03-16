@@ -193,7 +193,7 @@ void RenderingSystem::Release() NOEXCEPT
 */
 NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 {
-	return RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::PATH_TRACING || RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RayTraced;
+	return RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::PATH_TRACING || RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RAY_TRACED;
 }
 
 /*
