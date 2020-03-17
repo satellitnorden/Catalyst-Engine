@@ -129,8 +129,8 @@ void main()
 									0xff, 																						//cullMask
 									0, 																							//sbtRecordOffset
 									0, 																							//sbtRecordStride
-									1, 																							//missIndex
-									volumetric_particle_hit_position, 																//origin
+									0, 																							//missIndex
+									volumetric_particle_hit_position, 															//origin
 									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 									-light.position_or_direction,																//direction
 									VIEW_DISTANCE,																				//Tmax
