@@ -912,6 +912,9 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 
 			TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y);
 
+			//To alleviate discontinuities with displacement.
+			position._Y -= 0.5f;
+
 			//Add the vertex.
 			master_vertices.Emplace(position, VectorConstants::UP, VectorConstants::RIGHT, Vector2<float>(0.0f, 0.0f));
 
