@@ -93,8 +93,8 @@ private:
 	//The static models top level acceleration structure.
 	AccelerationStructureHandle _StaticModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
 
-	//The static models material uniform buffer.
-	BufferHandle _StaticModelsMaterialUniformBuffer{ EMPTY_HANDLE };
+	//The static models material buffer.
+	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
 
 	//Defines if the dynamic models top level acceleration structure needs update.
 	bool _DynamicModelsNeedsUpdate{ false };
@@ -102,8 +102,8 @@ private:
 	//The dynamic models top level acceleration structure.
 	AccelerationStructureHandle _DynamicModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
 
-	//The dynamic models material uniform buffer.
-	BufferHandle _DynamicModelsMaterialUniformBuffer{ EMPTY_HANDLE };
+	//The dynamic models material buffer.
+	BufferHandle _DynamicModelsMaterialBuffer{ EMPTY_HANDLE };
 
 	/*
 	*	Creates the empty top level acceleration structure.

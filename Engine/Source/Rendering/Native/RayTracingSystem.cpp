@@ -121,18 +121,22 @@ void RayTracingSystem::CreateEmptyTopLevelAccelerationStructure() NOEXCEPT
 */
 void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
+	//Define constants.
+	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
+	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
+
 	//Create the render data table layout.
 	StaticArray<RenderDataTableLayoutBinding, 9> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit),
 		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::StorageBuffer, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RayClosestHit),
+		RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit),
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -175,9 +179,9 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 			}
 		}
 
-		if (_StaticModelsMaterialUniformBuffer)
+		if (_StaticModelsMaterialBuffer)
 		{
-			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(4, 0, &_RenderDataTable, _StaticModelsMaterialUniformBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, 0, &_RenderDataTable, _StaticModelsMaterialBuffer);
 		}
 	}
 
@@ -201,9 +205,9 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 			}
 		}
 
-		if (_DynamicModelsMaterialUniformBuffer)
+		if (_DynamicModelsMaterialBuffer)
 		{
-			RenderingSystem::Instance->BindUniformBufferToRenderDataTable(8, 0, &_RenderDataTable, _DynamicModelsMaterialUniformBuffer);
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(8, 0, &_RenderDataTable, _DynamicModelsMaterialBuffer);
 		}
 	}
 }
@@ -228,10 +232,10 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 		_StaticModelsTopLevelAccelerationStructure = EMPTY_HANDLE;
 	}
 
-	if (_StaticModelsMaterialUniformBuffer)
+	if (_StaticModelsMaterialBuffer)
 	{
-		RenderingSystem::Instance->DestroyBuffer(&_StaticModelsMaterialUniformBuffer);
-		_StaticModelsMaterialUniformBuffer = EMPTY_HANDLE;
+		RenderingSystem::Instance->DestroyBuffer(&_StaticModelsMaterialBuffer);
+		_StaticModelsMaterialBuffer = EMPTY_HANDLE;
 	}
 
 	//If there's no static models left, no need to do anything.
@@ -240,59 +244,39 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 		return;
 	}
 
-	//Rebuild the static top level acceleration structure.
+	//Gather the instances and the material indices.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
+	DynamicArray<uint32> material_indices;
+
+	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+	const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+	uint32 mesh_counter{ 0 };
+
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		//Recreate the instances.
-		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
-
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		for (const uint32 material_index : component->_MaterialIndices)
 		{
-			for (const Mesh &mesh : component->_Model->_Meshes)
-			{
-				instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
-
-				++mesh_counter;
-
-				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, "Increase maximum number of raytraced static meshes!");
-			}
+			material_indices.Emplace(material_index);
 		}
 
-		//Create the top level acceleration structure.
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_StaticModelsTopLevelAccelerationStructure);
-	}
-
-	//Rebuild the static models material uniform buffer.
-	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialUniformBuffer);
-
-		StaticArray<uint32, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS> material_indices;
-
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		for (const Mesh &mesh : component->_Model->_Meshes)
 		{
-			for (const uint32 material_index : component->_MaterialIndices)
-			{
-				material_indices[mesh_counter] = material_index;
+			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
 
-				++mesh_counter;
-
-				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS, "Increase maximum number of raytraced static meshes!");
-			}
+			++mesh_counter;
 		}
-
-		const void* RESTRICT data_chunks[]{ material_indices.Data() };
-		const uint64 data_sizes[]{ sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MODELS };
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_StaticModelsMaterialUniformBuffer);
 	}
+
+	//Create the top level acceleration structure.
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_StaticModelsTopLevelAccelerationStructure);
+
+	//Create the dynamic models material buffer.
+	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * material_indices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialBuffer);
+
+	const void* RESTRICT data_chunks[]{ material_indices.Data() };
+	const uint64 data_sizes[]{ sizeof(uint32) * material_indices.Size() };
+	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_StaticModelsMaterialBuffer);
 }
 
 /*
@@ -307,10 +291,10 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 		_DynamicModelsTopLevelAccelerationStructure = EMPTY_HANDLE;
 	}
 
-	if (_DynamicModelsMaterialUniformBuffer)
+	if (_DynamicModelsMaterialBuffer)
 	{
-		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialUniformBuffer);
-		_DynamicModelsMaterialUniformBuffer = EMPTY_HANDLE;
+		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialBuffer);
+		_DynamicModelsMaterialBuffer = EMPTY_HANDLE;
 	}
 
 	//If there's no dynamic models left, no need to do anything.
@@ -319,57 +303,37 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 		return;
 	}
 
-	//Rebuild the dynamic top level acceleration structure.
+	//Gather the instances and the material indices.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
+	DynamicArray<uint32> material_indices;
+
+	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+	uint32 mesh_counter{ 0 };
+
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		//Recreate the instances.
-		DynamicArray<TopLevelAccelerationStructureInstanceData> instances;
-
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		for (const uint32 material_index : component->_MaterialIndices)
 		{
-			for (const Mesh &mesh : component->_Model->_Meshes)
-			{
-				instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
-
-				++mesh_counter;
-
-				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, "Increase maximum number of raytraced dynamic meshes!");
-			}
+			material_indices.Emplace(material_index);
 		}
 
-		//Create the top level acceleration structure.
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_DynamicModelsTopLevelAccelerationStructure);
-	}
-
-	//Rebuild the dynamic models material uniform buffer.
-	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialUniformBuffer);
-
-		StaticArray<uint32, CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS> material_indices;
-
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		for (const Mesh &mesh : component->_Model->_Meshes)
 		{
-			for (const uint32 material_index : component->_MaterialIndices)
-			{
-				material_indices[mesh_counter] = material_index;
+			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
 
-				++mesh_counter;
-
-				ASSERT(mesh_counter < CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS, "Increase maximum number of raytraced dynamic meshes!");
-			}
+			++mesh_counter;
 		}
-
-		const void* RESTRICT data_chunks[]{ material_indices.Data() };
-		const uint64 data_sizes[]{ sizeof(uint32) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MODELS };
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialUniformBuffer);
 	}
+
+	//Create the top level acceleration structure.
+	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instances), &_DynamicModelsTopLevelAccelerationStructure);
+
+	//Create the dynamic models material buffer.
+	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * material_indices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
+
+	const void* RESTRICT data_chunks[]{ material_indices.Data() };
+	const uint64 data_sizes[]{ sizeof(uint32) * material_indices.Size() };
+	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialBuffer);
 }
