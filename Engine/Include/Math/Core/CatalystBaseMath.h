@@ -217,6 +217,15 @@ public:
 	}
 
 	/*
+	*	Returns whether or not a number is a power of two.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD bool IsPowerOfTwo(const TYPE number) NOEXCEPT
+	{
+		return (number & (number - 1)) == static_cast<TYPE>(0);
+	}
+
+	/*
 	*	Linearly interpolate between two float values.
 	*/
 	template <typename TYPE>
