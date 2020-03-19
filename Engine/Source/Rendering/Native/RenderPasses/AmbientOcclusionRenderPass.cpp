@@ -37,8 +37,9 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + 1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
+	AddPipeline(&_AmbientOcclusionRayTracingPipeline);
 
 	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{
@@ -54,6 +55,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize();
+	_AmbientOcclusionRayTracingPipeline.Initialize();
 	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AmbientOcclusion),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R8_Byte_Half));
@@ -104,6 +106,13 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
+		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
+	}
+
+	else if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::RAY_TRACED)
+	{
+		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
+		_AmbientOcclusionRayTracingPipeline.Execute();
 	}
 	
 	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)

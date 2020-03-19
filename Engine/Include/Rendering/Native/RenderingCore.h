@@ -354,6 +354,7 @@ enum class Shader : uint8
 	PathTracingRayGeneration,
 	PathTracingRayMiss,
 	PostProcessingFragment,
+	RayTracedAmbientOcclusionRayGeneration,
 	RenderingReferenceFragment,
 	ResampleFragment,
 	SceneFeaturesDownsampleFragment,

@@ -9,6 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class AmbientOcclusionRenderPass final : public RenderPass
@@ -28,6 +29,9 @@ private:
 
 	//The screen space ambient occlusion graphics pipeline.
 	ScreenSpaceAmbientOcclusionGraphicsPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline;
+
+	//The ambient occlusion ray tracing pipeline.
+	AmbientOcclusionRayTracingPipeline _AmbientOcclusionRayTracingPipeline;
 
 	//The ambient occlusion spatial denoising graphics pipelines.
 	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 4> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;

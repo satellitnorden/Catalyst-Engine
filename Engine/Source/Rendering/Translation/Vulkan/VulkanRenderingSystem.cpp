@@ -947,6 +947,20 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
+			//Initialize the fragment shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::RayTracedAmbientOcclusionRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
+			}
+		}
+
+		{
 			//Initialize the shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));

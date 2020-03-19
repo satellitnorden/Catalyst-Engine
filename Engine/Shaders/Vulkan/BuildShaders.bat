@@ -35,6 +35,7 @@ glslangValidator.exe -V PathTracingRayClosestHitShader.rchit -o 			PathTracingRa
 glslangValidator.exe -V PathTracingRayGenerationShader.rgen -o 				PathTracingRayGenerationShader.spv
 glslangValidator.exe -V PathTracingRayMissShader.rmiss -o 				PathTracingRayMissShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
+glslangValidator.exe -V RayTracedAmbientOcclusionRayGenerationShader.rgen -o 		RayTracedAmbientOcclusionRayGenerationShader.spv
 glslangValidator.exe -V RenderingReferenceFragmentShader.frag -o 			RenderingReferenceFragmentShader.spv
 glslangValidator.exe -V ResampleFragmentShader.frag -o 					ResampleFragmentShader.spv
 glslangValidator.exe -V SceneFeaturesDownsampleFragmentShader.frag -o 			SceneFeaturesDownsampleFragmentShader.spv

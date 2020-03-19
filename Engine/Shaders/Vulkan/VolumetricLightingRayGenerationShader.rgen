@@ -169,29 +169,21 @@ void main()
 					float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 2.0f);
 
 					//Determine the visibility.
-					if (shadowsMode == SHADOWS_MODE_NONE)
-					{
-						visibility = 1.0f;
-					}
+					visibility = 0.0f;
 
-					else if (shadowsMode == SHADOWS_MODE_RAY_TRACED)
-					{
-						visibility = 0.0f;
-
-						traceNV(
-								STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								hitPosition, 																				//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								lightDirection,																				//direction
-								lengthToLight,																				//Tmax
-								1 																							//payload
-								);
-					}
+					traceNV(
+							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							0, 																							//missIndex
+							hitPosition, 																				//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							lightDirection,																				//direction
+							lengthToLight,																				//Tmax
+							1 																							//payload
+							);
 
 					//Add the direct lighting.
 					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * attenuation * visibility * 0.25f;
