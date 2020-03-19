@@ -9,8 +9,6 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) uniform image2D scene_features_2_image;
@@ -41,7 +39,7 @@ void main()
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
 
 	//Calculate the noise texture coordinate.
-	vec2 noise_texture_coordinate = gl_LaunchSizeNV.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
+	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
 	//Sample the noise texture.
 	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
@@ -64,7 +62,7 @@ void main()
 		vec3 pre_rotation_hemisphere_direction;
 		float random_length;
 
-		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + i + gl_LaunchIDNV.x + gl_LaunchIDNV.y, pre_rotation_hemisphere_direction, random_length);
+		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + gl_LaunchIDNV.x + gl_LaunchIDNV.y + i, pre_rotation_hemisphere_direction, random_length);
 
 		//Rotate the random direction.
 		vec3 random_direction = random_rotation * pre_rotation_hemisphere_direction;
@@ -89,7 +87,7 @@ void main()
 					world_position, 																			//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 					random_direction,																			//direction
-					AMBIENT_OCCLUSION_RADIUS,																	//Tmax
+					AMBIENT_OCCLUSION_RADIUS * random_length,													//Tmax
 					1 																							//payload
 					);
 
@@ -110,7 +108,7 @@ void main()
 					world_position, 																			//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 					random_direction,																			//direction
-					AMBIENT_OCCLUSION_RADIUS,																	//Tmax
+					AMBIENT_OCCLUSION_RADIUS * random_length,													//Tmax
 					1 																							//payload
 					);
 
@@ -131,7 +129,7 @@ void main()
 					world_position, 																			//origin
 					CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
 					random_direction,																			//direction
-					AMBIENT_OCCLUSION_RADIUS,																	//Tmax
+					AMBIENT_OCCLUSION_RADIUS * random_length,													//Tmax
 					1 																							//payload
 					);
 

@@ -150,7 +150,7 @@ private:
 	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::RAY_TRACED };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
