@@ -111,7 +111,7 @@ void main()
 	vec3 blended_specular_irradiance = mix(sky_specular_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
 	//Calculate the specular bias.
-	vec2 specular_bias_texture_coordinate = vec2(max(dot(current_features.normal, -current_features.view_direction), 0.0f), 1.0f - current_features.roughness);
+	vec2 specular_bias_texture_coordinate = vec2(max(dot(current_features.normal, -current_features.view_direction), 0.0f), current_features.roughness);
 	vec2 specular_bias = texture(sampler2D(GLOBAL_TEXTURES[SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), specular_bias_texture_coordinate).xy;	
 
 	//Calculate the indirect lighting.
