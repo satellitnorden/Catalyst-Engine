@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-template <typename Type>
+template <typename TYPE>
 class Collection
 {
 	
@@ -16,7 +16,7 @@ public:
 	Collection() NOEXCEPT
 	{
 		//Add this instance to the container for all instances of this type.
-		_Instances.EmplaceSlow(static_cast<Type *RESTRICT>(this));
+		_Instances.EmplaceSlow(static_cast<TYPE *const RESTRICT>(this));
 	}
 
 	/*
@@ -25,13 +25,13 @@ public:
 	virtual ~Collection() NOEXCEPT
 	{
 		//Remove this instance from the container for all instances of this type.
-		_Instances.Erase(static_cast<Type *RESTRICT>(this));
+		_Instances.Erase(static_cast<TYPE *const RESTRICT>(this));
 	}
 
 	/*
 	*	Returns the first instance of this type.
 	*/
-	RESTRICTED static NO_DISCARD Type *const RESTRICT First() NOEXCEPT
+	RESTRICTED static NO_DISCARD TYPE *const RESTRICT First() NOEXCEPT
 	{
 		return _Instances.Begin();
 	}
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Returns the last instance of this type.
 	*/
-	RESTRICTED static NO_DISCARD Type *const RESTRICT Last() NOEXCEPT
+	RESTRICTED static NO_DISCARD TYPE *const RESTRICT Last() NOEXCEPT
 	{
 		return _Instances.End();
 	}
@@ -47,10 +47,10 @@ public:
 private:
 
 	//The container for all instances of this type.
-	static DynamicArray<Type *RESTRICT> _Instances;
+	static DynamicArray<TYPE *RESTRICT> _Instances;
 
 };
 
 //Static variable definitions.
-template <typename Type>
-DynamicArray<Type *RESTRICT> Collection<Type>::_Instances;
+template <typename TYPE>
+DynamicArray<TYPE *RESTRICT> Collection<TYPE>::_Instances;

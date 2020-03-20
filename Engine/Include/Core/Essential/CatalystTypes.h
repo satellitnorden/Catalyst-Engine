@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-*	Integer types.
+*	Builtin types.
 */
 using uint8 = unsigned char;
 using uint16 = unsigned short int;
@@ -15,14 +15,11 @@ using int64 = long long int;
 
 using byte = uint8;
 
-/*
-*	Float types.
-*/
 using float32 = float;
 using float64 = double;
 
 /*
-*	Ensure that all types are indeed of the correct size.
+*	Ensure that all builtin types are indeed of the correct size.
 */
 static_assert(sizeof(uint8) == 1, "Size of uint8 is not 1 bytes, how could this be?");
 static_assert(sizeof(uint16) == 2, "Size of uint16 is not 2 bytes, how could this be?");
@@ -38,3 +35,10 @@ static_assert(sizeof(byte) == 1, "Size of byte is not 1 bytes, how could this be
 
 static_assert(sizeof(float32) == 4, "Size of float32 is not 4 bytes, how could this be?");
 static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could this be?");
+
+/*
+*	Special types.
+*/
+#include <Core/General/Float16.h>
+
+using float16 = Float16;

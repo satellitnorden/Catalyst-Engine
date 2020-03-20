@@ -1479,6 +1479,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Float16.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
