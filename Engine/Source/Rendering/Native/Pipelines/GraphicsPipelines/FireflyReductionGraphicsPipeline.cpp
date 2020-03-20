@@ -108,7 +108,7 @@ void FireflyReductionGraphicsPipeline::CreateRenderDataTables(const RenderTarget
 		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &renderDataTable);
 
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &renderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneFeatures2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &renderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 }
 

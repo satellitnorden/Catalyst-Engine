@@ -95,7 +95,7 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R32_Float), &_Properties._HeightMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R_FLOAT32), &_Properties._HeightMapTexture);
 		_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
 	}
 
@@ -110,7 +110,7 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::R8G8B8A8_Byte), &_Properties._IndexMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::RGBA_UINT8), &_Properties._IndexMapTexture);
 		_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
 	}
 
@@ -125,7 +125,7 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::R8G8B8A8_Byte), &_Properties._BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::RGBA_UINT8), &_Properties._BlendMapTexture);
 		_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
 	}
 }
@@ -139,7 +139,7 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	_Properties._HeightMap = height_map;
 
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R32_Float), &_Properties._HeightMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R_FLOAT32), &_Properties._HeightMapTexture);
 
 	//Add the texture to the global render data.
 	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
@@ -169,7 +169,7 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 	_Properties._IndexMap = index_map;
 
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::R8G8B8A8_Byte), &_Properties._IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::RGBA_UINT8), &_Properties._IndexMapTexture);
 
 	//Add the texture to the global render data.
 	_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
@@ -199,7 +199,7 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 	_Properties._BlendMap = blend_map;
 
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::R8G8B8A8_Byte), &_Properties._BlendMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::RGBA_UINT8), &_Properties._BlendMapTexture);
 
 	//Add the texture to the global render data.
 	_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);

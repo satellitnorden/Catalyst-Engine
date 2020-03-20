@@ -42,12 +42,12 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_DepthOfFieldBlurGraphicsPipelines[0].Initialize(	DepthOfFieldBlurGraphicsPipeline::Direction::Horizontal,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1));
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 
 	_DepthOfFieldBlurGraphicsPipelines[1].Initialize(	DepthOfFieldBlurGraphicsPipeline::Direction::Vertical,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_1),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_R32G32B32A32_Float_2));
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
+														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
 
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
 

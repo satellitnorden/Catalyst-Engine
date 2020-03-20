@@ -348,7 +348,7 @@ private:
 	GlobalRenderData _GlobalRenderData;
 
 	//Container for all render targets.
-	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
+	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NUMBER_OF_RENDER_TARGETS)> _RenderTargets;
 
 	//Container for all samplers.
 	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;

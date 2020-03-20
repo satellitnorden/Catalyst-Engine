@@ -58,15 +58,15 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize();
 	_IndirectLightingRayTracingPipeline.Initialize();
 	_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2));
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
 	_IndirectLightingSpatialDenoisingGraphicsPipelines[1].Initialize(	2,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_2),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::Intermediate_Half_R32G32B32A32_Float_1));
-	_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer2),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1));
-	_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer1),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalIndirectLightingBuffer2));
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_1));
+	_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_2));
 
 	_IndirectLightingApplicationGraphicsPipeline.Initialize();
 

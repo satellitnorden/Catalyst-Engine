@@ -52,8 +52,8 @@ void main()
 	//Sample the noise vector.
 	vec4 noise_vector = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
-	//Calculate the volumetric lighting for all lights.
-	for (int i = 0; i < numberOfLights; ++i)
+	//Calculate the volumetric lighting for all volumetric lights.
+	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);
@@ -79,26 +79,7 @@ void main()
 
 			case LIGHT_TYPE_POINT:
 			{
-				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-				for (int j = 0; j < 4; ++j)
-				{
-					//Calculate the volumetric particle hit distance.
-					float volumetricParticleHitDistance = hitDistance * randomVector[j];
-
-					//Calculate the hit position.
-					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
-
-					float lengthToLight = length(light.position_or_direction - hitPosition);
-					vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;
-
-					//Calculate the attenuation.
-					float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 1.5f);
-
-					//Add the direct lighting.
-					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * attenuation * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
-				}
+				//TODO
 
 				break;
 			}

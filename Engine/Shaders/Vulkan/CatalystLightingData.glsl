@@ -16,7 +16,7 @@ struct Light
 //Light uniform data.
 layout (std140, set = 2, binding = 0) uniform LightUniformData
 {
-  layout (offset = 0) int numberOfLights;
+  layout (offset = 0) int NUMBER_OF_LIGHTS;
   layout (offset = 16) vec4[MAXIMUM_NUMBER_OF_LIGHTS * 2] lightData;
 };
 

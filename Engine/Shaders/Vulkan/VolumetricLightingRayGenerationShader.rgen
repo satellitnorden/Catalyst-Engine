@@ -60,8 +60,8 @@ void main()
 	samples_offsets[2] = noise_vector_1[2];
 	samples_offsets[3] = noise_vector_1[3];
 
-	//Calculate the volumetric lighting for all lights.
-	for (int i = 0; i < numberOfLights; ++i)
+	//Calculate the volumetric lighting for all volumetric lights.
+	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);
@@ -148,50 +148,12 @@ void main()
 				break;
 			}
 
-			/*
 			case LIGHT_TYPE_POINT:
 			{
-				//Sample the random vector.
-				vec4 randomVector = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
-
-				for (int j = 0; j < 4; ++j)
-				{
-					//Calculate the volumetric particle hit distance.
-					float volumetricParticleHitDistance = hitDistance * randomVector[j];
-
-					//Calculate the hit position.
-					vec3 hitPosition = PERCEIVER_WORLD_POSITION + rayDirection * volumetricParticleHitDistance;
-
-					float lengthToLight = length(light.position_or_direction - hitPosition);
-					vec3 lightDirection = vec3(light.position_or_direction - hitPosition) / lengthToLight;
-
-					//Calculate the attenuation.
-					float attenuation = pow(1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight)), 2.0f);
-
-					//Determine the visibility.
-					visibility = 0.0f;
-
-					traceNV(
-							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							hitPosition, 																				//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							lightDirection,																				//direction
-							lengthToLight,																				//Tmax
-							1 																							//payload
-							);
-
-					//Add the direct lighting.
-					volumetricLighting += CATALYST_RAY_TRACING_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * attenuation * visibility * 0.25f;
-				}
+				//TODO
 
 				break;
 			}
-			*/
 		}
 	}
 

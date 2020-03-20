@@ -70,7 +70,7 @@ void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const REST
 
 		//Create the texture.
 		Texture2DHandle texture;
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_TextureData[i]), TextureFormat::R8_Byte), &texture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_TextureData[i]), TextureFormat::R_UINT8), &texture);
 
 		//Add the texture to the global render data.
 		font->_CharacterDescriptions[i]._TextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
@@ -144,7 +144,7 @@ void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, Te
 void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT texture) NOEXCEPT
 {
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::R8G8B8A8_Byte), &texture->_Texture2DHandle);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8), &texture->_Texture2DHandle);
 
 	//Add the texture to the global render data.
 	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2DHandle);
@@ -177,5 +177,5 @@ void ResourceCreator::CreateTexture3D(Texture3DData* const RESTRICT data, Textur
 	Texture3D<Vector4<byte>> temporary_texture{ data->_Width, data->_Height, data->_Depth, data->_Data[0].Data() };
 
 	//Create the texture!
-	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::R8G8B8A8_Byte), texture);
+	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8), texture);
 }

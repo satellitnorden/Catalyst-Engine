@@ -9,14 +9,10 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Descriptor set data.
-layout (set = 3, binding = 0, rgba8) uniform image2D scene_features_1_image;
-layout (set = 3, binding = 1, rgba32f) uniform image2D scene_features_2_image;
-layout (set = 3, binding = 2, rgba8) uniform image2D scene_features_3_image;
-layout (set = 3, binding = 3, rgba32f) uniform image2D scene_image;
+layout (set = 3, binding = 0, rgba32f) uniform image2D scene_features_2_image;
+layout (set = 3, binding = 1, rgba8) uniform image2D shadows_image;
 
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
@@ -26,35 +22,23 @@ void main()
 	//Calculate the screen coordinate.
 	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
-	//Retrieve the scene features.
-	vec4 sceneFeatures1 = imageLoad(scene_features_1_image, ivec2(gl_LaunchIDNV.xy));
-	vec4 sceneFeatures2 = imageLoad(scene_features_2_image, ivec2(gl_LaunchIDNV.xy));
-	vec4 sceneFeatures3 = imageLoad(scene_features_3_image, ivec2(gl_LaunchIDNV.xy));
+	//Sample the scene features.
+	vec4 scene_features_2 = imageLoad(scene_features_2_image, ivec2(gl_LaunchIDNV.xy));
+	float depth = scene_features_2.w;
 
-	//Retrieve all properties.
-	Material material = GLOBAL_MATERIALS[int(sceneFeatures1.w * 255.0f)];
-	vec3 albedo = sceneFeatures1.rgb;
-	float depth = sceneFeatures2.w;
-	vec3 shadingNormal = sceneFeatures2.xyz;
-	float roughness = sceneFeatures3.x;
-	float metallic = sceneFeatures3.y;
-	float ambientOcclusion = sceneFeatures3.z;
-
-	//Calculate the hit position.
+	//Calculate the world position at this fragment.
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
 
-	//Generate the view direction.
-	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
+	//Calculate the noise texture coordinate.
+	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
 	//Sample the noise texture.
-	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-	vec4 random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
 
-	//Calculate the direct lighting.
-	vec3 direct_lighting = vec3(0.0f);
+	//Calculate the shadows all shadow casting lights.
+	vec4 shadows = vec4(1.0f);
 
-	//Calculate all lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (uint i = 0; i < NUMBER_OF_LIGHTS; ++i)
 	{
 		Light light = UnpackLight(i);
 
@@ -62,8 +46,8 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				//Alter the direction a bit to simulare soft shadows.
-				vec3 light_direction = normalize(light.position_or_direction + vec3(random_noise.xyz * 2.0f - 1.0f) * 0.01f);
+				//Alter the direction a bit to simulate soft shadows.
+				vec3 light_direction = normalize(light.position_or_direction + vec3(noise_texture_sample.xyz * 2.0f - 1.0f) * 0.01f);
 
 				//Trace the visibility.
 				bool hit_anything = false;
@@ -131,47 +115,21 @@ void main()
 					hit_anything = visibility < 1.0f;
 				}
 
-				if (!hit_anything)
-				{
-					direct_lighting += CalculateLighting(	-view_direction,
-															albedo,
-															shadingNormal,
-															roughness,
-															metallic,
-															ambientOcclusion,
-															material.thickness,
-															light_direction,
-															light.luminance);
-				}
+				//Write the shadows.
+				shadows[i] = float(!hit_anything);
 
 				break;
 			}
 
 			case LIGHT_TYPE_POINT:
 			{
-				/*
-				float lengthToLight = length(light.position_or_direction - world_position);
-				vec3 lightDirection = vec3(light.position_or_direction - world_position) / lengthToLight;
-
-				//Calculate the attenuation.
-				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
-
-				directLighting += CalculateDirectLight(	-view_direction,
-														lightDirection,
-														albedo,
-														shadingNormal,
-														roughness,
-														metallic,
-														ambientOcclusion,
-														material.thickness,
-														light.luminance) * attenuation;
-				*/
+				//TODO
 
 				break;
 			}
 		}
 	}
 
-	//Write to the image.
-	imageStore(scene_image, ivec2(gl_LaunchIDNV.xy), vec4(imageLoad(scene_image, ivec2(gl_LaunchIDNV.xy)).rgb + direct_lighting, 1.0f));
+    //Write to the image.
+	imageStore(shadows_image, ivec2(gl_LaunchIDNV.xy), shadows);
 }

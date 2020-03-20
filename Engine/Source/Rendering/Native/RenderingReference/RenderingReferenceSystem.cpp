@@ -374,7 +374,7 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 			RenderingSystem::Instance->DestroyTexture2D(&_RenderingReferenceData->_RenderingReferenceTextureHandle);
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceData->_RenderingReferenceTexture), TextureFormat::R32G32B32A32_Float), &_RenderingReferenceData->_RenderingReferenceTextureHandle);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_RenderingReferenceData->_RenderingReferenceTexture), TextureFormat::RGBA_FLOAT32), &_RenderingReferenceData->_RenderingReferenceTextureHandle);
 		_RenderingReferenceData->_RenderingReferenceTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_RenderingReferenceData->_RenderingReferenceTextureHandle);
 
 		//Set the properties for the rendering reference.

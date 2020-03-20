@@ -36,11 +36,11 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 	//Initialize and add the pipelines.
 	SetNumberOfPipelines(_TemporalAntiAliasingGraphicsPipelines.Size());
 
-	_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer1));
+	_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1));
 
-	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TemporalAntiAliasingBuffer2));
+	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1),
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2));
 
 	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
 	{

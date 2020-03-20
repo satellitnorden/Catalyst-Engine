@@ -51,7 +51,7 @@ void main()
 	vec3 directLighting = vec3(0.0f);
 
 	//Calculate all lights.
-	for (int i = 0; i < numberOfLights; ++i)
+	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
 	{
 		Light light = UnpackLight(i);
 

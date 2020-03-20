@@ -181,47 +181,47 @@ enum class RenderTarget : uint8
 	/*
 	*	Contains the albedo in the RGB channels and the material index in the A channel.
 	*/
-	SceneFeatures1,
+	SCENE_FEATURES_1,
 
 	/*
 	*	Contains the shading normal in the RGB channels and the depth in the A channel.
 	*/
-	SceneFeatures2,
+	SCENE_FEATURES_2,
 
 	/*
 	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
 	*/
-	SceneFeatures3,
+	SCENE_FEATURES_3,
 
 	/*
 	*	Contains the velocity in the RG channels.
 	*/
-	SceneFeatures4,
+	SCENE_FEATURES_4,
 
 	/*
-	*	Contains the scene features 2 data in half resolution.
+	*	Contains the shading normal in the RGB channels and the depth in the A channel at half resolution.
 	*/
-	SceneFeatures2_Half,
+	SCENE_FEATURES_2_HALF,
 
 	/*
-	*	Contains the scene features 3 data in half resolution.
+	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel at half resolution.
 	*/
-	SceneFeatures3_Half,
+	SCENE_FEATURES_3_HALF,
 
 	/*
-	*	Contains the scene features 4 data in half resolution.
+	*	Contains the velocity in the RG channels at half resolution.
 	*/
-	SceneFeatures4_Half,
+	SCENE_FEATURES_4_HALF,
 
 	/*
 	*	Contains the ambient occlusion.
 	*/
-	AmbientOcclusion,
+	AMBIENT_OCCLUSION,
 
 	/*
 	*	Contains the final color for the scene.
 	*/
-	Scene,
+	SCENE,
 
 	/*
 	*	Contains the first temporal ambient occlusion buffer.
@@ -236,69 +236,69 @@ enum class RenderTarget : uint8
 	/*
 	*	Contains the first temporal indirect lighting buffer.
 	*/
-	TemporalIndirectLightingBuffer1,
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_1,
 
 	/*
 	*	Contains the second temporal indirect lighting buffer.
 	*/
-	TemporalIndirectLightingBuffer2,
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_2,
 
 	/*
 	*	Contains the first temporal anti aliasing buffer.
 	*/
-	TemporalAntiAliasingBuffer1,
+	TEMPORAL_ANTI_ALIASING_BUFFER_1,
 
 	/*
 	*	Contains the second temporal anti aliasing buffer.
 	*/
-	TemporalAntiAliasingBuffer2,
+	TEMPORAL_ANTI_ALIASING_BUFFER_2,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target.
 	*/
-	Intermediate_R8G8B8A8_Byte,
+	INTERMEDIATE_RGBA_UINT8,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target.
 	*/
-	Intermediate_R32G32B32A32_Float_1,
+	INTERMEDIATE_RGBA_FLOAT32_1,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target.
 	*/
-	Intermediate_R32G32B32A32_Float_2,
+	INTERMEDIATE_RGBA_FLOAT32_2,
 
 	/*
-	*	Intermediate render target, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target at half resolution.
 	*/
-	Intermediate_R8_Byte_Half,
+	INTERMEDIATE_R_UINT8_HALF,
 
 	/*
-	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target at half resolution.
 	*/
-	Intermediate_Half_R32G32B32A32_Float_1,
+	INTERMEDIATE_RGBA_FLOAT32_HALF_1,
 
 	/*
-	*	Intermediate render target at half resolution, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target at half resolution.
 	*/
-	Intermediate_Half_R32G32B32A32_Float_2,
+	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
 
 	/*
-	*	Intermediate render target at quarter resolution, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target at quarter resolution.
 	*/
-	Intermediate_Quarter_R32G32B32A32_Float,
+	INTERMEDIATE_RGBA_FLOAT32_QUARTER,
 
 	/*
-	*	Intermediate render target at eighth resolution, useful when pipelines needs to do ping-pong rendering.
+	*	Intermediate render target at eighth resolution.
 	*/
-	Intermediate_Eighth_R32G32B32A32_Float,
+	INTERMEDIATE_RGBA_FLOAT32_EIGHTH,
 
 	/*
-	*	For rendering directly to the screen.
+	*	Special render target for rendering directly to the screen.
 	*/
-	Screen,
+	SCREEN,
 
-	NumberOfRenderTargets
+	NUMBER_OF_RENDER_TARGETS
 };
 
 //Enumeration covering all samplers.
@@ -480,26 +480,11 @@ enum class TextureFilter : uint8
 //Enumeration covering all texture formats.
 enum class TextureFormat : uint8
 {
-	R8_Byte,
-	R8G8B8A8_Byte,
-	R32_Float,
-	R32G32_Float,
-	R32G32B32A32_Float
-};
-
-/*
-*	Gaussian blur data.
-*/
-class GaussianBlurData final
-{
-
-public:
-
-	//The direction.
-	Vector2<float> _Direction;
-
-	//The inverse resolution.
-	Vector2<float> _InverseResolution;
+	R_UINT8,
+	RGBA_UINT8,
+	R_FLOAT32,
+	RG_FLOAT32,
+	RGBA_FLOAT32
 };
 
 /*
@@ -583,42 +568,6 @@ public:
 
 	}
 
-};
-
-/*
-*	Render data table update information.
-*/
-class RenderDataTableUpdateInformation final
-{
-
-public:
-
-	//Enumeration covering all types.
-	enum class Type : uint8
-	{
-		Texture2D
-	};
-
-	//The binding.
-	uint32 _Binding;
-
-	//The type.
-	Type _Type;
-
-	//The handle.
-	OpaqueHandle _Handle;
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	RenderDataTableUpdateInformation(const uint32 initialBinding, const Type initialType, OpaqueHandle initialHandle) NOEXCEPT
-		:
-		_Binding(initialBinding),
-		_Type(initialType),
-		_Handle(initialHandle)
-	{
-
-	}
 };
 
 /*
