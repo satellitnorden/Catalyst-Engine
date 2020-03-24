@@ -20,5 +20,17 @@ public:
 	//The shader binding table buffer.
 	VulkanBuffer *RESTRICT _ShaderBindingTableBuffer;
 
+	//The hit shader binding offset.
+	uint32 _HitShaderBindingOffset;
+
+	//The hit shader binding stride.
+	uint32 _HitShaderBindingStride;
+
+	//The miss shader binding offset.
+	uint32 _MissShaderBindingOffset;
+
+	//The miss shader binding stride.
+	uint32 _MissShaderBindingStride;
+
 };
 #endif

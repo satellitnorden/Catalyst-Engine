@@ -227,14 +227,15 @@ void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, Shade
 */
 void CommandBuffer::TraceRays(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height) NOEXCEPT
 {
-	const VulkanRayTracingPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
+	const VulkanRayTracingPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
 
-	const uint32 stride{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
-
-	const uint32 missShaderBindingOffset{ static_cast<const RayTracingPipeline *const RESTRICT>(pipeline)->GetClosestHitShader() != Shader::None ? stride * 2 : stride };
-	const uint32 hitShaderBindingOffset{ stride };
-
-	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays(pipelineData->_ShaderBindingTableBuffer->Get(), missShaderBindingOffset, hitShaderBindingOffset, width, height);
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandTraceRays(pipeline_data->_ShaderBindingTableBuffer->Get(),
+																								pipeline_data->_MissShaderBindingOffset,
+																								pipeline_data->_MissShaderBindingStride,
+																								pipeline_data->_HitShaderBindingOffset,
+																								pipeline_data->_HitShaderBindingStride,
+																								width,
+																								height);
 }
 
 /*

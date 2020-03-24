@@ -546,6 +546,12 @@ namespace VulkanRenderingSystemLogic
 		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1);
 
 		Memory::Free(shaderHandleStorage);
+
+		//Calculate the offsets/strides.
+		data->_HitShaderBindingOffset = shaderGroupHandleSize;
+		data->_HitShaderBindingStride = shaderGroupHandleSize;
+		data->_MissShaderBindingOffset = pipeline->GetClosestHitShader() != Shader::None ? shaderGroupHandleSize * 2 : shaderGroupHandleSize;
+		data->_MissShaderBindingStride = shaderGroupHandleSize;
 	}
 
 	/*
