@@ -48,6 +48,11 @@ public:
 	void BindIndexBuffer(const Pipeline *const RESTRICT pipeline, BufferHandle buffer, const uint64 offset) NOEXCEPT;
 
 	/*
+	*	Binds a pipeline.
+	*/
+	void BindPipeline(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
+
+	/*
 	*	Binds a render data table.
 	*/
 	void BindRenderDataTable(const Pipeline *const RESTRICT pipeline, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT;

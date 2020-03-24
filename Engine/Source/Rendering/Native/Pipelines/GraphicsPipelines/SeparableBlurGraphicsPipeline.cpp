@@ -97,14 +97,17 @@ void SeparableBlurGraphicsPipeline::Initialize(const Direction direction, const 
 void SeparableBlurGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
 	PushConstantData data;
@@ -122,13 +125,13 @@ void SeparableBlurGraphicsPipeline::Execute() NOEXCEPT
 	data._Size = _Size;
 	data._Stride = _Stride;
 
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
-	commandBuffer->Draw(this, 3, 1);
+	command_buffer->Draw(this, 3, 1);
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

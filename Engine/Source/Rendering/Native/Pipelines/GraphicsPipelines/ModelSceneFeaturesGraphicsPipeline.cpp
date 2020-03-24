@@ -124,13 +124,16 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	constexpr uint64 OFFSET{ 0 };
 
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Draw static models
 	{
@@ -152,19 +155,20 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				vertexData._PreviousModelMatrix = component->_WorldTransform;
 				vertexData._CurrentModelMatrix = component->_WorldTransform;
 
-				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
 				FragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-				commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
 
-				commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+				//Draw!
+				command_buffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
 			}
 		}
 	}
@@ -189,25 +193,26 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
 				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
-				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
 				FragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				commandBuffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-				commandBuffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
 
-				commandBuffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+				//Draw!
+				command_buffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
 			}
 		}
 	}
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

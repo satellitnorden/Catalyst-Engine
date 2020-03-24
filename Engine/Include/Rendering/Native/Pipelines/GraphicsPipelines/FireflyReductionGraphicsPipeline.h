@@ -42,9 +42,6 @@ private:
 	//The direction.
 	Direction _Direction;
 
-	//The current buffer index.
-	uint8 _CurrentBufferIndex{ 0 };
-
 	/*
 	*	Creates the render data table layout.
 	*/

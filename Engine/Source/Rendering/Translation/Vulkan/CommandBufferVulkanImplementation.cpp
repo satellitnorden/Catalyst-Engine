@@ -22,38 +22,23 @@ void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 {
 	if (pipeline->GetType() == Pipeline::Type::Compute)
 	{
-		//Cache the Vulkan ray tracing pipeline data.
-		const VulkanComputePipelineData *const RESTRICT pipelineData{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
-
 		//Begin the command buffer.
 		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-
-		//Bind the pipeline.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pipelineData->_Pipeline->GetPipeline());
 	}
 
 	else if (pipeline->GetType() == Pipeline::Type::Graphics)
 	{
 		//Cache the Vulkan graphics pipeline data.
-		const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
+		const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
 		//Begin the command buffer.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelineData->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetRenderTargets().Empty() ? pipelineData->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? pipelineData->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipelineData->_FrameBuffers[0]->Get());
-
-		//Bind the pipeline.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineData->_Pipeline->Get());
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
 	}
 	
 	else if (pipeline->GetType() == Pipeline::Type::RayTracing)
 	{
-		//Cache the Vulkan ray tracing pipeline data.
-		const VulkanRayTracingPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
-
 		//Begin the command buffer.
 		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-
-		//Bind the pipeline.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, pipelineData->_Pipeline->GetPipeline());
 	}
 }
 
@@ -64,6 +49,39 @@ void CommandBuffer::BindIndexBuffer(const Pipeline *const RESTRICT pipeline, Buf
 {
 	//Bind the index buffer.
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindIndexBuffer(static_cast<VulkanBuffer *const RESTRICT>(buffer)->Get(), offset);
+}
+
+/*
+*	Binds a pipeline.
+*/
+void CommandBuffer::BindPipeline(const Pipeline* const RESTRICT pipeline) NOEXCEPT
+{
+	if (pipeline->GetType() == Pipeline::Type::Compute)
+	{
+		//Cache the pipeline data.
+		const VulkanComputePipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Bind the pipeline.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pipeline_data->_Pipeline->GetPipeline());
+	}
+
+	else if (pipeline->GetType() == Pipeline::Type::Graphics)
+	{
+		//Cache the pipeline data.
+		const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
+
+		//Bind the pipeline.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_data->_Pipeline->Get());
+	}
+
+	else if (pipeline->GetType() == Pipeline::Type::RayTracing)
+	{
+		//Cache the pipeline data.
+		const VulkanRayTracingPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Bind the pipeline.
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBindPipeline(VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, pipeline_data->_Pipeline->GetPipeline());
+	}
 }
 
 /*

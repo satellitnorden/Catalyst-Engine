@@ -85,6 +85,9 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 	//Begin the command buffer.
 	command_buffer->Begin(this);
 
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
+
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 

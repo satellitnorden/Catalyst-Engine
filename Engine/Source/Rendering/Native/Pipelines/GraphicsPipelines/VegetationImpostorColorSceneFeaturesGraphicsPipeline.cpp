@@ -138,14 +138,17 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Wait for vegetation culling and level of detail to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
@@ -177,23 +180,23 @@ void VegetationImpostorColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		geometry_data._ImpostorHalfWidth = component->_ImpostorHalfWidth;
 		geometry_data._ImpostorHeight = component->_ImpostorHeight;
 
-		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
+		command_buffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
 
 		//Push constants.
 		VegetationImpostorFragmentPushConstantData fragment_data;
 
 		fragment_data._MaterialIndex = component->_ImpostorMaterialIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
+		command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
 
 		//Bind the transformations buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
 
-		commandBuffer->Draw(this, 1, component->_NumberOfTransformations);
+		command_buffer->Draw(this, 1, component->_NumberOfTransformations);
 	}
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

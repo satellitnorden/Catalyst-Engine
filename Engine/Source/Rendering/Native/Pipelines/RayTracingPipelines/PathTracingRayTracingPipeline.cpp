@@ -62,22 +62,25 @@ void PathTracingRayTracingPipeline::Execute() NOEXCEPT
 	}
 
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	commandBuffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
+	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include in render.
 	SetIncludeInRender(true);

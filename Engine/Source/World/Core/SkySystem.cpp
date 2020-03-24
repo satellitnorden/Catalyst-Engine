@@ -48,7 +48,7 @@ NO_DISCARD SkyGradient SkySystem::GetCurrentSkyGradient() const NOEXCEPT
 		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f), Vector3<float>(1.0f, 0.25f, 0.0625f)),
 
 		//21.00.
-		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f, Vector3<float>(1.0f, 0.5f, 0.25f) * 0.125f)
+		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f * 0.5f, Vector3<float>(0.25f, 0.5f, 0.75f) * 0.125f * 0.25f)
 	};
 
 	//Retrieve the current time of day.

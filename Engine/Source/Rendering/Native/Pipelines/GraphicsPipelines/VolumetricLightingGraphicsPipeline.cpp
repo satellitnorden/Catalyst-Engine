@@ -70,22 +70,25 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Draw!
-	commandBuffer->Draw(this, 3, 1);
+	command_buffer->Draw(this, 3, 1);
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

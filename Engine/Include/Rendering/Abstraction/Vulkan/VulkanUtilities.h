@@ -23,14 +23,14 @@ public:
 	static void BuildAccelerationStructure(const VkAccelerationStructureTypeNV type, const uint32 instanceCount, const ArrayProxy<VkGeometryNV> &geometry, const VkBuffer instanceData, const VkAccelerationStructureNV accelerationStructure, const VkBuffer scratchBuffer) NOEXCEPT
 	{
 		//Create the command pool.
-		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+		static thread_local VulkanCommandPool *const RESTRICT command_pool{ VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create a command buffer.
-		VulkanCommandBuffer commandBuffer;
-		commandPool->AllocatePrimaryCommandBuffer(commandBuffer);
+		VulkanCommandBuffer command_buffer;
+		command_pool->AllocatePrimaryCommandBuffer(command_buffer);
 
 		//Begin the command buffer.
-		commandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		command_buffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Issue the build command!
 		VkAccelerationStructureInfoNV accelerationStructureInfo;
@@ -43,7 +43,7 @@ public:
 		accelerationStructureInfo.geometryCount = static_cast<uint32>(geometry.Size());
 		accelerationStructureInfo.pGeometries = geometry.Data();
 
-		vkCmdBuildAccelerationStructureNV(	commandBuffer.Get(),
+		vkCmdBuildAccelerationStructureNV(	command_buffer.Get(),
 											&accelerationStructureInfo,
 											instanceData,
 											0,
@@ -54,12 +54,12 @@ public:
 											0);
 
 		//End the command buffer.
-		commandBuffer.End();
+		command_buffer.End();
 
 		//Submit the command buffer to the transfer queue.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetComputeQueue()->Submit(commandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetComputeQueue()->Submit(command_buffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the command to finish.
 		fence.WaitFor();
@@ -68,7 +68,7 @@ public:
 		fence.Release();
 
 		//Free the copy command buffer.
-		commandPool->FreeCommandBuffer(commandBuffer);
+		command_pool->FreeCommandBuffer(command_buffer);
 	}
 
 	/*
@@ -307,40 +307,22 @@ public:
 	/*
 	*	Creates an acceleration structure scratch buffer.
 	*/
-	static void CreateAccelerationStructureScratchBuffer(const VkAccelerationStructureNV accelerationStructure, const bool update, VkBuffer *const RESTRICT vulkanBuffer, VkDeviceMemory *const RESTRICT vulkanDeviceMemory) NOEXCEPT
+	static void CreateAccelerationStructureScratchBuffer(const VkAccelerationStructureNV accelerationStructure, VkBuffer *const RESTRICT vulkanBuffer, VkDeviceMemory *const RESTRICT vulkanDeviceMemory) NOEXCEPT
 	{
 		//Query the memory requirements.
 		VkDeviceSize memorySizeRequirement{ 0 };
 
-		if (update)
-		{
-			VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
+		VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
 
-			accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
-			accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
-			accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
-			accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV;
+		accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
+		accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
+		accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
+		accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;
 
-			VkMemoryRequirements2 memoryRequirements2;
-			vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements2);
+		VkMemoryRequirements2 memoryRequirements2;
+		vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements2);
 
-			memorySizeRequirement = memoryRequirements2.memoryRequirements.size;
-		}
-
-		else
-		{
-			VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfo;
-
-			accelerationStructureMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
-			accelerationStructureMemoryRequirementsInfo.pNext = nullptr;
-			accelerationStructureMemoryRequirementsInfo.accelerationStructure = accelerationStructure;
-			accelerationStructureMemoryRequirementsInfo.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;
-
-			VkMemoryRequirements2 memoryRequirements2;
-			vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &accelerationStructureMemoryRequirementsInfo, &memoryRequirements2);
-
-			memorySizeRequirement = memoryRequirements2.memoryRequirements.size;
-		}
+		memorySizeRequirement = memoryRequirements2.memoryRequirements.size;
 
 		//Create the buffer create info.
 		VkBufferCreateInfo bufferCreateInfo;

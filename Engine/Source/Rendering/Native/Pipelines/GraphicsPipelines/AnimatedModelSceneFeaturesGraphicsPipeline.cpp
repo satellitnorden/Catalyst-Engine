@@ -152,13 +152,16 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Draw all animated models
 	const AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
@@ -166,8 +169,8 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
 	{
 		//Bind the vertex/inder buffer.
-		commandBuffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-		commandBuffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
+		command_buffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
 
 		//Push constants.
 		VertexPushConstantData vertexData;
@@ -175,7 +178,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
 		vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+		command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
 		FragmentPushConstantData fragmentData;
 
@@ -185,16 +188,16 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
 		fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
 
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		//Bind the aimation data render data table.
-		commandBuffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
+		command_buffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 
-		commandBuffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
+		command_buffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
 	}
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

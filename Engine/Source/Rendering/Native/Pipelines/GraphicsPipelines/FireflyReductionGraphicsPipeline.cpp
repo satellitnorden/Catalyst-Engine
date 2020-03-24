@@ -118,17 +118,20 @@ void FireflyReductionGraphicsPipeline::CreateRenderDataTables(const RenderTarget
 void FireflyReductionGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Update the current render data table.
 	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, currentRenderDataTable);
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, currentRenderDataTable);
 
 	//Push constants.
 	PushConstantData data;
@@ -143,17 +146,14 @@ void FireflyReductionGraphicsPipeline::Execute() NOEXCEPT
 		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
 	}
 
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
-	commandBuffer->Draw(this, 3, 1);
+	command_buffer->Draw(this, 3, 1);
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
-
-	//Update the current buffer index.
-	_CurrentBufferIndex = _CurrentBufferIndex == 0 ? 1 : 0;
 }

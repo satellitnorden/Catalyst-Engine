@@ -114,13 +114,16 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(this);
+	command_buffer->Begin(this);
+
+	//Bind the pipeline.
+	command_buffer->BindPipeline(this);
 
 	//Bind the render data table.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Render all user interface elements.
 	for (const UserInterfaceElement *const RESTRICT element : *UserInterfaceSystem::Instance->GetUserInterfaceElements())
@@ -143,17 +146,17 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				vertexData._Minimum = typeElement->_Minimum;
 				vertexData._Maximum = typeElement->_Maximum;
 
-				commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
 				UserInterfaceFragmentPushConstantData fragmentData;
 
 				fragmentData._Type = static_cast<int32>(UserInterfaceElementType::IMAGE);
 				fragmentData._TextureIndex = typeElement->_TextureIndex;
 
-				commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
 
 				//Draw!
-				commandBuffer->Draw(this, 4, 1);
+				command_buffer->Draw(this, 4, 1);
 
 				break;
 			}
@@ -183,17 +186,17 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * typeElement->_Scale;
 						vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * typeElement->_Scale;
 
-						commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
+						command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
 
 						UserInterfaceFragmentPushConstantData fragmentData;
 
 						fragmentData._Type = static_cast<int32>(UserInterfaceElementType::TEXT);
 						fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
 
-						commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
+						command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
 
 						//Draw!
-						commandBuffer->Draw(this, 4, 1);
+						command_buffer->Draw(this, 4, 1);
 					}
 
 					//Should the text wrap around?
@@ -250,7 +253,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//End the command buffer.
-	commandBuffer->End(this);
+	command_buffer->End(this);
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);

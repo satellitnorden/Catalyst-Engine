@@ -44,6 +44,7 @@
 #define GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS                                            (6)
 
 #define FLOAT_MAXIMUM (3.402823466e+38F)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
@@ -218,25 +219,33 @@ vec3 CalculateWorldPosition(vec2 texture_coordinate, float depth)
 }
 
 /*
-*   Hash function taking a lone uint.
+*   Hash function taking a uint.
 */
-uint Hash1(uint x)
+uint Hash1(uint seed)
 {
-    x += (x << 10u);
-    x ^= (x >>  6u);
-    x += (x <<  3u);
-    x ^= (x >> 11u);
-    x += (x << 15u);
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
 
-    return x;
+    return seed;
 }
 
 /*
-*   Hash function taking a vector of uint's.
+*   Hash function taking a uvec2.
 */
-uint Hash3(uvec3 x)
+uint Hash2(uvec2 seed)
 {
-    return Hash1(x.x ^ Hash1(x.y) ^ Hash1(x.z));
+    return Hash1(seed.x) ^ Hash1(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
 }
 
 /*
@@ -275,27 +284,11 @@ float LinearizeDepth(float depth)
 /*
 *   Given a coordinate and a seed, returns a random number.
 */
-#define RANDOM_FLOAT_IMPLEMENTATION 0
-
 float RandomFloat(vec2 coordinate, float seed)
 {
-
-#if RANDOM_FLOAT_IMPLEMENTATION == 0
-
-    return fract(sin(dot(vec2(coordinate.x * (EULERS_NUMBER + seed + 1.0f), coordinate.y * (PHI + seed + 1.0f)), vec2(12.9898f, 78.233f))) * 43758.5453f);
-
-#elif RANDOM_FLOAT_IMPLEMENTATION == 1
-
-    uint h = Hash3(uvec3(floatBitsToUint(coordinate.x), floatBitsToUint(coordinate.y), floatBitsToUint(seed)));
-
-    h &= 0x007FFFFFu;
-    h |= 0x3F800000u;
+	uint hash = Hash3(uvec3(floatBitsToUint(coordinate.x), floatBitsToUint(coordinate.y), floatBitsToUint(coordinate.x + coordinate.y + seed)));
     
-    float r2 = uintBitsToFloat(h);
-
-    return r2 - 1.0f;
-    
-#endif
+    return float(hash) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*
