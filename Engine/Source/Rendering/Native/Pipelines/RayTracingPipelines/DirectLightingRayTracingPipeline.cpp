@@ -34,9 +34,6 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::DirectLightingRayGeneration);
 
-	//Set the closest hit shader.
-	SetClosestHitShader(Shader::None);
-
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
 	AddMissShader(Shader::VisibilityRayMiss);

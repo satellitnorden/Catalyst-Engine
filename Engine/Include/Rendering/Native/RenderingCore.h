@@ -28,8 +28,8 @@ namespace RenderingConstants
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 
 	constexpr uint32 TERRAIN_HIT_GROUP_INDEX{ 0 };
-	constexpr uint32 STATIC_MODELS_HIT_GROUP_INDEX{ 0 };
-	constexpr uint32 DYNAMIC_MODELS_HIT_GROUP_INDEX{ 0 };
+	constexpr uint32 STATIC_MODELS_HIT_GROUP_INDEX{ 1 };
+	constexpr uint32 DYNAMIC_MODELS_HIT_GROUP_INDEX{ 2 };
 }
 
 /*

@@ -505,16 +505,18 @@ namespace VulkanRenderingSystemLogic
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())]);
+		parameters._RayGenerationShaderModule = VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetRayGenerationShader())];
 
-		if (pipeline->GetClosestHitShader() != Shader::None)
+		for (const RayTracingPipeline::HitGroup hit_group : pipeline->GetHitGroups())
 		{
-			parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetClosestHitShader())]);
+			parameters._HitGroups.Emplace(	hit_group._ClosestHitShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._ClosestHitShader)] : nullptr,
+											hit_group._AnyHitShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._AnyHitShader)] : nullptr,
+											hit_group._IntersectionShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._IntersectionShader)] : nullptr);
 		}
-		
+
 		for (const Shader shader : pipeline->GetMissShaders())
 		{
-			parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(shader)]);
+			parameters._MissShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(shader)]);
 		}
 
 		//Create the pipeline sub stage data.
@@ -525,33 +527,46 @@ namespace VulkanRenderingSystemLogic
 		data->_Pipeline = VulkanInterface::Instance->CreateRayTracingPipeline(parameters);
 
 		//Create the shader binding table buffer.
-		const uint32 shaderGroupHandleSize{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
-		const uint64 shaderHandleStorageSize{ shaderGroupHandleSize * parameters._ShaderModules.Size() };
+		const uint32 shader_group_handle_size{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
 
-		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shaderHandleStorageSize, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		//Calculate the shader binding table size.
+		uint32 shader_binding_table_size{ shader_group_handle_size };
+
+		for (const RayTracingPipeline::HitGroup hit_group : pipeline->GetHitGroups())
+		{
+			shader_binding_table_size += shader_group_handle_size;
+		}
+
+		for (const Shader shader : pipeline->GetMissShaders())
+		{
+			shader_binding_table_size += shader_group_handle_size;
+		}
+
+		//Create the shader binding table buffer.
+		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shader_binding_table_size, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		//Upload the data to it.
-		uint8 *const RESTRICT shaderHandleStorage{ static_cast<uint8 *const RESTRICT>(Memory::Allocate(shaderHandleStorageSize)) };
+		uint8 *const RESTRICT shader_binding_table_storage{ static_cast<uint8 *const RESTRICT>(Memory::Allocate(shader_binding_table_size)) };
 
 		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
 																data->_Pipeline->GetPipeline(),
 																0,
-																static_cast<uint32>(parameters._ShaderModules.Size()),
-																shaderHandleStorageSize,
-																shaderHandleStorage));
+																shader_binding_table_size / shader_group_handle_size,
+																shader_binding_table_size,
+																shader_binding_table_storage));
 
-		void *const RESTRICT dataChunks[]{ shaderHandleStorage };
-		const uint64 dataSizes[]{ shaderHandleStorageSize };
+		void *const RESTRICT data_chunks[]{ shader_binding_table_storage };
+		const uint64 data_sizes[]{ shader_binding_table_size };
 
-		data->_ShaderBindingTableBuffer->UploadData(dataChunks, dataSizes, 1);
+		data->_ShaderBindingTableBuffer->UploadData(data_chunks, data_sizes, 1);
 
-		Memory::Free(shaderHandleStorage);
+		Memory::Free(shader_binding_table_storage);
 
 		//Calculate the offsets/strides.
-		data->_HitShaderBindingOffset = shaderGroupHandleSize;
-		data->_HitShaderBindingStride = shaderGroupHandleSize;
-		data->_MissShaderBindingOffset = pipeline->GetClosestHitShader() != Shader::None ? shaderGroupHandleSize * 2 : shaderGroupHandleSize;
-		data->_MissShaderBindingStride = shaderGroupHandleSize;
+		data->_HitShaderBindingOffset = shader_group_handle_size;
+		data->_HitShaderBindingStride = shader_group_handle_size;
+		data->_MissShaderBindingOffset = shader_group_handle_size + static_cast<uint32>(pipeline->GetHitGroups().Size()) * shader_group_handle_size;
+		data->_MissShaderBindingStride = shader_group_handle_size;
 	}
 
 	/*

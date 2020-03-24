@@ -34,9 +34,6 @@ void AmbientOcclusionRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::RayTracedAmbientOcclusionRayGeneration);
 
-	//Set the closest hit shader.
-	SetClosestHitShader(Shader::None);
-
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
 	AddMissShader(Shader::VisibilityRayMiss);

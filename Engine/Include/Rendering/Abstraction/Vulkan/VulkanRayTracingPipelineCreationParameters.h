@@ -13,6 +13,39 @@ class VulkanRayTracingPipelineCreationParameters final
 
 public:
 
+	/*
+	*	Vulkan hit group class definition.
+	*/
+	class VulkanHitGroup final
+	{
+
+	public:
+
+		//The closest hit shader.
+		const VulkanShaderModule *RESTRICT _ClosestHitShader;
+
+		//The any hit shader.
+		const VulkanShaderModule *RESTRICT _AnyHitShader;
+
+		//The intersection shader.
+		const VulkanShaderModule *RESTRICT _IntersectionShader;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE constexpr VulkanHitGroup(	const VulkanShaderModule *const RESTRICT initial_closest_hit_shader,
+												const VulkanShaderModule *const RESTRICT initial_any_hit_shader,
+												const VulkanShaderModule *const RESTRICT initial_intersection_shader) NOEXCEPT
+			:
+			_ClosestHitShader(initial_closest_hit_shader),
+			_AnyHitShader(initial_any_hit_shader),
+			_IntersectionShader(initial_intersection_shader)
+		{
+
+		}
+
+	};
+
 	//The descriptor set layout count.
 	uint32 _DescriptorSetLayoutCount;
 
@@ -25,8 +58,14 @@ public:
 	//The push constant ranges.
 	VkPushConstantRange *RESTRICT _PushConstantRanges;
 
-	//The shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> _ShaderModules;
+	//The ray generation shader module.
+	VulkanShaderModule *RESTRICT _RayGenerationShaderModule;
+
+	//The hit groups
+	DynamicArray<VulkanHitGroup> _HitGroups;
+
+	//The miss shader modules.
+	DynamicArray<VulkanShaderModule *RESTRICT> _MissShaderModules;
 
 };
 #endif

@@ -37,8 +37,17 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the ray generation shader.
 	SetRayGenerationShader(Shader::PathTracingRayGeneration);
 
-	//Set the closest hit shader.
-	SetClosestHitShader(Shader::PathTracingRayClosestHit);
+	//Set the number of hit groups.
+	SetNumberOfHitGroups(3);
+
+	//Add the terrain hit group.
+	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
+
+	//Add the static models hit group.
+	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
+
+	//Add the dynamic models hit group.
+	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(2);

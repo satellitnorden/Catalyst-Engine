@@ -48,12 +48,77 @@ void VulkanRayTracingPipeline::Release() NOEXCEPT
 /*
 *	Creates the stages.
 */
-void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreationParameters &parameters, DynamicArray<VkPipelineShaderStageCreateInfo> *const RESTRICT stages) const NOEXCEPT
+void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreationParameters& parameters, DynamicArray<VkPipelineShaderStageCreateInfo>* const RESTRICT stages) const NOEXCEPT
 {
 	//Reserve the appropriate size.
-	stages->Reserve(parameters._ShaderModules.Size());
+	stages->Reserve(1 + parameters._HitGroups.Size() + parameters._MissShaderModules.Size());
 
-	for (const VulkanShaderModule *const RESTRICT shaderModule : parameters._ShaderModules)
+	//Add the ray generation shader stage.
+	{
+		stages->Emplace();
+
+		VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo{ stages->Back() };
+
+		pipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		pipelineShaderStageCreateInfo.pNext = nullptr;
+		pipelineShaderStageCreateInfo.flags = 0;
+		pipelineShaderStageCreateInfo.stage = parameters._RayGenerationShaderModule->GetStage();
+		pipelineShaderStageCreateInfo.module = parameters._RayGenerationShaderModule->Get();
+		pipelineShaderStageCreateInfo.pName = "main";
+		pipelineShaderStageCreateInfo.pSpecializationInfo = nullptr;
+	}
+
+	//Add the hit group shader stages.
+	for (const VulkanRayTracingPipelineCreationParameters::VulkanHitGroup& hit_group : parameters._HitGroups)
+	{
+		if (hit_group._ClosestHitShader)
+		{
+			stages->Emplace();
+
+			VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo{ stages->Back() };
+
+			pipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			pipelineShaderStageCreateInfo.pNext = nullptr;
+			pipelineShaderStageCreateInfo.flags = 0;
+			pipelineShaderStageCreateInfo.stage = hit_group._ClosestHitShader->GetStage();
+			pipelineShaderStageCreateInfo.module = hit_group._ClosestHitShader->Get();
+			pipelineShaderStageCreateInfo.pName = "main";
+			pipelineShaderStageCreateInfo.pSpecializationInfo = nullptr;
+		}
+
+		if (hit_group._AnyHitShader)
+		{
+			stages->Emplace();
+
+			VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo{ stages->Back() };
+
+			pipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			pipelineShaderStageCreateInfo.pNext = nullptr;
+			pipelineShaderStageCreateInfo.flags = 0;
+			pipelineShaderStageCreateInfo.stage = hit_group._AnyHitShader->GetStage();
+			pipelineShaderStageCreateInfo.module = hit_group._AnyHitShader->Get();
+			pipelineShaderStageCreateInfo.pName = "main";
+			pipelineShaderStageCreateInfo.pSpecializationInfo = nullptr;
+		}
+
+		if (hit_group._IntersectionShader)
+		{
+			stages->Emplace();
+
+			VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo{ stages->Back() };
+
+			pipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			pipelineShaderStageCreateInfo.pNext = nullptr;
+			pipelineShaderStageCreateInfo.flags = 0;
+			pipelineShaderStageCreateInfo.stage = hit_group._IntersectionShader->GetStage();
+			pipelineShaderStageCreateInfo.module = hit_group._IntersectionShader->Get();
+			pipelineShaderStageCreateInfo.pName = "main";
+			pipelineShaderStageCreateInfo.pSpecializationInfo = nullptr;
+		}
+	}
+
+	//Add the miss shader stages.
+	for (const VulkanShaderModule *const RESTRICT miss_shader_module : parameters._MissShaderModules)
 	{
 		//Create the pipeline shader stage create info.
 		stages->Emplace();
@@ -63,8 +128,8 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 		pipelineShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		pipelineShaderStageCreateInfo.pNext = nullptr;
 		pipelineShaderStageCreateInfo.flags = 0;
-		pipelineShaderStageCreateInfo.stage = shaderModule->GetStage();
-		pipelineShaderStageCreateInfo.module = shaderModule->Get();
+		pipelineShaderStageCreateInfo.stage = miss_shader_module->GetStage();
+		pipelineShaderStageCreateInfo.module = miss_shader_module->Get();
 		pipelineShaderStageCreateInfo.pName = "main";
 		pipelineShaderStageCreateInfo.pSpecializationInfo = nullptr;
 	}
@@ -75,19 +140,49 @@ void VulkanRayTracingPipeline::CreateStages(const VulkanRayTracingPipelineCreati
 */
 void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreationParameters &parameters, DynamicArray<VkRayTracingShaderGroupCreateInfoNV> *const RESTRICT groups) const NOEXCEPT
 {
-	groups->Reserve(parameters._ShaderModules.Size());
+	//Reserve the appropriate size.
+	groups->Reserve(1 + parameters._HitGroups.Size() + parameters._MissShaderModules.Size());
 
-	uint32 counter{ 0 };
+	//Add all groups.
+	uint32 shader_counter{ 0 };
 
-	for (const VulkanShaderModule* const shaderModule : parameters._ShaderModules)
+	//Add the ray generation group.
 	{
 		groups->Emplace();
 
 		groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
 		groups->Back().pNext = nullptr;
-		groups->Back().type = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV :  VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
-		groups->Back().generalShader = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? VK_SHADER_UNUSED_NV : counter++;
-		groups->Back().closestHitShader = shaderModule->GetStage() == VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV ? counter++ : VK_SHADER_UNUSED_NV;
+		groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+		groups->Back().generalShader = shader_counter++;
+		groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
+		groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
+		groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
+	}
+
+	//Add the hit groups.
+	for (const VulkanRayTracingPipelineCreationParameters::VulkanHitGroup& hit_group : parameters._HitGroups)
+	{
+		groups->Emplace();
+
+		groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+		groups->Back().pNext = nullptr;
+		groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;
+		groups->Back().generalShader = VK_SHADER_UNUSED_NV;
+		groups->Back().closestHitShader = hit_group._ClosestHitShader ? shader_counter++ : VK_SHADER_UNUSED_NV;
+		groups->Back().anyHitShader = hit_group._AnyHitShader ? shader_counter++ : VK_SHADER_UNUSED_NV;
+		groups->Back().intersectionShader = hit_group._IntersectionShader ? shader_counter++ : VK_SHADER_UNUSED_NV;
+	}
+
+	//Add the miss groups.
+	for (const VulkanShaderModule *const RESTRICT miss_shader_module : parameters._MissShaderModules)
+	{
+		groups->Emplace();
+
+		groups->Back().sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+		groups->Back().pNext = nullptr;
+		groups->Back().type = VkRayTracingShaderGroupTypeNV::VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+		groups->Back().generalShader = shader_counter++;
+		groups->Back().closestHitShader = VK_SHADER_UNUSED_NV;
 		groups->Back().anyHitShader = VK_SHADER_UNUSED_NV;
 		groups->Back().intersectionShader = VK_SHADER_UNUSED_NV;
 	}

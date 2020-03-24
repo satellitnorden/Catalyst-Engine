@@ -12,6 +12,37 @@ class RayTracingPipeline : public Pipeline
 public:
 
 	/*
+	*	Hit group class definition.
+	*/
+	class HitGroup final
+	{
+
+	public:
+
+		//The closest hit shader.
+		Shader _ClosestHitShader;
+
+		//The any hit shader.
+		Shader _AnyHitShader;
+
+		//The intersection shader.
+		Shader _IntersectionShader;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE constexpr HitGroup(const Shader initial_closest_hit_shader, const Shader initial_any_hit_shader, const Shader initial_intersection_shader) NOEXCEPT
+			:
+			_ClosestHitShader(initial_closest_hit_shader),
+			_AnyHitShader(initial_any_hit_shader),
+			_IntersectionShader(initial_intersection_shader)
+		{
+
+		}
+
+	};
+
+	/*
 	*	Default constructor.
 	*/
 	RayTracingPipeline() NOEXCEPT;
@@ -25,11 +56,11 @@ public:
 	}
 
 	/*
-	*	Returns the closest shader.
+	*	Returns the hit groups.
 	*/
-	FORCE_INLINE NO_DISCARD Shader GetClosestHitShader() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const DynamicArray<HitGroup>& GetHitGroups() const NOEXCEPT
 	{
-		return _ClosestHitShader;
+		return _HitGroups;
 	}
 
 	/*
@@ -51,11 +82,19 @@ protected:
 	}
 
 	/*
-	*	Sets the closest shader.
+	*	Sets the number of hit groups.
 	*/
-	FORCE_INLINE void SetClosestHitShader(const Shader shader) NOEXCEPT
+	FORCE_INLINE void SetNumberOfHitGroups(const uint64 number_of_hit_groups) NOEXCEPT
 	{
-		_ClosestHitShader = shader;
+		_HitGroups.Reserve(number_of_hit_groups);
+	}
+
+	/*
+	*	Adds a hit group.
+	*/
+	FORCE_INLINE void AddHitGroup(const Shader closest_hit_shader, const Shader any_hit_shader, const Shader intersection_shader) NOEXCEPT
+	{
+		_HitGroups.Emplace(closest_hit_shader, any_hit_shader, intersection_shader);
 	}
 
 	/*
@@ -79,8 +118,8 @@ private:
 	//The ray generation shader.
 	Shader _RayGenerationShader;
 
-	//The closest hit shader.
-	Shader _ClosestHitShader;
+	//The hit groups.
+	DynamicArray<HitGroup> _HitGroups;
 
 	//The miss shaders.
 	DynamicArray<Shader> _MissShaders;
