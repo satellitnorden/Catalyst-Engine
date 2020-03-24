@@ -210,13 +210,13 @@ public:
 		Memory::Copy(geometryInstance->_Transform, &transposedTransform, sizeof(geometryInstance->_Transform));
 
 		//Set the custom index.
-		geometryInstance->_InstanceCustomIndex = data._Index;
+		geometryInstance->_InstanceCustomIndex = data._InstanceIndex;
 
 		//Set the mask.
 		geometryInstance->_Mask = UINT8_MAXIMUM;
 
 		//Set the instance offset.
-		geometryInstance->_InstanceOffset = 0;
+		geometryInstance->_InstanceOffset = data._HitGroupIndex;
 
 		//Set the flags.
 		geometryInstance->_Flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_NV | VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV;

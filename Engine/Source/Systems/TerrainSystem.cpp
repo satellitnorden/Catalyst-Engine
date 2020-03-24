@@ -953,6 +953,6 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 																		&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 
 	//Create the top level acceleration structure.
-	const TopLevelAccelerationStructureInstanceData instance{ MatrixConstants::IDENTITY, _TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex], 0 };
+	const TopLevelAccelerationStructureInstanceData instance{ MatrixConstants::IDENTITY, _TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex], RenderingConstants::TERRAIN_HIT_GROUP_INDEX, 0 };
 	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instance), &_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 }

@@ -262,7 +262,7 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 		for (const Mesh &mesh : component->_Model->_Meshes)
 		{
-			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
+			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}
@@ -321,7 +321,7 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 		for (const Mesh &mesh : component->_Model->_Meshes)
 		{
-			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, mesh_counter));
+			instances.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}

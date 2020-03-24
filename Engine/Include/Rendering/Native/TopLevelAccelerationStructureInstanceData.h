@@ -20,8 +20,11 @@ public:
 	//The bottom level acceleration structure.
 	AccelerationStructureHandle _BottomLevelAccelerationStructure{ EMPTY_HANDLE };
 
-	//The index.
-	uint64 _Index{ UINT64_MAXIMUM };
+	//The hit group index.
+	uint32 _HitGroupIndex{ UINT32_MAXIMUM };
+
+	//The instance index.
+	uint32 _InstanceIndex{ UINT32_MAXIMUM };
 
 	/*
 	*	Default constructor.
@@ -34,11 +37,15 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(const Matrix4x4 &initialTransform, const AccelerationStructureHandle &initialBottomLevelAccelerationStructure, const uint64 initialIndex) NOEXCEPT
+	FORCE_INLINE constexpr TopLevelAccelerationStructureInstanceData(	const Matrix4x4 &initial_transform,
+																		const AccelerationStructureHandle &initial_bottom_level_acceleration_structure,
+																		const uint32 initial_hit_group_index,
+																		const uint32 initial_instance_index) NOEXCEPT
 		:
-		_Transform(initialTransform),
-		_BottomLevelAccelerationStructure(initialBottomLevelAccelerationStructure),
-		_Index(initialIndex)
+		_Transform(initial_transform),
+		_BottomLevelAccelerationStructure(initial_bottom_level_acceleration_structure),
+		_HitGroupIndex(initial_hit_group_index),
+		_InstanceIndex(initial_instance_index)
 	{
 
 	}
