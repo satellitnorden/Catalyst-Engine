@@ -219,7 +219,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 	{
 		Light light = UnpackLight(i);
 
-		switch (light.type)
+		switch (light.light_type)
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
@@ -299,7 +299,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 															surface_properties.material_properties[2],
 															1.0f,
 															light_direction,
-															light.luminance);
+															light.color * light.intensity);
 				}
 				
 

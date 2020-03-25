@@ -26,14 +26,26 @@ public:
 		Vector3<float32> _Position;
 	};
 
-	//The luminance.
-	Vector3<float32> _Luminance;
+	//The color.
+	Vector3<float32> _Color;
 
 	//The light type.
 	uint32 _LightType;
 
+	//The light properties.
+	uint32 _LightProperties;
+
+	//The intensity.
+	float32 _Intensity;
+
+	//The radius.
+	float32 _Radius;
+
 	//The size.
 	float32 _Size;
+
+	//Padding.
+	Padding<4> _Padding;
 
 	/*
 	*	Default constructor.
@@ -41,8 +53,11 @@ public:
 	FORCE_INLINE LightComponent() NOEXCEPT
 		:
 		_Position(VectorConstants::ZERO),
-		_Luminance(VectorConstants::ZERO),
+		_Color(VectorConstants::ZERO),
 		_LightType(static_cast<uint32>(LightType::POINT)),
+		_LightProperties(0),
+		_Intensity(0.0f),
+		_Radius(0.0f),
 		_Size(0.0f)
 	{
 
@@ -70,11 +85,14 @@ public:
 			}
 		}
 
-		_Luminance = other._Luminance;
+		_Color = other._Color;
 		_LightType = other._LightType;
+		_LightProperties = other._LightProperties;
+		_Intensity = other._Intensity;
+		_Radius = other._Radius;
 		_Size = other._Size;
 	}
 
 };
 
-static_assert(sizeof(LightComponent) == 32, "Light components must be exactly 32 bytes!");
+static_assert(sizeof(LightComponent) == 48, "Light components must be exactly 48 bytes!");

@@ -50,9 +50,12 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 		LightInitializationData* const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<LightInitializationData>() };
 
 		data->_Properties = EntityInitializationData::Property::None;
-		data->_LightType = LightType::DIRECTIONAL;
 		data->_Direction = VectorConstants::DOWN;
-		data->_Luminance = VectorConstants::ONE;
+		data->_Color = VectorConstants::ONE;
+		data->_LightType = LightType::DIRECTIONAL;
+		data->_LightProperties = CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT;
+		data->_Intensity = 1.0f;
+		data->_Radius = 0.0f;
 		data->_Size = 0.0f;
 
 		EntityCreationSystem::Instance->RequestInitialization(_SkyLight, data, false);
@@ -149,12 +152,14 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 
 		if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
 		{
-			_SkyLight->SetLuminance(NIGHT_SKY_LUMINANCE * NIGHT_SKY_INTENSITY * sky_luminance_alpha);
+			_SkyLight->SetColor(NIGHT_SKY_LUMINANCE);
+			_SkyLight->SetIntensity(NIGHT_SKY_INTENSITY * sky_luminance_alpha);
 		}
 
 		else
 		{
-			_SkyLight->SetLuminance(DAY_SKY_LUMINANCE * DAY_SKY_INTENSITY * sky_luminance_alpha);
+			_SkyLight->SetColor(DAY_SKY_LUMINANCE);
+			_SkyLight->SetIntensity(DAY_SKY_INTENSITY * sky_luminance_alpha);
 		}
 	}
 }

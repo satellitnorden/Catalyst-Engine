@@ -48,8 +48,11 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 		}
 	}
 
-	light_component._Luminance = light_initialization_data->_Luminance;
-	light_component._LightType = static_cast<int32>(light_initialization_data->_LightType);
+	light_component._Color = light_initialization_data->_Color;
+	light_component._LightType = static_cast<uint32>(light_initialization_data->_LightType);
+	light_component._LightProperties = light_initialization_data->_LightProperties;
+	light_component._Intensity = light_initialization_data->_Intensity;
+	light_component._Radius = light_initialization_data->_Radius;
 	light_component._Size = light_initialization_data->_Size;
 
 	//Destroy the initialization data.
@@ -66,17 +69,9 @@ void LightEntity::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns the light type of this light.
-*/
-LightType LightEntity::GetLightType() NOEXCEPT
-{
-	return static_cast<LightType>(ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType);
-}
-
-/*
 *	Returns the direction of this light.
 */
-Vector3<float32> LightEntity::GetDirection() NOEXCEPT
+Vector3<float32> LightEntity::GetDirection() const NOEXCEPT
 {
 	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Direction is only used for directional lights!");
 
@@ -96,7 +91,7 @@ void LightEntity::SetDirection(const Vector3<float32>& direction) NOEXCEPT
 /*
 *	Returns the position of this light.
 */
-Vector3<float32> LightEntity::GetPosition() NOEXCEPT
+Vector3<float32> LightEntity::GetPosition() const NOEXCEPT
 {
 	ASSERT(GetLightType() == LightType::POINT, "Position is only used for point lights!");
 
@@ -114,17 +109,175 @@ void LightEntity::SetPosition(const Vector3<float32> &position) NOEXCEPT
 }
 
 /*
-*	Returns the luminance of this light.
+*	Returns the color of this light.
 */
-Vector3<float32> LightEntity::GetLuminance() NOEXCEPT
+Vector3<float32> LightEntity::GetColor() const NOEXCEPT
 {
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance;
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color;
 }
 
 /*
-*	Sets the luminance of this light.
+*	Sets the color of this light.
 */
-void LightEntity::SetLuminance(const Vector3<float32> &luminance) NOEXCEPT
+void LightEntity::SetColor(const Vector3<float32> &color) NOEXCEPT
 {
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance = luminance;
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Color = color;
+}
+
+/*
+*	Returns the light type of this light.
+*/
+LightType LightEntity::GetLightType() const NOEXCEPT
+{
+	return static_cast<LightType>(ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType);
+}
+
+/*
+*	Sets the light type of this light.
+*/
+void LightEntity::SetLightType(const LightType type) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType = static_cast<uint32>(type);
+}
+
+/*
+*	Returns the light properties of this light.
+*/
+uint32 LightEntity::GetLightProperties() const NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightProperties;
+}
+
+/*
+*	Sets the light properties of this light.
+*/
+void LightEntity::SetLightProperties(const uint32 properties) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightProperties = properties;
+}
+
+/*
+*	Returns the intensity of this light.
+*/
+float32 LightEntity::GetIntensity() const NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Intensity;
+}
+
+/*
+*	Sets the intensity of this light.
+*/
+void LightEntity::SetIntensity(const float32 intensity) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Intensity = intensity;
+}
+
+/*
+*	Returns the radius of this light.
+*/
+float32 LightEntity::GetRadius() const NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Radius;
+}
+
+/*
+*	Sets the radius of this light.
+*/
+void LightEntity::SetRadius(const float32 radius) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Radius = radius;
+}
+
+/*
+*	Returns the size of this light.
+*/
+float32 LightEntity::GetSize() const NOEXCEPT
+{
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Size;
+}
+
+/*
+*	Sets the size of this light.
+*/
+void LightEntity::SetSize(const float32 size) NOEXCEPT
+{
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Size = size;
+}
+
+/*
+*	Returns if this light is surface shadow casting.
+*/
+NO_DISCARD bool LightEntity::IsSurfaceShadowCasting() const NOEXCEPT
+{
+	return TEST_BIT(GetLightProperties(), CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT);
+}
+
+/*
+*	Sets is this light is surface shadow casting.
+*/
+void LightEntity::SetIsSurfaceShadowCasting(const bool is_surface_shadow_casting) NOEXCEPT
+{
+	if (is_surface_shadow_casting)
+	{
+		SetLightProperties(GetLightProperties() | CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT);
+	}
+
+	else
+	{
+		uint32 current_light_properties{ GetLightProperties() };
+		CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT);
+		SetLightProperties(current_light_properties);
+	}
+}
+
+/*
+*	Returns if this light is volumetric.
+*/
+NO_DISCARD bool LightEntity::IsVolumetric() const NOEXCEPT
+{
+	return TEST_BIT(GetLightProperties(), CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT);
+}
+
+/*
+*	Sets is this light is volumetric.
+*/
+void LightEntity::SetIsVolumetric(const bool is_volumetric) NOEXCEPT
+{
+	if (is_volumetric)
+	{
+		SetLightProperties(GetLightProperties() | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT);
+	}
+	
+	else
+	{
+		uint32 current_light_properties{ GetLightProperties() };
+		CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT);
+		SetLightProperties(current_light_properties);
+	}
+}
+
+/*
+*	Returns if this light is volumetric shadow casting.
+*/
+NO_DISCARD bool LightEntity::IsVolumetricShadowCasting() const NOEXCEPT
+{
+	return TEST_BIT(GetLightProperties(), CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT);
+}
+
+/*
+*	Sets is this light is volumetric shadow casting.
+*/
+void LightEntity::SetIsVolumetricShadowCasting(const bool is_volumetric_shadow_casting) NOEXCEPT
+{
+	if (is_volumetric_shadow_casting)
+	{
+		SetLightProperties(GetLightProperties() | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT);
+	}
+
+	else
+	{
+		uint32 current_light_properties{ GetLightProperties() };
+		CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT);
+		SetLightProperties(current_light_properties);
+	}
 }

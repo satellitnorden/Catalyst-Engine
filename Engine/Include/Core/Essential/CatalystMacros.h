@@ -7,15 +7,15 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
+	#define ASSERT(CONDITION, MESSAGE) if (!(UNLIKELY(CONDITION))) { PRINT_TO_OUTPUT(MESSAGE); BREAKPOINT(); }
 #else
-	#define ASSERT(condition, message) 
+	#define ASSERT(CONDITION, MESSAGE) 
 #endif
 
 /*
 *	Defines the bit at the specified index.
 */
-#define BIT(index) (static_cast<uint64>(1) << static_cast<uint64>(index))
+#define BIT(INDEX) (static_cast<uint64>(1) << static_cast<uint64>(INDEX))
 
 /*
 *	Sets a breakpoint in the code in non-final builds.
@@ -80,12 +80,12 @@
 /*
 *	Clears the bit at the specified index.
 */
-#define CLEAR_BIT(bitfield, bit) (bitfield = bitfield & ~(bit))
+#define CLEAR_BIT(BIT_FIELD, BIT) (BIT_FIELD = BIT_FIELD & ~(BIT))
 
 /*
 *	Concatenates the arguments together.
 */
-#define CONCATENATE(first, second) first##second
+#define CONCATENATE(FIRST, SECOND) FIRST##SECOND
 
 /*
 *	Intentionally crashes the game.
@@ -148,12 +148,12 @@ return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																	\
 /*
 *	Sets the bit at the specified index.
 */
-#define SET_BIT(bitfield, bit) (bitfield = (bitfield | bit))
+#define SET_BIT(BIT_FIELD, BIT) (BIT_FIELD = (BIT_FIELD | BIT))
 
 /*
-*	Tests the bit of the specified bitfield
+*	Tests the bit of the specified bit field.
 */
-#define TEST_BIT(bitfield, bit) ((bitfield & bit) == bit)
+#define TEST_BIT(BIT_FIELD, BIT) ((BIT_FIELD & BIT) == BIT)
 
 /*
 *	Casts a value to it's underlying type.

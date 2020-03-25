@@ -55,7 +55,7 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		switch (light.type)
+		switch (light.light_type)
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
@@ -67,7 +67,7 @@ void main()
 													ambientOcclusion,
 													material.thickness,
 													light.position_or_direction,
-													light.luminance);
+													light.color * light.intensity);
 
 				break;
 			}

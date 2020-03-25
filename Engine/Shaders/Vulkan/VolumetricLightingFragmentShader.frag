@@ -58,7 +58,7 @@ void main()
 		//Unpack the light.
 		Light light = UnpackLight(i);
 
-		switch (light.type)
+		switch (light.light_type)
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
@@ -71,7 +71,7 @@ void main()
 					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
 
 					//Add the volumetric lighting.
-					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.luminance * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
 				}
 
 				break;

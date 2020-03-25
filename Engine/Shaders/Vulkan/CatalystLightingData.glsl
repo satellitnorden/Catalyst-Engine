@@ -8,8 +8,11 @@
 struct Light
 {
 	vec3 position_or_direction;
-	vec3 luminance;
-	uint type;
+	vec3 color;
+	uint light_type;
+	uint light_properties;
+	float intensity;
+	float radius;
 	float size;
 };
 
@@ -31,13 +34,17 @@ Light UnpackLight(uint index)
 {
 	Light light;
 
-  	vec4 light_data_1 = LIGHT_DATA[index * 2 + 0];
-  	vec4 light_data_2 = LIGHT_DATA[index * 2 + 1];
+  	vec4 light_data_1 = LIGHT_DATA[index * 3 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 3 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 3 + 2];
 
-  	light.position_or_direction = light_data_1.xyz;
-  	light.luminance = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
-  	light.type = floatBitsToUint(light_data_2.z);
-  	light.size = light_data_2.w;
+  	light.position_or_direction = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light.color = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light.light_type = floatBitsToUint(light_data_2.z);
+  	light.light_properties = floatBitsToUint(light_data_2.w);
+  	light.intensity = light_data_3.x;
+  	light.radius = light_data_3.y;
+  	light.size = light_data_3.z;
 
 	return light;
 }

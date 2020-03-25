@@ -147,7 +147,7 @@ public:
 private:
 
 	//The rendering path.
-	RenderingPath _RenderingPath{ RenderingPath::PATH_TRACING };
+	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::RAY_TRACED };

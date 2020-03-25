@@ -106,7 +106,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 		if (static_cast<LightType>(component._LightType) == LightType::DIRECTIONAL)
 		{
 			data._SkyLightDirection = component._Direction;
-			data._SkyLightLuminance = component._Luminance;
+			data._SkyLightLuminance = component._Color;
 
 			break;
 		}

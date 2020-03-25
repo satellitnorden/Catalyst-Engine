@@ -770,7 +770,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateSurfaceLighting(con
 																				surface_description._AmbientOcclusion,
 																				1.0f,
 																				component->_Direction,
-																				component->_Luminance);
+																				component->_Color * component->_Intensity);
 					}
 
 					break;
@@ -847,7 +847,7 @@ NO_DISCARD Vector3<float> RenderingReferenceSystem::CalculateVolumetricLighting(
 
 					if (!in_shadow)
 					{
-						lighting += volumetric_description._Albedo * component->_Luminance;
+						lighting += volumetric_description._Albedo * component->_Color * component->_Intensity;
 					}
 
 					break;

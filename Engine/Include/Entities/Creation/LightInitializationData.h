@@ -6,6 +6,9 @@
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
+//Lighting.
+#include <Lighting/LightingCore.h>
+
 //Math.
 #include <Math/General/Vector.h>
 
@@ -17,32 +20,44 @@ class LightInitializationData final : public EntityInitializationData
 
 public:
 
+	union
+	{
+		//The direction. Used for directional lights.
+		Vector3<float32> _Direction;
+
+		//The position. Used for point lights.
+		Vector3<float32> _Position;
+	};
+
+	//The color.
+	Vector3<float32> _Color;
+
 	//The light type.
 	LightType _LightType;
 
-	union
-	{
-		//The position. Used for point lights.
-		Vector3<float> _Position;
+	//The light properties.
+	uint32 _LightProperties;
 
-		//The direction. Used for directional lights.
-		Vector3<float> _Direction;
-	};
+	//The intensity.
+	float32 _Intensity;
 
-	//The luminance.
-	Vector3<float> _Luminance;
+	//The radius.
+	float32 _Radius;
 
 	//The size.
-	float _Size;
+	float32 _Size;
 
 	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE LightInitializationData() NOEXCEPT
 		:
-		_LightType(LightType::POINT),
 		_Position(VectorConstants::ZERO),
-		_Luminance(VectorConstants::ZERO),
+		_Color(VectorConstants::ZERO),
+		_LightType(LightType::POINT),
+		_LightProperties(0),
+		_Intensity(0.0f),
+		_Radius(0.0f),
 		_Size(0.0f)
 	{
 

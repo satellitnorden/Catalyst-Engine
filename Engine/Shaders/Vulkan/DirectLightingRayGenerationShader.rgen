@@ -58,77 +58,80 @@ void main()
 	{
 		Light light = UnpackLight(i);
 
-		switch (light.type)
+		switch (light.light_type)
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
 				//Alter the direction a bit to simulare soft shadows.
 				vec3 light_direction = normalize(light.position_or_direction + vec3(random_noise.xyz * 2.0f - 1.0f) * 0.01f);
 
-				//Trace the visibility.
+				//Determine the visibility.
 				bool hit_anything = false;
 
-				if (!hit_anything && true)
+				if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
 				{
-					visibility = 0.0f;
+					if (!hit_anything && true)
+					{
+						visibility = 0.0f;
 
-					traceNV(
-							TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							world_position, 																			//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light_direction,																			//direction
-							VIEW_DISTANCE,																				//Tmax
-							1 																							//payload
-							);
+						traceNV(
+								TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light_direction,																			//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
 
-					hit_anything = visibility < 1.0f;
-				}
+						hit_anything = visibility < 1.0f;
+					}
 
-				if (!hit_anything && true)
-				{
-					visibility = 0.0f;
+					if (!hit_anything && true)
+					{
+						visibility = 0.0f;
 
-					traceNV(
-							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							world_position, 																			//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light_direction,																			//direction
-							VIEW_DISTANCE,																				//Tmax
-							1 																							//payload
-							);
+						traceNV(
+								STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light_direction,																			//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
 
-					hit_anything = visibility < 1.0f;
-				}
+						hit_anything = visibility < 1.0f;
+					}
 
-				if (!hit_anything && true)
-				{
-					visibility = 0.0f;
+					if (!hit_anything && true)
+					{
+						visibility = 0.0f;
 
-					traceNV(
-							DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							0, 																							//missIndex
-							world_position, 																			//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light_direction,																			//direction
-							VIEW_DISTANCE,																				//Tmax
-							1 																							//payload
-							);
+						traceNV(
+								DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light_direction,																			//direction
+								VIEW_DISTANCE,																				//Tmax
+								1 																							//payload
+								);
 
-					hit_anything = visibility < 1.0f;
+						hit_anything = visibility < 1.0f;
+					}
 				}
 
 				if (!hit_anything)
@@ -141,7 +144,7 @@ void main()
 															ambientOcclusion,
 															material.thickness,
 															light_direction,
-															light.luminance);
+															light.color * light.intensity);
 				}
 
 				break;
