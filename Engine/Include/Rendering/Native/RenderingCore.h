@@ -162,13 +162,6 @@ enum class LevelOfDetail : uint8
 	NumberOfLevelOfDetails
 };
 
-//Enumeration covering all light types.
-enum class LightType : uint8
-{
-	DIRECTIONAL,
-	POINT
-};
-
 //Enumeration covering all memory properties.
 enum class MemoryProperty : uint8
 {

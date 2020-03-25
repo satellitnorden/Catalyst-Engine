@@ -6,7 +6,6 @@
 #include <Core/General/UpdateContext.h>
 
 //Lighting.
-#include <Lighting/DirectionalLight.h>
 #include <Lighting/LightingCore.h>
 
 //Rendering.
@@ -28,14 +27,6 @@ public:
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Returns the directional light.
-	*/
-	RESTRICTED DirectionalLight *const RESTRICT GetDirectionalLight() NOEXCEPT
-	{
-		return &_DirectionalLight;
-	}
-
-	/*
 	*	Returns the lighting data render data table layout.
 	*/
 	RenderDataTableLayoutHandle GetLightingDataRenderDataTableLayout() const NOEXCEPT
@@ -48,18 +39,7 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentLightingDataRenderDataTable() const NOEXCEPT;
 
-	/*
-	*	Returns the number of active lights.
-	*/
-	FORCE_INLINE NO_DISCARD int32 GetNumberOfActiveLights() const NOEXCEPT
-	{
-		return _NumberOfActiveLights;
-	}
-
 private:
-
-	//The directional light.
-	DirectionalLight _DirectionalLight;
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
@@ -67,11 +47,14 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
-	//The uniform buffers.
-	DynamicArray<BufferHandle> _UniformBuffers;
+	//The light uniform data buffers.
+	DynamicArray<BufferHandle> _LightUniformDataBuffers;
 
-	//The number of active lights.
-	int32 _NumberOfActiveLights;
+	//The light data buffers.
+	DynamicArray<BufferHandle> _LightDataBuffers;
+
+	//The light data buffer sizes.
+	DynamicArray<uint64> _LightDataBufferSizes;
 
 	/*
 	*	Creates the render data table layout.
@@ -84,8 +67,13 @@ private:
 	void CreateRenderDataTables() NOEXCEPT;
 
 	/*
-	*	Creates the uniform buffers.
+	*	Creates the light uniform data buffers.
 	*/
-	void CreateUniformBuffers() NOEXCEPT;
+	void CreateLightUniformDataBuffers() NOEXCEPT;
+
+	/*
+	*	Creates the light data buffers.
+	*/
+	void CreateLightDataBuffers() NOEXCEPT;
 
 };

@@ -121,7 +121,6 @@
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
     <ClInclude Include="..\..\..\Include\Input\MouseState.h" />
     <ClInclude Include="..\..\..\Include\Input\TouchState.h" />
-    <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />

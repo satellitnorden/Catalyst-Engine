@@ -74,41 +74,49 @@ LightType LightEntity::GetLightType() NOEXCEPT
 }
 
 /*
-*	Returns the position of this light.
-*/
-Vector3<float> LightEntity::GetPosition() NOEXCEPT
-{
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position;
-}
-
-/*
-*	Sets the position of this light.
-*/
-void LightEntity::SetPosition(const Vector3<float>& position) NOEXCEPT
-{
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position = position;
-}
-
-/*
 *	Returns the direction of this light.
 */
-Vector3<float> LightEntity::GetDirection() NOEXCEPT
+Vector3<float32> LightEntity::GetDirection() NOEXCEPT
 {
+	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Direction is only used for directional lights!");
+
 	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction;
 }
 
 /*
 *	Sets the direction of this light.
 */
-void LightEntity::SetDirection(const Vector3<float>& direction) NOEXCEPT
+void LightEntity::SetDirection(const Vector3<float32>& direction) NOEXCEPT
 {
+	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Direction is only used for directional lights!");
+
 	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction = direction;
+}
+
+/*
+*	Returns the position of this light.
+*/
+Vector3<float32> LightEntity::GetPosition() NOEXCEPT
+{
+	ASSERT(GetLightType() == LightType::POINT, "Position is only used for point lights!");
+
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position;
+}
+
+/*
+*	Sets the position of this light.
+*/
+void LightEntity::SetPosition(const Vector3<float32> &position) NOEXCEPT
+{
+	ASSERT(GetLightType() == LightType::POINT, "Position is only used for point lights!");
+
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position = position;
 }
 
 /*
 *	Returns the luminance of this light.
 */
-Vector3<float> LightEntity::GetLuminance() NOEXCEPT
+Vector3<float32> LightEntity::GetLuminance() NOEXCEPT
 {
 	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance;
 }
@@ -116,7 +124,7 @@ Vector3<float> LightEntity::GetLuminance() NOEXCEPT
 /*
 *	Sets the luminance of this light.
 */
-void LightEntity::SetLuminance(const Vector3<float>& luminance) NOEXCEPT
+void LightEntity::SetLuminance(const Vector3<float32> &luminance) NOEXCEPT
 {
 	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Luminance = luminance;
 }

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Lighting.
+#include <Lighting/LightingCore.h>
+
 //Math.
 #include <Math/General/Vector.h>
 
@@ -17,20 +20,20 @@ public:
 	union
 	{
 		//The direction. Used for directional lights.
-		Vector3<float> _Direction;
+		Vector3<float32> _Direction;
 
 		//The position. Used for point lights.
-		Vector3<float> _Position;
+		Vector3<float32> _Position;
 	};
 
 	//The luminance.
-	Vector3<float> _Luminance;
+	Vector3<float32> _Luminance;
 
 	//The light type.
-	int32 _LightType;
+	uint32 _LightType;
 
 	//The size.
-	float _Size;
+	float32 _Size;
 
 	/*
 	*	Default constructor.
@@ -39,7 +42,7 @@ public:
 		:
 		_Position(VectorConstants::ZERO),
 		_Luminance(VectorConstants::ZERO),
-		_LightType(static_cast<int32>(LightType::POINT)),
+		_LightType(static_cast<uint32>(LightType::POINT)),
 		_Size(0.0f)
 	{
 
@@ -74,4 +77,4 @@ public:
 
 };
 
-static_assert(sizeof(LightComponent) == 32, "Light components bust be exactly 32 bytes!");
+static_assert(sizeof(LightComponent) == 32, "Light components must be exactly 32 bytes!");

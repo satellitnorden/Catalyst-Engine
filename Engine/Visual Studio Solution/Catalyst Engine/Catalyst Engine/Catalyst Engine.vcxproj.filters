@@ -504,9 +504,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h">
-      <Filter>Lighting\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>

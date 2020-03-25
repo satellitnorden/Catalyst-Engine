@@ -19,13 +19,10 @@ class LightUniformData final
 public:
 
 	//The number of lights.
-	int32 _NumberOfLights;
+	uint32 _NumberOfLights;
 
-	//Some padding.
-	Padding<12> _Padding;
-
-	//The light data.
-	StaticArray<LightComponent, LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS> _LightData;
+	//The maximum number of shadow casting lights.
+	uint32 _MaximumNumberOfShadowCastingLights;
 
 };
 
@@ -40,8 +37,11 @@ void LightingSystem::PostInitialize() NOEXCEPT
 	//Create the render data tables.
 	CreateRenderDataTables();
 
-	//Create the uniform buffers.
-	CreateUniformBuffers();
+	//Create the light uniform data buffers.
+	CreateLightUniformDataBuffers();
+
+	//Create the light data buffers.
+	CreateLightDataBuffers();
 }
 
 /*
@@ -49,31 +49,56 @@ void LightingSystem::PostInitialize() NOEXCEPT
 */
 void LightingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Cache relevant data.
+	const uint64 number_of_lights{ ComponentManager::GetNumberOfLightComponents() };
+
 	//Update the current render data table.
-	RenderDataTableHandle &currentRenderDataTable{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+	RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	//Update the light uniform data.
+	//Update the current light uniform data buffer.
 	{
-		BufferHandle &currentUniformBuffer{ _UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+		BufferHandle &current_light_uniform_data_buffer{ _LightUniformDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-		LightUniformData lightUniformData;
+		LightUniformData light_uniform_data;
 
-		lightUniformData._NumberOfLights = CatalystBaseMath::Minimum<int32>(static_cast<int32>(ComponentManager::GetNumberOfLightComponents()), LightingConstants::MAXIMUM_NUMBER_OF_LIGHTS);
+		light_uniform_data._NumberOfLights = static_cast<uint32>(number_of_lights);
+		light_uniform_data._MaximumNumberOfShadowCastingLights = LightingConstants::MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
 
-		for (int32 i{ 0 }; i < lightUniformData._NumberOfLights; ++i)
+		const void *const RESTRICT data_chunks[]{ &light_uniform_data };
+		const uint64 data_sizes[]{ sizeof(LightUniformData) };
+
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_light_uniform_data_buffer);
+
+		//Bind the light uniform data buffer.
+		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &current_render_data_table, current_light_uniform_data_buffer);
+	}
+
+	//Update the current light data buffer.
+	{
+		BufferHandle &current_light_data_buffer{ _LightDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+		uint64 &current_light_data_buffer_size{ _LightDataBufferSizes[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+		//Does the light data buffer need to be recreated?
+		if (current_light_data_buffer_size != CatalystBaseMath::Maximum<uint64>(number_of_lights, 1))
 		{
-			lightUniformData._LightData[i] = ComponentManager::GetLightLightComponents()[i];
+			if (current_light_data_buffer)
+			{
+				RenderingSystem::Instance->DestroyBuffer(&current_light_data_buffer);
+			}
+
+			RenderingSystem::Instance->CreateBuffer(sizeof(LightComponent) * number_of_lights, BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &current_light_data_buffer);
+		
+			current_light_data_buffer_size = number_of_lights;
 		}
 
-		const void *const RESTRICT dataChunks[]{ &lightUniformData };
-		const uint64 dataSizes[]{ sizeof(LightUniformData) };
+		//Upload the light data to the buffer.
+		const void *const RESTRICT data_chunks[]{ ComponentManager::GetLightLightComponents() };
+		const uint64 data_sizes[]{ sizeof(LightComponent) * number_of_lights };
 
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &currentUniformBuffer);
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_light_data_buffer);
 
-		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &currentRenderDataTable, currentUniformBuffer);
-
-		//Store the number of active lights.
-		_NumberOfActiveLights = lightUniformData._NumberOfLights;
+		//Bind the light data buffer.
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, 0, &current_render_data_table, current_light_data_buffer);
 	}
 }
 
@@ -93,9 +118,10 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
 	{
-		StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
 		};
 
 		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -117,15 +143,37 @@ void LightingSystem::CreateRenderDataTables() NOEXCEPT
 }
 
 /*
-*	Creates the uniform buffers.
+*	Creates the light uniform data buffers.
 */
-void LightingSystem::CreateUniformBuffers() NOEXCEPT
+void LightingSystem::CreateLightUniformDataBuffers() NOEXCEPT
 {
-	//Create the uniform buffers.
-	_UniformBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	//Create the light uniform data buffers.
+	_LightUniformDataBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-	for (BufferHandle &uniformBuffer : _UniformBuffers)
+	for (BufferHandle &light_uniform_data_buffer : _LightUniformDataBuffers)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &uniformBuffer);
+		RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &light_uniform_data_buffer);
+	}
+}
+
+/*
+*	Creates the light data buffers.
+*/
+void LightingSystem::CreateLightDataBuffers() NOEXCEPT
+{
+	//Create the light data buffers.
+	_LightDataBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (BufferHandle &light_data_buffer : _LightDataBuffers)
+	{
+		RenderingSystem::Instance->CreateBuffer(sizeof(LightComponent), BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &light_data_buffer);
+	}
+
+	//Set the light data buffer sizes.
+	_LightDataBufferSizes.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (uint64 &light_data_buffer_size : _LightDataBufferSizes)
+	{
+		light_data_buffer_size = 1;
 	}
 }
