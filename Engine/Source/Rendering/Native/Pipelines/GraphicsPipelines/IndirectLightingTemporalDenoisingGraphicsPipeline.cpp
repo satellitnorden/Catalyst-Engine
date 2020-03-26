@@ -40,7 +40,7 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Render
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);

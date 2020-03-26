@@ -87,7 +87,7 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Dept
 	AddVertexInputBindingDescription(0, sizeof(Matrix4x4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);

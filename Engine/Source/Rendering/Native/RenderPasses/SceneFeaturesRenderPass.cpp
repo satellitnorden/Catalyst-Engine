@@ -37,7 +37,7 @@ SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 {
 	//Create the scene depth buffer.
-	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(), &_SceneDepthBuffer);
+	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
 	//Add the pipelines.
 	SetNumberOfPipelines(14);

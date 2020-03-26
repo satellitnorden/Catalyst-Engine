@@ -93,11 +93,11 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 	new (_RenderingReferenceData) RenderingReferenceData();
 
 	//Initialize the texture.
-	_RenderingReferenceData->_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
+	_RenderingReferenceData->_RenderingReferenceTexture.Initialize(RenderingSystem::Instance->GetScaledResolution(0)._Width, RenderingSystem::Instance->GetScaledResolution(0)._Height);
 
-	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
+	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution(0)._Height; ++Y)
 	{
-		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
+		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution(0)._Width; ++X)
 		{
 			_RenderingReferenceData->_RenderingReferenceTexture.At(X, Y) = Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f);
 		}
@@ -105,7 +105,7 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 
 	//Calculate how much asynchronous data is needed.
 	uint32 current_slice{ 0 };
-	const uint32 maximum_y{ RenderingSystem::Instance->GetScaledResolution()._Height };
+	const uint32 maximum_y{ RenderingSystem::Instance->GetScaledResolution(0)._Height };
 
 	uint32 counter{ 0 };
 
@@ -317,9 +317,9 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	}
 
 	//Normalize the values in the rendering reference texture.
-	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution()._Height; ++Y)
+	for (uint32 Y{ 0 }; Y < RenderingSystem::Instance->GetScaledResolution(0)._Height; ++Y)
 	{
-		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
+		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution(0)._Width; ++X)
 		{
 			_RenderingReferenceData->_RenderingReferenceTexture.At(X, Y) /= static_cast<float>(_RenderingReferenceData->_Iterations + 1);
 		}
@@ -382,7 +382,7 @@ void RenderingReferenceSystem::UpdateRenderingReference() NOEXCEPT
 	}
 
 	//Update the progress information.
-	const float iteration_percent{ _RenderingReferenceData->_TexelsCalculated.load() / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width * RenderingSystem::Instance->GetScaledResolution()._Height) * 100.0f };
+	const float iteration_percent{ _RenderingReferenceData->_TexelsCalculated.load() / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width * RenderingSystem::Instance->GetScaledResolution(0)._Height) * 100.0f };
 
 	char buffer[128];
 	sprintf_s(buffer, "Rendering Reference Progress: Iterations - %u - Iteration completion - %.3f%%", _RenderingReferenceData->_Iterations, iteration_percent);
@@ -398,7 +398,7 @@ void RenderingReferenceSystem::ExecuteAsynchronous(const RenderingReferenceData:
 	//Calculate all texels.
 	for (uint32 Y{ data->_StartY }; Y < data->_EndY; ++Y)
 	{
-		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution()._Width; ++X)
+		for (uint32 X{ 0 }; X < RenderingSystem::Instance->GetScaledResolution(0)._Width; ++X)
 		{
 			//Calculate the texel.
 			CalculateTexel(X, Y);
@@ -439,8 +439,8 @@ Vector3<float> RenderingReferenceSystem::CalculateRayDirection(const uint32 X, c
 	constexpr float JITTER{ 0.5f };
 
 	//Calculate the coordinate.
-	const Vector2<float> coordinate{	(static_cast<float>(X) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width),
-										(static_cast<float>(Y) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height) };
+	const Vector2<float> coordinate{	(static_cast<float>(X) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width),
+										(static_cast<float>(Y) + 0.5f + CatalystRandomMath::RandomFloatInRange(-JITTER, JITTER)) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
 
 	//Calculate the ray direction.
 	return RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(coordinate);

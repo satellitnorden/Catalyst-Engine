@@ -103,17 +103,17 @@ public:
 	/*
 	*	Returns the resolution.
 	*/
-	FORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Resolution GetFullResolution(const uint8 mip_level = 0) const NOEXCEPT
 	{
-		return _Resolution;
+		return _FullResolution;
 	}
 
 	/*
 	*	Returns the scaled resolution.
 	*/
-	FORCE_INLINE NO_DISCARD Resolution GetScaledResolution() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Resolution GetScaledResolution(const uint8 mip_level) const NOEXCEPT
 	{
-		return _ScaledResolution;
+		return _ScaledResolutions[mip_level];
 	}
 	 
 	/*
@@ -338,11 +338,11 @@ private:
 	//The noise texture size.
 	static constexpr uint8 NOISE_TEXTURE_SIZE{ 64 };
 
-	//The resolution.
-	Resolution _Resolution;
+	//The full resolution.
+	Resolution _FullResolution;
 
-	//The scaled resolution.
-	Resolution _ScaledResolution;
+	//The scaled resolutions.
+	StaticArray<Resolution, 10> _ScaledResolutions;
 
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;

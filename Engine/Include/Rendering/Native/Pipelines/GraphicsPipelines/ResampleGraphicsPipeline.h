@@ -17,7 +17,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blendEnabled) NOEXCEPT;
+	void Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blend_enabled) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

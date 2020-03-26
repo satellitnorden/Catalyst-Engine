@@ -59,7 +59,7 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
@@ -137,12 +137,12 @@ void PathTracingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	if (_Direction == Direction::Horizontal)
 	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 0.0f);
+		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 0.0f);
 	}
 
 	else
 	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
+		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
 	}
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);

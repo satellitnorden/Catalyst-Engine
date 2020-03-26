@@ -70,7 +70,7 @@ void VolumetricLightingRayTracingPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width / 2, RenderingSystem::Instance->GetScaledResolution()._Height / 2);
+	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(1)._Width, RenderingSystem::Instance->GetScaledResolution(1)._Height);
 
 	//End the command buffer.
 	command_buffer->End(this);

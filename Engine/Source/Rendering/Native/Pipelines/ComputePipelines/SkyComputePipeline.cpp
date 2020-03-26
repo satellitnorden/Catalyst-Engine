@@ -43,6 +43,9 @@ public:
 	//Padding.
 	Padding<4> _Padding4;
 
+	//The sky light intensity.
+	float32 _SkyLightIntensity;
+
 	//The current iteration.
 	uint32 _CurrentIteration;
 
@@ -98,6 +101,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 	//Pick the first directional light.
 	data._SkyLightDirection = VectorConstants::UP;
 	data._SkyLightLuminance = VectorConstants::ZERO;
+	data._SkyLightIntensity = 0.0f;
 
 	for (uint64 i{ 0 }, size{ ComponentManager::GetNumberOfLightComponents() }; i < size; ++i)
 	{
@@ -107,6 +111,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 		{
 			data._SkyLightDirection = component._Direction;
 			data._SkyLightLuminance = component._Color;
+			data._SkyLightIntensity = component._Intensity;
 
 			break;
 		}

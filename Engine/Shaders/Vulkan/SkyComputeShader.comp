@@ -32,9 +32,10 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 16) vec3 lower_sky_color;
 	layout (offset = 32) vec3 sky_light_direction;
 	layout (offset = 48) vec3 sky_light_luminance;
-	layout (offset = 64) uint current_iteration;
-	layout (offset = 68) float parameters_difference;
-	layout (offset = 72) float star_intensity;
+	layout (offset = 64) float sky_light_intensity;
+	layout (offset = 68) uint current_iteration;
+	layout (offset = 72) float parameters_difference;
+	layout (offset = 76) float star_intensity;
 };
 
 /*
@@ -96,16 +97,16 @@ vec3 CalculateSky(vec3 direction)
 	vec3 base_sky_color = mix(lower_sky_color, upper_sky_color, upward_factor);
 
 	//Calculate the sky light factor.
-	float sky_light_factor = max(dot(direction, -sky_light_direction) * 0.5f + 0.5f, 0.0f);
+	float sky_light_factor = max(dot(direction, -sky_light_direction) * 0.5f + 0.5f, 0.0f) * min(sky_light_intensity, 1.0f);
 
 	//Calculate the sky light color.
-	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance, sky_light_factor * 0.01f);
+	vec3 sky_light_color = mix(base_sky_color, sky_light_luminance * sky_light_intensity, sky_light_factor * 0.01f);
 
 	//Bias the sky light factor a bit.
-	sky_light_factor = pow(sky_light_factor, 4096.0f);
+	sky_light_factor = pow(sky_light_factor, 2048.0f);
 
 	//Calculate the final sky color.
-	vec3 final_sky_color = mix(sky_light_color, sky_light_luminance, sky_light_factor);
+	vec3 final_sky_color = mix(sky_light_color, sky_light_luminance * sky_light_intensity, sky_light_factor);
 
 	return final_sky_color;
 }

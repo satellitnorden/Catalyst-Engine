@@ -17,15 +17,21 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Resolution() NOEXCEPT { }
+	FORCE_INLINE constexpr Resolution() NOEXCEPT
+		:
+		_Width(0),
+		_Height(0)
+	{
+	
+	}
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Resolution(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
+	FORCE_INLINE constexpr Resolution(const uint32 initial_width, const uint32 initial_height) NOEXCEPT
 		:
-		_Width(initialWidth),
-		_Height(initialHeight)
+		_Width(initial_width),
+		_Height(initial_height)
 	{
 
 	}
@@ -33,7 +39,7 @@ public:
 	/*
 	*	Division operator overload.	
 	*/
-	Resolution operator/(const uint32 scalar) NOEXCEPT
+		FORCE_INLINE constexpr NO_DISCARD Resolution operator/(const uint32 scalar) NOEXCEPT
 	{
 		return Resolution(_Width / scalar, _Height / scalar);
 	}
@@ -41,9 +47,25 @@ public:
 	/*
 	*	Multiplication operator overload.
 	*/
-	Resolution operator*(const uint32 scalar) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Resolution operator*(const uint32 scalar) NOEXCEPT
 	{
 		return Resolution(_Width * scalar, _Height * scalar);
+	}
+
+	/*
+	*	Rounds the resolution up to the nearest multiple of two in both dimensions.
+	*/
+	FORCE_INLINE constexpr void RoundUpToNearestMultipleOfTwo() NOEXCEPT
+	{
+		if ((_Width & 1) != 0)
+		{
+			++_Width;
+		}
+
+		if ((_Height & 1) != 0)
+		{
+			++_Height;
+		}
 	}
 
 };

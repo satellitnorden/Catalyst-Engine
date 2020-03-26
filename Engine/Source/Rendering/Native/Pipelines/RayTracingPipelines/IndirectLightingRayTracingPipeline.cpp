@@ -70,7 +70,7 @@ void IndirectLightingRayTracingPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height);
+	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(0)._Width, RenderingSystem::Instance->GetScaledResolution(0)._Height);
 
 	//End the command buffer.
 	command_buffer->End(this);

@@ -61,7 +61,7 @@ void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(IndirectLightingApplicationPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);

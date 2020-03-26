@@ -35,7 +35,7 @@ void ScreenGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);

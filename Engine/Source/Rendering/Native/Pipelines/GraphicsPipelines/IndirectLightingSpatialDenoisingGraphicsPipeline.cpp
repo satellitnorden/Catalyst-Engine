@@ -61,7 +61,7 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 st
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
@@ -106,7 +106,7 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingSpatialDenoisingPushConstantData data;
 
-	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution()._Height / 2));
+	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
 	data._Stride = _Stride;
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);

@@ -151,7 +151,88 @@ namespace VulkanRenderingSystemLogic
 					currentPrimaryCommandBuffer->CommandEndRenderPass();
 				}
 
-				//vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, nullptr, 0, nullptr, 0, nullptr);
+				//Insert full pipeline barrier.
+				if (false)
+				{
+					//Create the image memory barrier.
+					VkMemoryBarrier memory_barrier{ };
+
+					memory_barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+					memory_barrier.pNext = nullptr;
+					memory_barrier.srcAccessMask =	VK_ACCESS_INDIRECT_COMMAND_READ_BIT |
+													VK_ACCESS_INDEX_READ_BIT |
+													VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT |
+													VK_ACCESS_UNIFORM_READ_BIT |
+													VK_ACCESS_INPUT_ATTACHMENT_READ_BIT |
+													VK_ACCESS_SHADER_READ_BIT |
+													VK_ACCESS_SHADER_WRITE_BIT |
+													VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+													VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+													VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+													VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+													VK_ACCESS_TRANSFER_READ_BIT |
+													VK_ACCESS_TRANSFER_WRITE_BIT |
+													VK_ACCESS_HOST_READ_BIT |
+													VK_ACCESS_HOST_WRITE_BIT;
+					memory_barrier.dstAccessMask =	VK_ACCESS_INDIRECT_COMMAND_READ_BIT |
+													VK_ACCESS_INDEX_READ_BIT |
+													VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT |
+													VK_ACCESS_UNIFORM_READ_BIT |
+													VK_ACCESS_INPUT_ATTACHMENT_READ_BIT |
+													VK_ACCESS_SHADER_READ_BIT |
+													VK_ACCESS_SHADER_WRITE_BIT |
+													VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+													VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+													VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+													VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+													VK_ACCESS_TRANSFER_READ_BIT |
+													VK_ACCESS_TRANSFER_WRITE_BIT |
+													VK_ACCESS_HOST_READ_BIT |
+													VK_ACCESS_HOST_WRITE_BIT;
+
+					//Record the pipeline barrier command.
+					vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 1, &memory_barrier, 0, nullptr, 0, nullptr);
+				}
+
+				//Insert image barriers.
+				if (true)
+				{
+					if (pipeline->GetType() == Pipeline::Type::Graphics)
+					{
+						for (const RenderTargetHandle render_target : static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->GetRenderTargets())
+						{
+							if (render_target == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN))
+							{
+								continue;
+							}
+
+							VulkanRenderTarget* const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget* const RESTRICT>(render_target) };
+
+							//Create the image memory barrier.
+							VkImageMemoryBarrier imageMemoryBarrier{ };
+
+							imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+							imageMemoryBarrier.pNext = nullptr;
+							imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+							imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+							imageMemoryBarrier.oldLayout = vulkan_render_target->GetImageLayout();
+							imageMemoryBarrier.newLayout = vulkan_render_target->GetImageLayout();
+							imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+							imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+							imageMemoryBarrier.image = vulkan_render_target->GetImage();
+
+							imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+							imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+							imageMemoryBarrier.subresourceRange.levelCount = 1;
+							imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+							imageMemoryBarrier.subresourceRange.layerCount = 1;
+
+							//Record the pipeline barrier command.
+							vkCmdPipelineBarrier(currentPrimaryCommandBuffer->Get(), VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+						}
+					}
+				}
 			}
 		}
 	}

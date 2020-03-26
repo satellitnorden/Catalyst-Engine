@@ -291,6 +291,36 @@ enum class RenderTarget : uint8
 	INTERMEDIATE_RGBA_FLOAT32_EIGHTH,
 
 	/*
+	*	Intermediate render target at sixteenth resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH,
+
+	/*
+	*	Intermediate render target at thirtysecond resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND,
+
+	/*
+	*	Intermediate render target at sixtyfourth resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH,
+
+	/*
+	*	Intermediate render target at hundredtwentyeighth resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH,
+
+	/*
+	*	Intermediate render target at twohundredfiftysixth resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH,
+
+	/*
+	*	Intermediate render target at fivehundredtwelve resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_FIVEHUNDREDTWELVE,
+
+	/*
 	*	Special render target for rendering directly to the screen.
 	*/
 	SCREEN,

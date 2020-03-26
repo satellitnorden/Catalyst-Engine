@@ -23,7 +23,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blendEnabled) NOEXCEPT
+void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blend_enabled) NOEXCEPT
 {
 	//Store the delta.
 	_Delta = delta;
@@ -59,7 +59,7 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
-	SetBlendEnabled(blendEnabled);
+	SetBlendEnabled(blend_enabled);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);
 	SetBlendFactorSourceAlpha(BlendFactor::Zero);

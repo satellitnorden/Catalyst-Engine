@@ -57,39 +57,111 @@ void BloomRenderPass::Initialize() NOEXCEPT
 
 	_BloomDownsampleGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height)),
-													RenderingSystem::Instance->GetScaledResolution() / 2,
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(1),
 													false);
 
 	_BloomDownsampleGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)),
-													RenderingSystem::Instance->GetScaledResolution() / 4,
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(2),
 													false);
 
 	_BloomDownsampleGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)),
-													RenderingSystem::Instance->GetScaledResolution() / 8,
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(3),
 													false);
 
-	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
+	_BloomDownsampleGraphicsPipelines[3].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(4),
+													false);
+
+	_BloomDownsampleGraphicsPipelines[4].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(5),
+													false);
+
+	_BloomDownsampleGraphicsPipelines[5].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(6),
+													false);
+
+	_BloomDownsampleGraphicsPipelines[6].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(7),
+													false);
+
+	_BloomDownsampleGraphicsPipelines[7].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(8),
+													false);
+
+	_BloomDownsampleGraphicsPipelines[8].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_FIVEHUNDREDTWELVE),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(8)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(8)._Height)),
+													RenderingSystem::Instance->GetScaledResolution(9),
+													false);
+
+	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_FIVEHUNDREDTWELVE),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(9)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(9)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(8),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(8)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(8)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(7),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(6),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[3].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(5),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[4].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(4),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[5].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
+													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(3),
+													true);
+
+	_BloomUpsampleGraphicsPipelines[6].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 8), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 8)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution() / 4,
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(2),
 													true);
 
-	_BloomUpsampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER),
+	_BloomUpsampleGraphicsPipelines[7].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 4), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 4)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution() / 2,
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(1),
 													true);
 
-	_BloomUpsampleGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
+	_BloomUpsampleGraphicsPipelines[8].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width / 2), static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height / 2)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(),
-													false);
+													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height)) * 0.5f,
+													RenderingSystem::Instance->GetScaledResolution(0),
+													true);
 
 	_BloomApplicationGraphicsPipeline.Initialize();
 
