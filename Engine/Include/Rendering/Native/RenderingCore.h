@@ -241,6 +241,16 @@ enum class RenderTarget : uint8
 	TEMPORAL_INDIRECT_LIGHTING_BUFFER_2,
 
 	/*
+	*	Contains the first temporal volumetric lighting buffer.
+	*/
+	TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1,
+
+	/*
+	*	Contains the second temporal volumetric lighting buffer.
+	*/
+	TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2,
+
+	/*
 	*	Contains the first temporal anti aliasing buffer.
 	*/
 	TEMPORAL_ANTI_ALIASING_BUFFER_1,
@@ -413,11 +423,12 @@ enum class Shader : uint8
 	ViewportVertex,
 	VisibilityRayMiss,
 	VolumetricLightingApplicationFragment,
-	VolumetricLightingDenoisingFragment,
 	VolumetricLightingFragment,
 	VolumetricLightingRayGeneration,
+	VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT,
+	VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FRAGMENT,
 
-	NumberOfShaders,
+	NUMBER_OF_SHADERS,
 
 	None
 };

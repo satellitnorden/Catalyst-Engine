@@ -37,11 +37,17 @@ VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + _VolumetricLightingDenoisingGraphicsPipelines.Size() + 2);
+	SetNumberOfPipelines(1 + 1 + _VolumetricLightingSpatialDenoisingGraphicsPipelines.Size() + _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() + 2);
+	
 	AddPipeline(&_VolumetricLightingGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingRayTracingPipeline);
 
-	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
+	for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
+	for (VolumetricLightingTemporalDenoisingGraphicsPipeline &pipeline : _VolumetricLightingTemporalDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -51,16 +57,13 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_VolumetricLightingGraphicsPipeline.Initialize();
 	_VolumetricLightingRayTracingPipeline.Initialize();
-	_VolumetricLightingDenoisingGraphicsPipelines[0].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Horizontal,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
-
-	_VolumetricLightingDenoisingGraphicsPipelines[1].Initialize(VolumetricLightingDenoisingGraphicsPipeline::Direction::Vertical,
-																1.0f,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
-
+	_VolumetricLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
+	_VolumetricLightingTemporalDenoisingGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1));
+	_VolumetricLightingTemporalDenoisingGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2));
 	_VolumetricLightingApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -96,10 +99,25 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 		_VolumetricLightingRayTracingPipeline.Execute();
 	}
 
-	for (VolumetricLightingDenoisingGraphicsPipeline &pipeline : _VolumetricLightingDenoisingGraphicsPipelines)
+	_VolumetricLightingSpatialDenoisingGraphicsPipelines[0].Execute();
+
+	//Execute the current buffer, don't include the rest.
+	for (uint64 i{ 0 }, size{ _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 	{
-		pipeline.Execute();
+		if (i == _CurrentTemporalBufferIndex)
+		{
+			_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].Execute();
+		}
+
+		else
+		{
+			_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+		}
 	}
+
+	//Update the current temporal buffer index.
+	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+
 
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
 }

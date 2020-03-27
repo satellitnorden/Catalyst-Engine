@@ -352,6 +352,8 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_2)]);
+	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1)]);
+	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_UINT8)]);

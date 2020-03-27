@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingSpatialDenoisingGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -18,27 +18,24 @@ class PushConstantData final
 
 public:
 
-	//The direction.
-	Vector2<float> _Direction;
+	//The inverse resolution.
+	Vector2<float32> _InverseResolution;
 
 	//The stride.
-	float _Stride;
+	int32 _Stride;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction direction, const float stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
 	CreateRenderDataTable(source);
-
-	//Set the direction.
-	_Direction = direction;
 
 	//Set the stride.
 	_Stride = stride;
@@ -48,7 +45,7 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VolumetricLightingSpatialDenoisingFragment);
+	SetFragmentShader(Shader::VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -89,9 +86,34 @@ void VolumetricLightingDenoisingGraphicsPipeline::Initialize(const Direction dir
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+}
+
+/*
 *	Executes this graphics pipeline.
 */
-void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
@@ -109,16 +131,7 @@ void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PushConstantData data;
 
-	if (_Direction == Direction::Horizontal)
-	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 0.0f);
-	}
-
-	else
-	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
-	}
-
+	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
 	data._Stride = _Stride;
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
@@ -131,29 +144,4 @@ void VolumetricLightingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
-}
-
-/*
-*	Creates the render data table layout.
-*/
-void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void VolumetricLightingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

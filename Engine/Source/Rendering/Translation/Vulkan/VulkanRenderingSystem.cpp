@@ -83,7 +83,7 @@ namespace VulkanRenderingSystemData
 	};
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NUMBER_OF_SHADERS)> _ShaderModules;
 
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;
@@ -1383,16 +1383,6 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.UpsizeFast(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-		}
-
-		{
-			//Initialize the shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.UpsizeFast(size);
-			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
@@ -1408,6 +1398,26 @@ namespace VulkanRenderingSystemLogic
 			{
 				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
 			}
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.UpsizeFast(size);
+			shaderCollection.Read(data.Data(), size);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		shaderCollection.Close();

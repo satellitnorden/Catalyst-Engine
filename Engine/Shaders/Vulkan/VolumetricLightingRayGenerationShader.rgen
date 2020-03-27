@@ -50,18 +50,20 @@ void main()
 	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
 	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
 
-	//Sample the noise vector.
-	vec4 noise_vector_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+	//Sample the noise texture.
+	vec4 noise_texture = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
 
 	float samples_offsets[4];
 
-	samples_offsets[0] = noise_vector_1[0];
-	samples_offsets[1] = noise_vector_1[1];
-	samples_offsets[2] = noise_vector_1[2];
-	samples_offsets[3] = noise_vector_1[3];
+	samples_offsets[0] = noise_texture[0];
+	samples_offsets[1] = noise_texture[1];
+	samples_offsets[2] = noise_texture[2];
+	samples_offsets[3] = noise_texture[3];
+
+	uint current_sample_offset_index = 0;
 
 	//Calculate the volumetric lighting for all volumetric lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i, ++current_sample_offset_index)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);
@@ -72,86 +74,83 @@ void main()
 			{
 				case LIGHT_TYPE_DIRECTIONAL:
 				{
-					for (int j = 0; j < 4; ++j)
+					//Calculate the volumetric particle hit distance.
+					float volumetric_particle_hit_distance = hit_distance * samples_offsets[current_sample_offset_index & 3];
+
+					//Calculate the volumetric particle hit position.
+					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
+
+					//Determine the visibility.
+					bool hit_anything = false;
+
+					if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
 					{
-						//Calculate the volumetric particle hit distance.
-						float volumetric_particle_hit_distance = hit_distance * samples_offsets[j];
-
-						//Calculate the volumetric particle hit position.
-						vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
-
-						//Determine the visibility.
-						bool hit_anything = false;
-
-						if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
+						if (!hit_anything && true)
 						{
-							if (!hit_anything && true)
-							{
-								visibility = 0.0f;
+							visibility = 0.0f;
 
-								traceNV(
-										TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-										gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-										0xff, 																						//cullMask
-										0, 																							//sbtRecordOffset
-										0, 																							//sbtRecordStride
-										0, 																							//missIndex
-										volumetric_particle_hit_position, 															//origin
-										CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-										-light.position_or_direction,																//direction
-										VIEW_DISTANCE,																				//Tmax
-										1 																							//payload
-										);
+							traceNV(
+									TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+									0xff, 																						//cullMask
+									0, 																							//sbtRecordOffset
+									0, 																							//sbtRecordStride
+									0, 																							//missIndex
+									volumetric_particle_hit_position, 															//origin
+									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+									-light.position_or_direction,																//direction
+									VIEW_DISTANCE,																				//Tmax
+									1 																							//payload
+									);
 
-								hit_anything = visibility < 1.0f;
-							}
-
-							if (!hit_anything && true)
-							{
-								visibility = 0.0f;
-
-								traceNV(
-										STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-										gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-										0xff, 																						//cullMask
-										0, 																							//sbtRecordOffset
-										0, 																							//sbtRecordStride
-										0, 																							//missIndex
-										volumetric_particle_hit_position, 															//origin
-										CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-										-light.position_or_direction,																//direction
-										VIEW_DISTANCE,																				//Tmax
-										1 																							//payload
-										);
-
-								hit_anything = visibility < 1.0f;
-							}
-
-							if (!hit_anything && true)
-							{
-								visibility = 0.0f;
-
-								traceNV(
-										DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-										gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-										0xff, 																						//cullMask
-										0, 																							//sbtRecordOffset
-										0, 																							//sbtRecordStride
-										0, 																							//missIndex
-										volumetric_particle_hit_position, 															//origin
-										CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-										-light.position_or_direction,																//direction
-										VIEW_DISTANCE,																				//Tmax
-										1 																							//payload
-										);
-
-								hit_anything = visibility < 1.0f;
-							}
+							hit_anything = visibility < 1.0f;
 						}
 
-						//Add to the volumetric lighting.
-						volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f * float(!hit_anything);
+						if (!hit_anything && true)
+						{
+							visibility = 0.0f;
+
+							traceNV(
+									STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+									0xff, 																						//cullMask
+									0, 																							//sbtRecordOffset
+									0, 																							//sbtRecordStride
+									0, 																							//missIndex
+									volumetric_particle_hit_position, 															//origin
+									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+									-light.position_or_direction,																//direction
+									VIEW_DISTANCE,																				//Tmax
+									1 																							//payload
+									);
+
+							hit_anything = visibility < 1.0f;
+						}
+
+						if (!hit_anything && true)
+						{
+							visibility = 0.0f;
+
+							traceNV(
+									DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+									0xff, 																						//cullMask
+									0, 																							//sbtRecordOffset
+									0, 																							//sbtRecordStride
+									0, 																							//missIndex
+									volumetric_particle_hit_position, 															//origin
+									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+									-light.position_or_direction,																//direction
+									VIEW_DISTANCE,																				//Tmax
+									1 																							//payload
+									);
+
+							hit_anything = visibility < 1.0f;
+						}
 					}
+
+					//Add to the volumetric lighting.
+					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * float(!hit_anything);
 
 					break;
 				}

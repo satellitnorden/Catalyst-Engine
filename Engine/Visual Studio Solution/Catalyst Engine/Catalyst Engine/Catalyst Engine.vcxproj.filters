@@ -1035,9 +1035,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1479,6 +1476,12 @@
     <ClInclude Include="..\..\..\Include\Core\General\Float16.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingSpatialDenoisingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1766,9 +1769,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -1954,6 +1954,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline .cpp">
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingSpatialDenoisingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

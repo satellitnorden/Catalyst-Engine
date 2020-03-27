@@ -277,8 +277,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingSpatialDenoisingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.h" />
@@ -513,8 +514,9 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingSpatialDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline .cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\DirectLightingRayTracingPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp" />
