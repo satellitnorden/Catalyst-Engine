@@ -240,7 +240,7 @@ void main()
 					if (!hit_anything)
 					{
 						//Calculate the attenuation.
-						float attenuation = 1.0f - SmoothStep(distance_to_light / light.radius);
+						float attenuation = CalculateAttenuation(distance_to_light, light.radius);
 
 						direct_lighting += CalculateLighting(	-view_direction,
 																albedo,

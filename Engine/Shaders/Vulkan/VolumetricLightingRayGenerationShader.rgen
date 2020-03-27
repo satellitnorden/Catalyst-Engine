@@ -6,12 +6,14 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystGeometryMath.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
+#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Constants.
 #define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
@@ -157,7 +159,55 @@ void main()
 
 				case LIGHT_TYPE_POINT:
 				{
-					//TODO
+					//Do a ray/sphere intersection to determine the volumetric particle hit distance.
+					Ray ray;
+
+					ray._Origin = PERCEIVER_WORLD_POSITION;
+					ray._Direction = ray_direction;
+
+					Sphere sphere;
+
+					sphere._Position = light.position_or_direction;
+					sphere._Radius = light.radius;
+
+					RaySphereIntersectionResult result = RaySphereIntersection(ray, sphere);
+
+					if (result._Result != RAY_SPHERE_INTERSECTION_RESULT_NO_HIT)
+					{
+						float volumetric_particle_hit_distance;
+
+						switch (result._Result)
+						{
+							case RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT:
+							{
+								volumetric_particle_hit_distance = mix(0.0f, result._ClosestHitDistance, samples_offsets[current_sample_offset_index & 3]);
+
+								break;
+							}
+
+							case RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS:
+							{
+								volumetric_particle_hit_distance = mix(result._ClosestHitDistance, result._FarthestHitDistance, samples_offsets[current_sample_offset_index & 3]);
+								
+								break;
+							}
+						}
+
+						if (volumetric_particle_hit_distance < hit_distance)
+						{
+							//Calculate the volumetric particle hit position.
+							vec3 volumetric_particle_hit_position = ray._Origin + ray._Direction * volumetric_particle_hit_distance;
+
+							//Determine the distance to the light.
+							float distance_to_light = length(light.position_or_direction - volumetric_particle_hit_position);
+
+							//Calculate the attenuation.
+							float attenuation = CalculateAttenuation(distance_to_light, light.radius);
+
+							//Add to the volumetric lighting.
+							volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * attenuation;
+						}
+					}
 
 					break;
 				}

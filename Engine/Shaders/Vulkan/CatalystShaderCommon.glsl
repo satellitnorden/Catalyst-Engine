@@ -10,9 +10,6 @@
 #define CATALYST_SHADER_LANGUAGE_GLSL
 #include "..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
 
-#include "CatalystShaderCommon.glsl"
-#include "CatalystGeometryMath.glsl"
-
 //Constants.
 #define MOTION_BLUR_MODE_NONE (0)
 #define MOTION_BLUR_MODE_HALF (1)

@@ -97,6 +97,14 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance);
 
 	/*
+	*	Calculates the attenuation based on the distance to a light source and it's radius.
+	*/
+	CATALYST_SHADER_FUNCTION_RETURN_TWO_ARGUMENTS(float, CalculateAttenuation, float distance_to_light_source, float radius)
+	{
+		return 1.0f - CATALYST_SHADER_FUNCTION_MINIMUM(distance_to_light_source / radius, 1.0f);
+	}
+
+	/*
 	*	Calculates lighting. Returns the radiance transmitted from the surface in the outgoing direction.
 	*
 	*	Arguments;

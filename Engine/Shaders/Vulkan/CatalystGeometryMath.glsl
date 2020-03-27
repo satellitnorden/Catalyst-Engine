@@ -1,56 +1,132 @@
-#if !defined(CATALYST_VECTOR_MATH)
-#define CATALYST_VECTOR_MATH
+#if !defined(CATALYST_GEOMETRY_MATH)
+#define CATALYST_GEOMETRY_MATH
+
+/////////////
+// GENERAL //
+/////////////
 
 /*
-*   Performs a line/plane intersection. Returns if there was an intersection and will, in the event of an intersection distance, return the intersection point as well.
+*   Ray struct definition.
 */
-bool LinePlaneIntersection(vec3 line_origin, vec3 line_direction, vec3 plane_position, vec3 plane_normal, out float intersection_distance)
+struct Ray
 {
-    if (dot(line_direction, plane_normal) >= 0.0f)
-    {
-        return false;
-    }
 
-    else
-    {
-        intersection_distance = dot(plane_position - line_origin, plane_normal) / dot(line_direction, plane_normal);
+    //The origin.
+    vec3 _Origin;
 
-        return true;
-    }
-}
+    //The direction.
+    vec3 _Direction;
+
+};
+
+/////////////
+// SPHERES //
+/////////////
 
 /*
-*   Performs a line/sphere intersection. Returns if there was an intersection and will, in the event of an intersection, return the intersection point as well.
+*   Sphere struct definition.
 */
-bool LineSphereIntersection(vec3 lineOrigin, vec3 lineDirection, vec3 spherePosition, float sphereRadius, out float T)
+struct Sphere
 {
-    vec3 L = lineOrigin - spherePosition;
-    float B = 2.0f * dot(lineDirection, L);
-    float C = dot(L, L) - sphereRadius * sphereRadius;
 
-    float discriminant = B * B - 4.0f * C;
+    //The position.
+    vec3 _Position;
 
-    if (discriminant <= 0.0f)
+    //The radius.
+    float _Radius;
+
+};
+
+//Ray/sphere intersection constants.
+#define RAY_SPHERE_INTERSECTION_RESULT_NO_HIT (0)
+#define RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT (1)
+#define RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS (2)
+
+/*
+*   Ray/sphere intersection result struct definition.
+*/
+struct RaySphereIntersectionResult
+{
+
+    //The result.
+    uint _Result;
+
+    //The closest hit distance. Only set if _Result is either RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT or RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS.
+    float _ClosestHitDistance;
+
+    //The farthest hit distance. Only set if _Result is RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS.
+    float _FarthestHitDistance;
+
+};
+
+/*
+*   Performs a ray/sphere intersection.
+*/
+RaySphereIntersectionResult RaySphereIntersection(Ray ray, Sphere sphere)
+{
+    RaySphereIntersectionResult result;
+
+    float T0, T1;
+
+    //Calculate TCA (distance from ray origin to sphere position).
+    vec3 ray_origin_to_sphere_position = sphere._Position - ray._Origin; 
+    float TCA = dot(ray_origin_to_sphere_position, ray._Direction); 
+
+    //Early out.
+    float d2 = dot(ray_origin_to_sphere_position, ray_origin_to_sphere_position) - TCA * TCA; 
+    float radius_squared = sphere._Radius * sphere._Radius;
+
+    if (d2 > radius_squared)
     {
-        return false;
+        result._Result = RAY_SPHERE_INTERSECTION_RESULT_NO_HIT;
+
+        return result; 
     }
 
-    else
+    //Calculate THC (distance from closest hit distance to sphere position).
+    float THC = sqrt(radius_squared - d2); 
+
+    //Calculate the two hit distances.
+    T0 = TCA - THC; 
+    T1 = TCA + THC; 
+
+    //Are both hit distances negative?
+    if (T0 < 0.0f && T1 < 0.0f)
     {
-        discriminant = sqrt(discriminant);
+        result._Result = RAY_SPHERE_INTERSECTION_RESULT_NO_HIT;
+
+        return result; 
     }
 
-    float T0 = -B + discriminant;
-    float T1 = -B - discriminant;
-
-    if (T0 <= 0.0f || T1 <= 0.0f)
+    //Swap if necessary.
+    if (T0 < 0.0f || (T0 > T1 && T1 > 0.0f))
     {
-        return false;
+        float temporary = T0;
+        T0 = T1;
+        T1 = temporary;
     }
+ 
+    //Is either hit distance negative?
+    if (T0 < 0.0f)
+    { 
+        //If so, swap.
+        T0 = T1;
 
-    T = T0 < T1 ? T0 * 0.5f : T1 * 0.5f;
+        //Are both hit distances negative?
+        if (T0 < 0.0f)
+        {
+            result._Result = RAY_SPHERE_INTERSECTION_RESULT_NO_HIT;
 
-    return true;
+            return result; 
+        }
+    } 
+ 
+    //Write the final result.
+    result._Result = T1 < 0.0f ? RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT : RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS;
+    result._ClosestHitDistance = T0;
+    result._FarthestHitDistance = T1;
+
+    return result;
 }
 
 #endif
