@@ -322,9 +322,6 @@
     <Filter Include="Animation\Include">
       <UniqueIdentifier>{cfefb470-25c5-4b34-b86c-a6a91e93162e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Include\Reading">
-      <UniqueIdentifier>{2d7eaced-a092-4b23-b323-56078473bbdc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Save">
       <UniqueIdentifier>{5760f812-531d-453a-81bf-2bbdf73edbd7}</UniqueIdentifier>
     </Filter>
@@ -1197,9 +1194,6 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Reading\SoundResource.h">
-      <Filter>Resources\Include\Reading</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
@@ -1481,6 +1475,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\Sound.h">
+      <Filter>Sound\Include\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

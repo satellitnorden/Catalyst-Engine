@@ -7,8 +7,8 @@
 //File.
 #include <File/Core/BinaryFile.h>
 
-//Resources.
-#include <Resources/Reading/SoundResource.h>
+//Sound.
+#include <Sound/Native/Sound.h>
 
 class WAVReader final
 {
@@ -18,7 +18,7 @@ public:
 	/*
 	*	Reads the sound resource at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundResource *const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, Sound *const RESTRICT resource) NOEXCEPT
 	{
 		ASSERT(resource, "WAVReader::Read - Invalid resource passed!");
 
@@ -69,7 +69,12 @@ public:
 		const uint64 number_of_samples{ header._SubChunk2Size / bytes_per_sample };
 
 		//Read all of the samples.
-		resource->_Samples.Reserve(number_of_samples);
+		resource->_Channels.Reserve(resource->_NumberOfChannels);
+
+		for (DynamicArray<float32> &channel : resource->_Channels)
+		{
+			channel.Reserve(number_of_samples / resource->_NumberOfChannels);
+		}
 
 		switch (header._BitsPerSample)
 		{
@@ -83,6 +88,7 @@ public:
 			case 24:
 			{
 				uint8 temporary[3]{ 0 };
+				uint8 channel_counter{ 0 };
 
 				for (uint64 i{ 0 }; i < number_of_samples; ++i)
 				{
@@ -95,7 +101,10 @@ public:
 						sample = sample | ~0xFFFFFF;
 					}
 
-					resource->_Samples.Emplace(static_cast<float>(sample) / static_cast<float>(INT24_MAXIMUM));
+					resource->_Channels[channel_counter].Emplace(static_cast<float32>(sample) / static_cast<float32>(INT24_MAXIMUM));
+
+					//Update the channel counter.
+					channel_counter = channel_counter < resource->_Channels.Size() - 1 ? channel_counter + 1 : 0;
 				}
 
 				break;
@@ -172,4 +181,5 @@ private:
 		uint32 _SubChunk2Size;
 
 	};
+
 };

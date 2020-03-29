@@ -4,18 +4,18 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-class SoundResource final
+class Sound final
 {
 
 public:
 
 	//The sample rate.
-	float _SampleRate;
+	float32 _SampleRate;
 
 	//The number of channels.
 	uint8 _NumberOfChannels;
 
-	//The samples.
-	DynamicArray<float> _Samples;
+	//The channels.
+	DynamicArray<DynamicArray<float32>> _Channels;
 
 };
