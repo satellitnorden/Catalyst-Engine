@@ -15,7 +15,7 @@ public:
 	//The number of channels.
 	uint8 _NumberOfChannels;
 
-	//The channels.
-	DynamicArray<DynamicArray<float32>> _Channels;
+	//The samples per channel.
+	DynamicArray<DynamicArray<float32>> _Samples;
 
 };

@@ -1,5 +1,9 @@
 #pragma once
 
+#define CATALYST_WAV_READER_IMPLEMENTATION (false)
+
+#if CATALYST_WAV_READER_IMPLEMENTATION
+
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Utilities/StringUtilities.h>
@@ -183,3 +187,47 @@ private:
 	};
 
 };
+
+#else
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+
+//Sound.
+#include <Sound/Native/Sound.h>
+
+//Third party.
+#include <ThirdParty/AudioFile.h>
+
+class WAVReader final
+{
+
+public:
+
+	/*
+	*	Reads the sound resource at the given file path. Returns if the read was succesful.
+	*/
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, Sound *const RESTRICT resource) NOEXCEPT
+	{
+		AudioFile<float32> audio_file;
+
+		audio_file.load(file);
+
+		resource->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
+		resource->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
+
+		resource->_Samples.UpsizeSlow(resource->_NumberOfChannels);
+
+		for (uint64 i{ 0 }, size{ resource->_Samples.Size() }; i < size; ++i)
+		{
+			resource->_Samples[i].UpsizeFast(audio_file.samples[i].size());
+
+			Memory::Copy(resource->_Samples[i].Data(), audio_file.samples[i].data(), sizeof(float32) * audio_file.samples[i].size());
+		}
+
+		return true;
+	}
+
+};
+
+#endif
