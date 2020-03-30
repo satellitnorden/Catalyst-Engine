@@ -252,14 +252,6 @@ public:
 	}
 
 	/*
-	*	Returns the last index if this dynamic array.
-	*/
-	FORCE_INLINE uint64 LastIndex() const NOEXCEPT
-	{
-		return _Size - 1;
-	}
-
-	/*
 	*	Clears this dynamic array of elements, calling the destructor on the underlying elements.
 	*/
 	FORCE_INLINE void Clear() NOEXCEPT
@@ -343,6 +335,44 @@ public:
 				return;
 			}
 		}
+	}
+
+	/*
+	*	Returns a (linearly) interpolated element, float32 overload.
+	*/
+	FORCE_INLINE TYPE Interpolate(const float32 index) const NOEXCEPT
+	{
+		const uint64 first_index{ static_cast<uint64>(index) };
+		const uint64 second_index{ first_index < LastIndex() ? first_index + 1 : first_index };
+		const float32 alpha{ index - static_cast<float32>(first_index) };
+
+		const TYPE first_element{ At(first_index) };
+		const TYPE Second_element{ At(second_index) };
+
+		return (first_element * (1.0f - alpha)) + (Second_element * alpha);
+	}
+
+	/*
+	*	Returns a (linearly) interpolated element, float64 overload.
+	*/
+	FORCE_INLINE TYPE Interpolate(const float64 index) const NOEXCEPT
+	{
+		const uint64 first_index{ static_cast<uint64>(index) };
+		const uint64 second_index{ first_index < LastIndex() ? first_index + 1 : first_index };
+		const float64 alpha{ index - static_cast<float64>(first_index) };
+
+		const TYPE first_element{ At(first_index) };
+		const TYPE second_element{ At(second_index) };
+
+		return (first_element * (1.0 - alpha)) + (second_element * alpha);
+	}
+
+	/*
+	*	Returns the last index if this dynamic array.
+	*/
+	FORCE_INLINE uint64 LastIndex() const NOEXCEPT
+	{
+		return _Size - 1;
 	}
 
 	/*

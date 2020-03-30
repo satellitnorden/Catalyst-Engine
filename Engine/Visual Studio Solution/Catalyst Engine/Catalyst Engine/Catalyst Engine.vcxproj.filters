@@ -1479,6 +1479,12 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\Sound.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
+      <Filter>Sound\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundPlayer.h">
+      <Filter>Sound\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
