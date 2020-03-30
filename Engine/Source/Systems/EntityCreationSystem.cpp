@@ -173,7 +173,7 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 
 		if (dataToInitialize == &_InitializationQueue.Back())
 		{
-			_InitializationQueue.PopFast();
+			_InitializationQueue.Pop();
 		}
 
 		else
@@ -198,7 +198,7 @@ void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 	}
 
 	//Clear the termination queue.
-	_TerminationQueue.ClearFast();
+	_TerminationQueue.Clear();
 }
 
 /*
@@ -216,7 +216,7 @@ void EntityCreationSystem::ProcessDestructionQueue() NOEXCEPT
 	}
 
 	//Clear the destruction queue.
-	_DestructionQueue.ClearFast();
+	_DestructionQueue.Clear();
 }
 
 /*

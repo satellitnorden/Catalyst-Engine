@@ -706,14 +706,14 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
 	}
 
-	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].ClearFast();
+	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].Clear();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
 		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Second);
 	}
 
-	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].ClearFast();
+	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].Clear();
 
 	//Unlock the global textures.
 	_GlobalRenderData._GlobalTexturesLock.Unlock();

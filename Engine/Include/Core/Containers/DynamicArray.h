@@ -260,17 +260,9 @@ public:
 	}
 
 	/*
-	*	Clears this dynamic array of elements without calling the destructor on the underlying elements.
-	*/
-	FORCE_INLINE void ClearFast() NOEXCEPT
-	{
-		_Size = 0;
-	}
-
-	/*
 	*	Clears this dynamic array of elements, calling the destructor on the underlying elements.
 	*/
-	FORCE_INLINE void ClearSlow() NOEXCEPT
+	FORCE_INLINE void Clear() NOEXCEPT
 	{
 		for (uint64 i = 0; i < _Size; ++i)
 		{
@@ -332,7 +324,7 @@ public:
 		object.~TYPE();
 		object = std::move(Back());
 
-		PopFast();
+		Pop();
 	}
 
 	/*
@@ -346,7 +338,7 @@ public:
 			{
 				object.~TYPE();
 				object = std::move(Back());
-				PopFast();
+				Pop();
 
 				return;
 			}
@@ -354,10 +346,12 @@ public:
 	}
 
 	/*
-	*	Pops an element from the back of this dynamic array without calling the constructor first..
+	*	Pops an element from the back of this dynamic array.
 	*/
-	FORCE_INLINE void PopFast() NOEXCEPT
+	FORCE_INLINE void Pop() NOEXCEPT
 	{
+		_Array[LastIndex()].~TYPE();
+
 		--_Size;
 	}
 

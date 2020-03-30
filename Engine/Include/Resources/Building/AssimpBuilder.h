@@ -159,7 +159,7 @@ private:
 			const Vector2<float> texture_coordinate{ mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 
 			//Go through all bones and see which one has an effect on this vertex.
-			temporary_bone_weights.ClearFast();
+			temporary_bone_weights.Clear();
 
 			Memory::Set(temporary_bone_weights.Data(), 0, sizeof(BoneWeight) * mesh->mNumBones);
 

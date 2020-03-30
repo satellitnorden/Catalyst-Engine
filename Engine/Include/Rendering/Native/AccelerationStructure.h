@@ -320,7 +320,7 @@ private:
 			Node* const RESTRICT node{ _BuildData->_NodesToBeSplit.Back()._First };
 			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _BuildData->_NodesToBeSplit.Back()._Second };
 
-			_BuildData->_NodesToBeSplit.PopFast();
+			_BuildData->_NodesToBeSplit.Pop();
 
 			SplitNode(maximum_triangles_per_node, axis_aligned_bounding_box, node);
 		}

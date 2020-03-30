@@ -90,14 +90,14 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 void ProfilingSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Clear all profiling entries and their associated data.
-	ProfilingSystemData::_ProfilingEntries.ClearSlow();
+	ProfilingSystemData::_ProfilingEntries.Clear();
 
 	for (UserInterfaceElement *const RESTRICT element : ProfilingSystemData::_UserInterfaceElements)
 	{
 		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(element);
 	}
 
-	ProfilingSystemData::_UserInterfaceElements.ClearFast();
+	ProfilingSystemData::_UserInterfaceElements.Clear();
 }
 
 /*
