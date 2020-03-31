@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingApplicationGraphicsPipeline.h>
 
+//File.
+#include <File/Core/BinaryFile.h>
+
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
 

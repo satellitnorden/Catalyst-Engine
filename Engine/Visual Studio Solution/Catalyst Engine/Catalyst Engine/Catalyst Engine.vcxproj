@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_CATALYST;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -554,6 +554,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\CatalystSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />

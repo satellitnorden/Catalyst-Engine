@@ -172,9 +172,6 @@
     <Filter Include="Sound\Include\Abstraction">
       <UniqueIdentifier>{a41bafc3-011d-44f6-b278-e1a7c8841b79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sound\Source\Native">
-      <UniqueIdentifier>{cf3dc045-77f4-42f6-bfb9-8ce609d59b14}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sound\Source\Abstraction">
       <UniqueIdentifier>{dc805d49-7877-462e-9ebc-7412d8fbfd5b}</UniqueIdentifier>
     </Filter>
@@ -384,6 +381,9 @@
     </Filter>
     <Filter Include="Physics\Source">
       <UniqueIdentifier>{45214598-a754-4dc1-bb78-c1a2617f0021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound\Source\Abstraction\Catalyst">
+      <UniqueIdentifier>{19b28c0d-92a4-4d16-b0fb-9a6845f3615d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1963,6 +1963,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\CatalystSoundSystem.cpp">
+      <Filter>Sound\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

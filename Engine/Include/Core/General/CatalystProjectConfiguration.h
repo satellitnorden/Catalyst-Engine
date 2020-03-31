@@ -8,6 +8,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//Sound.
+#include <Sound/Native/SoundCore.h>
+
 class CatalystProjectGeneralConfiguration final
 {
 
@@ -109,6 +112,12 @@ class CatalystProjectSoundConfiguration final
 {
 
 public:
+
+	/*
+	*	The process audio function.
+	*	Recommended: A non-nullptr function pointer to a game sound system function that processes audio.
+	*/
+	ProcessAudioFunction _ProcessAudioFunction;
 
 	/*
 	*	The maximum number of channels.
