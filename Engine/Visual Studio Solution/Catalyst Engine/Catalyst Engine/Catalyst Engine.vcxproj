@@ -554,7 +554,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp" />
-    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\CatalystSoundSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\WindowsCatalystSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />

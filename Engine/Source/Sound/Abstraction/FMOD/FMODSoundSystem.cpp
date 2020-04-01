@@ -176,15 +176,6 @@ void SoundSystem::DestroySoundInstance(const SoundInstanceHandle instance) NOEXC
 }
 
 /*
-*	Sets the playback position in seconds for a sound instance.
-*/
-void SoundSystem::SetPlaybackPosition(const float position, const SoundInstanceHandle instance) NOEXCEPT
-{
-	//Set the playback position.
-	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->setTimelinePosition(static_cast<int32>(position * 1'000.0f)));
-}
-
-/*
 *	Plays a sound instance.
 */
 void SoundSystem::Play(const SoundInstanceHandle instance) NOEXCEPT
@@ -203,23 +194,6 @@ void SoundSystem::Stop(const SoundInstanceHandle instance) NOEXCEPT
 }
 
 /*
-*	Returns the parameter index of a parameter of the given sound instance.
-*/
-uint32 SoundSystem::GetParameterIndex(const char *const RESTRICT parameter, const SoundInstanceHandle instance) NOEXCEPT
-{
-	//Retrieve the parameter instance.
-	FMOD::Studio::ParameterInstance *RESTRICT parameterInstance;
-	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->getParameter(parameter, &parameterInstance));
-
-	//Retrieve the parameter description.
-	FMOD_STUDIO_PARAMETER_DESCRIPTION parameterDescription;
-	FMOD_ERROR_CHECK(parameterInstance->getDescription(&parameterDescription));
-
-	//Return the parameter index.
-	return static_cast<uint32>(parameterDescription.index);
-}
-
-/*
 *	Returns the playback state of a sound instance.
 */
 PlaybackState SoundSystem::GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT
@@ -230,16 +204,6 @@ PlaybackState SoundSystem::GetPlaybackState(const SoundInstanceHandle instance) 
 
 	//Return the native playback state.
 	return FMODAbstractionUtilities::GetPlaybackState(playbackState);
-}
-
-/*
-*	Sets the parameter on the given sound instance at the given index.
-*	The index of a parameter might not always be the same as it appears in the sound editor.
-*/
-void SoundSystem::SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT
-{
-	//Set the parameter at the given index.
-	FMOD_ERROR_CHECK(static_cast<FMOD::Studio::EventInstance *const RESTRICT>(instance)->setParameterValueByIndex(static_cast<int32>(index), value));
 }
 
 /*

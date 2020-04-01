@@ -1964,7 +1964,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\CatalystSoundSystem.cpp">
+    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\WindowsCatalystSoundSystem.cpp">
       <Filter>Sound\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
   </ItemGroup>

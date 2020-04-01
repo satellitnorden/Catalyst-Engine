@@ -78,11 +78,6 @@ public:
 	void DestroySoundInstance(const SoundInstanceHandle instance) NOEXCEPT;
 
 	/*
-	*	Sets the playback position in seconds for a sound instance.
-	*/
-	void SetPlaybackPosition(const float position, const SoundInstanceHandle instance) NOEXCEPT;
-
-	/*
 	*	Plays a sound instance.
 	*/
 	void Play(const SoundInstanceHandle instance) NOEXCEPT;
@@ -93,20 +88,9 @@ public:
 	void Stop(const SoundInstanceHandle instance) NOEXCEPT;
 
 	/*
-	*	Returns the parameter index of a parameter of the given sound instance.
-	*/
-	uint32 GetParameterIndex(const char *const RESTRICT parameter, const SoundInstanceHandle instance) NOEXCEPT;
-
-	/*
 	*	Returns the playback state of a sound instance.
 	*/
 	PlaybackState GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT;
-
-	/*
-	*	Sets the parameter on the given sound instance at the given index.
-	*	The index of a parameter might not always be the same as it appears in the sound editor.
-	*/
-	void SetParameterAtIndex(const SoundInstanceHandle instance, const uint32 index, const float value) NOEXCEPT;
 
 	/*
 	*	Sets the position of a sound instance.
