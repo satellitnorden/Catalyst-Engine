@@ -118,6 +118,5 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 	//Update the current temporal buffer index.
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
-
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
 }

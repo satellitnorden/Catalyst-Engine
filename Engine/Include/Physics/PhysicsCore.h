@@ -6,7 +6,7 @@
 //Physics constants.
 namespace PhysicsConstants
 {
-	constexpr float GRAVITY{ 9.80'665f };
+	constexpr float32 GRAVITY{ 9.80'665f };
 }
 
 //Enumeration covering all model collision types.

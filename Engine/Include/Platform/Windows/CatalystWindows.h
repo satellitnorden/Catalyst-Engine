@@ -71,7 +71,7 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
-	*	Post-nitializes the platform.
+	*	Post-intializes the platform.
 	*/
 	static void PostInitialize() NOEXCEPT;
 

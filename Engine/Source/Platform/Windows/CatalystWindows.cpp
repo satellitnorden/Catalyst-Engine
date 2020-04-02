@@ -242,7 +242,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 }
 
 /*
-*	Post-nitializes the platform.
+*	Post-intializes the platform.
 */
 void CatalystPlatform::PostInitialize() NOEXCEPT
 {
