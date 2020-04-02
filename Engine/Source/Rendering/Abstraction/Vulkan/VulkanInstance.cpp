@@ -58,8 +58,8 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 	applicationInfo.pNext = nullptr;
 	applicationInfo.pApplicationName = CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	applicationInfo.pEngineName = "Catalyst Engine";
-	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	applicationInfo.pEngineName = CATALYST_ENGINE_NAME;
+	applicationInfo.engineVersion = VK_MAKE_VERSION(CATALYST_ENGINE_MAJOR_VERSION, CATALYST_ENGINE_MINOR_VERSION, CATALYST_ENGINE_PATCH_VERSION);
 	applicationInfo.apiVersion = VK_API_VERSION_1_1;
 }
 

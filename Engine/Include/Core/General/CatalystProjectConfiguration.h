@@ -8,9 +8,6 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
-//Sound.
-#include <Sound/Native/SoundCore.h>
-
 class CatalystProjectGeneralConfiguration final
 {
 
@@ -90,13 +87,13 @@ public:
 	*	The resolution scale.
 	*	Recommended: 1.0f.
 	*/
-	float _ResolutionScale;
+	float32 _ResolutionScale;
 
 	/*
 	*	The view distance.
 	*	Recommended: 1'024.0f.
 	*/
-	float _ViewDistance;
+	float32 _ViewDistance;
 
 	/*
 	*	Default constructor.
@@ -112,12 +109,6 @@ class CatalystProjectSoundConfiguration final
 {
 
 public:
-
-	/*
-	*	The process audio function.
-	*	Recommended: A non-nullptr function pointer to a game sound system function that processes audio.
-	*/
-	ProcessAudioFunction _ProcessAudioFunction;
 
 	/*
 	*	The maximum number of channels.
@@ -157,7 +148,7 @@ public:
 	*	The total terrain will be (_PatchSize * 3.0f) * (_PatchSize * 3.0f) large.
 	*	Recommended: 1'024.0f.
 	*/
-	float _PatchSize;
+	float32 _PatchSize;
 
 	/*
 	*	The patch resolution.

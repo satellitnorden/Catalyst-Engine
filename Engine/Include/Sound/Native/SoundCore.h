@@ -6,7 +6,8 @@
 /*
 *	Type aliases.
 */
-using ProcessAudioFunction = void(*)(	const uint32 number_of_channels,
+using ProcessSoundFunction = void(*)(	const uint32 sample_rate,
+										const uint32 number_of_channels,
 										const uint32 number_of_samples,
 										float32 *const RESTRICT *const RESTRICT output);
 

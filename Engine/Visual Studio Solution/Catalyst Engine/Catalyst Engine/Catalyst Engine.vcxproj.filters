@@ -1485,6 +1485,9 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundPlayer.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEngineInformation.h">
+      <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -14,6 +14,9 @@
 #include <thread>
 #include <type_traits>
 
+//Catalyst Engine information.
+#include <Core/Essential/CatalystEngineInformation.h>
+
 //Catalyst core.
 #include <Core/Essential/CatalystDefines.h>
 #include <Core/Essential/CatalystMacros.h>
@@ -31,11 +34,11 @@
 //Enumeration covering all update phases.
 enum class UpdatePhase : uint8
 {
-	Pre = BIT(0),
-	Logic = BIT(1),
-	Physics = BIT(2),
-	Render = BIT(3),
-	Post = BIT(4)
+	PRE = BIT(0),
+	LOGIC = BIT(1),
+	PHYSICS = BIT(2),
+	RENDER = BIT(3),
+	POST = BIT(4)
 };
 
 ENUMERATION_BIT_OPERATIONS(UpdatePhase);

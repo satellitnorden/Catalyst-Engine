@@ -45,6 +45,22 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
+	/*
+	*	Returns the number of channels for the chosen audio output device.
+	*/
+	uint8 GetNumberOfChannels() const NOEXCEPT;
+
+	/*
+	*	Returns the sample rate for the chosen audio output device.
+	*/
+	uint32 GetSampleRate() const NOEXCEPT;
+
+	/*
+	*	Registers a process sound function.
+	*	Doing this will leave all responsibility to the game to produce the sound output and bypass the sound system's own processing.
+	*/
+	void RegisterProcessSoundFunction(const ProcessSoundFunction function) NOEXCEPT;
+
 	//////////////////////////
 	// Soundbank interface. //
 	//////////////////////////
