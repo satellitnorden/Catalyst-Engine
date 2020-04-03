@@ -1,8 +1,9 @@
 #pragma once
 
 //Core.
-#include<Core/Essential/CatalystEssential.h>
+#include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/Optional.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -56,6 +57,22 @@ public:
 		_CloudDensity = cloud_density;
 	}
 
+	/*
+	*	Sets the sky gradient override.
+	*/
+	FORCE_INLINE void SetSkyGradientOverride(const SkyGradient& sky_gradient) NOEXCEPT
+	{
+		_SkyGradientOverride = sky_gradient;
+	}
+
+	/*
+	*	Sets the star strength override.
+	*/
+	FORCE_INLINE void SetStarStrengthOverride(const float32 star_strength) NOEXCEPT
+	{
+		_StarStrengthOverride = star_strength;
+	}
+
 private:
 
 	//Denotes if the sky textures are initialized.
@@ -66,6 +83,12 @@ private:
 
 	//The cloud density.
 	float _CloudDensity{ 0.5f };
+
+	//The sky gradient override.
+	Optional<SkyGradient> _SkyGradientOverride;
+
+	//The star strength override.
+	Optional<float32> _StarStrengthOverride;
 
 	/*
 	*	Initializes the sky textures.

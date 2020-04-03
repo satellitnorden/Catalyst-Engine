@@ -51,21 +51,30 @@ NO_DISCARD SkyGradient SkySystem::GetCurrentSkyGradient() const NOEXCEPT
 		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f * 0.5f, Vector3<float>(0.25f, 0.5f, 0.75f) * 0.125f * 0.25f)
 	};
 
-	//Retrieve the current time of day.
-	const float current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
+	//Check if there is a sky gradient override.
+	if (_SkyGradientOverride)
+	{
+		return _SkyGradientOverride;
+	}
 
-	//Calculate the time of day alpha.
-	const float time_of_day_alpha{ current_time_of_day / 24.0f * static_cast<float>(SKY_GRADIENT_LOOKUP_SIZE) };
+	else
+	{
+		//Retrieve the current time of day.
+		const float current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
 
-	//Calculate the indices.
-	const uint32 first_index{ static_cast<uint32>(time_of_day_alpha) };
-	const uint32 second_index{ first_index < SKY_GRADIENT_LOOKUP_SIZE - 1 ? first_index + 1 : 0 };
+		//Calculate the time of day alpha.
+		const float time_of_day_alpha{ current_time_of_day / 24.0f * static_cast<float>(SKY_GRADIENT_LOOKUP_SIZE) };
 
-	//Calculate the alpha.
-	const float alpha{ CatalystBaseMath::Fractional(time_of_day_alpha) };
+		//Calculate the indices.
+		const uint32 first_index{ static_cast<uint32>(time_of_day_alpha) };
+		const uint32 second_index{ first_index < SKY_GRADIENT_LOOKUP_SIZE - 1 ? first_index + 1 : 0 };
 
-	//Return the blended sky gradient.
-	return CatalystBaseMath::LinearlyInterpolate(SKY_GRADIENT_LOOKUP[first_index], SKY_GRADIENT_LOOKUP[second_index], alpha);
+		//Calculate the alpha.
+		const float alpha{ CatalystBaseMath::Fractional(time_of_day_alpha) };
+
+		//Return the blended sky gradient.
+		return CatalystBaseMath::LinearlyInterpolate(SKY_GRADIENT_LOOKUP[first_index], SKY_GRADIENT_LOOKUP[second_index], alpha);
+	}
 }
 
 /*
@@ -87,21 +96,30 @@ NO_DISCARD float SkySystem::GetCurrentStarIntensity() const NOEXCEPT
 		0.5f  //32.00
 	};
 
-	//Retrieve the current time of day.
-	const float current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
+	//Check if there is a star strength override.
+	if (_StarStrengthOverride)
+	{
+		return _StarStrengthOverride;
+	}
 
-	//Calculate the time of day alpha.
-	const float time_of_day_alpha{ current_time_of_day / 24.0f * static_cast<float>(STAR_INTENSITY_LOOKUP_SIZE) };
+	else
+	{
+		//Retrieve the current time of day.
+		const float current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
 
-	//Calculate the indices.
-	const uint32 first_index{ static_cast<uint32>(time_of_day_alpha) };
-	const uint32 second_index{ first_index < STAR_INTENSITY_LOOKUP_SIZE - 1 ? first_index + 1 : 0 };
+		//Calculate the time of day alpha.
+		const float time_of_day_alpha{ current_time_of_day / 24.0f * static_cast<float>(STAR_INTENSITY_LOOKUP_SIZE) };
 
-	//Calculate the alpha.
-	const float alpha{ CatalystBaseMath::Fractional(time_of_day_alpha) };
+		//Calculate the indices.
+		const uint32 first_index{ static_cast<uint32>(time_of_day_alpha) };
+		const uint32 second_index{ first_index < STAR_INTENSITY_LOOKUP_SIZE - 1 ? first_index + 1 : 0 };
 
-	//Return the blended star intensity.
-	return CatalystBaseMath::LinearlyInterpolate(STAR_STRENGTH_LOOKUP[first_index], STAR_STRENGTH_LOOKUP[second_index], alpha);
+		//Calculate the alpha.
+		const float alpha{ CatalystBaseMath::Fractional(time_of_day_alpha) };
+
+		//Return the blended star intensity.
+		return CatalystBaseMath::LinearlyInterpolate(STAR_STRENGTH_LOOKUP[first_index], STAR_STRENGTH_LOOKUP[second_index], alpha);
+	}
 }
 
 /*

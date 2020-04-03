@@ -32,14 +32,6 @@ public:
 	}
 
 	/*
-	*	Arrow operator overload.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT operator->() NOEXCEPT
-	{
-		return &_Value;
-	}
-
-	/*
 	*	Assignment operator overload.
 	*/
 	FORCE_INLINE constexpr void operator=(const TYPE &new_value) NOEXCEPT
@@ -50,7 +42,7 @@ public:
 	/*
 	*	Bool conversion operator overload.
 	*/
-	FORCE_INLINE constexpr operator bool() NOEXCEPT
+	FORCE_INLINE constexpr operator bool() const NOEXCEPT
 	{
 		return _Valid;
 	}
@@ -58,17 +50,9 @@ public:
 	/*
 	*	Type conversion operator overload.
 	*/
-	FORCE_INLINE constexpr operator TYPE() NOEXCEPT
+	FORCE_INLINE constexpr operator TYPE() const NOEXCEPT
 	{
 		return _Value;
-	}
-
-	/*
-	*	Resets this optional.
-	*/
-	FORCE_INLINE constexpr void Reset() NOEXCEPT
-	{
-		new (this) Optional();
 	}
 
 private:

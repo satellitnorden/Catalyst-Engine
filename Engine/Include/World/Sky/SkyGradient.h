@@ -18,6 +18,14 @@ public:
 	Vector3<float> _LowerSkyColor;
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE constexpr SkyGradient() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Constructor taking all values as arguments.
 	*/
 	FORCE_INLINE constexpr SkyGradient(const Vector3<float> &initial_upper_sky_color, const Vector3<float> &initial_lower_sky_color) NOEXCEPT
