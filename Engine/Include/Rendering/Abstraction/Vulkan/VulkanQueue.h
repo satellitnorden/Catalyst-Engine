@@ -4,8 +4,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Multithreading.
-#include <Multithreading/Spinlock.h>
+//Concurrency.
+#include <Concurrency/Spinlock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>

@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Multithreading.
-#include <Multithreading/AtomicQueue.h>
+//Concurrency.
+#include <Concurrency/AtomicQueue.h>
 
 //Forward declarations.
 class Task;

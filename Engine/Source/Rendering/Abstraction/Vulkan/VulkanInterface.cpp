@@ -2,9 +2,9 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
-//Multithreading.
-#include <Multithreading/ScopedLock.h>
-#include <Multithreading/Spinlock.h>
+//Concurrency.
+#include <Concurrency/ScopedLock.h>
+#include <Concurrency/Spinlock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanErrorReporting.h>

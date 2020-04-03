@@ -49,12 +49,6 @@
     <Filter Include="Math\Include">
       <UniqueIdentifier>{dd339576-83ef-4cc6-aa0c-9654a254099b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Multithreading">
-      <UniqueIdentifier>{f5811fd2-e8c2-41f9-b5cc-88eaf285e64a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Multithreading\Include">
-      <UniqueIdentifier>{ef43880f-43f7-4855-ad2b-ecd4a04115ca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{467fae4e-8006-49b1-bbe4-ecc32d8bc84e}</UniqueIdentifier>
     </Filter>
@@ -385,6 +379,12 @@
     <Filter Include="Sound\Source\Abstraction\Catalyst">
       <UniqueIdentifier>{19b28c0d-92a4-4d16-b0fb-9a6845f3615d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Concurrency">
+      <UniqueIdentifier>{67bad350-bd28-40dc-9acc-05aaa47feb16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Concurrency\Include">
+      <UniqueIdentifier>{83928798-3ec4-4119-80c3-80412ced52ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -404,21 +404,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\Task.h">
-      <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
       <Filter>Platform\Include\General</Filter>
@@ -443,9 +428,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h">
-      <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
       <Filter>Managers\Include</Filter>
@@ -533,12 +515,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h">
       <Filter>Entities\Include\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\ScopedReadLock.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\ScopedWriteLock.h">
-      <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystDefines.h">
       <Filter>Core\Include\Essential</Filter>
@@ -1287,12 +1263,6 @@
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h">
       <Filter>Save\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\ReadWriteSpinlock.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h">
-      <Filter>Multithreading\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Optional.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
@@ -1487,6 +1457,36 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEngineInformation.h">
       <Filter>Core\Include\Essential</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\AtomicFlag.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\AtomicQueue.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\ReadWriteSpinlock.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\ScopedLock.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\ScopedReadLock.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\ScopedWriteLock.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\Semaphore.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\Spinlock.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\Task.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\Thread.h">
+      <Filter>Concurrency\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1969,6 +1969,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\WindowsCatalystSoundSystem.cpp">
       <Filter>Sound\Source\Abstraction\Catalyst</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp">
+      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

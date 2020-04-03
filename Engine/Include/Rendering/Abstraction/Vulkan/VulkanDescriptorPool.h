@@ -5,8 +5,8 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Multithreading.
-#include <Multithreading/Spinlock.h>
+//Concurrency.
+#include <Concurrency/Spinlock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>

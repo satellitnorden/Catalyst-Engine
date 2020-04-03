@@ -3,16 +3,13 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
+
+//Concurrency.
+#include <Concurrency/Task.h>
 
 //Math.
 #include <Math/Geometry/GridPoint2.h>
-
-//Multithreading.
-#include <Multithreading/AtomicQueue.h>
-#include <Multithreading/Spinlock.h>
-#include <Multithreading/Task.h>
 
 //Terrain.
 #include <Terrain/TerrainCore.h>

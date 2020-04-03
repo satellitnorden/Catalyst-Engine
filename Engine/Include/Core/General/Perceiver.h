@@ -3,12 +3,12 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/ScopedLock.h>
+
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Vector.h>
-
-//Multithreading.
-#include <Multithreading/ScopedLock.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

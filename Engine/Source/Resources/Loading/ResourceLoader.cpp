@@ -4,9 +4,6 @@
 //Animation.
 #include <Animation/AnimatedVertex.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
-
 //Resources.
 #include <Resources/Creation/ResourceCreator.h>
 #include <Resources/Data/SoundBankData.h>
@@ -14,7 +11,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Static variable definitions.
 Map<HashString, AnimatedModel> ResourceLoader::_AnimatedModels;

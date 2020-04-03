@@ -1,8 +1,8 @@
 //Header file.
 #include <Systems/TaskSystem.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
+//Concurrency.
+#include <Concurrency/Task.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(TaskSystem);
@@ -29,10 +29,10 @@ void TaskSystem::Initialize() NOEXCEPT
 
 	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
 	{
-		_TaskExecutorThreads.Emplace(std::move(std::thread([](void *const RESTRICT)
+		_TaskExecutorThreads.Emplace(std::move(std::thread([]()
 		{
 			TaskSystem::Instance->ExecuteTasks();
-		}, nullptr)));
+		})));
 	}
 }
 

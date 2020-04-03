@@ -4,12 +4,12 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 
+//Concurrency.
+#include <Concurrency/Spinlock.h>
+
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 #include <Entities/Types/Entity.h>
-
-//Multithreading.
-#include <Multithreading/Spinlock.h>
 
 class EntityCreationSystem final
 {

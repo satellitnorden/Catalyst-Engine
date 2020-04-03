@@ -4,9 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
-
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>

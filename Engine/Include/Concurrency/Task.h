@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Multithreading.
-#include <Multithreading/Semaphore.h>
+//Concurrency.
+#include <Concurrency/Semaphore.h>
 
 //Type aliases.
 using TaskFunction = void(*)(void *const RESTRICT /*arguments*/);

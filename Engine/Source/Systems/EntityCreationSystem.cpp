@@ -1,8 +1,8 @@
 //Header file.
 #include <Systems/EntityCreationSystem.h>
 
-//Multithreading.
-#include <Multithreading/ScopedLock.h>
+//Concurrency.
+#include <Concurrency/ScopedLock.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntityCreationSystem);

@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
@@ -12,9 +15,6 @@
 
 //Math.
 #include <Math/General/Vector.h>
-
-//Multithreading.
-#include <Multithreading/Task.h>
 
 class InputSystem final
 {
