@@ -74,146 +74,146 @@ void VulkanInterface::Release() NOEXCEPT
 	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : _Vulkan2DTextures)
 	{
 		vulkan2DTexture->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(vulkan2DTexture);
+		Memory::Free(vulkan2DTexture);
 	}
 
 	//Release all Vulkan 3D textures.
 	for (Vulkan3DTexture* const RESTRICT vulkan3DTexture : _Vulkan3DTextures)
 	{
 		vulkan3DTexture->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(Vulkan3DTexture)>(vulkan3DTexture);
+		Memory::Free(vulkan3DTexture);
 	}
 
 	//Release all Vulkan acceleration structures.
 	for (VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure : _VulkanAccelerationStructures)
 	{
 		vulkanAccelerationStructure->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanAccelerationStructure)>(vulkanAccelerationStructure);
+		Memory::Free(vulkanAccelerationStructure);
 	}
 
 	//Release all Vulkan bufferrs.
 	for (VulkanBuffer *const RESTRICT vulkanBuffer : _VulkanBuffers)
 	{
 		vulkanBuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanBuffer)>(vulkanBuffer);
+		Memory::Free(vulkanBuffer);
 	}
 
 	//Release all Vulkan command pools.
 	for (VulkanCommandPool *const RESTRICT vulkanCommandPool : _VulkanCommandPools)
 	{
 		vulkanCommandPool->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanCommandPool)>(vulkanCommandPool);
+		Memory::Free(vulkanCommandPool);
 	}
 
 	//Release all Vulkan cube map textures.
 	for (VulkanCubeMapTexture *const RESTRICT vulkanCubeMapTexture : _VulkanCubeMapTextures)
 	{
 		vulkanCubeMapTexture->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanCubeMapTexture)>(vulkanCubeMapTexture);
+		Memory::Free(vulkanCubeMapTexture);
 	}
 
 	//Release all Vulkan depth buffers.
 	for (VulkanDepthBuffer *const RESTRICT vulkanDepthBuffer : _VulkanDepthBuffers)
 	{
 		vulkanDepthBuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanDepthBuffer)>(vulkanDepthBuffer);
+		Memory::Free(vulkanDepthBuffer);
 	}
 
 	//Release all Vulkan descriptor set layouts.
 	for (VulkanDescriptorSetLayout *const RESTRICT vulkanDescriptorSetLayout : _VulkanDescriptorSetLayouts)
 	{
 		vulkanDescriptorSetLayout->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanDescriptorSetLayout)>(vulkanDescriptorSetLayout);
+		Memory::Free(vulkanDescriptorSetLayout);
 	}
 
 	//Release all Vulkan descriptor sets.
 	for (VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet : _VulkanDescriptorSets)
 	{
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanDescriptorSet)>(vulkanDescriptorSet);
+		Memory::Free(vulkanDescriptorSet);
 	}
 
 	//Release all Vulkan events.
 	for (VulkanEvent *const RESTRICT vulkanEvent : _VulkanEvents)
 	{
 		vulkanEvent->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanEvent)>(vulkanEvent);
+		Memory::Free(vulkanEvent);
 	}
 
 	//Release all Vulkan fences.
 	for (VulkanFence *const RESTRICT vulkanFence : _VulkanFences)
 	{
 		vulkanFence->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanFence)>(vulkanFence);
+		Memory::Free(vulkanFence);
 	}
 
 	//Release all Vulkan framebuffers.
 	for (VulkanFramebuffer *const RESTRICT vulkanFramebuffer : _VulkanFramebuffers)
 	{
 		vulkanFramebuffer->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanFramebuffer)>(vulkanFramebuffer);
+		Memory::Free(vulkanFramebuffer);
 	}
 
 	//Release all Vulkan render targets.
 	for (VulkanRenderTarget *const RESTRICT vulkanRenderTarget : _VulkanRenderTargets)
 	{
 		vulkanRenderTarget->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanRenderTarget)>(vulkanRenderTarget);
+		Memory::Free(vulkanRenderTarget);
 	}
 
 	//Release all Vulkan compute pipelines.
 	for (VulkanComputePipeline *const RESTRICT vulkanComputePipeline : _VulkanComputePipelines)
 	{
 		vulkanComputePipeline->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanComputePipeline)>(vulkanComputePipeline);
+		Memory::Free(vulkanComputePipeline);
 	}
 
 	//Release all Vulkan graphics pipelines.
 	for (VulkanGraphicsPipeline *const RESTRICT vulkanGraphicsPipeline : _VulkanGraphicsPipelines)
 	{
 		vulkanGraphicsPipeline->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanGraphicsPipeline)>(vulkanGraphicsPipeline);
+		Memory::Free(vulkanGraphicsPipeline);
 	}
 
 	//Release all Vulkan ray tracing pipelines.
 	for (VulkanRayTracingPipeline *const RESTRICT vulkanRayTracingPipeline : _VulkanRayTracingPipelines)
 	{
 		vulkanRayTracingPipeline->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanRayTracingPipeline)>(vulkanRayTracingPipeline);
+		Memory::Free(vulkanRayTracingPipeline);
 	}
 
 	//Release all Vulkan query pools.
 	for (VulkanQueryPool *const RESTRICT vulkan_query_pool : _VulkanQueryPools)
 	{
 		vulkan_query_pool->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanQueryPool)>(vulkan_query_pool);
+		Memory::Free(vulkan_query_pool);
 	}
 
 	//Release all Vulkan render passes.
 	for (VulkanRenderPass *const RESTRICT vulkanRenderPass : _VulkanRenderPasses)
 	{
 		vulkanRenderPass->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanRenderPass)>(vulkanRenderPass);
+		Memory::Free(vulkanRenderPass);
 	}
 
 	//Release all Vulkan semaphores.
 	for (VulkanSemaphore *const RESTRICT vulkanSemaphore : _VulkanSemaphores)
 	{
 		vulkanSemaphore->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanSemaphore)>(vulkanSemaphore);
+		Memory::Free(vulkanSemaphore);
 	}
 
 	//Release all Vulkan samplers.
 	for (VulkanSampler *const RESTRICT vulkanSampler : _VulkanSamplers)
 	{
 		vulkanSampler->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanSampler)>(vulkanSampler);
+		Memory::Free(vulkanSampler);
 	}
 
 	//Release all Vulkan shader modules.
 	for (VulkanShaderModule *const RESTRICT vulkanShaderModule : _VulkanShaderModules)
 	{
 		vulkanShaderModule->Release();
-		Memory::GlobalPoolDeAllocate<sizeof(VulkanShaderModule)>(vulkanShaderModule);
+		Memory::Free(vulkanShaderModule);
 	}
 
 	//Release the Vulkan descriptor pool.
@@ -242,7 +242,7 @@ void VulkanInterface::Release() NOEXCEPT
 */
 RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format) NOEXCEPT
 {
-	Vulkan2DTexture *const RESTRICT new2DTexture{ new (Memory::GlobalPoolAllocate<sizeof(Vulkan2DTexture)>()) Vulkan2DTexture() };
+	Vulkan2DTexture *const RESTRICT new2DTexture{ new (Memory::Allocate(sizeof(Vulkan2DTexture))) Vulkan2DTexture() };
 	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format);
 
 	static Spinlock lock;
@@ -260,7 +260,7 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 {
 	texture->Release();
 	_Vulkan2DTextures.Erase(texture);
-	Memory::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(texture);
+	Memory::Free(texture);
 }
 
 /*
@@ -268,7 +268,7 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 */
 RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureDepth, const uint32 textureChannels, const uint32 textureTexelSize, const void* RESTRICT const* RESTRICT textureData, const VkFormat format) NOEXCEPT
 {
-	Vulkan3DTexture* const RESTRICT new3DTexture{ new (Memory::GlobalPoolAllocate<sizeof(Vulkan3DTexture)>()) Vulkan3DTexture() };
+	Vulkan3DTexture* const RESTRICT new3DTexture{ new (Memory::Allocate(sizeof(Vulkan3DTexture))) Vulkan3DTexture() };
 	new3DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureDepth, textureChannels, textureTexelSize, textureData, format);
 
 	static Spinlock lock;
@@ -284,7 +284,7 @@ RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(cons
 */
 RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT
 {
-	VulkanAccelerationStructure *const RESTRICT newAccelerationStructure{ new (Memory::GlobalPoolAllocate<sizeof(VulkanAccelerationStructure)>()) VulkanAccelerationStructure() };
+	VulkanAccelerationStructure *const RESTRICT newAccelerationStructure{ new (Memory::Allocate(sizeof(VulkanAccelerationStructure))) VulkanAccelerationStructure() };
 	newAccelerationStructure->Initialize(type, instances, geometry);
 
 	static Spinlock lock;
@@ -302,7 +302,7 @@ void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *
 {
 	accelerationStructure->Release();
 	_VulkanAccelerationStructures.Erase(accelerationStructure);
-	Memory::GlobalPoolDeAllocate<sizeof(VulkanAccelerationStructure)>(accelerationStructure);
+	Memory::Free(accelerationStructure);
 }
 
 /*
@@ -310,7 +310,7 @@ void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *
 */
 RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT
 {
-	VulkanBuffer *const RESTRICT newBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanBuffer)>()) VulkanBuffer() };
+	VulkanBuffer *const RESTRICT newBuffer{ new (Memory::Allocate(sizeof(VulkanBuffer))) VulkanBuffer() };
 	newBuffer->Initialize(size, usage, memoryProperties);
 
 	static Spinlock lock;
@@ -328,7 +328,7 @@ void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEP
 {
 	buffer->Release();
 	_VulkanBuffers.Erase(buffer);
-	Memory::GlobalPoolDeAllocate<sizeof(VulkanBuffer)>(buffer);
+	Memory::Free(buffer);
 }
 
 /*
@@ -336,7 +336,7 @@ void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEP
 */
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
-	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandPool)>()) VulkanCommandPool() };
+	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
 	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Compute));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
@@ -350,7 +350,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeComma
 */
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
-	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandPool)>()) VulkanCommandPool() };
+	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
 	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
@@ -364,7 +364,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsComm
 */
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
-	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandPool)>()) VulkanCommandPool() };
+	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
 	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
@@ -379,7 +379,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferComm
 */
 RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
 {
-	VulkanCubeMapTexture *const RESTRICT newCubeMapTexture{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCubeMapTexture)>()) VulkanCubeMapTexture() };
+	VulkanCubeMapTexture *const RESTRICT newCubeMapTexture{ new (Memory::Allocate(sizeof(VulkanCubeMapTexture))) VulkanCubeMapTexture() };
 	newCubeMapTexture->Initialize(data, width, height);
 
 	static Spinlock lock;
@@ -395,7 +395,7 @@ RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTe
 */
 RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
 {
-	VulkanDepthBuffer *const RESTRICT newDepthBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanDepthBuffer)>()) VulkanDepthBuffer() };
+	VulkanDepthBuffer *const RESTRICT newDepthBuffer{ new (Memory::Allocate(sizeof(VulkanDepthBuffer))) VulkanDepthBuffer() };
 	newDepthBuffer->Initialize(depthBufferExtent);
 
 	static Spinlock lock;
@@ -411,7 +411,7 @@ RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(
 */
 RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT
 {
-	VulkanDescriptorSetLayout *const RESTRICT newDescriptorSetLayout{ new (Memory::GlobalPoolAllocate<sizeof(VulkanDescriptorSetLayout)>()) VulkanDescriptorSetLayout() };
+	VulkanDescriptorSetLayout *const RESTRICT newDescriptorSetLayout{ new (Memory::Allocate(sizeof(VulkanDescriptorSetLayout))) VulkanDescriptorSetLayout() };
 	newDescriptorSetLayout->Initialize(numberOfDescriptorSetLayoutBindings, descriptorSetLayoutBindings);
 
 	static Spinlock lock;
@@ -427,7 +427,7 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 */
 RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
 {
-	VulkanDescriptorSet *const RESTRICT newDescriptorSet{ new (Memory::GlobalPoolAllocate<sizeof(VulkanDescriptorSet)>()) VulkanDescriptorSet() };
+	VulkanDescriptorSet *const RESTRICT newDescriptorSet{ new (Memory::Allocate(sizeof(VulkanDescriptorSet))) VulkanDescriptorSet() };
 	_VulkanDescriptorPool.AllocateDescriptorSet(*newDescriptorSet, vulkanDescriptorSetLayout);
 
 	static Spinlock lock;
@@ -445,7 +445,7 @@ void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT d
 {
 	_VulkanDescriptorPool.FreeDescriptorSet(descriptorSet->Get());
 	_VulkanDescriptorSets.Erase(descriptorSet);
-	Memory::GlobalPoolDeAllocate<sizeof(VulkanDescriptorSet)>(descriptorSet);
+	Memory::Free(descriptorSet);
 }
 
 /*
@@ -453,7 +453,7 @@ void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT d
 */
 RESTRICTED VulkanEvent *const RESTRICT VulkanInterface::CreateEvent() NOEXCEPT
 {
-	VulkanEvent *const RESTRICT newEvent{ new (Memory::GlobalPoolAllocate<sizeof(VulkanEvent)>()) VulkanEvent() };
+	VulkanEvent *const RESTRICT newEvent{ new (Memory::Allocate(sizeof(VulkanEvent))) VulkanEvent() };
 	newEvent->Initialize();
 
 	static Spinlock lock;
@@ -469,7 +469,7 @@ RESTRICTED VulkanEvent *const RESTRICT VulkanInterface::CreateEvent() NOEXCEPT
 */
 RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenceCreateFlags flags) NOEXCEPT
 {
-	VulkanFence *const RESTRICT newFence{ new (Memory::GlobalPoolAllocate<sizeof(VulkanFence)>()) VulkanFence() };
+	VulkanFence *const RESTRICT newFence{ new (Memory::Allocate(sizeof(VulkanFence))) VulkanFence() };
 	newFence->Initialize(flags);
 
 	static Spinlock lock;
@@ -485,7 +485,7 @@ RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenc
 */
 RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT
 {
-	VulkanFramebuffer *const RESTRICT newFramebuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanFramebuffer)>()) VulkanFramebuffer() };
+	VulkanFramebuffer *const RESTRICT newFramebuffer{ new (Memory::Allocate(sizeof(VulkanFramebuffer))) VulkanFramebuffer() };
 	newFramebuffer->Initialize(parameters);
 
 	static Spinlock lock;
@@ -501,7 +501,7 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 */
 RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputePipeline(const VulkanComputePipelineCreationParameters &parameters) NOEXCEPT
 {
-	VulkanComputePipeline *const RESTRICT newPipeline{ new (Memory::GlobalPoolAllocate<sizeof(VulkanComputePipeline)>()) VulkanComputePipeline() };
+	VulkanComputePipeline *const RESTRICT newPipeline{ new (Memory::Allocate(sizeof(VulkanComputePipeline))) VulkanComputePipeline() };
 	newPipeline->Initialize(parameters);
 
 	static Spinlock lock;
@@ -517,7 +517,7 @@ RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputeP
 */
 RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT
 {
-	VulkanGraphicsPipeline *const RESTRICT newPipeline{ new (Memory::GlobalPoolAllocate<sizeof(VulkanGraphicsPipeline)>()) VulkanGraphicsPipeline() };
+	VulkanGraphicsPipeline *const RESTRICT newPipeline{ new (Memory::Allocate(sizeof(VulkanGraphicsPipeline))) VulkanGraphicsPipeline() };
 	newPipeline->Initialize(parameters);
 
 	static Spinlock lock;
@@ -533,7 +533,7 @@ RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphic
 */
 RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT
 {
-	VulkanRayTracingPipeline *const RESTRICT newPipeline{ new (Memory::GlobalPoolAllocate<sizeof(VulkanRayTracingPipeline)>()) VulkanRayTracingPipeline() };
+	VulkanRayTracingPipeline *const RESTRICT newPipeline{ new (Memory::Allocate(sizeof(VulkanRayTracingPipeline))) VulkanRayTracingPipeline() };
 	newPipeline->Initialize(parameters);
 
 	static Spinlock lock;
@@ -549,7 +549,7 @@ RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTr
 */
 RESTRICTED VulkanQueryPool *const RESTRICT VulkanInterface::CreateQueryPool(const VkQueryType query_type, const uint32 query_count) NOEXCEPT
 {
-	VulkanQueryPool *const RESTRICT new_query_pool{ new (Memory::GlobalPoolAllocate<sizeof(VulkanQueryPool)>()) VulkanQueryPool() };
+	VulkanQueryPool *const RESTRICT new_query_pool{ new (Memory::Allocate(sizeof(VulkanQueryPool))) VulkanQueryPool() };
 	new_query_pool->Initialize(query_type, query_count);
 
 	static Spinlock lock;
@@ -565,7 +565,7 @@ RESTRICTED VulkanQueryPool *const RESTRICT VulkanInterface::CreateQueryPool(cons
 */
 RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT
 {
-	VulkanRenderPass *const RESTRICT newRenderPass{ new (Memory::GlobalPoolAllocate<sizeof(VulkanRenderPass)>()) VulkanRenderPass() };
+	VulkanRenderPass *const RESTRICT newRenderPass{ new (Memory::Allocate(sizeof(VulkanRenderPass))) VulkanRenderPass() };
 	newRenderPass->Initialize(parameters);
 
 	static Spinlock lock;
@@ -581,7 +581,7 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 */
 RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT
 {
-	VulkanRenderTarget *const RESTRICT newRenderTarget{ new (Memory::GlobalPoolAllocate<sizeof(VulkanRenderTarget)>()) VulkanRenderTarget() };
+	VulkanRenderTarget *const RESTRICT newRenderTarget{ new (Memory::Allocate(sizeof(VulkanRenderTarget))) VulkanRenderTarget() };
 	newRenderTarget->Initialize(extent, format);
 
 	static Spinlock lock;
@@ -597,7 +597,7 @@ RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarge
 */
 RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NOEXCEPT
 {
-	VulkanSemaphore *const RESTRICT newSemaphore{ new (Memory::GlobalPoolAllocate<sizeof(VulkanSemaphore)>()) VulkanSemaphore() };
+	VulkanSemaphore *const RESTRICT newSemaphore{ new (Memory::Allocate(sizeof(VulkanSemaphore))) VulkanSemaphore() };
 	newSemaphore->Initialize();
 
 	static Spinlock lock;
@@ -613,7 +613,7 @@ RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NO
 */
 RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
-	VulkanSampler *const RESTRICT newSampler{ new (Memory::GlobalPoolAllocate<sizeof(VulkanSampler)>()) VulkanSampler() };
+	VulkanSampler *const RESTRICT newSampler{ new (Memory::Allocate(sizeof(VulkanSampler))) VulkanSampler() };
 	newSampler->Initialize(magnificationFilter, mipmapMode, addressMode);
 
 	static Spinlock lock;
@@ -629,7 +629,7 @@ RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const Vk
 */
 RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT
 {
-	VulkanShaderModule *const RESTRICT newShaderModule{ new (Memory::GlobalPoolAllocate<sizeof(VulkanShaderModule)>()) VulkanShaderModule() };
+	VulkanShaderModule *const RESTRICT newShaderModule{ new (Memory::Allocate(sizeof(VulkanShaderModule))) VulkanShaderModule() };
 	newShaderModule->Initialize(shaderData, shaderDataSize, stage);
 
 	static Spinlock lock;

@@ -25,7 +25,7 @@ RESTRICTED CLASS* const RESTRICT EntityCreationSystem::CreateEntity(ARGUMENTS&&.
 template <typename TYPE>
 RESTRICTED TYPE* const RESTRICT EntityCreationSystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ Memory::GlobalPoolAllocate<sizeof(TYPE)>() };
+	void* const RESTRICT memory{ Memory::Allocate(sizeof(TYPE)) };
 
 	new (memory) TYPE();
 
@@ -39,5 +39,5 @@ template <typename TYPE>
 void EntityCreationSystem::DestroyInitializationData(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	static_cast<TYPE *const RESTRICT>(data)->~TYPE();
-	Memory::GlobalPoolDeAllocate<sizeof(TYPE)>(data);
+	Memory::Free(data);
 }

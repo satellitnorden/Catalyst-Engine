@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 template <uint64 SIZE>
 class LinearAllocator final
 {
@@ -46,7 +49,7 @@ public:
 private:
 
 	//The current index.
-	std::atomic<uint64> _Index{ 0 };
+	Atomic<uint64> _Index{ 0 };
 
 	//The memory.
 	void *RESTRICT _Memory{ nullptr };

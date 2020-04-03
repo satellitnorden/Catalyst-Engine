@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Default|x64">
@@ -64,8 +64,10 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
+    <ClInclude Include="..\..\..\Include\Concurrency\Atomic.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AtomicQueue.h" />
+    <ClInclude Include="..\..\..\Include\Concurrency\ConcurrencyCore.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\ReadWriteSpinlock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedLock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedReadLock.h" />
@@ -432,6 +434,7 @@
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsConcurrencyCore.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />

@@ -5,7 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Concurrency.
+#include <Concurrency/Atomic.h>
 #include <Concurrency/AtomicQueue.h>
+#include <Concurrency/Thread.h>
 
 //Forward declarations.
 class Task;
@@ -51,7 +53,7 @@ public:
 private:
 
 	//The maximum number of tasks.
-	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 128 };
+	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 1'024 };
 
 	//Denotes whether or not tasks should be executed.
 	bool _ExecuteTasks{ true };
@@ -60,13 +62,13 @@ private:
 	uint32 _NumberOfTaskExecutors;
 
 	//Container for all task executor threads.
-	DynamicArray<std::thread> _TaskExecutorThreads;
+	DynamicArray<Thread> _TaskExecutorThreads;
 
 	//Container for all atomic queues in which to put tasks in.
 	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> _TaskQueue;
 
 	//Denotes how many tasks are currently queued.
-	std::atomic<uint64> _TasksInQueue{ 0 };
+	Atomic<uint64> _TasksInQueue{ 0 };
 
 	/*
 	*	Executes tasks.

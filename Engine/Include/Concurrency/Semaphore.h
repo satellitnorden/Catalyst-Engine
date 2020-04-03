@@ -3,6 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+#include <Concurrency/ConcurrencyCore.h>
+
 //Enumeration covering all semaphore creation flags.
 enum SemaphoreCreationFlags : uint8
 {
@@ -55,13 +59,13 @@ public:
 	{
 		while (!_Signalled)
 		{
-			std::this_thread::yield();
+			Concurrency::CurrentThread::Yield();
 		}
 	}
 
 private:
 
 	//Defines whether or not this semaphore is signalled.
-	std::atomic<bool> _Signalled{ false };
+	Atomic<bool> _Signalled{ false };
 
 };

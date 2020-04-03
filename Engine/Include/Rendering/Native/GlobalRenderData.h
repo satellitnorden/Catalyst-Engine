@@ -1,11 +1,11 @@
 #pragma once
 
-//Concurrency.
-#include <Concurrency/Spinlock.h>
-
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+
+//Concurrency.
+#include <Concurrency/Spinlock.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>

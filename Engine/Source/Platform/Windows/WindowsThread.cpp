@@ -34,6 +34,16 @@ void Thread::SetPriority(const Priority priority) NOEXCEPT
 	_Priority = priority;
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Sets the name of this thread.
+*/
+void Thread::SetName(const DynamicString &name) NOEXCEPT
+{
+	_Name = name;
+}
+#endif
+
 /*
 *	Launches this thread.
 */
@@ -48,47 +58,63 @@ void Thread::Launch() NOEXCEPT
 	std::thread::native_handle_type native_handle{ static_cast<std::thread* const RESTRICT>(_PlatformData)->native_handle() };
 
 	//Set the thread priority.
-	int32 windows_priority{ THREAD_PRIORITY_NORMAL };
-
-	switch (_Priority)
 	{
-		case Priority::LOWEST:
-		{
-			windows_priority = THREAD_PRIORITY_LOWEST;
+		int32 windows_priority{ THREAD_PRIORITY_NORMAL };
 
-			break;
+		switch (_Priority)
+		{
+			case Priority::LOWEST:
+			{
+				windows_priority = THREAD_PRIORITY_LOWEST;
+
+				break;
+			}
+
+			case Priority::BELOW_NORMAL:
+			{
+				windows_priority = THREAD_PRIORITY_BELOW_NORMAL;
+
+				break;
+			}
+
+			case Priority::NORMAL:
+			{
+				windows_priority = THREAD_PRIORITY_NORMAL;
+
+				break;
+			}
+
+			case Priority::ABOVE_NORMAL:
+			{
+				windows_priority = THREAD_PRIORITY_ABOVE_NORMAL;
+
+				break;
+			}
+
+			case Priority::HIGHEST:
+			{
+				windows_priority = THREAD_PRIORITY_HIGHEST;
+
+				break;
+			}
 		}
 
-		case Priority::BELOW_NORMAL:
-		{
-			windows_priority = THREAD_PRIORITY_BELOW_NORMAL;
+		const HRESULT result{ SetThreadPriority(native_handle, windows_priority) };
 
-			break;
-		}
-
-		case Priority::NORMAL:
-		{
-			windows_priority = THREAD_PRIORITY_NORMAL;
-
-			break;
-		}
-
-		case Priority::ABOVE_NORMAL:
-		{
-			windows_priority = THREAD_PRIORITY_ABOVE_NORMAL;
-
-			break;
-		}
-
-		case Priority::HIGHEST:
-		{
-			windows_priority = THREAD_PRIORITY_HIGHEST;
-
-			break;
-		}
+		ASSERT(SUCCEEDED(result), "Couldn't set thread priority!");
 	}
 
-	SetThreadPriority(native_handle, windows_priority);
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the thread name.
+	{
+		const std::string string_name{ _Name.Data() };
+		const std::wstring name{ string_name.begin(), string_name.end() };
+
+		const HRESULT result{ SetThreadDescription(native_handle, name.c_str()) };
+
+		ASSERT(SUCCEEDED(result), "Couldn't set thread description!");
+	}
+#endif
 }
 
 /*

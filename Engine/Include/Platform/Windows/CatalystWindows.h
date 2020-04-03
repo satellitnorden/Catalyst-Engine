@@ -28,6 +28,7 @@
 #undef min
 #undef near
 #undef PlaySound
+#undef Yield
 
 /*
 *	Main function.

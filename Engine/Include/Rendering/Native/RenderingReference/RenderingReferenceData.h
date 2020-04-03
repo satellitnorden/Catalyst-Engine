@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 //Rendering.
 #include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/RenderingCore.h>
@@ -54,7 +57,7 @@ public:
 	DynamicArray<AsynchronousData> _AsynchronousData;
 
 	//Keeps track of the number of texels calculated.
-	std::atomic<uint64> _TexelsCalculated{ 0 };
+	Atomic<uint64> _TexelsCalculated{ 0 };
 
 	//The progress information.
 	TextUserInterfaceElement *RESTRICT _ProgressInformation;

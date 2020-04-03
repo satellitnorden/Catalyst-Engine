@@ -2,7 +2,6 @@
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
-#include <Concurrency/Spinlock.h>
 
 //Memory.
 #include <Memory/DestructorPointer.h>
@@ -79,52 +78,6 @@ public:
 	FORCE_INLINE RESTRICTED static NO_DISCARD LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
 	{
 		static LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> allocator;
-
-		return &allocator;
-	}
-
-	/*
-	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
-	*/
-	template <uint64 SIZE>
-	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT GlobalPoolAllocate() NOEXCEPT
-	{
-		SCOPED_LOCK(*GlobalPoolAllocatorLock<SIZE>());
-
-		return GlobalPoolAllocator<SIZE>()->Allocate();
-	}
-
-	/*
-	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
-	*/
-	template <uint64 SIZE>
-	FORCE_INLINE static void GlobalPoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
-	{
-		SCOPED_LOCK(*GlobalPoolAllocatorLock<SIZE>());
-
-		GlobalPoolAllocator<SIZE>()->DeAllocate(memory);
-	}
-
-private:
-
-	/*
-	*	Returns the global pool allocator lock with the given size.
-	*/
-	template <uint64 SIZE>
-	FORCE_INLINE RESTRICTED static NO_DISCARD Spinlock *const RESTRICT GlobalPoolAllocatorLock() NOEXCEPT
-	{
-		static Spinlock lock;
-
-		return &lock;
-	}
-
-	/*
-	*	Returns the global pool allocator with the given size.
-	*/
-	template <uint64 SIZE>
-	FORCE_INLINE RESTRICTED static NO_DISCARD PoolAllocator<SIZE> *const RESTRICT GlobalPoolAllocator() NOEXCEPT
-	{
-		static PoolAllocator<SIZE> allocator;
 
 		return &allocator;
 	}

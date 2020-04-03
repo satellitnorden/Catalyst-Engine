@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 /*
 *	Multiple producer - multiple consumers queue.
 *	WILL overwrite values once the circular buffer has reached the beginning again.
@@ -70,12 +73,12 @@ private:
 	StaticArray<TYPE, SIZE> _Queue;
 
 	//The first index in the queue.
-	std::atomic<uint64> _FirstIndex{ 0 };
+	Atomic<uint64> _FirstIndex{ 0 };
 
 	//The current write index.
-	std::atomic<uint64> _WriteIndex{ 0 };
+	Atomic<uint64> _WriteIndex{ 0 };
 
 	//The last index in the queue.
-	std::atomic<uint64> _LastIndex{ 0 };
+	Atomic<uint64> _LastIndex{ 0 };
 
 };

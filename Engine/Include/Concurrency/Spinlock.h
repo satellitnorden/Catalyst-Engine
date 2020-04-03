@@ -3,8 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Intrinsics.
-#include <immintrin.h>
+//Concurrency.
+#include <Concurrency/Atomic.h>
+#include <Concurrency/ConcurrencyCore.h>
 
 #if defined(CATALYST_CXX20) //C++20 implementation of a spinlock.
 class Spinlock final
@@ -56,12 +57,15 @@ public:
 		{
 			if (spin_count < MAXIMUM_SPIN_COUNT)
 			{
-				_mm_pause();
+				Concurrency::CurrentThread::Pause();
 			}
 
 			else
 			{
-				std::this_thread::yield();
+				//Yield the current thread.
+				Concurrency::CurrentThread::Yield();
+
+				//Reset the spin count.
 				spin_count = 0;
 			}
 		}
@@ -78,7 +82,7 @@ public:
 private:
 
 	//Denotes whether or not this lock is locked.
-	std::atomic<bool> _Locked{ false };
+	Atomic<bool> _Locked{ false };
 
 	/*
 	*	Tries to lock the lock. Returns if locking was successful.

@@ -2,6 +2,9 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Core/General/DynamicString.h>
+#endif
 
 class Thread final
 {
@@ -43,6 +46,13 @@ public:
 	*/
 	void SetPriority(const Priority priority) NOEXCEPT;
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Sets the name of this thread.
+	*/
+	void SetName(const DynamicString &name) NOEXCEPT;
+#endif
+
 	/*
 	*	Launches this thread.
 	*/
@@ -64,5 +74,10 @@ private:
 
 	//The priority.
 	Priority _Priority{ Priority::NORMAL };
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The name.
+	DynamicString _Name;
+#endif
 
 };

@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 class CatalystEngineSystem final
 {
 
@@ -89,7 +92,7 @@ private:
 	CatalystProjectConfiguration _ProjectConfiguration;
 
 	//Denotes whether or not the game should terminate.
-	std::atomic<bool> _ShouldTerminate{ false };
+	Atomic<bool> _ShouldTerminate{ false };
 
 	//Denotes the total frames.
 	uint64 _TotalFrames{ 0 };

@@ -1488,6 +1488,12 @@
     <ClInclude Include="..\..\..\Include\Concurrency\Thread.h">
       <Filter>Concurrency\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\ConcurrencyCore.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\Atomic.h">
+      <Filter>Concurrency\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1971,6 +1977,9 @@
       <Filter>Sound\Source\Abstraction\Catalyst</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsConcurrencyCore.cpp">
       <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>

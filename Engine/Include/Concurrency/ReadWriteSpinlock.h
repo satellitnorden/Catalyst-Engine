@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 class ReadWriteSpinlock final
 {
 
@@ -71,9 +74,9 @@ public:
 private:
 
 	//The number of readers.
-	std::atomic<uint64> _NumberOfReaders{ 0 };
+	Atomic<uint64> _NumberOfReaders{ 0 };
 
 	//Denotes whether or not a write is in progress.
-	std::atomic<bool> _WriteInProgress{ false };
+	Atomic<bool> _WriteInProgress{ false };
 
 };

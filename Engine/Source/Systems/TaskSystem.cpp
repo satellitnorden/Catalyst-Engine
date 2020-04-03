@@ -2,6 +2,7 @@
 #include <Systems/TaskSystem.h>
 
 //Concurrency.
+#include <Concurrency/ConcurrencyCore.h>
 #include <Concurrency/Task.h>
 
 //Singleton definition.
@@ -12,27 +13,41 @@ DEFINE_SINGLETON(TaskSystem);
 */
 void TaskSystem::Initialize() NOEXCEPT
 {
-	//Find out how many hardware threads there is.
-	uint32 numberOfHardwareThreads = std::thread::hardware_concurrency();
-
-	//In the rare case that the number of hardware threads cannot be retrieved, default to 8.
-	if (numberOfHardwareThreads == 0)
-	{
-		numberOfHardwareThreads = 8;
-	}
+	//Retrieve the number of hardware threads.
+	const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
 
 	//Set the number of task executors. Leave one slot open for the main thread.
-	_NumberOfTaskExecutors = numberOfHardwareThreads - 1;
+	_NumberOfTaskExecutors = number_of_hardware_threads - 1;
 
 	//Kick off all task executor threads.
-	_TaskExecutorThreads.Reserve(_NumberOfTaskExecutors);
+	_TaskExecutorThreads.UpsizeSlow(_NumberOfTaskExecutors);
 
-	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Keep track of the task executor number.
+	uint32 task_executor_number{ 1 };
+#endif
+
+	for (Thread& task_executor_thread : _TaskExecutorThreads)
 	{
-		_TaskExecutorThreads.Emplace(std::move(std::thread([]()
+		//Set the function.
+		task_executor_thread.SetFunction([]()
 		{
 			TaskSystem::Instance->ExecuteTasks();
-		})));
+		});
+
+		//Set the priority.
+		task_executor_thread.SetPriority(Thread::Priority::NORMAL);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		//Set the name.
+		char buffer[32];
+		sprintf_s(buffer, "TASK EXECUTOR %u", task_executor_number++);
+
+		task_executor_thread.SetName(buffer);
+#endif
+
+		//Launch the thread!
+		task_executor_thread.Launch();
 	}
 }
 
@@ -48,9 +63,9 @@ void TaskSystem::Terminate() NOEXCEPT
 	_ExecuteTasks = false;
 
 	//Join all task executor threads.
-	for (std::thread &taskExecutorThread : _TaskExecutorThreads)
+	for (Thread& task_executor_thread : _TaskExecutorThreads)
 	{
-		taskExecutorThread.join();
+		task_executor_thread.Join();
 	}
 }
 
@@ -88,9 +103,9 @@ void TaskSystem::ExecuteTasks() NOEXCEPT
 	while (_ExecuteTasks)
 	{
 		//Try to pop a task from the task queue, and execute it if it succeeds.
-		if (Task *const RESTRICT *const RESTRICT newTask{ _TaskQueue.Pop() })
+		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueue.Pop() })
 		{
-			(*newTask)->Execute();
+			(*new_task)->Execute();
 
 			--_TasksInQueue;
 		}

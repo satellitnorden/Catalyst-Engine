@@ -2003,9 +2003,9 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 
 	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
 	{
-		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::GlobalPoolAllocate<sizeof(VulkanCommandBuffer)>()) VulkanCommandBuffer };
+		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::Allocate(sizeof(VulkanCommandBuffer))) VulkanCommandBuffer };
 		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-		pipeline->AddCommandBuffer(new (Memory::GlobalPoolAllocate<sizeof(CommandBuffer)>()) CommandBuffer(pipelineCommandBuffer));
+		pipeline->AddCommandBuffer(new (Memory::Allocate(sizeof(CommandBuffer))) CommandBuffer(pipelineCommandBuffer));
 	}
 }
 

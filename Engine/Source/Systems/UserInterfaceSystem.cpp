@@ -23,36 +23,7 @@ void UserInterfaceSystem::Terminate() NOEXCEPT
 	//Deallocate all user interface elements.
 	for (UserInterfaceElement *const RESTRICT element : _UserInterfaceElements)
 	{
-		switch (element->_Type)
-		{
-			case UserInterfaceElementType::BUTTON:
-			{
-				Memory::GlobalPoolDeAllocate<sizeof(ButtonUserInterfaceElement)>(element);
-
-				break;
-			}
-
-			case UserInterfaceElementType::IMAGE:
-			{
-				Memory::GlobalPoolDeAllocate<sizeof(ImageUserInterfaceElement)>(element);
-
-				break;
-			}
-
-			case UserInterfaceElementType::TEXT:
-			{
-				Memory::GlobalPoolDeAllocate<sizeof(TextUserInterfaceElement)>(element);
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Unhandled case!");
-
-				break;
-			}
-		}
+		Memory::Free(element);
 	}
 }
 
@@ -65,7 +36,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 	{
 		case UserInterfaceElementType::BUTTON:
 		{
-			ButtonUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(ButtonUserInterfaceElement)>()) ButtonUserInterfaceElement() };
+			ButtonUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(ButtonUserInterfaceElement))) ButtonUserInterfaceElement() };
 			const ButtonUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ButtonUserInterfaceElementDescription* const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::IMAGE;
@@ -86,7 +57,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 
 		case UserInterfaceElementType::IMAGE:
 		{
-			ImageUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(ImageUserInterfaceElement)>()) ImageUserInterfaceElement() };
+			ImageUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(ImageUserInterfaceElement))) ImageUserInterfaceElement() };
 			const ImageUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ImageUserInterfaceElementDescription *const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::IMAGE;
@@ -101,7 +72,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 
 		case UserInterfaceElementType::TEXT:
 		{
-			TextUserInterfaceElement *const RESTRICT element{ new (Memory::GlobalPoolAllocate<sizeof(TextUserInterfaceElement)>()) TextUserInterfaceElement() };
+			TextUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(TextUserInterfaceElement))) TextUserInterfaceElement() };
 			const TextUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::TEXT;
