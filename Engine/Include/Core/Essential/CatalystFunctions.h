@@ -85,7 +85,7 @@ FORCE_INLINE static NO_DISCARD float64 NextFloat64(const float64 number) NOEXCEP
 *	Swaps two elements.
 */
 template <typename TYPE>
-FORCE_INLINE static void Swap(TYPE *const RESTRICT first, TYPE *const RESTRICT second) NOEXCEPT
+FORCE_INLINE constexpr static void Swap(TYPE *const RESTRICT first, TYPE *const RESTRICT second) NOEXCEPT
 {
 	TYPE temporary{ std::move(*first) };
 	*first = std::move(*second);

@@ -598,32 +598,13 @@ public:
 	*/
 	FORCE_INLINE constexpr void Transpose() NOEXCEPT
 	{
-		Vector4<float> transposedMatrix[4];
-
-		transposedMatrix[0]._X = _Matrix[0]._X;
-		transposedMatrix[1]._X = _Matrix[0]._Y;
-		transposedMatrix[2]._X = _Matrix[0]._Z;
-		transposedMatrix[3]._X = _Matrix[0]._W;
-
-		transposedMatrix[0]._Y = _Matrix[1]._X;
-		transposedMatrix[1]._Y = _Matrix[1]._Y;
-		transposedMatrix[2]._Y = _Matrix[1]._Z;
-		transposedMatrix[3]._Y = _Matrix[1]._W;
-
-		transposedMatrix[0]._Z = _Matrix[2]._X;
-		transposedMatrix[1]._Z = _Matrix[2]._Y;
-		transposedMatrix[2]._Z = _Matrix[2]._Z;
-		transposedMatrix[3]._Z = _Matrix[2]._W;
-
-		transposedMatrix[0]._W = _Matrix[3]._X;
-		transposedMatrix[1]._W = _Matrix[3]._Y;
-		transposedMatrix[2]._W = _Matrix[3]._Z;
-		transposedMatrix[3]._W = _Matrix[3]._W;
-
-		_Matrix[0] = transposedMatrix[0];
-		_Matrix[1] = transposedMatrix[1];
-		_Matrix[2] = transposedMatrix[2];
-		_Matrix[3] = transposedMatrix[3];
+		//Diagional stays the same, swap all other elements.
+		Swap(&_Matrix[0][1], &_Matrix[1][0]);
+		Swap(&_Matrix[0][2], &_Matrix[2][0]);
+		Swap(&_Matrix[0][3], &_Matrix[3][0]);
+		Swap(&_Matrix[1][2], &_Matrix[2][1]);
+		Swap(&_Matrix[1][3], &_Matrix[3][1]);
+		Swap(&_Matrix[2][3], &_Matrix[3][2]);
 
 		Verify();
 	}
