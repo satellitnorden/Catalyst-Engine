@@ -419,6 +419,11 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 				{
 					vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
 				}
+
+				if (parameters._TextureCoordinateMultiplier != 1.0f)
+				{
+					vertex._TextureCoordinate *= parameters._TextureCoordinateMultiplier;
+				}
 			}
 
 			//Write the number of vertices to the file.
