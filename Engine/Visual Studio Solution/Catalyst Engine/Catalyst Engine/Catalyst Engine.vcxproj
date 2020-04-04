@@ -143,6 +143,7 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h" />
