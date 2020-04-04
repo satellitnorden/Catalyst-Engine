@@ -40,7 +40,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 	//Get all available physical devices.
 	DynamicArray<VkPhysicalDevice> availablePhysicalDevices;
-	availablePhysicalDevices.UpsizeFast(availablePhysicalDeviceCount);
+	availablePhysicalDevices.Upsize<false>(availablePhysicalDeviceCount);
 	VULKAN_ERROR_CHECK(vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetInstance().Get(), &availablePhysicalDeviceCount, availablePhysicalDevices.Data()));
 
 	//Create and fill a list of suitable physical devices.
@@ -134,7 +134,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, nullptr));
 
 	DynamicArray<VkSurfaceFormatKHR> formats;
-	formats.UpsizeFast(formatsCount);
+	formats.Upsize<false>(formatsCount);
 
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, formats.Data()));
 
@@ -143,7 +143,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, nullptr));
 
 	DynamicArray<VkPresentModeKHR> presentModes;
-	presentModes.UpsizeFast(presentModesCount);
+	presentModes.Upsize<false>(presentModesCount);
 
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, presentModes.Data()));
 
@@ -161,7 +161,7 @@ bool VulkanPhysicalDevice::HasExtension(const VkPhysicalDevice &device, const ch
 	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(device, nullptr, &number_of_available_extensions, nullptr));
 
 	DynamicArray<VkExtensionProperties> available_extensions;
-	available_extensions.UpsizeFast(number_of_available_extensions);
+	available_extensions.Upsize<false>(number_of_available_extensions);
 	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(device, nullptr, &number_of_available_extensions, available_extensions.Data()));
 
 	//Go through all the available extensions and compare them.
@@ -190,7 +190,7 @@ VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<
 
 	//Calculate the score for all suitable physical devices.
 	DynamicArray<uint64> suitable_physical_device_scores;
-	suitable_physical_device_scores.UpsizeFast(suitable_physical_devices.Size());
+	suitable_physical_device_scores.Upsize<false>(suitable_physical_devices.Size());
 
 	for (uint64 i{ 0 }, size{ suitable_physical_devices.Size() }; i < size; ++i)
 	{
@@ -240,7 +240,7 @@ VkSurfaceFormatKHR VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOE
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, nullptr));
 
 	DynamicArray<VkSurfaceFormatKHR> availableFormats;
-	availableFormats.UpsizeFast(availableFormatsCount);
+	availableFormats.Upsize<false>(availableFormatsCount);
 
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, availableFormats.Data()));
 
@@ -271,7 +271,7 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
 
 	DynamicArray<VkPresentModeKHR> availablePresentModes;
-	availablePresentModes.UpsizeFast(availablePresentModesCount);
+	availablePresentModes.Upsize<false>(availablePresentModesCount);
 
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data()));
 

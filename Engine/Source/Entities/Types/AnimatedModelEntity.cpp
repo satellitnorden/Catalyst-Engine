@@ -48,8 +48,8 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	//Create the animation data buffers and render data tables.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
-	animated_model_component._AnimationDataBuffers.UpsizeFast(number_of_framebuffers);
-	animated_model_component._AnimationDataRenderDataTables.UpsizeFast(number_of_framebuffers);
+	animated_model_component._AnimationDataBuffers.Upsize<false>(number_of_framebuffers);
+	animated_model_component._AnimationDataRenderDataTables.Upsize<false>(number_of_framebuffers);
 
 	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{

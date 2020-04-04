@@ -85,13 +85,13 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 	//Copy the model space axis aligned bounding box.
 	model->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
 
-	model->_Meshes.UpsizeSlow(data->_NumberOfMeshes);
+	model->_Meshes.Upsize<true>(data->_NumberOfMeshes);
 
 	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
 	{
-		model->_Meshes[i]._VertexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
-		model->_Meshes[i]._IndexBuffers.UpsizeFast(data->_NumberOfLevelfDetails);
-		model->_Meshes[i]._IndexCounts.UpsizeFast(data->_NumberOfLevelfDetails);
+		model->_Meshes[i]._VertexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
+		model->_Meshes[i]._IndexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
+		model->_Meshes[i]._IndexCounts.Upsize<false>(data->_NumberOfLevelfDetails);
 
 		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
 		{

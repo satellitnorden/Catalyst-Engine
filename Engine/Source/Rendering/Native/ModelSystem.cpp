@@ -139,7 +139,7 @@ void ModelSystem::CreateRenderDataTableLayout() NOEXCEPT
 void ModelSystem::CreateRenderDataTables() NOEXCEPT
 {
 	//Create the compute render data tables.
-	_ModelDataRenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_ModelDataRenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (RenderDataTableHandle &renderDataTable : _ModelDataRenderDataTables)
 	{

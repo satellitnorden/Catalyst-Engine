@@ -134,7 +134,7 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 void LightingSystem::CreateRenderDataTables() NOEXCEPT
 {
 	//Create the render data tables.
-	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
 	{
@@ -148,7 +148,7 @@ void LightingSystem::CreateRenderDataTables() NOEXCEPT
 void LightingSystem::CreateLightUniformDataBuffers() NOEXCEPT
 {
 	//Create the light uniform data buffers.
-	_LightUniformDataBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_LightUniformDataBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (BufferHandle &light_uniform_data_buffer : _LightUniformDataBuffers)
 	{
@@ -162,7 +162,7 @@ void LightingSystem::CreateLightUniformDataBuffers() NOEXCEPT
 void LightingSystem::CreateLightDataBuffers() NOEXCEPT
 {
 	//Create the light data buffers.
-	_LightDataBuffers.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_LightDataBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (BufferHandle &light_data_buffer : _LightDataBuffers)
 	{
@@ -170,7 +170,7 @@ void LightingSystem::CreateLightDataBuffers() NOEXCEPT
 	}
 
 	//Set the light data buffer sizes.
-	_LightDataBufferSizes.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_LightDataBufferSizes.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (uint64 &light_data_buffer_size : _LightDataBufferSizes)
 	{

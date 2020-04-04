@@ -475,7 +475,7 @@ void ResourceBuilder::BuildSoundBank(const SoundBankBuildParameters &parameters)
 
 	//Read the sound bank data.
 	DynamicArray<byte> soundBankData;
-	soundBankData.UpsizeFast(soundBankSize);
+	soundBankData.Upsize<false>(soundBankSize);
 	
 	soundBankFile.Read(soundBankData.Data(), soundBankSize);
 

@@ -101,7 +101,7 @@ void FireflyReductionGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 */
 void FireflyReductionGraphicsPipeline::CreateRenderDataTables(const RenderTargetHandle source) NOEXCEPT
 {
-	_RenderDataTables.UpsizeFast(RenderingSystem::Instance->GetNumberOfFramebuffers());
+	_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
 	for (RenderDataTableHandle &renderDataTable : _RenderDataTables)
 	{

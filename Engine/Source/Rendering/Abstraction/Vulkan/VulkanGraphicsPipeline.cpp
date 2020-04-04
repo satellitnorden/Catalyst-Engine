@@ -13,7 +13,7 @@ void VulkanGraphicsPipeline::Initialize(const VulkanGraphicsPipelineCreationPara
 {
 	//Create the pipeline shader stage create infos for both shaders.
 	DynamicArray<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfos;
-	pipelineShaderStageCreateInfos.UpsizeFast(parameters._ShaderModules.Size());
+	pipelineShaderStageCreateInfos.Upsize<false>(parameters._ShaderModules.Size());
 
 	bool useTessellationStage{ false };
 

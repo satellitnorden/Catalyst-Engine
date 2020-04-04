@@ -663,7 +663,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AmbientOcclusionApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -673,7 +673,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AMBIENT_OCCLUSION_SPATIAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -683,7 +683,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AMBIENT_OCCLUSION_TEMPORAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -693,7 +693,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AnimatedModelSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -703,7 +703,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AnimatedModelSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -713,7 +713,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::BloomIsolationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -723,7 +723,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DepthOfFieldApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -733,7 +733,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DepthOfFieldBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -743,7 +743,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DirectLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -753,7 +753,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -767,7 +767,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::FastApproximateFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -777,7 +777,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::FireflyReductionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -787,7 +787,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -797,7 +797,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -811,7 +811,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingSpatialDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -821,7 +821,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::IndirectLightingTemporalDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -831,7 +831,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::LuminanceLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -841,7 +841,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelHighlightSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -851,7 +851,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelHighlightSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -861,7 +861,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -871,7 +871,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ModelSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -881,7 +881,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::MotionBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -891,7 +891,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::OceanSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -901,7 +901,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::OceanSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -911,7 +911,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
 		}
@@ -921,7 +921,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedColorSceneFeaturesFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -931,7 +931,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedColorSceneFeaturesGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 		}
@@ -941,7 +941,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedColorSceneFeaturesVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -951,7 +951,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedDepthSceneFeaturesFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -961,7 +961,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedDepthSceneFeaturesGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 		}
@@ -971,7 +971,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ParticleSystemMaskedDepthSceneFeaturesVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -981,7 +981,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PassthroughFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -991,7 +991,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingDenoisingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1001,7 +1001,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1015,7 +1015,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1029,7 +1029,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1043,7 +1043,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PostProcessingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1053,7 +1053,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1067,7 +1067,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::RenderingReferenceFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1077,7 +1077,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ResampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1087,7 +1087,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SceneFeaturesDownsampleFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1097,7 +1097,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1107,7 +1107,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SCREEN_SPACE_INDIRECT_LIGHTING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1117,7 +1117,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SeparableBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1127,7 +1127,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
 		}
@@ -1137,7 +1137,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyDownsampleCompute)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_COMPUTE_BIT);
 		}
@@ -1147,7 +1147,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1157,7 +1157,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::TemporalAntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1167,7 +1167,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::TerrainSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1177,7 +1177,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::TerrainSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1187,7 +1187,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ToneMappingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1197,7 +1197,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::UserInterfaceFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1207,7 +1207,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::UserInterfaceVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1217,7 +1217,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationColorSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1227,7 +1227,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationColorSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1237,7 +1237,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationDepthSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1247,7 +1247,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationDepthSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1257,7 +1257,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorColorSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1267,7 +1267,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorColorSceneFeaturesGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 		}
@@ -1277,7 +1277,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorColorSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1287,7 +1287,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorDepthSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1297,7 +1297,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorDepthSceneFeaturesGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 		}
@@ -1307,7 +1307,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationImpostorDepthSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1317,7 +1317,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationOpaqueSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1327,7 +1327,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VegetationOpaqueSceneFeaturesVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1337,7 +1337,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VelocityFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1347,7 +1347,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 		}
@@ -1357,7 +1357,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1371,7 +1371,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1381,7 +1381,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VolumetricLightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1391,7 +1391,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
@@ -1405,7 +1405,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1415,7 +1415,7 @@ namespace VulkanRenderingSystemLogic
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
-			data.UpsizeFast(size);
+			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
@@ -1551,7 +1551,7 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 	{
 		//Create the Vulkan geometry instance structres.
 		DynamicArray<VulkanGeometryInstance> geometryInstances;
-		geometryInstances.UpsizeFast(instanceData.Size());
+		geometryInstances.Upsize<false>(instanceData.Size());
 
 		for (uint64 i{ 0 }, size{ instanceData.Size() }; i < size; ++i)
 		{

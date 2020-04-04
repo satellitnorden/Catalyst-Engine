@@ -57,7 +57,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelInitialized();
 
 	//Upsize the level of detail indices.
-	component._LevelOfDetailIndices.UpsizeFast(component._Model->_Meshes.Size());
+	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);

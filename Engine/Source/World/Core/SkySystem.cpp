@@ -138,7 +138,7 @@ void SkySystem::InitializeSkyTextures() NOEXCEPT
 			TextureCubeData data;
 
 			data._Resolution = resolution;
-			data._Data.UpsizeFast(resolution * resolution * 4 * 6);
+			data._Data.Upsize<false>(resolution * resolution * 4 * 6);
 
 			Memory::Set(data._Data.Data(), 0, sizeof(float) * resolution * resolution * 4 * 6);
 

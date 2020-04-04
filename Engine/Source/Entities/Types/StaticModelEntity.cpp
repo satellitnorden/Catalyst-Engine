@@ -50,7 +50,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	}
 
 	//Upsize the level of detail indices.
-	component._LevelOfDetailIndices.UpsizeFast(component._Model->_Meshes.Size());
+	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);

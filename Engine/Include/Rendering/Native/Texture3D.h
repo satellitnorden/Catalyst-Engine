@@ -65,7 +65,7 @@ public:
 		_Depth(initial_resolution)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height * _Depth);
+		_Data.Upsize<false>(_Width * _Height * _Depth);
 	}
 
 	/*
@@ -78,7 +78,7 @@ public:
 		_Depth(initial_depth)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height * _Depth);
+		_Data.Upsize<false>(_Width * _Height * _Depth);
 	}
 
 	/*
@@ -91,7 +91,7 @@ public:
 		_Depth(initial_depth)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height * _Depth);
+		_Data.Upsize<false>(_Width * _Height * _Depth);
 
 		//Copy the data.
 		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height * _Depth);
@@ -139,7 +139,7 @@ public:
 		_Depth = initial_depth;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height * _Depth);
+		_Data.Upsize<false>(_Width * _Height * _Depth);
 	}
 
 	/*
@@ -153,7 +153,7 @@ public:
 		_Depth = initial_depth;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.UpsizeFast(_Width * _Height * _Depth);
+		_Data.Upsize<false>(_Width * _Height * _Depth);
 
 		//Copy the data.
 		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height * _Depth);

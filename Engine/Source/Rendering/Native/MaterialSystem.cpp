@@ -12,7 +12,7 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 	//Create all the global material uniform buffers.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
-	_GlobalMaterialUniformBuffers.UpsizeFast(number_of_framebuffers);
+	_GlobalMaterialUniformBuffers.Upsize<false>(number_of_framebuffers);
 
 	for (BufferHandle &buffer : _GlobalMaterialUniformBuffers)
 	{

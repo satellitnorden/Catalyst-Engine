@@ -27,7 +27,7 @@ public:
 		_PrimaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 		//Create the primary command buffers.
-		_PrimaryCommandBuffers.UpsizeFast(frameDataCount);
+		_PrimaryCommandBuffers.Upsize<false>(frameDataCount);
 
 		for (VulkanCommandBuffer &primaryCommandBuffer : _PrimaryCommandBuffers)
 		{
@@ -35,7 +35,7 @@ public:
 		}
 
 		//Create the fences.
-		_Fences.UpsizeFast(frameDataCount);
+		_Fences.Upsize<false>(frameDataCount);
 
 		for (VulkanFence *RESTRICT &fence : _Fences)
 		{

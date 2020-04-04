@@ -405,49 +405,60 @@ public:
 	}
 
 	/*
-	*	Upsizes this dynamic array, without calling the constructors of the new elements.
+	*	Upsizes this dynamic array.
 	*/
-	FORCE_INLINE void UpsizeFast(const uint64 newCapacity) NOEXCEPT
+	template <bool CONSTRUCT>
+	FORCE_INLINE void Upsize(const uint64 new_capacity) NOEXCEPT
+	{
+		ASSERT(false, "Intentionally unimplemented!");
+	}
+
+	/*
+	*	Upsizes this dynamic array.
+	*/
+	template<>
+	FORCE_INLINE void Upsize<false>(const uint64 new_capacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		TYPE *const RESTRICT newArray{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity)) };
+		TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_capacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::Copy(newArray, _Array, sizeof(TYPE) * _Size);
+		Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
 
 		//Free the old array.
 		Memory::Free(_Array);
 
 		//Update the array and the capacity.
-		_Array = newArray;
-		_Capacity = newCapacity;
-		_Size = newCapacity;
+		_Array = new_array;
+		_Capacity = new_capacity;
+		_Size = new_capacity;
 	}
 
 	/*
-	*	Upsizes this dynamic array, calling the constructors of the new elements.
+	*	Upsizes this dynamic array.
 	*/
-	FORCE_INLINE void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
+	template<>
+	FORCE_INLINE void Upsize<true>(const uint64 new_capacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		TYPE *const RESTRICT newArray{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * newCapacity)) };
+		TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_capacity)) };
 
 		//Move over all objects from the old array to the new array.
-		Memory::Copy(newArray, _Array, sizeof(TYPE) * _Size);
+		Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
 
 		//Default construct the remaining objects.
-		for (uint64 i = _Size; i < newCapacity; ++i)
+		for (uint64 i{ _Size }; i < new_capacity; ++i)
 		{
-			new (&newArray[i]) TYPE;
+			new (&new_array[i]) TYPE;
 		}
 
 		//Free the old array.
 		Memory::Free(_Array);
 
 		//Update the array and the capacity.
-		_Array = newArray;
-		_Capacity = newCapacity;
-		_Size = newCapacity;
+		_Array = new_array;
+		_Capacity = new_capacity;
+		_Size = new_capacity;
 	}
 
 private:

@@ -309,10 +309,10 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	const uint8 numberOfFrameBuffers{ GetNumberOfFramebuffers() };
 
 	//Upsize the buffers.
-	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
-	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
-	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
-	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
+	_GlobalRenderData._RenderDataTables.Upsize<false>(numberOfFrameBuffers);
+	_GlobalRenderData._DynamicUniformDataBuffers.Upsize<false>(numberOfFrameBuffers);
+	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(numberOfFrameBuffers);
+	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{

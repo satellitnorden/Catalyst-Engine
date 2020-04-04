@@ -127,7 +127,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> &file, Bone *const RES
 	uint64 number_of_child_bones;
 	file.Read(&number_of_child_bones, sizeof(uint64));
 
-	bone->_Children.UpsizeSlow(number_of_child_bones);
+	bone->_Children.Upsize<true>(number_of_child_bones);
 
 	for (Bone &child_bone : bone->_Children)
 	{
@@ -155,7 +155,7 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&numberOfVertices, sizeof(uint64));
 
 	//Read the vertices.
-	data._Vertices.UpsizeFast(numberOfVertices);
+	data._Vertices.Upsize<false>(numberOfVertices);
 	file.Read(data._Vertices.Data(), sizeof(AnimatedVertex) * numberOfVertices);
 
 	//Read the number of indices.
@@ -163,7 +163,7 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&numberOfIndices, sizeof(uint64));
 
 	//Read the indices.
-	data._Indices.UpsizeFast(numberOfIndices);
+	data._Indices.Upsize<false>(numberOfIndices);
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
 
 	//Read the skeleton.
@@ -204,7 +204,7 @@ void ResourceLoader::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
 		file.Read(&number_of_animation_keyframes, sizeof(uint64));
 
 		//Read the keyframe.
-		data._Animation._Keyframes[name].UpsizeFast(number_of_animation_keyframes);
+		data._Animation._Keyframes[name].Upsize<false>(number_of_animation_keyframes);
 		file.Read(data._Animation._Keyframes[name].Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
 	}
 
@@ -237,7 +237,7 @@ void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
 		file.Read(&data._CharacterDimensions[i], sizeof(Vector2<float>));
 
 		//Read the texture data.
-		data._TextureData[i].UpsizeSlow(data._MipmapLevels);
+		data._TextureData[i].Upsize<true>(data._MipmapLevels);
 
 		for (uint8 j{ 0 }; j < data._MipmapLevels; ++j)
 		{
@@ -271,13 +271,13 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the number of level of details.
 	file.Read(&data._NumberOfLevelfDetails, sizeof(uint64));
 
-	data._Vertices.UpsizeSlow(data._NumberOfMeshes);
-	data._Indices.UpsizeSlow(data._NumberOfMeshes);
+	data._Vertices.Upsize<true>(data._NumberOfMeshes);
+	data._Indices.Upsize<true>(data._NumberOfMeshes);
 
 	for (uint64 i{ 0 }; i < data._NumberOfMeshes; ++i)
 	{
-		data._Vertices[i].UpsizeSlow(data._NumberOfLevelfDetails);
-		data._Indices[i].UpsizeSlow(data._NumberOfLevelfDetails);
+		data._Vertices[i].Upsize<true>(data._NumberOfLevelfDetails);
+		data._Indices[i].Upsize<true>(data._NumberOfLevelfDetails);
 
 		for (uint64 j{ 0 }; j < data._NumberOfLevelfDetails; ++j)
 		{
@@ -286,7 +286,7 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 			file.Read(&number_of_vertices, sizeof(uint64));
 
 			//Read the vertices.
-			data._Vertices[i][j].UpsizeFast(number_of_vertices);
+			data._Vertices[i][j].Upsize<false>(number_of_vertices);
 			file.Read(data._Vertices[i][j].Data(), sizeof(Vertex) * number_of_vertices);
 
 			//Read the number of indices.
@@ -294,7 +294,7 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 			file.Read(&number_of_indices, sizeof(uint64));
 
 			//Read the indices.
-			data._Indices[i][j].UpsizeFast(number_of_indices);
+			data._Indices[i][j].Upsize<false>(number_of_indices);
 			file.Read(data._Indices[i][j].Data(), sizeof(uint32) * number_of_indices);
 		}
 	}
@@ -320,7 +320,7 @@ void ResourceLoader::LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&soundBankSize, sizeof(uint64));
 
 	//Reserve the required amount of memory.
-	data._Data.UpsizeFast(soundBankSize);
+	data._Data.Upsize<false>(soundBankSize);
 
 	//Read the sound bank memory.
 	file.Read(data._Data.Data(), soundBankSize);
@@ -348,7 +348,7 @@ void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
 	const uint64 dataSize{ data._Resolution * data._Resolution * 4 * 6 * sizeof(float) };
 
 	//Upsize the data accordingly.
-	data._Data.UpsizeFast(data._Resolution * data._Resolution * 4 * 6);
+	data._Data.Upsize<false>(data._Resolution * data._Resolution * 4 * 6);
 
 	//Read the data.
 	file.Read(data._Data.Data(), dataSize);
@@ -379,7 +379,7 @@ void ResourceLoader::LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&data._Height, sizeof(uint32));
 
 	//Read the data.
-	data._Data.UpsizeSlow(data._MipmapLevels);
+	data._Data.Upsize<true>(data._MipmapLevels);
 
 	for (uint8 i{ 0 }; i < data._MipmapLevels; ++i)
 	{
@@ -419,7 +419,7 @@ void ResourceLoader::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
 	file.Read(&data._Depth, sizeof(uint32));
 
 	//Read the data.
-	data._Data.UpsizeSlow(data._MipmapLevels);
+	data._Data.Upsize<true>(data._MipmapLevels);
 
 	for (uint8 i{ 0 }; i < data._MipmapLevels; ++i)
 	{

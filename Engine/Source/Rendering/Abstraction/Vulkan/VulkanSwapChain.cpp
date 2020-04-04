@@ -40,11 +40,11 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	//Query the swap chain images.
 	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, &_NumberOfSwapChainImages, nullptr));
 
-	_SwapChainImages.UpsizeFast(_NumberOfSwapChainImages);
+	_SwapChainImages.Upsize<false>(_NumberOfSwapChainImages);
 	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, &_NumberOfSwapChainImages, _SwapChainImages.Data()));
 
 	//Create the image views.
-	_SwapChainImageViews.UpsizeFast(_NumberOfSwapChainImages);
+	_SwapChainImageViews.Upsize<false>(_NumberOfSwapChainImages);
 
 	for (uint32 i = 0; i < _NumberOfSwapChainImages; ++i)
 	{

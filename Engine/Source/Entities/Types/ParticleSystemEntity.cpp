@@ -54,7 +54,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	//Set up the initial instance data.
 	DynamicArray<ParticleInstanceData> instance_data;
-	instance_data.UpsizeFast(component._NumberOfInstances);
+	instance_data.Upsize<false>(component._NumberOfInstances);
 
 	for (ParticleInstanceData& instance : instance_data)
 	{

@@ -204,7 +204,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	vkGetPhysicalDeviceQueueFamilyProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &queueFamilyCount, nullptr);
 
 	DynamicArray<VkQueueFamilyProperties> queueFamilyProperties;
-	queueFamilyProperties.UpsizeFast(queueFamilyCount);
+	queueFamilyProperties.Upsize<false>(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &queueFamilyCount, queueFamilyProperties.Data());
 
 	/*

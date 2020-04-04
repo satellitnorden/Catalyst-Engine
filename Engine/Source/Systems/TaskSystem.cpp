@@ -20,7 +20,7 @@ void TaskSystem::Initialize() NOEXCEPT
 	_NumberOfTaskExecutors = number_of_hardware_threads - 1;
 
 	//Kick off all task executor threads.
-	_TaskExecutorThreads.UpsizeSlow(_NumberOfTaskExecutors);
+	_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Keep track of the task executor number.
