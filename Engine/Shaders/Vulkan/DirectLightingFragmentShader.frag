@@ -48,7 +48,7 @@ void main()
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the direct lighting.
-	vec3 directLighting = vec3(0.0f);
+	vec3 direct_lighting = vec3(0.0f);
 
 	//Calculate all lights.
 	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
@@ -59,7 +59,7 @@ void main()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				directLighting += CalculateLighting(-view_direction,
+				direct_lighting += CalculateLighting(-view_direction,
 													albedo,
 													shadingNormal,
 													roughness,
@@ -74,23 +74,32 @@ void main()
 
 			case LIGHT_TYPE_POINT:
 			{
-				/*
-				float lengthToLight = length(light.position_or_direction - world_position);
-				vec3 lightDirection = vec3(light.position_or_direction - world_position) / lengthToLight;
+				//Calculate the light direction.
+				vec3 light_direction = world_position - light.position_or_direction;
 
-				//Calculate the attenuation.
-				float attenuation = 1.0f / (1.0f + lengthToLight + (lengthToLight * lengthToLight));
+				//Determine the distance to the light.
+				float distance_to_light = LengthSquared3(light_direction);
 
-				directLighting += CalculateDirectLight(	-view_direction,
-														lightDirection,
-														albedo,
-														shadingNormal,
-														roughness,
-														metallic,
-														ambientOcclusion,
-														material.thickness,
-														light.luminance) * attenuation;
-				*/
+				//Only calculate lighting if the the world position is within the light's radius.
+				if (distance_to_light < light.radius * light.radius)
+				{
+					//Normalize.
+					distance_to_light = sqrt(distance_to_light);
+					light_direction /= distance_to_light;
+
+					//Calculate the attenuation.
+					float attenuation = CalculateAttenuation(distance_to_light, light.radius);
+
+					direct_lighting += CalculateLighting(	-view_direction,
+															albedo,
+															shadingNormal,
+															roughness,
+															metallic,
+															ambientOcclusion,
+															material.thickness,
+															light_direction,
+															light.color * light.intensity) * attenuation;
+				}
 
 				break;
 			}
@@ -98,5 +107,5 @@ void main()
 	}
 
 	//Write the fragment.
-	fragment = vec4(directLighting, 1.0f);
+	fragment = vec4(direct_lighting, 1.0f);
 }
