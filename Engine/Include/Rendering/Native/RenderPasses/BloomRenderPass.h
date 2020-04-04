@@ -29,10 +29,10 @@ private:
 	BloomIsolationGraphicsPipeline _BloomIsolationGraphicsPipeline;
 
 	//The bloom downsample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 9> _BloomDownsampleGraphicsPipelines;
+	StaticArray<ResampleGraphicsPipeline, 8> _BloomDownsampleGraphicsPipelines;
 
 	//The bloom upsample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 9> _BloomUpsampleGraphicsPipelines;
+	StaticArray<ResampleGraphicsPipeline, 8> _BloomUpsampleGraphicsPipelines;
 
 	//The bloom application graphics pipeline.
 	BloomApplicationGraphicsPipeline _BloomApplicationGraphicsPipeline;

@@ -28,4 +28,7 @@ public:
 	//The material indices.
 	DynamicArray<uint32> _MaterialIndices;
 
+	//The level of detail indices.
+	DynamicArray<uint32> _LevelOfDetailIndices;
+
 };

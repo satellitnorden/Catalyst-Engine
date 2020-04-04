@@ -49,6 +49,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterStaticModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
 	}
 
+	//Upsize the level of detail indices.
+	component._LevelOfDetailIndices.UpsizeFast(component._Model->_Meshes.Size());
+
 	//Destroy the initialization data.
 	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
 }

@@ -33,6 +33,22 @@ public:
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Waits for static models level of detail to finish executing.
+	*/
+	FORCE_INLINE void WaitForStaticModelsLevelOfDetail() const NOEXCEPT
+	{
+		_StaticModelsLevelOfDetailTask.WaitFor();
+	}
+
+	/*
+	*	Waits for dynamic models level of detail to finish executing.
+	*/
+	FORCE_INLINE void WaitForDynamicModelsLevelOfDetail() const NOEXCEPT
+	{
+		_DynamicModelsLevelOfDetailTask.WaitFor();
+	}
+
+	/*
 	*	Waits for vegetation level of detail to finish executing.
 	*/
 	FORCE_INLINE void WaitForVegetationLevelOfDetail() const NOEXCEPT
@@ -42,8 +58,24 @@ public:
 
 private:
 
+	//The static models level of detail task.
+	Task _StaticModelsLevelOfDetailTask;
+
+	//The dynamic models level of detail task.
+	Task _DynamicModelsLevelOfDetailTask;
+
 	//The vegetation level of detail task.
 	Task _VegetationLevelOfDetailTask;
+
+	/*
+	*	Calculates level of detail for static models.
+	*/
+	void LevelOfDetailStaticModels() const NOEXCEPT;
+
+	/*
+	*	Calculates level of detail for dynamice models.
+	*/
+	void LevelOfDetailDynamicModels() const NOEXCEPT;
 
 	/*
 	*	Calculates level of detail for vegetation.

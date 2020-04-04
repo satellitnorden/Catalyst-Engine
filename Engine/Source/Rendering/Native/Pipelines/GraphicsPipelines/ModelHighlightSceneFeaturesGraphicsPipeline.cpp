@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -147,6 +148,9 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
+	//Wait for level of detail to finish.
+	LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
+
 	//Draw all models.
 	for (const HighlightedModel &highlighted_model : *highlighted_models)
 	{
@@ -175,11 +179,11 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
 
 			//Bind the vertex/inder buffer.
-			command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-			command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+			command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component._LevelOfDetailIndices[i]], &OFFSET);
+			command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component._LevelOfDetailIndices[i]], OFFSET);
 
 			//Draw!
-			command_buffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+			command_buffer->DrawIndexed(this, mesh._IndexCounts[component._LevelOfDetailIndices[i]], 1);
 		}
 	}
 

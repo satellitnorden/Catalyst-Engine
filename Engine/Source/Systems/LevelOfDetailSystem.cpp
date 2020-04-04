@@ -21,6 +21,22 @@ DEFINE_SINGLETON(LevelOfDetailSystem);
 */
 void LevelOfDetailSystem::Initialize() NOEXCEPT
 {
+	//Initialize the static models level of detail task.
+	_StaticModelsLevelOfDetailTask._Function = [](void *const RESTRICT)
+	{
+		LevelOfDetailSystem::Instance->LevelOfDetailStaticModels();
+	};
+	_StaticModelsLevelOfDetailTask._Arguments = nullptr;
+	_StaticModelsLevelOfDetailTask._ExecutableOnSameThread = true;
+
+	//Initialize the dynamic models level of detail task.
+	_DynamicModelsLevelOfDetailTask._Function = [](void *const RESTRICT)
+	{
+		LevelOfDetailSystem::Instance->LevelOfDetailDynamicModels();
+	};
+	_DynamicModelsLevelOfDetailTask._Arguments = nullptr;
+	_DynamicModelsLevelOfDetailTask._ExecutableOnSameThread = true;
+
 	//Initialize the vegetation level of detail task.
 	_VegetationLevelOfDetailTask._Function = [](void *const RESTRICT)
 	{
@@ -36,7 +52,102 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 void LevelOfDetailSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Execute all tasks.
+	TaskSystem::Instance->ExecuteTask(&_StaticModelsLevelOfDetailTask);
+	TaskSystem::Instance->ExecuteTask(&_DynamicModelsLevelOfDetailTask);
 	TaskSystem::Instance->ExecuteTask(&_VegetationLevelOfDetailTask);
+}
+
+/*
+*	Calculates level of detail for static models.
+*/
+void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
+{
+	//Define constants.
+	constexpr float32 MAXIMUM_DISTANCE{ 100.0f };
+	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
+
+	//Cache the perceiver position.
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+
+	//Iterate over all static model components and calculate their level of detail.
+	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+	StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+	for (uint64 i{ 0 }; i < number_of_static_model_components; ++i, ++component)
+	{
+		for (uint64 j{ 0 }, size{ component->_Model->_Meshes.Size() }; j < size; ++j)
+		{
+			//If the mesh used only has one level of detail, skip it.
+			if (component->_Model->_Meshes[j]._VertexBuffers.Size() == 1)
+			{
+				component->_LevelOfDetailIndices[j] = 0;
+
+				continue;
+			}
+
+			//Calculate the squared distance.
+			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
+
+			//Calculate the distance coefficient.
+			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
+
+			//Modify the distance coefficient a bit to "flatten the curve", since squared distances are being used..
+			distance_coefficient = 1.0f - distance_coefficient;
+			distance_coefficient *= distance_coefficient;
+			distance_coefficient = 1.0f - distance_coefficient;
+
+			//Calculate the level of detail index.
+			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_Model->_Meshes[j]._VertexBuffers.Size() - 1));
+		}
+	}
+}
+
+/*
+*	Calculates level of detail for dynamice models.
+*/
+void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
+{
+	//Define constants.
+	constexpr float32 MAXIMUM_DISTANCE{ 100.0f };
+	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
+
+	//Cache the perceiver position.
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+
+	//Iterate over all dynamic model components and calculate their level of detail.
+	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+	for (uint64 i{ 0 }; i < number_of_dynamic_model_components; ++i, ++component)
+	{
+		for (uint64 j{ 0 }, size{ component->_Model->_Meshes.Size() }; j < size; ++j)
+		{
+			//If the mesh used only has one level of detail, skip it.
+			if (component->_Model->_Meshes[j]._VertexBuffers.Size() == 1)
+			{
+				component->_LevelOfDetailIndices[j] = 0;
+
+				continue;
+			}
+
+			//TODO: Shouldn't recaulcate AABB here!
+			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_Model->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform, &component->_WorldSpaceAxisAlignedBoundingBox);
+
+			//Calculate the squared distance.
+			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
+
+			//Calculate the distance coefficient.
+			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
+
+			//Modify the distance coefficient a bit to "flatten the curve", since squared distances are being used..
+			distance_coefficient = 1.0f - distance_coefficient;
+			distance_coefficient *= distance_coefficient;
+			distance_coefficient = 1.0f - distance_coefficient;
+
+			//Calculate the level of detail index.
+			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_Model->_Meshes[j]._VertexBuffers.Size() - 1));
+		}
+	}
 }
 
 /*
@@ -51,9 +162,9 @@ void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
 	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };
 	VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
 
-	for (uint64 i = 0; i < number_of_vegetation_components; ++i, ++component)
+	for (uint64 i{ 0 }; i < number_of_vegetation_components; ++i, ++component)
 	{
-		if (Vector3<float>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
+		if (Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
 		{
 			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Full;
 		}

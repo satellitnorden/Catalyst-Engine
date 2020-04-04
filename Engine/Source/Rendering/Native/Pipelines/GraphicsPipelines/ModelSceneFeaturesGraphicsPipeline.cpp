@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -141,6 +142,9 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
+		//Wait for static models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
+
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Draw all meshes.
@@ -164,11 +168,11 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
 			}
 		}
 	}
@@ -178,6 +182,9 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Cache relevant data.
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		//Wait for dynamic models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
 
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
@@ -202,11 +209,11 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[0], 1);
+				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
 			}
 		}
 	}
