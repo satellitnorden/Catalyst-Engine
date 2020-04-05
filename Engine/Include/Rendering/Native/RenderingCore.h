@@ -515,6 +515,7 @@ enum class TextureFormat : uint8
 {
 	R_UINT8,
 	RGBA_UINT8,
+	RG_FLOAT16,
 	R_FLOAT32,
 	RG_FLOAT32,
 	RGBA_FLOAT32

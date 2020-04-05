@@ -15,7 +15,7 @@ layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	scene_image;
 layout (set = 3, binding = 1, rgba8) 	uniform image2D 	scene_features_1_image;
 layout (set = 3, binding = 2, rgba32f) 	uniform image2D 	scene_features_2_image;
 layout (set = 3, binding = 3, rgba8) 	uniform image2D 	scene_features_3_image;
-layout (set = 3, binding = 4, rg32f) 	uniform image2D 	scene_features_4_image;
+layout (set = 3, binding = 4, rg16f) 	uniform image2D 	scene_features_4_image;
 
 //In parameters.
 layout(location = 0) rayPayloadNV PathTracingRayPayload path_tracing_ray_payload;
