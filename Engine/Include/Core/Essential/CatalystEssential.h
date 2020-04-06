@@ -34,54 +34,33 @@
 //Enumeration covering all update phases.
 enum class UpdatePhase : uint8
 {
-	PRE = BIT(0),
-	LOGIC = BIT(1),
-	PHYSICS = BIT(2),
-	RENDER = BIT(3),
-	POST = BIT(4),
+	/*
+	*	During this update phase, input is retrieved from the platform.
+	*/
+	INPUT,
 
-	NUMBER_OF_UPDATES_PHASES = 5
+	/*
+	*	During this update phase, game logic is simulated.
+	*/
+	LOGIC,
+
+	/*
+	*	During this update phase, physics is simulated.
+	*/
+	PHYSICS,
+
+	/*
+	*	During this update phase, the game world is rendered.
+	*/
+	RENDER,
+
+	/*
+	*	During this update phase, sound is calculated.
+	*/
+	POST,
+
+	/*
+	*	The total number of update phases.
+	*/
+	NUMBER_OF_UPDATES_PHASES
 };
-
-ENUMERATION_BIT_OPERATIONS(UpdatePhase);
-
-/*
-*	Returns the index for the given update phase.
-*/
-FORCE_INLINE uint64 UpdatePhaseIndex(const UpdatePhase phase) NOEXCEPT
-{
-	switch (phase)
-	{
-		case UpdatePhase::PRE:
-		{
-			return 0;
-		}
-
-		case UpdatePhase::LOGIC:
-		{
-			return 1;
-		}
-
-		case UpdatePhase::PHYSICS:
-		{
-			return 2;
-		}
-
-		case UpdatePhase::RENDER:
-		{
-			return 3;
-		}
-
-		case UpdatePhase::POST:
-		{
-			return 4;
-		}
-
-		default:
-		{
-			CRASH();
-
-			return 0;
-		}
-	}
-}

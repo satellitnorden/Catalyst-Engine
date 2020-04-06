@@ -156,6 +156,6 @@ private:
 	/*
 	*	Updates an individual phase.
 	*/
-	void UpdateIndividualPhase(const uint64 phase_index) NOEXCEPT;
+	void UpdateIndividualPhase(const UpdatePhase phase) NOEXCEPT;
 
 };

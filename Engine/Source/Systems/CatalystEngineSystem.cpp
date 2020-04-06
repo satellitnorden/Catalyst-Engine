@@ -177,29 +177,28 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	context._DeltaTime = _DeltaTime;
 
 	/*
-	*	Pre update phase.
+	*	Input update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::PRE));
+	UpdateIndividualPhase(UpdatePhase::INPUT);
 
 	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 
 	CatalystPlatform::PreUpdate(&context);
 
-	InputSystem::Instance->PreUpdate(&context);
 	RenderingSystem::Instance->PreUpdate(&context);
 	WorldSystem::Instance->PreUpdate(&context);
 
 	/*
 	*	Logic update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::LOGIC));
+	UpdateIndividualPhase(UpdatePhase::LOGIC);
 	_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
 	WorldSystem::Instance->LogicUpdate(&context);
 
 	/*
 	*	Physics update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::PHYSICS));
+	UpdateIndividualPhase(UpdatePhase::PHYSICS);
 	_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
 #if defined(CATALYST_CONFIGURATION_PROFILE)
@@ -210,7 +209,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Render update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::RENDER));
+	UpdateIndividualPhase(UpdatePhase::RENDER);
 	_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
 	CullingSystem::Instance->RenderUpdate(&context);
@@ -220,7 +219,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Post-update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::POST));
+	UpdateIndividualPhase(UpdatePhase::POST);
 	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 
 	CatalystPlatform::PostUpdate(&context);
@@ -289,23 +288,23 @@ void CatalystEngineSystem::RegisterUpdate(	const UpdateFunction update_function,
 	new_update_data->_Task._ExecutableOnSameThread = true;
 
 	//Add the update data to the appropriate start/end containers.
-	_StartUpdateData[UpdatePhaseIndex(start)].Emplace(new_update_data);
-	_EndUpdateData[UpdatePhaseIndex(end)].Emplace(new_update_data);
+	_StartUpdateData[UNDERLYING(start)].Emplace(new_update_data);
+	_EndUpdateData[UNDERLYING(end)].Emplace(new_update_data);
 }
 
 /*
 *	Updates an individual phase.
 */
-void CatalystEngineSystem::UpdateIndividualPhase(const uint64 phase_index) NOEXCEPT
+void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCEPT
 {
 	//Wait for the update data that ends in this update phase.
-	for (UpdateData *const RESTRICT update_data : _EndUpdateData[phase_index])
+	for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
 	{
 		update_data->_Task.WaitFor();
 	}
 
 	//Execute the update data that starts in this update phase.
-	for (UpdateData *const RESTRICT update_data : _StartUpdateData[phase_index])
+	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
 	{
 		TaskSystem::Instance->ExecuteTask(&update_data->_Task);
 	}

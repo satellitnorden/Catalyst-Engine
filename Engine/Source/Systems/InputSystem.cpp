@@ -2,7 +2,7 @@
 #include <Systems/InputSystem.h>
 
 //Systems.
-#include <Systems/TaskSystem.h>
+#include <Systems/CatalystEngineSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
@@ -12,28 +12,14 @@ DEFINE_SINGLETON(InputSystem);
 */
 void InputSystem::Initialize() NOEXCEPT
 {
-	//Set up the update task.
-	_UpdateTask._Function = [](void *const RESTRICT)
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
-		InputSystem::Instance->UpdateAsynchronous();
-	};
-	_UpdateTask._Arguments = nullptr;
-	_UpdateTask._ExecutableOnSameThread = true;
-}
-
-/*
-*	Updates the input system during the pre update phase.
-*/
-void InputSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Wait for the update task to finish.
-	_UpdateTask.WaitFor();
-
-	//Copy over the asynchronous input state.
-	Memory::Copy(&_InputState, &_AsynchronousInputState, sizeof(InputState));
-
-	//Fire off the update task again.
-	TaskSystem::Instance->ExecuteTask(&_UpdateTask);
+		static_cast<InputSystem *const RESTRICT>(arguments)->InputUpdate();
+	},
+	this,
+	UpdatePhase::INPUT,
+	UpdatePhase::LOGIC);
 }
 
 /*
@@ -53,19 +39,19 @@ void InputSystem::ShowCursor() const NOEXCEPT
 }
 
 /*
-*	Updates the input system asynchronously.
+*	Updates the input system during the input update phase.
 */
-void InputSystem::UpdateAsynchronous() NOEXCEPT
+void InputSystem::InputUpdate() NOEXCEPT
 {
 	//Retrieve the current gamepad states.
-	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
+	for (uint8 i{ 0 }; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
-		CatalystPlatform::GetCurrentGamepadState(i, &_AsynchronousInputState._GamepadStates[i]);
+		CatalystPlatform::GetCurrentGamepadState(i, &_InputState._GamepadStates[i]);
 	}
 
 	//Retrieve the current keyboard state.
-	CatalystPlatform::GetCurrentKeyboardState(&_AsynchronousInputState._KeyboardState);
+	CatalystPlatform::GetCurrentKeyboardState(&_InputState._KeyboardState);
 
 	//Retrieve the current mouse state.
-	CatalystPlatform::GetCurrentMouseState(&_AsynchronousInputState._MouseState);
+	CatalystPlatform::GetCurrentMouseState(&_InputState._MouseState);
 }

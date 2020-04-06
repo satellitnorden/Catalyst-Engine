@@ -2,10 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/UpdateContext.h>
-
-//Concurrency.
-#include <Concurrency/Task.h>
 
 //Input.
 #include <Input/GamepadState.h>
@@ -36,11 +32,6 @@ public:
 	*	Initializes the input system.
 	*/
 	void Initialize() NOEXCEPT;
-
-	/*
-	*	Updates the input system during the pre update phase.
-	*/
-	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the given gamepad state.
@@ -101,15 +92,9 @@ private:
 	//The input state.
 	InputState _InputState;
 
-	//The asynchronous input state.
-	InputState _AsynchronousInputState;
-
-	//The update task.
-	Task _UpdateTask;
-
 	/*
-	*	Updates the input system asynchronously.
+	*	Updates the input system during the input update phase.
 	*/
-	void UpdateAsynchronous() NOEXCEPT;
+	void InputUpdate() NOEXCEPT;
 
 };
