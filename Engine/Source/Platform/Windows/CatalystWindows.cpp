@@ -286,6 +286,16 @@ void CatalystPlatform::Release() NOEXCEPT
 */
 void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT
 {
+	//The COM library needs to be initialized for XInput, so initialize that if not already done.
+	static thread_local bool com_initialized{ false };
+
+	if (!com_initialized)
+	{
+		CoInitialize(nullptr);
+
+		com_initialized = true;
+	}
+
 	//No need to update if the window isn't in focus.
 	if (!CatalystWindowsData::_IsWindowInFocus)
 	{
