@@ -211,21 +211,27 @@ public:
 	{
 		AudioFile<float32> audio_file;
 
-		audio_file.load(file);
-
-		resource->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
-		resource->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
-
-		resource->_Samples.Upsize<true>(resource->_NumberOfChannels);
-
-		for (uint64 i{ 0 }, size{ resource->_Samples.Size() }; i < size; ++i)
+		if (audio_file.load(file))
 		{
-			resource->_Samples[i].Upsize<false>(audio_file.samples[i].size());
+			resource->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
+			resource->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
 
-			Memory::Copy(resource->_Samples[i].Data(), audio_file.samples[i].data(), sizeof(float32) * audio_file.samples[i].size());
+			resource->_Samples.Upsize<true>(resource->_NumberOfChannels);
+
+			for (uint64 i{ 0 }, size{ resource->_Samples.Size() }; i < size; ++i)
+			{
+				resource->_Samples[i].Upsize<false>(audio_file.samples[i].size());
+
+				Memory::Copy(resource->_Samples[i].Data(), audio_file.samples[i].data(), sizeof(float32) * audio_file.samples[i].size());
+			}
+
+			return true;
 		}
-
-		return true;
+		
+		else
+		{
+			return false;
+		}
 	}
 
 };
