@@ -159,8 +159,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
-	PROFILING_SCOPE("CatalystEngineSystem::Update");
-
 	//Update the total frames.
 	++_TotalFrames;
 
