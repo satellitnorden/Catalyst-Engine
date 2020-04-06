@@ -300,7 +300,7 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 	//Wait for the update data that ends in this update phase.
 	for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
 	{
-		update_data->_Task.WaitFor();
+		update_data->_Task.Wait<WaitMode::PAUSE>();
 	}
 
 	//Execute the update data that starts in this update phase.

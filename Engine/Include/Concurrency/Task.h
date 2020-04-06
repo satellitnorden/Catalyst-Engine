@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
-#include <Concurrency/Semaphore.h>
+#include <Concurrency/AtomicFlag.h>
 
 //Type aliases.
 using TaskFunction = void(*)(void *const RESTRICT /*arguments*/);
@@ -23,8 +23,8 @@ public:
 	//Denotes if this task is executable on the same thread as it was queued from.
 	bool _ExecutableOnSameThread;
 
-	//The semaphore that will be signalled after the function that this task will execute has finished executing.
-	Semaphore _Semaphore{ SemaphoreCreationFlags::Signalled };
+	//Atomic flag denoting if this task is executed.
+	AtomicFlag _IsExecuted;
 
 	/*
 	*	Default constructor.
@@ -68,18 +68,25 @@ public:
 		//Execute the function.
 		_Function(_Arguments);
 
-		//Signal the semaphore.
-		_Semaphore.Signal();
+		//Set the atomic flag denoting whether or not this task is executed.
+		_IsExecuted.Set();
 	}
 
 	/*
 	*	Returns whether or not this task has finished executing.
 	*/
-	bool IsExecuted() const NOEXCEPT { return _Semaphore.IsSignalled(); }
+	bool IsExecuted() const NOEXCEPT
+	{
+		return _IsExecuted.IsSet();
+	}
 
 	/*
 	*	Waits for this task to finish executing.
 	*/
-	void WaitFor() const NOEXCEPT { _Semaphore.WaitFor(); }
+	template <WaitMode MODE>
+	void Wait() const NOEXCEPT
+	{
+		_IsExecuted.Wait<MODE>();
+	}
 
 };

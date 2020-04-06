@@ -1,15 +1,6 @@
 #if defined(CATALYST_PLATFORM_WINDOWS)
-//Header file.
-#include <Concurrency/ConcurrencyCore.h>
-
 //Intrinsics.
 #include <immintrin.h>
-
-//Concurrency constants.
-namespace ConcurrencyConstants
-{
-	constexpr uint32 MINIMUM_NUMBER_OF_HARDWARE_THREADS{ 4 };
-}
 
 /*
 *	Concurrency namespace, containing common functions relating to concurrency.
@@ -20,7 +11,7 @@ namespace Concurrency
 	/*
 	*	Returns the number of hardware threads.
 	*/
-	uint32 NumberOfHardwareThreads() NOEXCEPT
+	FORCE_INLINE uint32 NumberOfHardwareThreads() NOEXCEPT
 	{
 		//Ask the standard library. (:
 		const uint32 number_of_hardware_threads{ std::thread::hardware_concurrency() };
@@ -38,7 +29,7 @@ namespace Concurrency
 		/*
 		*	Pauses the current thread.
 		*/
-		void Pause() NOEXCEPT
+		FORCE_INLINE void Pause() NOEXCEPT
 		{
 			_mm_pause();
 		}
@@ -46,7 +37,7 @@ namespace Concurrency
 		/*
 		*	Yields the current thread.
 		*/
-		void Yield() NOEXCEPT
+		FORCE_INLINE void Yield() NOEXCEPT
 		{
 			//Just use the standard library.
 			std::this_thread::yield();

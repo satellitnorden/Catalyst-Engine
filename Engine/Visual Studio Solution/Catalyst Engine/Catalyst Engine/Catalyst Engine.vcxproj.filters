@@ -1476,9 +1476,6 @@
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedWriteLock.h">
       <Filter>Concurrency\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Concurrency\Semaphore.h">
-      <Filter>Concurrency\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Concurrency\Spinlock.h">
       <Filter>Concurrency\Include</Filter>
     </ClInclude>
@@ -1982,9 +1979,6 @@
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp">
       <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsConcurrencyCore.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl">
@@ -1992,6 +1986,9 @@
     </None>
     <None Include="..\..\..\Include\Systems\EntityCreationSystem.inl">
       <Filter>Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
+      <Filter>Platform\Include\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@ public:
 	*/
 	FORCE_INLINE void WaitForTerrainCulling() const NOEXCEPT
 	{
-		_TerrainCullingTask.WaitFor();
+		_TerrainCullingTask.Wait<WaitMode::YIELD>();
 	}
 
 	/*
@@ -45,7 +45,7 @@ public:
 	*/
 	FORCE_INLINE void WaitForVegetationCulling() const NOEXCEPT
 	{
-		_VegetationCullingTask.WaitFor();
+		_VegetationCullingTask.Wait<WaitMode::YIELD>();
 	}
 
 private:

@@ -76,8 +76,8 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT task) NOEXCEPT
 {
 	ASSERT(_TasksInQueue < MAXIMUM_NUMBER_OF_TASKS, "Pushing too many tasks to the task queue, increase maximum number of tasks!");
 
-	//Reset the semaphore.
-	task->_Semaphore.Reset();
+	//Clear the atomic flag denoting whether or not this task is executed.
+	task->_IsExecuted.Clear();
 
 	//If the number of tasks in queue is the same as the number of task executors, try to run this task on the same thread.
 	if (_TasksInQueue >= _NumberOfTaskExecutors && task->_ExecutableOnSameThread)

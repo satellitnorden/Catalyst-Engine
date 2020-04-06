@@ -72,7 +72,6 @@
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedLock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedReadLock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\ScopedWriteLock.h" />
-    <ClInclude Include="..\..\..\Include\Concurrency\Semaphore.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\Task.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\Thread.h" />
@@ -435,7 +434,6 @@
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsConcurrencyCore.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />
@@ -583,6 +581,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
+    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl" />
     <None Include="..\..\..\Include\Systems\EntityCreationSystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -37,7 +37,7 @@ public:
 	*/
 	FORCE_INLINE void WaitForStaticModelsLevelOfDetail() const NOEXCEPT
 	{
-		_StaticModelsLevelOfDetailTask.WaitFor();
+		_StaticModelsLevelOfDetailTask.Wait<WaitMode::YIELD>();
 	}
 
 	/*
@@ -45,7 +45,7 @@ public:
 	*/
 	FORCE_INLINE void WaitForDynamicModelsLevelOfDetail() const NOEXCEPT
 	{
-		_DynamicModelsLevelOfDetailTask.WaitFor();
+		_DynamicModelsLevelOfDetailTask.Wait<WaitMode::YIELD>();
 	}
 
 	/*
@@ -53,7 +53,7 @@ public:
 	*/
 	FORCE_INLINE void WaitForVegetationLevelOfDetail() const NOEXCEPT
 	{
-		_VegetationLevelOfDetailTask.WaitFor();
+		_VegetationLevelOfDetailTask.Wait<WaitMode::YIELD>();
 	}
 
 private:
