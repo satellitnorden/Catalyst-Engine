@@ -27,36 +27,6 @@ public:
 	void(*_InitializationFunction)();
 
 	/*
-	*	The pre update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
-	*/
-	void(*_PreUpdateFunction)(const UpdateContext *const RESTRICT);
-
-	/*
-	*	The logic update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
-	*/
-	void(*_LogicUpdateFunction)(const UpdateContext *const RESTRICT);
-
-	/*
-	*	The physics update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
-	*/
-	void(*_PhysicsUpdateFunction)(const UpdateContext *const RESTRICT);
-
-	/*
-	*	The physics update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
-	*/
-	void(*_RenderUpdateFunction)(const UpdateContext *const RESTRICT);
-
-	/*
-	*	The post update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
-	*/
-	void(*_PostUpdateFunction)(const UpdateContext *const RESTRICT);
-
-	/*
 	*	The post update function.
 	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/

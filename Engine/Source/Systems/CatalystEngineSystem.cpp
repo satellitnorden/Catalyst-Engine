@@ -134,6 +134,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize();
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
+	UserInterfaceSystem::Instance->Initialize();
 
 	//Load the Catalyst Engine resource collection. 
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
@@ -181,25 +182,27 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	UpdateIndividualPhase(UpdatePhase::INPUT);
 
-	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
-
 	CatalystPlatform::PreUpdate(&context);
 
 	RenderingSystem::Instance->PreUpdate(&context);
 	WorldSystem::Instance->PreUpdate(&context);
 
 	/*
+	*	User interface update phase.
+	*/
+	UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
+
+	/*
 	*	Logic update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::LOGIC);
-	_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
+
 	WorldSystem::Instance->LogicUpdate(&context);
 
 	/*
 	*	Physics update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::PHYSICS);
-	_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PhysicsUpdate(&context);
@@ -210,7 +213,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Render update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::RENDER);
-	_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
 	CullingSystem::Instance->RenderUpdate(&context);
 	LevelOfDetailSystem::Instance->RenderUpdate(&context);
@@ -220,7 +222,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Post-update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::POST);
-	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 
 	CatalystPlatform::PostUpdate(&context);
 

@@ -11,6 +11,17 @@ class ButtonUserInterfaceElement final : public UserInterfaceElement
 
 public:
 
+	//Enumeration covering all states.
+	enum class State : uint8
+	{
+		IDLE,
+		HOVERED,
+		PRESSED
+	};
+
+	//The current state.
+	State _CurrentState;
+
 	//The start hovered callback.
 	ButtonUserInterfaceElementCallback _StartHoveredCallback;
 

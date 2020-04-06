@@ -25,6 +25,11 @@ public:
 	}
 
 	/*
+	*	Initializes the user interface system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
 	*	Terminates the user interface system.
 	*/
 	void Terminate() NOEXCEPT;
@@ -51,5 +56,10 @@ private:
 
 	//Container for all user interface elements.
 	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
+
+	/*
+	*	Updates the user interface system during the user interface update phase.
+	*/
+	void UserInterfaceUpdate() NOEXCEPT;
 
 };

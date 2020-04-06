@@ -40,6 +40,11 @@ enum class UpdatePhase : uint8
 	INPUT,
 
 	/*
+	*	During this update phase, user interface elements are updated.
+	*/
+	USER_INTERFACE,
+
+	/*
 	*	During this update phase, game logic is simulated.
 	*/
 	LOGIC,

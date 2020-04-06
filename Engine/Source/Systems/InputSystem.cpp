@@ -19,7 +19,7 @@ void InputSystem::Initialize() NOEXCEPT
 	},
 	this,
 	UpdatePhase::INPUT,
-	UpdatePhase::LOGIC);
+	UpdatePhase::USER_INTERFACE);
 }
 
 /*
