@@ -116,7 +116,7 @@ FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator&(const ENUMERATION
 }																															\
 FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator~(const ENUMERATION enumeration) NOEXCEPT						\
 {																															\
-return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																	\
+	return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																\
 }																															\
 
 /*

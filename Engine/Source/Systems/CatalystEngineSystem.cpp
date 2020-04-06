@@ -111,7 +111,7 @@ namespace CatalystEngineSystemLogic
 /*
 *	Initializes the Catalyst engine system.
 */
-void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
+void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	//Build the Catalyst Engine resources.
@@ -119,7 +119,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 
 	//Set the project configuration.
-	_ProjectConfiguration = initialProjectConfiguration;
+	_ProjectConfiguration = initial_project_configuration;
 
 	//Initialize the platform.
 	CatalystPlatform::Initialize();
@@ -179,6 +179,8 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Pre update phase.
 	*/
+	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::PRE));
+
 	_ProjectConfiguration._GeneralConfiguration._PreUpdateFunction(&context);
 
 	CatalystPlatform::PreUpdate(&context);
@@ -190,12 +192,14 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Logic update phase.
 	*/
+	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::LOGIC));
 	_ProjectConfiguration._GeneralConfiguration._LogicUpdateFunction(&context);
 	WorldSystem::Instance->LogicUpdate(&context);
 
 	/*
 	*	Physics update phase.
 	*/
+	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::PHYSICS));
 	_ProjectConfiguration._GeneralConfiguration._PhysicsUpdateFunction(&context);
 	
 #if defined(CATALYST_CONFIGURATION_PROFILE)
@@ -206,6 +210,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Render update phase.
 	*/
+	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::RENDER));
 	_ProjectConfiguration._GeneralConfiguration._RenderUpdateFunction(&context);
 
 	CullingSystem::Instance->RenderUpdate(&context);
@@ -215,6 +220,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Post-update phase.
 	*/
+	UpdateIndividualPhase(UpdatePhaseIndex(UpdatePhase::POST));
 	_ProjectConfiguration._GeneralConfiguration._PostUpdateFunction(&context);
 
 	CatalystPlatform::PostUpdate(&context);
@@ -258,4 +264,49 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	RenderingSystem::Instance->Release();
 	SoundSystem::Instance->Terminate();
 	UserInterfaceSystem::Instance->Terminate();
+}
+
+/*
+*	Registers an update.
+*/
+void CatalystEngineSystem::RegisterUpdate(	const UpdateFunction update_function,
+											void *const RESTRICT update_arguments,
+											const UpdatePhase start,
+											const UpdatePhase end) NOEXCEPT
+{
+	//Allocate the update data.
+	UpdateData* const RESTRICT new_update_data{ static_cast<UpdateData *const RESTRICT>(_UpdateDataAllocator.Allocate()) };
+
+	//Set the properties.
+	new_update_data->_UpdateFunction = update_function;
+	new_update_data->_UpdateArguments = update_arguments;
+	new_update_data->_Start = start;
+	new_update_data->_End = end;
+
+	//Set up the update data task.
+	new_update_data->_Task._Function = update_function;
+	new_update_data->_Task._Arguments = update_arguments;
+	new_update_data->_Task._ExecutableOnSameThread = true;
+
+	//Add the update data to the appropriate start/end containers.
+	_StartUpdateData[UpdatePhaseIndex(start)].Emplace(new_update_data);
+	_EndUpdateData[UpdatePhaseIndex(end)].Emplace(new_update_data);
+}
+
+/*
+*	Updates an individual phase.
+*/
+void CatalystEngineSystem::UpdateIndividualPhase(const uint64 phase_index) NOEXCEPT
+{
+	//Wait for the update data that ends in this update phase.
+	for (UpdateData *const RESTRICT update_data : _EndUpdateData[phase_index])
+	{
+		update_data->_Task.WaitFor();
+	}
+
+	//Execute the update data that starts in this update phase.
+	for (UpdateData *const RESTRICT update_data : _StartUpdateData[phase_index])
+	{
+		TaskSystem::Instance->ExecuteTask(&update_data->_Task);
+	}
 }

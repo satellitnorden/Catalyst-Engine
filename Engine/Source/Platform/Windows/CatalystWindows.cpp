@@ -54,7 +54,7 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 	{
 		case WM_DESTROY:
 		{
-			CatalystEngineSystem::Instance->SetShouldTerminate(true);
+			CatalystEngineSystem::Instance->SetShouldTerminate();
 
 			return DefWindowProc(window, message, wParam, lParam);
 		}
