@@ -44,6 +44,14 @@ public:
     }
 
     /*
+    *   Sets the current sample.
+    */
+    FORCE_INLINE void SetCurrentSample(const float64 sample) NOEXCEPT
+    {
+        _CurrentSample = sample;
+    }
+
+    /*
     *   Advances this sound player.
     */
     FORCE_INLINE void Advance() NOEXCEPT
