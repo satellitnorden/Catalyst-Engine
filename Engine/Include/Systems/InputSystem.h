@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 //Input.
 #include <Input/GamepadState.h>
@@ -31,7 +32,7 @@ public:
 	/*
 	*	Initializes the input system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const CatalystProjectInputConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Returns the given gamepad state.
@@ -88,6 +89,9 @@ private:
 		MouseState _MouseState;
 
 	};
+
+	//The number of supported gamepads.
+	uint8 _NumberOfSupportedGamepads;
 
 	//The input state.
 	InputState _InputState;

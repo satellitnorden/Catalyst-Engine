@@ -10,8 +10,11 @@ DEFINE_SINGLETON(InputSystem);
 /*
 *	Initializes the input system.
 */
-void InputSystem::Initialize() NOEXCEPT
+void InputSystem::Initialize(const CatalystProjectInputConfiguration &configuration) NOEXCEPT
 {
+	//Set the number of supported gamepads.
+	_NumberOfSupportedGamepads = configuration._NumberOfSupportedGamepads;
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
@@ -47,7 +50,7 @@ void InputSystem::InputUpdate() NOEXCEPT
 	const InputState old_input_state{ _InputState };
 
 	//Retrieve the current gamepad states.
-	for (uint8 i{ 0 }; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
+	for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 	{
 		CatalystPlatform::GetCurrentGamepadState(i, &_InputState._GamepadStates[i]);
 	}

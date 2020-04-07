@@ -126,7 +126,8 @@ void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *cons
 */
 void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 {
-	//Cache the mouse data.
+	//Cache the input data.
+	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
 	const Vector2<float32> mouse_position{ InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY };
 	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::Pressed || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PressedHold };
 

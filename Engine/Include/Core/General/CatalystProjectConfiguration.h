@@ -42,6 +42,27 @@ public:
 
 };
 
+class CatalystProjectInputConfiguration final
+{
+
+public:
+
+	/*
+	*	The number of supported gamepads.
+	*	Recommended: 1 for singeleplayer games, 1-4 for multiplayer games.
+	*/
+	uint8 _NumberOfSupportedGamepads;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectInputConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
 class CatalystProjectRenderingConfiguration final
 {
 
@@ -154,6 +175,9 @@ public:
 
 	//The project general configuration.
 	CatalystProjectGeneralConfiguration _GeneralConfiguration;
+
+	//The project input configuration.
+	CatalystProjectInputConfiguration _InputConfiguration;
 
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
