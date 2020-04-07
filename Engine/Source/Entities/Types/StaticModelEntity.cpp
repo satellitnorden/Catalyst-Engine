@@ -11,7 +11,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/PhysicsSystem.h>
 
 /*
@@ -53,7 +53,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
 }
 
 /*

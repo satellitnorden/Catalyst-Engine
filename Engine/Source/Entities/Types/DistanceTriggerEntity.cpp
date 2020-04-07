@@ -8,7 +8,7 @@
 #include <Entities/Creation/DistanceTriggerInitializationData.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 /*
 *	Default constructor.
@@ -39,7 +39,7 @@ void DistanceTriggerEntity::Initialize(EntityInitializationData *const RESTRICT 
 	distance_trigger_component._CurrentState = State::UNENTERED;
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<DistanceTriggerInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<DistanceTriggerInitializationData>(data);
 }
 
 /*

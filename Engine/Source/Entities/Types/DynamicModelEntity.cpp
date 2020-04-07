@@ -11,7 +11,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/PhysicsSystem.h>
 
 /*
@@ -60,7 +60,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
 }
 
 /*

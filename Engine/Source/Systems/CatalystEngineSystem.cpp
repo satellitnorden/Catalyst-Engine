@@ -20,7 +20,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CullingSystem.h>
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
@@ -223,7 +223,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	CatalystPlatform::PostUpdate(&context);
 
-	EntityCreationSystem::Instance->PostUpdate(&context);
+	EntitySystem::Instance->PostUpdate(&context);
 	SoundSystem::Instance->PostUpdate(&context);
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);

@@ -12,7 +12,7 @@ DEFINE_SINGLETON(EntityPlacementSystem);
 #include <Math/Geometry/GridPoint2.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/TaskSystem.h>
 
 /*
@@ -161,8 +161,8 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 		{
 			for (Entity *const RESTRICT entity : data->_Entities[i])
 			{
-				EntityCreationSystem::Instance->RequestTermination(entity);
-				EntityCreationSystem::Instance->RequestDestruction(entity);
+				EntitySystem::Instance->RequestTermination(entity);
+				EntitySystem::Instance->RequestDestruction(entity);
 			}
 
 			data->_GridPoints.EraseAt(i);

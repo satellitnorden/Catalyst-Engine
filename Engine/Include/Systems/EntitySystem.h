@@ -11,24 +11,24 @@
 #include <Entities/Creation/EntityInitializationData.h>
 #include <Entities/Types/Entity.h>
 
-class EntityCreationSystem final
+class EntitySystem final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(EntityCreationSystem);
+	DECLARE_SINGLETON(EntitySystem);
 
 	/*
 	*	Default constructor.
 	*/
-	EntityCreationSystem() NOEXCEPT
+	EntitySystem() NOEXCEPT
 	{
 
 	}
 
 	/*
-	*	Updates the entity creation system during the post update phase.
+	*	Updates the entity system during the post update phase.
 	*/
 	void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
@@ -202,4 +202,4 @@ private:
 };
 
 //Templated function definitions.
-#include <Systems/EntityCreationSystem.inl>
+#include <Systems/EntitySystem.inl>

@@ -8,7 +8,7 @@
 #include <Entities/Creation/SoundInitializationData.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/SoundSystem.h>
 
 /*
@@ -44,7 +44,7 @@ void SoundEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	SoundSystem::Instance->Play(component._Instance);
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<SoundInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<SoundInitializationData>(data);
 }
 
 /*

@@ -11,7 +11,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 /*
 *	Default constructor.
@@ -50,7 +50,7 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	component._NumberOfTransformations = static_cast<uint32>(vegetation_initialization_data->_Transformations.Size());
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<VegetationInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<VegetationInitializationData>(data);
 }
 
 /*

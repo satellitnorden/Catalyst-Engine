@@ -4,7 +4,7 @@
 *	Creates a new entity.
 */
 template <class CLASS, class... ARGUMENTS>
-RESTRICTED CLASS* const RESTRICT EntityCreationSystem::CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT
+RESTRICTED CLASS* const RESTRICT EntitySystem::CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT
 {
 	_AllocatorLock.Lock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
@@ -23,7 +23,7 @@ RESTRICTED CLASS* const RESTRICT EntityCreationSystem::CreateEntity(ARGUMENTS&&.
 *	Creates initialization data for an entity.
 */
 template <typename TYPE>
-RESTRICTED TYPE* const RESTRICT EntityCreationSystem::CreateInitializationData() NOEXCEPT
+RESTRICTED TYPE* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
 	void* const RESTRICT memory{ Memory::Allocate(sizeof(TYPE)) };
 
@@ -36,7 +36,7 @@ RESTRICTED TYPE* const RESTRICT EntityCreationSystem::CreateInitializationData()
 *	Destroys initialization data for an entity.
 */
 template <typename TYPE>
-void EntityCreationSystem::DestroyInitializationData(EntityInitializationData *const RESTRICT data) NOEXCEPT
+void EntitySystem::DestroyInitializationData(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	static_cast<TYPE *const RESTRICT>(data)->~TYPE();
 	Memory::Free(data);

@@ -15,7 +15,7 @@
 
 //Systems.
 #include <Systems/AnimationSystem.h>
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 /*
 *	Default constructor.
@@ -68,7 +68,7 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	}
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<AnimatedModelInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<AnimatedModelInitializationData>(data);
 }
 
 /*

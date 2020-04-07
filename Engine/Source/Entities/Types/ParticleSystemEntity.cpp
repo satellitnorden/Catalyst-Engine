@@ -14,7 +14,7 @@
 #include <Rendering/Native/ParticleInstanceData.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -84,7 +84,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, 0, &component._RenderDataTable, render_component._TransformationsBuffer);
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<ParticleSystemInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<ParticleSystemInitializationData>(data);
 }
 
 /*

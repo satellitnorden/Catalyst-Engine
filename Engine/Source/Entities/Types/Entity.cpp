@@ -14,10 +14,6 @@
 #include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/VegetationEntity.h>
 
-//Systems.
-#include <Systems/EntityCreationSystem.h>
-#include <Systems/PhysicsSystem.h>
-
 /*
 *	Initializes this entity.
 */

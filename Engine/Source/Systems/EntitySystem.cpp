@@ -1,16 +1,16 @@
 //Header file.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(EntityCreationSystem);
+DEFINE_SINGLETON(EntitySystem);
 
 /*
-*	Updates the entity creation system during the post update phase.
+*	Updates the entity system during the post update phase.
 */
-void EntityCreationSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void EntitySystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Process the initialization queue.
 	ProcessInitializationQueue();
@@ -31,7 +31,7 @@ void EntityCreationSystem::PostUpdate(const UpdateContext *const RESTRICT contex
 /*
 *	Initializes one entity.
 */
-void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
 	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AutomaticTermination))
@@ -59,7 +59,7 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 /*
 *	Terminates one entity.
 */
-void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
+void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Terminate this entity.
 	entity->Terminate();
@@ -71,7 +71,7 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 /*
 *	Destroys one entity.
 */
-void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
+void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
 	_AllocatorLock.Lock();
@@ -91,7 +91,7 @@ void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 *	But if the initialization is forced, it will take priority and will be initialized on the next update.
 *	So if N entities are forced for the next entity system update, all of them will be initialized.
 */
-void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data, const bool force) NOEXCEPT
+void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data, const bool force) NOEXCEPT
 {
 	ASSERT(!entity->_Initialized, "Don't call EntityCreationSystem::RequestInitialization() on entities that already are initialized!");
 
@@ -106,7 +106,7 @@ void EntityCreationSystem::RequestInitialization(Entity* const RESTRICT entity, 
 *	Requests the termination of en entity.
 *	Termination will happen at the next synchronous update of the entity system.
 */
-void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
+void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(entity->_Initialized, "Don't call EntityCreationSystem::RequestTermination() on entities that are not initialized!");
 
@@ -121,7 +121,7 @@ void EntityCreationSystem::RequestTermination(Entity* const RESTRICT entity) NOE
 *	Requests the destruction of an entity.
 *	Destruction will happen at the next synchronous update of the entity system.
 */
-void EntityCreationSystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
+void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Lock the queue.
 	SCOPED_LOCK(_DestructionQueueLock);
@@ -133,7 +133,7 @@ void EntityCreationSystem::RequestDestruction(Entity *const RESTRICT entity) NOE
 /*
 *	Processes the initialization queue.
 */
-void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
+void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 {
 	//Lock the initialization queue.
 	SCOPED_LOCK(_InitializationQueueLock);
@@ -186,7 +186,7 @@ void EntityCreationSystem::ProcessInitializationQueue() NOEXCEPT
 /*
 *	Processes the termination queue.
 */
-void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
+void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 {
 	//Lock the termination queue.
 	SCOPED_LOCK(_TerminationQueueLock);
@@ -204,7 +204,7 @@ void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
 /*
 *	Processes the destruction queue.
 */
-void EntityCreationSystem::ProcessDestructionQueue() NOEXCEPT
+void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 {
 	//Lock the destruction queue.
 	SCOPED_LOCK(_DestructionQueueLock);
@@ -222,7 +222,7 @@ void EntityCreationSystem::ProcessDestructionQueue() NOEXCEPT
 /*
 *	Processes the automatic termination queue.
 */
-void EntityCreationSystem::ProcessAutomaticTerminationQueue() NOEXCEPT
+void EntitySystem::ProcessAutomaticTerminationQueue() NOEXCEPT
 {
 	for (uint64 i = 0; i < _AutomaticTerminationQueue.Size();)
 	{
@@ -245,7 +245,7 @@ void EntityCreationSystem::ProcessAutomaticTerminationQueue() NOEXCEPT
 /*
 *	Processes the automatic destruction queue.
 */
-void EntityCreationSystem::ProcessAutomaticDestructionQueue() NOEXCEPT
+void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 {
 	for (uint64 i = 0; i < _AutomaticDestructionQueue.Size();)
 	{

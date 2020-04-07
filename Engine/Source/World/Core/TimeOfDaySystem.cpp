@@ -5,7 +5,7 @@
 #include <Entities/Creation/LightInitializationData.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 /*
 *	Updates the time of day system during the pre update phase.
@@ -46,8 +46,8 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 
 	//Create the sky light.
 	{
-		_SkyLight = EntityCreationSystem::Instance->CreateEntity<LightEntity>();
-		LightInitializationData* const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<LightInitializationData>() };
+		_SkyLight = EntitySystem::Instance->CreateEntity<LightEntity>();
+		LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
 
 		data->_Properties = EntityInitializationData::Property::None;
 		data->_Direction = VectorConstants::DOWN;
@@ -58,7 +58,7 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 		data->_Radius = 0.0f;
 		data->_Size = 0.0f;
 
-		EntityCreationSystem::Instance->RequestInitialization(_SkyLight, data, false);
+		EntitySystem::Instance->RequestInitialization(_SkyLight, data, false);
 	}
 }
 

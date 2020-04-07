@@ -483,9 +483,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h">
       <Filter>Entities\Include\Types</Filter>
     </ClInclude>
@@ -1494,6 +1491,9 @@
     <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1527,9 +1527,6 @@
       <Filter>Platform\Source\Android</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp">
@@ -1979,16 +1976,19 @@
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp">
       <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl">
       <Filter>Math\Inline\General</Filter>
     </None>
-    <None Include="..\..\..\Include\Systems\EntityCreationSystem.inl">
-      <Filter>Systems\Inline</Filter>
-    </None>
     <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
       <Filter>Platform\Include\Windows</Filter>
+    </None>
+    <None Include="..\..\..\Include\Systems\EntitySystem.inl">
+      <Filter>Systems\Inline</Filter>
     </None>
   </ItemGroup>
 </Project>

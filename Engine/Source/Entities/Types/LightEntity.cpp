@@ -8,7 +8,7 @@
 #include <Entities/Creation/LightInitializationData.h>
 
 //Systems.
-#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntitySystem.h>
 
 /*
 *	Default constructor.
@@ -56,7 +56,7 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	light_component._Size = light_initialization_data->_Size;
 
 	//Destroy the initialization data.
-	EntityCreationSystem::Instance->DestroyInitializationData<LightInitializationData>(data);
+	EntitySystem::Instance->DestroyInitializationData<LightInitializationData>(data);
 }
 
 /*
