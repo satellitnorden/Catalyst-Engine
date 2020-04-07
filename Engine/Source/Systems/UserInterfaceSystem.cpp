@@ -139,94 +139,148 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 			//Cache the type element.
 			ButtonUserInterfaceElement *const RESTRICT type_element{ static_cast<ButtonUserInterfaceElement *const RESTRICT>(element) };
 
-			//Determine if the mouse is inside the element's bounding box.
-			const bool is_inside{	mouse_position._X >= type_element->_Minimum._X
-									&& mouse_position._X <= type_element->_Maximum._X
-									&& mouse_position._Y >= type_element->_Minimum._Y
-									&& mouse_position._Y <= type_element->_Maximum._Y };
-
-			//Mutate the state and call callbacks.
-			switch (type_element->_CurrentState)
+			//Apply different logic based on which input device type was updated last.
+			switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
 			{
-				case ButtonUserInterfaceElement::State::IDLE:
+				case InputDeviceType::GAMEPAD:
 				{
-					if (is_inside)
+					//Mutate the state and call callbacks.
+					switch (type_element->_CurrentState)
 					{
-						if (mouse_pressed)
+						case ButtonUserInterfaceElement::State::IDLE:
 						{
-							if (type_element->_StartPressedCallback)
+							if (gamepad_state->_A == ButtonState::Pressed)
 							{
-								type_element->_StartPressedCallback(type_element);
+								if (type_element->_StartPressedCallback)
+								{
+									type_element->_StartPressedCallback(type_element);
+								}
+
+								type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
 							}
 
-							type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
+							break;
 						}
 
-						else
+						case ButtonUserInterfaceElement::State::HOVERED:
 						{
-							if (type_element->_StartHoveredCallback)
+							break;
+						}
+
+						case ButtonUserInterfaceElement::State::PRESSED:
+						{
+							if (gamepad_state->_A != ButtonState::PressedHold)
 							{
-								type_element->_StartHoveredCallback(type_element);
+								if (type_element->_StopPressedCallback)
+								{
+									type_element->_StopPressedCallback(type_element);
+								}
+
+								type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
 							}
 
-							type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
+							break;
 						}
 					}
 
 					break;
 				}
 
-				case ButtonUserInterfaceElement::State::HOVERED:
+				case InputDeviceType::KEYBOARD:
+				case InputDeviceType::MOUSE:
 				{
-					if (is_inside)
+					//Determine if the mouse is inside the element's bounding box.
+					const bool is_inside{	mouse_position._X >= type_element->_Minimum._X
+											&& mouse_position._X <= type_element->_Maximum._X
+											&& mouse_position._Y >= type_element->_Minimum._Y
+											&& mouse_position._Y <= type_element->_Maximum._Y };
+
+					//Mutate the state and call callbacks.
+					switch (type_element->_CurrentState)
 					{
-						if (mouse_pressed)
+						case ButtonUserInterfaceElement::State::IDLE:
 						{
-							if (type_element->_StartPressedCallback)
+							if (is_inside)
 							{
-								type_element->_StartPressedCallback(type_element);
+								if (mouse_pressed)
+								{
+									if (type_element->_StartPressedCallback)
+									{
+										type_element->_StartPressedCallback(type_element);
+									}
+
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
+								}
+
+								else
+								{
+									if (type_element->_StartHoveredCallback)
+									{
+										type_element->_StartHoveredCallback(type_element);
+									}
+
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
+								}
 							}
 
-							type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
-						}
-					}
-
-					else
-					{
-						if (type_element->_StopHoveredCallback)
-						{
-							type_element->_StopHoveredCallback(type_element);
+							break;
 						}
 
-						type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
-					}
-
-					break;
-				}
-
-				case ButtonUserInterfaceElement::State::PRESSED:
-				{
-					if (is_inside)
-					{
-						if (!mouse_pressed)
+						case ButtonUserInterfaceElement::State::HOVERED:
 						{
-							if (type_element->_StopPressedCallback)
+							if (is_inside)
 							{
-								type_element->_StopPressedCallback(type_element);
+								if (mouse_pressed)
+								{
+									if (type_element->_StartPressedCallback)
+									{
+										type_element->_StartPressedCallback(type_element);
+									}
+
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
+								}
 							}
 
-							type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
-						}
-					}
+							else
+							{
+								if (type_element->_StopHoveredCallback)
+								{
+									type_element->_StopHoveredCallback(type_element);
+								}
 
-					else
-					{
-						if (type_element->_StopPressedCallback)
+								type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
+							}
+
+							break;
+						}
+
+						case ButtonUserInterfaceElement::State::PRESSED:
 						{
-							type_element->_StopPressedCallback(type_element);
-						}
+							if (is_inside)
+							{
+								if (!mouse_pressed)
+								{
+									if (type_element->_StopPressedCallback)
+									{
+										type_element->_StopPressedCallback(type_element);
+									}
 
-						type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
+								}
+							}
+
+							else
+							{
+								if (type_element->_StopPressedCallback)
+								{
+									type_element->_StopPressedCallback(type_element);
+								}
+
+								type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
+							}
+
+							break;
+						}
 					}
 
 					break;

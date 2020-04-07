@@ -66,19 +66,19 @@ void InputSystem::InputUpdate() NOEXCEPT
 		//Did the gamepad state change?
 		if (!Memory::Compare(&old_input_state._GamepadStates, &_InputState._GamepadStates, sizeof(_InputState._GamepadStates)))
 		{
-			_LastUpdateInputDeviceType = InputDeviceType::GAMEPAD;
+			_LastUpdatedInputDeviceType = InputDeviceType::GAMEPAD;
 		}
 
 		//Did the keybard state change?
 		else if (!Memory::Compare(&old_input_state._KeyboardState, &_InputState._KeyboardState, sizeof(_InputState._KeyboardState)))
 		{
-			_LastUpdateInputDeviceType = InputDeviceType::KEYBOARD;
+			_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
 		}
 
 		//Did the mouse state change?
 		else if (!Memory::Compare(&old_input_state._MouseState, &_InputState._MouseState, sizeof(_InputState._MouseState)))
 		{
-			_LastUpdateInputDeviceType = InputDeviceType::MOUSE;
+			_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
 		}
 	}
 }

@@ -59,6 +59,14 @@ public:
 	}
 
 	/*
+	*	Returns the last update input device type.
+	*/
+	FORCE_INLINE NO_DISCARD InputDeviceType GetLastUpdatedInputDeviceType() const NOEXCEPT
+	{
+		return _LastUpdatedInputDeviceType;
+	}
+
+	/*
 	*	Hides the cursor.
 	*/
 	void HideCursor() const NOEXCEPT;
@@ -97,7 +105,7 @@ private:
 	InputState _InputState;
 
 	//Denotes the last updated input device type.
-	InputDeviceType _LastUpdateInputDeviceType;
+	InputDeviceType _LastUpdatedInputDeviceType;
 
 	/*
 	*	Updates the input system during the input update phase.
