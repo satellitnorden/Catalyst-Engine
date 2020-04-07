@@ -118,6 +118,14 @@ FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator~(const ENUMERATION
 {																															\
 	return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																\
 }																															\
+FORCE_INLINE constexpr static void operator|=(ENUMERATION &first, const ENUMERATION second) NOEXCEPT						\
+{																															\
+	first = first | second;																									\
+}																															\
+FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERATION second) NOEXCEPT						\
+{																															\
+	first = first & second;																									\
+}																															\
 
 /*
 *	Given a condition and a message, if the condition is false, the message will be printed and the game will immediately crash.

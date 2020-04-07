@@ -91,13 +91,16 @@ RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::ModifyWorldT
 	//Notify the ray tracing system that this dynamic model was modified.
 	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelModified();
 
+	//Remember that the world space axis aligned bounding box needs to be updated.
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags |= DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX;
+
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
 
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -105,8 +108,18 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelE
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
+	//Does the world space axis aligned bounding box need to be updated?
+	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
+	{
+		//Update the world space axis aligned bounding box.
+		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), *GetWorldTransform(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+	
+		//Clear the update flag.
+		CLEAR_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);
+	}
+
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }
 

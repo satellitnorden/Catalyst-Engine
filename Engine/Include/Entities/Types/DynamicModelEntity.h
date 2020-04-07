@@ -52,12 +52,12 @@ public:
 	/*
 	*	Returns the model space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT;
 
 	/*
 	*	Returns the world space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
 
 	/*
 	*	Enables highlight on this model entity.
