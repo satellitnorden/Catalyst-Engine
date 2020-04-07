@@ -43,6 +43,9 @@ void InputSystem::ShowCursor() const NOEXCEPT
 */
 void InputSystem::InputUpdate() NOEXCEPT
 {
+	//Remember the old input state.
+	const InputState old_input_state{ _InputState };
+
 	//Retrieve the current gamepad states.
 	for (uint8 i{ 0 }; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
@@ -54,4 +57,25 @@ void InputSystem::InputUpdate() NOEXCEPT
 
 	//Retrieve the current mouse state.
 	CatalystPlatform::GetCurrentMouseState(&_InputState._MouseState);
+
+	//Determine the last updated input device type.
+	{
+		//Did the gamepad state change?
+		if (!Memory::Compare(&old_input_state._GamepadStates, &_InputState._GamepadStates, sizeof(_InputState._GamepadStates)))
+		{
+			_LastUpdateInputDeviceType = InputDeviceType::GAMEPAD;
+		}
+
+		//Did the keybard state change?
+		else if (!Memory::Compare(&old_input_state._KeyboardState, &_InputState._KeyboardState, sizeof(_InputState._KeyboardState)))
+		{
+			_LastUpdateInputDeviceType = InputDeviceType::KEYBOARD;
+		}
+
+		//Did the mouse state change?
+		else if (!Memory::Compare(&old_input_state._MouseState, &_InputState._MouseState, sizeof(_InputState._MouseState)))
+		{
+			_LastUpdateInputDeviceType = InputDeviceType::MOUSE;
+		}
+	}
 }

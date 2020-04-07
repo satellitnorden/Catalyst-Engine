@@ -71,6 +71,8 @@ public:
 private:
 
 	//The underlying atomic flag.
-	std::atomic<bool> _Flag{ false };
+	Atomic<bool> _Flag{ false };
 
 };
+
+static_assert(Atomic<bool>::is_always_lock_free, "Atomic bools are assumed to be lock-free!");

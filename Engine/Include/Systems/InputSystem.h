@@ -92,6 +92,9 @@ private:
 	//The input state.
 	InputState _InputState;
 
+	//Denotes the last updated input device type.
+	InputDeviceType _LastUpdateInputDeviceType;
+
 	/*
 	*	Updates the input system during the input update phase.
 	*/

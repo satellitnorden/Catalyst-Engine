@@ -39,8 +39,8 @@ public:
 	/*
 	*	Reallocates a chunk of memory previously allocated with Allocate().
 	*/
-	template <typename Type>
-	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT Reallocate(Type *const RESTRICT memory, const uint64 size) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT Reallocate(TYPE *const RESTRICT memory, const uint64 size) NOEXCEPT
 	{
 		return realloc((void *const RESTRICT) memory, size);
 	}
@@ -48,8 +48,8 @@ public:
 	/*
 	*	Frees a chunk of memory.
 	*/
-	template <typename Type>
-	FORCE_INLINE static void Free(Type *const RESTRICT memory) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static void Free(TYPE *const RESTRICT memory) NOEXCEPT
 	{
 		free((void *const RESTRICT) memory);
 	}
@@ -57,8 +57,8 @@ public:
 	/*
 	*	Copies memory from the destination to the source.
 	*/
-	template <typename Type1, typename Type2>
-	FORCE_INLINE static void Copy(Type1 *const RESTRICT destination, const Type2 *const RESTRICT source, const uint64 size) NOEXCEPT
+	template <typename TYPE_1, typename TYPE_2>
+	FORCE_INLINE static void Copy(TYPE_1 *const RESTRICT destination, const TYPE_2 *const RESTRICT source, const uint64 size) NOEXCEPT
 	{
 		memcpy((void *const RESTRICT) destination, (const void *const RESTRICT) source, size);
 	}
@@ -66,10 +66,19 @@ public:
 	/*
 	*	Sets a chunk of memory to the specified value.
 	*/
-	template <typename Type>
-	FORCE_INLINE static void Set(Type *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static void Set(TYPE *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT
 	{
 		memset((void *const RESTRICT) destination, value, size);
+	}
+
+	/*
+	*	Compares two chunks of memory. Returns true if the chunks are identical, false otherwise.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD bool Compare(const TYPE *const RESTRICT first, const TYPE *const RESTRICT second, const uint64 size) NOEXCEPT
+	{
+		return memcmp(first, second, size) == 0;
 	}
 
 	/*
