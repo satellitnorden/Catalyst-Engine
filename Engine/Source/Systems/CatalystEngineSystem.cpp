@@ -127,6 +127,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize all systems.
 	CullingSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
+	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
@@ -176,13 +177,17 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	context._DeltaTime = _DeltaTime;
 
 	/*
+	*	Entity update phase.
+	*/
+	UpdateIndividualPhase(UpdatePhase::ENTITY);
+
+	/*
 	*	Input update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::INPUT);
 
 	CatalystPlatform::PreUpdate(&context);
 
-	RenderingSystem::Instance->PreUpdate(&context);
 	WorldSystem::Instance->PreUpdate(&context);
 
 	/*
@@ -223,7 +228,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	CatalystPlatform::PostUpdate(&context);
 
-	EntitySystem::Instance->PostUpdate(&context);
 	SoundSystem::Instance->PostUpdate(&context);
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);

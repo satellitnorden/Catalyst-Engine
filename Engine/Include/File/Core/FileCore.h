@@ -2,12 +2,19 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/DynamicString.h>
 
 /*
 *	File namespace, containing common functions relating to files.
 */
 namespace File
 {
+
+	/*
+	*	Browses for a folder.
+	*	Returns if the action was successful.
+	*/
+	FORCE_INLINE NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT;
 
 	/*
 	*	Creates a file.

@@ -28,9 +28,9 @@ public:
 	}
 
 	/*
-	*	Updates the entity system during the post update phase.
+	*	Initializes the entity system.
 	*/
-	void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Creates a new entity.
@@ -173,6 +173,11 @@ private:
 
 	//Container for all entities that have requested automatic destruction.
 	DynamicArray<Entity *RESTRICT> _AutomaticDestructionQueue;
+
+	/*
+	*	Updates the entity system during the entity update phase.
+	*/
+	void EntityUpdate() NOEXCEPT;
 
 	/*
 	*	Processes the initialization queue.

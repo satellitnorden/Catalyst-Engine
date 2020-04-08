@@ -7,15 +7,22 @@
 //Concurrency.
 #include <Concurrency/Atomic.h>
 
+//Math.
+#include <Math/Core/CatalystBaseMath.h>
+
 /*
 *	Multiple producer - multiple consumers queue.
 *	WILL overwrite values once the circular buffer has reached the beginning again.
 *	This is to avoid reallocations when pushing/popping, so the atomic queue MUST be initialized with large enough storage to ensure that this never happens.
+*	
+*	TYPE should preferably be a small/builtin type that is easily copied.
+*	SIZE MUST be a power of two.
 */
-
 template <typename TYPE, uint64 SIZE>
 class AtomicQueue final
 {
+
+	static_assert(CatalystBaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
 
 public:
 

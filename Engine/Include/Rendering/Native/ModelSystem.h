@@ -19,14 +19,14 @@ class ModelSystem final
 public:
 
 	/*
+	*	Initializes the model system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
 	*	Post-initializes the model system.
 	*/
 	void PostInitialize() NOEXCEPT;
-
-	/*
-	*	Updates the model system during the pre update phase.
-	*/
-	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the top level acceleration structure instances.
@@ -111,5 +111,10 @@ private:
 	*	Creates the render data tables.
 	*/
 	void CreateRenderDataTables() NOEXCEPT;
+
+	/*
+	*	Updates the model system during the input update phase.
+	*/
+	void InputUpdate() NOEXCEPT;
 
 };

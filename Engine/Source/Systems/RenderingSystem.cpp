@@ -106,6 +106,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ScaledResolutions[9] = _ScaledResolutions[8] / 2;
 	_ScaledResolutions[9].RoundUpToNearestMultipleOfTwo();
 
+	//Initialize the model system.
+	_ModelSystem.Initialize();
+
 	//Set the far plane of the perceiver.
 	Perceiver::Instance->SetFarPlane(configuration._ViewDistance * 2.0f);
 
@@ -159,15 +162,6 @@ void RenderingSystem::PostInitializeSystem() NOEXCEPT
 
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses();
-}
-
-/*
-*	Updates the rendering system during the pre update phase.
-*/
-void RenderingSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Update the model system.
-	_ModelSystem.PreUpdate(context);
 }
 
 /*

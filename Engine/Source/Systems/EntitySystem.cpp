@@ -4,28 +4,25 @@
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(EntitySystem);
 
 /*
-*	Updates the entity system during the post update phase.
+*	Initializes the entity system.
 */
-void EntitySystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void EntitySystem::Initialize() NOEXCEPT
 {
-	//Process the initialization queue.
-	ProcessInitializationQueue();
-
-	//Process the termination queue.
-	ProcessTerminationQueue();
-
-	//Process the destruction queue.
-	ProcessDestructionQueue();
-
-	//Process the automatic termination queue.
-	ProcessAutomaticTerminationQueue();
-
-	//Process the automatic destruction queue.
-	ProcessAutomaticDestructionQueue();
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<EntitySystem *const RESTRICT>(arguments)->EntityUpdate();
+	},
+	this,
+	UpdatePhase::ENTITY,
+	UpdatePhase::INPUT);
 }
 
 /*
@@ -128,6 +125,27 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 
 	//Add the data.
 	_DestructionQueue.Emplace(entity);
+}
+
+/*
+*	Updates the entity system during the entity update phase.
+*/
+void EntitySystem::EntityUpdate() NOEXCEPT
+{
+	//Process the initialization queue.
+	ProcessInitializationQueue();
+
+	//Process the termination queue.
+	ProcessTerminationQueue();
+
+	//Process the destruction queue.
+	ProcessDestructionQueue();
+
+	//Process the automatic termination queue.
+	ProcessAutomaticTerminationQueue();
+
+	//Process the automatic destruction queue.
+	ProcessAutomaticDestructionQueue();
 }
 
 /*

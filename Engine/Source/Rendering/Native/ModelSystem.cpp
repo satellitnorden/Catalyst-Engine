@@ -5,7 +5,23 @@
 #include <Components/Core/ComponentManager.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
+
+/*
+*	Initializes the model system.
+*/
+void ModelSystem::Initialize() NOEXCEPT
+{
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<ModelSystem *const RESTRICT>(arguments)->InputUpdate();
+	},
+	this,
+	UpdatePhase::INPUT,
+	UpdatePhase::USER_INTERFACE);
+}
 
 /*
 *	Post-initializes the model system.
@@ -17,30 +33,6 @@ void ModelSystem::PostInitialize() NOEXCEPT
 
 	//Create the render data tables.
 	CreateRenderDataTables();
-}
-
-/*
-*	Updates the model system during the pre update phase.
-*/
-void ModelSystem::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Store the previous world transform for all model entities.
-	const uint64 numberOfModelComponents{ ComponentManager::GetNumberOfDynamicModelComponents() };
-	DynamicModelComponent *RESTRICT modelComponent{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-	for (uint64 i{ 0 }; i < numberOfModelComponents; ++i, ++modelComponent)
-	{
-		modelComponent->_PreviousWorldTransform = modelComponent->_CurrentWorldTransform;
-	}
-
-	//Store the previous world transform for all animated model entities.
-	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
-	AnimatedModelComponent *RESTRICT animatedModelComponent{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
-
-	for (uint64 i{ 0 }; i < numberOfAnimatedModelComponents; ++i, ++animatedModelComponent)
-	{
-		animatedModelComponent->_PreviousWorldTransform = animatedModelComponent->_CurrentWorldTransform;
-	}
 }
 
 /*
@@ -144,5 +136,33 @@ void ModelSystem::CreateRenderDataTables() NOEXCEPT
 	for (RenderDataTableHandle &renderDataTable : _ModelDataRenderDataTables)
 	{
 		RenderingSystem::Instance->CreateRenderDataTable(_ModelDataRenderDataTableLayout, &renderDataTable);
+	}
+}
+
+/*
+*	Updates the model system during the input update phase.
+*/
+void ModelSystem::InputUpdate() NOEXCEPT
+{
+	//Store the previous world transform for all dynamic model entities.
+	{
+		const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_dynamic_model_components; ++i, ++component)
+		{
+			component->_PreviousWorldTransform = component->_CurrentWorldTransform;
+		}
+	}
+
+	//Store the previous world transform for all animated model entities.
+	{
+		const uint64 number_of_animated_model_components{ ComponentManager::GetNumberOfAnimatedModelComponents() };
+		AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_animated_model_components; ++i, ++component)
+		{
+			component->_PreviousWorldTransform = component->_CurrentWorldTransform;
+		}
 	}
 }

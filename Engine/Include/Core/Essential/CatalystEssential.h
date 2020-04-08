@@ -35,6 +35,11 @@
 enum class UpdatePhase : uint8
 {
 	/*
+	*	During this update phase, entities are initialized/terminated/destroyed.
+	*/
+	ENTITY,
+
+	/*
 	*	During this update phase, input is retrieved from the platform.
 	*/
 	INPUT,
