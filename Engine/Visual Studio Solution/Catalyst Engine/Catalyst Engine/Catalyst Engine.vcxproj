@@ -125,7 +125,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h" />
-    <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h" />
+    <ClInclude Include="..\..\..\Include\File\Core\FileCore.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
@@ -582,6 +582,7 @@
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl" />
+    <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl" />
     <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

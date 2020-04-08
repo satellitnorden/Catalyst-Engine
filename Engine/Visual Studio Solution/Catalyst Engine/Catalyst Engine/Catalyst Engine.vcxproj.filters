@@ -385,6 +385,12 @@
     <Filter Include="Concurrency\Include">
       <UniqueIdentifier>{83928798-3ec4-4119-80c3-80412ced52ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform\Inline">
+      <UniqueIdentifier>{2879da5b-8db6-4f9b-91fb-d188c67f5f79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Inline\Windows">
+      <UniqueIdentifier>{342d374f-d35a-4105-a168-aa86e608cdd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1287,9 +1293,6 @@
     <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h">
       <Filter>File\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\File\Core\FileUtilities.h">
-      <Filter>File\Include\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h">
       <Filter>File\Include\Writers</Filter>
     </ClInclude>
@@ -1493,6 +1496,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h">
       <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Core\FileCore.h">
+      <Filter>File\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1984,11 +1990,14 @@
     <None Include="..\..\..\Include\Math\General\Vector.inl">
       <Filter>Math\Inline\General</Filter>
     </None>
-    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
-      <Filter>Platform\Include\Windows</Filter>
-    </None>
     <None Include="..\..\..\Include\Systems\EntitySystem.inl">
       <Filter>Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
+      <Filter>Platform\Inline\Windows</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl">
+      <Filter>Platform\Inline\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

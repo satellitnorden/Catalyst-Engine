@@ -2,8 +2,8 @@
 #include <Systems/SaveSystem.h>
 
 //File.
+#include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
-#include <File/Core/FileUtilities.h>
 
 //Systems.
 #include <Systems/TaskSystem.h>
@@ -97,7 +97,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		if (entry._SaveMask & _ProcessLoadsMask)
 		{
 			//Does the file exist?
-			if (!FileUtilities::DoesFileExist(entry._File.Data()))
+			if (!File::Exists(entry._File.Data()))
 			{			
 				//Determine the size required for the save.
 				const uint64 size{ entry._SaveSizeCallback() };
@@ -109,7 +109,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 				entry._DefaultValuesCallback(save_data);
 
 				//Create the file.
-				FileUtilities::CreateFile(entry._File.Data());
+				File::Create(entry._File.Data());
 
 				//Write it to file.
 				BinaryFile<IOMode::Out> file{ entry._File.Data() };
