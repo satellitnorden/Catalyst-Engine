@@ -5,17 +5,12 @@
 #define CATALYST_RAY_TRACING_T_MINIMUM (0.001f)
 #define CATALYST_RAY_TRACING_T_MAXIMUM (1000.0f)
 
-#define CATALYST_PATH_TRACING_TYPE_TERRAIN (0)
-#define CATALYST_PATH_TRACING_TYPE_STATIC_MODELS (1)
-#define CATALYST_PATH_TRACING_TYPE_DYNAMIC_MODELS (2)
-
 /*
 *	Path tracing ray payload struct definition.
 */
 struct PathTracingRayPayload
 {
 	//Input data.
-	uint type;
 	uint current_recursion_depth;
 	vec4 random_noise;
 	vec4 random_hemisphere_sample;

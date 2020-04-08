@@ -12,6 +12,26 @@ class AtomicFlag final
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE AtomicFlag() NOEXCEPT
+		:
+		_Flag(false)
+	{
+
+	}
+
+	/*
+	*	Constructor taking the initial state.
+	*/
+	FORCE_INLINE AtomicFlag(const bool initial_state) NOEXCEPT
+		:
+		_Flag(initial_state)
+	{
+
+	}
+
+	/*
 	*	Sets this atomic flag.
 	*/
 	FORCE_INLINE void Set() NOEXCEPT
@@ -71,7 +91,7 @@ public:
 private:
 
 	//The underlying atomic flag.
-	Atomic<bool> _Flag{ false };
+	Atomic<bool> _Flag;
 
 };
 

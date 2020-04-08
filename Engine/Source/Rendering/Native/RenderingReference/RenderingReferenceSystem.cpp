@@ -313,7 +313,7 @@ void RenderingReferenceSystem::EndRenderingReference() NOEXCEPT
 	//Wait for all tasks to finish.
 	for (RenderingReferenceData::AsynchronousData& data : _RenderingReferenceData->_AsynchronousData)
 	{
-		data._Task.WaitFor();
+		data._Task.Wait<WaitMode::PAUSE>();
 	}
 
 	//Normalize the values in the rendering reference texture.

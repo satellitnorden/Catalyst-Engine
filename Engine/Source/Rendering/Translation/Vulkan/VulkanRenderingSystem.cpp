@@ -769,6 +769,20 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::DynamicModelRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+			}
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.Upsize<false>(size);
+			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::FastApproximateFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
@@ -1006,20 +1020,6 @@ namespace VulkanRenderingSystemLogic
 
 			if (RenderingSystem::Instance->IsRayTracingSupported())
 			{
-				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
-			}
-		}
-
-		{
-			//Initialize the shader module.
-			uint64 size{ 0 };
-			shaderCollection.Read(&size, sizeof(uint64));
-			DynamicArray<byte> data;
-			data.Upsize<false>(size);
-			shaderCollection.Read(data.Data(), size);
-
-			if (RenderingSystem::Instance->IsRayTracingSupported())
-			{
 				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::PathTracingRayGeneration)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_RAYGEN_BIT_NV);
 			}
 		}
@@ -1153,13 +1153,41 @@ namespace VulkanRenderingSystemLogic
 		}
 
 		{
-			//Initialize the temporal anti aliasing fragment shader module.
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.Upsize<false>(size);
+			shaderCollection.Read(data.Data(), size);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::StaticModelRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+			}
+		}
+
+		{
+			//Initialize the shader module.
 			uint64 size{ 0 };
 			shaderCollection.Read(&size, sizeof(uint64));
 			DynamicArray<byte> data;
 			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
 			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::TemporalAntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+
+		{
+			//Initialize the shader module.
+			uint64 size{ 0 };
+			shaderCollection.Read(&size, sizeof(uint64));
+			DynamicArray<byte> data;
+			data.Upsize<false>(size);
+			shaderCollection.Read(data.Data(), size);
+
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::TerrainRayClosestHit)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+			}
 		}
 
 		{

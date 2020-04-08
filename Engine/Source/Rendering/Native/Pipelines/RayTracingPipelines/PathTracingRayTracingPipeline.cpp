@@ -41,13 +41,13 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfHitGroups(3);
 
 	//Add the terrain hit group.
-	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::TerrainRayClosestHit, Shader::None, Shader::None);
 
 	//Add the static models hit group.
-	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::StaticModelRayClosestHit, Shader::None, Shader::None);
 
 	//Add the dynamic models hit group.
-	AddHitGroup(Shader::PathTracingRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::DynamicModelRayClosestHit, Shader::None, Shader::None);
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(2);

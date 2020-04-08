@@ -104,7 +104,7 @@ namespace File
 			windows_path[i] = file[i];
 		}
 
-		return GetFileAttributes(windows_path) == INVALID_FILE_ATTRIBUTES;
+		return GetFileAttributes(windows_path) != INVALID_FILE_SIZE;
 	}
 	
 }

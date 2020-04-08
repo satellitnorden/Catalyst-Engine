@@ -112,7 +112,7 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 void SoundSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Wait for the update task to finish.
-	FMODSoundSystemData::_UpdateTask.WaitFor();
+	FMODSoundSystemData::_UpdateTask.Wait<WaitMode::PAUSE>();
 
 	//Update the listener position.
 	FMODSoundSystemLogic::UpdateListenerPosition();

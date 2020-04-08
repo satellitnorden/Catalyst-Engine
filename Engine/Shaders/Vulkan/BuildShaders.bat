@@ -8,6 +8,7 @@ glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOf
 glslangValidator.exe -V DepthOfFieldBlurFragmentShader.frag -o 				DepthOfFieldBlurFragmentShader.spv
 glslangValidator.exe -V DirectLightingFragmentShader.frag -o 				DirectLightingFragmentShader.spv
 glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLightingRayGenerationShader.spv
+glslangValidator.exe -V DynamicModelRayClosestHitShader.rchit -o 		DynamicModelRayClosestHitShader.spv
 glslangValidator.exe -V FastApproximateAntiAliasingFragmentShader.frag -o 		FastApproximateAntiAliasingFragmentShader.spv
 glslangValidator.exe -V FireflyReductionFragmentShader.frag -o 			FireflyReductionFragmentShader.spv
 glslangValidator.exe -V IndirectLightingApplicationFragmentShader.frag -o 		IndirectLightingApplicationFragmentShader.spv
@@ -31,7 +32,6 @@ glslangValidator.exe -V ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geo
 glslangValidator.exe -V ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert -o 	ParticleSystemMaskedDepthSceneFeaturesVertexShader.spv
 glslangValidator.exe -V PassthroughFragmentShader.frag -o 				PassthroughFragmentShader.spv
 glslangValidator.exe -V PathTracingDenoisingFragmentShader.frag -o 			PathTracingDenoisingFragmentShader.spv
-glslangValidator.exe -V PathTracingRayClosestHitShader.rchit -o 			PathTracingRayClosestHitShader.spv
 glslangValidator.exe -V PathTracingRayGenerationShader.rgen -o 				PathTracingRayGenerationShader.spv
 glslangValidator.exe -V PathTracingRayMissShader.rmiss -o 				PathTracingRayMissShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
@@ -45,7 +45,9 @@ glslangValidator.exe -V SeparableBlurFragmentShader.frag -o 				SeparableBlurFra
 glslangValidator.exe -V SkyComputeShader.comp -o 					SkyComputeShader.spv
 glslangValidator.exe -V SkyDownsampleComputeShader.comp -o 				SkyDownsampleComputeShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv
+glslangValidator.exe -V StaticModelRayClosestHitShader.rchit -o 			StaticModelRayClosestHitShader.spv
 glslangValidator.exe -V TemporalAntiAliasingFragmentShader.frag -o 			TemporalAntiAliasingFragmentShader.spv
+glslangValidator.exe -V TerrainRayClosestHitShader.rchit -o 				TerrainRayClosestHitShader.spv
 glslangValidator.exe -V TerrainSceneFeaturesFragmentShader.frag -o 			TerrainSceneFeaturesFragmentShader.spv
 glslangValidator.exe -V TerrainSceneFeaturesVertexShader.vert -o 			TerrainSceneFeaturesVertexShader.spv
 glslangValidator.exe -V ToneMappingFragmentShader.frag -o 				ToneMappingFragmentShader.spv

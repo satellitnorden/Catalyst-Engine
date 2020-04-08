@@ -24,7 +24,7 @@ public:
 	bool _ExecutableOnSameThread;
 
 	//Atomic flag denoting if this task is executed.
-	AtomicFlag _IsExecuted;
+	AtomicFlag _IsExecuted{ true };
 
 	/*
 	*	Default constructor.
