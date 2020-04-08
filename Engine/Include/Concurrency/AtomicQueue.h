@@ -36,17 +36,17 @@ public:
 
 		do
 		{
-			old_write_index = _WriteIndex.load();
+			old_write_index = _WriteIndex.load(std::memory_order_acquire);
 
 			new_write_index = old_write_index < (SIZE - 1) ? old_write_index + 1 : 0;
-		} while (!_WriteIndex.compare_exchange_weak(old_write_index, new_write_index));
+		} while (!_WriteIndex.compare_exchange_weak(old_write_index, new_write_index, std::memory_order_release));
 
 		_Queue[old_write_index] = new_value;
 
 		uint64 expected_last_index{ new_write_index > 0 ? new_write_index - 1 : SIZE - 1 };
 		uint64 new_last_index{ expected_last_index < (SIZE - 1) ? expected_last_index + 1 : 0 };
 
-		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index));
+		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index, std::memory_order_release));
 	}
 
 	/*
@@ -60,8 +60,8 @@ public:
 
 		do
 		{
-			old_first_index = _FirstIndex.load();
-			old_last_index = _LastIndex.load();
+			old_first_index = _FirstIndex.load(std::memory_order_acquire);
+			old_last_index = _LastIndex.load(std::memory_order_acquire);
 
 			if (old_first_index == old_last_index)
 			{
@@ -69,7 +69,7 @@ public:
 			}
 
 			new_first_index = old_first_index < (SIZE - 1) ? old_first_index + 1 : 0;
-		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index));
+		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index, std::memory_order_release));
 
 		return &_Queue[old_first_index];
 	}
