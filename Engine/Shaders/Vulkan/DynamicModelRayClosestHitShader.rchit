@@ -86,7 +86,7 @@ SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
 	//Fill in the surface properties.
 	surface_properties.albedo = albedo;
 	surface_properties.shading_normal = shading_normal;
-	surface_properties.material_properties = material_properties;
+	surface_properties.material_properties = vec4(material_properties[0], material_properties[1], material_properties[2], material_properties[3] * material.luminance_multiplier);
 
 	return surface_properties;
 }
