@@ -13,21 +13,19 @@ struct Vertex
 	vec2 texture_coordinate;
 };
 
-//Terrain render data table data.
-layout (set = 1, binding = 0) uniform accelerationStructureNV TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE;
+//General render data table data.
+layout (set = 1, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
 //Static models render data table data.
-layout (set = 1, binding = 1) uniform accelerationStructureNV STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE;
-layout (set = 1, binding = 2) buffer STATIC_MODEL_VERTEX_DATA_BUFFER { vec4 STATIC_MODEL_VERTEX_DATA[]; } STATIC_MODEL_VERTEX_BUFFERS[];
-layout (set = 1, binding = 3) buffer STATIC_MODEL_INDEX_DATA_BUFFER { uint STATIC_MODEL_INDEX_DATA[]; } STATIC_MODEL_INDEX_BUFFERS[];
-layout (set = 1, binding = 4) buffer STATIC_MODEL_UNIFORM_DATA
+layout (set = 1, binding = 1) buffer STATIC_MODEL_VERTEX_DATA_BUFFER { vec4 STATIC_MODEL_VERTEX_DATA[]; } STATIC_MODEL_VERTEX_BUFFERS[];
+layout (set = 1, binding = 2) buffer STATIC_MODEL_INDEX_DATA_BUFFER { uint STATIC_MODEL_INDEX_DATA[]; } STATIC_MODEL_INDEX_BUFFERS[];
+layout (set = 1, binding = 3) buffer STATIC_MODEL_UNIFORM_DATA
 {
     layout (offset = 0) uvec4[] STATIC_MODEL_MATERIAL_INDICES;
 };
 //Dynamic models render data table data.
-layout (set = 1, binding = 5) uniform accelerationStructureNV DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE;
-layout (set = 1, binding = 6) buffer DYNAMIC_MODEL_VERTEX_DATA_BUFFER { vec4 DYNAMIC_MODEL_VERTEX_DATA[]; } DYNAMIC_MODEL_VERTEX_BUFFERS[];
-layout (set = 1, binding = 7) buffer DYNAMIC_MODEL_INDEX_DATA_BUFFER { uint DYNAMIC_MODEL_INDEX_DATA[]; } DYNAMIC_MODEL_INDEX_BUFFERS[];
-layout (set = 1, binding = 8) buffer DYNAMIC_MODEL_UNIFORM_DATA
+layout (set = 1, binding = 4) buffer DYNAMIC_MODEL_VERTEX_DATA_BUFFER { vec4 DYNAMIC_MODEL_VERTEX_DATA[]; } DYNAMIC_MODEL_VERTEX_BUFFERS[];
+layout (set = 1, binding = 5) buffer DYNAMIC_MODEL_INDEX_DATA_BUFFER { uint DYNAMIC_MODEL_INDEX_DATA[]; } DYNAMIC_MODEL_INDEX_BUFFERS[];
+layout (set = 1, binding = 6) buffer DYNAMIC_MODEL_UNIFORM_DATA
 {
     layout (offset = 0) uvec4[] DYNAMIC_MODEL_MATERIAL_INDICES;
 };

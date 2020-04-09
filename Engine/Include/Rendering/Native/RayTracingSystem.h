@@ -41,39 +41,18 @@ public:
 	}
 
 	/*
-	*	Sets the terrain top level acceleration structure.
+	*	Sets the terrain bottom level acceleration structure.
 	*/
-	void SetTerrainTopLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
+	void SetTerrainBottomLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
 
-	/*
-	*	Notifies the ray tracing system that a static model was initialized.
-	*/
-	void NofityStaticModelInitialized() NOEXCEPT;
-
-	/*
-	*	Notifies the ray tracing system that a static model was terminated.
-	*/
-	void NofityStaticModelTerminated() NOEXCEPT;
-
-	/*
-	*	Notifies the ray tracing system that a dynamic model was initialized.
-	*/
-	void NofityDynamicModelInitialized() NOEXCEPT;
-
-	/*
-	*	Notifies the ray tracing system that a dynamic model was modified.
-	*/
-	void NofityDynamicModelModified() NOEXCEPT;
-
-	/*
-	*	Notifies the ray tracing system that a dynamic model was terminated.
-	*/
-	void NofityDynamicModelTerminated() NOEXCEPT;
 
 private:
 
-	//The empty top level acceleration structure.
-	AccelerationStructureHandle _EmptyTopLevelAccelerationStructure;
+	//Container for all the top level acceleration structure instance data.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> _TopLevelAccelerationStructureInstanceData;
+
+	//The top level acceleration structure.
+	AccelerationStructureHandle _TopLevelAccelerationStructure{ EMPTY_HANDLE };
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
@@ -81,34 +60,14 @@ private:
 	//The render data tabls.
 	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
 
-	//Defines if the terrain needs update.
-	bool _TerrainNeedsUpdate{ false };
-
-	//The terrain top level acceleration structure.
-	AccelerationStructureHandle _TerrainTopAccelerationStructure{ EMPTY_HANDLE };
-
-	//Defines if the static models top level acceleration structure needs update.
-	bool _StaticModelsNeedsUpdate{ false };
-
-	//The static models top level acceleration structure.
-	AccelerationStructureHandle _StaticModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
+	//The terrain bottom level acceleration structure.
+	AccelerationStructureHandle _TerrainBottomAccelerationStructure{ EMPTY_HANDLE };
 
 	//The static models material buffer.
 	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
 
-	//Defines if the dynamic models top level acceleration structure needs update.
-	bool _DynamicModelsNeedsUpdate{ false };
-
-	//The dynamic models top level acceleration structure.
-	AccelerationStructureHandle _DynamicModelsTopLevelAccelerationStructure{ EMPTY_HANDLE };
-
 	//The dynamic models material buffer.
 	BufferHandle _DynamicModelsMaterialBuffer{ EMPTY_HANDLE };
-
-	/*
-	*	Creates the empty top level acceleration structure.
-	*/
-	void CreateEmptyTopLevelAccelerationStructure() NOEXCEPT;
 
 	/*
 	*	Creates the render data table layout.

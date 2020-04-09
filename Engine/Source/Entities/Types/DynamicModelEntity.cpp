@@ -53,9 +53,6 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelPhysicsSimulationData(_ComponentsIndex, model_initialization_data->_ModelPhysicsSimulationData);
 	}
 
-	//Notify the ray tracing system that this dynamic model was initialized.
-	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelInitialized();
-
 	//Upsize the level of detail indices.
 	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
@@ -68,9 +65,6 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 */
 void DynamicModelEntity::Terminate() NOEXCEPT
 {
-	//Notify the ray tracing system that this dynamic model was terminated.
-	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelTerminated();
-
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDynamicModelComponentsIndex(_ComponentsIndex);
 }
@@ -88,9 +82,6 @@ RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT DynamicModelEntity::GetWor
 */
 RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::ModifyWorldTransform() NOEXCEPT
 {
-	//Notify the ray tracing system that this dynamic model was modified.
-	RenderingSystem::Instance->GetRayTracingSystem()->NofityDynamicModelModified();
-
 	//Remember that the world space axis aligned bounding box needs to be updated.
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags |= DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX;
 

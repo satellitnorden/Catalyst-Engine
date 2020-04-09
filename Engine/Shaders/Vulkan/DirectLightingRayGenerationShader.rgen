@@ -70,68 +70,23 @@ void main()
 
 				if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
 				{
-					if (!hit_anything && true)
-					{
-						visibility = 0.0f;
+					visibility = 0.0f;
 
-						traceNV(
-								TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								world_position, 																			//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light_direction,																			//direction
-								VIEW_DISTANCE,																				//Tmax
-								1 																							//payload
-								);
+					traceNV(
+							TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							0, 																							//missIndex
+							world_position, 																			//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light_direction,																			//direction
+							VIEW_DISTANCE,																				//Tmax
+							1 																							//payload
+							);
 
-						hit_anything = visibility < 1.0f;
-					}
-
-					if (!hit_anything && true)
-					{
-						visibility = 0.0f;
-
-						traceNV(
-								STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								world_position, 																			//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light_direction,																			//direction
-								VIEW_DISTANCE,																				//Tmax
-								1 																							//payload
-								);
-
-						hit_anything = visibility < 1.0f;
-					}
-
-					if (!hit_anything && true)
-					{
-						visibility = 0.0f;
-
-						traceNV(
-								DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								world_position, 																			//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light_direction,																			//direction
-								VIEW_DISTANCE,																				//Tmax
-								1 																							//payload
-								);
-
-						hit_anything = visibility < 1.0f;
-					}
+					hit_anything = visibility < 1.0f;
 				}
 
 				if (!hit_anything)
@@ -173,68 +128,23 @@ void main()
 
 					if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
 					{
-						if (!hit_anything && true)
-						{
-							visibility = 0.0f;
+						visibility = 0.0f;
 
-							traceNV(
-									TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-									0xff, 																						//cullMask
-									0, 																							//sbtRecordOffset
-									0, 																							//sbtRecordStride
-									0, 																							//missIndex
-									world_position, 																			//origin
-									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-									-light_direction,																			//direction
-									distance_to_light,																			//Tmax
-									1 																							//payload
-									);
+						traceNV(
+								TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								-light_direction,																			//direction
+								distance_to_light,																			//Tmax
+								1 																							//payload
+								);
 
-							hit_anything = visibility < 1.0f;
-						}
-
-						if (!hit_anything && true)
-						{
-							visibility = 0.0f;
-
-							traceNV(
-									STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-									0xff, 																						//cullMask
-									0, 																							//sbtRecordOffset
-									0, 																							//sbtRecordStride
-									0, 																							//missIndex
-									world_position, 																			//origin
-									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-									-light_direction,																			//direction
-									distance_to_light,																			//Tmax
-									1 																							//payload
-									);
-
-							hit_anything = visibility < 1.0f;
-						}
-
-						if (!hit_anything && true)
-						{
-							visibility = 0.0f;
-
-							traceNV(
-									DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-									0xff, 																						//cullMask
-									0, 																							//sbtRecordOffset
-									0, 																							//sbtRecordStride
-									0, 																							//missIndex
-									world_position, 																			//origin
-									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-									-light_direction,																			//direction
-									distance_to_light,																			//Tmax
-									1 																							//payload
-									);
-
-							hit_anything = visibility < 1.0f;
-						}
+						hit_anything = visibility < 1.0f;
 					}
 
 					if (!hit_anything)

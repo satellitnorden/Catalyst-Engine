@@ -129,7 +129,7 @@ vec3 Irradiance(vec3 origin, vec3 direction)
 	visibility = 0.0f;
 
 	traceNV(
-			STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+			TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
 			gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 			0xff, 																						//cullMask
 			0, 																							//sbtRecordOffset

@@ -350,7 +350,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	if (RenderingSystem::Instance->IsRayTracingActive())
 	{
 		//Update the terrain top level acceleration structure.
-		RenderingSystem::Instance->GetRayTracingSystem()->SetTerrainTopLevelAccelerationStructure(_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+		RenderingSystem::Instance->GetRayTracingSystem()->SetTerrainBottomLevelAccelerationStructure(_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 	
 		//Update the current buffer index.
 		_TerrainRayTracingData._CurrentBufferIndex ^= static_cast<uint8>(1);
@@ -836,11 +836,6 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 		RenderingSystem::Instance->DestroyAccelerationStructure(&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 	}
 
-	if (_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex])
-	{
-		RenderingSystem::Instance->DestroyAccelerationStructure(&_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
-	}
-
 	//Keep track of the indices offset.
 	uint32 indices_offset{ 0 };
 
@@ -951,8 +946,4 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 																		_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex],
 																		static_cast<uint32>(master_indices.Size()),
 																		&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
-
-	//Create the top level acceleration structure.
-	const TopLevelAccelerationStructureInstanceData instance{ MatrixConstants::IDENTITY, _TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex], RenderingConstants::TERRAIN_HIT_GROUP_INDEX, 0 };
-	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(instance), &_TerrainRayTracingData._TopLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
 }

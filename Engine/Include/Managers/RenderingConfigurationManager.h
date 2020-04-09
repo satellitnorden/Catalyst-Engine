@@ -150,7 +150,7 @@ private:
 	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::RAY_TRACED };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
@@ -159,7 +159,7 @@ private:
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::NONE };
+	ShadowsMode _ShadowsMode{ ShadowsMode::RAY_TRACED };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };

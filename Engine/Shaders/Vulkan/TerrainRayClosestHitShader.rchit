@@ -108,7 +108,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 				visibility = 0.0f;
 
 				traceNV(
-						TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
+						TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
 						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 						0xff, 																						//cullMask
 						0, 																							//sbtRecordOffset
@@ -122,48 +122,6 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 						);
 
 				hit_anything = visibility < 1.0f;
-
-				if (!hit_anything)
-				{
-					visibility = 0.0f;
-
-					traceNV(
-							STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-							0xff, 																						//cullMask
-							0, 																							//sbtRecordOffset
-							0, 																							//sbtRecordStride
-							1, 																							//missIndex
-							hit_position, 																				//origin
-							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-							-light_direction,																			//direction
-							VIEW_DISTANCE,																				//Tmax
-							1 																							//payload
-							);
-
-					hit_anything = visibility < 1.0f;
-
-					if (!hit_anything)
-					{
-						visibility = 0.0f;
-
-						traceNV(
-								DYNAMIC_TOP_LEVEL_ACCELERATION_STRUCTURE, 													//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								1, 																							//missIndex
-								hit_position, 																				//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light_direction,																			//direction
-								VIEW_DISTANCE,																				//Tmax
-								1 																							//payload
-								);
-
-						hit_anything = visibility < 1.0f;
-					}
-				}
 
 				if (!hit_anything)
 				{
@@ -217,64 +175,31 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 		bool has_hit = false;
 		float closest_hit_distance = VIEW_DISTANCE;
 
-		//Terrain.
+		//Reset the payload.
+		path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
+		path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+		//Fire the ray!
+		traceNV(
+				TOP_LEVEL_ACCELERATION_STRUCTURE,			//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				hit_position, 								//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				indirect_lighting_direction, 				//direction
+				closest_hit_distance, 						//Tmax
+				0 											//payload
+				);
+
+		closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
+
+		//Keep track of whether or not there was a hit.
+		if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
 		{
-			//Reset the payload.
-			path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
-			path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
-
-			//Fire the ray!
-			traceNV(
-					TERRAIN_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
-					gl_RayFlagsOpaqueNV, 						//rayFlags
-					0xff, 										//cullMask
-					0, 											//sbtRecordOffset
-					0, 											//sbtRecordStride
-					0, 											//missIndex
-					hit_position, 								//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-					indirect_lighting_direction, 				//direction
-					closest_hit_distance, 						//Tmax
-					0 											//payload
-					);
-
-			closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
-
-			//Keep track of whether or not there was a hit.
-			if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
-			{
-				has_hit = true;
-			}
-		}
-
-		//Static models.
-		{
-			//Reset the payload.
-			path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
-			path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
-
-			//Fire the ray!
-			traceNV(
-					STATIC_TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
-					gl_RayFlagsOpaqueNV, 						//rayFlags
-					0xff, 										//cullMask
-					0, 											//sbtRecordOffset
-					0, 											//sbtRecordStride
-					0, 											//missIndex
-					hit_position, 								//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-					indirect_lighting_direction, 				//direction
-					closest_hit_distance, 						//Tmax
-					0 											//payload
-					);
-
-			closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
-
-			//Keep track of whether or not there was a hit.
-			if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
-			{
-				has_hit = true;
-			}
+			has_hit = true;
 		}
 
 		//Was there a hit?

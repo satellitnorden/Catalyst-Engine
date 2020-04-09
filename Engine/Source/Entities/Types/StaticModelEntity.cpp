@@ -40,9 +40,6 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
 
-	//Notify the ray tracing system that this static model was initialized.
-	RenderingSystem::Instance->GetRayTracingSystem()->NofityStaticModelInitialized();
-
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
 	{
@@ -61,9 +58,6 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 */
 void StaticModelEntity::Terminate() NOEXCEPT
 {
-	//Notify the ray tracing system that this static model was terminated.
-	RenderingSystem::Instance->GetRayTracingSystem()->NofityStaticModelTerminated();
-
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
 }

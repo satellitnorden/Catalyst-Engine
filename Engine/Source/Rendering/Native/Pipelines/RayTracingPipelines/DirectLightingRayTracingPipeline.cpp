@@ -44,16 +44,6 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 */
 void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
 {
-	//No need to fire rays if there's nothing to fire against.
-	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-
-	if (number_of_components == 0)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 

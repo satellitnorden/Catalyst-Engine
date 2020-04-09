@@ -24,7 +24,4 @@ public:
 	//The bottom level acceleration structures.
 	StaticArray<AccelerationStructureHandle, 2> _BottomLevelAccelerationStructures{ EMPTY_HANDLE };
 
-	//The top level acceleration structures.
-	StaticArray<AccelerationStructureHandle, 2> _TopLevelAccelerationStructures{ EMPTY_HANDLE };
-
 };
