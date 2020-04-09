@@ -44,6 +44,14 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 */
 void VolumetricLightingRayTracingPipeline::Execute() NOEXCEPT
 {
+	//Check if ray tracing is possible.
+	if (!RenderingSystem::Instance->IsRayTracingPossible())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 

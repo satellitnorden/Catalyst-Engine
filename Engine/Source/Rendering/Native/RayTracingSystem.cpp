@@ -76,6 +76,12 @@ void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 */
 void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 {
+	//No need to create anything if there's nothing to trace against.
+	if (_TopLevelAccelerationStructureInstanceData.Empty())
+	{
+		return;
+	}
+
 	//Destroy the old render data table, if necessary.
 	if (_RenderDataTable)
 	{

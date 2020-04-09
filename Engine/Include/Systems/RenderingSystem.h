@@ -96,6 +96,11 @@ public:
 	NO_DISCARD bool IsRayTracingActive() const NOEXCEPT;
 
 	/*
+	*	Returns whether or not ray tracing is possible.
+	*/
+	NO_DISCARD bool IsRayTracingPossible() const NOEXCEPT;
+
+	/*
 	*	Returns the resolution.
 	*/
 	FORCE_INLINE NO_DISCARD Resolution GetFullResolution(const uint8 mip_level = 0) const NOEXCEPT

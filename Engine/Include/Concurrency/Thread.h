@@ -12,13 +12,13 @@ class Thread final
 public:
 
 	//Enumeration covering all priorities.
-	enum class Priority : int8
+	enum class Priority : uint8
 	{
-		LOWEST = -2,
-		BELOW_NORMAL = -1,
-		NORMAL = 0,
-		ABOVE_NORMAL = 1,
-		HIGHEST = 2
+		LOWEST,
+		BELOW_NORMAL,
+		NORMAL,
+		ABOVE_NORMAL,
+		HIGHEST
 	};
 
 	/*

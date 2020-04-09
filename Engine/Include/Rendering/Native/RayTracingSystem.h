@@ -45,6 +45,13 @@ public:
 	*/
 	void SetTerrainBottomLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
 
+	/*
+	*	Returns if ray tracing data exists.
+	*/
+	FORCE_INLINE NO_DISCARD bool DoesRayTracingDataExist() const NOEXCEPT
+	{
+		return !_TopLevelAccelerationStructureInstanceData.Empty();
+	}
 
 private:
 

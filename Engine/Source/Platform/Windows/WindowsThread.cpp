@@ -55,7 +55,7 @@ void Thread::Launch() NOEXCEPT
 	_PlatformData = new std::thread(_Function);
 
 	//Retrieve the native handle.
-	std::thread::native_handle_type native_handle{ static_cast<std::thread* const RESTRICT>(_PlatformData)->native_handle() };
+	std::thread::native_handle_type native_handle{ static_cast<std::thread *const RESTRICT>(_PlatformData)->native_handle() };
 
 	//Set the thread priority.
 	{

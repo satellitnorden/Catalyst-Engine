@@ -222,6 +222,14 @@ NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 }
 
 /*
+*	Returns whether or not ray tracing is possible.
+*/
+NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
+{
+	return _RayTracingSystem.DoesRayTracingDataExist();
+}
+
+/*
 *	Returns the global render data table.
 */
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT

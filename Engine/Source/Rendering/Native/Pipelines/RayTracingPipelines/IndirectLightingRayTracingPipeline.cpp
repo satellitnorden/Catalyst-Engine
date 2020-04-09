@@ -44,6 +44,14 @@ void IndirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 */
 void IndirectLightingRayTracingPipeline::Execute() NOEXCEPT
 {
+	//Check if ray tracing is possible.
+	if (!RenderingSystem::Instance->IsRayTracingPossible())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 
