@@ -270,8 +270,10 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 /*
 *	Registers an update.
+*	Returns a unique identifier for this update,
+*	which can later be used to query information about the update and deregister the update.
 */
-void CatalystEngineSystem::RegisterUpdate(	const UpdateFunction update_function,
+uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function,
 											void *const RESTRICT update_arguments,
 											const UpdatePhase start,
 											const UpdatePhase end) NOEXCEPT
@@ -280,6 +282,7 @@ void CatalystEngineSystem::RegisterUpdate(	const UpdateFunction update_function,
 	UpdateData* const RESTRICT new_update_data{ static_cast<UpdateData *const RESTRICT>(_UpdateDataAllocator.Allocate()) };
 
 	//Set the properties.
+	new_update_data->_Identifier = _UpdateDataCounter++;
 	new_update_data->_UpdateFunction = update_function;
 	new_update_data->_UpdateArguments = update_arguments;
 	new_update_data->_Start = start;
@@ -293,6 +296,41 @@ void CatalystEngineSystem::RegisterUpdate(	const UpdateFunction update_function,
 	//Add the update data to the appropriate start/end containers.
 	_StartUpdateData[UNDERLYING(start)].Emplace(new_update_data);
 	_EndUpdateData[UNDERLYING(end)].Emplace(new_update_data);
+
+	//Return the identifier.
+	return new_update_data->_Identifier;
+}
+
+/*
+*	Deregisters an update.
+*/
+void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
+{
+	for (DynamicArray<UpdateData *RESTRICT> &update_data : _StartUpdateData)
+	{
+		for (uint64 i{ 0 }, size{ update_data.Size() }; i < size; ++i)
+		{
+			if (update_data[i]->_Identifier == identifier)
+			{
+				update_data.EraseAt(i);
+
+				break;
+			}
+		}
+	}
+
+	for (DynamicArray<UpdateData *RESTRICT> &update_data : _EndUpdateData)
+	{
+		for (uint64 i{ 0 }, size{ update_data.Size() }; i < size; ++i)
+		{
+			if (update_data[i]->_Identifier == identifier)
+			{
+				update_data.EraseAt(i);
+
+				break;
+			}
+		}
+	}
 }
 
 /*

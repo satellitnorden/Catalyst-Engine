@@ -45,11 +45,18 @@ public:
 
 	/*
 	*	Registers an update.
+	*	Returns a unique identifier for this update,
+	*	which can later be used to query information about the update and deregister the update.
 	*/
-	void RegisterUpdate(const UpdateFunction update_function,
-						void *const RESTRICT update_arguments,
-						const UpdatePhase start,
-						const UpdatePhase end) NOEXCEPT;
+	uint64 RegisterUpdate(	const UpdateFunction update_function,
+							void *const RESTRICT update_arguments,
+							const UpdatePhase start,
+							const UpdatePhase end) NOEXCEPT;
+
+	/*
+	*	Deregisters an update.
+	*/
+	void DeregisterUpdate(const uint64 identifier) NOEXCEPT;
 
 	/*
 	*	Returns the project configuration.
@@ -109,6 +116,9 @@ private:
 
 	public:
 
+		//The identifier.
+		uint64 _Identifier;
+
 		//The update function.
 		UpdateFunction _UpdateFunction;
 
@@ -144,14 +154,17 @@ private:
 	//The update speed.
 	float32 _UpdateSpeed{ 1.0f };
 
+	//The update data counter.
+	uint64 _UpdateDataCounter{ 0 };
+
 	//The update data allocator.
 	PoolAllocator<sizeof(UpdateData)> _UpdateDataAllocator;
 
 	//Container for all start updata data.
-	StaticArray<DynamicArray<UpdateData *const RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _StartUpdateData;
+	StaticArray<DynamicArray<UpdateData *RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _StartUpdateData;
 
 	//Container for all end updata data.
-	StaticArray<DynamicArray<UpdateData *const RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _EndUpdateData;
+	StaticArray<DynamicArray<UpdateData *RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _EndUpdateData;
 
 	/*
 	*	Updates an individual phase.

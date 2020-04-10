@@ -316,7 +316,7 @@ public:
 		object.~TYPE();
 		object = std::move(Back());
 
-		Pop();
+		--_Size;
 	}
 
 	/*
@@ -330,7 +330,8 @@ public:
 			{
 				object.~TYPE();
 				object = std::move(Back());
-				Pop();
+				
+				--_Size;
 
 				return;
 			}
