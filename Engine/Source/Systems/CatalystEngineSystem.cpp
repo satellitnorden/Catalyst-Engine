@@ -279,7 +279,7 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 											const UpdatePhase end) NOEXCEPT
 {
 	//Allocate the update data.
-	UpdateData* const RESTRICT new_update_data{ static_cast<UpdateData *const RESTRICT>(_UpdateDataAllocator.Allocate()) };
+	UpdateData* const RESTRICT new_update_data{ new (_UpdateDataAllocator.Allocate()) UpdateData() };
 
 	//Set the properties.
 	new_update_data->_Identifier = _UpdateDataCounter++;

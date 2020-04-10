@@ -63,7 +63,7 @@ void LevelOfDetailSystem::RenderUpdate(const UpdateContext *const RESTRICT conte
 void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 MAXIMUM_DISTANCE{ 100.0f };
+	constexpr float32 MAXIMUM_DISTANCE{ 1'024.0f };
 	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
 
 	//Cache the perceiver position.
@@ -108,7 +108,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 MAXIMUM_DISTANCE{ 100.0f };
+	constexpr float32 MAXIMUM_DISTANCE{ 512.0f };
 	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
 
 	//Cache the perceiver position.
