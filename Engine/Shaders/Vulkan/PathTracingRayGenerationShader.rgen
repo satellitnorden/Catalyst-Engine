@@ -62,7 +62,7 @@ void main()
 	float hit_distance = VIEW_DISTANCE;
 	vec4 material_properties = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//Fire the ray(s)!
+	//Fire the ray!
 	bool has_hit = false;
 	float closest_hit_distance = VIEW_DISTANCE;
 
@@ -126,69 +126,4 @@ void main()
 		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(0.0f, 0.0f, 0.0f, 0.0f));
 		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
 	}
-
-	/*
-
-	//Accumulate values.
-	vec3 radiance = vec3(0.0f);
-	vec3 albedo = vec3(0.0f);
-	vec3 geometryNormal = vec3(0.0f);
-	float hitDistance = 0.0f;
-	vec3 shadingNormal = vec3(0.0f);
-	int materialProperties = 0;
-	float roughness = 0.0f;
-	float metallic = 0.0f;
-	float ambientOcclusion = 0.0f;
-	float luminance = 0.0f;
-
-	for (int i = 0; i < PATH_TRACING_SAMPLES; ++i)
-	{
-		//Jitter the screen coordinate a bit for some anti aliasing.
-		vec2 jitteredScreenCoordinate = screenCoordinate + PATH_TRACING_JITTER_SAMPLES[i] * inverseScaledResolution;
-
-		//Denote that this is the first recursion depth.
-		rayPayload.currentRecursionDepth = 0;
-
-		//Sample the noise texture.
-		vec2 noiseCoordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-		vec4 noiseSample = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + i) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noiseCoordinate);
-
-		//Write the random vector.
-		rayPayload.randomVector = noiseSample;
-
-		//Fire the ray!
-		traceNV(
-					topLevelAccelerationStructure, 		//topLevel
-					gl_RayFlagsOpaqueNV, 				//rayFlags
-					0xff, 								//cullMask
-					0, 									//sbtRecordOffset
-					0, 									//sbtRecordStride
-					0, 									//missIndex
-					PERCEIVER_WORLD_POSITION, 			//origin
-					CATALYST_RAY_TRACING_T_MINIMUM, 	//Tmin
-					rayDirection, 						//direction
-					VIEW_DISTANCE, 						//Tmax
-					0 									//payload
-					);
-
-		//Accumulate values.
-		radiance += rayPayload.radiance / PATH_TRACING_SAMPLES;
-		albedo += rayPayload.albedo / PATH_TRACING_SAMPLES;
-		geometryNormal += rayPayload.geometryNormal / PATH_TRACING_SAMPLES;
-		hitDistance += rayPayload.hitDistance / PATH_TRACING_SAMPLES;
-		shadingNormal += rayPayload.shadingNormal / PATH_TRACING_SAMPLES;
-		materialProperties += rayPayload.materialProperties / PATH_TRACING_SAMPLES;
-		roughness += rayPayload.roughness / PATH_TRACING_SAMPLES;
-		metallic += rayPayload.metallic / PATH_TRACING_SAMPLES;
-		ambientOcclusion += rayPayload.ambientOcclusion / PATH_TRACING_SAMPLES;
-		luminance += rayPayload.luminance / PATH_TRACING_SAMPLES;
-	}
-
-	//Write to the images.
-	imageStore(sceneImage, ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
-	imageStore(sceneFeatures1Image, ivec2(gl_LaunchIDNV.xy), vec4(albedo, 1.0f));
-	imageStore(sceneFeatures2Image, ivec2(gl_LaunchIDNV.xy), vec4(geometryNormal, hitDistance));
-	imageStore(sceneFeatures3Image, ivec2(gl_LaunchIDNV.xy), vec4(shadingNormal, intBitsToFloat(materialProperties)));
-	imageStore(sceneFeatures4Image, ivec2(gl_LaunchIDNV.xy), vec4(roughness, metallic, ambientOcclusion, luminance));
-	*/
 }

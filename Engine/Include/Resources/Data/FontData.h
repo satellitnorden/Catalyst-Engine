@@ -14,9 +14,6 @@ class FontData final
 
 public:
 
-	//The number of mipmap levels.
-	uint8 _MipmapLevels{ 1 };
-
 	//The character descriptions.
 	StaticArray<Font::CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
 

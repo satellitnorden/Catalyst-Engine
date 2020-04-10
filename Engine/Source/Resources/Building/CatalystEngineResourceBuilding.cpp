@@ -44,7 +44,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ID = "Catalyst_Engine_Default_Font";
 		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\Timeless.ttf";
 		parameters._MaximumFontResolution = 128;
-		parameters._MipmapLevels = 1;
 
 		ResourceBuilder::BuildFont(parameters);
 	}

@@ -34,6 +34,9 @@ public:
 
 	};
 
+	//The texture index.
+	uint32 _TextureIndex;
+
 	//Container for all character descriptions.
 	StaticArray<CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
 
