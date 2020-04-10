@@ -135,7 +135,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 bidirectional_reflectance_distribution = CalculateBidirectionalReflectanceDistribution(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, irradiance_direction, irradiance);
 
 		//Calculate the weakening factor.
-		float weakening_factor = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(-irradiance_direction, normal), 0.0f);
+		float weakening_factor = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(1.0f, CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(-irradiance_direction, normal), 0.0f), thickness);
 
 		//Calculate the lighting.
 		return bidirectional_reflectance_distribution * irradiance * weakening_factor * ambient_occlusion;

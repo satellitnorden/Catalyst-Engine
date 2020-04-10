@@ -105,6 +105,22 @@ void ParticleSystemEntity::SetPosition(const Vector3<float>& position) NOEXCEPT
 }
 
 /*
+*	Sets the minimum velocity.
+*/
+void ParticleSystemEntity::SetMinimumVelocity(const Vector3<float32> &velocity) NOEXCEPT
+{
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._MinimumVelocity = velocity;
+}
+
+/*
+*	Sets the maximum velocity.
+*/
+void ParticleSystemEntity::SetMaximumVelocity(const Vector3<float32> &velocity) NOEXCEPT
+{
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._MaximumVelocity = velocity;
+}
+
+/*
 *	Sets the spawn frequency.
 */
 void ParticleSystemEntity::SetSpawnFrequency(const float spawn_frequency) NOEXCEPT

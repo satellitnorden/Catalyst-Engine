@@ -42,6 +42,16 @@ public:
 	void SetPosition(const Vector3<float>& position) NOEXCEPT;
 
 	/*
+	*	Sets the minimum velocity.
+	*/
+	void SetMinimumVelocity(const Vector3<float32> &velocity) NOEXCEPT;
+
+	/*
+	*	Sets the maximum velocity.
+	*/
+	void SetMaximumVelocity(const Vector3<float32> &velocity) NOEXCEPT;
+
+	/*
 	*	Sets the spawn frequency.
 	*/
 	void SetSpawnFrequency(const float spawn_frequency) NOEXCEPT;

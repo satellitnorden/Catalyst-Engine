@@ -50,8 +50,7 @@ void main()
 	vec4 materialProperties = RetrieveMaterialProperties(material, fragment_texture_coordinate);
 
 	//Calculate the velocity.
-  //vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_current_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_previous_world_position);
-  vec2 velocity = vec2(0.0f);
+  vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_current_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_previous_world_position);
 
   //Write the fragments.
   sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);
