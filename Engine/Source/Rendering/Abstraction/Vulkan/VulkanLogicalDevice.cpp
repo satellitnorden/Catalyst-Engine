@@ -115,7 +115,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.occlusionQueryPrecise = VK_FALSE;
 	physicalDeviceFeatures.pipelineStatisticsQuery = VK_FALSE;
 	physicalDeviceFeatures.vertexPipelineStoresAndAtomics = VK_FALSE;
-	physicalDeviceFeatures.fragmentStoresAndAtomics = VK_FALSE;
+	physicalDeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
 	physicalDeviceFeatures.shaderTessellationAndGeometryPointSize = VK_FALSE;
 	physicalDeviceFeatures.shaderImageGatherExtended = VK_FALSE;
 	physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_TRUE;

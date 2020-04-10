@@ -107,6 +107,7 @@ void main()
 
 			case LIGHT_TYPE_POINT:
 			{
+				/*
 				//Alter the position a bit to simulare soft shadows.
 				vec3 light_position = light.position_or_direction + vec3(random_noise.xyz * 2.0f - 1.0f) * light.size;
 
@@ -163,6 +164,7 @@ void main()
 																light.color * light.intensity) * attenuation;
 					}
 				}
+				*/
 
 				break;
 			}

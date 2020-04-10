@@ -16,15 +16,15 @@ struct Vertex
 //General render data table data.
 layout (set = 1, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
 //Static models render data table data.
-layout (set = 1, binding = 1) buffer STATIC_MODEL_VERTEX_DATA_BUFFER { vec4 STATIC_MODEL_VERTEX_DATA[]; } STATIC_MODEL_VERTEX_BUFFERS[];
-layout (set = 1, binding = 2) buffer STATIC_MODEL_INDEX_DATA_BUFFER { uint STATIC_MODEL_INDEX_DATA[]; } STATIC_MODEL_INDEX_BUFFERS[];
+layout (set = 1, binding = 1) buffer STATIC_MODEL_VERTEX_DATA_BUFFER { vec4 STATIC_MODEL_VERTEX_DATA[]; } STATIC_MODEL_VERTEX_BUFFERS[4096];
+layout (set = 1, binding = 2) buffer STATIC_MODEL_INDEX_DATA_BUFFER { uint STATIC_MODEL_INDEX_DATA[]; } STATIC_MODEL_INDEX_BUFFERS[4096];
 layout (set = 1, binding = 3) buffer STATIC_MODEL_UNIFORM_DATA
 {
     layout (offset = 0) uvec4[] STATIC_MODEL_MATERIAL_INDICES;
 };
 //Dynamic models render data table data.
-layout (set = 1, binding = 4) buffer DYNAMIC_MODEL_VERTEX_DATA_BUFFER { vec4 DYNAMIC_MODEL_VERTEX_DATA[]; } DYNAMIC_MODEL_VERTEX_BUFFERS[];
-layout (set = 1, binding = 5) buffer DYNAMIC_MODEL_INDEX_DATA_BUFFER { uint DYNAMIC_MODEL_INDEX_DATA[]; } DYNAMIC_MODEL_INDEX_BUFFERS[];
+layout (set = 1, binding = 4) buffer DYNAMIC_MODEL_VERTEX_DATA_BUFFER { vec4 DYNAMIC_MODEL_VERTEX_DATA[]; } DYNAMIC_MODEL_VERTEX_BUFFERS[4096];
+layout (set = 1, binding = 5) buffer DYNAMIC_MODEL_INDEX_DATA_BUFFER { uint DYNAMIC_MODEL_INDEX_DATA[]; } DYNAMIC_MODEL_INDEX_BUFFERS[4096];
 layout (set = 1, binding = 6) buffer DYNAMIC_MODEL_UNIFORM_DATA
 {
     layout (offset = 0) uvec4[] DYNAMIC_MODEL_MATERIAL_INDICES;

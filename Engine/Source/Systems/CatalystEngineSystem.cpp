@@ -222,7 +222,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	RenderingSystem::Instance->RenderUpdate(&context);
 
 	/*
-	*	Post-update phase.
+	*	Post update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::POST);
 
