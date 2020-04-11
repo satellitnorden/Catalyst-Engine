@@ -55,11 +55,8 @@ void WorldSystem::UpdateParticleSystems(const UpdateContext* const RESTRICT cont
 
 	for (uint64 i{ 0 }; i < number_of_particle_system_components; ++i, ++component, ++render_component)
 	{
-		//Calculate how many particle to spawn per second.
-		const float particles_to_spawn_per_second{ component->_Lifetime / static_cast<float>(component->_NumberOfInstances) };
-
 		//Update the time since the last particle spawned.
-		component->_TimeSinceLastSpawn += context->_DeltaTime * component->_SpawnFrequency;
+		component->_TimeSinceLastSpawn += context->_DeltaTime;
 
 		//Update the first particle index to spawn.
 		component->_FirstParticleIndexToSpawn = component->_FirstParticleIndexToSpawn + component->_NumberOfParticlesToSpawn;
@@ -73,9 +70,9 @@ void WorldSystem::UpdateParticleSystems(const UpdateContext* const RESTRICT cont
 		//Calculate the number of particles to spawn this update.
 		component->_NumberOfParticlesToSpawn = 0;
 
-		while (component->_TimeSinceLastSpawn >= particles_to_spawn_per_second)
+		while (component->_TimeSinceLastSpawn >= component->_SpawnFrequency)
 		{
-			component->_TimeSinceLastSpawn -= particles_to_spawn_per_second;
+			component->_TimeSinceLastSpawn -= component->_SpawnFrequency;
 
 			++component->_NumberOfParticlesToSpawn;
 		}

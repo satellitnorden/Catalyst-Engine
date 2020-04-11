@@ -13,9 +13,25 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Particle system masked depth push constant data definition.
+*	Particle system masked depth geometry push constant data definition.
 */
-class ParticleSystemMaskedColorFragmentPushConstantData final
+class ParticleSystemMaskedDepthGeometryPushConstantData final
+{
+
+public:
+
+	//The lifetime.
+	float32 _Lifetime;
+
+	//The fade time.
+	float32 _FadeTime;
+
+};
+
+/*
+*	Particle system masked depth fragment push constant data definition.
+*/
+class ParticleSystemMaskedDepthFragmentPushConstantData final
 {
 
 public:
@@ -44,8 +60,9 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -117,7 +134,8 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer* const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
-	const ParticleSystemRenderComponent* RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
+	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
+	const ParticleSystemRenderComponent* RESTRICT render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);
@@ -128,20 +146,31 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
+	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component, ++render_component)
 	{
 		//Push constants.
-		ParticleSystemMaskedColorFragmentPushConstantData data;
+		{
+			ParticleSystemMaskedDepthGeometryPushConstantData data;
 
-		data._MaterialIndex = component->_MaterialIndex;
+			data._Lifetime = component->_Lifetime;
+			data._FadeTime = component->_FadeTime;
 
-		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
+			command_buffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), &data);
+		}
+
+		{
+			ParticleSystemMaskedDepthFragmentPushConstantData data;
+
+			data._MaterialIndex = render_component->_MaterialIndex;
+
+			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData), &data);
+		}
 
 		//Bind the transformations buffer.
-		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, render_component->_TransformationsBuffer, &OFFSET);
 
 		//Draw!
-		command_buffer->Draw(this, 1, component->_NumberOfInstances);
+		command_buffer->Draw(this, 1, render_component->_NumberOfInstances);
 	}
 
 	//End the command buffer.

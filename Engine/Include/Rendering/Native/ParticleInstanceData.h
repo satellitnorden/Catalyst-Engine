@@ -24,13 +24,7 @@ public:
 	//The time.
 	float _Time;
 
-	//The random seed 1.
-	float _RandomSeed1;
-
-	//The random seed 2.
-	float _RandomSeed2;
-
-	//The random seed 3.
-	float _RandomSeed3;
+	//Some padding.
+	Padding<12> _Padding;
 
 };

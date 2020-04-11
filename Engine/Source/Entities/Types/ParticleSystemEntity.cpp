@@ -47,7 +47,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	component._MaximumVelocity = particle_system_initialization_data->_MaximumVelocity;
 	component._MinimumScale = particle_system_initialization_data->_MinimumScale;
 	component._MaximumScale = particle_system_initialization_data->_MaximumScale;
-	component._NumberOfInstances = particle_system_initialization_data->_NumberOfInstances;
+	component._NumberOfInstances = static_cast<uint32>(particle_system_initialization_data->_Lifetime / particle_system_initialization_data->_InitialSpawnFrequency);
 	component._SpawnFrequency = particle_system_initialization_data->_InitialSpawnFrequency;
 	component._Lifetime = particle_system_initialization_data->_Lifetime;
 	component._FadeTime = particle_system_initialization_data->_FadeTime;
@@ -58,10 +58,10 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	for (ParticleInstanceData& instance : instance_data)
 	{
+		instance._Position = Vector3<float32>(0.0f, 0.0f, 0.0f);
+		instance._Velocity = Vector3<float32>(0.0f, 0.0f, 0.0f);
+		instance._Size = Vector2<float32>(0.0f, 0.0f);
 		instance._Time = component._Lifetime;
-		instance._RandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-		instance._RandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-		instance._RandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	}
 
 	component._TimeSinceLastSpawn = 0.0f;
@@ -78,7 +78,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	const uint64 data_sizes[]{ sizeof(ParticleInstanceData) * instance_data.Size() };
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &render_component._TransformationsBuffer);
 
-	render_component._NumberOfInstances = particle_system_initialization_data->_NumberOfInstances;
+	render_component._NumberOfInstances = component._NumberOfInstances;
 
 	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &component._RenderDataTable);
 	RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, 0, &component._RenderDataTable, render_component._TransformationsBuffer);

@@ -15,7 +15,7 @@
 /*
 *	Particle system masked depth push constant data definition.
 */
-class ParticleSystemMaskedDepthFragmentPushConstantData final
+class ParticleSystemMaskedColorFragmentPushConstantData final
 {
 
 public:
@@ -52,7 +52,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedDepthFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -138,11 +138,11 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
 	{
 		//Push constants.
-		ParticleSystemMaskedDepthFragmentPushConstantData data;
+		ParticleSystemMaskedColorFragmentPushConstantData data;
 
 		data._MaterialIndex = component->_MaterialIndex;
 
-		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedDepthFragmentPushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
 
 		//Bind the transformations buffer.
 		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);

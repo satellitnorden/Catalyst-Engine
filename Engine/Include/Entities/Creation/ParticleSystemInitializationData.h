@@ -38,9 +38,6 @@ public:
 	//The maximum scale.
 	Vector2<float> _MaximumScale;
 
-	//The number of instances.
-	uint32 _NumberOfInstances;
-
 	//The initial spawn frequency.
 	float _InitialSpawnFrequency;
 

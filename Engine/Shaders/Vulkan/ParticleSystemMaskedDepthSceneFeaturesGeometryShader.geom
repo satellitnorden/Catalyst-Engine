@@ -7,6 +7,13 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float LIFETIME;
+    layout (offset = 4) float FADE_TIME;
+};
+
 //Layout specification.
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
@@ -19,9 +26,6 @@ layout (location = 2) in float geometry_times[];
 //Out parameters.
 layout (location = 0) out vec2 fragment_texture_coordinate;
 layout (location = 1) out float fragment_opacity;
-
-#define fade_time (0.25f)
-#define lifetime (10.0f)
 
 void main()
 {
@@ -40,7 +44,7 @@ void main()
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	
 	//Calculate the opacity.
-	float opacity = min(time / fade_time, 1.0f) * clamp(1.0f - ((time - (lifetime - fade_time)) / fade_time), 0.0f, 1.0f);
+	float opacity = min(time / FADE_TIME, 1.0f) * clamp(1.0f - ((time - (LIFETIME - FADE_TIME)) / FADE_TIME), 0.0f, 1.0f);
 
 	//Construct all the vertices.
 	fragment_texture_coordinate = vec2(0.0f, 1.0f);

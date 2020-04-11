@@ -168,63 +168,39 @@ void SetInstanceTime(uint index, float time)
 	particle_system_instance_data[index * 3 + 2].x = time;
 }
 
-/*
-*	Returns the random seed 1 of the particle instance at the specified index.
-*/
-float GetInstanceRandomSeed1(uint index)
-{
-	return particle_system_instance_data[index * 3 + 2].y;
-}
-
-/*
-*	Returns the random seed 1 of the particle instance at the specified index.
-*/
-float GetInstanceRandomSeed2(uint index)
-{
-	return particle_system_instance_data[index * 3 + 2].z;
-}
-
-/*
-*	Returns the random seed 1 of the particle instance at the specified index.
-*/
-float GetInstanceRandomSeed3(uint index)
-{
-	return particle_system_instance_data[index * 3 + 2].w;
-}
-
 void main() 
 {
 	//Unpack the particle system input data.
-	ParticleSystemInputData data;
-	UnpackParticleSystemInputData(data);
+	ParticleSystemInputData input_data;
+	UnpackParticleSystemInputData(input_data);
 
 	//Get the index of the particle to update.
-	uint particle_index = gl_GlobalInvocationID.x; //Multiply the index since the particle data is stored in blocks of vec4's.
+	uint particle_index = gl_GlobalInvocationID.x;
 
 	//Update this particles time.
 	SetInstanceTime(particle_index, GetInstanceTime(particle_index) + DELTA_TIME);
 
 	//IF this particle's time is over the lifetime and it should spawn, generate new properties.
-	if (GetInstanceTime(particle_index) >= data.lifetime
-		&& ShouldSpawn(data, particle_index))
+	if (GetInstanceTime(particle_index) >= input_data.lifetime
+		&& ShouldSpawn(input_data, particle_index))
 	{
 		vec3 new_position;
 
-		new_position.x = mix(data.minimum_position.x, data.maximum_position.x, fract(data.position_seed_1 + GetInstanceRandomSeed1(particle_index)));
-		new_position.y = mix(data.minimum_position.y, data.maximum_position.y, fract(data.position_seed_2 + GetInstanceRandomSeed2(particle_index)));
-		new_position.z = mix(data.minimum_position.z, data.maximum_position.z, fract(data.position_seed_3 + GetInstanceRandomSeed3(particle_index)));
+		new_position.x = mix(input_data.minimum_position.x, input_data.maximum_position.x, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.position_seed_1));
+		new_position.y = mix(input_data.minimum_position.y, input_data.maximum_position.y, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.position_seed_2));
+		new_position.z = mix(input_data.minimum_position.z, input_data.maximum_position.z, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.position_seed_3));
 
-		SetInstancePosition(particle_index, data.position + new_position);
+		SetInstancePosition(particle_index, input_data.position + new_position);
 
 		vec3 new_velocity;
 
-		new_velocity.x = mix(data.minimum_velocity.x, data.maximum_velocity.x, fract(data.velocity_seed_1 + GetInstanceRandomSeed1(particle_index)));
-		new_velocity.y = mix(data.minimum_velocity.y, data.maximum_velocity.y, fract(data.velocity_seed_2 + GetInstanceRandomSeed2(particle_index)));
-		new_velocity.z = mix(data.minimum_velocity.z, data.maximum_velocity.z, fract(data.velocity_seed_3 + GetInstanceRandomSeed3(particle_index)));
+		new_velocity.x = mix(input_data.minimum_velocity.x, input_data.maximum_velocity.x, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.velocity_seed_1));
+		new_velocity.y = mix(input_data.minimum_velocity.y, input_data.maximum_velocity.y, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.velocity_seed_2));
+		new_velocity.z = mix(input_data.minimum_velocity.z, input_data.maximum_velocity.z, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.velocity_seed_3));
 
 		SetInstanceVelocity(particle_index, new_velocity);
 
-		vec2 new_size = mix(data.minimum_size, data.maximum_size, fract(data.size_seed + GetInstanceRandomSeed1(particle_index)));
+		vec2 new_size = mix(input_data.minimum_size, input_data.maximum_size, RandomFloat(vec2(DELTA_TIME, float(particle_index)), input_data.size_seed));
 
 		SetInstanceSize(particle_index, new_size);
 
