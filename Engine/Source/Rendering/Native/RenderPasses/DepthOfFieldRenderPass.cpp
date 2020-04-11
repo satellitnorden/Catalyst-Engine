@@ -34,21 +34,25 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(3);
+	SetNumberOfPipelines(1 + _DepthOfFieldFloodFillBlurGraphicsPipelines.Size() + 1);
 
-	AddPipeline(&_DepthOfFieldBlurGraphicsPipelines[0]);
-	AddPipeline(&_DepthOfFieldBlurGraphicsPipelines[1]);
+	AddPipeline(&_DepthOfFieldBokehBlurGraphicsPipeline);
+
+	for (DepthOfFieldFloodFillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodFillBlurGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_DepthOfFieldApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_DepthOfFieldBlurGraphicsPipelines[0].Initialize(	DepthOfFieldBlurGraphicsPipeline::Direction::Horizontal,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
-
-	_DepthOfFieldBlurGraphicsPipelines[1].Initialize(	DepthOfFieldBlurGraphicsPipeline::Direction::Vertical,
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-														RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
-
+	_DepthOfFieldBokehBlurGraphicsPipeline.Initialize();
+	_DepthOfFieldFloodFillBlurGraphicsPipelines[0].Initialize(	1,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
+	_DepthOfFieldFloodFillBlurGraphicsPipelines[1].Initialize(	2,
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -71,7 +75,12 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	_DepthOfFieldBlurGraphicsPipelines[0].Execute();
-	_DepthOfFieldBlurGraphicsPipelines[1].Execute();
+	_DepthOfFieldBokehBlurGraphicsPipeline.Execute();
+
+	for (DepthOfFieldFloodFillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodFillBlurGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
 }

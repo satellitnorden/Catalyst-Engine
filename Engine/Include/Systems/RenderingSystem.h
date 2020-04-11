@@ -18,6 +18,7 @@
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/MaterialSystem.h>
 #include <Rendering/Native/ModelSystem.h>
+#include <Rendering/Native/PostProcessingSystem.h>
 #include <Rendering/Native/RayTracingSystem.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
@@ -164,6 +165,14 @@ public:
 	RESTRICTED NO_DISCARD ModelSystem *const RESTRICT GetModelSystem() NOEXCEPT
 	{
 		return &_ModelSystem;
+	}
+
+	/*
+	*	Returns the post processing system.
+	*/
+	RESTRICTED NO_DISCARD PostProcessingSystem *const RESTRICT GetPostProcessingSystem() NOEXCEPT
+	{
+		return &_PostProcessingSystem;
 	}
 
 	/*
@@ -373,6 +382,9 @@ private:
 
 	//The model system.
 	ModelSystem _ModelSystem;
+
+	//The post processing system.
+	PostProcessingSystem _PostProcessingSystem;
 
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;

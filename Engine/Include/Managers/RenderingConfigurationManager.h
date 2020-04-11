@@ -128,22 +128,6 @@ public:
 		_ChromaticAberrationIntensity = intensity;
 	}
 
-	/*
-	*	Returns the depth of field focus distance.
-	*/
-	FORCE_INLINE NO_DISCARD float GetDepthOfFieldFocusDistance() const NOEXCEPT
-	{
-		return _DepthOfFieldFocusDistance;
-	}
-
-	/*
-	*	Sets the depth of field focus distance.
-	*/
-	FORCE_INLINE void SetDepthOfFieldFocusDistance(const float distance) NOEXCEPT
-	{
-		_DepthOfFieldFocusDistance = distance;
-	}
-
 private:
 
 	//The rendering path.
@@ -166,8 +150,5 @@ private:
 
 	//The chromatic aberration intensity.
 	float _ChromaticAberrationIntensity{ 0.0025f };
-
-	//The depth of field focus distance.
-	float _DepthOfFieldFocusDistance{ 10.0f };
 
 };

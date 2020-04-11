@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldApplicationGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldBokehBlurGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -8,9 +8,9 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Depth of field application fragment push constant data definition.
+*	Depth of field bokeh blur fragment push constant data definition.
 */
-class DepthOfFieldApplicationFragmentPushConstantData final
+class DepthOfFieldBokehBlurFragmentPushConstantData final
 {
 
 public:
@@ -18,12 +18,15 @@ public:
 	//The depth of field focus distance.
 	float32 _DepthOfFieldFocusDistance;
 
+	//The depth of field size.
+	float32 _DepthOfFieldSize;
+
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
+void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -36,11 +39,11 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DepthOfFieldApplicationFragment);
+	SetFragmentShader(Shader::DepthOfFieldBokehBlurFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -49,14 +52,14 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
-	SetBlendEnabled(true);
+	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
@@ -79,7 +82,7 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void DepthOfFieldApplicationGraphicsPipeline::Execute() NOEXCEPT
+void DepthOfFieldBokehBlurGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
@@ -95,11 +98,12 @@ void DepthOfFieldApplicationGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
-	DepthOfFieldApplicationFragmentPushConstantData data;
+	DepthOfFieldBokehBlurFragmentPushConstantData data;
 
 	data._DepthOfFieldFocusDistance = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldFocusDistance();
+	data._DepthOfFieldSize = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize();
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -114,7 +118,7 @@ void DepthOfFieldApplicationGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void DepthOfFieldApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void DepthOfFieldBokehBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -128,10 +132,10 @@ void DepthOfFieldApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEX
 /*
 *	Creates the render data table.
 */
-void DepthOfFieldApplicationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void DepthOfFieldBokehBlurGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

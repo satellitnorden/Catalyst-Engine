@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldBlurGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldFloodFillBlurGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -8,38 +8,38 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Push constant data definition.
+*	Depth of field flood fill blur fragment push constant data definition.
 */
-class PushConstantData final
+class DepthOfFieldFloodFillBlurFragmentPushConstantData final
 {
 
 public:
 
-	//The direction.
-	Vector2<float> _Direction;
+	//The stride.
+	int32 _Stride;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void DepthOfFieldBlurGraphicsPipeline::Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
+void DepthOfFieldFloodFillBlurGraphicsPipeline::Initialize(const int32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
+	//Set the stride.
+	_Stride = stride;
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
 	CreateRenderDataTable(source);
 
-	//Set the direction.
-	_Direction = direction;
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DepthOfFieldBlurFragment);
+	SetFragmentShader(Shader::DepthOfFieldFloodFillBlurFragment);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -52,7 +52,7 @@ void DepthOfFieldBlurGraphicsPipeline::Initialize(const Direction direction, con
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -80,34 +80,9 @@ void DepthOfFieldBlurGraphicsPipeline::Initialize(const Direction direction, con
 }
 
 /*
-*	Creates the render data table layout.
-*/
-void DepthOfFieldBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void DepthOfFieldBlurGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
 *	Executes this graphics pipeline.
 */
-void DepthOfFieldBlurGraphicsPipeline::Execute() NOEXCEPT
+void DepthOfFieldFloodFillBlurGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
@@ -123,19 +98,11 @@ void DepthOfFieldBlurGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
-	PushConstantData data;
+	DepthOfFieldFloodFillBlurFragmentPushConstantData data;
 
-	if (_Direction == Direction::Horizontal)
-	{
-		data._Direction = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width), 0.0f);
-	}
+	data._Stride = _Stride;
 
-	else
-	{
-		data._Direction = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
-	}
-
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -145,4 +112,27 @@ void DepthOfFieldBlurGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void DepthOfFieldFloodFillBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void DepthOfFieldFloodFillBlurGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

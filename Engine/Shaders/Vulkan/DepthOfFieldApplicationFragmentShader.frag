@@ -11,6 +11,12 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float DEPTH_OF_FIELD_FOCUS_DISTANCE;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
@@ -23,14 +29,14 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	//Sample the depth.
-	float depth = LinearizeDepth(texture(scene_features_2_texture, fragment_texture_coordinate).w);
-
 	//Sample the depth of field.
 	vec3 depth_of_field = texture(depth_of_field_texture, fragment_texture_coordinate).rgb;
 
+	//Calculate the hit distance.
+	float hit_distance = length(CalculateWorldPosition(fragment_texture_coordinate, texture(scene_features_2_texture, fragment_texture_coordinate).w) - PERCEIVER_WORLD_POSITION);
+
 	//Calculate the weight.
-	float weight = 1.0f - depth;
+	float weight = min(hit_distance / DEPTH_OF_FIELD_FOCUS_DISTANCE, 1.0f);
 
     //Write the fragment.
     fragment = vec4(depth_of_field, weight);

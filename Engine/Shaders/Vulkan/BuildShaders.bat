@@ -5,7 +5,8 @@ glslangValidator.exe -V AnimatedModelSceneFeaturesFragmentShader.frag -o 		Anima
 glslangValidator.exe -V AnimatedModelSceneFeaturesVertexShader.vert -o 			AnimatedModelSceneFeaturesVertexShader.spv
 glslangValidator.exe -V BloomIsolationFragmentShader.frag -o 				BloomIsolationFragmentShader.spv
 glslangValidator.exe -V DepthOfFieldApplicationFragmentShader.frag -o 			DepthOfFieldApplicationFragmentShader.spv
-glslangValidator.exe -V DepthOfFieldBlurFragmentShader.frag -o 				DepthOfFieldBlurFragmentShader.spv
+glslangValidator.exe -V DepthOfFieldBokehBlurFragmentShader.frag -o 			DepthOfFieldBokehBlurFragmentShader.spv
+glslangValidator.exe -V DepthOfFieldFloodFillBlurFragmentShader.frag -o 		DepthOfFieldFloodFillBlurFragmentShader.spv
 glslangValidator.exe -V DirectLightingFragmentShader.frag -o 				DirectLightingFragmentShader.spv
 glslangValidator.exe -V DirectLightingRayGenerationShader.rgen -o 			DirectLightingRayGenerationShader.spv
 glslangValidator.exe -V DynamicModelRayClosestHitShader.rchit -o 		DynamicModelRayClosestHitShader.spv

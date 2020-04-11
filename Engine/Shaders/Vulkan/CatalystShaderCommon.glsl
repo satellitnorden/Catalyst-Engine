@@ -112,7 +112,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 620) float chromaticAberrationIntensity;
     layout (offset = 624) float UNUSED_W;
 
-    layout (offset = 628) float depthOfFieldFocusDistance;
+    layout (offset = 628) float ASPECT_RATIO;
 
     layout (offset = 632) int activeNoiseTextureIndex;
     layout (offset = 636) float activeNoiseTextureOffsetX;

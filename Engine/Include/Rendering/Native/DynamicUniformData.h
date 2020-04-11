@@ -51,7 +51,7 @@ public:
 	float _ChromaticAberrationIntensity;
 	float _UNUSEDW;
 
-	float _DepthOfFieldFocusDistance;
+	float32 _AspectRatio;
 
 	int32 _ActiveBlueNoiseTextureIndex;
 	float _ActiveBlueNoiseTextureOffsetX;

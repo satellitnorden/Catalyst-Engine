@@ -670,7 +670,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
 	_DynamicUniformData._ChromaticAberrationIntensity = RenderingConfigurationManager::Instance->GetChromaticAberrationIntensity();
 
-	_DynamicUniformData._DepthOfFieldFocusDistance = RenderingConfigurationManager::Instance->GetDepthOfFieldFocusDistance();
+	_DynamicUniformData._AspectRatio = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 
 	_DynamicUniformData._ActiveBlueNoiseTextureIndex = _NoiseTextures[_ActiveNoiseTextureIndex]->_Index;
 	_DynamicUniformData._ActiveBlueNoiseTextureOffsetX = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
