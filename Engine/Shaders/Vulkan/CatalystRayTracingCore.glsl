@@ -2,7 +2,7 @@
 #define CATALYST_RAY_TRACING_CORE
 
 //Preprocessor defines.
-#define CATALYST_RAY_TRACING_T_MINIMUM (0.001f)
+#define CATALYST_RAY_TRACING_T_MINIMUM (0.01f)
 #define CATALYST_RAY_TRACING_T_MAXIMUM (1000.0f)
 
 /*
@@ -44,6 +44,14 @@ vec3 CalculateRayDirection(vec2 coordinate)
 uvec2 CalculateStaleScreenCoordinate(uvec2 input_coordinate)
 {
 	return (input_coordinate / 4) * 4;
+}
+
+/*
+*	Calculates the floating point compensation for the given world position.
+*/
+float CalculateFloatingPointCompensation(vec3 world_position)
+{
+	return 0.0f;
 }
 
 #endif

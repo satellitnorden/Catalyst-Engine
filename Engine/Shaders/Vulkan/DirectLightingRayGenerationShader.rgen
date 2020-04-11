@@ -42,6 +42,7 @@ void main()
 
 	//Calculate the hit position.
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+	world_position += shadingNormal * CalculateFloatingPointCompensation(world_position);
 
 	//Generate the view direction.
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
