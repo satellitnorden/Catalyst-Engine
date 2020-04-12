@@ -73,6 +73,9 @@ private:
 	//The static models material buffer.
 	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
 
+	//The dynamic models material indices.
+	DynamicArray<uint32> _DynamicModelsMaterialindices;
+
 	//The dynamic models material buffer.
 	BufferHandle _DynamicModelsMaterialBuffer{ EMPTY_HANDLE };
 

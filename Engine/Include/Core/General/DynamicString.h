@@ -72,7 +72,7 @@ public:
 	}
 
 	/*
-	*	Copy assignment operator overload.
+	*	Copy operator overload taking another dynamic string.
 	*/
 	FORCE_INLINE void operator=(const DynamicString &other) NOEXCEPT
 	{
@@ -87,7 +87,43 @@ public:
 	}
 
 	/*
-	*	Move assignment operator overload.
+	*	Copy operator overload taking a C string.
+	*/
+	FORCE_INLINE void operator=(const char *const RESTRICT new_string) NOEXCEPT
+	{
+		//Calculate the length of the new string.
+		const uint64 new_string_length{ strlen(new_string) };
+
+		//It's possible the string hasn't been constructed yet - if so, allocate the required memory.
+		if (!_String)
+		{
+			_String = static_cast<char *RESTRICT>(Memory::Allocate(new_string_length + 1));
+			Memory::Copy(_String, new_string, new_string_length + 1);
+
+			_Length = new_string_length;
+		}
+		
+		else
+		{
+			//If the current length matches the new string's length, just copy the data over directly.
+			if (_Length == new_string_length)
+			{
+				Memory::Copy(_String, new_string, _Length + 1);
+			}
+
+			//Otherwise, allocate sufficient data to hold the new string.
+			else
+			{
+				_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), new_string_length + 1));
+				Memory::Copy(_String, new_string, new_string_length + 1);
+
+				_Length = new_string_length;
+			}
+		}
+	}
+
+	/*
+	*	Move operator overload taking another dynamic string.
 	*/
 	FORCE_INLINE void operator=(DynamicString &&other) NOEXCEPT
 	{

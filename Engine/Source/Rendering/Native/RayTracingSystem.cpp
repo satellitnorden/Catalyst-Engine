@@ -232,7 +232,7 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 	}
 
 	//Gather the instances and the material indices.
-	DynamicArray<uint32> material_indices;
+	_DynamicModelsMaterialindices.Clear();
 
 	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 	const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
@@ -243,7 +243,7 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 	{
 		for (const uint32 material_index : component->_MaterialIndices)
 		{
-			material_indices.Emplace(material_index);
+			_DynamicModelsMaterialindices.Emplace(material_index);
 		}
 
 		for (const Mesh &mesh : component->_Model->_Meshes)
@@ -254,10 +254,16 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 		}
 	}
 
-	//Create the dynamic models material buffer.
-	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * material_indices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
+	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
+	if (_DynamicModelsMaterialindices.Capacity() > _DynamicModelsMaterialindices.Size() * 2)
+	{
+		_DynamicModelsMaterialindices.Reserve(_DynamicModelsMaterialindices.Size());
+	}
 
-	const void* RESTRICT data_chunks[]{ material_indices.Data() };
-	const uint64 data_sizes[]{ sizeof(uint32) * material_indices.Size() };
+	//Create the dynamic models material buffer.
+	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _DynamicModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
+
+	const void* RESTRICT data_chunks[]{ _DynamicModelsMaterialindices.Data() };
+	const uint64 data_sizes[]{ sizeof(uint32) * _DynamicModelsMaterialindices.Size() };
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialBuffer);
 }
