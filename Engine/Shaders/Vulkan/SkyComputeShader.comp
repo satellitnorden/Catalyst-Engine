@@ -18,7 +18,7 @@
 #define SKY_CLOUDS_MAXIMUM_DENSITY (0.675f) //0.025f step.
 #define SKY_CLOUDS_MAXIMUM_TRACE_DISTANCE (256.0f)
 #define SKY_CLOUDS_SKY_LIGHT_LUMINANCE_MULTIPLIER (0.3f) //0.025f step.
-#define SKY_CLOUDS_DENSITY_MULTIPLIER (16.0f) //0.25f step.
+#define SKY_CLOUDS_DENSITY_MULTIPLIER (32.0f) //0.25f step.
 
 #define SKY_FEEDBACK_FACTOR (0.99f) //0.0025f step.
 
@@ -190,18 +190,13 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 	vec2 noise_texture_index = vec2(coordinate.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
 
 	vec4 noise_sample_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
-	vec4 noise_sample_2 = texture(sampler2D(GLOBAL_TEXTURES[(activeNoiseTextureIndex + 1) & 63], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
 
-	float noise_samples[8];
+	float noise_samples[4];
 
 	noise_samples[0] = noise_sample_1[0];
 	noise_samples[1] = noise_sample_1[1];
 	noise_samples[2] = noise_sample_1[2];
 	noise_samples[3] = noise_sample_1[3];
-	noise_samples[4] = noise_sample_2[0];
-	noise_samples[5] = noise_sample_2[1];
-	noise_samples[6] = noise_sample_2[2];
-	noise_samples[7] = noise_sample_2[3];
 
 	//Calculate the start and end
     vec3 start = direction * SKY_CLOUDS_LOWER_PLANE;
@@ -211,7 +206,7 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
     float cloud_density = 0.0f;
     float cloud_density_in_direction = 0.0f;
 
-    for (int i = 0; i < 8; i += 2)
+    for (int i = 0; i < 4; i += 2)
     {
     	vec3 sample_point = mix(start, end, noise_samples[i + 0]);
 
