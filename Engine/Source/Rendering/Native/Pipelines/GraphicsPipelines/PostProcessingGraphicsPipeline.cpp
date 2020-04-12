@@ -8,6 +8,19 @@
 #include <Systems/RenderingSystem.h>
 
 /*
+*	Post processing fragment push constant data definition.
+*/
+class PostProcessingFragmentPushConstantData final
+{
+
+public:
+
+	//The contrast.
+	float32 _Contrast;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
@@ -33,6 +46,10 @@ void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -76,6 +93,13 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	PostProcessingFragmentPushConstantData data;
+
+	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
+
+	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

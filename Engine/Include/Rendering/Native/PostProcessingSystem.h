@@ -9,6 +9,22 @@ class PostProcessingSystem final
 public:
 
 	/*
+	*	Returns the contrast.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetContrast() const NOEXCEPT
+	{
+		return _Contrast;
+	}
+
+	/*
+	*	Sets the contrast.
+	*/
+	FORCE_INLINE void SetContrast(const float32 value) NOEXCEPT
+	{
+		_Contrast = value;
+	}
+
+	/*
 	*	Returns the depth of field focus distance.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetDepthOfFieldFocusDistance() const NOEXCEPT
@@ -41,6 +57,9 @@ public:
 	}
 
 private:
+
+	//The contrast.
+	float32 _Contrast{ 1.0f };
 
 	//The depth of field focus distance.
 	float32 _DepthOfFieldFocusDistance{ 1'024.0f };

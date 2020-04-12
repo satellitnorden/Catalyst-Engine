@@ -10,8 +10,13 @@
 #include "CatalystRenderingUtilities.glsl"
 
 //Constants.
-#define POST_PROCESSING_CONTRAST (1.25f) //0.025f step.
 #define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0125f) //0.0025f step.
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float CONTRAST;
+};
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -31,10 +36,13 @@ layout (location = 0) out vec4 fragment;
 vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 {
 	//Determine the offset weight.
-	float offset_weight = 1.0f - edge_factor;
+	vec2 offset_weight = vec2(1.0f - edge_factor);
+
+	//Account for the aspect ratio.
+	offset_weight.y *= ASPECT_RATIO;
 
 	//Calculate the chromatic aberration.
-	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).r, texture(source_texture, fragment_texture_coordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).gb);
+	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight.x).r, texture(source_texture, fragment_texture_coordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight.y).gb);
 }
 
 /*
@@ -76,7 +84,7 @@ void main()
 	post_processed_fragment = ApplyChromaticAberration(post_processed_fragment, edge_factor);
 
 	//Apply contrast.
-	post_processed_fragment = ApplyContrast(post_processed_fragment, POST_PROCESSING_CONTRAST);
+	post_processed_fragment = ApplyContrast(post_processed_fragment, CONTRAST);
 
 	//Apply film grain.
 	post_processed_fragment = ApplyFilmGrain(post_processed_fragment);
