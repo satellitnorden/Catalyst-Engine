@@ -20,7 +20,8 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D depth_of_field_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 1) uniform sampler2D depth_of_field_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -34,9 +35,19 @@ void main()
 	{
 		for (int X = -STRIDE; X <= STRIDE; X += STRIDE)
 		{
-			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * inverseScaledResolution;
+			//Calculate the sample coordinate.
+			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * inverseScaledResolution * 2.0f;
 
-			blurred_depth_of_field = max(blurred_depth_of_field, texture(depth_of_field_texture, sample_coordinate).rgb);
+			/*
+			*	Calculate the sample weight, depending on these criteria;
+			*	
+			*	1. Is the sample coordinate a valid coordinate?
+			*/
+			float sample_weight = 1.0f;
+
+			sample_weight *= float(ValidCoordinate(sample_coordinate));
+
+			blurred_depth_of_field = mix(blurred_depth_of_field, max(blurred_depth_of_field, texture(depth_of_field_texture, sample_coordinate).rgb), sample_weight);
 		}
 	}
 	

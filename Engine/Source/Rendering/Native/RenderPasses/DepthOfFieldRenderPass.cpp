@@ -48,11 +48,11 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Initialize();
 	_DepthOfFieldFloodFillBlurGraphicsPipelines[0].Initialize(	1,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
 	_DepthOfFieldFloodFillBlurGraphicsPipelines[1].Initialize(	2,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
+																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -67,11 +67,17 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 */
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {
-	if (true)
+	//No need to execute if depth of field size is zero.
+	if (RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize() == 0.0f)
 	{
 		SetEnabled(false);
 
 		return;
+	}
+
+	else
+	{
+		SetEnabled(true);
 	}
 
 	//Execute all pipelines.
@@ -79,7 +85,8 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 
 	for (DepthOfFieldFloodFillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodFillBlurGraphicsPipelines)
 	{
-		pipeline.Execute();
+		//pipeline.Execute();
+		pipeline.SetIncludeInRender(false);
 	}
 
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();

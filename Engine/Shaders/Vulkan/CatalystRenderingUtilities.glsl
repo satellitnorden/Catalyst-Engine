@@ -10,6 +10,14 @@
 #include "CatalystPackingUtilities.glsl"
 
 /*
+*	Applies contrast to the given fragment.
+*/
+vec3 ApplyContrast(vec3 fragment, float contrast)
+{
+	return ((fragment - 0.5f) * contrast) + 0.5f;
+}
+
+/*
 *	Calculates an (approximate) tangent space matrix from a normal.
 */
 mat3 CalculateTangentSpaceMatrix(vec3 normal)

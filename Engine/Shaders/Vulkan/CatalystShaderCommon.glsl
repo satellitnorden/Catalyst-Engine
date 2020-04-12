@@ -196,7 +196,7 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
     vec4 view_space_position = inverseProjectionMatrix * vec4(vec3(near_plane_coordinate, depth), 1.0f);
     float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
-    view_space_position *= inverse_view_space_position_denominator;
+    view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
 }

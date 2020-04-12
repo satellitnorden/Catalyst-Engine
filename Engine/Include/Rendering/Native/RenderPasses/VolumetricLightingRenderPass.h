@@ -34,7 +34,7 @@ private:
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
 
 	//The volumetric lighting spatial denoising graphics pipelines.
-	StaticArray<VolumetricLightingSpatialDenoisingGraphicsPipeline, 1> _VolumetricLightingSpatialDenoisingGraphicsPipelines;
+	StaticArray<VolumetricLightingSpatialDenoisingGraphicsPipeline, 2> _VolumetricLightingSpatialDenoisingGraphicsPipelines;
 
 	//The volumetric lighting temporal denoising graphics pipelines.
 	StaticArray<VolumetricLightingTemporalDenoisingGraphicsPipeline, 2> _VolumetricLightingTemporalDenoisingGraphicsPipelines;

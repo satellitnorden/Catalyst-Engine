@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Constants.
-#define VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.725f) //0.025f step.
+#define VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.75f) //0.025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;

@@ -7,9 +7,10 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "CatalystRenderingUtilities.glsl"
 
 //Constants.
-#define POST_PROCESSING_CONTRAST (1.025f) //0.025f step.
+#define POST_PROCESSING_CONTRAST (1.25f) //0.025f step.
 #define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0125f) //0.0025f step.
 
 //Layout specification.
@@ -34,16 +35,6 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 
 	//Calculate the chromatic aberration.
 	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).r, texture(source_texture, fragment_texture_coordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight).gb);
-}
-
-/*
-*	Applies contrast.
-*/
-vec3 ApplyContrast(vec3 fragment)
-{
-	//return mix(fragment, vec3(SmoothStep(fragment.r), SmoothStep(fragment.g), SmoothStep(fragment.b)), 1.0f - POST_PROCESSING_CONTRAST);
-	//return mix(vec3(0.5f), fragment, POST_PROCESSING_CONTRAST);
-    return fragment * POST_PROCESSING_CONTRAST + (0.5f - POST_PROCESSING_CONTRAST * 0.5f);
 }
 
 /*
@@ -85,7 +76,7 @@ void main()
 	post_processed_fragment = ApplyChromaticAberration(post_processed_fragment, edge_factor);
 
 	//Apply contrast.
-	post_processed_fragment = ApplyContrast(post_processed_fragment);
+	post_processed_fragment = ApplyContrast(post_processed_fragment, POST_PROCESSING_CONTRAST);
 
 	//Apply film grain.
 	post_processed_fragment = ApplyFilmGrain(post_processed_fragment);
