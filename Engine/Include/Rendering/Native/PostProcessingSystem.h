@@ -25,6 +25,22 @@ public:
 	}
 
 	/*
+	*	Returns the chromatic aberration intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetChromaticAberrationIntensity() const NOEXCEPT
+	{
+		return _ChromaticAberrationIntensity;
+	}
+
+	/*
+	*	Sets the chromatic aberration intensity.
+	*/
+	FORCE_INLINE void SetChromaticAberrationIntensity(const float32 value) NOEXCEPT
+	{
+		_ChromaticAberrationIntensity = value;
+	}
+
+	/*
 	*	Returns the depth of field focus distance.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetDepthOfFieldFocusDistance() const NOEXCEPT
@@ -60,6 +76,9 @@ private:
 
 	//The contrast.
 	float32 _Contrast{ 1.0f };
+
+	//The chromatic aberration intensity.
+	float32 _ChromaticAberrationIntensity{ 0.0025f };
 
 	//The depth of field focus distance.
 	float32 _DepthOfFieldFocusDistance{ 1'024.0f };

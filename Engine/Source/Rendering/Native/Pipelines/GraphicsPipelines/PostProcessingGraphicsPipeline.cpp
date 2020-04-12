@@ -18,6 +18,9 @@ public:
 	//The contrast.
 	float32 _Contrast;
 
+	//The chromatic aberration intensity.
+	float32 _ChromaticAberrationIntensity;
+
 };
 
 /*
@@ -98,6 +101,7 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	PostProcessingFragmentPushConstantData data;
 
 	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
+	data._ChromaticAberrationIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetChromaticAberrationIntensity();
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 

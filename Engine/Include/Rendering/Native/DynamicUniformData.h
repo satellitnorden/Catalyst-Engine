@@ -48,7 +48,7 @@ public:
 
 	float _UNUSED2;
 	float _BloomIntensity;
-	float _ChromaticAberrationIntensity;
+	float _UNUSEDWAT;
 	float _UNUSEDW;
 
 	float32 _AspectRatio;

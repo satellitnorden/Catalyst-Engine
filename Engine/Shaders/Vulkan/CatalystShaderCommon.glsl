@@ -109,7 +109,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     layout (offset = 612) float UNUSED_2;
     layout (offset = 616) float bloomIntensity;
-    layout (offset = 620) float chromaticAberrationIntensity;
+    layout (offset = 620) float UNUSED_WAT;
     layout (offset = 624) float UNUSED_W;
 
     layout (offset = 628) float ASPECT_RATIO;

@@ -16,6 +16,7 @@
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) float CONTRAST;
+	layout (offset = 4) float CHROMATIC_ABERRATION_INTENSITY;
 };
 
 //Layout specification.
@@ -42,7 +43,7 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 	offset_weight.y *= ASPECT_RATIO;
 
 	//Calculate the chromatic aberration.
-	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight.x).r, texture(source_texture, fragment_texture_coordinate + vec2(chromaticAberrationIntensity, chromaticAberrationIntensity) * offset_weight.y).gb);
+	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.x).r, texture(source_texture, fragment_texture_coordinate + vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.y).gb);
 }
 
 /*

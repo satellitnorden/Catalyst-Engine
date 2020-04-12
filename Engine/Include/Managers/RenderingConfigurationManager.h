@@ -112,22 +112,6 @@ public:
 		_BloomIntensity = intensity;
 	}
 
-	/*
-	*	Returns the chromatic aberration intensity.
-	*/
-	FORCE_INLINE NO_DISCARD float GetChromaticAberrationIntensity() const NOEXCEPT
-	{
-		return _ChromaticAberrationIntensity;
-	}
-
-	/*
-	*	Sets the chromatic aberration intensity.
-	*/
-	FORCE_INLINE void SetChromaticAberrationIntensity(const float intensity) NOEXCEPT
-	{
-		_ChromaticAberrationIntensity = intensity;
-	}
-
 private:
 
 	//The rendering path.
@@ -147,8 +131,5 @@ private:
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };
-
-	//The chromatic aberration intensity.
-	float _ChromaticAberrationIntensity{ 0.0025f };
 
 };
