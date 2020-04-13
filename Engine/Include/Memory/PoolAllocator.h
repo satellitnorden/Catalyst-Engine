@@ -14,7 +14,7 @@ public:
 	*/
 	PoolAllocator() NOEXCEPT
 	{
-		//Allocate a new node that will be both the root node.
+		//Allocate a new node that will be the root node.
 		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(malloc(sizeof(PoolAllocatorNode)));
 
 		//Reset the new node.
@@ -34,7 +34,7 @@ public:
 		{
 			PoolAllocatorNode *RESTRICT previous{ next };
 			next = next->_Next;
-			free(previous);
+			Memory::Free(previous);
 		} while (next);
 	}
 
@@ -45,7 +45,7 @@ public:
 	{
 		PoolAllocatorNode *RESTRICT current{ _Root };
 
-		while (true)
+		for (;;)
 		{
 			for (uint8 i = 0; i < 64; ++i)
 			{
@@ -64,7 +64,7 @@ public:
 
 			else
 			{
-				current->_Next = static_cast<PoolAllocatorNode *const RESTRICT>(malloc(sizeof(PoolAllocatorNode)));
+				current->_Next = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::Allocate(sizeof(PoolAllocatorNode)));
 				current->_Next->_Active = 0;
 				current->_Next->_Next = nullptr;
 
@@ -74,14 +74,14 @@ public:
 	}
 
 	/*
-	*	De-allocates memory.
+	*	Frees memory.
 	*/
-	void DeAllocate(void *const RESTRICT memory) NOEXCEPT
+	void Free(void *const RESTRICT memory) NOEXCEPT
 	{
 		PoolAllocatorNode *previous{ _Root };
 		PoolAllocatorNode *current{ _Root };
 
-		while (true)
+		for (;;)
 		{
 			byte *RESTRICT currentData{ current->_Data };
 
@@ -119,7 +119,7 @@ private:
 		uint64 _Active;
 
 		//The data.
-		byte _Data[SIZE * 64];
+		uint8 _Data[SIZE * 64];
 
 		//Pointer to the next node.
 		PoolAllocatorNode *RESTRICT _Next;

@@ -213,7 +213,7 @@ public:
 	/*
 	*	Destroys a descriptor set.
 	*/
-	void DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptorSet) NOEXCEPT;
+	void DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptor_set) NOEXCEPT;
 
 	/*
 	*	Creates and returns an event.

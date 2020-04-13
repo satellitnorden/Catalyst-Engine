@@ -6,7 +6,6 @@
 //Memory.
 #include <Memory/DestructorPointer.h>
 #include <Memory/LinearAllocator.h>
-#include <Memory/PoolAllocator.h>
 #include <Memory/UniquePointer.h>
 
 //Memory constants.

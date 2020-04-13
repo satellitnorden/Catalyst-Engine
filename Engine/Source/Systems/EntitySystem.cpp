@@ -72,7 +72,7 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
 	_AllocatorLock.Lock();
-	_Allocator.DeAllocate(entity);
+	_Allocator.Free(entity);
 	_AllocatorLock.Unlock();
 
 	//Remove the entity from the list of entities.

@@ -11,6 +11,12 @@
 #include <Entities/Creation/EntityInitializationData.h>
 #include <Entities/Types/Entity.h>
 
+//Memory.
+#include <Memory/PoolAllocator.h>
+
+//Systems.
+#include <Systems/MemorySystem.h>
+
 class EntitySystem final
 {
 

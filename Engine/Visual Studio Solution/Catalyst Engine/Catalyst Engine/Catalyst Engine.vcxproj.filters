@@ -1506,6 +1506,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldFloodFillBlurGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\MemorySystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1994,6 +1997,9 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldFloodFillBlurGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\MemorySystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl">
@@ -2007,6 +2013,9 @@
     </None>
     <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl">
       <Filter>Platform\Inline\Windows</Filter>
+    </None>
+    <None Include="..\..\..\Include\Systems\MemorySystem.inl">
+      <Filter>Systems\Inline</Filter>
     </None>
   </ItemGroup>
 </Project>

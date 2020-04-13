@@ -205,7 +205,7 @@ public:
 	/*
 	*	Creates a top level acceleration structure.
 	*/
-	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instanceData, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Destroys an acceleration structure.

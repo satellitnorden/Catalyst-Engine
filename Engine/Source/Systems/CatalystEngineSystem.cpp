@@ -24,6 +24,7 @@
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
+#include <Systems/MemorySystem.h>
 #include <Systems/PhysicsSystem.h>
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 #include <Systems/ProfilingSystem.h>
@@ -279,7 +280,7 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 											const UpdatePhase end) NOEXCEPT
 {
 	//Allocate the update data.
-	UpdateData* const RESTRICT new_update_data{ new (_UpdateDataAllocator.Allocate()) UpdateData() };
+	UpdateData* const RESTRICT new_update_data{ new (MemorySystem::Instance->TypeAllocate<UpdateData>()) UpdateData() };
 
 	//Set the properties.
 	new_update_data->_Identifier = _UpdateDataCounter++;
@@ -312,6 +313,8 @@ void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
 		{
 			if (update_data[i]->_Identifier == identifier)
 			{
+				MemorySystem::Instance->TypeFree<UpdateData>(update_data[i]);
+
 				update_data.EraseAt(i);
 
 				break;

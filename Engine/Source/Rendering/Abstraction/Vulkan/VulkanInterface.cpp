@@ -6,6 +6,9 @@
 #include <Concurrency/ScopedLock.h>
 #include <Concurrency/Spinlock.h>
 
+//Systems.
+#include <Systems/MemorySystem.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanErrorReporting.h>
 
@@ -92,10 +95,10 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan bufferrs.
-	for (VulkanBuffer *const RESTRICT vulkanBuffer : _VulkanBuffers)
+	for (VulkanBuffer *const RESTRICT vulkan_buffer : _VulkanBuffers)
 	{
-		vulkanBuffer->Release();
-		Memory::Free(vulkanBuffer);
+		vulkan_buffer->Release();
+		MemorySystem::Instance->TypeFree<VulkanBuffer>(vulkan_buffer);
 	}
 
 	//Release all Vulkan command pools.
@@ -127,9 +130,9 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan descriptor sets.
-	for (VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet : _VulkanDescriptorSets)
+	for (VulkanDescriptorSet *const RESTRICT vulkan_descriptor_set : _VulkanDescriptorSets)
 	{
-		Memory::Free(vulkanDescriptorSet);
+		MemorySystem::Instance->TypeFree<VulkanDescriptorSet>(vulkan_descriptor_set);
 	}
 
 	//Release all Vulkan events.
@@ -310,15 +313,15 @@ void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *
 */
 RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT
 {
-	VulkanBuffer *const RESTRICT newBuffer{ new (Memory::Allocate(sizeof(VulkanBuffer))) VulkanBuffer() };
-	newBuffer->Initialize(size, usage, memoryProperties);
+	VulkanBuffer *const RESTRICT new_buffer{ new (MemorySystem::Instance->TypeAllocate<VulkanBuffer>()) VulkanBuffer() };
+	new_buffer->Initialize(size, usage, memoryProperties);
 
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanBuffers.Emplace(newBuffer);
+	_VulkanBuffers.Emplace(new_buffer);
 
-	return newBuffer;
+	return new_buffer;
 }
 
 /*
@@ -328,7 +331,7 @@ void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEP
 {
 	buffer->Release();
 	_VulkanBuffers.Erase(buffer);
-	Memory::Free(buffer);
+	MemorySystem::Instance->TypeFree<VulkanBuffer>(buffer);
 }
 
 /*
@@ -427,25 +430,25 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 */
 RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
 {
-	VulkanDescriptorSet *const RESTRICT newDescriptorSet{ new (Memory::Allocate(sizeof(VulkanDescriptorSet))) VulkanDescriptorSet() };
-	_VulkanDescriptorPool.AllocateDescriptorSet(*newDescriptorSet, vulkanDescriptorSetLayout);
+	VulkanDescriptorSet *const RESTRICT new_descriptor_set{ new (MemorySystem::Instance->TypeAllocate<VulkanDescriptorSet>()) VulkanDescriptorSet() };
+	_VulkanDescriptorPool.AllocateDescriptorSet(*new_descriptor_set, vulkanDescriptorSetLayout);
 
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
 
-	_VulkanDescriptorSets.Emplace(newDescriptorSet);
+	_VulkanDescriptorSets.Emplace(new_descriptor_set);
 
-	return newDescriptorSet;
+	return new_descriptor_set;
 }
 
 /*
 *	Destroys a descriptor set.
 */
-void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptorSet) NOEXCEPT
+void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptor_set) NOEXCEPT
 {
-	_VulkanDescriptorPool.FreeDescriptorSet(descriptorSet->Get());
-	_VulkanDescriptorSets.Erase(descriptorSet);
-	Memory::Free(descriptorSet);
+	_VulkanDescriptorPool.FreeDescriptorSet(descriptor_set->Get());
+	_VulkanDescriptorSets.Erase(descriptor_set);
+	MemorySystem::Instance->TypeFree<VulkanDescriptorSet>(descriptor_set);
 }
 
 /*

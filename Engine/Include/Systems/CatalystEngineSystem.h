@@ -157,9 +157,6 @@ private:
 	//The update data counter.
 	uint64 _UpdateDataCounter{ 0 };
 
-	//The update data allocator.
-	PoolAllocator<sizeof(UpdateData)> _UpdateDataAllocator;
-
 	//Container for all start updata data.
 	StaticArray<DynamicArray<UpdateData *RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _StartUpdateData;
 

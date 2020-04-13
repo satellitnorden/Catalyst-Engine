@@ -25,11 +25,7 @@ RESTRICTED CLASS* const RESTRICT EntitySystem::CreateEntity(ARGUMENTS&&... argum
 template <typename TYPE>
 RESTRICTED TYPE* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ Memory::Allocate(sizeof(TYPE)) };
-
-	new (memory) TYPE();
-
-	return static_cast<TYPE* const RESTRICT>(memory);
+	return new (MemorySystem::Instance->TypeAllocate<TYPE>()) TYPE();
 }
 
 /*
@@ -39,5 +35,6 @@ template <typename TYPE>
 void EntitySystem::DestroyInitializationData(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	static_cast<TYPE *const RESTRICT>(data)->~TYPE();
-	Memory::Free(data);
+	
+	MemorySystem::Instance->TypeFree<TYPE>(static_cast<TYPE *const RESTRICT>(data));
 }

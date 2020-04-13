@@ -381,6 +381,7 @@
     <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\MemorySystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\ProfilingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
@@ -570,6 +571,7 @@
     <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\MemorySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
@@ -587,6 +589,7 @@
     <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl" />
     <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
+    <None Include="..\..\..\Include\Systems\MemorySystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
