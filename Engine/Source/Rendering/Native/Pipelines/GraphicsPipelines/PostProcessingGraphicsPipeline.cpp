@@ -15,11 +15,14 @@ class PostProcessingFragmentPushConstantData final
 
 public:
 
+	//The chromatic aberration intensity.
+	float32 _ChromaticAberrationIntensity;
+
 	//The contrast.
 	float32 _Contrast;
 
-	//The chromatic aberration intensity.
-	float32 _ChromaticAberrationIntensity;
+	//The film grain intensity.
+	float32 _FilmGrainIntensity;
 
 };
 
@@ -100,8 +103,9 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PostProcessingFragmentPushConstantData data;
 
-	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
 	data._ChromaticAberrationIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetChromaticAberrationIntensity();
+	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
+	data._FilmGrainIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetFilmGrainIntensity();
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 

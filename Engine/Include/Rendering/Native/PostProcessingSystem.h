@@ -72,6 +72,22 @@ public:
 		_DepthOfFieldSize = value;
 	}
 
+	/*
+	*	Returns the film grain intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetFilmGrainIntensity() const NOEXCEPT
+	{
+		return _FilmGrainIntensity;
+	}
+
+	/*
+	*	Sets the film grain intensity.
+	*/
+	FORCE_INLINE void SetFilmGrainIntensity(const float32 value) NOEXCEPT
+	{
+		_FilmGrainIntensity = value;
+	}
+
 private:
 
 	//The contrast.
@@ -85,5 +101,8 @@ private:
 
 	//The depth of field size.
 	float32 _DepthOfFieldSize{ 0.001f };
+
+	//The film grain intensity.
+	float32 _FilmGrainIntensity{ 0.01f };
 
 };

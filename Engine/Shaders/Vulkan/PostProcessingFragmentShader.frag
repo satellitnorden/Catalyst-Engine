@@ -9,14 +9,12 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 
-//Constants.
-#define POST_PROCESSING_FILM_GRAIN_STRENGTH (0.0125f) //0.0025f step.
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) float CONTRAST;
-	layout (offset = 4) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 0) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 4) float CONTRAST;
+	layout (offset = 8) float FILM_GRAIN_INTENSITY;
 };
 
 //Layout specification.
@@ -51,7 +49,7 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 */
 vec3 ApplyFilmGrain(vec3 fragment)
 {
-	return mix(fragment, vec3(RandomFloat(fragment_texture_coordinate, globalRandomSeed1)), POST_PROCESSING_FILM_GRAIN_STRENGTH);
+	return mix(fragment, vec3(RandomFloat(fragment_texture_coordinate, globalRandomSeed1)), FILM_GRAIN_INTENSITY);
 }
 
 /*
