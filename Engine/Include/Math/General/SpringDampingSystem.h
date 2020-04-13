@@ -9,6 +9,14 @@ class SpringDampingSystem final
 public:
 
 	/*
+	*	Returns the desired value.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetDesired() const NOEXCEPT
+	{
+		return _Desired;
+	}
+
+	/*
 	*	Sets the desired value.
 	*/
 	FORCE_INLINE void SetDesired(const float32 desired) NOEXCEPT
