@@ -15,6 +15,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 0) float CHROMATIC_ABERRATION_INTENSITY;
 	layout (offset = 4) float CONTRAST;
 	layout (offset = 8) float FILM_GRAIN_INTENSITY;
+	layout (offset = 12) float HORIZONTAL_BORDER;
 };
 
 //Layout specification.
@@ -65,7 +66,7 @@ vec3 ApplyVignette(vec3 fragment, float edge_factor)
 */
 vec3 ApplyBorders(vec3 fragment)
 {
-	return fragment * float(fragment_texture_coordinate.y >= 0.0f && fragment_texture_coordinate.y <= 1.0f);
+	return fragment * float(fragment_texture_coordinate.y >= HORIZONTAL_BORDER && fragment_texture_coordinate.y <= (1.0f - HORIZONTAL_BORDER));
 }
 
 void main()

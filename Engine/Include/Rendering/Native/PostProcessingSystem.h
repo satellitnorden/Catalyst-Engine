@@ -88,6 +88,22 @@ public:
 		_FilmGrainIntensity = value;
 	}
 
+	/*
+	*	Returns the horizontal border.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetHorizontalBorder() const NOEXCEPT
+	{
+		return _HorizontalBorder;
+	}
+
+	/*
+	*	Sets the horizontal border.
+	*/
+	FORCE_INLINE void SetHorizontalBorder(const float32 value) NOEXCEPT
+	{
+		_HorizontalBorder = value;
+	}
+
 private:
 
 	//The contrast.
@@ -104,5 +120,8 @@ private:
 
 	//The film grain intensity.
 	float32 _FilmGrainIntensity{ 0.01f };
+
+	//The horizontal border.
+	float32 _HorizontalBorder{ 0.0f };
 
 };

@@ -24,6 +24,9 @@ public:
 	//The film grain intensity.
 	float32 _FilmGrainIntensity;
 
+	//The horizontal border.
+	float32 _HorizontalBorder;
+
 };
 
 /*
@@ -106,6 +109,7 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	data._ChromaticAberrationIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetChromaticAberrationIntensity();
 	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
 	data._FilmGrainIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetFilmGrainIntensity();
+	data._HorizontalBorder = RenderingSystem::Instance->GetPostProcessingSystem()->GetHorizontalBorder();
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 
