@@ -88,10 +88,10 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan acceleration structures.
-	for (VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure : _VulkanAccelerationStructures)
+	for (VulkanAccelerationStructure *const RESTRICT vulkan_acceleration_structure : _VulkanAccelerationStructures)
 	{
-		vulkanAccelerationStructure->Release();
-		Memory::Free(vulkanAccelerationStructure);
+		vulkan_acceleration_structure->Release();
+		MemorySystem::Instance->TypeFree<VulkanAccelerationStructure>(vulkan_acceleration_structure);
 	}
 
 	//Release all Vulkan bufferrs.
@@ -287,7 +287,7 @@ RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(cons
 */
 RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT
 {
-	VulkanAccelerationStructure *const RESTRICT newAccelerationStructure{ new (Memory::Allocate(sizeof(VulkanAccelerationStructure))) VulkanAccelerationStructure() };
+	VulkanAccelerationStructure* const RESTRICT newAccelerationStructure{ new (MemorySystem::Instance->TypeAllocate<VulkanAccelerationStructure>()) VulkanAccelerationStructure() };
 	newAccelerationStructure->Initialize(type, instances, geometry);
 
 	static Spinlock lock;
@@ -301,11 +301,11 @@ RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAc
 /*
 *	Destroys an acceleration structure
 */
-void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT accelerationStructure) NOEXCEPT
+void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT acceleration_structure) NOEXCEPT
 {
-	accelerationStructure->Release();
-	_VulkanAccelerationStructures.Erase(accelerationStructure);
-	Memory::Free(accelerationStructure);
+	acceleration_structure->Release();
+	_VulkanAccelerationStructures.Erase(acceleration_structure);
+	MemorySystem::Instance->TypeFree<VulkanAccelerationStructure>(acceleration_structure);
 }
 
 /*

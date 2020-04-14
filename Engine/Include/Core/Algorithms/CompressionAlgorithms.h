@@ -50,9 +50,9 @@ namespace CompressionAlgorithms
 		intermediate_data[(*compressed_size)++] = run_value;
 
 		//Now that the actual compressed size is known, allocate the correct amount of memory, copy over the data and free the intermediate data.
-		*compressed_data = static_cast<int8 *const RESTRICT>(malloc(*compressed_size));
-		memcpy(*compressed_data, intermediate_data, *compressed_size);
-		free(intermediate_data);
+		*compressed_data = static_cast<int8 *const RESTRICT>(Memory::Allocate(*compressed_size));
+		Memory::Copy(*compressed_data, intermediate_data, *compressed_size);
+		Memory::Free(intermediate_data);
 	}
 
 }

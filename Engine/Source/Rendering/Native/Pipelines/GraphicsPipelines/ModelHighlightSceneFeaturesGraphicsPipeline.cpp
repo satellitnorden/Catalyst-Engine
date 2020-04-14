@@ -174,7 +174,7 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			fragment_data._HighlightColor = highlighted_model._HighlightColor;
 			fragment_data._HighlightStrength = highlighted_model._HighlightStrength;
-			fragment_data._MaterialIndex = component._MaterialIndices[i];
+			fragment_data._MaterialIndex = component._MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component._Model->_Meshes.Size()));
 
 			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
 

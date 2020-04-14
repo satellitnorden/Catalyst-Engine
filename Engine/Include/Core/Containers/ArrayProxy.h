@@ -40,6 +40,17 @@ public:
 	}
 
 	/*
+	*	Constructor taking an array and size.
+	*/
+	FORCE_INLINE constexpr ArrayProxy(const TYPE *const RESTRICT array, const uint64 size) NOEXCEPT
+		:
+		_Array(array),
+		_Size(size)
+	{
+
+	}
+
+	/*
 	*	Constructor taking a dynamic array.
 	*/
 	FORCE_INLINE constexpr ArrayProxy(const DynamicArray<TYPE> &array) NOEXCEPT

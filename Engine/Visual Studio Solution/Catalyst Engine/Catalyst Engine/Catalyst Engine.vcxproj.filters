@@ -1509,6 +1509,12 @@
     <ClInclude Include="..\..\..\Include\Systems\MemorySystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Memory\FrameAllocator.h">
+      <Filter>Memory\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

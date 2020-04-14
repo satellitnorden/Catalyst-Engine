@@ -34,6 +34,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/MemorySystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -1588,8 +1589,7 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 	if (IsRayTracingSupported())
 	{
 		//Create the Vulkan geometry instance structres.
-		DynamicArray<VulkanGeometryInstance> geometry_instances;
-		geometry_instances.Upsize<false>(instance_data.Size());
+		VulkanGeometryInstance* const RESTRICT geometry_instances{ MemorySystem::Instance->FrameAllocate<VulkanGeometryInstance>(sizeof(VulkanGeometryInstance) * instance_data.Size()) };
 
 		for (uint64 i{ 0 }, size{ instance_data.Size() }; i < size; ++i)
 		{
@@ -1598,7 +1598,7 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 
 		//Create the acceleration structure.
 		*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
-																			ArrayProxy<VulkanGeometryInstance>(geometry_instances),
+																			ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
 																			ArrayProxy<VkGeometryNV>());
 	}
 	

@@ -376,6 +376,8 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 	//Determine the number of meshes. Assume that each level of detail has the same number of meshes.
 	const uint64 number_of_meshes{ AssimpBuilder::DetermineNumberOfMeshes(parameters._LevelOfDetails[0]) };
 
+	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more then the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
+
 	//Write the number of meshes.
 	file.Write(&number_of_meshes, sizeof(uint64));
 

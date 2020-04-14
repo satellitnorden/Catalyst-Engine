@@ -39,7 +39,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._PreviousWorldTransform = model_initialization_data->_Transform;
 	component._CurrentWorldTransform = model_initialization_data->_Transform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
-	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
+	component._MaterialIndexCollection = model_initialization_data->_MaterialIndexCollection;
 
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
@@ -52,9 +52,6 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	{
 		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelPhysicsSimulationData(_ComponentsIndex, model_initialization_data->_ModelPhysicsSimulationData);
 	}
-
-	//Upsize the level of detail indices.
-	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);

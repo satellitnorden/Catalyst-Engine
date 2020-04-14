@@ -15,7 +15,7 @@
 #include <Physics/PhysicsCore.h>
 
 //Rendering.
-#include <Rendering/Native/Material.h>
+#include <Rendering/Native/MaterialIndexCollection.h>
 #include <Rendering/Native/Model.h>
 
 class DynamicModelInitializationData final : public EntityInitializationData
@@ -29,8 +29,8 @@ public:
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
 
-	//The material indices.
-	DynamicArray<uint32> _MaterialIndices;
+	//The material index collection.
+	MaterialIndexCollection _MaterialIndexCollection;
 
 	//The model collision data.
 	ModelCollisionData _ModelCollisionData;

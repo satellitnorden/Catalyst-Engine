@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\SimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Memory\DestructorPointer.h" />
+    <ClInclude Include="..\..\..\Include\Memory\FrameAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\Memory.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
@@ -226,6 +227,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Mesh.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />

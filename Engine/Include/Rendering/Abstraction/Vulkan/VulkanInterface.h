@@ -163,7 +163,7 @@ public:
 	/*
 	*	Destroys an acceleration structure
 	*/
-	void DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT accelerationStructure) NOEXCEPT;
+	void DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT acceleration_structure) NOEXCEPT;
 
 	/*
 	*	Creates and returns a buffer.

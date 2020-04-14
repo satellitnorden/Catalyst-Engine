@@ -8,6 +8,7 @@
 #include <Concurrency/Spinlock.h>
 
 //Memory.
+#include <Memory/FrameAllocator.h>
 #include <Memory/PoolAllocator.h>
 
 class MemorySystem final
@@ -27,6 +28,22 @@ public:
 	}
 
 	/*
+	*	Updates the memory system before the frame begins.
+	*/
+	void PreUpdate() NOEXCEPT;
+
+	/*
+	*	Allocates from a heap specific to the current frame.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT FrameAllocate(const uint64 size) NOEXCEPT
+	{
+		SCOPED_LOCK(_FrameAllocatorLock);
+
+		return _FrameAllocator.Allocate<TYPE>(size);
+	}
+
+	/*
 	*	Allocates from a heap specific to the given type.
 	*/
 	template <typename TYPE>
@@ -39,6 +56,12 @@ public:
 	FORCE_INLINE void TypeFree(TYPE *const RESTRICT memory) NOEXCEPT;
 
 private:
+
+	//The frame allocator.
+	FrameAllocator<1'024 * 32> _FrameAllocator;
+
+	//The frame allocator lock.
+	Spinlock _FrameAllocatorLock;
 
 	/*
 	*	Returns the  pool allocator specific to the given type.

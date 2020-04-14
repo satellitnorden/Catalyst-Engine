@@ -15,7 +15,7 @@ public:
 	PoolAllocator() NOEXCEPT
 	{
 		//Allocate a new node that will be the root node.
-		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(malloc(sizeof(PoolAllocatorNode)));
+		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::Allocate(sizeof(PoolAllocatorNode)));
 
 		//Reset the new node.
 		_Root->_Active = static_cast<uint64>(0);

@@ -178,6 +178,11 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	context._DeltaTime = _DeltaTime;
 
 	/*
+	*	Pre update phase.
+	*/
+	MemorySystem::Instance->PreUpdate();
+
+	/*
 	*	Entity update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::ENTITY);

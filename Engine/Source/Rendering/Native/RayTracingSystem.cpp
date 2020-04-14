@@ -241,9 +241,9 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		for (const uint32 material_index : component->_MaterialIndices)
+		for (uint64 j{ 0 }, size{ component->_Model->_Meshes.Size() }; j < size; ++j)
 		{
-			_DynamicModelsMaterialindices.Emplace(material_index);
+			_DynamicModelsMaterialindices.Emplace(component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(j), static_cast<uint8>(component->_Model->_Meshes.Size())));
 		}
 
 		for (const Mesh &mesh : component->_Model->_Meshes)

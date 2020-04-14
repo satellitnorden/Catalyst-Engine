@@ -2,10 +2,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Material.h>
+#include <Rendering/Native/MaterialIndexCollection.h>
 #include <Rendering/Native/Model.h>
 
 class DynamicModelComponent final
@@ -19,6 +19,14 @@ public:
 		WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX = BIT(0)
 	};
 
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE DynamicModelComponent() NOEXCEPT
+	{
+
+	}
+
 	//The model.
 	const Model *RESTRICT _Model{ nullptr };
 
@@ -31,11 +39,11 @@ public:
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material indices.
-	DynamicArray<uint32> _MaterialIndices;
+	//The material index collection.
+	MaterialIndexCollection _MaterialIndexCollection;
 
 	//The level of detail indices.
-	DynamicArray<uint32> _LevelOfDetailIndices;
+	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;
 
 	//Denotes the update flags.
 	UpdateFlag _UpdateFlags{ static_cast<UpdateFlag>(0) };
