@@ -33,47 +33,6 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Terminates the user interface system.
-*/
-void UserInterfaceSystem::Terminate() NOEXCEPT
-{
-	//Deallocate all user interface elements.
-	for (UserInterfaceElement *const RESTRICT element : _UserInterfaceElements)
-	{
-		switch (element->_Type)
-		{
-			case UserInterfaceElementType::BUTTON:
-			{
-				MemorySystem::Instance->TypeFree<ButtonUserInterfaceElement>(static_cast<ButtonUserInterfaceElement *const RESTRICT>(element));
-
-				break;
-			}
-
-			case UserInterfaceElementType::IMAGE:
-			{
-				MemorySystem::Instance->TypeFree<ImageUserInterfaceElement>(static_cast<ImageUserInterfaceElement *const RESTRICT>(element));
-
-				break;
-			}
-
-			case UserInterfaceElementType::TEXT:
-			{
-				MemorySystem::Instance->TypeFree<TextUserInterfaceElement>(static_cast<TextUserInterfaceElement *const RESTRICT>(element));
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-}
-
-/*
 *	Creates a user interface element.
 */
 RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT
@@ -194,6 +153,32 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 	const Vector2<float32> mouse_position{ InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY };
 	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::Pressed || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PressedHold };
 
+	//Update which button is gamepad selected.
+	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
+	{
+		ChooseDefaultGamepadSelectedButton();
+
+		if (gamepad_state->_DpadUp == ButtonState::Pressed)
+		{
+			ChooseNewGamepadSelectedButton(Vector2<float32>(0.0f, 1.0f));
+		}
+
+		else if (gamepad_state->_DpadDown == ButtonState::Pressed)
+		{
+			ChooseNewGamepadSelectedButton(Vector2<float32>(0.0f, -1.0f));
+		}
+
+		else if (gamepad_state->_DpadLeft == ButtonState::Pressed)
+		{
+			ChooseNewGamepadSelectedButton(Vector2<float32>(-1.0f, 0.0f));
+		}
+
+		else if (gamepad_state->_DpadRight == ButtonState::Pressed)
+		{
+			ChooseNewGamepadSelectedButton(Vector2<float32>(1.0f, 0.0f));
+		}
+	}
+
 	//Update the state of all button user interface elements and call the callbacks if necessary.
 	for (uint64 i{ 0 }; i < _UserInterfaceElements.Size(); ++i)
 	{
@@ -215,14 +200,22 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 					{
 						case ButtonUserInterfaceElement::State::IDLE:
 						{
-							if (gamepad_state->_A == ButtonState::Pressed)
+							if (type_element->_IsGamepadSelected)
 							{
-								if (type_element->_StartPressedCallback)
+								if (gamepad_state->_A == ButtonState::Pressed)
 								{
-									type_element->_StartPressedCallback(type_element);
+									if (type_element->_StartPressedCallback)
+									{
+										type_element->_StartPressedCallback(type_element);
+									}
+
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
 								}
 
-								type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
+								else
+								{
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
+								}
 							}
 
 							break;
@@ -230,18 +223,44 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 
 						case ButtonUserInterfaceElement::State::HOVERED:
 						{
+							if (type_element->_IsGamepadSelected)
+							{
+								if (gamepad_state->_A == ButtonState::Pressed)
+								{
+									if (type_element->_StartPressedCallback)
+									{
+										type_element->_StartPressedCallback(type_element);
+									}
+
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::PRESSED;
+								}
+							}
+
+							else
+							{
+								type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
+							}
+
 							break;
 						}
 
 						case ButtonUserInterfaceElement::State::PRESSED:
 						{
-							if (gamepad_state->_A != ButtonState::PressedHold)
+							if (type_element->_IsGamepadSelected)
 							{
-								if (type_element->_StopPressedCallback)
+								if (gamepad_state->_A == ButtonState::Released)
 								{
-									type_element->_StopPressedCallback(type_element);
-								}
+									if (type_element->_StopPressedCallback)
+									{
+										type_element->_StopPressedCallback(type_element);
+									}
 
+									type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
+								}
+							}
+
+							else
+							{
 								type_element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
 							}
 
@@ -353,5 +372,125 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 				}
 			}
 		}
+	}
+}
+
+/*
+*	Chooses a default gamepad selected button.
+*/
+void UserInterfaceSystem::ChooseDefaultGamepadSelectedButton() NOEXCEPT
+{
+	//First of all, find the first and the currently gamepad selected button.
+	ButtonUserInterfaceElement *RESTRICT first_button{ nullptr };
+	ButtonUserInterfaceElement *RESTRICT currently_gamepad_selected_button{ nullptr };
+
+	//Update the state of all button user interface elements and call the callbacks if necessary.
+	for (uint64 i{ 0 }; i < _UserInterfaceElements.Size(); ++i)
+	{
+		//Cache the element.
+		UserInterfaceElement *const RESTRICT element{ _UserInterfaceElements[i] };
+
+		//Is this element a button?
+		if (element->_Type == UserInterfaceElementType::BUTTON)
+		{
+			//Cache the type element.
+			ButtonUserInterfaceElement* const RESTRICT type_element{ static_cast<ButtonUserInterfaceElement* const RESTRICT>(element) };
+
+			//Remember the first button.
+			first_button = first_button ? first_button : type_element;
+
+			//Remember the currently gamepad selected button.
+			if (type_element->_IsGamepadSelected)
+			{
+				currently_gamepad_selected_button = type_element;
+
+				break;
+			}
+		}
+	}
+
+	//If there's no currently gamepad selected button, pick the first one found.
+	if (!currently_gamepad_selected_button && first_button)
+	{
+		first_button->_IsGamepadSelected = true;
+	}
+}
+
+/*
+*	Chooses a new gamepad selected button in the given direction.
+*/
+void UserInterfaceSystem::ChooseNewGamepadSelectedButton(const Vector2<float32>& direction) NOEXCEPT
+{
+	//First of all, find the currently gamepad selected button.
+	ButtonUserInterfaceElement *RESTRICT currently_gamepad_selected_button{ nullptr };
+
+	//Update the state of all button user interface elements and call the callbacks if necessary.
+	for (uint64 i{ 0 }; i < _UserInterfaceElements.Size(); ++i)
+	{
+		//Cache the element.
+		UserInterfaceElement *const RESTRICT element{ _UserInterfaceElements[i] };
+
+		//Is this element a button?
+		if (element->_Type == UserInterfaceElementType::BUTTON)
+		{
+			//Cache the type element.
+			ButtonUserInterfaceElement* const RESTRICT type_element{ static_cast<ButtonUserInterfaceElement* const RESTRICT>(element) };
+
+			//Remember the currently gamepad selected button.
+			if (type_element->_IsGamepadSelected)
+			{
+				currently_gamepad_selected_button = type_element;
+
+				break;
+			}
+		}
+	}
+
+	//Calculate the center of the currently gamepad selected button.
+	const Vector2<float32> currently_gamepad_selected_button_center{ currently_gamepad_selected_button->_Minimum + ((currently_gamepad_selected_button->_Maximum - currently_gamepad_selected_button->_Minimum) * 0.5f) };
+
+	//Find another button that is close and in the general direction.
+	ButtonUserInterfaceElement *RESTRICT new_gamepad_selected_button{ nullptr };
+	float32 shortest_distance{ FLOAT_MAXIMUM };
+
+	for (uint64 i{ 0 }; i < _UserInterfaceElements.Size(); ++i)
+	{
+		//Cache the element.
+		UserInterfaceElement *const RESTRICT element{ _UserInterfaceElements[i] };
+
+		//Is this element a button, and not the currently selected gamepad button?
+		if (element->_Type == UserInterfaceElementType::BUTTON && element != currently_gamepad_selected_button)
+		{
+			//Cache the type element.
+			ButtonUserInterfaceElement* const RESTRICT type_element{ static_cast<ButtonUserInterfaceElement* const RESTRICT>(element) };
+
+			//Calculate the center of this button.
+			const Vector2<float32> button_center{ type_element->_Minimum + ((type_element->_Maximum - type_element->_Minimum) * 0.5f) };
+
+			//Calculate the distance to ths button.
+			const float32 distance_to_button{ Vector2<float32>::Length(button_center - currently_gamepad_selected_button_center) };
+
+			//Calculate the direction to this button.
+			const Vector2<float32> direction_to_button{ (button_center - currently_gamepad_selected_button_center) / distance_to_button };
+
+			//Test the angle.
+			if (Vector2<float32>::DotProduct(direction, direction_to_button) >= 0.5f)
+			{
+				//Test the distance.
+				if (shortest_distance > distance_to_button)
+				{
+					new_gamepad_selected_button = type_element;
+					shortest_distance = distance_to_button;
+				}
+
+			}
+		}
+	}
+
+	//Is there a new gamepad selected button?
+	if (new_gamepad_selected_button)
+	{
+		currently_gamepad_selected_button->_IsGamepadSelected = false;
+		new_gamepad_selected_button->_IsGamepadSelected = true;
 	}
 }

@@ -271,7 +271,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Release all systems.
 	RenderingSystem::Instance->Release();
 	SoundSystem::Instance->Terminate();
-	UserInterfaceSystem::Instance->Terminate();
 }
 
 /*

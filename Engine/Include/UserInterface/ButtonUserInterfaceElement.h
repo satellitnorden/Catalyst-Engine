@@ -46,4 +46,7 @@ public:
 	//The pressed material.
 	UserInterfaceMaterial _PressedMaterial;
 
+	//Denotes if this button user interface element is gamepad selected.
+	bool _IsGamepadSelected{ false };
+
 };

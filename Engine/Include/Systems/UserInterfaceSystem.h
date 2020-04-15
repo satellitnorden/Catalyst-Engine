@@ -30,11 +30,6 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Terminates the user interface system.
-	*/
-	void Terminate() NOEXCEPT;
-
-	/*
 	*	Creates a user interface element.
 	*/
 	RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
@@ -61,5 +56,15 @@ private:
 	*	Updates the user interface system during the user interface update phase.
 	*/
 	void UserInterfaceUpdate() NOEXCEPT;
+
+	/*
+	*	Chooses a default gamepad selected button.
+	*/
+	void ChooseDefaultGamepadSelectedButton() NOEXCEPT;
+
+	/*
+	*	Chooses a new gamepad selected button in the given direction.
+	*/
+	void ChooseNewGamepadSelectedButton(const Vector2<float32> &direction) NOEXCEPT;
 
 };
