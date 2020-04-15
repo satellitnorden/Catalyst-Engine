@@ -1515,6 +1515,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\UserInterfaceMaterial.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceUtilities.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

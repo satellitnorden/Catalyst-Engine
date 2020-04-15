@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystUserInterfaceCore.glsl"
 
 //Constants.
 #define USER_INTERFACE_ELEMENT_TYPE_BUTTON (0)
@@ -18,8 +19,9 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 16) uint type;
-    layout (offset = 20) uint texture_index;
+    layout (offset = 16) uint TYPE;
+    layout (offset = 20) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 32) UserInterfaceMaterial MATERIAL;
 };
 
 //In parameters.
@@ -30,20 +32,13 @@ layout (location = 0) out vec4 fragment;
 
 void main()
 {
-	switch (type)
+	switch (TYPE)
 	{
 		case USER_INTERFACE_ELEMENT_TYPE_BUTTON:
-		{
-			//Write the fragment.
-			fragment = texture(sampler2D(GLOBAL_TEXTURES[texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-
-			break;
-		}
-
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			fragment = texture(sampler2D(GLOBAL_TEXTURES[texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, fragment_texture_coordinate, ELEMENT_ASPECT_RATIO);
 
 			break;
 		}
@@ -51,7 +46,7 @@ void main()
 		case USER_INTERFACE_ELEMENT_TYPE_TEXT:
 		{
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), texture(sampler2D(GLOBAL_TEXTURES[texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).r);
+			fragment = vec4(vec3(1.0f), texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).r);
 
 			break;
 		}
@@ -59,7 +54,7 @@ void main()
 		default:
 		{
 			//Write the fragment.
-			fragment = texture(sampler2D(GLOBAL_TEXTURES[texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, fragment_texture_coordinate, ELEMENT_ASPECT_RATIO);
 
 			break;
 		}

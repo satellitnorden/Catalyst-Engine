@@ -60,12 +60,12 @@
 */
 struct Material
 {
-	int albedo_texture_index;
-	int normal_map_texture_index;
-	int material_properties_texture_index;
-	int optional_texture_index;
-	int type;
-	int properties;
+	uint albedo_texture_index;
+	uint normal_map_texture_index;
+	uint material_properties_texture_index;
+	uint optional_texture_index;
+	uint type;
+	uint properties;
 	float luminance_multiplier;
 	float thickness;
 };

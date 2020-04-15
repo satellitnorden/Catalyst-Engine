@@ -159,6 +159,8 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 		description._Maximum = Vector2<float>(0.99f, 0.25f);
 		description._Font = &ResourceLoader::GetFontResource(HashString("Catalyst_Engine_Default_Font"));
 		description._Scale = 0.025f;
+		description._HorizontalAlignment = TextHorizontalAlignment::LEFT;
+		description._VerticalAlignment = TextVerticalAlignment::TOP;
 		description._Text = "";
 
 		_RenderingReferenceData->_ProgressInformation = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));

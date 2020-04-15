@@ -4,6 +4,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/MemorySystem.h>
 
 //User interface.
 #include <UserInterface/ButtonUserInterfaceElement.h>
@@ -39,7 +40,36 @@ void UserInterfaceSystem::Terminate() NOEXCEPT
 	//Deallocate all user interface elements.
 	for (UserInterfaceElement *const RESTRICT element : _UserInterfaceElements)
 	{
-		Memory::Free(element);
+		switch (element->_Type)
+		{
+			case UserInterfaceElementType::BUTTON:
+			{
+				MemorySystem::Instance->TypeFree<ButtonUserInterfaceElement>(static_cast<ButtonUserInterfaceElement *const RESTRICT>(element));
+
+				break;
+			}
+
+			case UserInterfaceElementType::IMAGE:
+			{
+				MemorySystem::Instance->TypeFree<ImageUserInterfaceElement>(static_cast<ImageUserInterfaceElement *const RESTRICT>(element));
+
+				break;
+			}
+
+			case UserInterfaceElementType::TEXT:
+			{
+				MemorySystem::Instance->TypeFree<TextUserInterfaceElement>(static_cast<TextUserInterfaceElement *const RESTRICT>(element));
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 }
 
@@ -52,7 +82,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 	{
 		case UserInterfaceElementType::BUTTON:
 		{
-			ButtonUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(ButtonUserInterfaceElement))) ButtonUserInterfaceElement() };
+			ButtonUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<ButtonUserInterfaceElement>()) ButtonUserInterfaceElement() };
 			const ButtonUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ButtonUserInterfaceElementDescription* const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::BUTTON;
@@ -63,9 +93,9 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_StopHoveredCallback = type_description->_StopHoveredCallback;
 			element->_StartPressedCallback = type_description->_StartPressedCallback;
 			element->_StopPressedCallback = type_description->_StopPressedCallback;
-			element->_IdleTextureIndex = type_description->_IdleTextureIndex;
-			element->_HoveredTextureIndex = type_description->_HoveredTextureIndex;
-			element->_PressedTextureIndex = type_description->_PressedTextureIndex;
+			element->_IdleMaterial = type_description->_IdleMaterial;
+			element->_HoveredMaterial = type_description->_HoveredMaterial;
+			element->_PressedMaterial = type_description->_PressedMaterial;
 
 			_UserInterfaceElements.Emplace(element);
 
@@ -74,13 +104,13 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 
 		case UserInterfaceElementType::IMAGE:
 		{
-			ImageUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(ImageUserInterfaceElement))) ImageUserInterfaceElement() };
+			ImageUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<ImageUserInterfaceElement>()) ImageUserInterfaceElement() };
 			const ImageUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ImageUserInterfaceElementDescription *const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::IMAGE;
 			element->_Minimum = type_description->_Minimum;
 			element->_Maximum = type_description->_Maximum;
-			element->_TextureIndex = type_description->_ImageTextureIndex;
+			element->_Material = type_description->_Material;
 
 			_UserInterfaceElements.Emplace(element);
 
@@ -89,7 +119,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 
 		case UserInterfaceElementType::TEXT:
 		{
-			TextUserInterfaceElement *const RESTRICT element{ new (Memory::Allocate(sizeof(TextUserInterfaceElement))) TextUserInterfaceElement() };
+			TextUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<TextUserInterfaceElement>()) TextUserInterfaceElement() };
 			const TextUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
 
 			element->_Type = UserInterfaceElementType::TEXT;
@@ -97,6 +127,8 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Maximum = type_description->_Maximum;
 			element->_Font = type_description->_Font;
 			element->_Scale = type_description->_Scale;
+			element->_HorizontalAlignment = type_description->_HorizontalAlignment;
+			element->_VerticalAlignment = type_description->_VerticalAlignment;
 			element->_Text = std::move(type_description->_Text);
 
 			_UserInterfaceElements.Emplace(element);
@@ -118,6 +150,37 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 */
 void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT
 {
+	switch (element->_Type)
+	{
+		case UserInterfaceElementType::BUTTON:
+		{
+			MemorySystem::Instance->TypeFree<ButtonUserInterfaceElement>(static_cast<ButtonUserInterfaceElement *const RESTRICT>(element));
+
+			break;
+		}
+
+		case UserInterfaceElementType::IMAGE:
+		{
+			MemorySystem::Instance->TypeFree<ImageUserInterfaceElement>(static_cast<ImageUserInterfaceElement *const RESTRICT>(element));
+
+			break;
+		}
+
+		case UserInterfaceElementType::TEXT:
+		{
+			MemorySystem::Instance->TypeFree<TextUserInterfaceElement>(static_cast<TextUserInterfaceElement *const RESTRICT>(element));
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	_UserInterfaceElements.Erase(element);
 }
 
@@ -132,8 +195,11 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::Pressed || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PressedHold };
 
 	//Update the state of all button user interface elements and call the callbacks if necessary.
-	for (UserInterfaceElement* const RESTRICT element : _UserInterfaceElements)
+	for (uint64 i{ 0 }; i < _UserInterfaceElements.Size(); ++i)
 	{
+		//Cache the element.
+		UserInterfaceElement *const RESTRICT element{ _UserInterfaceElements[i] };
+
 		if (element->_Type == UserInterfaceElementType::BUTTON)
 		{
 			//Cache the type element.

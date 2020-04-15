@@ -11,7 +11,7 @@ class ImageUserInterfaceElementDescription final : public UserInterfaceElementDe
 
 public:
 
-	//The image texture index.
-	uint32 _ImageTextureIndex;
+	//The material.
+	UserInterfaceMaterial _Material;
 
 };

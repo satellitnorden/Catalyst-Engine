@@ -15,7 +15,7 @@ layout (push_constant) uniform PushConstantData
 };
 
 //Out parameters.
-layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec2 fragment_texture_coordinate;
 
 void main()
 {
@@ -24,12 +24,12 @@ void main()
     float y = float(gl_VertexIndex == 2 || gl_VertexIndex == 3);
 
     //Calculate the texture coordinate.
-    fragmentTextureCoordinate.x = x;
-    fragmentTextureCoordinate.y = 1.0f - y;
+    fragment_texture_coordinate.x = x;
+    fragment_texture_coordinate.y = 1.0f - y;
     
     //Calculate the viewport coordinates.
-    vec2 viewportCoordinates = vec2(mix(minimum.x,  maximum.x, x), 1.0f - mix(minimum.y, maximum.y, y));
+    vec2 viewport_coordinates = vec2(mix(minimum.x,  maximum.x, x), 1.0f - mix(minimum.y, maximum.y, y));
 
     //Write the position.
-    gl_Position = vec4(viewportCoordinates.x * 2.0f - 1.0f, viewportCoordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
+    gl_Position = vec4(viewport_coordinates.x * 2.0f - 1.0f, viewport_coordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
 } 

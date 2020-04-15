@@ -10,7 +10,7 @@
 /*
 *   Unpacks a color into a vec4.
 */
-vec4 UnpackColor(int color)
+vec4 UnpackColor(uint color)
 {   
     vec4 unpacked;
 

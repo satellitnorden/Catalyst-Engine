@@ -4,9 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Perceiver.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Matrix.h>
@@ -174,6 +171,48 @@ public:
 		}
 
 		return true;
+	}
+
+	/*
+	*	Packs a color into an unsigned integer.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD uint32 PackColor(const Vector4<float> &color, const bool apply_gamma_correction) NOEXCEPT
+	{
+		if (apply_gamma_correction)
+		{
+			float32 first{ 0.0f };
+			float32 second{ 0.0f };
+			Vector4<float32> corrected;
+
+			first = color._X * color._X;
+			second = first * first;
+			corrected._X = first * 0.8f + second * 0.2f;
+
+			first = color._Y * color._Y;
+			second = first * first;
+			corrected._Y = first * 0.8f + second * 0.2f;
+
+			first = color._Z * color._Z;
+			second = first * first;
+			corrected._Z = first * 0.8f + second * 0.2f;
+
+			first = color._W * color._W;
+			second = first * first;
+			corrected._W = first * 0.8f + second * 0.2f;
+
+			return	static_cast<uint32>(corrected._X * 255.0f)
+					| (static_cast<uint32>(corrected._Y * 255.0f) << 8)
+					| (static_cast<uint32>(corrected._Z * 255.0f) << 16)
+					| (static_cast<uint32>(corrected._W * 255.0f) << 24);
+		}
+
+		else
+		{
+			return	static_cast<uint32>(color._X * 255.0f)
+					| (static_cast<uint32>(color._Y * 255.0f) << 8)
+					| (static_cast<uint32>(color._Z * 255.0f) << 16)
+					| (static_cast<uint32>(color._W * 255.0f) << 24);
+		}
 	}
 
 	/*

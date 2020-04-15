@@ -335,6 +335,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TopLevelAccelerationStructureInstanceData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\UserInterfaceMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Vertex.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
@@ -414,6 +415,7 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceUtilities.h" />
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />

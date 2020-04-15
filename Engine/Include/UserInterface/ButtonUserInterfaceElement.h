@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Native/UserInterfaceMaterial.h>
+
 //User interface.
 #include <UserInterface/UserInterfaceElement.h>
 
@@ -34,13 +37,13 @@ public:
 	//The stop pressed callback.
 	ButtonUserInterfaceElementCallback _StopPressedCallback;
 
-	//The idle texture index.
-	uint32 _IdleTextureIndex;
+	//The idle material.
+	UserInterfaceMaterial _IdleMaterial;
 
-	//The hovered texture index.
-	uint32 _HoveredTextureIndex;
+	//The hovered material.
+	UserInterfaceMaterial _HoveredMaterial;
 
-	//The pressed texture index.
-	uint32 _PressedTextureIndex;
+	//The pressed material.
+	UserInterfaceMaterial _PressedMaterial;
 
 };

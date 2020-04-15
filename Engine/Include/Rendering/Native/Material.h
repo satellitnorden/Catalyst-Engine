@@ -13,7 +13,7 @@ class Material final
 public:
 
 	//Enumeration covering all types.
-	enum class Type : int32
+	enum class Type : uint32
 	{
 		/*
 		*	Visual entities with a masked material will use the optional texture index as the mask texture.
@@ -28,7 +28,7 @@ public:
 	};
 
 	//Enumeration covering all material properties.
-	enum class Property : int32
+	enum class Property : uint32
 	{
 		/*
 		*	Defines that this material does not have any properties.
@@ -57,16 +57,16 @@ public:
 	};
 
 	//The index of the albedo texture.
-	int32 _AlbedoTextureIndex{ INT32_MAXIMUM };
+	uint32 _AlbedoTextureIndex{ INT32_MAXIMUM };
 
 	//The index of the normal map texture.
-	int32 _NormalMapTextureIndex{ INT32_MAXIMUM };
+	uint32 _NormalMapTextureIndex{ INT32_MAXIMUM };
 
 	//The index of the material properties texture.
-	int32 _MaterialPropertiesTextureIndex{ INT32_MAXIMUM };
+	uint32 _MaterialPropertiesTextureIndex{ INT32_MAXIMUM };
 
 	//The index of the optional texture.
-	int32 _OptionalTextureIndex{ INT32_MAXIMUM };
+	uint32 _OptionalTextureIndex{ INT32_MAXIMUM };
 
 	//The type.
 	Type _Type{ Type::Opaque };
@@ -81,48 +81,6 @@ public:
 	float _Thickness{ 1.0f };
 
 	/*
-	*	Packs a color into an integer.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD int32 PackColor(const Vector4<float> &color, const bool apply_gamma_correction) NOEXCEPT
-	{
-		if (apply_gamma_correction)
-		{
-			float first{ 0.0f };
-			float second{ 0.0f };
-			Vector4<float> corrected;
-
-			first = color._X * color._X;
-			second = first * first;
-			corrected._X = first * 0.8f + second * 0.2f;
-
-			first = color._Y * color._Y;
-			second = first * first;
-			corrected._Y = first * 0.8f + second * 0.2f;
-
-			first = color._Z * color._Z;
-			second = first * first;
-			corrected._Z = first * 0.8f + second * 0.2f;
-
-			first = color._W * color._W;
-			second = first * first;
-			corrected._W = first * 0.8f + second * 0.2f;
-
-			return	static_cast<int32>(corrected._X * 255.0f)
-					| (static_cast<int32>(corrected._Y * 255.0f) << 8)
-					| (static_cast<int32>(corrected._Z * 255.0f) << 16)
-					| (static_cast<int32>(corrected._W * 255.0f) << 24);
-		}
-
-		else
-		{
-			return	static_cast<int32>(color._X * 255.0f)
-					| (static_cast<int32>(color._Y * 255.0f) << 8)
-					| (static_cast<int32>(color._Z * 255.0f) << 16)
-					| (static_cast<int32>(color._W * 255.0f) << 24);
-		}
-	}
-
-	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr Material() NOEXCEPT
@@ -133,10 +91,10 @@ public:
 	/*
 	*	Constructor taking all values arguments.
 	*/
-	FORCE_INLINE constexpr Material(const int32 initial_albedo_texture_index,
-									const int32 initial_normal_map_texture_index,
-									const int32 initial_material_properties_texture_index,
-									const int32 initial_optional_texture_index,
+	FORCE_INLINE constexpr Material(const uint32 initial_albedo_texture_index,
+									const uint32 initial_normal_map_texture_index,
+									const uint32 initial_material_properties_texture_index,
+									const uint32 initial_optional_texture_index,
 									const Type initial_type,
 									const Property initial_properties,
 									const float initial_luminance_multiplier,

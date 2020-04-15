@@ -19,7 +19,13 @@ public:
 	const Font *RESTRICT _Font;
 
 	//The scale.
-	float _Scale;
+	float32 _Scale;
+
+	//The horizontal alignment.
+	TextHorizontalAlignment _HorizontalAlignment;
+
+	//The vertical alignment.
+	TextVerticalAlignment _VerticalAlignment;
 
 	//The text.
 	DynamicString _Text;

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Native/UserInterfaceMaterial.h>
+
 //User interface.
 #include <UserInterface/UserInterfaceElement.h>
 
@@ -11,7 +14,7 @@ class ImageUserInterfaceElement final : public UserInterfaceElement
 
 public:
 
-	//The texture index.
-	uint32 _TextureIndex;
+	//The material.
+	UserInterfaceMaterial _Material;
 
 };

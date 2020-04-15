@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/UserInterfaceMaterial.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -15,6 +16,7 @@
 #include <UserInterface/ButtonUserInterfaceElement.h>
 #include <UserInterface/ImageUserInterfaceElement.h>
 #include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/UserInterfaceUtilities.h>
 
 /*
 *	User interface vertex push constant data definition.
@@ -43,8 +45,14 @@ public:
 	//The type.
 	uint32 _Type;
 
-	//The texture index.
-	uint32 _TextureIndex;
+	//The element aspect ratio.
+	float32 _ElementAspectRatio;
+
+	//Padding.
+	Padding<8> _Padding;
+
+	//The material.
+	UserInterfaceMaterial _Material;
 
 };
 
@@ -104,10 +112,10 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Get the number of user interface elements.
-	const uint64 numberOfUserInterfaceElements{ UserInterfaceSystem::Instance->GetUserInterfaceElements()->Size() };
+	const uint64 number_of_user_interface_elements{ UserInterfaceSystem::Instance->GetUserInterfaceElements()->Size() };
 
 	//If there's no to render, then... Don't.
-	if (numberOfUserInterfaceElements == 0)
+	if (number_of_user_interface_elements == 0)
 	{
 		SetIncludeInRender(false);
 
@@ -147,26 +155,27 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				UserInterfaceFragmentPushConstantData fragment_data;
 
 				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::BUTTON);
+				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				
 				switch (type_element->_CurrentState)
 				{
 					case ButtonUserInterfaceElement::State::IDLE:
 					{
-						fragment_data._TextureIndex = type_element->_IdleTextureIndex;
+						fragment_data._Material = type_element->_IdleMaterial;
 
 						break;
 					}
 
 					case ButtonUserInterfaceElement::State::HOVERED:
 					{
-						fragment_data._TextureIndex = type_element->_HoveredTextureIndex;
+						fragment_data._Material = type_element->_HoveredMaterial;
 
 						break;
 					}
 
 					case ButtonUserInterfaceElement::State::PRESSED:
 					{
-						fragment_data._TextureIndex = type_element->_PressedTextureIndex;
+						fragment_data._Material = type_element->_PressedMaterial;
 
 						break;
 					}
@@ -182,22 +191,23 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfaceElementType::IMAGE:
 			{
-				const ImageUserInterfaceElement *const RESTRICT typeElement{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
+				const ImageUserInterfaceElement *const RESTRICT type_element{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
 
 				//Push constants.
-				UserInterfaceVertexPushConstantData vertexData;
+				UserInterfaceVertexPushConstantData vertex_data;
 
-				vertexData._Minimum = typeElement->_Minimum;
-				vertexData._Maximum = typeElement->_Maximum;
+				vertex_data._Minimum = type_element->_Minimum;
+				vertex_data._Maximum = type_element->_Maximum;
 
-				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
-				UserInterfaceFragmentPushConstantData fragmentData;
+				UserInterfaceFragmentPushConstantData fragment_data;
 
-				fragmentData._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
-				fragmentData._TextureIndex = typeElement->_TextureIndex;
+				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
+				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
+				fragment_data._Material = type_element->_Material;
 
-				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
 				//Draw!
 				command_buffer->Draw(this, 4, 1);
@@ -207,80 +217,94 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfaceElementType::TEXT:
 			{
-				const TextUserInterfaceElement *const RESTRICT typeElement{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
+				const TextUserInterfaceElement *const RESTRICT type_element{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
+
+				//Calculate the aligned minimum/maximum.
+				Vector2<float32> aligned_minimum;
+				Vector2<float32> aligned_maximum;
+
+				UserInterfaceUtilities::CalculateAlignedBoundingBox(type_element->_Minimum,
+																	type_element->_Maximum,
+																	type_element->_Font,
+																	type_element->_Text,
+																	type_element->_Scale,
+																	type_element->_HorizontalAlignment,
+																	type_element->_VerticalAlignment,
+																	&aligned_minimum,
+																	&aligned_maximum);
 
 				//Draw all characters.
-				float currentOffsetX{ 0.0f };
-				float currentOffsetY{ typeElement->_Maximum._Y - typeElement->_Minimum._Y - typeElement->_Scale };
+				float32 current_offset_X{ 0.0f };
+				float32 current_offset_Y{ aligned_maximum._Y - aligned_minimum._Y - type_element->_Scale };
 
-				for (uint64 i{ 0 }, length{ typeElement->_Text.Length() }; i < length; ++i)
+				for (uint64 i{ 0 }, length{ type_element->_Text.Length() }; i < length; ++i)
 				{
 					//Cache the chartacter.
-					const char character{ typeElement->_Text[i] };
+					const char character{ type_element->_Text[i] };
 
 					//Only draw if it´s a valid character.
 					if (character != '\n')
 					{
 						//Push constants.
-						UserInterfaceVertexPushConstantData vertexData;
+						UserInterfaceVertexPushConstantData vertex_data;
 
-						vertexData._Minimum._X = typeElement->_Minimum._X + currentOffsetX + typeElement->_Font->_CharacterDescriptions[character]._Bearing._X * typeElement->_Scale;
-						vertexData._Minimum._Y = typeElement->_Minimum._Y + currentOffsetY - (typeElement->_Font->_CharacterDescriptions[character]._Size._Y - typeElement->_Font->_CharacterDescriptions[character]._Bearing._Y) * typeElement->_Scale;
+						vertex_data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_Font->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
+						vertex_data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_Font->_CharacterDescriptions[character]._Size._Y - type_element->_Font->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
 
-						vertexData._Maximum._X = vertexData._Minimum._X + typeElement->_Font->_CharacterDescriptions[character]._Size._X * typeElement->_Scale;
-						vertexData._Maximum._Y = vertexData._Minimum._Y + typeElement->_Font->_CharacterDescriptions[character]._Size._Y * typeElement->_Scale;
+						vertex_data._Maximum._X = vertex_data._Minimum._X + type_element->_Font->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
+						vertex_data._Maximum._Y = vertex_data._Minimum._Y + type_element->_Font->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
 
-						command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertexData);
+						command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
-						UserInterfaceFragmentPushConstantData fragmentData;
+						UserInterfaceFragmentPushConstantData fragment_data;
 
-						fragmentData._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
-						fragmentData._TextureIndex = typeElement->_Font->_CharacterDescriptions[character]._TextureIndex;
+						fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
+						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
+						fragment_data._Material.SetPrimaryTextureIndex(type_element->_Font->_CharacterDescriptions[character]._TextureIndex);
 
-						command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragmentData);
+						command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
 						//Draw!
 						command_buffer->Draw(this, 4, 1);
 					}
 
 					//Should the text wrap around?
-					bool shouldWrapAround{ false };
+					bool should_wrap_around{ false };
 
 					//It should wrap around if a line break is specified.
 					if (character == '\n')
 					{
-						shouldWrapAround = true;
+						should_wrap_around = true;
 					}
 
 					//If this character is a space, look ahead toward the next space to see if the line should wrap around.
 					else if (character == ' ')
 					{
-						float temporaryOffsetX{ currentOffsetX };
+						float32 temporary_offset_X{ current_offset_X };
 
-						for (uint64 j{ i + 1 }; j < length && typeElement->_Text[j] != ' '; ++j)
+						for (uint64 j{ i + 1 }; j < length && type_element->_Text[j] != ' '; ++j)
 						{
-							temporaryOffsetX += typeElement->_Font->_CharacterDescriptions[typeElement->_Text[j]]._Advance * typeElement->_Scale;
+							temporary_offset_X += type_element->_Font->_CharacterDescriptions[type_element->_Text[j]]._Advance * type_element->_Scale;
 
-							if (temporaryOffsetX >= typeElement->_Maximum._X - typeElement->_Minimum._X)
+							if (temporary_offset_X >= aligned_maximum._X - aligned_minimum._X)
 							{
-								shouldWrapAround = true;
+								should_wrap_around = true;
 
 								break;
 							}
 						}
-
 					}
 					
 					//Perform the wrap around, if necessary.
-					if (shouldWrapAround)
+					if (should_wrap_around)
 					{
-						currentOffsetX = 0.0f;
-						currentOffsetY -= typeElement->_Scale;
+						current_offset_X = 0.0f;
+						current_offset_Y -= type_element->_Scale;
 					}
 
 					else
 					{
-						currentOffsetX += typeElement->_Font->_CharacterDescriptions[character]._Advance * typeElement->_Scale;
+						current_offset_X += type_element->_Font->_CharacterDescriptions[character]._Advance * type_element->_Scale;
 					}
 				}
 
