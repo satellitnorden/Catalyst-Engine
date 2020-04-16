@@ -86,7 +86,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 			}
 
 			//Calculate the squared distance.
-			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
+			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
 
 			//Calculate the distance coefficient.
 			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
@@ -134,7 +134,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_Model->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform, &component->_WorldSpaceAxisAlignedBoundingBox);
 
 			//Calculate the squared distance.
-			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
+			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
 
 			//Calculate the distance coefficient.
 			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
@@ -164,7 +164,7 @@ void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_vegetation_components; ++i, ++component)
 	{
-		if (Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
+		if (Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
 		{
 			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Full;
 		}

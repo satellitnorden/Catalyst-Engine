@@ -30,7 +30,7 @@
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Resources.
-#include <Resources/Data/TextureCubeData.h>
+#include <Resources/Loading/TextureCubeData.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>

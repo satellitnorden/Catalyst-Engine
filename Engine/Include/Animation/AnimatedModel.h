@@ -19,7 +19,7 @@ class AnimatedModel final
 public:
 
 	//The model space axis-aligned bounding box.
-	AxisAlignedBoundingBox _ModelSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _ModelSpaceAxisAlignedBoundingBox;
 
 	//The vertex buffer.
 	BufferHandle _VertexBuffer;

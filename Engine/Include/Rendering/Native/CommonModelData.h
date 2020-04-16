@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/Data/Modeldata.h>
+#include <Resources/Loading/Modeldata.h>
 
 namespace CommonModelData
 {

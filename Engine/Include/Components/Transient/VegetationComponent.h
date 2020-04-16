@@ -23,7 +23,7 @@ public:
 	};
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
 	//Denotes the visibility of this vegetation.
 	bool _Visibility;

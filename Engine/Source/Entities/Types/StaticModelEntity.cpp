@@ -73,7 +73,7 @@ RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT StaticModelEntity::GetWorl
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -81,7 +81,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT StaticModelEn
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }

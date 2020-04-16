@@ -1,5 +1,5 @@
 //Header file.
-#include <Resources/Creation/ResourceCreator.h>
+#include <Resources/Creation/ResourceCreationSystem.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -7,7 +7,7 @@
 /*
 *	Creates an animated model.
 */
-void ResourceCreator::CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModel *const RESTRICT model) NOEXCEPT
+void ResourceCreationSystem::CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModel *const RESTRICT model) NOEXCEPT
 {
 	//Copy the model space axis aligned bounding box.
 	model->_ModelSpaceAxisAlignedBoundingBox = std::move(data->_AxisAlignedBoundingBox);
@@ -44,7 +44,7 @@ void ResourceCreator::CreateAnimatedModel(AnimatedModelData *const RESTRICT data
 /*
 *	Creates an animation
 */
-void ResourceCreator::CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT
+void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT
 {
 	//Just... Copy.
 	*animation = data->_Animation;
@@ -53,7 +53,7 @@ void ResourceCreator::CreateAnimation(AnimationData *const RESTRICT data, Animat
 /*
 *	Creates a font.
 */
-void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT
+void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT
 {
 	//Just copy the character descriptions.
 	font->_CharacterDescriptions = data->_CharacterDescriptions;
@@ -80,7 +80,7 @@ void ResourceCreator::CreateFont(FontData *const RESTRICT data, Font *const REST
 /*
 *	Creates a model.
 */
-void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
+void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
 {
 	//Copy the model space axis aligned bounding box.
 	model->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
@@ -130,9 +130,20 @@ void ResourceCreator::CreateModel(ModelData *const RESTRICT data, Model *const R
 }
 
 /*
+*	Creates a sound.
+*/
+void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundResource *const RESTRICT resource) NOEXCEPT
+{
+	//Just copy over all data.
+	resource->_SampleRate = data->_SampleRate;
+	resource->_NumberOfChannels = data->_NumberOfChannels;
+	resource->_Samples = std::move(data->_Samples);
+}
+
+/*
 *	Creates a texture cube.
 */
-void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT
+void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT
 {
 	//Create the texture cube.
 	RenderingSystem::Instance->CreateTextureCube(*data, texture);
@@ -141,17 +152,17 @@ void ResourceCreator::CreateTextureCube(TextureCubeData *const RESTRICT data, Te
 /*
 *	Creates a texture 2D.
 */
-void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT texture) NOEXCEPT
+void ResourceCreationSystem::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT
 {
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8), &texture->_Texture2DHandle);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8), &resource->_Texture2DHandle);
 
 	//Add the texture to the global render data.
-	texture->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture->_Texture2DHandle);
+	resource->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(resource->_Texture2DHandle);
 
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	//Create the texture 2D.
-	texture->_Texture2D.Initialize(data->_Width, data->_Height);
+	resource->_Texture2D.Initialize(data->_Width, data->_Height);
 
 	for (uint32 Y{ 0 }; Y < data->_Height; ++Y)
 	{
@@ -159,10 +170,10 @@ void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Textur
 		{
 			uint64 source_texture_index{ (X + (Y * data->_Width)) * 4 };
 
-			texture->_Texture2D.At(X, Y)._X = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._Y = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._Z = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
-			texture->_Texture2D.At(X, Y)._W = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			resource->_Texture2D.At(X, Y)._X = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			resource->_Texture2D.At(X, Y)._Y = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			resource->_Texture2D.At(X, Y)._Z = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
+			resource->_Texture2D.At(X, Y)._W = static_cast<float>(data->_Data[0][source_texture_index++]) / 255.0f;
 		}
 	}
 #endif
@@ -171,7 +182,7 @@ void ResourceCreator::CreateTexture2D(Texture2DData *const RESTRICT data, Textur
 /*
 *	Creates a texture 3D.
 */
-void ResourceCreator::CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT
+void ResourceCreationSystem::CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT
 {
 	//Create a texture 3D ouf of the incoming data.
 	Texture3D<Vector4<byte>> temporary_texture{ data->_Width, data->_Height, data->_Depth, data->_Data[0].Data() };

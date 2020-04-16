@@ -7,12 +7,11 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
-//Resources.
-#include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/TerrainSystem.h>
 
 //Terrain.
@@ -46,7 +45,7 @@ public:
 void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Cache the ocean texture index.
-	_OceanTextureIndex = ResourceLoader::GetTexture2DResource(HashString("Ocean_Texture2D"))._Index;
+	_OceanTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Ocean_Texture2D"))->_Index;
 
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();

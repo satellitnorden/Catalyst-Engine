@@ -4,11 +4,9 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
-//Resources.
-#include <Resources/Loading/ResourceLoader.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Tone mapping push constant data definition.
@@ -101,7 +99,7 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	ToneMappingPushConstantData data;
 
-	data._ColorGradingTextureIndex = ResourceLoader::GetTexture2DResource(HashString("Color_Grading_Lookup_Texture2D"))._Index;
+	data._ColorGradingTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Color_Grading_Lookup_Texture2D"))->_Index;
 
 	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ToneMappingPushConstantData), &data);
 

@@ -16,6 +16,6 @@ class TerrainPatchInformation final
 public:
 
 	//The axis-aligned bounding box for this terrain patch.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _AxisAlignedBoundingBox;
 
 };

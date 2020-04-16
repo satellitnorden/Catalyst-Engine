@@ -22,7 +22,7 @@ public:
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
-	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4x4> &transformations, const AxisAlignedBoundingBox &model_space_bounding_box, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4x4> &transformations, const AxisAlignedBoundingBox3 &model_space_bounding_box, AxisAlignedBoundingBox3 *const RESTRICT box) NOEXCEPT
 	{
 		float extent{ CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._X) };
 		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Y));
@@ -126,7 +126,7 @@ public:
 	/*
 	*	Returns whether or not an axis-aligned bounding box is within the view frustum.
 	*/
-	FORCE_INLINE static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox3 &box) NOEXCEPT
 	{
 		for (uint8 i = 0; i < 6; ++i)
 		{
@@ -218,7 +218,7 @@ public:
 	/*
 	*	Transforms an axis aligned bounding box from one space to another.
 	*/
-	FORCE_INLINE static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox &originalBox, const Matrix4x4 &transformation, AxisAlignedBoundingBox *const RESTRICT newBox) NOEXCEPT
+	FORCE_INLINE static void TransformAxisAlignedBoundingBox(const AxisAlignedBoundingBox3 &originalBox, const Matrix4x4 &transformation, AxisAlignedBoundingBox3 *const RESTRICT newBox) NOEXCEPT
 	{
 		const Vector3<float> xMinimum{ transformation.GetRight() * originalBox._Minimum._X };
 		const Vector3<float> xMaximum{ transformation.GetRight() * originalBox._Maximum._X };

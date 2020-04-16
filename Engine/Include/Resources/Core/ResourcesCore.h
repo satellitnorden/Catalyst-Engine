@@ -1,8 +1,7 @@
 /*
-*	Resources in the Catalyst Engine is dealt with in a lot of different stages;
+*	Resources in the Catalyst Engine is dealt with in a few different stages;
 *
-*	- Reading;	The process of reading raw resource files (.png, .fbx etc) and transforming them into the format that the Catalyst Engine is comfortable with.
-*	- Building; The process of taking the raw data that was just read and packaging it into binary files that's optimized to be loaded at runtime by the Catalyst Engine.
+*	- Building; The process of reading raw resource files (.png, .fbx etc) and packaging it into binary files that's optimized to be loaded at runtime by the Catalyst Engine.
 *	- Loading;	The process of reading the binary files into memory and preparing the data for the final processing.
 *	- Creation;	The process of taking the data in memory and doing the final processing (for example, sending texture resources data to the GPU).
 */
@@ -15,14 +14,23 @@
 //Enumeration covering all different resources types.
 enum class ResourceType : uint8
 {
-	AnimatedModel,
-	Animation,
-	Font,
-	Model,
-	SoundBank,
-	TextureCube,
-	Texture2D,
-	Texture3D,
+	ANIMATED_MODEL,
+	ANIMATION,
+	FONT,
+	MODEL,
+	SOUND,
+	TEXTURE_CUBE,
+	TEXTURE_2D,
+	TEXTURE_3D,
 
-	NumberOfResourceTypes
+	NUMBER_OF_RESOURCE_TYPES
+};
+
+//Enumeration covering all different resource load states.
+enum class ResourceLoadState : uint8
+{
+	NOT_LOADED,
+	LOADING,
+	LOADED,
+	UNLOADING
 };

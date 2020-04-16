@@ -11,7 +11,6 @@ using ProcessSoundFunction = void(*)(	const uint32 sample_rate,
 										const uint32 number_of_samples,
 										float32 *const RESTRICT *const RESTRICT output);
 
-using SoundBankHandle = void *RESTRICT;
 using SoundDescriptionHandle = void *RESTRICT;
 using SoundInstanceHandle = void *RESTRICT;
 

@@ -16,7 +16,7 @@ class AnimatedModelData final
 public:
 
 	//The axis-aligned bounding box.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _AxisAlignedBoundingBox;
 
 	//The vertices of this model.
 	DynamicArray<AnimatedVertex> _Vertices;

@@ -194,14 +194,6 @@ void SoundSystem::RegisterProcessSoundFunction(const ProcessSoundFunction functi
 }
 
 /*
-*	Creates a sound bank.
-*/
-void SoundSystem::CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT handle) NOEXCEPT
-{
-
-}
-
-/*
 *	Given an ID, returns the sound description.
 */
 void SoundSystem::GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT

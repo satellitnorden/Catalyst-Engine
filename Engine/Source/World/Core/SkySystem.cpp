@@ -2,7 +2,7 @@
 #include <World/Core/SkySystem.h>
 
 //Resources.
-#include <Resources/Data/TextureCubeData.h>
+#include <Resources/Loading/TextureCubeData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

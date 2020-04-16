@@ -193,8 +193,8 @@ private:
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Sound.
-#include <Sound/Native/Sound.h>
+//Resources.
+#include <Resources/Core/SoundResource.h>
 
 //Third party.
 #include <ThirdParty/AudioFile.h>
@@ -207,7 +207,7 @@ public:
 	/*
 	*	Reads the sound resource at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, Sound *const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundResource *const RESTRICT resource) NOEXCEPT
 	{
 		AudioFile<float32> audio_file;
 

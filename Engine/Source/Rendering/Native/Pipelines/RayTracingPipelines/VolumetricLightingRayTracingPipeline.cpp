@@ -7,9 +7,6 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
-//Resources.
-#include <Resources/Loading/ResourceLoader.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 

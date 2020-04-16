@@ -193,7 +193,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 			//Calculate the axis aligned bounding box.
 			const Vector3<float> wantedGridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(wantedGridPoint, data->_GridCellSize) };
 
-			AxisAlignedBoundingBox box;
+			AxisAlignedBoundingBox3 box;
 
 			box._Minimum._X = wantedGridPointWorldPosition._X - data->_GridCellSize * 0.5f;
 			box._Minimum._Y = 0.0f;

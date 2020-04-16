@@ -8,9 +8,6 @@
 //Math.
 #include <Math/General/Vector.h>
 
-//Resources.
-#include <Resources/Data/SoundBankData.h>
-
 //Sound.
 #include <Sound/Native/SoundCore.h>
 
@@ -60,15 +57,6 @@ public:
 	*	Doing this will leave all responsibility to the game to produce the sound output and bypass the sound system's own processing.
 	*/
 	void RegisterProcessSoundFunction(const ProcessSoundFunction function) NOEXCEPT;
-
-	//////////////////////////
-	// Soundbank interface. //
-	//////////////////////////
-
-	/*
-	*	Creates a sound bank.
-	*/
-	void CreateSoundBank(const SoundBankData &data, SoundBankHandle *const RESTRICT handle) NOEXCEPT;
 
 	//////////////////////////////////
 	// Sound description interface. //

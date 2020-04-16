@@ -22,7 +22,7 @@ public:
 	Material _Material;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
 	//The previous world transform.
 	Matrix4x4 _PreviousWorldTransform;

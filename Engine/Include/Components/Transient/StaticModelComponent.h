@@ -20,7 +20,7 @@ public:
 	Matrix4x4 _WorldTransform;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
 	//The material indices.
 	DynamicArray<uint32> _MaterialIndices;

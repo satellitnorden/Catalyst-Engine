@@ -16,7 +16,7 @@ class ModelData final
 public:
 
 	//The axis aligned bounding box.
-	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _AxisAlignedBoundingBox;
 
 	//The number of meshes.
 	uint64 _NumberOfMeshes;

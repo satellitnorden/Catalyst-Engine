@@ -16,7 +16,7 @@ class Model final
 public:
 
 	//The model space axis-aligned bounding box.
-	AxisAlignedBoundingBox _ModelSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _ModelSpaceAxisAlignedBoundingBox;
 
 	//Container for all the meshes.
 	DynamicArray<Mesh> _Meshes;

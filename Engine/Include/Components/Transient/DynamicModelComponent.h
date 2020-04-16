@@ -37,7 +37,7 @@ public:
 	Matrix4x4 _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
 	//The material index collection.
 	MaterialIndexCollection _MaterialIndexCollection;

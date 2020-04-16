@@ -214,9 +214,6 @@
     <Filter Include="Resources\Include\Loading">
       <UniqueIdentifier>{25f6a7c9-db6f-4fce-974b-c3772782c55f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Include\Data">
-      <UniqueIdentifier>{6eb8d705-4064-4bdf-9564-03af836e5584}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Source\Loading">
       <UniqueIdentifier>{8e22983c-29d1-41da-848e-204a0863945e}</UniqueIdentifier>
     </Filter>
@@ -480,9 +477,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Containers\Collection.h">
-      <Filter>Core\Include\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
@@ -600,29 +594,14 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\SoundBankData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoader.h">
-      <Filter>Resources\Include\Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuilder.h">
-      <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h">
       <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\ModelData.h">
-      <Filter>Resources\Include\Data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreator.h">
-      <Filter>Resources\Include\Creation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\Triangle.h">
       <Filter>Math\Include\Geometry</Filter>
@@ -633,14 +612,8 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\Texture2DData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\TextureCubeData.h">
-      <Filter>Resources\Include\Data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h">
       <Filter>Components\Include\Transient</Filter>
@@ -876,9 +849,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanComputePipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Building\SoundBankBuildParameters.h">
-      <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
@@ -920,9 +890,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h">
       <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\FontData.h">
-      <Filter>Resources\Include\Data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h">
       <Filter>User Interface\Include</Filter>
@@ -1116,9 +1083,6 @@
     <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\AnimatedModelData.h">
-      <Filter>Resources\Include\Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Animation\Bone.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
@@ -1139,9 +1103,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Animation\BoneTransform.h">
       <Filter>Animation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\AnimationData.h">
-      <Filter>Resources\Include\Data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PassthroughGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1193,9 +1154,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan3DTexture.h">
       <Filter>Rendering\Include\Abstraction\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Data\Texture3DData.h">
-      <Filter>Resources\Include\Data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
@@ -1443,9 +1401,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\Sound.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
@@ -1521,6 +1476,57 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceUtilities.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\ResourceSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuildingSystem.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoadingSystem.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\AnimationData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\FontData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ModelData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\Texture2DData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\Texture3DData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\TextureCubeData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreationSystem.h">
+      <Filter>Resources\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\SoundResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Containers\HashTable.h">
+      <Filter>Core\Include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\SoundBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\SoundData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1573,15 +1579,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp">
       <Filter>Core\Source\General</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoader.cpp">
-      <Filter>Resources\Source\Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuilder.cpp">
-      <Filter>Resources\Source\Building</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreator.cpp">
-      <Filter>Resources\Source\Creation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp">
       <Filter>Lighting\Source</Filter>
@@ -2011,6 +2008,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\MemorySystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\ResourceSystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuildingSystem.cpp">
+      <Filter>Resources\Source\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoadingSystem.cpp">
+      <Filter>Resources\Source\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp">
+      <Filter>Resources\Source\Creation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

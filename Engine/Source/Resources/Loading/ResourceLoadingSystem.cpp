@@ -1,121 +1,12 @@
 //Header file.
-#include <Resources/Loading/ResourceLoader.h>
+#include <Resources/Loading/ResourceLoadingSystem.h>
 
 //Animation.
 #include <Animation/AnimatedVertex.h>
 
-//Resources.
-#include <Resources/Creation/ResourceCreator.h>
-#include <Resources/Data/SoundBankData.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/SoundSystem.h>
-
-//Static variable definitions.
-Map<HashString, AnimatedModel> ResourceLoader::_AnimatedModels;
-Map<HashString, Animation> ResourceLoader::_Animations;
-Map<HashString, Font> ResourceLoader::_Fonts;
-Map<HashString, Model> ResourceLoader::_Models;
-Map<HashString, SoundBankHandle> ResourceLoader::_SoundBanks;
-Map<HashString, TextureCubeHandle> ResourceLoader::_TextureCubes;
-Map<HashString, Texture2DResource> ResourceLoader::_Texture2Ds;
-Map<HashString, Texture3DHandle> ResourceLoader::_Texture3Ds;
-
-/*
-*	Given a file path, load a resource collection.
-*/
-void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT
-{
-	//Load the resource collection.
-	LoadResourceCollectionInternal(filePath);
-}
-
-/*
-*	Loads a resource collection, internal implementation.
-*/
-void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePath) NOEXCEPT
-{
-	//Load the file.
-	BinaryFile<IOMode::In> file{ filePath };
-
-	//Read the number of resources.
-	uint64 numberOfResources;
-	file.Read(&numberOfResources, sizeof(uint64));
-
-	//For each resource, load it.
-	for (uint64 i = 0; i < numberOfResources; ++i)
-	{
-		//Read the resource type.
-		ResourceType resourceType;
-		file.Read(&resourceType, sizeof(ResourceType));
-
-		switch (resourceType)
-		{
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-			default:
-			{
-				ASSERT(false, "Undefined resource type.");
-			}
-#endif
-			case ResourceType::AnimatedModel:
-			{
-				LoadAnimatedModel(file);
-
-				break;
-			}
-
-			case ResourceType::Animation:
-			{
-				LoadAnimation(file);
-
-				break;
-			}
-
-			case ResourceType::Font:
-			{
-				LoadFont(file);
-
-				break;
-			}
-
-			case ResourceType::Model:
-			{
-				LoadModel(file);
-
-				break;
-			}
-
-			case ResourceType::SoundBank:
-			{
-				LoadSoundBank(file);
-
-				break;
-			}
-
-			case ResourceType::TextureCube:
-			{
-				LoadTextureCube(file);
-
-				break;
-			}
-
-			case ResourceType::Texture2D:
-			{
-				LoadTexture2D(file);
-
-				break;
-			}
-
-			case ResourceType::Texture3D:
-			{
-				LoadTexture3D(file);
-
-				break;
-			}
-		}
-	}
-}
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Reads a bone from file.
@@ -138,7 +29,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> &file, Bone *const RES
 /*
 *	Given a file, load an animated model.
 */
-void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Load the model data.
 	AnimatedModelData data;
@@ -148,7 +39,7 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the axis-aligned bounding box
-	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
 	//Read the number of vertices.
 	uint64 numberOfVertices;
@@ -170,13 +61,13 @@ void ResourceLoader::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	ReadBoneFromFile(file, &data._Skeleton._RootBone);
 
 	//Create the model.
-	ResourceCreator::CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);
 }
 
 /*
 *	Given a file, load an animation.
 */
-void ResourceLoader::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Load the animation data.
 	AnimationData data;
@@ -209,13 +100,13 @@ void ResourceLoader::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Create the animation.
-	ResourceCreator::CreateAnimation(&data, &_Animations[resource_ID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateAnimation(&data, &_Animations[resource_ID]);
 }
 
 /*
 *	Given a file, load a font.
 */
-void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Load the font data.
 	FontData data;
@@ -244,13 +135,13 @@ void ResourceLoader::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Create the font.
-	ResourceCreator::CreateFont(&data, &_Fonts[resourceID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateFont(&data, &_Fonts[resourceID]);
 }
 
 /*
 *	Given a file, load a model.
 */
-void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Load the model data.
 	ModelData data;
@@ -260,7 +151,7 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the axis-aligned bounding box
-	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
 	//Read the number of meshes.
 	file.Read(&data._NumberOfMeshes, sizeof(uint64));
@@ -297,39 +188,40 @@ void ResourceLoader::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Create the model.
-	ResourceCreator::CreateModel(&data, &_Models[resourceID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateModel(&data, &_Models[resourceID]);
 }
 
 /*
-*	Given a file, load a sound bank.
+*	Given a file, load sound data.
 */
-void ResourceLoader::LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadSound(BinaryFile<IOMode::In> *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT
 {
-	//Store the sound bank data in the sound bank data structure.
-	SoundBankData data;
+	//Read the sample rate.
+	file->Read(&data->_SampleRate, sizeof(float32));
 
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
+	//Read the number of channels.
+	file->Read(&data->_NumberOfChannels, sizeof(uint8));
 
-	//Read the size of the sound bank.
-	uint64 soundBankSize{ 0 };
-	file.Read(&soundBankSize, sizeof(uint64));
+	//Reserve the appropriate size for the channels.
+	data->_Samples.Upsize<true>(data->_NumberOfChannels);
 
-	//Reserve the required amount of memory.
-	data._Data.Upsize<false>(soundBankSize);
+	//Read the number of samples.
+	uint64 number_of_samples;
+	file->Read(&number_of_samples, sizeof(uint64));
 
-	//Read the sound bank memory.
-	file.Read(data._Data.Data(), soundBankSize);
+	//Read the samples.
+	for (DynamicArray<float32> &channel : data->_Samples)
+	{
+		channel.Upsize<false>(number_of_samples);
 
-	//Create the sound bank via the sound system.
-	SoundSystem::Instance->CreateSoundBank(data, &_SoundBanks[resourceID]);
+		file->Read(channel.Data(), sizeof(float32) * number_of_samples);
+	}
 }
 
 /*
 *	Given a file, load a texture cube.
 */
-void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Load the texture cube data
 	TextureCubeData data;
@@ -351,50 +243,40 @@ void ResourceLoader::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(data._Data.Data(), dataSize);
 
 	//Create the texture cube.
-	ResourceCreator::CreateTextureCube(&data, &_TextureCubes[resourceID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateTextureCube(&data, &_TextureCubes[resourceID]);
 }
 
 /*
-*	Given a file, load a texture 2D
+*	Given a file, load texture 2D data.
 */
-void ResourceLoader::LoadTexture2D(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadTexture2D(BinaryFile<IOMode::In> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT
 {
-	//Load the texture 2D data.
-	Texture2DData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
 	//Read the number of mipmap levels.
-	file.Read(&data._MipmapLevels, sizeof(uint8));
+	file->Read(&data->_MipmapLevels, sizeof(uint8));
 
 	//Read the width.
-	file.Read(&data._Width, sizeof(uint32));
+	file->Read(&data->_Width, sizeof(uint32));
 
 	//Read the height.
-	file.Read(&data._Height, sizeof(uint32));
+	file->Read(&data->_Height, sizeof(uint32));
 
 	//Read the data.
-	data._Data.Upsize<true>(data._MipmapLevels);
+	data->_Data.Upsize<true>(data->_MipmapLevels);
 
-	for (uint8 i{ 0 }; i < data._MipmapLevels; ++i)
+	for (uint8 i{ 0 }; i < data->_MipmapLevels; ++i)
 	{
-		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
+		const uint64 textureSize{ (data->_Width >> i) * (data->_Height >> i) * 4 };
 
-		data._Data[i].Reserve(textureSize);
+		data->_Data[i].Reserve(textureSize);
 
-		file.Read(data._Data[i].Data(), textureSize);
+		file->Read(data->_Data[i].Data(), textureSize);
 	}
-
-	//Create the texture 2D.
-	ResourceCreator::CreateTexture2D(&data, &_Texture2Ds[resourceID]);
 }
 
 /*
 *	Given a file, load a texture 3D.
 */
-void ResourceLoader::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
+void ResourceLoadingSystem::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
 {
 	//Load the texture 3D data.
 	Texture3DData data;
@@ -428,5 +310,5 @@ void ResourceLoader::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
 	}
 
 	//Create the texture 3D.
-	ResourceCreator::CreateTexture3D(&data, &_Texture3Ds[resourceID]);
+	ResourceSystem::Instance->GetResourceCreationSystem()->CreateTexture3D(&data, &_Texture3Ds[resourceID]);
 }

@@ -15,7 +15,6 @@
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 #endif
-#include <Resources/Loading/ResourceLoader.h>
 
 //Systems.
 #include <Systems/AnimationSystem.h>
@@ -30,6 +29,7 @@
 #include <Systems/ProfilingSystem.h>
 #endif
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
@@ -138,8 +138,8 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
 	UserInterfaceSystem::Instance->Initialize();
 
-	//Load the Catalyst Engine resource collection. 
-	ResourceLoader::LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
+	//Register the Catalyst Engine resource collection. 
+	ResourceSystem::Instance->LoadsResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
 
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();

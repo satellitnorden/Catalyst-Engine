@@ -4,11 +4,11 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Forward declarations.
-class AxisAlignedBoundingBox;
+class AxisAlignedBoundingBox3;
 class Entity;
 
 //Type aliases.
-using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);
+using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox3 &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);
 
 //Enumeration covering all entity placement types.
 enum class EntityPlacementType : uint8

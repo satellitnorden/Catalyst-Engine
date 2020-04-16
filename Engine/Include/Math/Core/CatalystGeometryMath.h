@@ -46,7 +46,7 @@ public:
 	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3 &box1, const AxisAlignedBoundingBox3 &box2) NOEXCEPT
 	{
 		return	box1._Minimum._X <= box2._Maximum._X
 				&& box1._Maximum._X >= box2._Minimum._X
@@ -60,7 +60,7 @@ public:
 	*	Performs a ray-box intersection and returns whether or not there was an intersection.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(	const Ray &ray,
-																		const AxisAlignedBoundingBox &box,
+																		const AxisAlignedBoundingBox3 &box,
 																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		//Find the minimum/maximum.

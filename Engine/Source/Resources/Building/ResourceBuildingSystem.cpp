@@ -1,6 +1,6 @@
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
-#include <Resources/Building/ResourceBuilder.h>
+#include <Resources/Building/ResourceBuildingSystem.h>
 
 //Core.
 #include <Core/Containers/DynamicArray.h>
@@ -13,6 +13,7 @@
 
 //File.
 #include <File/Core/BinaryFile.h>
+#include <File/Readers/WAVReader.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
@@ -35,7 +36,7 @@
 /*
 *	Builds a resource collection.
 */
-void ResourceBuilder::BuildResourceCollection(const ResourceCollectionBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildResourceCollection(const ResourceCollectionBuildParameters &parameters) NOEXCEPT
 {
 	//What should the collection be called?
 	DynamicString fileName{ parameters._Output };
@@ -101,7 +102,7 @@ FORCE_INLINE void WriteBoneToFile(const Bone &bone, BinaryFile<IOMode::Out> *con
 /*
 *	Builds an animated model.
 */
-void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
 {
 	//What should the material be called?
 	DynamicString fileName{ parameters._Output };
@@ -111,7 +112,7 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
-	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::AnimatedModel) };
+	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::ANIMATED_MODEL) };
 	file.Write(&resourceType, sizeof(ResourceType));
 
 	//Write the resource ID to the file.
@@ -126,7 +127,7 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	AssimpBuilder::BuildAnimatedModel(parameters._File, &vertices, &indices, &skeleton);
 
 	//Transform all vertices and simultaneously calculate the bounding box.
-	AxisAlignedBoundingBox axisAlignedBoundingBox;
+	AxisAlignedBoundingBox3 axisAlignedBoundingBox;
 
 	axisAlignedBoundingBox._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
 	axisAlignedBoundingBox._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
@@ -145,7 +146,7 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 	}
 
 	//Write the axis-aligned bounding box to the file.
-	file.Write(&axisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox));
+	file.Write(&axisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
 	//Write the size of the vertices to the file.
 	const uint64 sizeOfVertices{ vertices.Size() };
@@ -171,10 +172,10 @@ void ResourceBuilder::BuildAnimatedModel(const AnimatedModelBuildParameters &par
 /*
 *	Builds an animation.
 */
-void ResourceBuilder::BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::Animation) };
+	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::ANIMATION) };
 
 	//What should the material be called?
 	DynamicString file_name{ parameters._Output };
@@ -237,7 +238,7 @@ void ResourceBuilder::BuildAnimation(const AnimationBuildParameters &parameters)
 /*
 *	Builds a font.
 */
-void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 {
 	//What should the material be called?
 	DynamicString file_name{ parameters._Output };
@@ -247,7 +248,7 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource type to the file.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::Font) };
+	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::FONT) };
 	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
 
 	//Write the resource ID to the file.
@@ -324,7 +325,7 @@ void ResourceBuilder::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 /*
 *	Builds a model.
 */
-void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) NOEXCEPT
 {
 	//What should the material be called?
 	DynamicString fileName{ parameters._Output };
@@ -334,7 +335,7 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::Model) };
+	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::MODEL) };
 	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
 
 	//Write the resource ID to the file.
@@ -350,7 +351,7 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 		AssimpBuilder::BuildModel(parameters._LevelOfDetails[0], &vertices, &indices);
 
 		//Transform all vertices and simultaneously calculate the bounding box.
-		AxisAlignedBoundingBox aixs_aligned_bounding_box;
+		AxisAlignedBoundingBox3 aixs_aligned_bounding_box;
 
 		aixs_aligned_bounding_box._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
 		aixs_aligned_bounding_box._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
@@ -370,7 +371,7 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 		}
 
 		//Write the axis-aligned bounding box to the file.
-		file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox));
+		file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3));
 	}
 
 	//Determine the number of meshes. Assume that each level of detail has the same number of meshes.
@@ -431,52 +432,60 @@ void ResourceBuilder::BuildModel(const ModelBuildParameters &parameters) NOEXCEP
 }
 
 /*
-*	Builds a sound bank.
+*	Builds a sound.
 */
-void ResourceBuilder::BuildSoundBank(const SoundBankBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) NOEXCEPT
 {
-	//What should the sound bank be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
+	//Read the file.
+	SoundResource resource;
 
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
+	if (WAVReader::Read(parameters._File, &resource))
+	{
+		//What should the material be called?
+		DynamicString file_name{ parameters._Output };
+		file_name += ".cr";
 
-	//Write the resource type to the file.
-	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::SoundBank) };
-	file.Write(&resourceType, sizeof(ResourceType));
+		//Open the file to be written to.
+		BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource ID to the file.
-	const HashString resourceID{ parameters._ID };
-	file.Write(&resourceID, sizeof(HashString));
+		//Write the resource type to the file.
+		constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::SOUND) };
+		file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
 
-	//Read the sound bank file.
-	BinaryFile<IOMode::In> soundBankFile{ parameters._File };
+		//Write the resource identifier to the file.
+		const HashString resource_identifier{ parameters._ID };
+		file.Write(&resource_identifier, sizeof(HashString));
 
-	//Write the sound bank size to the file.
-	const uint64 soundBankSize{ soundBankFile.Size() };
-	file.Write(&soundBankSize, sizeof(uint64));
+		//Write the sample rate to the file.
+		file.Write(&resource._SampleRate, sizeof(float32));
 
-	//Read the sound bank data.
-	DynamicArray<byte> soundBankData;
-	soundBankData.Upsize<false>(soundBankSize);
-	
-	soundBankFile.Read(soundBankData.Data(), soundBankSize);
+		//Write the number of channels to the file.
+		file.Write(&resource._NumberOfChannels, sizeof(uint8));
 
-	//Close the sound bank file.
-	soundBankFile.Close();
+		//Write the number of samples.
+		const uint64 number_of_samples{ resource._Samples[0].Size() }; //Assume all channels have the same size.
+		file.Write(&number_of_samples, sizeof(uint64));
 
-	//Write the sound bank data to the file.
-	file.Write(soundBankData.Data(), soundBankSize);
+		//Write the samples.
+		for (const DynamicArray<float32>& channel : resource._Samples)
+		{
+			file.Write(channel.Data(), sizeof(float32) * number_of_samples);
+		}
 
-	//Close the file.
-	file.Close();
+		//Close the file.
+		file.Close();
+	}
+
+	else
+	{
+		ASSERT(false, "Couldn't build sound!");
+	}
 }
 
 /*
 *	Builds a texture cube
 */
-void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
 	constexpr Vector2<float> INVERSE_ATAN{ 0.1591f, 0.3183f };
@@ -489,7 +498,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
-	constexpr ResourceType resourceType{ ResourceType::TextureCube };
+	constexpr ResourceType resourceType{ ResourceType::TEXTURE_CUBE };
 	file.Write(&resourceType, sizeof(ResourceType));
 
 	//Write the resource ID to the file.
@@ -566,7 +575,7 @@ void ResourceBuilder::BuildTextureCube(const TextureCubeBuildParameters &paramet
 /*
 *	Builds a texture 2D.
 */
-void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT
 {
 	//What should the material be called?
 	DynamicString fileName{ parameters._Output };
@@ -576,7 +585,7 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource type to the file.
-	constexpr ResourceType resourceType{ ResourceType::Texture2D };
+	constexpr ResourceType resourceType{ ResourceType::TEXTURE_2D };
 	file.Write(&resourceType, sizeof(ResourceType));
 
 	//Write the resource ID to the file.
@@ -800,7 +809,7 @@ void ResourceBuilder::BuildTexture2D(const Texture2DBuildParameters &parameters)
 /*
 *	Builds a texture 3D.
 */
-void ResourceBuilder::BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT
+void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT
 {
 	//What should the material be called?
 	DynamicString file_name{ parameters._Output };
@@ -810,7 +819,7 @@ void ResourceBuilder::BuildTexture3D(const Texture3DBuildParameters& parameters)
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::Texture3D };
+	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_3D };
 	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
 
 	//Write the resource ID to the file.

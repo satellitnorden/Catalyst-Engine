@@ -9,7 +9,10 @@
 #include <Rendering/Native/Texture2D.h>
 #endif
 
-class Texture2DResource final
+//Resources.
+#include <Resources/Core/Resource.h>
+
+class Texture2DResource final : public Resource
 {
 
 public:

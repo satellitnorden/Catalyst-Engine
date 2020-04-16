@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class SoundBankBuildParameters final
+class SoundBuildParameters final
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	//The resource ID.
 	const char *RESTRICT _ID{ nullptr };
 
-	//The file.
+	//The file path.
 	const char *RESTRICT _File{ nullptr };
 
 };

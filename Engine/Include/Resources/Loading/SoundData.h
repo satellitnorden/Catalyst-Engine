@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-class Sound final
+class SoundData final
 {
 
 public:

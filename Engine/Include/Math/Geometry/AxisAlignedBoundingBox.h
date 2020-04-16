@@ -7,7 +7,7 @@
 //Math.
 #include <Math/General/Vector.h>
 
-class AxisAlignedBoundingBox final
+class AxisAlignedBoundingBox3 final
 {
 
 public:
@@ -30,7 +30,7 @@ public:
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> CalculateCenter(const AxisAlignedBoundingBox3 &box) NOEXCEPT
 	{
 		return box._Minimum + ((box._Maximum - box._Minimum) * 0.5f);
 	}
@@ -38,7 +38,7 @@ public:
 	/*
 	*	Calcules the closest point inside an axis-aligned bounding box relative to the specified position.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> GetClosestPointInside(const AxisAlignedBoundingBox &box, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> GetClosestPointInside(const AxisAlignedBoundingBox3 &box, const Vector3<float> &position) NOEXCEPT
 	{
 		return Vector3<float>(	CatalystBaseMath::Clamp<float>(position._X, box._Minimum._X, box._Maximum._X),
 								CatalystBaseMath::Clamp<float>(position._Y, box._Minimum._Y, box._Maximum._Y),
@@ -48,16 +48,16 @@ public:
 	/*
 	*	Returns the union of two axis aligned bounding boxes.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD AxisAlignedBoundingBox Union(const AxisAlignedBoundingBox &first, const AxisAlignedBoundingBox &second) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD AxisAlignedBoundingBox3 Union(const AxisAlignedBoundingBox3 &first, const AxisAlignedBoundingBox3 &second) NOEXCEPT
 	{
-		return AxisAlignedBoundingBox(	Vector3<float>::Minimum(first._Minimum, second._Minimum),
+		return AxisAlignedBoundingBox3(	Vector3<float>::Minimum(first._Minimum, second._Minimum),
 										Vector3<float>::Maximum(first._Maximum, second._Maximum));
 	}
 
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr AxisAlignedBoundingBox() NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox3() NOEXCEPT
 		:
 		_Minimum(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM),
 		_Maximum(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM)
@@ -68,7 +68,7 @@ public:
 	/*
 	*	Constructor taking the minimum and maximum values.
 	*/
-	FORCE_INLINE constexpr AxisAlignedBoundingBox(const Vector3<float> &initial_minimum, const Vector3<float> & initial_maximum) NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox3(const Vector3<float> &initial_minimum, const Vector3<float> & initial_maximum) NOEXCEPT
 		:
 		_Minimum(initial_minimum),
 		_Maximum(initial_maximum)
@@ -79,7 +79,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	FORCE_INLINE constexpr AxisAlignedBoundingBox(const AxisAlignedBoundingBox &other) NOEXCEPT
+	FORCE_INLINE constexpr AxisAlignedBoundingBox3(const AxisAlignedBoundingBox3 &other) NOEXCEPT
 		:
 		_Minimum(other._Minimum),
 		_Maximum(other._Maximum)
@@ -90,15 +90,15 @@ public:
 	/*
 	*	Addition by Vector3<float> operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD AxisAlignedBoundingBox operator+(const Vector3<float> &vector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD AxisAlignedBoundingBox3 operator+(const Vector3<float> &vector) const NOEXCEPT
 	{
-		return AxisAlignedBoundingBox(_Minimum + vector, _Maximum + vector);
+		return AxisAlignedBoundingBox3(_Minimum + vector, _Maximum + vector);
 	}
 
 	/*
 	*	Assignment operator overload.
 	*/
-	FORCE_INLINE constexpr void operator=(const AxisAlignedBoundingBox &other) NOEXCEPT
+	FORCE_INLINE constexpr void operator=(const AxisAlignedBoundingBox3 &other) NOEXCEPT
 	{
 		_Minimum = other._Minimum;
 		_Maximum = other._Maximum;
@@ -132,7 +132,7 @@ public:
 	/*
 *	Expands this axis aligned bounding box with the box.
 */
-	FORCE_INLINE constexpr void Expand(const AxisAlignedBoundingBox& box) NOEXCEPT
+	FORCE_INLINE constexpr void Expand(const AxisAlignedBoundingBox3& box) NOEXCEPT
 	{
 		Expand(box._Minimum);
 		Expand(box._Maximum);

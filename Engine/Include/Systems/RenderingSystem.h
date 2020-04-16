@@ -33,7 +33,6 @@
 #include <Resources/Core/Texture2DResource.h>
 
 //Forward declarations.
-class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
 class Entity;
 class Resolution;
@@ -395,7 +394,7 @@ private:
 #endif
 
 	//The noise textures.
-	StaticArray<const Texture2DResource *RESTRICT, NUMBER_OF_NOISE_TEXTURES> _NoiseTextures;
+	StaticArray<uint32, NUMBER_OF_NOISE_TEXTURES> _NoiseTextureIndices;
 
 	//The active noise texture index.
 	uint8 _ActiveNoiseTextureIndex{ 0 };
