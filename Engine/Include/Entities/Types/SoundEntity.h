@@ -26,9 +26,4 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
-	/*
-	*	Returns whether or not this entity should automatically terminate.
-	*/
-	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
-
 };

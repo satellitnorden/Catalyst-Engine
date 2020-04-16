@@ -2056,7 +2056,9 @@ void RenderingSystem::PreInitialize() NOEXCEPT
 	VulkanInterface::Instance->Initialize();
 
 	//Initialize all shader modules.
+	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 	VulkanRenderingSystemLogic::InitializeShaderModules();
+	CATALYST_BENCHMARK_AVERAGE_SECTION_END("InitializeShaderModules");
 
 	//Initialize the Vulkan frame data.
 	VulkanRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());

@@ -9,9 +9,6 @@
 //Math.
 #include <Math/General/Vector.h>
 
-//Sound.
-#include <Sound/Native/SoundCore.h>
-
 class SoundInitializationData final : public EntityInitializationData
 {
 
@@ -19,8 +16,5 @@ public:
 
 	//The position.
 	Vector3<float> _Position;
-
-	//The description.
-	SoundDescriptionHandle _Description;
 
 };

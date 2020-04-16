@@ -234,7 +234,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	CatalystPlatform::PostUpdate(&context);
 
-	SoundSystem::Instance->PostUpdate(&context);
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);
 #endif

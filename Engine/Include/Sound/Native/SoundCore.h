@@ -3,17 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-/*
-*	Type aliases.
-*/
-using ProcessSoundFunction = void(*)(	const uint32 sample_rate,
-										const uint32 number_of_channels,
-										const uint32 number_of_samples,
-										float32 *const RESTRICT *const RESTRICT output);
-
-using SoundDescriptionHandle = void *RESTRICT;
-using SoundInstanceHandle = void *RESTRICT;
-
 //Enumeration covering all note durations.
 enum class NoteDuration : uint8
 {

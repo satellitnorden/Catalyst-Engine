@@ -127,18 +127,6 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 }
 
 /*
-*	Updates the sound system during the post update phase.
-*/
-void SoundSystem::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Don't do anything if the Windows Catalyst sound system isn't initialized.
-	if (!WindowsCatalystSoundSystemData::_Initialized)
-	{
-		return;
-	}
-}
-
-/*
 *	Terminates the sound system.
 */
 void SoundSystem::Terminate() NOEXCEPT
@@ -182,70 +170,5 @@ uint32 SoundSystem::GetSampleRate() const NOEXCEPT
 	}
 
 	return 0;
-}
-
-/*
-*	Registers a process sound function.
-*	Doing this will leave all responsibility to the game to produce the sound output and bypass the sound system's own processing.
-*/
-void SoundSystem::RegisterProcessSoundFunction(const ProcessSoundFunction function) NOEXCEPT
-{
-
-}
-
-/*
-*	Given an ID, returns the sound description.
-*/
-void SoundSystem::GetSoundDescription(const char *const RESTRICT ID, SoundDescriptionHandle *const RESTRICT handle) NOEXCEPT
-{
-
-}
-
-/*
-*	Creates a sound instance based on the given sound description.
-*/
-void SoundSystem::CreateSoundInstance(const SoundDescriptionHandle description, SoundInstanceHandle *const RESTRICT instance) NOEXCEPT
-{
-	
-}
-
-/*
-*	Destroys a sound instance as soon as the sound instance has stopped playing.
-*/
-void SoundSystem::DestroySoundInstance(const SoundInstanceHandle instance) NOEXCEPT
-{
-
-}
-
-/*
-*	Plays a sound instance.
-*/
-void SoundSystem::Play(const SoundInstanceHandle instance) NOEXCEPT
-{
-
-}
-
-/*
-*	Stops a sound instance.
-*/
-void SoundSystem::Stop(const SoundInstanceHandle instance) NOEXCEPT
-{
-
-}
-
-/*
-*	Returns the playback state of a sound instance.
-*/
-PlaybackState SoundSystem::GetPlaybackState(const SoundInstanceHandle instance) NOEXCEPT
-{
-	return PlaybackState::Stopped;
-}
-
-/*
-*	Sets the position of a sound instance.
-*/
-void SoundSystem::SetPosition(const SoundInstanceHandle instance, const Vector3<float> &position) NOEXCEPT
-{
-	
 }
 #endif

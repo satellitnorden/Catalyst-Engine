@@ -30,18 +30,9 @@ void SoundEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 
 	//Copy the data over to the component.
 	SoundComponent &component{ ComponentManager::GetSoundSoundComponents()[_ComponentsIndex] };
-	const SoundInitializationData *const RESTRICT soundInitializationData{ static_cast<const SoundInitializationData *const RESTRICT>(data) };
+	const SoundInitializationData *const RESTRICT sound_initialization_data{ static_cast<const SoundInitializationData *const RESTRICT>(data) };
 
-	component._Position = soundInitializationData->_Position;
-
-	//Create the sound instance.
-	SoundSystem::Instance->CreateSoundInstance(soundInitializationData->_Description, &component._Instance);
-
-	//Set the position of the sound instance.
-	SoundSystem::Instance->SetPosition(component._Instance, component._Position);
-
-	//Play the instance.
-	SoundSystem::Instance->Play(component._Instance);
+	component._Position = sound_initialization_data->_Position;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<SoundInitializationData>(data);
@@ -52,18 +43,6 @@ void SoundEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 */
 void SoundEntity::Terminate() NOEXCEPT
 {
-	//Destroy the sound instance.
-	SoundSystem::Instance->DestroySoundInstance(ComponentManager::GetSoundSoundComponents()[_ComponentsIndex]._Instance);
-
 	//Return this entitiy's components index.
 	ComponentManager::ReturnSoundComponentsIndex(_ComponentsIndex);
-}
-
-/*
-*	Returns whether or not this entity should automatically terminate.
-*/
-bool SoundEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
-{
-	//This sound entity should automatically terminate if the sound has stopped playing.
-	return SoundSystem::Instance->GetPlaybackState(ComponentManager::GetSoundSoundComponents()[_ComponentsIndex]._Instance) == PlaybackState::Stopped;
 }
