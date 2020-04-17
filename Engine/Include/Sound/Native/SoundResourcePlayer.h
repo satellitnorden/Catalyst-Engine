@@ -3,10 +3,11 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Sound.
-#include <Sound/Native/Sound.h>
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/SoundResource.h>
 
-class SoundPlayer final
+class SoundResourcePlayer final
 {
 
 public:
@@ -14,17 +15,17 @@ public:
     /*
     *   Default constructor.
     */
-    SoundPlayer()
+    FORCE_INLINE SoundResourcePlayer() NOEXCEPT
     {
 
     }
 
     /*
-    *   Sets the sound.
+    *   Sets the sound resource.
     */
-    FORCE_INLINE void SetSound(const Sound *const RESTRICT sound) NOEXCEPT
+    FORCE_INLINE void SetSoundResource(const ResourcePointer<SoundResource> sound_resource) NOEXCEPT
     {
-        _Sound = sound;
+        _SoundResource = sound_resource;
     }
 
     /*
@@ -46,7 +47,7 @@ public:
     /*
     *   Sets the current sample.
     */
-    FORCE_INLINE void SetCurrentSample(const float64 sample) NOEXCEPT
+    FORCE_INLINE void SetCurrentSample(const float32 sample) NOEXCEPT
     {
         _CurrentSample = sample;
     }
@@ -64,11 +65,11 @@ public:
     */
     FORCE_INLINE float32 NextSample(const uint64 channel) NOEXCEPT
     {
-        const uint64 actual_channel{ channel < _Sound->_Samples.Size() ? channel : 0 };
+        const uint64 actual_channel{ channel < _SoundResource->_Samples.Size() ? channel : 0 };
 
-        if (_CurrentSample < _Sound->_Samples[actual_channel].Size())
+        if (_CurrentSample < _SoundResource->_Samples[actual_channel].Size())
         {
-            return _Sound->_Samples[actual_channel].Interpolate(_CurrentSample) * _Gain;
+            return _SoundResource->_Samples[actual_channel].Interpolate(_CurrentSample) * _Gain;
         }
 
         else
@@ -89,8 +90,8 @@ public:
 
 private:
 
-    //The sound.
-    const Sound *RESTRICT _Sound;
+    //The sound resource.
+    ResourcePointer<SoundResource> _SoundResource;
 
     //The gain.
     float32 _Gain{ 1.0f };
@@ -99,7 +100,7 @@ private:
     float32 _PlaybackSpeed{ 1.0f };
 
     //The current sample.
-    float64 _CurrentSample{ 0 };
+    float32 _CurrentSample{ 0.0f };
 
     //Denotes if this sound resource player is active.
     bool _IsActive{ true };

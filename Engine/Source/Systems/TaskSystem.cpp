@@ -103,11 +103,16 @@ void TaskSystem::ExecuteTasks() NOEXCEPT
 	while (_ExecuteTasks)
 	{
 		//Try to pop a task from the task queue, and execute it if it succeeds.
-		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueue.Pop() })
+		if (Task* const RESTRICT* const RESTRICT new_task{ _TaskQueue.Pop() })
 		{
 			(*new_task)->Execute();
 
 			--_TasksInQueue;
+		}
+
+		else
+		{
+			Concurrency::CurrentThread::Yield();
 		}
 	}
 }

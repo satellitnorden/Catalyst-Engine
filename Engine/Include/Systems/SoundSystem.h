@@ -8,6 +8,10 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/SoundResource.h>
+
 //Sound.
 #include <Sound/Native/SoundCore.h>
 
@@ -46,5 +50,10 @@ public:
 	*	Returns the sample rate for the chosen audio output device.
 	*/
 	uint32 GetSampleRate() const NOEXCEPT;
+
+	/*
+	*	Plays a sound.
+	*/
+	void PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT;
 
 };

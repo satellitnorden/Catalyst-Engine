@@ -75,6 +75,14 @@ public:
 	}
 
 	/*
+	*	Returns whether or not the game should terminate.
+	*/
+	FORCE_INLINE NO_DISCARD bool ShouldTerminate() NOEXCEPT
+	{
+		return _ShouldTerminate;
+	}
+
+	/*
 	*	Returns the total frames.
 	*/
 	FORCE_INLINE NO_DISCARD uint64 GetTotalFrames() const NOEXCEPT
@@ -140,7 +148,7 @@ private:
 	CatalystProjectConfiguration _ProjectConfiguration;
 
 	//Denotes whether or not the game should terminate.
-	Atomic<bool> _ShouldTerminate{ false };
+	bool _ShouldTerminate{ false };
 
 	//Denotes the total frames.
 	uint64 _TotalFrames{ 0 };

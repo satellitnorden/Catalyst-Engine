@@ -1404,9 +1404,6 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundPlayer.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEngineInformation.h">
       <Filter>Core\Include\Essential</Filter>
     </ClInclude>
@@ -1535,6 +1532,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h">
       <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h">
+      <Filter>Sound\Include\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
