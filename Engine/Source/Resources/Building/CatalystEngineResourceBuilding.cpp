@@ -1110,7 +1110,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionApplicationFragmentShader";
 		parameters._ID = "AmbientOcclusionApplicationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\AmbientOcclusionApplicationFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1121,7 +1121,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionSpatialDenoisingFragmentShader";
 		parameters._ID = "AmbientOcclusionSpatialDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\AmbientOcclusionSpatialDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1132,7 +1132,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionTemporalDenoisingFragmentShader";
 		parameters._ID = "AmbientOcclusionTemporalDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\AmbientOcclusionTemporalDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1143,7 +1143,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesFragmentShader";
 		parameters._ID = "AnimatedModelSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\AnimatedModelSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1154,7 +1154,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesVertexShader";
 		parameters._ID = "AnimatedModelSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\AnimatedModelSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1165,7 +1165,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\BloomIsolationFragmentShader";
 		parameters._ID = "BloomIsolationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\BloomIsolationFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\BloomIsolationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1176,7 +1176,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldApplicationFragmentShader";
 		parameters._ID = "DepthOfFieldApplicationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DepthOfFieldApplicationFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1187,7 +1187,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldBokehBlurFragmentShader";
 		parameters._ID = "DepthOfFieldBokehBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DepthOfFieldBokehBlurFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldBokehBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1198,7 +1198,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldFloodFillBlurFragmentShader";
 		parameters._ID = "DepthOfFieldFloodFillBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DepthOfFieldFloodFillBlurFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldFloodFillBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1209,7 +1209,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingFragmentShader";
 		parameters._ID = "DirectLightingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DirectLightingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1220,7 +1220,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingRayGenerationShader";
 		parameters._ID = "DirectLightingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DirectLightingRayGenerationShader.rgen";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1231,7 +1231,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
 		parameters._ID = "DynamicModelRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\DynamicModelRayClosestHitShader.rchit";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DynamicModelRayClosestHitShader.rchit";
 		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1242,7 +1242,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FastApproximateAntiAliasingFragmentShader";
 		parameters._ID = "FastApproximateAntiAliasingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\FastApproximateAntiAliasingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1253,7 +1253,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FireflyReductionFragmentShader";
 		parameters._ID = "FireflyReductionFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\FireflyReductionFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FireflyReductionFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1264,7 +1264,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingApplicationFragmentShader";
 		parameters._ID = "IndirectLightingApplicationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\IndirectLightingApplicationFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1275,7 +1275,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingRayGenerationShader";
 		parameters._ID = "IndirectLightingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\IndirectLightingRayGenerationShader.rgen";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1286,7 +1286,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingSpatialDenoisingFragmentShader";
 		parameters._ID = "IndirectLightingSpatialDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\IndirectLightingSpatialDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1297,7 +1297,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingTemporalDenoisingFragmentShader";
 		parameters._ID = "IndirectLightingTemporalDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\IndirectLightingTemporalDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1308,7 +1308,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\LuminanceLightingFragmentShader";
 		parameters._ID = "LuminanceLightingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\LuminanceLightingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\LuminanceLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1319,7 +1319,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelHighlightSceneFeaturesFragmentShader";
 		parameters._ID = "ModelHighlightSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ModelHighlightSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelHighlightSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1330,7 +1330,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelHighlightSceneFeaturesVertexShader";
 		parameters._ID = "ModelHighlightSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ModelHighlightSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelHighlightSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1341,7 +1341,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelSceneFeaturesFragmentShader";
 		parameters._ID = "ModelSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ModelSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1352,7 +1352,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelSceneFeaturesVertexShader";
 		parameters._ID = "ModelSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ModelSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1363,7 +1363,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MotionBlurFragmentShader";
 		parameters._ID = "MotionBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\MotionBlurFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1374,7 +1374,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesFragmentShader";
 		parameters._ID = "OceanSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\OceanSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1385,7 +1385,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesVertexShader";
 		parameters._ID = "OceanSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\OceanSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1396,7 +1396,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemComputeShader";
 		parameters._ID = "ParticleSystemComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemComputeShader.comp";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemComputeShader.comp";
 		parameters._Stage = ShaderStage::COMPUTE;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1407,7 +1407,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1418,7 +1418,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1429,7 +1429,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1440,7 +1440,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1451,7 +1451,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1462,7 +1462,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1473,7 +1473,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PassthroughFragmentShader";
 		parameters._ID = "PassthroughFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\PassthroughFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PassthroughFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1484,7 +1484,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingDenoisingFragmentShader";
 		parameters._ID = "PathTracingDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\PathTracingDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1495,7 +1495,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayGenerationShader";
 		parameters._ID = "PathTracingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\PathTracingRayGenerationShader.rgen";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1506,7 +1506,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayMissShader";
 		parameters._ID = "PathTracingRayMissShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\PathTracingRayMissShader.rmiss";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayMissShader.rmiss";
 		parameters._Stage = ShaderStage::RAY_MISS;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1517,7 +1517,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PostProcessingFragmentShader";
 		parameters._ID = "PostProcessingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\PostProcessingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PostProcessingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1528,7 +1528,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1539,7 +1539,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RenderingReferenceFragmentShader";
 		parameters._ID = "RenderingReferenceFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\RenderingReferenceFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1550,7 +1550,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ResampleFragmentShader";
 		parameters._ID = "ResampleFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ResampleFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ResampleFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1561,7 +1561,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SceneFeaturesDownsampleFragmentShader";
 		parameters._ID = "SceneFeaturesDownsampleFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\SceneFeaturesDownsampleFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SceneFeaturesDownsampleFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1572,7 +1572,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceAmbientOcclusionFragmentShader";
 		parameters._ID = "ScreenSpaceAmbientOcclusionFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1583,7 +1583,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
 		parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ScreenSpaceIndirectLightingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1594,7 +1594,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SeparableBlurFragmentShader";
 		parameters._ID = "SeparableBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\SeparableBlurFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SeparableBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1605,7 +1605,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyComputeShader";
 		parameters._ID = "SkyComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\SkyComputeShader.comp";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyComputeShader.comp";
 		parameters._Stage = ShaderStage::COMPUTE;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1616,7 +1616,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyDownsampleComputeShader";
 		parameters._ID = "SkyDownsampleComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\SkyDownsampleComputeShader.comp";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyDownsampleComputeShader.comp";
 		parameters._Stage = ShaderStage::COMPUTE;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1627,7 +1627,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
 		parameters._ID = "SkyFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\SkyFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1638,7 +1638,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\StaticModelRayClosestHitShader";
 		parameters._ID = "StaticModelRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\StaticModelRayClosestHitShader.rchit";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\StaticModelRayClosestHitShader.rchit";
 		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1649,7 +1649,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TemporalAntiAliasingFragmentShader";
 		parameters._ID = "TemporalAntiAliasingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\TemporalAntiAliasingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TemporalAntiAliasingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1660,7 +1660,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainRayClosestHitShader";
 		parameters._ID = "TerrainRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\TerrainRayClosestHitShader.rchit";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainRayClosestHitShader.rchit";
 		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1671,7 +1671,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesFragmentShader";
 		parameters._ID = "TerrainSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\TerrainSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1682,7 +1682,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesVertexShader";
 		parameters._ID = "TerrainSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\TerrainSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1693,7 +1693,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
 		parameters._ID = "ToneMappingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ToneMappingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1704,7 +1704,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceFragmentShader";
 		parameters._ID = "UserInterfaceFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\UserInterfaceFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1715,7 +1715,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceVertexShader";
 		parameters._ID = "UserInterfaceVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\UserInterfaceVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1726,7 +1726,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationColorSceneFeaturesFragmentShader";
 		parameters._ID = "VegetationColorSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationColorSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1737,7 +1737,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationColorSceneFeaturesVertexShader";
 		parameters._ID = "VegetationColorSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationColorSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1748,7 +1748,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationDepthSceneFeaturesFragmentShader";
 		parameters._ID = "VegetationDepthSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationDepthSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1759,7 +1759,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationDepthSceneFeaturesVertexShader";
 		parameters._ID = "VegetationDepthSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationDepthSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1770,7 +1770,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesFragmentShader";
 		parameters._ID = "VegetationImpostorColorSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorColorSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1781,7 +1781,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesGeometryShader";
 		parameters._ID = "VegetationImpostorColorSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorColorSceneFeaturesGeometryShader.geom";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1792,7 +1792,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesVertexShader";
 		parameters._ID = "VegetationImpostorColorSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorColorSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1803,7 +1803,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesFragmentShader";
 		parameters._ID = "VegetationImpostorDepthSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorDepthSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1814,7 +1814,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesGeometryShader";
 		parameters._ID = "VegetationImpostorDepthSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorDepthSceneFeaturesGeometryShader.geom";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1825,7 +1825,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesVertexShader";
 		parameters._ID = "VegetationImpostorDepthSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationImpostorDepthSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1836,7 +1836,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationOpaqueSceneFeaturesFragmentShader";
 		parameters._ID = "VegetationOpaqueSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationOpaqueSceneFeaturesFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationOpaqueSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1847,7 +1847,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationOpaqueSceneFeaturesVertexShader";
 		parameters._ID = "VegetationOpaqueSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VegetationOpaqueSceneFeaturesVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationOpaqueSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1858,7 +1858,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VelocityFragmentShader";
 		parameters._ID = "VelocityFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VelocityFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VelocityFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1869,7 +1869,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ViewportVertexShader";
 		parameters._ID = "ViewportVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\ViewportVertexShader.vert";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1880,7 +1880,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VisibilityRayMissShader";
 		parameters._ID = "VisibilityRayMissShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VisibilityRayMissShader.rmiss";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VisibilityRayMissShader.rmiss";
 		parameters._Stage = ShaderStage::RAY_MISS;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1891,7 +1891,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingApplicationFragmentShader";
 		parameters._ID = "VolumetricLightingApplicationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VolumetricLightingApplicationFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1902,7 +1902,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingFragmentShader";
 		parameters._ID = "VolumetricLightingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VolumetricLightingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1913,7 +1913,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingRayGenerationShader";
 		parameters._ID = "VolumetricLightingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VolumetricLightingRayGenerationShader.rgen";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1924,7 +1924,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingSpatialDenoisingFragmentShader";
 		parameters._ID = "VolumetricLightingSpatialDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VolumetricLightingSpatialDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1935,7 +1935,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingTemporalDenoisingFragmentShader";
 		parameters._ID = "VolumetricLightingTemporalDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\Vulkan\\VolumetricLightingTemporalDenoisingFragmentShader.frag";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
