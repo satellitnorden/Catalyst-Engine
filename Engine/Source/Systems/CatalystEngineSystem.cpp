@@ -143,7 +143,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
-	RenderingSystem::Instance->PostInitializeSystem();
+	RenderingSystem::Instance->PostInitialize();
 	WorldSystem::Instance->PostInitialize();
 
 	//Post-initialize the platform.
@@ -267,8 +267,8 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Release the platform.
 	CatalystPlatform::Release();
 
-	//Release all systems.
-	RenderingSystem::Instance->Release();
+	//Terminate all systems.
+	RenderingSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 }
 

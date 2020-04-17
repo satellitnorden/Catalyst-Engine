@@ -20,10 +20,10 @@ void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AmbientOcclusionApplicationFragment);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
+	SetFragmentShader(Shader::AMBIENT_OCCLUSION_APPLICATION_FRAGMENT);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -94,8 +94,8 @@ void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTableLayout() 
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

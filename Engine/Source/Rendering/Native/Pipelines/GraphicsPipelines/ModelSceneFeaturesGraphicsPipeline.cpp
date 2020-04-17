@@ -44,9 +44,9 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ModelSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::ModelSceneFeaturesFragment);
 
 	//Set the depth buffer.
@@ -65,8 +65,8 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -159,13 +159,13 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				vertexData._PreviousModelMatrix = component->_WorldTransform;
 				vertexData._CurrentModelMatrix = component->_WorldTransform;
 
-				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 
 				FragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
@@ -200,13 +200,13 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
 				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
-				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 
 				FragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component->_Model->_Meshes.Size()));
 
-				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);

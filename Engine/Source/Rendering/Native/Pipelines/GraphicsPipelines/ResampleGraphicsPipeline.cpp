@@ -36,9 +36,9 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::ResampleFragment);
 
 	//Add the render targets.
@@ -52,7 +52,7 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(resolution);
@@ -102,7 +102,7 @@ void ResampleGraphicsPipeline::Execute() NOEXCEPT
 
 	data._Delta = _Delta;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -121,7 +121,7 @@ void ResampleGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

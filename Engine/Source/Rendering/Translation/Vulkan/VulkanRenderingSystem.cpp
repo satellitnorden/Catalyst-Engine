@@ -500,11 +500,11 @@ namespace VulkanRenderingSystemLogic
 			}
 
 			parameters._ShaderModules.Reserve(5);
-			if (pipeline->GetVertexShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
-			if (pipeline->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
-			if (pipeline->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
-			if (pipeline->GetGeometryShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
-			if (pipeline->GetFragmentShader() != Shader::None) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
+			if (pipeline->GetVertexShader() != Shader::NONE) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetVertexShader())]);
+			if (pipeline->GetTessellationControlShader() != Shader::NONE) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationControlShader())]);
+			if (pipeline->GetTessellationEvaluationShader() != Shader::NONE) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetTessellationEvaluationShader())]);
+			if (pipeline->GetGeometryShader() != Shader::NONE) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetGeometryShader())]);
+			if (pipeline->GetFragmentShader() != Shader::NONE) parameters._ShaderModules.Emplace(VulkanRenderingSystemData::_ShaderModules[UNDERLYING(pipeline->GetFragmentShader())]);
 			parameters._StencilTestEnable = pipeline->IsStencilTestEnabled();
 			parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilFailOperator());
 			parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilPassOperator());
@@ -591,9 +591,9 @@ namespace VulkanRenderingSystemLogic
 
 		for (const RayTracingPipeline::HitGroup hit_group : pipeline->GetHitGroups())
 		{
-			parameters._HitGroups.Emplace(	hit_group._ClosestHitShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._ClosestHitShader)] : nullptr,
-											hit_group._AnyHitShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._AnyHitShader)] : nullptr,
-											hit_group._IntersectionShader != Shader::None ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._IntersectionShader)] : nullptr);
+			parameters._HitGroups.Emplace(	hit_group._ClosestHitShader != Shader::NONE ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._ClosestHitShader)] : nullptr,
+											hit_group._AnyHitShader != Shader::NONE ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._AnyHitShader)] : nullptr,
+											hit_group._IntersectionShader != Shader::NONE ? VulkanRenderingSystemData::_ShaderModules[UNDERLYING(hit_group._IntersectionShader)] : nullptr);
 		}
 
 		for (const Shader shader : pipeline->GetMissShaders())
@@ -666,7 +666,7 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AmbientOcclusionApplicationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AMBIENT_OCCLUSION_APPLICATION_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
@@ -696,7 +696,7 @@ namespace VulkanRenderingSystemLogic
 			DynamicArray<byte> data;
 			data.Upsize<false>(size);
 			shaderCollection.Read(data.Data(), size);
-			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AnimatedModelSceneFeaturesFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+			VulkanRenderingSystemData::_ShaderModules[UNDERLYING(Shader::AMINATED_MODEL_SCENE_FEATURES_FRAGMENT)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		{
@@ -1525,12 +1525,37 @@ namespace VulkanRenderingSystemLogic
 }
 
 /*
+*	Terminates the rendering system.
+*/
+void RenderingSystem::Terminate() NOEXCEPT
+{
+	//Release the Vulkan interface.
+	VulkanInterface::Instance->Release();
+}
+
+/*
 *	Returns whether or not ray tracing is supported.
 */
 NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
 {
 	//Just check if the physical device has ray tracing support.
 	return VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport();
+}
+
+/*
+*	Returns the number of framebuffers.
+*/
+uint8 RenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
+{
+	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+}
+
+/*
+*	Returns the current framebuffer index.
+*/
+uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
+{
+	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 }
 
 /*
@@ -2056,20 +2081,10 @@ void RenderingSystem::PreInitialize() NOEXCEPT
 	VulkanInterface::Instance->Initialize();
 
 	//Initialize all shader modules.
-	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 	VulkanRenderingSystemLogic::InitializeShaderModules();
-	CATALYST_BENCHMARK_AVERAGE_SECTION_END("InitializeShaderModules");
 
 	//Initialize the Vulkan frame data.
 	VulkanRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
-}
-
-/*
-*	Post-initializes the rendering system.
-*/
-void RenderingSystem::PostInitialize() NOEXCEPT
-{
-	
 }
 
 /*
@@ -2115,38 +2130,5 @@ void RenderingSystem::EndFrame() NOEXCEPT
 
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(VulkanRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());
-}
-
-/*
-*	Pre-releases the rendering system.
-*/
-void RenderingSystem::PreRelease() NOEXCEPT
-{
-	//Release the Vulkan interface.
-	VulkanInterface::Instance->Release();
-}
-
-/*
-*	Post-releases the rendering system.
-*/
-void RenderingSystem::PostRelease() NOEXCEPT
-{
-
-}
-
-/*
-*	Returns the number of framebuffers.
-*/
-uint8 RenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
-{
-	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
-}
-
-/*
-*	Returns the current framebuffer index.
-*/
-uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
-{
-	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 }
 #endif

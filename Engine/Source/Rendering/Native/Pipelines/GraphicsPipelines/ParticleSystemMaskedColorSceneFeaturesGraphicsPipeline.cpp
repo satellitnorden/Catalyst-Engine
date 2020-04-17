@@ -31,8 +31,8 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ParticleSystemMaskedColorSceneFeaturesVertexShader);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
 	SetGeometryShader(Shader::ParticleSystemMaskedColorSceneFeaturesGeometryShader);
 	SetFragmentShader(Shader::ParticleSystemMaskedColorSceneFeaturesFragmentShader);
 
@@ -52,7 +52,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -142,7 +142,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		data._MaterialIndex = component->_MaterialIndex;
 
-		command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
 
 		//Bind the transformations buffer.
 		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);

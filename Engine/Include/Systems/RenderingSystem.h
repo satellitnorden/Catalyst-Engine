@@ -46,17 +46,6 @@ public:
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
 
-	//Enumeration covering all common physical models.
-	enum class CommonPhysicalModel : uint8
-	{
-		Cube,
-		Octahedron,
-		Plane,
-		Sphere,
-
-		NumberOfCommonPhysicalModels
-	};
-
 	/*
 	*	Default constructor.
 	*/
@@ -73,7 +62,7 @@ public:
 	/*
 	*	Post initializes the rendering system.
 	*/
-	void PostInitializeSystem() NOEXCEPT;
+	void PostInitialize() NOEXCEPT;
 
 	/*
 	*	Updates the rendering system during the render update phase.
@@ -81,9 +70,9 @@ public:
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Releases the rendering system.
+	*	Terminates the rendering system.
 	*/
-	void Release() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns whether or not ray tracing is supported.
@@ -115,7 +104,7 @@ public:
 	{
 		return _ScaledResolutions[mip_level];
 	}
-	 
+	
 	/*
 	*	Returns the number of framebuffers.
 	*/
@@ -408,11 +397,6 @@ private:
 	void PreInitialize() NOEXCEPT;
 
 	/*
-	*	Post-initializes the rendering system.
-	*/
-	void PostInitialize() NOEXCEPT;
-
-	/*
 	*	Begins a frame.
 	*/
 	void BeginFrame() NOEXCEPT;
@@ -421,16 +405,6 @@ private:
 	*	Ends a frame.
 	*/
 	void EndFrame() NOEXCEPT;
-
-	/*
-	*	Pre-releases the rendering system.
-	*/
-	void PreRelease() NOEXCEPT;
-
-	/*
-	*	Post-releases the rendering system.
-	*/
-	void PostRelease() NOEXCEPT;
 
 	/*
 	*	Pre-initializes the global render data.

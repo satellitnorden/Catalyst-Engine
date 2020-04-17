@@ -42,9 +42,9 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT);
 
 	//Add the render targets.
@@ -58,7 +58,7 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -92,8 +92,8 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLa
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -134,7 +134,7 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
 	data._Stride = _Stride;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

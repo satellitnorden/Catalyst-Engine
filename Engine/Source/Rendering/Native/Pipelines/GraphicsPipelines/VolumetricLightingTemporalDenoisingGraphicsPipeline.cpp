@@ -24,9 +24,9 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Rend
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FRAGMENT);
 
 	//Add the render targets.
@@ -99,9 +99,9 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableL
 {
 	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

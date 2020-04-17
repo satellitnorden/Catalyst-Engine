@@ -286,17 +286,17 @@ public:
 
 #define MAPPING(STAGE, BIT) if (TEST_BIT(shaderStage, STAGE)) flags |= BIT;
 
-		MAPPING(ShaderStage::Compute,					VK_SHADER_STAGE_COMPUTE_BIT);
-		MAPPING(ShaderStage::Fragment,				VK_SHADER_STAGE_FRAGMENT_BIT);
-		MAPPING(ShaderStage::Geometry,				VK_SHADER_STAGE_GEOMETRY_BIT);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayAnyHit,				VK_SHADER_STAGE_ANY_HIT_BIT_NV);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayClosestHit,			VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayGeneration,			VK_SHADER_STAGE_RAYGEN_BIT_NV);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayIntersection,			VK_SHADER_STAGE_INTERSECTION_BIT_NV);
-		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RayMiss,					VK_SHADER_STAGE_MISS_BIT_NV);
-		MAPPING(ShaderStage::TessellationControl,		VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
-		MAPPING(ShaderStage::TessellationEvaluation,	VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-		MAPPING(ShaderStage::Vertex,					VK_SHADER_STAGE_VERTEX_BIT);
+		MAPPING(ShaderStage::COMPUTE,				VK_SHADER_STAGE_COMPUTE_BIT);
+		MAPPING(ShaderStage::FRAGMENT,				VK_SHADER_STAGE_FRAGMENT_BIT);
+		MAPPING(ShaderStage::GEOMETRY,				VK_SHADER_STAGE_GEOMETRY_BIT);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RAY_ANY_HIT,		VK_SHADER_STAGE_ANY_HIT_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RAY_CLOSEST_HIT,	VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RAY_GENERATION,	VK_SHADER_STAGE_RAYGEN_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RAY_INTERSECTION,	VK_SHADER_STAGE_INTERSECTION_BIT_NV);
+		if (RenderingSystem::Instance->IsRayTracingSupported()) MAPPING(ShaderStage::RAY_MISS,			VK_SHADER_STAGE_MISS_BIT_NV);
+		MAPPING(ShaderStage::TESSELLATION_CONTROL,	VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		MAPPING(ShaderStage::TESSELLATION_CONTROL,	VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		MAPPING(ShaderStage::VERTEX,				VK_SHADER_STAGE_VERTEX_BIT);
 
 #undef MAPPING
 

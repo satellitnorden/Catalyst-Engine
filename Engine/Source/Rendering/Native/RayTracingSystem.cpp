@@ -59,13 +59,13 @@ void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 	//Create the render data table layout.
 	StaticArray<RenderDataTableLayoutBinding, 7> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RayClosestHit),
-		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RayClosestHit)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RAY_CLOSEST_HIT),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
+		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
+		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RAY_CLOSEST_HIT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

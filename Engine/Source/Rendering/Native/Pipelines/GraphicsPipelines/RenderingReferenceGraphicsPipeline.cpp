@@ -31,9 +31,9 @@ void RenderingReferenceGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::RenderingReferenceFragment);
 
 	//Add the render targets.
@@ -46,7 +46,7 @@ void RenderingReferenceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(RenderingReferencePushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(RenderingReferencePushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -96,7 +96,7 @@ void RenderingReferenceGraphicsPipeline::Execute() NOEXCEPT
 	data._RenderingReferenceTextureIndex = _RenderingReferenceTextureIndex;
 	data._Iterations = _Iterations;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(RenderingReferencePushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(RenderingReferencePushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

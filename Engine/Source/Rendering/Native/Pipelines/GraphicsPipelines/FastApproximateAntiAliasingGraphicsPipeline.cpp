@@ -20,9 +20,9 @@ void FastApproximateAntiAliasingGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::FastApproximateFragment);
 
 	//Add the render targets.
@@ -36,7 +36,7 @@ void FastApproximateAntiAliasingGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -98,7 +98,7 @@ void FastApproximateAntiAliasingGraphicsPipeline::CreateRenderDataTableLayout() 
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

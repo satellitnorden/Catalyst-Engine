@@ -120,8 +120,8 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 	{
 		StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION)
 		};
 
 		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

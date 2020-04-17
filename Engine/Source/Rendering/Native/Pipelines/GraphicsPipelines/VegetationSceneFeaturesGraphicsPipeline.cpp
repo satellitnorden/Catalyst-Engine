@@ -50,9 +50,9 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationOpaqueSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::VegetationOpaqueSceneFeaturesFragment);
 
 	//Set the depth buffer.
@@ -71,8 +71,8 @@ void VegetationSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(VegetationVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
@@ -218,14 +218,14 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			vertex_data._MediumScaleWindDisplacementFactor = component->_MediumScaleWindDisplacementFactor;
 			vertex_data._SmallScaleWindDisplacementFactor = component->_SmallScaleWindDisplacementFactor;
 
-			command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VegetationVertexPushConstantData), &vertex_data);
+			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VegetationVertexPushConstantData), &vertex_data);
 
 			VegetationFragmentPushConstantData fragment_data;
 
 			fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
 			fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
-			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
+			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
 			//Bind the vertex/inder buffer.
 			command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);

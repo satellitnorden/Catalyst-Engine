@@ -47,8 +47,8 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ParticleSystemMaskedDepthSceneFeaturesVertexShader);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
 	SetGeometryShader(Shader::ParticleSystemMaskedDepthSceneFeaturesGeometryShader);
 	SetFragmentShader(Shader::ParticleSystemMaskedDepthSceneFeaturesFragmentShader);
 
@@ -61,8 +61,8 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::GEOMETRY, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -155,7 +155,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			data._Lifetime = component->_Lifetime;
 			data._FadeTime = component->_FadeTime;
 
-			command_buffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), &data);
+			command_buffer->PushConstants(this, ShaderStage::GEOMETRY, 0, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), &data);
 		}
 
 		{
@@ -163,7 +163,7 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			data._MaterialIndex = render_component->_MaterialIndex;
 
-			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData), &data);
+			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(ParticleSystemMaskedDepthGeometryPushConstantData), sizeof(ParticleSystemMaskedDepthFragmentPushConstantData), &data);
 		}
 
 		//Bind the transformations buffer.

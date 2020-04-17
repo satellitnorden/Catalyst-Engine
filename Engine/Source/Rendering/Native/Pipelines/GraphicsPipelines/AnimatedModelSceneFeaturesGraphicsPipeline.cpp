@@ -50,10 +50,10 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 {
 	//Set the shaders.
 	SetVertexShader(Shader::AnimatedModelSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AnimatedModelSceneFeaturesFragment);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
+	SetFragmentShader(Shader::AMINATED_MODEL_SCENE_FEATURES_FRAGMENT);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);
@@ -72,8 +72,8 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(6);
@@ -178,7 +178,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
 		vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
 
-		command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+		command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 
 		FragmentPushConstantData fragmentData;
 
@@ -188,7 +188,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
 		fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
 
-		command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		//Bind the aimation data render data table.
 		command_buffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);

@@ -71,7 +71,7 @@ void SkyComputePipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Compute, 0, sizeof(SkyPushConstantData));
+	AddPushConstantRange(ShaderStage::COMPUTE, 0, sizeof(SkyPushConstantData));
 }
 
 /*
@@ -121,7 +121,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 	data._ParametersDifference = CalculateParametersDifference();
 	data._StarIntensity = WorldSystem::Instance->GetSkySystem()->GetCurrentStarIntensity();
 
-	command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(SkyPushConstantData), &data);
 
 	//Dispatch!
 	command_buffer->Dispatch(this, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> 1, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> 1, 6);

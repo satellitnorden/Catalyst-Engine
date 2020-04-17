@@ -38,7 +38,7 @@ void SkyDownsampleComputePipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Compute, 0, sizeof(SkyDownsamplePushConstantData));
+	AddPushConstantRange(ShaderStage::COMPUTE, 0, sizeof(SkyDownsamplePushConstantData));
 }
 
 /*
@@ -67,7 +67,7 @@ void SkyDownsampleComputePipeline::Execute() NOEXCEPT
 		data._InputIndex = i;
 		data._OutputIndex = i + 1;
 
-		command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(SkyDownsamplePushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(SkyDownsamplePushConstantData), &data);
 
 		//Dispatch!
 		command_buffer->Dispatch(this, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), 6);

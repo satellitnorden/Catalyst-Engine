@@ -38,13 +38,13 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfHitGroups(3);
 
 	//Add the terrain hit group.
-	AddHitGroup(Shader::TerrainRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::TerrainRayClosestHit, Shader::NONE, Shader::NONE);
 
 	//Add the static models hit group.
-	AddHitGroup(Shader::StaticModelRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::StaticModelRayClosestHit, Shader::NONE, Shader::NONE);
 
 	//Add the dynamic models hit group.
-	AddHitGroup(Shader::DynamicModelRayClosestHit, Shader::None, Shader::None);
+	AddHitGroup(Shader::DynamicModelRayClosestHit, Shader::NONE, Shader::NONE);
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(2);
@@ -97,11 +97,11 @@ void PathTracingRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 5> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RayGeneration)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

@@ -41,9 +41,9 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 {
 	//Set the shaders.
 	SetVertexShader(Shader::TerrainSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::TerrainSceneFeaturesFragment);
 
 	//Set the depth buffer.
@@ -62,7 +62,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(TerrainPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -147,7 +147,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
 
-		command_buffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(TerrainPushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainPushConstantData), &data);
 
 		//Draw the patch!
 		command_buffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);

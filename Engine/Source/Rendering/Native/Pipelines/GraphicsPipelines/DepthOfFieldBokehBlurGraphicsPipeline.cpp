@@ -83,9 +83,9 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::DepthOfFieldBokehBlurFragment);
 
 	//Add the render targets.
@@ -99,7 +99,7 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -150,7 +150,7 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Execute() NOEXCEPT
 	data._DepthOfFieldFocusDistance = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldFocusDistance();
 	data._DepthOfFieldSize = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize();
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -169,8 +169,8 @@ void DepthOfFieldBokehBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCE
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

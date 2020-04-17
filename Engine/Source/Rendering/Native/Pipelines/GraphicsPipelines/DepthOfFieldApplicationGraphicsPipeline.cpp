@@ -36,9 +36,9 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::DepthOfFieldApplicationFragment);
 
 	//Add the render targets.
@@ -52,7 +52,7 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -103,7 +103,7 @@ void DepthOfFieldApplicationGraphicsPipeline::Execute() NOEXCEPT
 	data._DepthOfFieldFocusDistance = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldFocusDistance();
 	data._DepthOfFieldSize = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize();
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldApplicationFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -122,8 +122,8 @@ void DepthOfFieldApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEX
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

@@ -48,9 +48,9 @@ void SeparableBlurGraphicsPipeline::Initialize(const Direction direction, const 
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::SeparableBlurFragment);
 
 	//Add the render targets.
@@ -64,7 +64,7 @@ void SeparableBlurGraphicsPipeline::Initialize(const Direction direction, const 
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(resolution);
@@ -125,7 +125,7 @@ void SeparableBlurGraphicsPipeline::Execute() NOEXCEPT
 	data._Size = _Size;
 	data._Stride = _Stride;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -144,7 +144,7 @@ void SeparableBlurGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

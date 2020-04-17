@@ -42,9 +42,9 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 st
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::IndirectLightingSpatialDenoisingFragment);
 
 	//Add the render targets.
@@ -58,7 +58,7 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 st
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -109,7 +109,7 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
 	data._Stride = _Stride;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -128,8 +128,8 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayo
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

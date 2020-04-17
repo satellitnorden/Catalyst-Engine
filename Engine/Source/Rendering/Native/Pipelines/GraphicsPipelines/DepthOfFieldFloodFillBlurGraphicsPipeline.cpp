@@ -36,9 +36,9 @@ void DepthOfFieldFloodFillBlurGraphicsPipeline::Initialize(const int32 stride, c
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::DepthOfFieldFloodFillBlurFragment);
 
 	//Add the render targets.
@@ -52,7 +52,7 @@ void DepthOfFieldFloodFillBlurGraphicsPipeline::Initialize(const int32 stride, c
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -102,7 +102,7 @@ void DepthOfFieldFloodFillBlurGraphicsPipeline::Execute() NOEXCEPT
 
 	data._Stride = _Stride;
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldFloodFillBlurFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -121,8 +121,8 @@ void DepthOfFieldFloodFillBlurGraphicsPipeline::CreateRenderDataTableLayout() NO
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

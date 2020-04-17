@@ -46,9 +46,9 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHa
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ModelHighlightSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::ModelHighlightSceneFeaturesFragment);
 
 	//Set the depth buffer.
@@ -65,8 +65,8 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHa
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -168,7 +168,7 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			vertex_data._CurrentModelMatrix = component._CurrentWorldTransform;
 
-			command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), &vertex_data);
+			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), &vertex_data);
 
 			ModelHighlightSceneFeaturesFragmentPushConstantData fragment_data;
 
@@ -176,7 +176,7 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			fragment_data._HighlightStrength = highlighted_model._HighlightStrength;
 			fragment_data._MaterialIndex = component._MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component._Model->_Meshes.Size()));
 
-			command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
+			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
 
 			//Bind the vertex/inder buffer.
 			command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component._LevelOfDetailIndices[i]], &OFFSET);

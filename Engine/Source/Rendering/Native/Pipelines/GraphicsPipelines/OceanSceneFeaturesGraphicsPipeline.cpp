@@ -55,9 +55,9 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 
 	//Set the shaders.
 	SetVertexShader(Shader::OceanSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::OceanSceneFeaturesFragment);
 
 	//Set the depth buffer.
@@ -77,7 +77,7 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(OceanPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(OceanPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -164,7 +164,7 @@ void OceanSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		data._PatchSize = information._PatchSize;
 		data._OceanTextureIndex = _OceanTextureIndex;
 
-		command_buffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(OceanPushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(OceanPushConstantData), &data);
 
 		//Draw the patch!
 		command_buffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
@@ -184,8 +184,8 @@ void OceanSceneFeaturesGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

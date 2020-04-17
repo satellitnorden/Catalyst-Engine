@@ -42,9 +42,9 @@ void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::PostProcessingFragment);
 
 	//Add the render targets.
@@ -58,7 +58,7 @@ void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(PostProcessingFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -111,7 +111,7 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	data._FilmGrainIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetFilmGrainIntensity();
 	data._HorizontalBorder = RenderingSystem::Instance->GetPostProcessingSystem()->GetHorizontalBorder();
 
-	command_buffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -130,7 +130,7 @@ void PostProcessingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

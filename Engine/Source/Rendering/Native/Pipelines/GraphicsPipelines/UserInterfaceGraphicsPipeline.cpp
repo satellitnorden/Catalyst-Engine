@@ -63,9 +63,9 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(Shader::UserInterfaceVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::UserInterfaceFragment);
 
 	//Add the render targets.
@@ -78,8 +78,8 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -150,7 +150,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				vertex_data._Minimum = type_element->_Minimum;
 				vertex_data._Maximum = type_element->_Maximum;
 
-				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
 				UserInterfaceFragmentPushConstantData fragment_data;
 
@@ -181,7 +181,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					}
 				}
 
-				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
 				//Draw!
 				command_buffer->Draw(this, 4, 1);
@@ -199,7 +199,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				vertex_data._Minimum = type_element->_Minimum;
 				vertex_data._Maximum = type_element->_Maximum;
 
-				command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
 				UserInterfaceFragmentPushConstantData fragment_data;
 
@@ -207,7 +207,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				fragment_data._Material = type_element->_Material;
 
-				command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
 				//Draw!
 				command_buffer->Draw(this, 4, 1);
@@ -254,7 +254,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						vertex_data._Maximum._X = vertex_data._Minimum._X + type_element->_Font->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
 						vertex_data._Maximum._Y = vertex_data._Minimum._Y + type_element->_Font->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
 
-						command_buffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
+						command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
 						UserInterfaceFragmentPushConstantData fragment_data;
 
@@ -262,7 +262,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
 						fragment_data._Material.SetPrimaryTextureIndex(type_element->_Font->_CharacterDescriptions[character]._TextureIndex);
 
-						command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+						command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
 						//Draw!
 						command_buffer->Draw(this, 4, 1);

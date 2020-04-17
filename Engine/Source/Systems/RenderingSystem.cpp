@@ -129,15 +129,12 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
-
-	//Post-initialize the rendering system.
-	PostInitialize();
 }
 
 /*
 *	Post initializes the rendering system.
 */
-void RenderingSystem::PostInitializeSystem() NOEXCEPT
+void RenderingSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();
@@ -193,18 +190,6 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 
 	//End the frame.
 	EndFrame();
-}
-
-/*
-*	Releases the rendering system.
-*/
-void RenderingSystem::Release() NOEXCEPT
-{
-	//Pre-release the rendering system.
-	PreRelease();
-
-	//Post-release the rendering system.
-	PostRelease();
 }
 
 /*
@@ -396,28 +381,28 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
 		{
 			//Global uniform data.
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::Geometry | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::RayMiss | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
 			
 			//Global textures.
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 			
 			//Global samplers.
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 			
 			//Global materials.
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration | ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 
 			//Cloud texture.
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Compute | ShaderStage::Fragment | ShaderStage::RayGeneration),
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 			
 			//Sky images.
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Compute),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::COMPUTE),
 
 			//Sky textures.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::Fragment | ShaderStage::RayClosestHit | ShaderStage::RayGeneration),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
 
 			//Hammersley hemisphere samples uniform buffer.
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment | ShaderStage::RayGeneration),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -427,7 +412,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		//Initialize the dynamic uniform data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::Compute)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::COMPUTE)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);

@@ -15,9 +15,9 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::SkyFragment);
 
 	//Set the depth buffer.

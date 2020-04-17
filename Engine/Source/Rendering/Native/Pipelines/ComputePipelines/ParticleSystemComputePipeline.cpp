@@ -58,7 +58,7 @@ void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Compute, 0, sizeof(ParticleSystemComputePushConstantData));
+	AddPushConstantRange(ShaderStage::COMPUTE, 0, sizeof(ParticleSystemComputePushConstantData));
 }
 
 /*
@@ -116,7 +116,7 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 		data._NumberOfParticlesToSpawn = component->_NumberOfParticlesToSpawn;
 		data._NumberOfInstances = component->_NumberOfInstances;
 
-		command_buffer->PushConstants(this, ShaderStage::Compute, 0, sizeof(ParticleSystemComputePushConstantData), &data);
+		command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(ParticleSystemComputePushConstantData), &data);
 
 		//Bind the render data table.
 		command_buffer->BindRenderDataTable(this, 1, component->_RenderDataTable);

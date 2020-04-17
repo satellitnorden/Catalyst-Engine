@@ -46,8 +46,8 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Dept
 {
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationImpostorDepthSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
 	SetGeometryShader(Shader::VegetationImpostorDepthSceneFeaturesGeometry);
 	SetFragmentShader(Shader::VegetationImpostorDepthSceneFeaturesFragment);
 
@@ -60,8 +60,8 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Dept
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::GEOMETRY, 0, sizeof(VegetationImpostorGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -174,14 +174,14 @@ void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		geometry_data._ImpostorHalfWidth = component->_ImpostorHalfWidth;
 		geometry_data._ImpostorHeight = component->_ImpostorHeight;
 
-		command_buffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
+		command_buffer->PushConstants(this, ShaderStage::GEOMETRY, 0, sizeof(VegetationImpostorGeometryPushConstantData), &geometry_data);
 
 		VegetationImpostorFragmentPushConstantData fragment_data;
 
 		fragment_data._MaterialIndex = component->_ImpostorMaterialIndex;
 		fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
-		command_buffer->PushConstants(this, ShaderStage::Fragment, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
+		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationImpostorGeometryPushConstantData), sizeof(VegetationImpostorFragmentPushConstantData), &fragment_data);
 
 		//Bind the transformations buffer.
 		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);

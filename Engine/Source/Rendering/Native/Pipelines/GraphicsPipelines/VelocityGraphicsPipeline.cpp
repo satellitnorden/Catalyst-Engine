@@ -14,9 +14,9 @@ void VelocityGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) N
 {
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::None);
-	SetTessellationEvaluationShader(Shader::None);
-	SetGeometryShader(Shader::None);
+	SetTessellationControlShader(Shader::NONE);
+	SetTessellationEvaluationShader(Shader::NONE);
+	SetGeometryShader(Shader::NONE);
 	SetFragmentShader(Shader::VelocityFragment);
 
 	//Set the depth buffer.
