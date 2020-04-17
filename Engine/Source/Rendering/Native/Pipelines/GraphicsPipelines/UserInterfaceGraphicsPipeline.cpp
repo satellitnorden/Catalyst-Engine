@@ -10,6 +10,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
@@ -62,11 +63,11 @@ public:
 void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::UserInterfaceVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::UserInterfaceFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

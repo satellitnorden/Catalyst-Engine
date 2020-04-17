@@ -6,6 +6,10 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/ShaderResource.h>
+
 class ComputePipeline : public Pipeline
 {
 
@@ -19,7 +23,7 @@ public:
 	/*
 	*	Returns the shader.
 	*/
-	FORCE_INLINE NO_DISCARD Shader GetShader() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShader() const NOEXCEPT
 	{
 		return _Shader;
 	}
@@ -29,7 +33,7 @@ protected:
 	/*
 	*	Sets the shader.
 	*/
-	FORCE_INLINE void SetShader(const Shader shader) NOEXCEPT
+	FORCE_INLINE void SetShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT
 	{
 		_Shader = shader;
 	}
@@ -37,6 +41,6 @@ protected:
 private:
 
 	//The shader.
-	Shader _Shader;
+	ResourcePointer<ShaderResource> _Shader;
 
 };

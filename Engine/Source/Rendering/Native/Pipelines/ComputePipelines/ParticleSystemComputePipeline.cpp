@@ -12,6 +12,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Particle system compute push constant data definition.
@@ -49,7 +50,7 @@ public:
 void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 {
 	//Set the shader.
-	SetShader(Shader::ParticleSystemCompute);
+	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemComputeShader")));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

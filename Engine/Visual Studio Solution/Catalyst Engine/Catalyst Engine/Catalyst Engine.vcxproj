@@ -351,6 +351,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuildingSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\ShaderBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\SoundBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h" />
@@ -358,6 +359,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\ShaderResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\SoundResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreationSystem.h" />
@@ -366,6 +368,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\FontData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoadingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\SoundData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\Texture2DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\Texture3DData.h" />

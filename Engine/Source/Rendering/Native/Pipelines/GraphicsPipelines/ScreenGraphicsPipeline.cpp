@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes this graphics pipeline.
@@ -19,11 +20,11 @@ void ScreenGraphicsPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::PassthroughFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PassthroughFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

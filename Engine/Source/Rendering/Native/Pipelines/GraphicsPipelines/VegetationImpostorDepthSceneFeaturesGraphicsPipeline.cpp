@@ -12,6 +12,7 @@
 #include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Vegetation impostor geometry push constant data definition.
@@ -45,11 +46,11 @@ public:
 void VegetationImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationImpostorDepthSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::VegetationImpostorDepthSceneFeaturesGeometry);
-	SetFragmentShader(Shader::VegetationImpostorDepthSceneFeaturesFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("VegetationImpostorDepthSceneFeaturesVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourceSystem::Instance->GetShaderResource(HashString("VegetationImpostorDepthSceneFeaturesGeometryShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VegetationImpostorDepthSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

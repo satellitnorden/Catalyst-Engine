@@ -12,6 +12,7 @@
 #include <Animation/AnimatedVertex.h>
 
 //File.
+#include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
 #include <File/Readers/WAVReader.h>
 
@@ -432,6 +433,83 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 }
 
 /*
+*	Builds a shader.
+*/
+void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT
+{
+	//Determine the compiled file path.
+	DynamicString compiled_file_path{ parameters._ID };
+	compiled_file_path += ".compiled";
+
+	//First, compile the shader.
+	{
+		//Create a temporary batch file that stores all commands.
+		std::ofstream batch_file;
+
+		batch_file.open("temporary_batch_file.bat", std::ios::out);
+
+		batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
+		batch_file << " -V ";
+		batch_file << parameters._FilePath;
+		batch_file << " -o ";
+		batch_file << compiled_file_path.Data();
+
+		batch_file.close();
+
+		//Execute the temporary batch file.
+		system("temporary_batch_file.bat");
+
+		//Delete the temporary batch file.
+		File::Delete("temporary_batch_file.bat");
+	}
+
+	ASSERT(File::Exists(compiled_file_path.Data()), "Compiled file doesn't exist!");
+
+	//What should the resource be called?
+	DynamicString file_name{ parameters._Output };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource type to the file.
+	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::SHADER) };
+	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
+
+	//Write the resource identifier to the file.
+	const HashString resource_identifier{ parameters._ID };
+	file.Write(&resource_identifier, sizeof(HashString));
+
+	//Write the stage.
+	file.Write(&parameters._Stage, sizeof(ShaderStage));
+
+	//Open the compiled file.
+	BinaryFile<IOMode::In> compiled_file{ compiled_file_path.Data() };
+
+	//Write the size of the compiled file.
+	const uint64 compiled_file_size{ compiled_file.Size() };
+	file.Write(&compiled_file_size, sizeof(uint64));
+
+	//Read the data.
+	DynamicArray<byte> data;
+	data.Upsize<false>(compiled_file_size);
+
+	compiled_file.Read(data.Data(), compiled_file_size);
+
+	//Write the data.
+	file.Write(data.Data(), compiled_file_size);
+
+	//Close the compiled file.
+	compiled_file.Close();
+
+	//Close the file.
+	file.Close();
+
+	//Delete the compiled file.
+	File::Delete(compiled_file_path.Data());
+}
+
+/*
 *	Builds a sound.
 */
 void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) NOEXCEPT
@@ -441,7 +519,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 
 	if (WAVReader::Read(parameters._File, &resource))
 	{
-		//What should the material be called?
+		//What should the resource be called?
 		DynamicString file_name{ parameters._Output };
 		file_name += ".cr";
 

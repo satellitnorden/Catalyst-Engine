@@ -13,6 +13,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Vertex push constant data definition.
@@ -49,11 +50,11 @@ public:
 void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::AnimatedModelSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::AMINATED_MODEL_SCENE_FEATURES_FRAGMENT);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
 
 /*
@@ -14,11 +15,11 @@
 void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::SkyFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("SkyFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

@@ -11,6 +11,7 @@
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Particle system masked depth geometry push constant data definition.
@@ -46,11 +47,11 @@ public:
 void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ParticleSystemMaskedDepthSceneFeaturesVertexShader);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::ParticleSystemMaskedDepthSceneFeaturesGeometryShader);
-	SetFragmentShader(Shader::ParticleSystemMaskedDepthSceneFeaturesFragmentShader);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesGeometryShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

@@ -12,6 +12,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes this ray tracing pipeline.
@@ -32,11 +33,11 @@ void AmbientOcclusionRayTracingPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(Shader::RayTracedAmbientOcclusionRayGeneration);
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedAmbientOcclusionRayGenerationShader")));
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
-	AddMissShader(Shader::VisibilityRayMiss);
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
 }
 
 /*

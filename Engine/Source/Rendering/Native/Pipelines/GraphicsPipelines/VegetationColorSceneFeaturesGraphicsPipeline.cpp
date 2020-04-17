@@ -12,6 +12,7 @@
 #include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Vegetation vertex push constant data definition.
@@ -45,11 +46,11 @@ public:
 void VegetationColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationColorSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::VegetationColorSceneFeaturesFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("VegetationColorSceneFeaturesVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VegetationColorSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

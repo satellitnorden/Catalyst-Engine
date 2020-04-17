@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Depth of field flood fill blur fragment push constant data definition.
@@ -35,11 +36,11 @@ void DepthOfFieldFloodFillBlurGraphicsPipeline::Initialize(const int32 stride, c
 	CreateRenderDataTable(source);
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::DepthOfFieldFloodFillBlurFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DepthOfFieldFloodFillBlurFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

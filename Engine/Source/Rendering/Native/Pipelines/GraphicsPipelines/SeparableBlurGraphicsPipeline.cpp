@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Push constant data definition.
@@ -47,11 +48,11 @@ void SeparableBlurGraphicsPipeline::Initialize(const Direction direction, const 
 	_Stride = stride;
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::SeparableBlurFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertex")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("SeparableBlurFragment")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

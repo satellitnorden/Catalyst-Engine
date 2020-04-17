@@ -12,6 +12,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes this ray tracing pipeline.
@@ -32,24 +33,24 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(Shader::PathTracingRayGeneration);
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingRayGenerationShader")));
 
 	//Set the number of hit groups.
 	SetNumberOfHitGroups(3);
 
 	//Add the terrain hit group.
-	AddHitGroup(Shader::TerrainRayClosestHit, Shader::NONE, Shader::NONE);
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("TerrainRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
 
 	//Add the static models hit group.
-	AddHitGroup(Shader::StaticModelRayClosestHit, Shader::NONE, Shader::NONE);
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("StaticModelRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
 
 	//Add the dynamic models hit group.
-	AddHitGroup(Shader::DynamicModelRayClosestHit, Shader::NONE, Shader::NONE);
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("DynamicModelRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(2);
-	AddMissShader(Shader::PathTracingRayMiss);
-	AddMissShader(Shader::VisibilityRayMiss);
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingRayMissShader")));
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
 }
 
 /*

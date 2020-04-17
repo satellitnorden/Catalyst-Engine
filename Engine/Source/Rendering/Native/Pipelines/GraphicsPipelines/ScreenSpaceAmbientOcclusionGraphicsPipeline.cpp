@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes this graphics pipeline.
@@ -22,11 +23,11 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenSpaceAmbientOcclusionFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

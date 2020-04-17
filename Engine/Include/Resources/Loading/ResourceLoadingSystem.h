@@ -18,6 +18,7 @@
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
+#include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
 
@@ -144,6 +145,11 @@ public:
 	*	Given a file, load a model.
 	*/
 	void LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load shader data.
+	*/
+	void LoadShader(BinaryFile<IOMode::In> *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load sound data.

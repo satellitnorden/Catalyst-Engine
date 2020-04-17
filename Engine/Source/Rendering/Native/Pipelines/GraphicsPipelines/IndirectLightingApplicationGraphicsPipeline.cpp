@@ -12,6 +12,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Indirect lighting application push constant data definition.
@@ -44,11 +45,11 @@ void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::IndirectLightingApplicationFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("IndirectLightingApplicationFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

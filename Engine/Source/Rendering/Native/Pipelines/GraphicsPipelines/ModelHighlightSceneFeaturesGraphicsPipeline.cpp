@@ -11,6 +11,7 @@
 //Systems.
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Vertex push constant data definition.
@@ -45,11 +46,11 @@ public:
 void ModelHighlightSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(Shader::ModelHighlightSceneFeaturesVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::ModelHighlightSceneFeaturesFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelHighlightSceneFeaturesVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelHighlightSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

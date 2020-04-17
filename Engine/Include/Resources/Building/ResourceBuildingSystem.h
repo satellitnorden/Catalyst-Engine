@@ -10,6 +10,7 @@
 #include <Resources/Building/FontBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
+#include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
 #include <Resources/Building/TextureCubeBuildParameters.h>
 #include <Resources/Building/Texture2DBuildParameters.h>
@@ -44,6 +45,11 @@ public:
 	*	Builds a model.
 	*/
 	void BuildModel(const ModelBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a shader.
+	*/
+	void BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a sound.

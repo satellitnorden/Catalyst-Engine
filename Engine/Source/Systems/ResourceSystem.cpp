@@ -56,6 +56,35 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
+			case ResourceType::SHADER:
+			{
+				static uint32 shader_reads{ 0 };
+
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				ShaderResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource() };
+
+				//Load the resource.
+				ShaderData data;
+				_ResourceLoadingSystem.LoadShader(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateShader(&data, new_resource);
+
+				//Add the new resource.
+				_ShaderResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
+
+				++shader_reads;
+
+				break;
+			}
+
 			case ResourceType::SOUND:
 			{
 				//Read the identifier.
@@ -63,7 +92,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				file.Read(&identifier, sizeof(HashString));
 
 				//Allocate the new resource.
-				SoundResource* const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource() };
+				SoundResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource() };
 
 				//Load the resource.
 				SoundData data;
@@ -74,6 +103,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 				//Add the new resource.
 				_SoundResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}
@@ -92,7 +124,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				file.Read(&identifier, sizeof(HashString));
 
 				//Allocate the new resource.
-				Texture2DResource* const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource() };
+				Texture2DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource() };
 
 				//Load the resource.
 				Texture2DData data;
@@ -103,6 +135,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 				//Add the new resource.
 				_Texture2DResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}

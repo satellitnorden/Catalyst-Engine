@@ -65,7 +65,7 @@ public:
 	DynamicArray<VulkanHitGroup> _HitGroups;
 
 	//The miss shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> _MissShaderModules;
+	DynamicArray<const VulkanShaderModule *RESTRICT> _MissShaderModules;
 
 };
 #endif

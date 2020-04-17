@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
 
 /*
@@ -63,7 +64,7 @@ public:
 void SkyComputePipeline::Initialize() NOEXCEPT
 {
 	//Set the shader.
-	SetShader(Shader::SkyCompute);
+	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("SkyComputeShader")));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

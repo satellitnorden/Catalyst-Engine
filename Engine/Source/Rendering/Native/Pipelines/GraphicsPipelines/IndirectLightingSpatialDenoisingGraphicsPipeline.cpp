@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Indirect lighting spatial denoising push constant data definition.
@@ -41,11 +42,11 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 st
 	_Stride = stride;
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::IndirectLightingSpatialDenoisingFragment);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("IndirectLightingSpatialDenoisingFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

@@ -109,5 +109,13 @@ namespace File
 		return GetFileAttributes(windows_path) != INVALID_FILE_SIZE;
 	}
 	
+	/*
+	*	Deletes a file.
+	*/
+	FORCE_INLINE void Delete(const char *const RESTRICT file) NOEXCEPT
+	{
+		DeleteFile(file);
+	}
+
 }
 #endif

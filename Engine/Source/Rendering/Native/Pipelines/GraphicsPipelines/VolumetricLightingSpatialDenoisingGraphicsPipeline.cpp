@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Push constant data definition.
@@ -41,11 +42,11 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	_Stride = stride;
 
 	//Set the shaders.
-	SetVertexShader(Shader::ViewportVertex);
-	SetTessellationControlShader(Shader::NONE);
-	SetTessellationEvaluationShader(Shader::NONE);
-	SetGeometryShader(Shader::NONE);
-	SetFragmentShader(Shader::VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT);
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetTessellationControlShader(ResourcePointer<ShaderResource>());
+	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
+	SetGeometryShader(ResourcePointer<ShaderResource>());
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingSpatialDenoisingFragmentShader")));
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);

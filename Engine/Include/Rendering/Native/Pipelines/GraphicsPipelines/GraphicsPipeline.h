@@ -9,6 +9,10 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/ShaderResource.h>
+
 class GraphicsPipeline : public Pipeline
 {
 
@@ -22,27 +26,27 @@ public:
 	/*
 	*	Returns the vertex shader.
 	*/
-	Shader GetVertexShader() const NOEXCEPT { return _VertexShader; }
+	ResourcePointer<ShaderResource> GetVertexShader() const NOEXCEPT { return _VertexShader; }
 
 	/*
 	*	Returns the tessellation control shader.
 	*/
-	Shader GetTessellationControlShader() const NOEXCEPT { return _TessellationControlShader; }
+	ResourcePointer<ShaderResource> GetTessellationControlShader() const NOEXCEPT { return _TessellationControlShader; }
 
 	/*
 	*	Returns the tessellation evaluation shader.
 	*/
-	Shader GetTessellationEvaluationShader() const NOEXCEPT { return _TessellationEvaluationShader; }
+	ResourcePointer<ShaderResource> GetTessellationEvaluationShader() const NOEXCEPT { return _TessellationEvaluationShader; }
 
 	/*
 	*	Returns the geometry shader.
 	*/
-	Shader GetGeometryShader() const NOEXCEPT { return _GeometryShader; }
+	ResourcePointer<ShaderResource> GetGeometryShader() const NOEXCEPT { return _GeometryShader; }
 
 	/*
 	*	Returns the fragment shader.
 	*/
-	Shader GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
+	ResourcePointer<ShaderResource> GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
 
 	/*
 	*	Returns the depth buffer.
@@ -167,27 +171,27 @@ public:
 	/*
 	*	Sets the vertex shader.
 	*/
-	void SetVertexShader(const Shader newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
+	void SetVertexShader(const ResourcePointer<ShaderResource> newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
 
 	/*
 	*	Sets the tessellation control shader.
 	*/
-	void SetTessellationControlShader(const Shader newTessellationControlShader) NOEXCEPT { _TessellationControlShader = newTessellationControlShader; }
+	void SetTessellationControlShader(const ResourcePointer<ShaderResource> newTessellationControlShader) NOEXCEPT { _TessellationControlShader = newTessellationControlShader; }
 
 	/*
 	*	Sets the tessellation evaluation shader.
 	*/
-	void SetTessellationEvaluationShader(const Shader newTessellationEvaluationShader) NOEXCEPT { _TessellationEvaluationShader = newTessellationEvaluationShader; }
+	void SetTessellationEvaluationShader(const ResourcePointer<ShaderResource> newTessellationEvaluationShader) NOEXCEPT { _TessellationEvaluationShader = newTessellationEvaluationShader; }
 
 	/*
 	*	Sets the geometry shader.
 	*/
-	void SetGeometryShader(const Shader newGeometryShader) NOEXCEPT { _GeometryShader = newGeometryShader; }
+	void SetGeometryShader(const ResourcePointer<ShaderResource> newGeometryShader) NOEXCEPT { _GeometryShader = newGeometryShader; }
 
 	/*
 	*	Sets the fragment shader.
 	*/
-	void SetFragmentShader(const Shader newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
+	void SetFragmentShader(const ResourcePointer<ShaderResource> newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
 
 	/*
 	*	Sets the depth buffer.
@@ -327,19 +331,19 @@ public:
 private:
 
 	//The vertex shader.
-	Shader _VertexShader;
+	ResourcePointer<ShaderResource> _VertexShader;
 
 	//The tessellation control shader.
-	Shader _TessellationControlShader;
+	ResourcePointer<ShaderResource> _TessellationControlShader;
 
 	//The tessellation evaluation shader.
-	Shader _TessellationEvaluationShader;
+	ResourcePointer<ShaderResource> _TessellationEvaluationShader;
 
 	//The geometry shader.
-	Shader _GeometryShader;
+	ResourcePointer<ShaderResource> _GeometryShader;
 
 	//The fragment shader.
-	Shader _FragmentShader;
+	ResourcePointer<ShaderResource> _FragmentShader;
 
 	//The depth buffer.
 	DepthBufferHandle _DepthBuffer{ EMPTY_HANDLE };

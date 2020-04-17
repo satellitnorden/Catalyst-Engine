@@ -1527,6 +1527,15 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\SoundData.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\ShaderResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\ShaderBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
 
 /*
@@ -30,7 +31,7 @@ public:
 void SkyDownsampleComputePipeline::Initialize() NOEXCEPT
 {
 	//Set the shader.
-	SetShader(Shader::SkyDownsampleCompute);
+	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("SkyDownsampleComputeShader")));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

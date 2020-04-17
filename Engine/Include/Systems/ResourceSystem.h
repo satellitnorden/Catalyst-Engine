@@ -7,9 +7,12 @@
 
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
-#include <Resources/Building/ResourceBuildingSystem.h>
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+	#include <Resources/Building/ResourceBuildingSystem.h>
+#endif
 #include <Resources/Creation/ResourceCreationSystem.h>
 #include <Resources/Loading/ResourceLoadingSystem.h>
 
@@ -29,6 +32,7 @@ public:
 
 	}
 
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	/*
 	*	Returns the resource building system.
 	*/
@@ -36,6 +40,7 @@ public:
 	{
 		return &_ResourceBuildingSystem;
 	}
+#endif
 
 	/*
 	*	Returns the resource loading system.
@@ -57,6 +62,20 @@ public:
 	*	Loads the resource collection with the given file path.
 	*/
 	void LoadsResourceCollection(const char *const RESTRICT file_path) NOEXCEPT;
+
+
+	/*
+	*	Returns the shader resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		ShaderResource *const RESTRICT *const RESTRICT resource{ _ShaderResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<ShaderResource>(*resource);
+	}
 
 	/*
 	*	Returns the sound resource with the given identifier.
@@ -86,14 +105,19 @@ public:
 
 private:
 
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	//The resource building system.
 	ResourceBuildingSystem _ResourceBuildingSystem;
+#endif
 
 	//The resource loading system.
 	ResourceLoadingSystem _ResourceLoadingSystem;
 
 	//The resource creation system.
 	ResourceCreationSystem _ResourceCreationSystem;
+
+	//Container for all shader resources.
+	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;
 
 	//Container for all sound resources.
 	HashTable<HashString, SoundResource *RESTRICT> _SoundResources;

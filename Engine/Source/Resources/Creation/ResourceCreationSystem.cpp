@@ -130,6 +130,15 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, Model *
 }
 
 /*
+*	Creates a shader.
+*/
+void ResourceCreationSystem::CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT
+{
+	//Create the shader.
+	RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_Data), data->_Stage, &resource->_Handle);
+}
+
+/*
 *	Creates a sound.
 */
 void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundResource *const RESTRICT resource) NOEXCEPT

@@ -192,6 +192,25 @@ void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 }
 
 /*
+*	Given a file, load shader data.
+*/
+void ResourceLoadingSystem::LoadShader(BinaryFile<IOMode::In> *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT
+{
+	//Read the stage.
+	file->Read(&data->_Stage, sizeof(ShaderStage));
+
+	//Read the data size.
+	uint64 data_size{ 0 };
+	file->Read(&data_size, sizeof(uint64));
+
+	//Reserve the appropriate amount of memory for the data.
+	data->_Data.Upsize<false>(data_size);
+
+	//Read the data.
+	file->Read(data->_Data.Data(), data_size);
+}
+
+/*
 *	Given a file, load sound data.
 */
 void ResourceLoadingSystem::LoadSound(BinaryFile<IOMode::In> *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT

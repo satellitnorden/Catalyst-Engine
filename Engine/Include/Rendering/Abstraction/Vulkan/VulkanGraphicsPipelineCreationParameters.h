@@ -57,7 +57,7 @@ public:
 	VkPushConstantRange *RESTRICT _PushConstantRanges;
 
 	//The shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> _ShaderModules;
+	DynamicArray<const VulkanShaderModule *RESTRICT> _ShaderModules;
 
 	//Defines whether or not to enable stencil test.
 	VkBool32 _StencilTestEnable;

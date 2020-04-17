@@ -34,8 +34,10 @@ public:
 		:
 		_Resource(initial_resource)
 	{
+		/*
 		//Increment the resource's reference count.
 		++_Resource->_ReferenceCount;
+		*/
 	}
 
 	/*
@@ -43,19 +45,37 @@ public:
 	*/
 	FORCE_INLINE ~ResourcePointer() NOEXCEPT
 	{
+		/*
 		//Decrement the resource's reference count.
 		if (_Resource)
 		{
 			--_Resource->_ReferenceCount;
 		}
+		*/
 	}
 
 	/*
-	*	Arrow operator overload.
+	*	Arrow operator overload, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const TYPE *const RESTRICT operator->() const NOEXCEPT
+	{
+		return _Resource;
+	}
+
+	/*
+	*	Arrow operator overload, non-const.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT operator->() NOEXCEPT
 	{
 		return _Resource;
+	}
+
+	/*
+	*	Bool operator overload.
+	*/
+	FORCE_INLINE operator bool() const NOEXCEPT
+	{
+		return _Resource != nullptr;
 	}
 
 private:

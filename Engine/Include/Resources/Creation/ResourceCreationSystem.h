@@ -12,12 +12,14 @@
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
+#include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
 #include <Resources/Loading/ModelData.h>
+#include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/TextureCubeData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -47,6 +49,11 @@ public:
 	*	Creates a model.
 	*/
 	void CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT;
+
+	/*
+	*	Creates a shader.
+	*/
+	void CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a sound.

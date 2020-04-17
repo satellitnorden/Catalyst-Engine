@@ -18,6 +18,7 @@ enum class ResourceType : uint8
 	ANIMATION,
 	FONT,
 	MODEL,
+	SHADER,
 	SOUND,
 	TEXTURE_CUBE,
 	TEXTURE_2D,
