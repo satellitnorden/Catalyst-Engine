@@ -26,10 +26,10 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	TextureData(const TextureDataContainer &initialTextureDataContainer, const TextureFormat initialTextureFormat) NOEXCEPT
+	TextureData(TextureDataContainer &&initial_texture_data_container, const TextureFormat initial_texture_format) NOEXCEPT
 		:
-		_TextureDataContainer(initialTextureDataContainer),
-		_TextureFormat(initialTextureFormat)
+		_TextureDataContainer(std::move(initial_texture_data_container)),
+		_TextureFormat(initial_texture_format)
 	{
 
 	}
