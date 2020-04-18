@@ -446,6 +446,12 @@ void UserInterfaceSystem::ChooseNewGamepadSelectedButton(const Vector2<float32>&
 		}
 	}
 
+	//If there are no buttons at all, just return.
+	if (!currently_gamepad_selected_button)
+	{
+		return;
+	}
+
 	//Calculate the center of the currently gamepad selected button.
 	const Vector2<float32> currently_gamepad_selected_button_center{ currently_gamepad_selected_button->_Minimum + ((currently_gamepad_selected_button->_Maximum - currently_gamepad_selected_button->_Minimum) * 0.5f) };
 
