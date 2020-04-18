@@ -49,14 +49,14 @@ void InputSystem::InputUpdate() NOEXCEPT
 	//Remember the old input state.
 	const InputState old_input_state{ _InputState };
 
-	//Retrieve the current gamepad states.
+	//Update the gamepad states.
 	for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 	{
-		CatalystPlatform::GetCurrentGamepadState(i, &_InputState._GamepadStates[i]);
+		UpdateGamepadState(i);
 	}
 
-	//Retrieve the current keyboard state.
-	CatalystPlatform::GetCurrentKeyboardState(&_InputState._KeyboardState);
+	//Update the keyboard state.
+	UpdateKeyboardState();
 
 	//Retrieve the current mouse state.
 	CatalystPlatform::GetCurrentMouseState(&_InputState._MouseState);

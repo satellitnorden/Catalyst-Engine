@@ -12,7 +12,7 @@ class TouchState final
 public:
 
 	//The button state.
-	ButtonState _ButtonState{ ButtonState::ReleasedHold };
+	ButtonState _ButtonState{ ButtonState::RELEASED_HELD };
 
 	//The current X.
 	float _CurrentX{ 0.0f };

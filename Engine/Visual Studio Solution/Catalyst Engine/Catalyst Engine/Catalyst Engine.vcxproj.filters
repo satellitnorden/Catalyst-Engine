@@ -373,9 +373,6 @@
     <Filter Include="Physics\Source">
       <UniqueIdentifier>{45214598-a754-4dc1-bb78-c1a2617f0021}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sound\Source\Abstraction\Catalyst">
-      <UniqueIdentifier>{19b28c0d-92a4-4d16-b0fb-9a6845f3615d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Concurrency">
       <UniqueIdentifier>{67bad350-bd28-40dc-9acc-05aaa47feb16}</UniqueIdentifier>
     </Filter>
@@ -2000,9 +1997,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\WindowsCatalystSoundSystem.cpp">
-      <Filter>Sound\Source\Abstraction\Catalyst</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp">
       <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
@@ -2029,6 +2023,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp">
       <Filter>Resources\Source\Creation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsCatalystSoundSystem.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp">
+      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

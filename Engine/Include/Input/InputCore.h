@@ -21,8 +21,8 @@ enum class InputDeviceType : uint8
 //Enumeration for all possible button states.
 enum class ButtonState : uint8
 {
-	Pressed,
-	PressedHold,
-	Released,
-	ReleasedHold
+	PRESSED,
+	PRESSED_HELD,
+	RELEASED,
+	RELEASED_HELD
 };

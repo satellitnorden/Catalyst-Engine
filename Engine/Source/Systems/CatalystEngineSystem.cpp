@@ -241,7 +241,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	CatalystEngineSystemLogic::ExecuteSequentialUpdate(&context);
 
 	//Return if the game should be terminated.
-	return !_ShouldTerminate && InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) != ButtonState::Pressed;
+	return !_ShouldTerminate && InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) != ButtonState::PRESSED;
 }
 
 /*
@@ -260,9 +260,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Terminate the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->Terminate();
-
-	//Release the platform.
-	CatalystPlatform::Release();
 
 	//Terminate all systems.
 	RenderingSystem::Instance->Terminate();

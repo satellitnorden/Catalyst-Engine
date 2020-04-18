@@ -161,7 +161,7 @@ public:
 		//Set all keyboard button states to the default value.
 		for (uint8 i = 0; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
 		{
-			_ButtonStates[i] = ButtonState::Released;
+			_ButtonStates[i] = ButtonState::RELEASED;
 		}
 	}
 

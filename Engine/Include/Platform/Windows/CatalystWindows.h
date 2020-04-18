@@ -51,10 +51,7 @@
 }																							\
 
 //Forward declarations.
-class GamepadState;
-class KeyboardState;
 class MouseState;
-class TouchState;
 
 class CatalystPlatform final
 {
@@ -84,21 +81,6 @@ public:
 	*	Post-updates the platform.
 	*/
 	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Releases the platform.
-	*/
-	static void Release() NOEXCEPT;
-
-	/*
-	*	Retrieves the current gamepad state.
-	*/
-	static void GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT;
-
-	/*
-	*	Retrieves the current keyboard state.
-	*/
-	static void GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT;
 
 	/*
 	*	Retrieves the current mouse state.

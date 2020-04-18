@@ -30,13 +30,13 @@ public:
 	float _DeltaY{ 0.0f };
 
 	//The left button state.
-	ButtonState _Left{ ButtonState::ReleasedHold };
+	ButtonState _Left{ ButtonState::RELEASED_HELD };
 
 	//The scroll wheel button state.
-	ButtonState _ScrollWheel{ ButtonState::ReleasedHold };
+	ButtonState _ScrollWheel{ ButtonState::RELEASED_HELD };
 
 	//The right button state.
-	ButtonState _Right{ ButtonState::ReleasedHold };
+	ButtonState _Right{ ButtonState::RELEASED_HELD };
 
 	//The scroll wheel step.
 	int8 _ScrollWheelStep{ 0 };

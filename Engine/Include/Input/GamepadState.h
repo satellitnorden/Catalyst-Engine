@@ -13,24 +13,24 @@ public:
 
 	bool _IsConnected{ false };
 
-	ButtonState _DpadUp{ ButtonState::Released };
-	ButtonState _DpadDown{ ButtonState::Released };
-	ButtonState _DpadLeft{ ButtonState::Released };
-	ButtonState _DpadRight{ ButtonState::Released };
+	ButtonState _DpadUp{ ButtonState::RELEASED };
+	ButtonState _DpadDown{ ButtonState::RELEASED };
+	ButtonState _DpadLeft{ ButtonState::RELEASED };
+	ButtonState _DpadRight{ ButtonState::RELEASED };
 
-	ButtonState _Start{ ButtonState::Released };
-	ButtonState _Back{ ButtonState::Released };
+	ButtonState _Start{ ButtonState::RELEASED };
+	ButtonState _Back{ ButtonState::RELEASED };
 
-	ButtonState _LeftThumb{ ButtonState::Released };
-	ButtonState _RightThumb{ ButtonState::Released };
+	ButtonState _LeftThumb{ ButtonState::RELEASED };
+	ButtonState _RightThumb{ ButtonState::RELEASED };
 
-	ButtonState _LeftShoulder{ ButtonState::Released };
-	ButtonState _RightShoulder{ ButtonState::Released };
+	ButtonState _LeftShoulder{ ButtonState::RELEASED };
+	ButtonState _RightShoulder{ ButtonState::RELEASED };
 
-	ButtonState _A{ ButtonState::Released };
-	ButtonState _B{ ButtonState::Released };
-	ButtonState _X{ ButtonState::Released };
-	ButtonState _Y{ ButtonState::Released };
+	ButtonState _A{ ButtonState::RELEASED };
+	ButtonState _B{ ButtonState::RELEASED };
+	ButtonState _X{ ButtonState::RELEASED };
+	ButtonState _Y{ ButtonState::RELEASED };
 
 	float _LeftTrigger{ 0.0f };
 	float _RightTrigger{ 0.0f };

@@ -447,6 +447,8 @@
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsCatalystSoundSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />
@@ -572,7 +574,6 @@
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuildingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoadingSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Sound\Abstraction\Catalyst\WindowsCatalystSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />

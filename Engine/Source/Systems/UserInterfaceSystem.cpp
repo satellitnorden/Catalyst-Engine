@@ -151,29 +151,29 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 	//Cache the input data.
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
 	const Vector2<float32> mouse_position{ InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY };
-	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::Pressed || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PressedHold };
+	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED_HELD };
 
 	//Update which button is gamepad selected.
 	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
 	{
 		ChooseDefaultGamepadSelectedButton();
 
-		if (gamepad_state->_DpadUp == ButtonState::Pressed)
+		if (gamepad_state->_DpadUp == ButtonState::PRESSED)
 		{
 			ChooseNewGamepadSelectedButton(Vector2<float32>(0.0f, 1.0f));
 		}
 
-		else if (gamepad_state->_DpadDown == ButtonState::Pressed)
+		else if (gamepad_state->_DpadDown == ButtonState::PRESSED)
 		{
 			ChooseNewGamepadSelectedButton(Vector2<float32>(0.0f, -1.0f));
 		}
 
-		else if (gamepad_state->_DpadLeft == ButtonState::Pressed)
+		else if (gamepad_state->_DpadLeft == ButtonState::PRESSED)
 		{
 			ChooseNewGamepadSelectedButton(Vector2<float32>(-1.0f, 0.0f));
 		}
 
-		else if (gamepad_state->_DpadRight == ButtonState::Pressed)
+		else if (gamepad_state->_DpadRight == ButtonState::PRESSED)
 		{
 			ChooseNewGamepadSelectedButton(Vector2<float32>(1.0f, 0.0f));
 		}
@@ -202,7 +202,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 						{
 							if (type_element->_IsGamepadSelected)
 							{
-								if (gamepad_state->_A == ButtonState::Pressed)
+								if (gamepad_state->_A == ButtonState::PRESSED)
 								{
 									if (type_element->_StartPressedCallback)
 									{
@@ -225,7 +225,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 						{
 							if (type_element->_IsGamepadSelected)
 							{
-								if (gamepad_state->_A == ButtonState::Pressed)
+								if (gamepad_state->_A == ButtonState::PRESSED)
 								{
 									if (type_element->_StartPressedCallback)
 									{
@@ -248,7 +248,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 						{
 							if (type_element->_IsGamepadSelected)
 							{
-								if (gamepad_state->_A == ButtonState::Released)
+								if (gamepad_state->_A == ButtonState::RELEASED)
 								{
 									if (type_element->_StopPressedCallback)
 									{

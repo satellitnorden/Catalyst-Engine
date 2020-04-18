@@ -112,4 +112,19 @@ private:
 	*/
 	void InputUpdate() NOEXCEPT;
 
+	/*
+	*	Updates the gamepad state at the given index.
+	*/
+	void UpdateGamepadState(const uint8 index) NOEXCEPT;
+
+	/*
+	*	Updates the keyboard state.
+	*/
+	void UpdateKeyboardState() NOEXCEPT;
+
+	/*
+	*	Updates the mouse state.
+	*/
+	void UpdateMouseState() NOEXCEPT;
+
 };

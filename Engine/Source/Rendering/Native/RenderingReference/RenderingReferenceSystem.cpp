@@ -58,7 +58,7 @@ void RenderingReferenceSystem::RenderUpdate(const UpdateContext* const RESTRICT 
 	//Should the rendering reference start/stop?
 	const KeyboardState *const RESTRICT state{ InputSystem::Instance->GetKeyboardState() };
 
-	if (state->GetButtonState(KeyboardButton::F1) == ButtonState::Pressed)
+	if (state->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
 	{
 		//Is the rendering reference in progress? If so, stop it.
 		if (_RenderingReferenceInProgress)
