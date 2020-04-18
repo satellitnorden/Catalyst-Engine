@@ -76,11 +76,6 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
-	*	Post-intializes the platform.
-	*/
-	static void PostInitialize() NOEXCEPT;
-
-	/*
 	*	Pre-updates the platform.
 	*/
 	static void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;

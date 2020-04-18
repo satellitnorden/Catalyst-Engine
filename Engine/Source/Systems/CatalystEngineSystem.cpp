@@ -146,9 +146,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->PostInitialize();
 	WorldSystem::Instance->PostInitialize();
 
-	//Post-initialize the platform.
-	CatalystPlatform::PostInitialize();
-
 	//Initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 

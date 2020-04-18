@@ -203,7 +203,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	windowInfo.lpszClassName = _T("Catalyst Engine");
 	windowInfo.hIconSm = LoadIcon(windowInfo.hInstance, IDI_APPLICATION);
 
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	if (!RegisterClassEx(&windowInfo))
 	{
 		BREAKPOINT();
@@ -225,7 +225,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 							_Instance,
 							nullptr);
 
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	if (!_Window)
 	{
 		const DWORD result{ GetLastError() };
@@ -239,14 +239,6 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Update the window.
 	UpdateWindow(_Window);
-}
-
-/*
-*	Post-intializes the platform.
-*/
-void CatalystPlatform::PostInitialize() NOEXCEPT
-{
-
 }
 
 /*
