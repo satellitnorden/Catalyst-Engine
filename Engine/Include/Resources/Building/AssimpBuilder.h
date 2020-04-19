@@ -7,11 +7,13 @@
 
 //Animation.
 #include <Animation/AnimatedVertex.h>
-#include <Animation/Animation.h>
 #include <Animation/Skeleton.h>
 
 //Rendering.
 #include <Rendering/Native/Vertex.h>
+
+//Resources.
+#include <Resources/Core/AnimationResource.h>
 
 //Third party.
 #include <ThirdParty/assimp/Importer.hpp>
@@ -79,7 +81,7 @@ public:
 	/*
 	*	Builds an animation.
 	*/
-	FORCE_INLINE static void BuildAnimation(const char *const RESTRICT file, Animation *const RESTRICT animation) NOEXCEPT
+	FORCE_INLINE static void BuildAnimation(const char *const RESTRICT file, AnimationResource *const RESTRICT animation) NOEXCEPT
 	{
 		//Load the model.
 		Assimp::Importer importer;

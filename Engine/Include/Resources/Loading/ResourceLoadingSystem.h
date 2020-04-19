@@ -5,9 +5,6 @@
 #include <Core/Containers/Map.h>
 #include <Core/General/HashString.h>
 
-//Animation.
-#include <Animation/Animation.h>
-
 //File.
 #include <File/Core/BinaryFile.h>
 
@@ -18,6 +15,7 @@
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
 #include <Resources/Loading/AnimatedModelData.h>
+#include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -29,22 +27,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Returns all animation resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, Animation> &GetAllAnimationResources() NOEXCEPT
-	{
-		return _Animations;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding animation resource.
-	*/
-	FORCE_INLINE NO_DISCARD const Animation &GetAnimationResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _Animations[resource_ID];
-	}
 
 	/*
 	*	Returns all font resources.
@@ -111,14 +93,14 @@ public:
 	}
 
 	/*
-	*	Given a file, load an animated model.
+	*	Given a file, load animated model data.
 	*/
 	void LoadAnimatedModel(BinaryFile<IOMode::In> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load an animation.
+	*	Given a file, load animation data.
 	*/
-	void LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	void LoadAnimation(BinaryFile<IOMode::In> *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load a model.
@@ -156,9 +138,6 @@ public:
 	void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
 
 private:
-
-	//Container for all animations.
-	Map<HashString, Animation> _Animations;
 
 	//Container for all fonts.
 	Map<HashString, Font> _Fonts;

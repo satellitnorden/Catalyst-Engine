@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Animation.
-#include <Animation/Animation.h>
+//Resources.
+#include <Resources/Core/AnimationResource.h>
 
 class AnimationData final
 {
@@ -12,6 +12,6 @@ class AnimationData final
 public:
 
 	//The animation.
-	Animation _Animation;
+	AnimationResource _Animation;
 
 };

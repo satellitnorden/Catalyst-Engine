@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Animation.
-#include <Animation/Animation.h>
-
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
@@ -17,6 +14,7 @@
 
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
+#include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
 class AnimatedModelInitializationData final : public EntityInitializationData
@@ -33,7 +31,7 @@ public:
 	//The material.
 	Material _Material;
 
-	//The initial animation.
-	const Animation* RESTRICT _InitialAnimation{ nullptr };
+	//The initial animation resource.
+	ResourcePointer<AnimationResource> _InitialAnimationResource;
 
 };

@@ -193,7 +193,7 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 	file.Write(&resource_ID, sizeof(HashString));
 
 	//Build the animation.
-	Animation animation;
+	AnimationResource animation;
 	AssimpBuilder::BuildAnimation(parameters._File, &animation);
 
 	//Sort the animation keyframes.

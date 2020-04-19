@@ -44,10 +44,10 @@ void ResourceCreationSystem::CreateAnimatedModel(AnimatedModelData *const RESTRI
 /*
 *	Creates an animation
 */
-void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT
+void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data, AnimationResource *const RESTRICT resource) NOEXCEPT
 {
 	//Just... Copy.
-	*animation = data->_Animation;
+	*resource = data->_Animation;
 }
 
 /*

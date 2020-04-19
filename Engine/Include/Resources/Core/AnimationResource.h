@@ -7,13 +7,16 @@
 //Animation.
 #include <Animation/AnimationKeyframe.h>
 
-class Animation final
+//Resources.
+#include <Resources/Core/Resource.h>
+
+class AnimationResource final : public Resource
 {
 
 public:
 
 	//The duration of this animation, denoted in seconds.
-	float _Duration;
+	float32 _Duration;
 
 	//Container for all the keyframes for all bones.
 	Map<HashString, DynamicArray<AnimationKeyframe>> _Keyframes;

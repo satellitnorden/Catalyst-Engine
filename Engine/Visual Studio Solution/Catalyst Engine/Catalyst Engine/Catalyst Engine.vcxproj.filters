@@ -1068,9 +1068,6 @@
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Animation\Animation.h">
-      <Filter>Animation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\AnimatedModelBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
@@ -1531,6 +1528,9 @@
       <Filter>Sound\Include\Native</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>

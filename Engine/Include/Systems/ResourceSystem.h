@@ -7,6 +7,7 @@
 
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
+#include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
@@ -78,6 +79,19 @@ public:
 	}
 
 	/*
+	*	Returns the animation resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		AnimationResource *const RESTRICT *const RESTRICT resource{ _AnimationResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<AnimationResource>(*resource);
+	}
+
+	/*
 	*	Returns the shader resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT
@@ -131,6 +145,9 @@ private:
 
 	//Container for all animated model resources.
 	HashTable<HashString, AnimatedModelResource *RESTRICT> _AnimatedModelResources;
+
+	//Container for all animation resources.
+	HashTable<HashString, AnimationResource *RESTRICT> _AnimationResources;
 
 	//Container for all shader resources.
 	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;

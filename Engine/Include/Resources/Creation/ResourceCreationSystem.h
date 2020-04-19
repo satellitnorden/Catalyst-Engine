@@ -10,6 +10,7 @@
 
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
+#include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
@@ -34,9 +35,9 @@ public:
 	void CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModelResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
-	*	Creates an animation
+	*	Creates an animation.
 	*/
-	void CreateAnimation(AnimationData *const RESTRICT data, Animation *const RESTRICT animation) NOEXCEPT;
+	void CreateAnimation(AnimationData *const RESTRICT data, AnimationResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a font.

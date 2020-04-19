@@ -52,7 +52,7 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 {
 	StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> bone_transforms;
 
-	if (component->_CurrentAnimation)
+	if (component->_CurrentAnimationResource)
 	{
 		//Update the current animation time.
 		component->_CurrentAnimationTime += context->_DeltaTime;
@@ -60,14 +60,14 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 		//Wrap around if the animation is looping.
 		if (true) //IsLooping() or whater...
 		{
-			while (component->_CurrentAnimationTime >= component->_CurrentAnimation->_Duration)
+			while (component->_CurrentAnimationTime >= component->_CurrentAnimationResource->_Duration)
 			{
-				component->_CurrentAnimationTime -= component->_CurrentAnimation->_Duration;
+				component->_CurrentAnimationTime -= component->_CurrentAnimationResource->_Duration;
 			}
 		}
 
 		//For every keyframe channel, calculate it's bone transform.
-		for (const Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : component->_CurrentAnimation->_Keyframes)
+		for (const Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : component->_CurrentAnimationResource->_Keyframes)
 		{
 			for (const AnimationKeyframe& keyframe : keyframes._Second)
 			{

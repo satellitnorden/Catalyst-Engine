@@ -31,10 +31,6 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> *const RESTRICT file, 
 */
 void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
 {
-	//Read the resource ID.
-	HashString resourceID;
-	file->Read(&resourceID, sizeof(HashString));
-
 	//Read the axis-aligned bounding box
 	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
@@ -59,42 +55,32 @@ void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> *const REST
 }
 
 /*
-*	Given a file, load an animation.
+*	Given a file, load animation data.
 */
-void ResourceLoadingSystem::LoadAnimation(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimation(BinaryFile<IOMode::In> *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT
 {
-	//Load the animation data.
-	AnimationData data;
-
-	//Read the resource ID.
-	HashString resource_ID;
-	file.Read(&resource_ID, sizeof(HashString));
-
 	//Read the duration.
-	file.Read(&data._Animation._Duration, sizeof(float));
+	file->Read(&data->_Animation._Duration, sizeof(float32));
 
 	//Read the number of animation keyframe channels.
 	uint64 number_of_animation_keyframe_channels;
-	file.Read(&number_of_animation_keyframe_channels, sizeof(uint64));
+	file->Read(&number_of_animation_keyframe_channels, sizeof(uint64));
 
 	//Read the animation keyframes.
 	for (uint64 i{ 0 }; i < number_of_animation_keyframe_channels; ++i)
 	{
 		//Read the name of the channel.
 		HashString name;
-		file.Read(&name, sizeof(HashString));
+		file->Read(&name, sizeof(HashString));
 
 		//Read the number of animation keyframes.
 		uint64 number_of_animation_keyframes;
-		file.Read(&number_of_animation_keyframes, sizeof(uint64));
+		file->Read(&number_of_animation_keyframes, sizeof(uint64));
 
 		//Read the keyframe.
-		data._Animation._Keyframes[name].Upsize<false>(number_of_animation_keyframes);
-		file.Read(data._Animation._Keyframes[name].Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
+		data->_Animation._Keyframes[name].Upsize<false>(number_of_animation_keyframes);
+		file->Read(data->_Animation._Keyframes[name].Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
 	}
-
-	//Create the animation.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateAnimation(&data, &_Animations[resource_ID]);
 }
 
 /*
