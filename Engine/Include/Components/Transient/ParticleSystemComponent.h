@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Entities.
+#include <Entities/Types/ParticleSystemEntity.h>
+
 //Math.
 #include <Math/General/Matrix.h>
 #include <Math/General/Vector.h>
@@ -15,6 +18,9 @@ class ParticleSystemComponent final
 {
 
 public:
+
+	//The particle system properties.
+	ParticleSystemEntity::Property _ParticleSystemProperties;
 
 	//The position.
 	Vector3<float> _Position;

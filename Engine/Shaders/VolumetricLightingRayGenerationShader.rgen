@@ -13,7 +13,7 @@
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Constants.
 #define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))

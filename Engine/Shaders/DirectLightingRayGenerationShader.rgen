@@ -10,7 +10,7 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba8) uniform image2D scene_features_1_image;

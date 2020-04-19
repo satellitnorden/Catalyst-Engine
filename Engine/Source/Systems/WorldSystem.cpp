@@ -81,9 +81,12 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 		component->_FirstParticleIndexToSpawn = component->_FirstParticleIndexToSpawn + component->_NumberOfParticlesToSpawn;
 
 		//Wrap around.
-		while (component->_FirstParticleIndexToSpawn >= component->_NumberOfInstances)
+		if (TEST_BIT(component->_ParticleSystemProperties, ParticleSystemEntity::Property::LOOPING))
 		{
-			component->_FirstParticleIndexToSpawn -= component->_NumberOfInstances;
+			while (component->_FirstParticleIndexToSpawn >= component->_NumberOfInstances)
+			{
+				component->_FirstParticleIndexToSpawn -= component->_NumberOfInstances;
+			}
 		}
 
 		//Calculate the number of particles to spawn this update.

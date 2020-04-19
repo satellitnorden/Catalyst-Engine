@@ -32,7 +32,7 @@ void EntitySystem::Initialize() NOEXCEPT
 void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
-	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AutomaticTermination))
+	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AUTOMATIC_TERMINATION))
 	{
 		SCOPED_LOCK(_AutomaticTerminationQueueLock);
 
@@ -40,7 +40,7 @@ void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitial
 	}
 
 	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
-	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AutomaticDestruction))
+	if (TEST_BIT(data->_Properties, EntityInitializationData::Property::AUTOMATIC_DESTRUCTION))
 	{
 		SCOPED_LOCK(_AutomaticDestructionQueueLock);
 

@@ -9,7 +9,7 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
+#include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
 //Layout specification.
 layout (early_fragment_tests) in;

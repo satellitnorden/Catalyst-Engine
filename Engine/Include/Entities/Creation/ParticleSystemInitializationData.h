@@ -5,6 +5,7 @@
 
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -13,6 +14,9 @@ class ParticleSystemInitializationData final : public EntityInitializationData
 {
 
 public:
+
+	//The particle system properties.
+	ParticleSystemEntity::Property _ParticleSystemProperties;
 
 	//The initial position.
 	Vector3<float> _InitialPosition;

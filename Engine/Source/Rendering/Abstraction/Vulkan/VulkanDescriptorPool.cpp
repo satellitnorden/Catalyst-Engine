@@ -14,7 +14,7 @@
 //Vulkan descriptor pool constants.
 namespace VulkanDescriptorPoolConstants
 {
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 128 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 256 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 4'096 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLED_IMAGES{ 1'024 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLERS{ 16 };

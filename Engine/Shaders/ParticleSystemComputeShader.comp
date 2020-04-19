@@ -87,7 +87,8 @@ bool ShouldSpawn(ParticleSystemInputData data, uint index)
 		return true;
 	}
 
-	else if (	end >= data.number_of_instances
+	else if (	data.first_particle_index_to_spawn < data.number_of_instances
+				&& end >= data.number_of_instances
 				&& index < (end - data.number_of_instances))
 	{
 		return true;

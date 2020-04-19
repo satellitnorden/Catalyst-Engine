@@ -44,7 +44,11 @@ void main()
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	
 	//Calculate the opacity.
-	float opacity = min(time / FADE_TIME, 1.0f) * clamp(1.0f - ((time - (LIFETIME - FADE_TIME)) / FADE_TIME), 0.0f, 1.0f);
+	float opacity = 1.0f;
+
+	opacity *= min(time / FADE_TIME, 1.0f);
+	opacity *= clamp(1.0f - ((time - (LIFETIME - FADE_TIME)) / FADE_TIME), 0.0f, 1.0f);
+	opacity *= float(time <= LIFETIME);
 
 	//Construct all the vertices.
 	fragment_texture_coordinate = vec2(0.0f, 1.0f);

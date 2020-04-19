@@ -40,6 +40,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	ParticleSystemRenderComponent& render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex] };
 
 	//Initialize the component.
+	component._ParticleSystemProperties = particle_system_initialization_data->_ParticleSystemProperties;
 	component._Position = particle_system_initialization_data->_InitialPosition;
 	component._MinimumPosition = particle_system_initialization_data->_MinimumPosition;
 	component._MaximumPosition = particle_system_initialization_data->_MaximumPosition;
@@ -92,8 +93,36 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 */
 void ParticleSystemEntity::Terminate() NOEXCEPT
 {
+	//Cache the components.
+	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex] };
+	ParticleSystemRenderComponent &render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex] };
+
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&component._RenderDataTable);
+
+	//Destroy the transformations buffer.
+	RenderingSystem::Instance->DestroyBuffer(&render_component._TransformationsBuffer);
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnParticleSystemComponentsIndex(_ComponentsIndex);
+}
+
+/*
+*	Returns whether or not this entity should automatically terminate.
+*/
+bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
+{
+	ASSERT(!IsLooping(), "Looping particle system entities will never automatically terminate!");
+
+	return ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._FirstParticleIndexToSpawn > (ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._NumberOfInstances * 2);
+}
+
+/*
+*	Returns whether or not this particle system entity is looping.
+*/
+NO_DISCARD bool ParticleSystemEntity::IsLooping() const NOEXCEPT
+{
+	return TEST_BIT(ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._ParticleSystemProperties, Property::LOOPING);
 }
 
 /*

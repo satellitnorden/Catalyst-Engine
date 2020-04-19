@@ -11,6 +11,20 @@ class ParticleSystemEntity : public Entity
 
 public:
 
+	//Enumeration covering all properties.
+	enum class Property : uint8
+	{
+		/*
+		*	No properties.
+		*/
+		NONE = BIT(0),
+
+		/*
+		*	Particle system entities with the looping property is looping, and will not terminate until explicitly terminated.
+		*/
+		LOOPING = BIT(1)
+	};
+
 	/*
 	*	Default constructor.
 	*/
@@ -29,12 +43,12 @@ public:
 	/*
 	*	Returns whether or not this entity should automatically terminate.
 	*/
-	bool ShouldAutomaticallyTerminate() const NOEXCEPT
-	{
-		ASSERT(false, "This entity type does not have this function implemented!");
+	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
 
-		return false;
-	}
+	/*
+	*	Returns whether or not this particle system entity is looping.
+	*/
+	NO_DISCARD bool IsLooping() const NOEXCEPT;
 
 	/*
 	*	Sets the position.
@@ -57,3 +71,5 @@ public:
 	void SetSpawnFrequency(const float spawn_frequency) NOEXCEPT;
 
 };
+
+ENUMERATION_BIT_OPERATIONS(ParticleSystemEntity::Property);

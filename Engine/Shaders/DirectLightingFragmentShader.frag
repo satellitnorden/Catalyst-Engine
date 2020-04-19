@@ -9,7 +9,7 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Layout specification.
 layout (early_fragment_tests) in;

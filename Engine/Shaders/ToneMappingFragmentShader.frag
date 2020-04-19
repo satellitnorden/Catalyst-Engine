@@ -6,7 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
+#include "..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
 
 //Constants.
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS (16.0f)

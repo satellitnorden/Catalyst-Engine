@@ -6,7 +6,7 @@
 #endif
 
 #if defined(CATALYST_SHADER_LANGUAGE_GLSL)
-	#include "..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h"
+	#include "..\Include\Rendering\Native\Shader\CatalystShaderCore.h"
 #endif
 
 CATALYST_SHADER_NAMESPACE_BEGIN(CatalystTerrain)

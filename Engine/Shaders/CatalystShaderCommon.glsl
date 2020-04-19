@@ -8,7 +8,7 @@
 
 //Includes.
 #define CATALYST_SHADER_LANGUAGE_GLSL
-#include "..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
+#include "..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
 
 //Constants.
 #define MOTION_BLUR_MODE_NONE (0)

@@ -11,8 +11,8 @@
 #include "CatalystRayTracingData.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystLighting.h"
-#include "..\..\Include\Rendering\Native\Shader\CatalystTerrain.h"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
 /*
 *	Surface properties struct definition.

@@ -7,7 +7,7 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
-#include "..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 /*
 *	Scene features struct definition.

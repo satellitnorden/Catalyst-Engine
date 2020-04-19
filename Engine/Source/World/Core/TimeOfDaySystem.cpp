@@ -29,7 +29,7 @@ void TimeOfDaySystem::Enable(const float32 time_of_day, const TimeOfDayParameter
 		_SkyLight = EntitySystem::Instance->CreateEntity<LightEntity>();
 		LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
 
-		data->_Properties = EntityInitializationData::Property::None;
+		data->_Properties = EntityInitializationData::Property::NONE;
 		data->_Direction = VectorConstants::DOWN;
 		data->_Color = VectorConstants::ONE;
 		data->_LightType = LightType::DIRECTIONAL;
