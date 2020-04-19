@@ -58,8 +58,8 @@ void InputSystem::InputUpdate() NOEXCEPT
 	//Update the keyboard state.
 	UpdateKeyboardState();
 
-	//Retrieve the current mouse state.
-	CatalystPlatform::GetCurrentMouseState(&_InputState._MouseState);
+	//Update the mouse state.
+	UpdateMouseState();
 
 	//Determine the last updated input device type.
 	{

@@ -83,11 +83,6 @@ public:
 	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Retrieves the current mouse state.
-	*/
-	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
-
-	/*
 	*	Returns whether or not the window is in focus.
 	*/
 	static bool IsWindowInFocus() NOEXCEPT;
@@ -101,6 +96,16 @@ public:
 	*	Shows the cursor.
 	*/
 	static void ShowCursor() NOEXCEPT;
+
+	/*
+	*	Returns whether or not the cursor is shown.
+	*/
+	static bool IsCursorShown() NOEXCEPT;
+
+	/*
+	*	Returns the scroll wheel step and resets it.
+	*/
+	static int8 GetAndResetScrollWheelStep() NOEXCEPT;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
