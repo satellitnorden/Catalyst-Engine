@@ -30,7 +30,25 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 		{
 			case ResourceType::ANIMATED_MODEL:
 			{
-				_ResourceLoadingSystem.LoadAnimatedModel(file);
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				AnimatedModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource() };
+
+				//Load the resource.
+				AnimatedModelData data;
+				_ResourceLoadingSystem.LoadAnimatedModel(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateAnimatedModel(&data, new_resource);
+
+				//Add the new resource.
+				_AnimatedModelResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}
@@ -58,8 +76,6 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 			case ResourceType::SHADER:
 			{
-				static uint32 shader_reads{ 0 };
-
 				//Read the identifier.
 				HashString identifier;
 				file.Read(&identifier, sizeof(HashString));
@@ -79,8 +95,6 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				++shader_reads;
 
 				break;
 			}

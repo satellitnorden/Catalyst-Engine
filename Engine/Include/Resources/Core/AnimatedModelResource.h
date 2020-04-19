@@ -13,7 +13,10 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
-class AnimatedModel final
+//Resources.
+#include <Resources/Core/Resource.h>
+
+class AnimatedModelResource final : public Resource
 {
 
 public:

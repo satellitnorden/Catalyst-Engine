@@ -5,18 +5,21 @@
 
 //Animation.
 #include <Animation/Animation.h>
-#include <Animation/AnimatedModel.h>
 
 //Rendering.
 #include <Rendering/Native/Material.h>
+
+//Resources.
+#include <Resources/Core/AnimatedModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class AnimatedModelComponent final
 {
 
 public:
 
-	//The model.
-	const AnimatedModel *RESTRICT _Model{ nullptr };
+	//The animated model resource.
+	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
 	//The material.
 	Material _Material;

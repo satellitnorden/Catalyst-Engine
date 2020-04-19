@@ -6,7 +6,6 @@
 #include <Core/General/HashString.h>
 
 //Animation.
-#include <Animation/AnimatedModel.h>
 #include <Animation/Animation.h>
 
 //File.
@@ -18,6 +17,7 @@
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
+#include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -29,22 +29,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Returns all animated model resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, AnimatedModel> &GetAllAnimatedModelResources() NOEXCEPT
-	{
-		return _AnimatedModels;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding animated model resource.
-	*/
-	FORCE_INLINE NO_DISCARD const AnimatedModel &GetAnimatedModelResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _AnimatedModels[resource_ID];
-	}
 
 	/*
 	*	Returns all animation resources.
@@ -129,7 +113,7 @@ public:
 	/*
 	*	Given a file, load an animated model.
 	*/
-	void LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	void LoadAnimatedModel(BinaryFile<IOMode::In> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load an animation.
@@ -172,9 +156,6 @@ public:
 	void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
 
 private:
-
-	//Container for all animated models.
-	Map<HashString, AnimatedModel> _AnimatedModels;
 
 	//Container for all animations.
 	Map<HashString, Animation> _Animations;

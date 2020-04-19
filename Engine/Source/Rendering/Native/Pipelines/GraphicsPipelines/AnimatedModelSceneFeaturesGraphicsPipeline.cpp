@@ -170,8 +170,8 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
 	{
 		//Bind the vertex/inder buffer.
-		command_buffer->BindVertexBuffer(this, 0, component->_Model->_VertexBuffer, &OFFSET);
-		command_buffer->BindIndexBuffer(this, component->_Model->_IndexBuffer, OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, component->_AnimatedModelResource->_VertexBuffer, &OFFSET);
+		command_buffer->BindIndexBuffer(this, component->_AnimatedModelResource->_IndexBuffer, OFFSET);
 
 		//Push constants.
 		VertexPushConstantData vertexData;
@@ -194,7 +194,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Bind the aimation data render data table.
 		command_buffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 
-		command_buffer->DrawIndexed(this, component->_Model->_IndexCount, 1);
+		command_buffer->DrawIndexed(this, component->_AnimatedModelResource->_IndexCount, 1);
 	}
 
 	//End the command buffer.

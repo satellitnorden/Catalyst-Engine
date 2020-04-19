@@ -3,15 +3,13 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Animation.
-#include <Animation/AnimatedModel.h>
-
 //Rendering.
 #include <Rendering/Native/Font.h>
 #include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
+#include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
@@ -33,7 +31,7 @@ public:
 	/*
 	*	Creates an animated model.
 	*/
-	void CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModel *const RESTRICT model) NOEXCEPT;
+	void CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModelResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates an animation

@@ -76,7 +76,7 @@ void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT co
 					//Find the bone index.
 					uint32 bone_index{ 0 };
 
-					if (FindBoneIndex(&component->_Model->_Skeleton._RootBone, keyframes._First, &bone_index))
+					if (FindBoneIndex(&component->_AnimatedModelResource->_Skeleton._RootBone, keyframes._First, &bone_index))
 					{
 						bone_transforms[bone_index] = Matrix4x4(keyframe._BoneTransform._Position, keyframe._BoneTransform._Rotation);
 					}

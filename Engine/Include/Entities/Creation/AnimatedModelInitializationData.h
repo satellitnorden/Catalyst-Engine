@@ -5,7 +5,6 @@
 
 //Animation.
 #include <Animation/Animation.h>
-#include <Animation/AnimatedModel.h>
 
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
@@ -16,16 +15,20 @@
 //Rendering.
 #include <Rendering/Native/Material.h>
 
+//Resources.
+#include <Resources/Core/AnimatedModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
+
 class AnimatedModelInitializationData final : public EntityInitializationData
 {
 
 public:
 
+	//The animated model resource.
+	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+
 	//The transform.
 	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
-
-	//The model.
-	const AnimatedModel *RESTRICT _Model{ nullptr };
 
 	//The material.
 	Material _Material;

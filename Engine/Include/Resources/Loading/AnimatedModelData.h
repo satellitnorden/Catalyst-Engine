@@ -6,6 +6,7 @@
 
 //Animation.
 #include <Animation/AnimatedVertex.h>
+#include <Animation/Skeleton.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>

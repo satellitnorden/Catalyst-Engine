@@ -11,12 +11,12 @@
 /*
 *	Reads a bone from file.
 */
-FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> &file, Bone *const RESTRICT bone) NOEXCEPT
+FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> *const RESTRICT file, Bone *const RESTRICT bone) NOEXCEPT
 {
-	file.Read(bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
+	file->Read(bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
 
 	uint64 number_of_child_bones;
-	file.Read(&number_of_child_bones, sizeof(uint64));
+	file->Read(&number_of_child_bones, sizeof(uint64));
 
 	bone->_Children.Upsize<true>(number_of_child_bones);
 
@@ -29,39 +29,33 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> &file, Bone *const RES
 /*
 *	Given a file, load an animated model.
 */
-void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
 {
-	//Load the model data.
-	AnimatedModelData data;
-
 	//Read the resource ID.
 	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
+	file->Read(&resourceID, sizeof(HashString));
 
 	//Read the axis-aligned bounding box
-	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
+	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
 	//Read the number of vertices.
-	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
+	uint64 number_of_vertices;
+	file->Read(&number_of_vertices, sizeof(uint64));
 
 	//Read the vertices.
-	data._Vertices.Upsize<false>(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(AnimatedVertex) * numberOfVertices);
+	data->_Vertices.Upsize<false>(number_of_vertices);
+	file->Read(data->_Vertices.Data(), sizeof(AnimatedVertex) * number_of_vertices);
 
 	//Read the number of indices.
-	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
+	uint64 number_of_indices;
+	file->Read(&number_of_indices, sizeof(uint64));
 
 	//Read the indices.
-	data._Indices.Upsize<false>(numberOfIndices);
-	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+	data->_Indices.Upsize<false>(number_of_indices);
+	file->Read(data->_Indices.Data(), sizeof(uint32) * number_of_indices);
 
 	//Read the skeleton.
-	ReadBoneFromFile(file, &data._Skeleton._RootBone);
-
-	//Create the model.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateAnimatedModel(&data, &_AnimatedModels[resourceID]);
+	ReadBoneFromFile(file, &data->_Skeleton._RootBone);
 }
 
 /*

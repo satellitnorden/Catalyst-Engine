@@ -46,7 +46,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h" />
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h" />
     <ClInclude Include="..\..\..\Include\Animation\Animation.h" />
     <ClInclude Include="..\..\..\Include\Animation\AnimationCore.h" />
@@ -356,6 +355,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />

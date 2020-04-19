@@ -1077,9 +1077,6 @@
     <ClInclude Include="..\..\..\Include\Animation\AnimatedVertex.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Animation\AnimatedModel.h">
-      <Filter>Animation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Animation\Bone.h">
       <Filter>Animation\Include</Filter>
     </ClInclude>
@@ -1532,6 +1529,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h">
       <Filter>Sound\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h">
+      <Filter>Resources\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

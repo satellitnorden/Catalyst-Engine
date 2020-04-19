@@ -38,10 +38,10 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	const AnimatedModelInitializationData *const RESTRICT animated_model_initialization_data{ static_cast<const AnimatedModelInitializationData *const RESTRICT>(data) };
 	AnimatedModelComponent& animated_model_component{ ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex] };
 
-	animated_model_component._Model = animated_model_initialization_data->_Model;
+	animated_model_component._AnimatedModelResource = animated_model_initialization_data->_AnimatedModelResource;
 	animated_model_component._Material = animated_model_initialization_data->_Material;
 	animated_model_component._CurrentAnimation = animated_model_initialization_data->_InitialAnimation;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._Model->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
 	animated_model_component._PreviousWorldTransform = animated_model_initialization_data->_Transform;
 	animated_model_component._CurrentWorldTransform = animated_model_initialization_data->_Transform;
 
@@ -93,7 +93,7 @@ RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT AnimatedModelEntity::GetWorldTra
 */
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
-	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
+	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
 
 /*
