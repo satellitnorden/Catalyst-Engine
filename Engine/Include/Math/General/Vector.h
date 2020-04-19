@@ -113,6 +113,14 @@ public:
 	}
 
 	/*
+	*	Negative operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator-() const NOEXCEPT
+	{
+		return Vector2<float>(-_X, -_Y);
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE TYPE operator[](const uint64 index) const NOEXCEPT
