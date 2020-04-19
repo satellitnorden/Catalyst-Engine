@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/Map.h>
+#include <Core/General/UpdateContext.h>
 
 //Math.
 #include <Math/Geometry/Ray.h>

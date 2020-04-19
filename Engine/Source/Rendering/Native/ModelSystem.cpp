@@ -20,7 +20,8 @@ void ModelSystem::Initialize() NOEXCEPT
 	},
 	this,
 	UpdatePhase::INPUT,
-	UpdatePhase::USER_INTERFACE);
+	UpdatePhase::USER_INTERFACE,
+	false);
 }
 
 /*

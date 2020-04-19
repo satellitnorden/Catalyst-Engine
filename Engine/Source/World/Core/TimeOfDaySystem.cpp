@@ -5,36 +5,16 @@
 #include <Entities/Creation/LightInitializationData.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
-
-/*
-*	Updates the time of day system during the pre update phase.
-*/
-void TimeOfDaySystem::PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
-{
-	if (!_Enabled)
-	{
-		return;
-	}
-
-	//Update the current time of day.
-	_CurrentTimeOfDay += context->_DeltaTime / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
-
-	//Wrap around.
-	while (_CurrentTimeOfDay >= 24.0f)
-	{
-		_CurrentTimeOfDay -= 24.0f;
-	}
-
-	//Update the sky light.
-	UpdateSkyLight();
-}
 
 /*
 *	Enables the time of day system.
 */
-void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters& time_of_day_parameters) NOEXCEPT
+void TimeOfDaySystem::Enable(const float32 time_of_day, const TimeOfDayParameters& time_of_day_parameters) NOEXCEPT
 {
+	ASSERT(!_Enabled, "Enabling the time of day system twice!");
+
 	//The time of day system is now enabled!
 	_Enabled = true;
 
@@ -60,6 +40,39 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 
 		EntitySystem::Instance->RequestInitialization(_SkyLight, data, false);
 	}
+
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<TimeOfDaySystem *const RESTRICT>(arguments)->PreUpdate();
+	},
+	this,
+	UpdatePhase::PRE,
+	UpdatePhase::RENDER,
+	false);
+}
+
+/*
+*	Updates the time of day system during the pre update phase.
+*/
+void TimeOfDaySystem::PreUpdate() NOEXCEPT
+{
+	ASSERT(_Enabled, "The time of day system should not be updated if it's not enabled");
+
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
+	//Update the current time of day.
+	_CurrentTimeOfDay +=delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
+
+	//Wrap around.
+	while (_CurrentTimeOfDay >= 24.0f)
+	{
+		_CurrentTimeOfDay -= 24.0f;
+	}
+
+	//Update the sky light.
+	UpdateSkyLight();
 }
 
 /*
@@ -68,10 +81,10 @@ void TimeOfDaySystem::Enable(const float time_of_day, const TimeOfDayParameters&
 void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
-	constexpr float NIGHT_SKY_INTENSITY{ 5.0f };
-	constexpr float DAY_SKY_INTENSITY{ 17.5f };
-	constexpr Vector3<float> NIGHT_SKY_LUMINANCE{ 0.8f, 0.9f, 1.0f };
-	constexpr Vector3<float> DAY_SKY_LUMINANCE{ 1.0f, 0.9f, 0.8f };
+	constexpr float32 NIGHT_SKY_INTENSITY{ 5.0f };
+	constexpr float32 DAY_SKY_INTENSITY{ 17.5f };
+	constexpr Vector3<float32> NIGHT_SKY_LUMINANCE{ 0.8f, 0.9f, 1.0f };
+	constexpr Vector3<float32> DAY_SKY_LUMINANCE{ 1.0f, 0.9f, 0.8f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
@@ -80,7 +93,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	}
 
 	//Calculate the time of day alpha.
-	float time_of_day_alpha;
+	float32 time_of_day_alpha;
 
 	if (_CurrentTimeOfDay >= 18.0f)
 	{
@@ -98,28 +111,28 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	}
 
 	//Calculate the sky light direction.
-	Vector3<float> sky_light_direction;
+	Vector3<float32> sky_light_direction;
 
 	if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
 	{
-		Vector3<float> rotation;
+		Vector3<float32> rotation;
 
 		rotation._X = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 		rotation._Y = 0.0f;
 		rotation._Z = CatalystBaseMath::DegreesToRadians(22.5f);
 
-		sky_light_direction = Vector3<float>::Normalize(VectorConstants::DOWN.Rotated(rotation));
+		sky_light_direction = Vector3<float32>::Normalize(VectorConstants::DOWN.Rotated(rotation));
 	}
 	
 	else
 	{
-		Vector3<float> rotation;
+		Vector3<float32> rotation;
 
 		rotation._X = CatalystBaseMath::DegreesToRadians(22.5f);
 		rotation._Y = 0.0f;
 		rotation._Z = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 
-		sky_light_direction = Vector3<float>::Normalize(VectorConstants::DOWN.Rotated(rotation));
+		sky_light_direction = Vector3<float32>::Normalize(VectorConstants::DOWN.Rotated(rotation));
 	}
 
 	//Set the sky light direction.
@@ -128,7 +141,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	//Update the sky light luminance.
 	{
 		//Calculate the sky luminance alpha.
-		float sky_luminance_alpha;
+		float32 sky_luminance_alpha;
 
 		if (_CurrentTimeOfDay < 6.0f)
 		{

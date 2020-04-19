@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/UpdateContext.h>
 
 //Physics.
 #include <Physics/CharacterMovement.h>

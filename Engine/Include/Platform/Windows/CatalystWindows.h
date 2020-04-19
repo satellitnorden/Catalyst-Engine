@@ -4,7 +4,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/UpdateContext.h>
 
 //Windows.
 #include <Windows.h>
@@ -71,16 +70,6 @@ public:
 	*	Initializes the platform.
 	*/
 	static void Initialize() NOEXCEPT;
-
-	/*
-	*	Pre-updates the platform.
-	*/
-	static void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Post-updates the platform.
-	*/
-	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns whether or not the window is in focus.

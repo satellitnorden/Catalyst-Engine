@@ -39,6 +39,30 @@ namespace CatalystWindowsData
 	int8 _ScrollWheelStep{ 0 };
 }
 
+//Catalyst Windows logic.
+namespace CatalystWindowsLogic
+{
+
+	/*
+	*	Updates during the post update phase.
+	*/
+	void PostUpdate() NOEXCEPT
+	{
+		//Determine if the window is in focus.
+		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatform::_Window;
+
+		//Process messages.
+		MSG message;
+
+		while (PeekMessage(&message, CatalystPlatform::_Window, 0, 0, PM_REMOVE) > 0)
+		{
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
+	}
+
+}
+
 /*
 *	Window procedure handling.
 */
@@ -148,30 +172,16 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Update the window.
 	UpdateWindow(_Window);
-}
 
-/*
-*	Pre-updates the platform.
-*/
-void CatalystPlatform::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Determine if the window is in focus.
-	CatalystWindowsData::_IsWindowInFocus = GetFocus() == _Window;
-}
-
-/*
-*	Post-updates the platform.
-*/
-void CatalystPlatform::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Process messages.
-	MSG message;
-
-	while (PeekMessage(&message, _Window, 0, 0, PM_REMOVE) > 0)
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)
 	{
-		TranslateMessage(&message);
-		DispatchMessage(&message);
-	}
+		CatalystWindowsLogic::PostUpdate();
+	},
+	nullptr,
+	UpdatePhase::POST,
+	UpdatePhase::PRE,
+	true);
 }
 
 /*

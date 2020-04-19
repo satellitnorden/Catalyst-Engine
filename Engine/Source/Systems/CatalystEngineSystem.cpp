@@ -131,12 +131,14 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();
+	MemorySystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize();
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
 	UserInterfaceSystem::Instance->Initialize();
+	WorldSystem::Instance->Initialize();
 
 	//Register the Catalyst Engine resource collection. 
 	ResourceSystem::Instance->LoadsResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
@@ -177,7 +179,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Pre update phase.
 	*/
-	MemorySystem::Instance->PreUpdate();
+	UpdateIndividualPhase(UpdatePhase::PRE);
 
 	/*
 	*	Entity update phase.
@@ -188,10 +190,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Input update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::INPUT);
-
-	CatalystPlatform::PreUpdate(&context);
-
-	WorldSystem::Instance->PreUpdate(&context);
 
 	/*
 	*	User interface update phase.
@@ -228,8 +226,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Post update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::POST);
-
-	CatalystPlatform::PostUpdate(&context);
 
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PostUpdate(&context);
@@ -274,7 +270,8 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function,
 											void *const RESTRICT update_arguments,
 											const UpdatePhase start,
-											const UpdatePhase end) NOEXCEPT
+											const UpdatePhase end,
+											const bool run_on_main_thread) NOEXCEPT
 {
 	//Allocate the update data.
 	UpdateData* const RESTRICT new_update_data{ new (MemorySystem::Instance->TypeAllocate<UpdateData>()) UpdateData() };
@@ -285,6 +282,7 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 	new_update_data->_UpdateArguments = update_arguments;
 	new_update_data->_Start = start;
 	new_update_data->_End = end;
+	new_update_data->_RunOnMainThread = run_on_main_thread;
 
 	//Set up the update data task.
 	new_update_data->_Task._Function = update_function;
@@ -344,9 +342,21 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 		update_data->_Task.Wait<WaitMode::PAUSE>();
 	}
 
-	//Execute the update data that starts in this update phase.
+	//Execute the tasks for the update data that starts in this update phase.
 	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
 	{
-		TaskSystem::Instance->ExecuteTask(&update_data->_Task);
+		if (!update_data->_RunOnMainThread)
+		{
+			TaskSystem::Instance->ExecuteTask(&update_data->_Task);
+		}
+	}
+
+	//Next, execute the tasks for the update data that starts in this update phase that needs to be run on the main thread.
+	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+	{
+		if (update_data->_RunOnMainThread)
+		{
+			update_data->_Task.Execute();
+		}
 	}
 }

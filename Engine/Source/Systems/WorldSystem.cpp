@@ -10,8 +10,27 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(WorldSystem);
+
+/*
+*	Initializes the world system.
+*/
+void WorldSystem::Initialize() NOEXCEPT
+{
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<WorldSystem *const RESTRICT>(arguments)->InputUpdate();
+	},
+	this,
+	UpdatePhase::INPUT,
+	UpdatePhase::RENDER,
+	false);
+}
 
 /*
 *	Post-initializes the world system.
@@ -20,18 +39,6 @@ void WorldSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize the sky system.
 	_SkySystem.PostInitialize();
-}
-
-/*
-*	Updates the world system during the pre update phase.
-*/
-void WorldSystem::PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
-{
-	//Update the time of day system.
-	_TimeOfDaySystem.PreUpdate(context);
-
-	//Update all particle systems.
-	UpdateParticleSystems(context);
 }
 
 /*
@@ -44,10 +51,22 @@ void WorldSystem::LogicUpdate(const UpdateContext* const RESTRICT context) NOEXC
 }
 
 /*
+*	Updates the world system during the input update phase.
+*/
+void WorldSystem::InputUpdate() NOEXCEPT
+{
+	//Update all particle systems.
+	UpdateParticleSystems();
+}
+
+/*
 *	Updates all particle systems.
 */
-void WorldSystem::UpdateParticleSystems(const UpdateContext* const RESTRICT context) NOEXCEPT
+void WorldSystem::UpdateParticleSystems() NOEXCEPT
 {
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
 	//Update all particle systems.
 	const uint64 number_of_particle_system_components{ ComponentManager::GetNumberOfParticleSystemComponents() };
 	ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
@@ -56,7 +75,7 @@ void WorldSystem::UpdateParticleSystems(const UpdateContext* const RESTRICT cont
 	for (uint64 i{ 0 }; i < number_of_particle_system_components; ++i, ++component, ++render_component)
 	{
 		//Update the time since the last particle spawned.
-		component->_TimeSinceLastSpawn += context->_DeltaTime;
+		component->_TimeSinceLastSpawn += delta_time;
 
 		//Update the first particle index to spawn.
 		component->_FirstParticleIndexToSpawn = component->_FirstParticleIndexToSpawn + component->_NumberOfParticlesToSpawn;

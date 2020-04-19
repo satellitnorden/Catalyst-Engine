@@ -35,6 +35,11 @@
 enum class UpdatePhase : uint8
 {
 	/*
+	*	During this update phase, certain systems are reset and prepared for the coming frame.
+	*/
+	PRE,
+
+	/*
 	*	During this update phase, entities are initialized/terminated/destroyed.
 	*/
 	ENTITY,
@@ -65,7 +70,7 @@ enum class UpdatePhase : uint8
 	RENDER,
 
 	/*
-	*	During this update phase, sound is calculated.
+	*	During this update phase, certain systems clean up data that is no longer needed..
 	*/
 	POST,
 

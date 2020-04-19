@@ -28,9 +28,9 @@ public:
 	}
 
 	/*
-	*	Updates the memory system before the frame begins.
+	*	Initializes the memory system.
 	*/
-	void PreUpdate() NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Allocates from a heap specific to the current frame.
@@ -62,6 +62,11 @@ private:
 
 	//The frame allocator lock.
 	Spinlock _FrameAllocatorLock;
+
+	/*
+	*	Updates the memory system before the frame begins.
+	*/
+	void PreUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the  pool allocator specific to the given type.

@@ -29,7 +29,8 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 	},
 	this,
 	UpdatePhase::USER_INTERFACE,
-	UpdatePhase::LOGIC);
+	UpdatePhase::LOGIC,
+	false);
 }
 
 /*

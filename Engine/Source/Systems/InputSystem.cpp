@@ -22,7 +22,8 @@ void InputSystem::Initialize(const CatalystProjectInputConfiguration &configurat
 	},
 	this,
 	UpdatePhase::INPUT,
-	UpdatePhase::USER_INTERFACE);
+	UpdatePhase::USER_INTERFACE,
+	false);
 }
 
 /*

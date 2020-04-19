@@ -25,14 +25,14 @@ public:
 	}
 
 	/*
+	*	Initializes the world system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
 	*	Post-initializes the world system.
 	*/
 	void PostInitialize() NOEXCEPT;
-
-	/*
-	*	Updates the world system during the pre update phase.
-	*/
-	void PreUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Updates the world system during the logic update phase.
@@ -94,9 +94,14 @@ private:
 	float _Wetness{ 0.0f };
 
 	/*
+	*	Updates the world system during the input update phase.
+	*/
+	void InputUpdate() NOEXCEPT;
+
+	/*
 	*	Updates all particle systems.
 	*/
-	void UpdateParticleSystems(const UpdateContext* const RESTRICT context) NOEXCEPT;
+	void UpdateParticleSystems() NOEXCEPT;
 
 	/*
 	*	Updates all distance triggers.

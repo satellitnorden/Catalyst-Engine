@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/HashString.h>
+#include <Core/General/UpdateContext.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>

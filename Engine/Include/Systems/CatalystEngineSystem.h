@@ -51,7 +51,8 @@ public:
 	uint64 RegisterUpdate(	const UpdateFunction update_function,
 							void *const RESTRICT update_arguments,
 							const UpdatePhase start,
-							const UpdatePhase end) NOEXCEPT;
+							const UpdatePhase end,
+							const bool run_on_main_thread) NOEXCEPT;
 
 	/*
 	*	Deregisters an update.
@@ -138,6 +139,9 @@ private:
 
 		//The end update phase.
 		UpdatePhase _End;
+
+		//Denotes whether or not to run this update on the main thread.
+		bool _RunOnMainThread{ false };
 
 		//The task.
 		Task _Task;
