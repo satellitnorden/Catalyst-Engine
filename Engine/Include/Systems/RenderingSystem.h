@@ -334,12 +334,6 @@ public:
 
 private:
 
-	//The number of noise textures.
-	static constexpr uint8 NUMBER_OF_NOISE_TEXTURES{ 64 };
-
-	//The noise texture size.
-	static constexpr uint8 NOISE_TEXTURE_SIZE{ 64 };
-
 	//The full resolution.
 	Resolution _FullResolution;
 
@@ -387,11 +381,8 @@ private:
 	RenderingReferenceSystem _RenderingReferenceSystem;
 #endif
 
-	//The noise textures.
-	StaticArray<uint32, NUMBER_OF_NOISE_TEXTURES> _NoiseTextureIndices;
-
-	//The active noise texture index.
-	uint8 _ActiveNoiseTextureIndex{ 0 };
+	//The current blue noise texture index.
+	uint8 _CurrentBlueNoiseTextureIndex{ 0 };
 
 	//The Hammersley hemisphere samples uniform buffer.
 	BufferHandle _HammersleyHemisphereSamplesUniformBuffer;
@@ -440,11 +431,6 @@ private:
 	*	Initializes the Hammersley hemisphere samples uniform buffer.
 	*/
 	void InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXCEPT;
-
-	/*
-	*	Initializes the noise textures.
-	*/
-	void InitializeNoiseTextures() NOEXCEPT;
 
 	/*
 	*	Post-initializes the global render data.

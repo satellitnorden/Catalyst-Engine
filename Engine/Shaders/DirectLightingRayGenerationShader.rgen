@@ -48,8 +48,7 @@ void main()
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Sample the noise texture.
-	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-	vec4 random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+	vec4 random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
 
 	//Calculate the direct lighting.
 	vec3 direct_lighting = vec3(0.0f);

@@ -385,6 +385,9 @@
     <Filter Include="Platform\Inline\Windows">
       <UniqueIdentifier>{342d374f-d35a-4105-a168-aa86e608cdd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{717dc264-a1e6-4a0d-ae7a-f33c5989de59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -2046,6 +2049,285 @@
     </None>
     <None Include="..\..\..\Include\Systems\MemorySystem.inl">
       <Filter>Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorColorSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorDepthSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorDepthSceneFeaturesGeometryShader.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorDepthSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationOpaqueSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationOpaqueSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VelocityFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ViewportVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VisibilityRayMissShader.rmiss">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VolumetricLightingApplicationFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VolumetricLightingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VolumetricLightingRayGenerationShader.rgen">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VolumetricLightingSpatialDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VolumetricLightingTemporalDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\AmbientOcclusionApplicationFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\AmbientOcclusionSpatialDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\AmbientOcclusionTemporalDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\AnimatedModelSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\AnimatedModelSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\BloomIsolationFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystGeometryMath.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystLightingData.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystModelData.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystOceanCore.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystPackingUtilities.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystRandomUtilities.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystRayTracingCore.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystRayTracingData.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystRenderingUtilities.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystShaderCommon.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystShaderPhysicallyBasedLighting.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystShaderPhysicallyBasedLightingInternals.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystSimplexNoise.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystTerrainUtilities.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystTransparency.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystUserInterfaceCore.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\CatalystVegetationUtilities.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DepthOfFieldApplicationFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DepthOfFieldBokehBlurFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DepthOfFieldFloodFillBlurFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DirectLightingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DirectLightingRayGenerationShader.rgen">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\DynamicModelRayClosestHitShader.rchit">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\FastApproximateAntiAliasingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\FireflyReductionFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\IndirectLightingApplicationFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\IndirectLightingRayGenerationShader.rgen">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\IndirectLightingSpatialDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\IndirectLightingTemporalDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\LuminanceLightingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ModelHighlightSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ModelHighlightSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ModelSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ModelSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\MotionBlurFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\OceanSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\OceanSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemComputeShader.comp">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\PassthroughFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\PathTracingDenoisingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\PathTracingRayGenerationShader.rgen">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\PathTracingRayMissShader.rmiss">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\PostProcessingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\RayTracedAmbientOcclusionRayGenerationShader.rgen">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\RenderingReferenceFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ResampleFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\SceneFeaturesDownsampleFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ScreenSpaceAmbientOcclusionFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ScreenSpaceIndirectLightingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\SeparableBlurFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\SkyComputeShader.comp">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\SkyDownsampleComputeShader.comp">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\SkyFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\StaticModelRayClosestHitShader.rchit">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\TemporalAntiAliasingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\TerrainRayClosestHitShader.rchit">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\TerrainSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\TerrainSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\ToneMappingFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\UserInterfaceFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\UserInterfaceVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationColorSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationColorSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationDepthSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationDepthSceneFeaturesVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorColorSceneFeaturesFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Shaders\VegetationImpostorColorSceneFeaturesGeometryShader.geom">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

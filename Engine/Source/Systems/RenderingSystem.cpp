@@ -139,9 +139,6 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();
 
-	//Initialize the noise textures.
-	InitializeNoiseTextures();
-
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
@@ -378,7 +375,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 9> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
@@ -392,17 +389,20 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			//Global materials.
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 
+			//Blue noise textures.
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+
 			//Cloud texture.
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 			
 			//Sky images.
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::COMPUTE),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::COMPUTE),
 
 			//Sky textures.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
 
 			//Hammersley hemisphere samples uniform buffer.
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -457,78 +457,6 @@ void RenderingSystem::InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXC
 }
 
 /*
-*	Initializes the noise textures.
-*/
-void RenderingSystem::InitializeNoiseTextures() NOEXCEPT
-{
-	//Add all the noise textures.
-	_NoiseTextureIndices[0] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_0_Texture2D"))->_Index;
-	_NoiseTextureIndices[1] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_1_Texture2D"))->_Index;
-	_NoiseTextureIndices[2] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_2_Texture2D"))->_Index;
-	_NoiseTextureIndices[3] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_3_Texture2D"))->_Index;
-	_NoiseTextureIndices[4] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_4_Texture2D"))->_Index;
-	_NoiseTextureIndices[5] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_5_Texture2D"))->_Index;
-	_NoiseTextureIndices[6] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_6_Texture2D"))->_Index;
-	_NoiseTextureIndices[7] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_7_Texture2D"))->_Index;
-	_NoiseTextureIndices[8] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_8_Texture2D"))->_Index;
-	_NoiseTextureIndices[9] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_9_Texture2D"))->_Index;
-	_NoiseTextureIndices[10] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_10_Texture2D"))->_Index;
-	_NoiseTextureIndices[11] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_11_Texture2D"))->_Index;
-	_NoiseTextureIndices[12] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_12_Texture2D"))->_Index;
-	_NoiseTextureIndices[13] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_13_Texture2D"))->_Index;
-	_NoiseTextureIndices[14] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_14_Texture2D"))->_Index;
-	_NoiseTextureIndices[15] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_15_Texture2D"))->_Index;
-	_NoiseTextureIndices[16] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_16_Texture2D"))->_Index;
-	_NoiseTextureIndices[17] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_17_Texture2D"))->_Index;
-	_NoiseTextureIndices[18] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_18_Texture2D"))->_Index;
-	_NoiseTextureIndices[19] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_19_Texture2D"))->_Index;
-	_NoiseTextureIndices[20] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_20_Texture2D"))->_Index;
-	_NoiseTextureIndices[21] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_21_Texture2D"))->_Index;
-	_NoiseTextureIndices[22] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_22_Texture2D"))->_Index;
-	_NoiseTextureIndices[23] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_23_Texture2D"))->_Index;
-	_NoiseTextureIndices[24] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_24_Texture2D"))->_Index;
-	_NoiseTextureIndices[25] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_25_Texture2D"))->_Index;
-	_NoiseTextureIndices[26] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_26_Texture2D"))->_Index;
-	_NoiseTextureIndices[27] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_27_Texture2D"))->_Index;
-	_NoiseTextureIndices[28] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_28_Texture2D"))->_Index;
-	_NoiseTextureIndices[29] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_29_Texture2D"))->_Index;
-	_NoiseTextureIndices[30] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_30_Texture2D"))->_Index;
-	_NoiseTextureIndices[31] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_31_Texture2D"))->_Index;
-	_NoiseTextureIndices[32] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_32_Texture2D"))->_Index;
-	_NoiseTextureIndices[33] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_33_Texture2D"))->_Index;
-	_NoiseTextureIndices[34] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_34_Texture2D"))->_Index;
-	_NoiseTextureIndices[35] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_35_Texture2D"))->_Index;
-	_NoiseTextureIndices[36] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_36_Texture2D"))->_Index;
-	_NoiseTextureIndices[37] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_37_Texture2D"))->_Index;
-	_NoiseTextureIndices[38] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_38_Texture2D"))->_Index;
-	_NoiseTextureIndices[39] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_39_Texture2D"))->_Index;
-	_NoiseTextureIndices[40] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_40_Texture2D"))->_Index;
-	_NoiseTextureIndices[41] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_41_Texture2D"))->_Index;
-	_NoiseTextureIndices[42] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_42_Texture2D"))->_Index;
-	_NoiseTextureIndices[43] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_43_Texture2D"))->_Index;
-	_NoiseTextureIndices[44] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_44_Texture2D"))->_Index;
-	_NoiseTextureIndices[45] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_45_Texture2D"))->_Index;
-	_NoiseTextureIndices[46] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_46_Texture2D"))->_Index;
-	_NoiseTextureIndices[47] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_47_Texture2D"))->_Index;
-	_NoiseTextureIndices[48] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_48_Texture2D"))->_Index;
-	_NoiseTextureIndices[49] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_49_Texture2D"))->_Index;
-	_NoiseTextureIndices[50] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_50_Texture2D"))->_Index;
-	_NoiseTextureIndices[51] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_51_Texture2D"))->_Index;
-	_NoiseTextureIndices[52] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_52_Texture2D"))->_Index;
-	_NoiseTextureIndices[53] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_53_Texture2D"))->_Index;
-	_NoiseTextureIndices[54] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_54_Texture2D"))->_Index;
-	_NoiseTextureIndices[55] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_55_Texture2D"))->_Index;
-	_NoiseTextureIndices[56] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_56_Texture2D"))->_Index;
-	_NoiseTextureIndices[57] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_57_Texture2D"))->_Index;
-	_NoiseTextureIndices[58] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_58_Texture2D"))->_Index;
-	_NoiseTextureIndices[59] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_59_Texture2D"))->_Index;
-	_NoiseTextureIndices[60] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_60_Texture2D"))->_Index;
-	_NoiseTextureIndices[61] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_61_Texture2D"))->_Index;
-	_NoiseTextureIndices[62] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_62_Texture2D"))->_Index;
-	_NoiseTextureIndices[63] = ResourceSystem::Instance->GetTexture2DResource(HashString("Blue_Noise_63_Texture2D"))->_Index;
-}
-
-/*
 *	Post-initializes the global render data.
 */
 void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
@@ -548,22 +476,40 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Bind the cloud texture.
-		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetResourceLoadingSystem()->GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetResourceLoadingSystem()->GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 
 		//Bind the sky images.
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
 		{
-			BindStorageImageToRenderDataTable(5, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j));
+			BindStorageImageToRenderDataTable(6, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j));
 		}
 
 		//Bind the sky textures.
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(6, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+			BindCombinedImageSamplerToRenderDataTable(7, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 		}
 
 		//Bind the Hammersley hemisphere samples uniform buffer.
-		BindUniformBufferToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
+		BindUniformBufferToRenderDataTable(8, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
+	}
+
+	//Bind all the blue noise textures to the global render data tables.
+	for (uint8 i{ 0 }; i < CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES; ++i)
+	{
+		//Create the identifier.
+		char buffer[32];
+		sprintf_s(buffer, "Blue_Noise_%u_Texture2D", i);
+		const HashString identifier{ buffer };
+
+		//Retrieve the texture 2D handle.
+		const Texture2DHandle texture_2D_handle{ ResourceSystem::Instance->GetTexture2DResource(identifier)->_Texture2DHandle };
+
+		//Bind the texture to the global render data tables.
+		for (uint8 j{ 0 }; j < GetNumberOfFramebuffers(); ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(4, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+		}
 	}
 }
 
@@ -644,18 +590,15 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	_DynamicUniformData._AmbientOcclusionMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAmbientOcclusionMode());
 	_DynamicUniformData._MotionBlurMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetMotionBlurMode());
-	_DynamicUniformData._UNUSED3 = 0;
 	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
-	_DynamicUniformData._UNUSED4 = 0;
 
-	_DynamicUniformData._UNUSED2 = 0.0f;
 	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
 
 	_DynamicUniformData._AspectRatio = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 
-	_DynamicUniformData._ActiveBlueNoiseTextureIndex = _NoiseTextureIndices[_ActiveNoiseTextureIndex];
-	_DynamicUniformData._ActiveBlueNoiseTextureOffsetX = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
-	_DynamicUniformData._ActiveBlueNoiseTextureOffsetY = static_cast<float>(CatalystRandomMath::RandomIntegerInRange<int32>(0, NUMBER_OF_NOISE_TEXTURES - 1)) / static_cast<float>(NOISE_TEXTURE_SIZE);
+	_DynamicUniformData._CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex;
+	_DynamicUniformData._CurrentBlueNoiseTextureOffsetX = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
+	_DynamicUniformData._CurrentBlueNoiseTextureOffsetY = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
 	_DynamicUniformData._CloudDensity = WorldSystem::Instance->GetSkySystem()->GetCloudDensity();
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
@@ -675,7 +618,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_CurrentJitterIndex = _CurrentJitterIndex == JITTER_SAMPLES.Size() - 1 ? 0 : _CurrentJitterIndex + 1;
 
 	//Update the active noise texture index.
-	_ActiveNoiseTextureIndex = _ActiveNoiseTextureIndex == NUMBER_OF_NOISE_TEXTURES - 1 ? 0 : _ActiveNoiseTextureIndex + 1;
+	_CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex == CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES - 1 ? 0 : _CurrentBlueNoiseTextureIndex + 1;
 }
 
 /*

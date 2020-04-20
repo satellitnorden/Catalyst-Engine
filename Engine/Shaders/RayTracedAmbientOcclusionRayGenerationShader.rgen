@@ -38,11 +38,8 @@ void main()
 	//Calculate the world position at this fragment.
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
 
-	//Calculate the noise texture coordinate.
-	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-
 	//Sample the noise texture.
-	vec4 noise_texture_sample = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
 
 	//Calculate the random rotation matrix.
 	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);

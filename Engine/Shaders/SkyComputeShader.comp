@@ -187,9 +187,7 @@ float SampleCloudDensity(vec3 point)
 vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 {
 	//Sample all of the noise samples.
-	vec2 noise_texture_index = vec2(coordinate.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY);
-
-	vec4 noise_sample_1 = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_index);
+	vec4 noise_sample_1 = SampleBlueNoiseTexture(uvec2(coordinate.xy), 0);
 
 	float noise_samples[4];
 

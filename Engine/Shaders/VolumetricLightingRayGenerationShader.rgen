@@ -53,7 +53,7 @@ void main()
 	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
 
 	//Sample the noise texture.
-	vec4 noise_texture = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+	vec4 noise_texture = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
 
 	float samples_offsets[4];
 

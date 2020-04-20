@@ -50,7 +50,7 @@ void main()
 	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
 
 	//Sample the noise vector.
-	vec4 noise_vector = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), gl_FragCoord.xy / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY));
+	vec4 noise_vector = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
 	//Calculate the volumetric lighting for all volumetric lights.
 	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)

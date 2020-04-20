@@ -456,14 +456,31 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 		batch_file.close();
 
-		//Execute the temporary batch file.
 		system("temporary_batch_file.bat");
 
 		//Delete the temporary batch file.
 		File::Delete("temporary_batch_file.bat");
 	}
 
-	ASSERT(File::Exists(compiled_file_path.Data()), "Compiled file doesn't exist!");
+	//If the file exists, recreate the temporary batch file with a pause statement in the end to display the error.
+	if (!File::Exists(compiled_file_path.Data()))
+	{
+		std::ofstream batch_file;
+
+		batch_file.open("temporary_batch_file.bat", std::ios::out);
+
+		batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
+		batch_file << " -V ";
+		batch_file << parameters._FilePath;
+		batch_file << " -o ";
+		batch_file << compiled_file_path.Data();
+		batch_file << std::endl;
+		batch_file << "pause";
+
+		batch_file.close();
+
+		system("temporary_batch_file.bat");
+	}
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };

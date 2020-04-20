@@ -53,9 +53,9 @@ public:
 
 	float32 _AspectRatio;
 
-	int32 _ActiveBlueNoiseTextureIndex;
-	float _ActiveBlueNoiseTextureOffsetX;
-	float _ActiveBlueNoiseTextureOffsetY;
+	uint32 _CurrentBlueNoiseTextureIndex;
+	float _CurrentBlueNoiseTextureOffsetX;
+	float _CurrentBlueNoiseTextureOffsetY;
 	float _ViewDistance;
 	float _CloudDensity;
 	float _Wetness;

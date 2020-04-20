@@ -114,9 +114,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     layout (offset = 628) float ASPECT_RATIO;
 
-    layout (offset = 632) int activeNoiseTextureIndex;
-    layout (offset = 636) float activeNoiseTextureOffsetX;
-    layout (offset = 640) float activeNoiseTextureOffsetY;
+    layout (offset = 632) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 636) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 640) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
     layout (offset = 644) float VIEW_DISTANCE;
     layout (offset = 648) float CLOUD_DENSITY;
@@ -144,17 +144,20 @@ layout (std140, set = 0, binding = 3) uniform GlobalMaterials
     layout (offset = 0) Material GLOBAL_MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
+//The blue noise textures.
+layout (set = 0, binding = 4) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+
 //The cloud texture.
-layout (set = 0, binding = 4) uniform sampler3D CLOUD_TEXTURE;
+layout (set = 0, binding = 5) uniform sampler3D CLOUD_TEXTURE;
 
 //The sky textures.
-layout (set = 0, binding = 5, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
+layout (set = 0, binding = 6, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
 
 //The sky textures.
-layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
+layout (set = 0, binding = 7) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
 
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 7) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };
@@ -286,6 +289,14 @@ float RandomFloat(vec2 coordinate, float seed)
 	uint hash = Hash3(uvec3(floatBitsToUint(coordinate.x), floatBitsToUint(coordinate.y), floatBitsToUint(coordinate.x + coordinate.y + seed)));
     
     return float(hash) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    return texture(BLUE_NOISE_TEXTURES[(CURRENT_BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION) + vec2(CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X, CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y));
 }
 
 /*

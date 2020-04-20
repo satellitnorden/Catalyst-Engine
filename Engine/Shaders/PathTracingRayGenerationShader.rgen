@@ -10,6 +10,9 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 
+//Constants.
+#define PATH_TRACING_SAMPLES (1)
+
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	scene_image;
 layout (set = 3, binding = 1, rgba8) 	uniform image2D 	scene_features_1_image;
@@ -39,69 +42,61 @@ void main()
 	//Generate the ray direction.
 	vec3 ray_direction = CalculateRayDirection(screen_coordinate);
 
-	//Calculate if this coordinate should generate random numbers.
-	//bool should_generate_random_numbers = CalculateStaleScreenCoordinate(uvec2(gl_LaunchIDNV.xy)) != uvec2(gl_LaunchIDNV.xy);
-	bool should_generate_random_numbers = true;
-
-	//Sample the noise texture.
-	vec2 noise_texture_coordinate = vec2(gl_LaunchIDNV.xy) / 64.0f + vec2(activeNoiseTextureOffsetX, activeNoiseTextureOffsetY) * float(should_generate_random_numbers);
-	path_tracing_ray_payload.random_noise = texture(sampler2D(GLOBAL_TEXTURES[activeNoiseTextureIndex * uint(should_generate_random_numbers)], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_REPEAT_INDEX]), noise_texture_coordinate);
-
-	//Sample the random hemisphere sample.
-	vec3 random_hemisphere_direction;
-	float random_length;
-
-	SampleHammersleyHemisphereSample(uint(path_tracing_ray_payload.random_noise.w * 64.0f) + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y), random_hemisphere_direction, random_length);
-
-	path_tracing_ray_payload.random_hemisphere_sample = vec4(random_hemisphere_direction, random_length);
-
-	//Keep track of the output data.
+	//Accumulate the output data.
 	vec3 radiance = vec3(0.0f, 0.0f, 0.0f);
 	vec3 albedo = vec3(0.0f, 0.0f, 0.0f);
 	vec3 shading_normal = vec3(0.0f, 1.0f, 0.0f);
-	float hit_distance = VIEW_DISTANCE;
+	float hit_distance = 0.0f;
 	vec4 material_properties = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//Fire the ray!
-	bool has_hit = false;
-	float closest_hit_distance = VIEW_DISTANCE;
-
-	//Reset the payload.
-	path_tracing_ray_payload.current_recursion_depth = 0;
-	path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
-
-	//Fire the ray!
-	traceNV(
-			TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
-			gl_RayFlagsOpaqueNV, 						//rayFlags
-			0xff, 										//cullMask
-			0, 											//sbtRecordOffset
-			0, 											//sbtRecordStride
-			0, 											//missIndex
-			PERCEIVER_WORLD_POSITION, 					//origin
-			CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-			ray_direction, 								//direction
-			closest_hit_distance, 						//Tmax
-			0 											//payload
-			);
-		
-	closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
-	
-	//Keep track of the output data.
-
-	if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
+	for (uint i = 0; i < PATH_TRACING_SAMPLES; ++i)
 	{
-		has_hit = true;
+		//Sample the noise texture.
+		path_tracing_ray_payload.random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
 
-		radiance = path_tracing_ray_payload.radiance;
-		albedo = path_tracing_ray_payload.albedo;
-		shading_normal = path_tracing_ray_payload.shading_normal;
-		hit_distance = path_tracing_ray_payload.hit_distance;
-		material_properties = path_tracing_ray_payload.material_properties;
+		//Sample the random hemisphere sample.
+		vec3 random_hemisphere_direction;
+		float random_length;
+
+		SampleHammersleyHemisphereSample(uint(path_tracing_ray_payload.random_noise.w * 64.0f) + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y) + i, random_hemisphere_direction, random_length);
+
+		path_tracing_ray_payload.random_hemisphere_sample = vec4(random_hemisphere_direction, random_length);
+
+		//Reset the payload.
+		path_tracing_ray_payload.current_recursion_depth = 0;
+		path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+		//Fire the ray!
+		traceNV(
+				TOP_LEVEL_ACCELERATION_STRUCTURE,	//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				PERCEIVER_WORLD_POSITION, 					//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				ray_direction, 								//direction
+				VIEW_DISTANCE, 								//Tmax
+				0 											//payload
+				);
+
+		radiance += path_tracing_ray_payload.radiance;
+		albedo += path_tracing_ray_payload.albedo;
+		shading_normal += path_tracing_ray_payload.shading_normal;
+		hit_distance += path_tracing_ray_payload.hit_distance;
+		material_properties += path_tracing_ray_payload.material_properties;
 	}
 
+	//Normalize the output data.
+	radiance /= float(PATH_TRACING_SAMPLES);
+	albedo /= float(PATH_TRACING_SAMPLES);
+	shading_normal /= float(PATH_TRACING_SAMPLES);
+	hit_distance /= float(PATH_TRACING_SAMPLES);
+	material_properties /= float(PATH_TRACING_SAMPLES);
+
 	//Calculate the velocity.
-	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * closest_hit_distance;
+	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * hit_distance;
 	vec2 velocity = CalculateScreenCoordinate(viewMatrix, hit_position) - CalculateScreenCoordinate(viewMatrixMinusOne, hit_position);
 
 	//Calculate the depth.
@@ -109,7 +104,7 @@ void main()
 	float depth = clip_space_position.z / clip_space_position.w;
 
 	//Write to the images.
-	if (has_hit)
+	if (hit_distance < VIEW_DISTANCE)
 	{
 		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
 		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(albedo, 0.0f));
