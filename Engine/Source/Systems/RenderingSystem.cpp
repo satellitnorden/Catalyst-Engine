@@ -197,7 +197,8 @@ NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 	return	IsRayTracingSupported() &&
 			(RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::PATH_TRACING
 			|| RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::RAY_TRACED
-			|| RenderingConfigurationManager::Instance->GetShadowsMode() == RenderingConfigurationManager::ShadowsMode::RAY_TRACED);
+			|| RenderingConfigurationManager::Instance->GetSurfaceShadowsMode() == RenderingConfigurationManager::SurfaceShadowsMode::RAY_TRACED
+			|| RenderingConfigurationManager::Instance->GetVolumetricShadowsMode() == RenderingConfigurationManager::VolumetricShadowsMode::RAY_TRACED);
 }
 
 /*
@@ -584,13 +585,12 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._UNUSED5 = 0.0f;
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 2.5f;
 
 	_DynamicUniformData._AmbientOcclusionMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAmbientOcclusionMode());
 	_DynamicUniformData._MotionBlurMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetMotionBlurMode());
-	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetShadowsMode());
+	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSurfaceShadowsMode());
 
 	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
 

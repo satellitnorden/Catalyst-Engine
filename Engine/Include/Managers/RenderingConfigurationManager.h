@@ -38,10 +38,18 @@ public:
 		Full
 	};
 
-	//Enumeration covering all shadows modes.
-	enum class ShadowsMode : uint8
+	//Enumeration covering all surface shadows modes.
+	enum class SurfaceShadowsMode : uint8
 	{
 		NONE,
+		RAY_TRACED
+	};
+
+	//Enumeration covering all volumetric shadows modes.
+	enum class VolumetricShadowsMode : uint8
+	{
+		NONE,
+		SCREEN_SPACE,
 		RAY_TRACED
 	};
 
@@ -89,11 +97,19 @@ public:
 	}
 
 	/*
-	*	Returns the shadows mode.
+	*	Returns the surface shadows mode.
 	*/
-	FORCE_INLINE NO_DISCARD ShadowsMode GetShadowsMode() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD SurfaceShadowsMode GetSurfaceShadowsMode() const NOEXCEPT
 	{
-		return _ShadowsMode;
+		return _SurfaceShadowsMode;
+	}
+
+	/*
+	*	Returns the volumetric shadows mode.
+	*/
+	FORCE_INLINE NO_DISCARD VolumetricShadowsMode GetVolumetricShadowsMode() const NOEXCEPT
+	{
+		return _VolumetricShadowsMode;
 	}
 
 	/*
@@ -126,8 +142,11 @@ private:
 	//The motion blur mode.
 	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
-	//The shadows mode.
-	ShadowsMode _ShadowsMode{ ShadowsMode::RAY_TRACED };
+	//The surface shadows mode.
+	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RAY_TRACED };
+
+	//The volumetric shadows mode.
+	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::RAY_TRACED };
 
 	//The bloom intensity.
 	float _BloomIntensity{ 0.1f };
