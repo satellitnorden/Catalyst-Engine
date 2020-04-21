@@ -13,7 +13,7 @@ DEFINE_SINGLETON(PostProcessingRenderPass);
 PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::PostProcessing);
+	SetStage(RenderPassStage::POST_PROCESSING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

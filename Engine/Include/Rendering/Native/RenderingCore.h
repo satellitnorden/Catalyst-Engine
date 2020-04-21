@@ -62,30 +62,30 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class RenderPassStage : uint8
 {
-	SceneFeatures,
-	Ocean,
-	PostSceneFeatures,
-	AmbientOcclusion,
-	LuminanceLighting,
-	DirectLighting,
-	IndirectLighting,
-	Sky,
-	VolumetricLighting,
-	PathTracing,
-	DepthOfField,
-	MotionBlur,
-	Bloom,
-	ToneMapping,
-	FastApproximateAntiAliasing,
-	TemporalAntiAliasing,
-	PostProcessing,
+	SCENE_FEATURES,
+	OCEAN,
+	POST_SCENE_FEATURES,
+	AMBIENT_OCCLUSION,
+	LUMINANCE_LIGHTING,
+	DIRECT_LIGHTING,
+	INDIRECT_LIGHTING,
+	SKY,
+	VOLUMETRIC_LIGHTING,
+	PATH_TRACING,
+	DEPTH_OF_FIELD,
+	MOTION_BLUR,
+	BLOOM,
+	TONE_MAPPING,
+	FAST_APPROXIMATE_ANTI_ALIASING,
+	TEMPORAL_ANTI_ALIASING,
+	POST_PROCESSING,
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
-	RenderingReference,
+	RENDERING_REFERENCE,
 #endif
-	UserInterface,
-	Screen,
+	USER_INTERFACE,
+	SCREEN,
 	
-	NumberOfRenderPassStages
+	NUMBER_OF_RENDER_PASS_STAGES
 };
 
 //Enumeration covering all blend factors.
@@ -330,96 +330,6 @@ enum class Sampler : uint8
 	NumberOfSamplers
 };
 
-//Define all shaders.
-#define ALL_SHADERS											\
-SHADER(AMBIENT_OCCLUSION_APPLICATION_FRAGMENT)				\
-SHADER(AMBIENT_OCCLUSION_SPATIAL_DENOISING_FRAGMENT)		\
-SHADER(AMBIENT_OCCLUSION_TEMPORAL_DENOISING_FRAGMENT)		\
-SHADER(AMINATED_MODEL_SCENE_FEATURES_FRAGMENT)				\
-SHADER(AnimatedModelSceneFeaturesVertex)					\
-SHADER(BloomIsolationFragment)								\
-SHADER(DepthOfFieldApplicationFragment)						\
-SHADER(DepthOfFieldBokehBlurFragment)						\
-SHADER(DepthOfFieldFloodFillBlurFragment)					\
-SHADER(DirectLightingFragment)								\
-SHADER(DirectLightingRayGeneration)							\
-SHADER(DynamicModelRayClosestHit)							\
-SHADER(FastApproximateFragment)								\
-SHADER(FireflyReductionFragment)							\
-SHADER(IndirectLightingApplicationFragment)					\
-SHADER(IndirectLightingRayGeneration)						\
-SHADER(IndirectLightingSpatialDenoisingFragment)			\
-SHADER(IndirectLightingTemporalDenoisingFragment)			\
-SHADER(LuminanceLightingFragment)							\
-SHADER(ModelHighlightSceneFeaturesFragment)					\
-SHADER(ModelHighlightSceneFeaturesVertex)					\
-SHADER(ModelSceneFeaturesFragment)							\
-SHADER(ModelSceneFeaturesVertex)							\
-SHADER(MotionBlurFragment)									\
-SHADER(OceanSceneFeaturesFragment)							\
-SHADER(OceanSceneFeaturesVertex)							\
-SHADER(ParticleSystemCompute)								\
-SHADER(ParticleSystemMaskedColorSceneFeaturesFragmentShader)\
-SHADER(ParticleSystemMaskedColorSceneFeaturesGeometryShader)\
-SHADER(ParticleSystemMaskedColorSceneFeaturesVertexShader)	\
-SHADER(ParticleSystemMaskedDepthSceneFeaturesFragmentShader)\
-SHADER(ParticleSystemMaskedDepthSceneFeaturesGeometryShader)\
-SHADER(ParticleSystemMaskedDepthSceneFeaturesVertexShader)	\
-SHADER(PassthroughFragment)									\
-SHADER(PathTracingDenoisingFragment)						\
-SHADER(PathTracingRayGeneration)							\
-SHADER(PathTracingRayMiss)									\
-SHADER(PostProcessingFragment)								\
-SHADER(RayTracedAmbientOcclusionRayGeneration)				\
-SHADER(RenderingReferenceFragment)							\
-SHADER(ResampleFragment)									\
-SHADER(SceneFeaturesDownsampleFragment)						\
-SHADER(ScreenSpaceAmbientOcclusionFragment)					\
-SHADER(SCREEN_SPACE_INDIRECT_LIGHTING_FRAGMENT)				\
-SHADER(SeparableBlurFragment)								\
-SHADER(SkyCompute)											\
-SHADER(SkyDownsampleCompute)								\
-SHADER(SkyFragment)											\
-SHADER(StaticModelRayClosestHit)							\
-SHADER(TemporalAntiAliasingFragment)						\
-SHADER(TerrainRayClosestHit)								\
-SHADER(TerrainSceneFeaturesFragment)						\
-SHADER(TerrainSceneFeaturesVertex)							\
-SHADER(ToneMappingFragment)									\
-SHADER(UserInterfaceFragment)								\
-SHADER(UserInterfaceVertex)									\
-SHADER(VegetationColorSceneFeaturesFragment)				\
-SHADER(VegetationColorSceneFeaturesVertex)					\
-SHADER(VegetationDepthSceneFeaturesFragment)				\
-SHADER(VegetationDepthSceneFeaturesVertex)					\
-SHADER(VegetationImpostorColorSceneFeaturesFragment)		\
-SHADER(VegetationImpostorColorSceneFeaturesGeometry)		\
-SHADER(VegetationImpostorColorSceneFeaturesVertex)			\
-SHADER(VegetationImpostorDepthSceneFeaturesFragment)		\
-SHADER(VegetationImpostorDepthSceneFeaturesGeometry)		\
-SHADER(VegetationImpostorDepthSceneFeaturesVertex)			\
-SHADER(VegetationOpaqueSceneFeaturesFragment)				\
-SHADER(VegetationOpaqueSceneFeaturesVertex)					\
-SHADER(VelocityFragment)									\
-SHADER(ViewportVertex)										\
-SHADER(VisibilityRayMiss)									\
-SHADER(VolumetricLightingApplicationFragment)				\
-SHADER(VolumetricLightingFragment)							\
-SHADER(VolumetricLightingRayGeneration)						\
-SHADER(VOLUMETRIC_LIGHTING_SPATIAL_DENOISING_FRAGMENT)		\
-SHADER(VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FRAGMENT)		\
-
-//Enumeration covering all shaders.
-enum class Shader : uint8
-{
-#define SHADER(VALUE) VALUE,
-	ALL_SHADERS
-#undef SHADER
-	NUMBER_OF_SHADERS,
-
-	NONE
-};
-
 //Enumeration covering all shader stages.
 enum class ShaderStage : uint16
 {
@@ -498,8 +408,8 @@ enum class MipmapMode : uint8
 //Enumeration covering all texture filters.
 enum class TextureFilter : uint8
 {
-	Linear,
-	Nearest
+	LINEAR,
+	NEAREST
 };
 
 //Enumeration covering all texture formats.

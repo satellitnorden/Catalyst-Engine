@@ -14,7 +14,7 @@ DEFINE_SINGLETON(RenderingReferenceRenderPass);
 RenderingReferenceRenderPass::RenderingReferenceRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::RenderingReference);
+	SetStage(RenderPassStage::RENDERING_REFERENCE);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

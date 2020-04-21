@@ -13,7 +13,7 @@ DEFINE_SINGLETON(MotionBlurRenderPass);
 MotionBlurRenderPass::MotionBlurRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::MotionBlur);
+	SetStage(RenderPassStage::MOTION_BLUR);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

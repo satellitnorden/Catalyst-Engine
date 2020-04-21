@@ -16,7 +16,7 @@ DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::AmbientOcclusion);
+	SetStage(RenderPassStage::AMBIENT_OCCLUSION);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

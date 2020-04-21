@@ -7,8 +7,6 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Constants.
 #define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
@@ -18,10 +16,17 @@
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) vec3 SKY_LIGHT_LUMINANCE;
+	layout (offset = 16) vec2 SKY_LIGHT_SCREEN_SPACE_POSITION;
+};
 
 //Texture samplers.
-layout (set = 3, binding = 0) uniform sampler2D sceneFeatures2Texture;
+layout (set = 3, binding = 0) uniform sampler2D scene_features_2_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -29,63 +34,56 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
 	//Load the scene features.
-	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, fragmentTextureCoordinate);
+	vec4 scene_features_2 = texture(scene_features_2_texture, fragment_texture_coordinate);
 
 	//Retrieve all properties.
-	vec3 world_position = CalculateWorldPosition(fragmentTextureCoordinate, sceneFeatures2.w);
-	float hitDistance = length(world_position - PERCEIVER_WORLD_POSITION);
+	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
+	float hit_distance = length(world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the ray direction.
-	vec3 rayDirection = CalculateRayDirection(fragmentTextureCoordinate);
+	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
 
-	//Calculate the volumetric lighting.
-	vec3 volumetric_lighting = vec3(0.0f);
+	//Calculate the ambient lighting.
+	vec3 ambient_lighting = vec3(0.0f);
 
-	//Add the ambient lighting.
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
 
-	//Sample the noise vector.
-	vec4 noise_vector = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+	//Calculate the sky light lighting.
+	vec3 sky_light_lighting = CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
-	//Calculate the volumetric lighting for all volumetric lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	//Different logic depending on if the sky light is on the screen or not.
+	if (ValidCoordinate(SKY_LIGHT_SCREEN_SPACE_POSITION))
 	{
-		//Unpack the light.
-		Light light = UnpackLight(i);
+		//Sample the noise.
+		vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
-		switch (light.light_type)
+		//Accumulate occlusion.
+		float occlusion = 0.0f;
+
+		for (uint i = 0; i < 4; ++i)
 		{
-			case LIGHT_TYPE_DIRECTIONAL:
-			{
-				for (int j = 0; j < 4; ++j)
-				{
-					//Calculate the volumetric particle hit distance.
-					float volumetric_particle_hit_distance = hitDistance * noise_vector[j];
+			//Calculate the sample point.
+			vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
 
-					//Calculate the volumetric particle hit position.
-					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + rayDirection * volumetric_particle_hit_distance;
-
-					//Add the volumetric lighting.
-					volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * 0.25f;
-				}
-
-				break;
-			}
-
-			case LIGHT_TYPE_POINT:
-			{
-				//TODO
-
-				break;
-			}
+			//Accumulate occlusion.
+			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.25f;
 		}
+
+		//Calculate the disocclusion.
+		float disocclusion = 1.0f - min(occlusion, 1.0f);
+
+		//Write the fragment.
+		fragment = vec4(mix(ambient_lighting, sky_light_lighting, disocclusion), disocclusion);
 	}
 
-	//Write the fragment.
-	fragment = vec4(volumetric_lighting, 1.0f);
+	else
+	{
+		//Write the fragment.
+		fragment = vec4(mix(ambient_lighting, sky_light_lighting, 0.5f), 0.5f);
+	}
 }

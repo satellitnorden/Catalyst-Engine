@@ -13,7 +13,7 @@ DEFINE_SINGLETON(TemporalAntiAliasingRenderPass);
 TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::TemporalAntiAliasing);
+	SetStage(RenderPassStage::TEMPORAL_ANTI_ALIASING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

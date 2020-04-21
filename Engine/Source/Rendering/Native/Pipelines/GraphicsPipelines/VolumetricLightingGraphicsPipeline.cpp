@@ -6,10 +6,30 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+
+/*
+*	Volumetric lighting application push constant data definition.
+*/
+class VolumetricLightingPushConstantData final
+{
+
+public:
+
+	//The sky light luminance.
+	Vector3<float32> _SkyLightLuminance;
+
+	//Padding.
+	Padding<4> _Padding;
+
+	//The sky light screen space position.
+	Vector2<float32> _SkyLightScreenSpacePosition;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -39,6 +59,10 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(VolumetricLightingPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -84,6 +108,28 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
+
+	//Push constants.
+	VolumetricLightingPushConstantData data;
+
+	data._SkyLightLuminance = VectorConstants::ZERO;
+	data._SkyLightScreenSpacePosition = Vector2<float32>(FLOAT_MAXIMUM, FLOAT_MAXIMUM);
+
+	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+	const LightComponent * RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+	{
+		if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
+		{
+			data._SkyLightLuminance = component->_Color * component->_Intensity;
+			data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetPosition() - component->_Direction);
+
+			break;
+		}
+	}
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(VolumetricLightingPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

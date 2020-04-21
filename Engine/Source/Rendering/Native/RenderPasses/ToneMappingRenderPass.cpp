@@ -13,7 +13,7 @@ DEFINE_SINGLETON(ToneMappingRenderPass);
 ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::ToneMapping);
+	SetStage(RenderPassStage::TONE_MAPPING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

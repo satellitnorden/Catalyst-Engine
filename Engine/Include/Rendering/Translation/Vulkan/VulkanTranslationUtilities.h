@@ -329,8 +329,8 @@ public:
 	{
 		switch (textureFilter)
 		{
-			case TextureFilter::Linear: return VkFilter::VK_FILTER_LINEAR;
-			case TextureFilter::Nearest: return VkFilter::VK_FILTER_NEAREST;
+			case TextureFilter::LINEAR: return VkFilter::VK_FILTER_LINEAR;
+			case TextureFilter::NEAREST: return VkFilter::VK_FILTER_NEAREST;
 
 			default:
 			{

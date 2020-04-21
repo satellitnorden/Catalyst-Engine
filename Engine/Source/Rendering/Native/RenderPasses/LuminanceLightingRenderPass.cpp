@@ -16,7 +16,7 @@ DEFINE_SINGLETON(LuminanceLightingRenderPass);
 LuminanceLightingRenderPass::LuminanceLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::LuminanceLighting);
+	SetStage(RenderPassStage::LUMINANCE_LIGHTING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

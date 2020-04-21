@@ -75,5 +75,5 @@ void main()
 	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness, PERCEIVER_WORLD_POSITION.y);
 
 	//Write the fragment.
-	fragment = vec4(current_volumetric_lighting, volumetric_lighting_opacity);
+	fragment = vec4(current_volumetric_lighting.rgb, volumetric_lighting_opacity);
 }

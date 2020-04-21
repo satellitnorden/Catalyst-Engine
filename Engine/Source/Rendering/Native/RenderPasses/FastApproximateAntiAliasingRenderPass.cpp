@@ -13,7 +13,7 @@ DEFINE_SINGLETON(FastApproximateAntiAliasingRenderPass);
 FastApproximateAntiAliasingRenderPass::FastApproximateAntiAliasingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::FastApproximateAntiAliasing);
+	SetStage(RenderPassStage::FAST_APPROXIMATE_ANTI_ALIASING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

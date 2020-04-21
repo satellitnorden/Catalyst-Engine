@@ -16,7 +16,7 @@ DEFINE_SINGLETON(VolumetricLightingRenderPass);
 VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::VolumetricLighting);
+	SetStage(RenderPassStage::VOLUMETRIC_LIGHTING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

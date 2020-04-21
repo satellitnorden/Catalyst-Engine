@@ -16,7 +16,7 @@ DEFINE_SINGLETON(PathTracingRenderPass);
 PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::PathTracing);
+	SetStage(RenderPassStage::PATH_TRACING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

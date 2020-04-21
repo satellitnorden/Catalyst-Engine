@@ -16,7 +16,7 @@ DEFINE_SINGLETON(BloomRenderPass);
 BloomRenderPass::BloomRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Bloom);
+	SetStage(RenderPassStage::BLOOM);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
