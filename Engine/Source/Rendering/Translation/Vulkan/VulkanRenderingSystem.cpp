@@ -55,10 +55,10 @@ namespace VulkanRenderingSystemData
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
-			AccelerationStructure,
-			Buffer,
-			RenderDataTable,
-			Texture2D
+			ACCELERATION_STRUCTURE,
+			BUFFER,
+			RENDER_DATA_TABLE,
+			TEXTURE_2D
 		};
 
 		//The number of frames since destruction was requested.
@@ -73,10 +73,10 @@ namespace VulkanRenderingSystemData
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
+		VulkanDestructionData(const Type initial_type, OpaqueHandle initial_handle) NOEXCEPT
 			:
-			_Type(type),
-			_Handle(handle)
+			_Type(initial_type),
+			_Handle(initial_handle)
 		{
 
 		}
@@ -662,41 +662,40 @@ namespace VulkanRenderingSystemLogic
 			{
 				switch (VulkanRenderingSystemData::_DestructionQueue[i]._Type)
 				{
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure:
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE:
 					{
 						VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer:
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::BUFFER:
 					{
 						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable:
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
 					{
 						VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D:
+					case VulkanRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D:
 					{
 						VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
-#if defined(CATALYST_CONFIGURATION_DEBUG)
+
 					default:
 					{
 						ASSERT(false, "Unhandled case!");
 
 						break;
 					}
-#endif
 				}
 
 				VulkanRenderingSystemData::_DestructionQueue.EraseAt(i);
@@ -826,7 +825,7 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 void RenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::AccelerationStructure, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
 }
 
 /*
@@ -853,7 +852,7 @@ void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTR
 void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::Buffer, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
 }
 
 /*
@@ -1237,7 +1236,7 @@ void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, c
 void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::RenderDataTable, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
 }
 
 /*
@@ -1297,7 +1296,7 @@ void RenderingSystem::CreateTexture3D(const TextureData& data, Texture3DHandle* 
 void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::Texture2D, *handle);
+	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
 }
 
 /*
