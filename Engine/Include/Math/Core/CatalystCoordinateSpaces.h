@@ -29,7 +29,7 @@ namespace CatalystWorldCoordinateSpace
 	constexpr Vector3<float32> UP{ 0.0f, 1.0f, 0.0f };
 
 	//The forward vector.
-	constexpr Vector3<float32> FORWARD{ 0.0f, 0.0f, 1.0f };
+	constexpr Vector3<float32> FORWARD{ 0.0f, 0.0f, -1.0f };
 
 }
 

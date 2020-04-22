@@ -157,24 +157,6 @@
     <Filter Include="Physics\Include">
       <UniqueIdentifier>{a4e0f938-dc3a-443c-84a5-80dbe4da459d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sound\Source">
-      <UniqueIdentifier>{a04f12c5-50e3-4721-806d-ba8d17d1de65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sound\Include\Native">
-      <UniqueIdentifier>{eb95d34b-7731-468e-a36f-8a182ffae620}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sound\Include\Abstraction">
-      <UniqueIdentifier>{a41bafc3-011d-44f6-b278-e1a7c8841b79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sound\Source\Abstraction">
-      <UniqueIdentifier>{dc805d49-7877-462e-9ebc-7412d8fbfd5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sound\Source\Abstraction\FMOD">
-      <UniqueIdentifier>{4b74896c-b0eb-4c2a-acf9-ac8155d13947}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sound\Include\Abstraction\FMOD">
-      <UniqueIdentifier>{5f4eea93-b7b5-45cd-9a03-6240a84ed543}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Include\Essential">
       <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
     </Filter>
@@ -500,15 +482,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h">
       <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODCore.h">
-      <Filter>Sound\Include\Abstraction\FMOD</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Abstraction\FMOD\FMODAbstractionUtilities.h">
-      <Filter>Sound\Include\Abstraction\FMOD</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h">
       <Filter>Entities\Include\Types</Filter>
@@ -1122,9 +1095,6 @@
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
     </ClInclude>
@@ -1392,9 +1362,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystEngineInformation.h">
       <Filter>Core\Include\Essential</Filter>
     </ClInclude>
@@ -1524,9 +1491,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h">
-      <Filter>Sound\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
@@ -1541,6 +1505,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Concurrency\AssertLock.h">
       <Filter>Concurrency\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
+      <Filter>Sound\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1585,9 +1561,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
       <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Sound\Abstraction\FMOD\FMODSoundSystem.cpp">
-      <Filter>Sound\Source\Abstraction\FMOD</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp">
       <Filter>Entities\Source\Types</Filter>

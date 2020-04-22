@@ -3,17 +3,16 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/CatalystProjectConfiguration.h>
-#include <Core/General/UpdateContext.h>
 
-//Math.
-#include <Math/General/Vector.h>
+//Concurrency.
+#include <Concurrency/AtomicQueue.h>
 
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/SoundResource.h>
 
 //Sound.
-#include <Sound/Native/SoundCore.h>
+#include <Sound/SoundCore.h>
 
 class SoundSystem final
 {
@@ -55,5 +54,21 @@ public:
 	*	Plays a sound.
 	*/
 	void PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT;
+
+private:
+
+	/*
+	*	The asynchronous update function.
+	*/
+	void AsynchronousUpdate() NOEXCEPT;
+
+	/*
+	*	The sound callback.
+	*/
+	void SoundCallback(	const float32 sample_rate,
+						const uint8 bits_per_sample,
+						const uint8 number_of_channels,
+						const uint32 number_of_samples,
+						void *const RESTRICT buffer_data) NOEXCEPT;
 
 };

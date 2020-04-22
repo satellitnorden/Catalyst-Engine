@@ -21,7 +21,7 @@
 #include <Resources/Loading/Texture2DData.h>
 
 //Sound.
-#include <Sound/Native/SoundCore.h>
+#include <Sound/SoundCore.h>
 
 class ResourceLoadingSystem final
 {

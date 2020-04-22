@@ -65,7 +65,7 @@ private:
 	DynamicArray<Thread> _TaskExecutorThreads;
 
 	//Container for all atomic queues in which to put tasks in.
-	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> _TaskQueue;
+	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _TaskQueue;
 
 	//Denotes how many tasks are currently queued.
 	Atomic<uint64> _TasksInQueue{ 0 };

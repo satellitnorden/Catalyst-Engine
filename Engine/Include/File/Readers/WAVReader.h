@@ -12,7 +12,7 @@
 #include <File/Core/BinaryFile.h>
 
 //Sound.
-#include <Sound/Native/Sound.h>
+#include <Sound/Sound.h>
 
 class WAVReader final
 {
