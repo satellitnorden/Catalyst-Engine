@@ -80,7 +80,25 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 			case ResourceType::FONT:
 			{
-				_ResourceLoadingSystem.LoadFont(file);
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				FontResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource() };
+
+				//Load the resource.
+				FontData data;
+				_ResourceLoadingSystem.LoadFont(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateFont(&data, new_resource);
+
+				//Add the new resource.
+				_FontResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}

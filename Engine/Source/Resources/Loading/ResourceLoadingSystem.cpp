@@ -84,38 +84,28 @@ void ResourceLoadingSystem::LoadAnimation(BinaryFile<IOMode::In> *const RESTRICT
 }
 
 /*
-*	Given a file, load a font.
+*	Given a file, load font data.
 */
-void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT
 {
-	//Load the font data.
-	FontData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
 	//Read all characters.
 	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
 	{
 		//Read the character description.
-		file.Read(&data._CharacterDescriptions[i], sizeof(Font::CharacterDescription));
+		file->Read(&data->_CharacterDescriptions[i], sizeof(FontResource::CharacterDescription));
 
 		//Read the texture dimensions.
-		file.Read(&data._CharacterDimensions[i], sizeof(Vector2<float>));
+		file->Read(&data->_CharacterDimensions[i], sizeof(Vector2<float>));
 
 		//Read the texture data.
-		data._TextureData[i].Upsize<true>(1);
+		data->_TextureData[i].Upsize<true>(1);
 
 		for (uint8 j{ 0 }; j < 1; ++j)
 		{
-			data._TextureData[i][j].Initialize(data._CharacterDimensions[i]._X >> j, data._CharacterDimensions[i]._Y >> j);
-			file.Read(data._TextureData[i][j].Data(), (data._CharacterDimensions[i]._X >> j) * (data._CharacterDimensions[i]._Y >> j));
+			data->_TextureData[i][j].Initialize(data->_CharacterDimensions[i]._X >> j, data->_CharacterDimensions[i]._Y >> j);
+			file->Read(data->_TextureData[i][j].Data(), (data->_CharacterDimensions[i]._X >> j) * (data->_CharacterDimensions[i]._Y >> j));
 		}
 	}
-
-	//Create the font.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateFont(&data, &_Fonts[resourceID]);
 }
 
 /*

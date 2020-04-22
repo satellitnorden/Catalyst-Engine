@@ -4,10 +4,12 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
+#include <Concurrency/Spinlock.h>
 #include <Concurrency/ScopedLock.h>
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/CatalystCoordinateSpaces.h>
 #include <Math/General/Vector.h>
 
 //Systems.
@@ -102,23 +104,13 @@ public:
 	}
 
 	/*
-	*	Returns the forward vector of the perceiver.
-	*/
-	Vector3<float> GetForwardVector() const NOEXCEPT
-	{
-		SCOPED_LOCK(_Lock);
-
-		return Vector3<float>::ForwardVector(_Rotation);
-	}
-
-	/*
 	*	Returns the right vector of the perceiver.
 	*/
 	Vector3<float> GetRightVector() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		return Vector3<float>::RightVector(_Rotation);
+		return CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_Rotation);
 	}
 
 	/*
@@ -128,7 +120,17 @@ public:
 	{
 		SCOPED_LOCK(_Lock);
 
-		return Vector3<float>::UpVector(_Rotation);
+		return CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_Rotation);
+	}
+
+	/*
+	*	Returns the forward vector of the perceiver.
+	*/
+	Vector3<float> GetForwardVector() const NOEXCEPT
+	{
+		SCOPED_LOCK(_Lock);
+
+		return CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation);
 	}
 
 	/*

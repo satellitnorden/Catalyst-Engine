@@ -888,9 +888,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h">
-      <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
@@ -1535,6 +1532,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h">
       <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystCoordinateSpaces.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Concurrency\AssertLock.h">
+      <Filter>Concurrency\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

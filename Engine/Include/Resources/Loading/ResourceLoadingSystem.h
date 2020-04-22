@@ -9,13 +9,13 @@
 #include <File/Core/BinaryFile.h>
 
 //Rendering.
-#include <Rendering/Native/Font.h>
 #include <Rendering/Native/Model.h>
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
+#include <Resources/Loading/FontData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -27,22 +27,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Returns all font resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, Font> &GetAllFontResources() NOEXCEPT
-	{
-		return _Fonts;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding font resource.
-	*/
-	FORCE_INLINE NO_DISCARD const Font &GetFontResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _Fonts[resource_ID];
-	}
 
 	/*
 	*	Returns all model resources.
@@ -103,9 +87,9 @@ public:
 	void LoadAnimation(BinaryFile<IOMode::In> *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load a model.
+	*	Given a file, load font data.
 	*/
-	void LoadFont(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	void LoadFont(BinaryFile<IOMode::In> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load a model.
@@ -138,9 +122,6 @@ public:
 	void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
 
 private:
-
-	//Container for all fonts.
-	Map<HashString, Font> _Fonts;
 
 	//Container for all models.
 	Map<HashString, Model> _Models;

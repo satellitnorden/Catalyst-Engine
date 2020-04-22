@@ -6,8 +6,10 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Font.h>
 #include <Rendering/Native/Texture2D.h>
+
+//Resources.
+#include <Resources/Core/FontResource.h>
 
 class FontData final
 {
@@ -15,7 +17,7 @@ class FontData final
 public:
 
 	//The character descriptions.
-	StaticArray<Font::CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
+	StaticArray<FontResource::CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
 
 	//The character dimensions.
 	StaticArray<Vector2<uint32>, INT8_MAXIMUM> _CharacterDimensions;

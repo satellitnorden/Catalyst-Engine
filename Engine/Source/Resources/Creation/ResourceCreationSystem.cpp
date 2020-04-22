@@ -53,10 +53,10 @@ void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data,
 /*
 *	Creates a font.
 */
-void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT
+void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResource *const RESTRICT resource) NOEXCEPT
 {
 	//Just copy the character descriptions.
-	font->_CharacterDescriptions = data->_CharacterDescriptions;
+	resource->_CharacterDescriptions = data->_CharacterDescriptions;
 
 	//Create all textures for each character description.
 	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
@@ -73,7 +73,7 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, Font *con
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_TextureData[i]), TextureFormat::R_UINT8), &texture);
 
 		//Add the texture to the global render data.
-		font->_CharacterDescriptions[i]._TextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
+		resource->_CharacterDescriptions[i]._TextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
 	}
 }
 

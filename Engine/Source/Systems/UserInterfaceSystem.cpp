@@ -85,7 +85,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Type = UserInterfaceElementType::TEXT;
 			element->_Minimum = type_description->_Minimum;
 			element->_Maximum = type_description->_Maximum;
-			element->_Font = type_description->_Font;
+			element->_FontResource = type_description->_FontResource;
 			element->_Scale = type_description->_Scale;
 			element->_HorizontalAlignment = type_description->_HorizontalAlignment;
 			element->_VerticalAlignment = type_description->_VerticalAlignment;

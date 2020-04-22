@@ -19,14 +19,14 @@
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
 
-//Resources
-#include <Resources/Building/AssimpBuilder.h>
-#include <Resources/Core/ResourcesCore.h>
-
 //Rendering.
-#include <Rendering/Native/Font.h>
 #include <Rendering/Native/Texture2D.h>
 #include <Rendering/Native/Vertex.h>
+
+//Resources
+#include <Resources/Building/AssimpBuilder.h>
+#include <Resources/Core/FontResource.h>
+#include <Resources/Core/ResourcesCore.h>
 
 //Third party.
 #include <ThirdParty/ft2build.h>
@@ -284,7 +284,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 		}
 
 		//Write the character description to the file.
-		Font::CharacterDescription character_description;
+		FontResource::CharacterDescription character_description;
 
 		character_description._TextureIndex = UINT32_MAXIMUM;
 		character_description._Size._X = static_cast<float>(free_type_face->glyph->bitmap.width) / static_cast<float>(parameters._MaximumFontResolution);
@@ -293,7 +293,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 		character_description._Bearing._Y = static_cast<float>(free_type_face->glyph->bitmap_top) / static_cast<float>(parameters._MaximumFontResolution);
 		character_description._Advance = static_cast<float>(free_type_face->glyph->advance.x >> 6) / static_cast<float>(parameters._MaximumFontResolution);
 
-		file.Write(&character_description, sizeof(Font::CharacterDescription));
+		file.Write(&character_description, sizeof(FontResource::CharacterDescription));
 
 		//Write the character dimensions.
 		const Vector2<uint32> character_dimensions{ free_type_face->glyph->bitmap.width, free_type_face->glyph->bitmap.rows };

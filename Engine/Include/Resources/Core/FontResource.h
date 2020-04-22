@@ -7,7 +7,10 @@
 //Math.
 #include <Math/General/Vector.h>
 
-class Font final
+//Resources.
+#include <Resources/Core/Resource.h>
+
+class FontResource final : public Resource
 {
 
 public:
@@ -24,18 +27,15 @@ public:
 		uint32 _TextureIndex;
 
 		//The size.
-		Vector2<float> _Size;
+		Vector2<float32> _Size;
 
 		//The bearing.
-		Vector2<float> _Bearing;
+		Vector2<float32> _Bearing;
 
 		//The advance.
-		float _Advance;
+		float32 _Advance;
 
 	};
-
-	//The texture index.
-	uint32 _TextureIndex;
 
 	//Container for all character descriptions.
 	StaticArray<CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;

@@ -4,8 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
-//Rendering.
-#include <Rendering/Native/Font.h>
+//Resources.
+#include <Resources/Core/FontResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 //User interface.
 #include <UserInterface/UserInterfaceElementDescription.h>
@@ -15,8 +16,8 @@ class TextUserInterfaceElementDescription final : public UserInterfaceElementDes
 
 public:
 
-	//The font.
-	const Font *RESTRICT _Font;
+	//The font resource.
+	ResourcePointer<FontResource> _FontResource;
 
 	//The scale.
 	float32 _Scale;

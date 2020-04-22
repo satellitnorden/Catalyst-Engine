@@ -562,30 +562,6 @@ public:
 	}
 
 	/*
-	*	Given a rotation vector, returns the forward vector.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> ForwardVector(const Vector3<float> &rotation) NOEXCEPT
-	{
-		return Vector3<float>::Normalize(Vector3<float>(0.0f, 0.0f, -1.0f).Rotated(rotation));
-	}
-
-	/*
-	*	Given a rotation vector, returns the right vector.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> RightVector(const Vector3<float> &rotation) NOEXCEPT
-	{
-		return Vector3<float>::Normalize(Vector3<float>(1.0f, 0.0f, 0.0f).Rotated(rotation));
-	}
-
-	/*
-	*	Given a rotation vector, returns the up vector.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float> UpVector(const Vector3<float> &rotation) NOEXCEPT
-	{
-		return Vector3<float>::Normalize(Vector3<float>(0.0f, 1.0f, 0.0f).Rotated(rotation));
-	}
-
-	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr Vector3() NOEXCEPT

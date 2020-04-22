@@ -62,6 +62,7 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
+    <ClInclude Include="..\..\..\Include\Concurrency\AssertLock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\Atomic.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AtomicFlag.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AtomicQueue.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystCoordinateSpaces.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
@@ -220,7 +222,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Font.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
@@ -356,6 +357,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />

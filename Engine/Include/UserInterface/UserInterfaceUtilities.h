@@ -7,8 +7,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
-//Rendering.
-#include <Rendering/Native/Font.h>
+//Resources.
+#include <Resources/Core/FontResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 namespace UserInterfaceUtilities
 {
@@ -18,7 +19,7 @@ namespace UserInterfaceUtilities
 	*/
 	FORCE_INLINE static void CalculateAlignedBoundingBox(	const Vector2<float32>& original_minimum,
 															const Vector2<float32>& original_maximum,
-															const Font *const RESTRICT font,
+															ResourcePointer<FontResource> font_resource,
 															const DynamicString &text,
 															const float32 scale,
 															const TextHorizontalAlignment horizontal_alignment,
@@ -45,18 +46,18 @@ namespace UserInterfaceUtilities
 			Vector2<float32> character_minimum;
 			Vector2<float32> character_maximum;
 
-			character_minimum._X = original_minimum._X + current_offset_X + font->_CharacterDescriptions[character]._Bearing._X * scale;
-			character_minimum._Y = original_minimum._Y - (font->_CharacterDescriptions[character]._Size._Y + font->_CharacterDescriptions[character]._Bearing._Y) * scale;
+			character_minimum._X = original_minimum._X + current_offset_X + font_resource->_CharacterDescriptions[character]._Bearing._X * scale;
+			character_minimum._Y = original_minimum._Y - (font_resource->_CharacterDescriptions[character]._Size._Y + font_resource->_CharacterDescriptions[character]._Bearing._Y) * scale;
 
-			character_maximum._X = character_minimum._X + font->_CharacterDescriptions[character]._Size._X * scale;
-			character_maximum._Y = character_minimum._Y + font->_CharacterDescriptions[character]._Size._Y * scale;
+			character_maximum._X = character_minimum._X + font_resource->_CharacterDescriptions[character]._Size._X * scale;
+			character_maximum._Y = character_minimum._Y + font_resource->_CharacterDescriptions[character]._Size._Y * scale;
 			
 			//Expand the text minimum/maximum.
 			text_minimum = Vector2<float32>::Minimum(text_minimum, character_minimum);
 			text_maximum = Vector2<float32>::Maximum(text_maximum, character_maximum);
 
 			//Advance the current offset.
-			current_offset_X += font->_CharacterDescriptions[character]._Advance * scale;
+			current_offset_X += font_resource->_CharacterDescriptions[character]._Advance * scale;
 		}
 
 		//Calculate the text horizontal/vertical extent.

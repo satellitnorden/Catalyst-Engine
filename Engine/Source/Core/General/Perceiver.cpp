@@ -57,7 +57,7 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 {
 	//Update the perceiver matrix.
-	_PerceiverMatrix = Matrix4x4::LookAt(_Position, _Position + Vector3<float>::ForwardVector(_Rotation), Vector3<float>::UpVector(_Rotation));
+	_PerceiverMatrix = Matrix4x4::LookAt(_Position, _Position + GetForwardVector(), GetUpVector());
 
 	//Update the inverse perceiver matrix.
 	_InversePerceiverMatrix = _PerceiverMatrix;

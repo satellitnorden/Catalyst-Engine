@@ -226,7 +226,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 				UserInterfaceUtilities::CalculateAlignedBoundingBox(type_element->_Minimum,
 																	type_element->_Maximum,
-																	type_element->_Font,
+																	type_element->_FontResource,
 																	type_element->_Text,
 																	type_element->_Scale,
 																	type_element->_HorizontalAlignment,
@@ -249,11 +249,11 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						//Push constants.
 						UserInterfaceVertexPushConstantData vertex_data;
 
-						vertex_data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_Font->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
-						vertex_data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_Font->_CharacterDescriptions[character]._Size._Y - type_element->_Font->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
+						vertex_data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
+						vertex_data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_FontResource->_CharacterDescriptions[character]._Size._Y - type_element->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
 
-						vertex_data._Maximum._X = vertex_data._Minimum._X + type_element->_Font->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
-						vertex_data._Maximum._Y = vertex_data._Minimum._Y + type_element->_Font->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
+						vertex_data._Maximum._X = vertex_data._Minimum._X + type_element->_FontResource->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
+						vertex_data._Maximum._Y = vertex_data._Minimum._Y + type_element->_FontResource->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
 
 						command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
 
@@ -261,7 +261,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 						fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
 						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
-						fragment_data._Material.SetPrimaryTextureIndex(type_element->_Font->_CharacterDescriptions[character]._TextureIndex);
+						fragment_data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_CharacterDescriptions[character]._TextureIndex);
 
 						command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 
@@ -285,7 +285,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 						for (uint64 j{ i + 1 }; j < length && type_element->_Text[j] != ' '; ++j)
 						{
-							temporary_offset_X += type_element->_Font->_CharacterDescriptions[type_element->_Text[j]]._Advance * type_element->_Scale;
+							temporary_offset_X += type_element->_FontResource->_CharacterDescriptions[type_element->_Text[j]]._Advance * type_element->_Scale;
 
 							if (temporary_offset_X >= aligned_maximum._X - aligned_minimum._X)
 							{
@@ -305,7 +305,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 					else
 					{
-						current_offset_X += type_element->_Font->_CharacterDescriptions[character]._Advance * type_element->_Scale;
+						current_offset_X += type_element->_FontResource->_CharacterDescriptions[character]._Advance * type_element->_Scale;
 					}
 				}
 

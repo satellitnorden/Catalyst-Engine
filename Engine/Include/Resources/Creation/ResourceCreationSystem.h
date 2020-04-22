@@ -4,13 +4,13 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Font.h>
 #include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
+#include <Resources/Core/FontResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Creates a font.
 	*/
-	void CreateFont(FontData *const RESTRICT data, Font *const RESTRICT font) NOEXCEPT;
+	void CreateFont(FontData *const RESTRICT data, FontResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a model.
