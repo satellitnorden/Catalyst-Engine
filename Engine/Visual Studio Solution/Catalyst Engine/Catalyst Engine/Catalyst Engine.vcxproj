@@ -221,6 +221,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\AccelerationStructure.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\DebugRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\BloomApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\BloomIsolationGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehBlurGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldFloodFillBlurGraphicsPipeline.h" />
@@ -301,6 +303,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\BloomRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DebugRenderingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DirectLightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.h" />
@@ -455,7 +458,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAccelerationStructure.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanBuffer.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBufferSource.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCore.cpp" />
@@ -483,6 +486,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanShaderModule.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\DebugRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\LightingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\MaterialSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
@@ -497,6 +501,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomIsolationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehBlurGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldFloodFillBlurGraphicsPipeline.cpp" />
@@ -549,6 +554,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderingReference\RenderingReferenceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\BloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DebugRenderingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DepthOfFieldRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DirectLightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\FastApproximateAntiAliasingRenderPass.cpp" />
@@ -568,7 +574,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\UserInterfaceRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\CatalystEngineResourceBuilding.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\ResourceBuildingSystem.cpp" />

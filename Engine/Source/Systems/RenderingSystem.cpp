@@ -103,6 +103,11 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ScaledResolutions[9] = _ScaledResolutions[8] / 2;
 	_ScaledResolutions[9].RoundUpToNearestMultipleOfTwo();
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Initialize the debug rendering system.
+	_DebugRenderingSystem.Initialize();
+#endif
+
 	//Initialize the model system.
 	_ModelSystem.Initialize();
 

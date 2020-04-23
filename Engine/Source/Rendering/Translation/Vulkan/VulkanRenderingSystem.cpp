@@ -856,6 +856,87 @@ void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const N
 }
 
 /*
+*	Creates a command pool.
+*/
+void RenderingSystem::CreateCommandPool(const Pipeline::Type type, const CommandPoolCreateFlags flags, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Retrieve the vulkan flags.
+	VkCommandPoolCreateFlags vulkan_flags;
+
+	if (TEST_BIT(flags, CommandPoolCreateFlags::RESET_COMMAND_BUFFER))
+	{
+		vulkan_flags |= VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	}
+
+	switch (type)
+	{
+		case Pipeline::Type::Compute:
+		case Pipeline::Type::RayTracing:
+		{
+			*handle = VulkanInterface::Instance->CreateComputeCommandPool(vulkan_flags);
+
+			break;
+		}
+
+		case Pipeline::Type::Graphics:
+		{
+			*handle = VulkanInterface::Instance->CreateGraphicsCommandPool(vulkan_flags);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
+*	Allocates a command buffer from the given command pool.
+*/
+RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT
+{
+	//Cache the vulkan command pool.
+	VulkanCommandPool *const RESTRICT vulkan_command_pool{ static_cast<VulkanCommandPool *const RESTRICT>(command_pool) };
+
+	//Allocate and initialize the Vulkan command buffer.
+	VulkanCommandBuffer *const RESTRICT vulkan_command_buffer{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandBuffer>()) VulkanCommandBuffer };
+
+	switch (level)
+	{
+		case CommandBufferLevel::PRIMARY:
+		{
+			vulkan_command_pool->AllocatePrimaryCommandBuffer(*vulkan_command_buffer);
+
+			break;
+		}
+
+		case CommandBufferLevel::SECONDARY:
+		{
+			vulkan_command_pool->AllocateSecondaryCommandBuffer(*vulkan_command_buffer);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+	
+	//Allocate and initialize the command buffer.
+	CommandBuffer *const RESTRICT command_buffer{ new (MemorySystem::Instance->TypeAllocate<CommandBuffer>()) CommandBuffer(vulkan_command_buffer) };
+	
+	//Return the command buffer.
+	return command_buffer;
+}
+
+/*
 *	Creates a depth buffer.
 */
 void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
@@ -1341,17 +1422,18 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 	}
 
 	//Add the command buffers.
-	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
-	pipeline->SetNumberOfCommandBuffers(numberOfCommandBuffers);
+	const uint64 number_of_command_buffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
+	pipeline->SetNumberOfCommandBuffers(number_of_command_buffers);
 
-	//Create the directional shadow command pool.
-	VulkanCommandPool *const RESTRICT pipelineCommandPool{ pipeline->GetType() == Pipeline::Type::Graphics ? VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) : VulkanInterface::Instance->CreateComputeCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
+	//Create the pipeline command pool.
+	CommandPoolHandle pipeline_command_pool;
+	CreateCommandPool(pipeline->GetType(), CommandPoolCreateFlags::RESET_COMMAND_BUFFER, &pipeline_command_pool);
 
-	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
+	for (uint64 i = 0; i < number_of_command_buffers; ++i)
 	{
-		VulkanCommandBuffer *const RESTRICT pipelineCommandBuffer{ new (Memory::Allocate(sizeof(VulkanCommandBuffer))) VulkanCommandBuffer };
-		pipelineCommandPool->AllocateSecondaryCommandBuffer(*pipelineCommandBuffer);
-		pipeline->AddCommandBuffer(new (Memory::Allocate(sizeof(CommandBuffer))) CommandBuffer(pipelineCommandBuffer));
+		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+		pipeline->AddCommandBuffer(AllocateCommandBuffer(pipeline_command_pool, CommandBufferLevel::SECONDARY));
+		CATALYST_BENCHMARK_AVERAGE_SECTION_END("hrrm");
 	}
 }
 

@@ -1518,6 +1518,15 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\DebugRenderingRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\DebugRenderingSystem.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1556,9 +1565,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp">
       <Filter>Entities\Source\Types</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\CommandBufferVulkanImplementation.cpp">
-      <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -1581,9 +1587,6 @@
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanAllocator.cpp">
-      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBuffer.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandPool.cpp">
@@ -2011,6 +2014,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp">
       <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\DebugRenderingRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\DebugRenderingSystem.cpp">
+      <Filter>Rendering\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanCommandBuffer.cpp">
+      <Filter>Rendering\Source\Translation\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBufferSource.cpp">
+      <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

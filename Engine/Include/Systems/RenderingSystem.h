@@ -12,6 +12,9 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Rendering/Native/DebugRenderingSystem.h>
+#endif
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
 #include <Rendering/Native/LightingSystem.h>
@@ -131,6 +134,16 @@ public:
 		return _Samplers[UNDERLYING(sampler)];
 	}
 	
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Returns the debug rendering system.
+	*/
+	RESTRICTED NO_DISCARD DebugRenderingSystem *const RESTRICT GetDebugRenderingSystem() NOEXCEPT
+	{
+		return &_DebugRenderingSystem;
+	}
+#endif
+
 	/*
 	*	Returns the lighting system.
 	*/
@@ -214,6 +227,16 @@ public:
 	*	Destroys a buffer.
 	*/
 	void DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Creates a command pool.
+	*/
+	void CreateCommandPool(const Pipeline::Type type, const CommandPoolCreateFlags flags, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Allocates a command buffer from the given command pool.
+	*/
+	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.
@@ -360,6 +383,11 @@ private:
 
 	//The current jitter index.
 	uint8 _CurrentJitterIndex{ 0 };
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The debug rendering system.
+	DebugRenderingSystem _DebugRenderingSystem;
+#endif
 
 	//The lighting system.
 	LightingSystem _LightingSystem;

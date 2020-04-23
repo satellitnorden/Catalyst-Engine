@@ -12,18 +12,29 @@ class Sphere final
 public:
 
 	//The position.
-	Vector3<float> _Position;
+	Vector3<float32> _Position;
 
 	//The radius.
-	float _Radius;
+	float32 _Radius;
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE constexpr Sphere() NOEXCEPT
+		:
+		_Position(0.0f, 0.0f, 0.0f),
+		_Radius(1.0f)
+	{
+
+	}
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr Sphere(const Vector3<float> &initialPosition, const float initialRadius) NOEXCEPT
+	FORCE_INLINE constexpr Sphere(const Vector3<float32> &initial_position, const float32 initial_radius) NOEXCEPT
 		:
-		_Position(initialPosition),
-		_Radius(initialRadius)
+		_Position(initial_position),
+		_Radius(initial_radius)
 	{
 
 	}

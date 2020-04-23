@@ -41,6 +41,7 @@ using OpaqueHandle = void *RESTRICT; //Opaque handle that represents abstract da
 
 using AccelerationStructureHandle = void *RESTRICT;
 using BufferHandle = void *RESTRICT;
+using CommandPoolHandle = void *RESTRICT;
 using DepthBufferHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
@@ -72,6 +73,9 @@ enum class RenderPassStage : uint8
 	SKY,
 	VOLUMETRIC_LIGHTING,
 	PATH_TRACING,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DEBUG_RENDERING,
+#endif
 	DEPTH_OF_FIELD,
 	MOTION_BLUR,
 	BLOOM,
@@ -114,6 +118,29 @@ enum class BufferUsage : uint8
 };
 
 ENUMERATION_BIT_OPERATIONS(BufferUsage);
+
+//Enumeration covering all command buff levels.
+enum class CommandBufferLevel : uint8
+{
+	PRIMARY,
+	SECONDARY
+};
+
+//Enumeration covering all command pool create flags.
+enum class CommandPoolCreateFlags : uint8
+{
+	/*
+	*	None.
+	*/
+	NONE = 0,
+
+	/*
+	*	Setting this flag enables command buffers allocated from this command pool to be reset.
+	*/
+	RESET_COMMAND_BUFFER = BIT(0)
+};
+
+ENUMERATION_BIT_OPERATIONS(CommandPoolCreateFlags);
 
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8

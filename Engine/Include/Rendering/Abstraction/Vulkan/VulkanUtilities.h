@@ -600,37 +600,6 @@ public:
 	}
 
 	/*
-	*	Creates a Vulkan sampler.
-	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
-	{
-		//Create the image view create info.
-		VkSamplerCreateInfo samplerCreateInfo;
-
-		samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		samplerCreateInfo.pNext = nullptr;
-		samplerCreateInfo.flags = 0;
-		samplerCreateInfo.magFilter = magnificationFilter;
-		samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
-		samplerCreateInfo.mipmapMode = mipmapMode;
-		samplerCreateInfo.addressModeU = addressMode;
-		samplerCreateInfo.addressModeV = addressMode;
-		samplerCreateInfo.addressModeW = addressMode;
-		samplerCreateInfo.mipLodBias = 0.0f;
-		samplerCreateInfo.anisotropyEnable = VK_FALSE;
-		samplerCreateInfo.maxAnisotropy = 1.0f;
-		samplerCreateInfo.compareEnable = VK_FALSE;
-		samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-		samplerCreateInfo.minLod = 0.0f;
-		samplerCreateInfo.maxLod = FLOAT_MAXIMUM;
-		samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
-
-		//Create the sampler!
-		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
-	}
-
-	/*
 	*	Finds a memory type index.
 	*/
 	static uint32 FindMemoryTypeIndex(const uint32 memoryTypeBits, const VkMemoryPropertyFlags memoryProperties) NOEXCEPT

@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CommandBuffer() NOEXCEPT
+	FORCE_INLINE CommandBuffer() NOEXCEPT
 	{
 
 	}
@@ -25,9 +25,9 @@ public:
 	/*
 	*	Constructor taking the command buffer data.
 	*/
-	CommandBuffer(void *const RESTRICT commandBufferData) NOEXCEPT
+	FORCE_INLINE CommandBuffer(void *const RESTRICT initial_command_buffer_data) NOEXCEPT
 		:
-		_CommandBufferData(commandBufferData)
+		_CommandBufferData(initial_command_buffer_data)
 	{
 
 	}
@@ -35,7 +35,10 @@ public:
 	/*
 	*	Returns the underlying the command buffer data.
 	*/
-	RESTRICTED NO_DISCARD void *const RESTRICT GetCommandBufferData() const NOEXCEPT { return _CommandBufferData; }
+	FORCE_INLINE RESTRICTED NO_DISCARD void *const RESTRICT GetCommandBufferData() const NOEXCEPT
+	{
+		return _CommandBufferData;
+	}
 
 	/*
 	*	Begins the command buffer.
