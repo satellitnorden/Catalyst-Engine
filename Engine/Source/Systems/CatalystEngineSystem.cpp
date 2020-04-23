@@ -160,6 +160,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
+	//Define constants.
+	constexpr float MAXIMUM_DELTA_TIME{ 0.1f };
+
 	//Update the total frames.
 	++_TotalFrames;
 
@@ -167,7 +170,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	_TotalTime += _DeltaTime;
 
 	//Update the delta time.
-	_DeltaTime = CatalystEngineSystemData::_DeltaTimer.Update() * _UpdateSpeed;
+	_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 
 	//Construct the update context.
 	UpdateContext context;

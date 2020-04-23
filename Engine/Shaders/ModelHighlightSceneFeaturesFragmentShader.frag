@@ -61,7 +61,7 @@ void main()
 	vec3 view_direction = normalize(fragment_current_world_position - PERCEIVER_WORLD_POSITION);
 
 	//Calculate the highlight weight.
-	float highlight_weight = (1.0f - max(dot(shading_normal, -view_direction), 0.0f)) * highlight_strength;
+	float highlight_weight = (1.0f - (dot(shading_normal, -view_direction) * 0.5f + 0.5f));
 
 	//Apply the highlight properties.
 	albedo = mix(albedo, highlight_color, highlight_weight);

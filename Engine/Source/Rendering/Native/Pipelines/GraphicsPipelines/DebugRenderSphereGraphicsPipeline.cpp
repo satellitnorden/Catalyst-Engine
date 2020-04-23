@@ -1,3 +1,4 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
 
@@ -162,3 +163,4 @@ void DebugRenderSphereGraphicsPipeline::Execute() NOEXCEPT
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
 }
+#endif

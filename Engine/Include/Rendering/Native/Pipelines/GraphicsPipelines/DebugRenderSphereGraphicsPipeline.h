@@ -1,3 +1,4 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
 //Core.
@@ -22,3 +23,4 @@ public:
 	void Execute() NOEXCEPT;
 
 };
+#endif
