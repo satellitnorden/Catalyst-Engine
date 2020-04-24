@@ -367,6 +367,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ShaderResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\SoundResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\TextureCubeResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimationData.h" />

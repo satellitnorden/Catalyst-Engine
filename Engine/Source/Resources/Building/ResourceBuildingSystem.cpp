@@ -786,96 +786,6 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 }
 
 /*
-*	Builds a texture cube
-*/
-void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
-{
-	//Define constants.
-	constexpr Vector2<float> INVERSE_ATAN{ 0.1591f, 0.3183f };
-
-	//What should the material be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
-
-	//Write the resource type to the file.
-	constexpr ResourceType resourceType{ ResourceType::TEXTURE_CUBE };
-	file.Write(&resourceType, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resourceID{ parameters._ID };
-	file.Write(&resourceID, sizeof(HashString));
-
-	//Load the texture.
-	int32 width, height, numberOfChannels;
-	float *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
-
-	//Wrap the data into a texture 2D for easier manipulation.
-	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint32>(width), static_cast<uint32>(height) };
-
-	//Copy the data into the cpu texture.
-	Memory::Copy(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
-
-	//Create the diffuse output textures.
-	StaticArray<Texture2D<Vector4<float>>, 6> outputTextures
-	{
-		Texture2D<Vector4<float>>(parameters._Resolution),
-		Texture2D<Vector4<float>>(parameters._Resolution),
-		Texture2D<Vector4<float>>(parameters._Resolution),
-		Texture2D<Vector4<float>>(parameters._Resolution),
-		Texture2D<Vector4<float>>(parameters._Resolution),
-		Texture2D<Vector4<float>>(parameters._Resolution)
-	};
-
-	for (uint8 i{ 0 }; i < 6; ++i)
-	{
-		for (uint32 j = 0; j < parameters._Resolution; ++j)
-		{
-			for (uint32 k = 0; k < parameters._Resolution; ++k)
-			{
-				Vector3<float> position;
-
-				const float xWeight{ static_cast<float>(j) / static_cast<float>(parameters._Resolution) };
-				const float yWeight{ static_cast<float>(k) / static_cast<float>(parameters._Resolution) };
-
-				switch (i)
-				{
-					default: CRASH(); break;
-					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight)); break; //Front.
-					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight)); break; //Back.
-					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, yWeight)); break; //Up.
-					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight)); break; //Down.
-					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f); break; //Right.
-					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f); break; //Left.
-				}
-
-				position.Normalize();
-
-				Vector2<float> textureCoordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
-				textureCoordinate *= INVERSE_ATAN;
-				textureCoordinate += 0.5f;
-
-				outputTextures[i].At(j, k) = hdrTexture.Sample(textureCoordinate, AddressMode::ClampToEdge);
-			}
-		}
-	}
-
-	//Write the resolution to the file.
-	file.Write(&parameters._Resolution, sizeof(uint32));
-
-	//Write the diffuse to the file.
-	for (uint8 i = 0; i < 6; ++i)
-	{
-		file.Write(outputTextures[i].Data(), parameters._Resolution * parameters._Resolution * 4 * sizeof(float));
-	}
-
-	//Close the file.
-	file.Close();
-}
-
-/*
 *	Builds a texture 2D.
 */
 void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT
@@ -1144,5 +1054,95 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 
 	//Write the data.
 	file.Write(parameters._Texture->Data(), width * height * depth * sizeof(Vector4<byte>));
+}
+
+/*
+*	Builds a texture cube
+*/
+void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
+{
+	//Define constants.
+	constexpr Vector2<float> INVERSE_ATAN{ 0.1591f, 0.3183f };
+
+	//What should the material be called?
+	DynamicString fileName{ parameters._Output };
+	fileName += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
+
+	//Write the resource type to the file.
+	constexpr ResourceType resourceType{ ResourceType::TEXTURE_CUBE };
+	file.Write(&resourceType, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resourceID{ parameters._ID };
+	file.Write(&resourceID, sizeof(HashString));
+
+	//Load the texture.
+	int32 width, height, numberOfChannels;
+	float *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+
+	//Wrap the data into a texture 2D for easier manipulation.
+	Texture2D<Vector4<float>> hdrTexture{ static_cast<uint32>(width), static_cast<uint32>(height) };
+
+	//Copy the data into the cpu texture.
+	Memory::Copy(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
+
+	//Create the diffuse output textures.
+	StaticArray<Texture2D<Vector4<float>>, 6> outputTextures
+	{
+		Texture2D<Vector4<float>>(parameters._Resolution),
+		Texture2D<Vector4<float>>(parameters._Resolution),
+		Texture2D<Vector4<float>>(parameters._Resolution),
+		Texture2D<Vector4<float>>(parameters._Resolution),
+		Texture2D<Vector4<float>>(parameters._Resolution),
+		Texture2D<Vector4<float>>(parameters._Resolution)
+	};
+
+	for (uint8 i{ 0 }; i < 6; ++i)
+	{
+		for (uint32 j = 0; j < parameters._Resolution; ++j)
+		{
+			for (uint32 k = 0; k < parameters._Resolution; ++k)
+			{
+				Vector3<float> position;
+
+				const float xWeight{ static_cast<float>(j) / static_cast<float>(parameters._Resolution) };
+				const float yWeight{ static_cast<float>(k) / static_cast<float>(parameters._Resolution) };
+
+				switch (i)
+				{
+					default: CRASH(); break;
+					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight)); break; //Front.
+					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight)); break; //Back.
+					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, yWeight)); break; //Up.
+					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight)); break; //Down.
+					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f); break; //Right.
+					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f); break; //Left.
+				}
+
+				position.Normalize();
+
+				Vector2<float> textureCoordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
+				textureCoordinate *= INVERSE_ATAN;
+				textureCoordinate += 0.5f;
+
+				outputTextures[i].At(j, k) = hdrTexture.Sample(textureCoordinate, AddressMode::ClampToEdge);
+			}
+		}
+	}
+
+	//Write the resolution to the file.
+	file.Write(&parameters._Resolution, sizeof(uint32));
+
+	//Write the diffuse to the file.
+	for (uint8 i = 0; i < 6; ++i)
+	{
+		file.Write(outputTextures[i].Data(), parameters._Resolution * parameters._Resolution * 4 * sizeof(float));
+	}
+
+	//Close the file.
+	file.Close();
 }
 #endif

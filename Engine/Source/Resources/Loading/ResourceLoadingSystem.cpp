@@ -208,34 +208,6 @@ void ResourceLoadingSystem::LoadSound(BinaryFile<IOMode::In> *const RESTRICT fil
 }
 
 /*
-*	Given a file, load a texture cube.
-*/
-void ResourceLoadingSystem::LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Load the texture cube data
-	TextureCubeData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the resolution.
-	file.Read(&data._Resolution, sizeof(uint32));
-
-	//Calculate the data size.
-	const uint64 dataSize{ data._Resolution * data._Resolution * 4 * 6 * sizeof(float) };
-
-	//Upsize the data accordingly.
-	data._Data.Upsize<false>(data._Resolution * data._Resolution * 4 * 6);
-
-	//Read the data.
-	file.Read(data._Data.Data(), dataSize);
-
-	//Create the texture cube.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateTextureCube(&data, &_TextureCubes[resourceID]);
-}
-
-/*
 *	Given a file, load texture 2D data.
 */
 void ResourceLoadingSystem::LoadTexture2D(BinaryFile<IOMode::In> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT
@@ -300,4 +272,22 @@ void ResourceLoadingSystem::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
 
 	//Create the texture 3D.
 	ResourceSystem::Instance->GetResourceCreationSystem()->CreateTexture3D(&data, &_Texture3Ds[resourceID]);
+}
+
+/*
+*	Given a file, load texture cube data.
+*/
+void ResourceLoadingSystem::LoadTextureCube(BinaryFile<IOMode::In> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT
+{
+	//Read the resolution.
+	file->Read(&data->_Resolution, sizeof(uint32));
+
+	//Calculate the data size.
+	const uint64 data_size{ data->_Resolution * data->_Resolution * 4 * 6 * sizeof(float32) };
+
+	//Upsize the data accordingly.
+	data->_Data.Upsize<false>(data->_Resolution * data->_Resolution * 4 * 6);
+
+	//Read the data.
+	file->Read(data->_Data.Data(), data_size);
 }

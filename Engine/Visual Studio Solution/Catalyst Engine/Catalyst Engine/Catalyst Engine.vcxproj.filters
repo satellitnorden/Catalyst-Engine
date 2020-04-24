@@ -1524,6 +1524,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\DebugRenderingSystem.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\TextureCubeResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

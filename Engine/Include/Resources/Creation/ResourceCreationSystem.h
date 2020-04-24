@@ -14,15 +14,16 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
+#include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
 #include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
-#include <Resources/Loading/TextureCubeData.h>
 #include <Resources/Loading/Texture2DData.h>
 #include <Resources/Loading/Texture3DData.h>
+#include <Resources/Loading/TextureCubeData.h>
 
 class ResourceCreationSystem final
 {
@@ -60,11 +61,6 @@ public:
 	void CreateSound(SoundData *const RESTRICT data, SoundResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
-	*	Creates a texture cube.
-	*/
-	void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT;
-
-	/*
 	*	Creates a texture 2D.
 	*/
 	void CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT;
@@ -73,5 +69,10 @@ public:
 	*	Creates a texture 3D.
 	*/
 	void CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT;
+
+	/*
+	*	Creates a texture cube.
+	*/
+	void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeResource *const RESTRICT resource) NOEXCEPT;
 
 };

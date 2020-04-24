@@ -162,7 +162,25 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 			case ResourceType::TEXTURE_CUBE:
 			{
-				_ResourceLoadingSystem.LoadTextureCube(file);
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				TextureCubeResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource() };
+
+				//Load the resource.
+				TextureCubeData data;
+				_ResourceLoadingSystem.LoadTextureCube(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
+
+				//Add the new resource.
+				_TextureCubeResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}

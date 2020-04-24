@@ -150,15 +150,6 @@ void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundRe
 }
 
 /*
-*	Creates a texture cube.
-*/
-void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeHandle *const RESTRICT texture) NOEXCEPT
-{
-	//Create the texture cube.
-	RenderingSystem::Instance->CreateTextureCube(*data, texture);
-}
-
-/*
 *	Creates a texture 2D.
 */
 void ResourceCreationSystem::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT
@@ -198,4 +189,13 @@ void ResourceCreationSystem::CreateTexture3D(Texture3DData* const RESTRICT data,
 
 	//Create the texture!
 	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8), texture);
+}
+
+/*
+*	Creates a texture cube.
+*/
+void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeResource *const RESTRICT resource) NOEXCEPT
+{
+	//Create the texture cube.
+	RenderingSystem::Instance->CreateTextureCube(*data, &resource->_TextureCubeHandle);
 }

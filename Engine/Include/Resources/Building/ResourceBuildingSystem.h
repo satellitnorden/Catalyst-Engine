@@ -12,9 +12,9 @@
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
-#include <Resources/Building/TextureCubeBuildParameters.h>
 #include <Resources/Building/Texture2DBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
+#include <Resources/Building/TextureCubeBuildParameters.h>
 
 class ResourceBuildingSystem final
 {
@@ -57,11 +57,6 @@ public:
 	void BuildSound(const SoundBuildParameters &parameters) NOEXCEPT;
 
 	/*
-	*	Builds a texture cube
-	*/
-	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
-
-	/*
 	*	Builds a texture 2D.
 	*/
 	void BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT;
@@ -70,6 +65,11 @@ public:
 	*	Builds a texture 3D.
 	*/
 	void BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT;
+
+	/*
+	*	Builds a texture cube
+	*/
+	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
 
 };
 #endif

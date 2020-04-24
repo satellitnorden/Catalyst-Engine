@@ -19,6 +19,7 @@
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
+#include <Resources/Loading/TextureCubeData.h>
 
 //Sound.
 #include <Sound/SoundCore.h>
@@ -42,22 +43,6 @@ public:
 	FORCE_INLINE NO_DISCARD const Model &GetModelResource(const HashString resource_ID) NOEXCEPT
 	{
 		return _Models[resource_ID];
-	}
-
-	/*
-	*	Returns all texture cube resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, TextureCubeHandle> &GetAllTextureCubeResources() NOEXCEPT
-	{
-		return _TextureCubes;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding texture cube resource.
-	*/
-	FORCE_INLINE NO_DISCARD const TextureCubeHandle &GetTextureCubeResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _TextureCubes[resource_ID];
 	}
 
 	/*
@@ -107,11 +92,6 @@ public:
 	void LoadSound(BinaryFile<IOMode::In> *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load a texture cube.
-	*/
-	void LoadTextureCube(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
 	*	Given a file, load texture 2D data.
 	*/
 	void LoadTexture2D(BinaryFile<IOMode::In> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT;
@@ -121,13 +101,15 @@ public:
 	*/
 	void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
 
+	/*
+	*	Given a file, load texture cube data.
+	*/
+	void LoadTextureCube(BinaryFile<IOMode::In> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT;
+
 private:
 
 	//Container for all models.
 	Map<HashString, Model> _Models;
-
-	//Container for all texture cubes.
-	Map<HashString, TextureCubeHandle> _TextureCubes;
 
 	//Container for all texture 3Ds.
 	Map<HashString, Texture3DHandle> _Texture3Ds;
