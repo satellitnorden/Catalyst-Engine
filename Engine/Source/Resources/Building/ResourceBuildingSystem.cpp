@@ -441,25 +441,149 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	DynamicString compiled_file_path{ parameters._ID };
 	compiled_file_path += ".compiled";
 
+	//Remember the name of the temporary shader file path.
+	std::string temporary_shader_file_path;
+
 	//First, compile the shader.
 	{
-		//Create a temporary batch file that stores all commands.
-		std::ofstream batch_file;
+		//Create a compiler-ready version of the file.
+		{
+			std::ifstream file{ parameters._FilePath };
+			std::string file_string;
 
-		batch_file.open("temporary_batch_file.bat", std::ios::out);
+			file.seekg(0, std::ios::end);   
+			file_string.reserve(file.tellg());
+			file.seekg(0, std::ios::beg);
 
-		batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
-		batch_file << " -V ";
-		batch_file << parameters._FilePath;
-		batch_file << " -o ";
-		batch_file << compiled_file_path.Data();
+			file_string.assign(	(std::istreambuf_iterator<char>(file)),
+								std::istreambuf_iterator<char>());
 
-		batch_file.close();
+			//Add the header data.
+			{
+				file_string = "#version 460 \n#extension GL_GOOGLE_include_directive : enable \n#include \"CatalystShaderCommon.glsl\" \n" + file_string;
+			}
 
-		system("temporary_batch_file.bat");
+			//Replace "CatalystShaderMain" with "main".
+			{
+				size_t position{ file_string.find("CatalystShaderMain") };
 
-		//Delete the temporary batch file.
-		File::Delete("temporary_batch_file.bat");
+				if (position != std::string::npos)
+				{
+					file_string.replace(position, strlen("CatalystShaderMain"), "main");
+				}
+			}
+
+			//Determine the temporary shader file path.
+			temporary_shader_file_path = parameters._FilePath + std::string(".glsl");
+
+			//Write the compiler-ready version to a new temporary file.
+			std::ofstream shader_file{ temporary_shader_file_path };
+
+			shader_file << file_string;
+
+			shader_file.close();
+		}
+
+		//Compile the file.
+		{
+			//Create a temporary batch file that stores all commands.
+			std::ofstream batch_file;
+
+			batch_file.open("temporary_batch_file.bat", std::ios::out);
+
+			batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
+			batch_file << " -V ";
+			batch_file << temporary_shader_file_path;
+			batch_file << " -o ";
+			batch_file << compiled_file_path.Data();
+
+			switch (parameters._Stage)
+			{
+				case ShaderStage::COMPUTE:
+				{
+					batch_file << " -S comp";
+
+					break;
+				}
+
+				case ShaderStage::FRAGMENT:
+				{
+					batch_file << " -S frag";
+
+					break;
+				}
+
+				case ShaderStage::GEOMETRY:
+				{
+					batch_file << " -S geom";
+
+					break;
+				}
+
+				case ShaderStage::RAY_ANY_HIT:
+				{
+					batch_file << " -S rahit";
+
+					break;
+				}
+
+				case ShaderStage::RAY_CLOSEST_HIT:
+				{
+					batch_file << " -S rchit";
+
+					break;
+				}
+
+				case ShaderStage::RAY_GENERATION:
+				{
+					batch_file << " -S rgen";
+
+					break;
+				}
+
+				case ShaderStage::RAY_INTERSECTION:
+				{
+					batch_file << " -S rint";
+
+					break;
+				}
+
+				case ShaderStage::RAY_MISS:
+				{
+					batch_file << " -S rmiss";
+
+					break;
+				}
+
+				case ShaderStage::TESSELLATION_CONTROL:
+				{
+					batch_file << " -S tesc";
+
+					break;
+				}
+
+				case ShaderStage::TESSELLATION_EVALUATION:
+				{
+					batch_file << " -S tese";
+
+					break;
+				}
+
+				case ShaderStage::VERTEX:
+				{
+					batch_file << " -S vert";
+
+					break;
+				}
+			}
+
+			batch_file.close();
+
+			system("temporary_batch_file.bat");
+
+			//Delete the temporary batch file.
+			File::Delete("temporary_batch_file.bat");
+		}
 	}
 
 	//If the file exists, recreate the temporary batch file with a pause statement in the end to display the error.
@@ -471,9 +595,90 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 		batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
 		batch_file << " -V ";
-		batch_file << parameters._FilePath;
+		batch_file << temporary_shader_file_path;
 		batch_file << " -o ";
 		batch_file << compiled_file_path.Data();
+
+		switch (parameters._Stage)
+		{
+			case ShaderStage::COMPUTE:
+			{
+				batch_file << " -S comp";
+
+				break;
+			}
+
+			case ShaderStage::FRAGMENT:
+			{
+				batch_file << " -S frag";
+
+				break;
+			}
+
+			case ShaderStage::GEOMETRY:
+			{
+				batch_file << " -S geom";
+
+				break;
+			}
+
+			case ShaderStage::RAY_ANY_HIT:
+			{
+				batch_file << " -S rahit";
+
+				break;
+			}
+
+			case ShaderStage::RAY_CLOSEST_HIT:
+			{
+				batch_file << " -S rchit";
+
+				break;
+			}
+
+			case ShaderStage::RAY_GENERATION:
+			{
+				batch_file << " -S rgen";
+
+				break;
+			}
+
+			case ShaderStage::RAY_INTERSECTION:
+			{
+				batch_file << " -S rint";
+
+				break;
+			}
+
+			case ShaderStage::RAY_MISS:
+			{
+				batch_file << " -S rmiss";
+
+				break;
+			}
+
+			case ShaderStage::TESSELLATION_CONTROL:
+			{
+				batch_file << " -S tesc";
+
+				break;
+			}
+
+			case ShaderStage::TESSELLATION_EVALUATION:
+			{
+				batch_file << " -S tese";
+
+				break;
+			}
+
+			case ShaderStage::VERTEX:
+			{
+				batch_file << " -S vert";
+
+				break;
+			}
+		}
+
 		batch_file << std::endl;
 		batch_file << "pause";
 
@@ -481,6 +686,9 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 		system("temporary_batch_file.bat");
 	}
+
+	//Delete the temporary shader file.
+	File::Delete(temporary_shader_file_path.c_str());
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };

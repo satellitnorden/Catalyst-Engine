@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
@@ -171,7 +164,7 @@ void SampleRandomDirectionAndLength(vec3 normal, out vec3 direction, out float l
 	length = random_direction_and_length_sample.w;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the current features.
 	SceneFeatures current_features = SampleSceneFeatures(ivec2(gl_LaunchIDNV.xy));

@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Constants.
 #define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.99f)
 #define TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_SIZE (3.0f)
@@ -47,7 +38,7 @@ vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
 		return previous;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the unjittered screen coordinate.
 	vec2 unjitteredScreenCoordinate = fragmentTextureCoordinate - currentFrameJitter;
@@ -63,7 +54,7 @@ void main()
 	{
 		for (float y = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; y <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++y)
 		{
-			vec2 sampleCoordinate = unjitteredScreenCoordinate + vec2(x, y) * inverseScaledResolution;
+			vec2 sampleCoordinate = unjitteredScreenCoordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION;
 		
 			vec3 neighbordhoodSample = texture(currentFrameTexture, sampleCoordinate).rgb;
 

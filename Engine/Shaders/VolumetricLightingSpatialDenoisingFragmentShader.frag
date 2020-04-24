@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
@@ -52,7 +45,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the volumetric lighting and scene features at the current fragment.
 	vec3 current_volumetric_lighting = texture(volumetric_lighting_texture, fragment_texture_coordinate).rgb;

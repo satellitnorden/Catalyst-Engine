@@ -861,7 +861,7 @@ void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const N
 void RenderingSystem::CreateCommandPool(const Pipeline::Type type, const CommandPoolCreateFlags flags, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Retrieve the vulkan flags.
-	VkCommandPoolCreateFlags vulkan_flags;
+	VkCommandPoolCreateFlags vulkan_flags{ 0 };
 
 	if (TEST_BIT(flags, CommandPoolCreateFlags::RESET_COMMAND_BUFFER))
 	{
@@ -1431,9 +1431,7 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 
 	for (uint64 i = 0; i < number_of_command_buffers; ++i)
 	{
-		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 		pipeline->AddCommandBuffer(AllocateCommandBuffer(pipeline_command_pool, CommandBufferLevel::SECONDARY));
-		CATALYST_BENCHMARK_AVERAGE_SECTION_END("hrrm");
 	}
 }
 

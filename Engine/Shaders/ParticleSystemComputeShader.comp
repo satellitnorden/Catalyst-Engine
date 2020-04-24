@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 /*
 *	Particle system input data struct definition.
 */
@@ -169,7 +160,7 @@ void SetInstanceTime(uint index, float time)
 	particle_system_instance_data[index * 3 + 2].x = time;
 }
 
-void main() 
+void CatalystShaderMain() 
 {
 	//Unpack the particle system input data.
 	ParticleSystemInputData input_data;

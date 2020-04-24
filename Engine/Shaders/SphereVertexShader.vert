@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -18,7 +9,7 @@ layout (push_constant) uniform PushConstantData
 //Out parameters.
 layout (location = 0) out vec3 fragment_normal;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the stack index.
 	uint stack_index = gl_VertexIndex / NUMBER_OF_SEGMENTS;
@@ -43,5 +34,5 @@ void main()
 	fragment_normal = normalize(unit_position);
 
     //Write the position.
-    gl_Position = viewMatrix * vec4(POSITION + unit_position, 1.0f);
+    gl_Position = WORLD_TO_CLIP_MATRIX * vec4(POSITION + unit_position, 1.0f);
 } 

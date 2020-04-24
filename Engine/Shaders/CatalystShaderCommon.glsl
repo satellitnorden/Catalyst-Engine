@@ -73,63 +73,46 @@ struct Material
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
-    layout (offset = 0) mat4 viewMatrixMinusOne;
-    layout (offset = 64) mat4 UNUSED_1;
-    layout (offset = 128) mat4 inversePerceiverMatrix;
-    layout (offset = 192) mat4 inverseProjectionMatrix;
-    layout (offset = 256) mat4 perceiverMatrix;
-    layout (offset = 320) mat4 projectionMatrix;
-    layout (offset = 384) mat4 viewMatrix;
+    layout (offset = 0) mat4 INVERSE_PERCEIVER_TO_CLIP_MATRIX;
+    layout (offset = 64) mat4 INVERSE_WORLD_TO_PERCEIVER_MATRIX;
+    layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+    layout (offset = 192) mat4 WORLD_TO_CLIP_MATRIX;
+    layout (offset = 256) mat4 WORLD_TO_PERCEIVER_MATRIX;
 
-    layout (offset = 448) vec3 UNUSED_X;
-    layout (offset = 464) vec3 UNUSED_Y;
-    layout (offset = 480) vec3 UNUSED_6;
-    layout (offset = 496) vec3 perceiverForwardVector;
-    layout (offset = 512) vec3 PERCEIVER_WORLD_POSITION;
+    layout (offset = 320) vec3 PERCEIVER_FORWARD_VECTOR;
+    layout (offset = 336) vec3 PERCEIVER_WORLD_POSITION;
 
-    layout (offset = 528) vec2 scaledResolution;
-    layout (offset = 536) vec2 inverseScaledResolution;
-    layout (offset = 544) vec2 previousFrameJitter;
-    layout (offset = 552) vec2 currentFrameJitter;
+    layout (offset = 352) vec2 INVERSE_SCALED_RESOLUTION;
+    layout (offset = 360) vec2 previousFrameJitter;
+    layout (offset = 368) vec2 currentFrameJitter;
 
-    layout (offset = 560) float DELTA_TIME;
-    layout (offset = 564) float UNUSED_Z;
-    layout (offset = 568) float globalRandomSeed1;
-    layout (offset = 572) float globalRandomSeed2;
-    layout (offset = 576) float globalRandomSeed3;
-    layout (offset = 580) float UNUSED_5;
-    layout (offset = 584) float totalTime;
-    layout (offset = 588) float windSpeed;
+    layout (offset = 376) float DELTA_TIME;
+    layout (offset = 380) float globalRandomSeed1;
+    layout (offset = 384) float globalRandomSeed2;
+    layout (offset = 388) float globalRandomSeed3;
+    layout (offset = 392) float totalTime;
+    layout (offset = 396) float windSpeed;
 
-    layout (offset = 592) int ambientOcclusionMode;
-    layout (offset = 596) int motionBlurMode;
-    layout (offset = 600) int UNUSED_3;
-    layout (offset = 604) int shadowsMode;
-    layout (offset = 608) int UNUSED_4;
+    layout (offset = 400) float bloomIntensity;
 
-    layout (offset = 612) float UNUSED_2;
-    layout (offset = 616) float bloomIntensity;
-    layout (offset = 620) float UNUSED_WAT;
-    layout (offset = 624) float UNUSED_W;
+    layout (offset = 404) float ASPECT_RATIO;
 
-    layout (offset = 628) float ASPECT_RATIO;
+    layout (offset = 408) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 412) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 416) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 632) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 636) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 640) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 420) float VIEW_DISTANCE;
+    layout (offset = 424) float CLOUD_DENSITY;
+    layout (offset = 428) float WETNESS;
+    layout (offset = 432) float NEAR_PLANE;
+    layout (offset = 436) float FAR_PLANE;
 
-    layout (offset = 644) float VIEW_DISTANCE;
-    layout (offset = 648) float CLOUD_DENSITY;
-    layout (offset = 652) float WETNESS;
-    layout (offset = 656) float NEAR_PLANE;
-    layout (offset = 660) float FAR_PLANE;
+    layout (offset = 440) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 444) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 448) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 452) float TERRAIN_MAP_RESOLUTION;
 
-    layout (offset = 664) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 668) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 672) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 676) float TERRAIN_MAP_RESOLUTION;
-
-    //Total size; 680
+    //Total size; 456
 };
 
 //The global textures.
@@ -197,7 +180,7 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 {
     vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = inverseProjectionMatrix * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    vec4 view_space_position = INVERSE_PERCEIVER_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
     float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
@@ -210,10 +193,10 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 vec3 CalculateWorldPosition(vec2 texture_coordinate, float depth)
 {
     vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = inverseProjectionMatrix * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    vec4 view_space_position = INVERSE_PERCEIVER_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
     float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
     view_space_position *= inverse_view_space_position_denominator;
-    vec4 world_space_position = inversePerceiverMatrix * view_space_position;
+    vec4 world_space_position = INVERSE_WORLD_TO_PERCEIVER_MATRIX * view_space_position;
 
     return world_space_position.xyz;
 }
@@ -365,10 +348,10 @@ vec4 Upsample(sampler2D lowresTexture, vec2 coordinate)
 {
     vec4 result = vec4(0.0f);
 
-    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, -inverseScaledResolution.y));
-    result += texture(lowresTexture, coordinate + vec2(-inverseScaledResolution.x, inverseScaledResolution.y));
-    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, -inverseScaledResolution.y));
-    result += texture(lowresTexture, coordinate + vec2(inverseScaledResolution.x, inverseScaledResolution.y));
+    result += texture(lowresTexture, coordinate + vec2(-INVERSE_SCALED_RESOLUTION.x, -INVERSE_SCALED_RESOLUTION.y));
+    result += texture(lowresTexture, coordinate + vec2(-INVERSE_SCALED_RESOLUTION.x, INVERSE_SCALED_RESOLUTION.y));
+    result += texture(lowresTexture, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x, -INVERSE_SCALED_RESOLUTION.y));
+    result += texture(lowresTexture, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x, INVERSE_SCALED_RESOLUTION.y));
 
     return result * 0.25f;
 }

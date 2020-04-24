@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -27,7 +18,7 @@ layout (set = 1, binding = 0) uniform sampler2D inputTexture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the start/end.
 	float startAndEnd = (size * 0.5f) * stride;

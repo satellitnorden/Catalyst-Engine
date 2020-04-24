@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -23,10 +14,10 @@ layout (location = 0) out vec4 scene_features_2_half;
 layout (location = 1) out vec4 scene_features_3_half;
 layout (location = 2) out vec4 scene_features_4_half;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the texel offset.
-	vec2 texel_offset = vec2(inverseScaledResolution.x * 0.5f, inverseScaledResolution.y * 0.5f);
+	vec2 texel_offset = vec2(INVERSE_SCALED_RESOLUTION.x * 0.5f, INVERSE_SCALED_RESOLUTION.y * 0.5f);
 
 	//Compare the depths in the scene features 2 texture. Choose the texel for the downsample with the depth closest to the perceiver.
 	vec4 scene_features_2_sample_1 = texture(scene_features_2_texture, fragment_texture_coordinate + vec2(-texel_offset.x, -texel_offset.y));

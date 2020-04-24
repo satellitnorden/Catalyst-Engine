@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystTerrainUtilities.glsl"
 
 //Constants.
@@ -71,7 +64,7 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 			+ displacement_4 * blend_map[3];
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Set the position.
 	vec2 position = vertexPosition.xy;
@@ -126,6 +119,6 @@ void main()
 	//Apply the displacement.
 	fragmentWorldPosition.y += mix(-0.5f, 0.5f, final_displacement);
 
-	gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragmentWorldPosition, 1.0f);
 	
 }

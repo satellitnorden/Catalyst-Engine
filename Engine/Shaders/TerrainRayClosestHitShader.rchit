@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
@@ -244,7 +237,7 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 	}
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Remember the current recursion depth.
 	uint current_recursion_depth = path_tracing_ray_payload.current_recursion_depth;

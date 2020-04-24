@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 
@@ -69,7 +62,7 @@ vec3 ApplyBorders(vec3 fragment)
 	return fragment * float(fragment_texture_coordinate.y >= HORIZONTAL_BORDER && fragment_texture_coordinate.y <= (1.0f - HORIZONTAL_BORDER));
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the source texture.
 	vec3 post_processed_fragment = texture(source_texture, fragment_texture_coordinate).rgb;
@@ -78,7 +71,7 @@ void main()
 	vec3 fragment_direction = CalculateRayDirection(fragment_texture_coordinate);
 
 	//Calculate the edge factor.
-	float edge_factor = max(dot(perceiverForwardVector, fragment_direction), 0.0f);
+	float edge_factor = max(dot(PERCEIVER_FORWARD_VECTOR, fragment_direction), 0.0f);
 
 	//Apply chromatic aberration.
 	post_processed_fragment = ApplyChromaticAberration(post_processed_fragment, edge_factor);

@@ -1,12 +1,3 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Constants.
 #define ANIMATED_MODEL_MAXIMUM_BONE_TRANSFORMS (16)
 #define ANIMATED_MODEL_MAXIMUM_WEIGHTS (3)
@@ -38,7 +29,7 @@ layout (location = 3) out vec3 fragment_previous_world_position;
 layout (location = 4) out vec3 fragment_current_world_position;
 layout (location = 5) out vec2 fragment_texture_coordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	vec3 animated_position = vec3(0.0f);
 	vec3 animated_normal = vec3(0.0f);
@@ -60,5 +51,5 @@ void main()
 	fragment_current_world_position = vec3(current_model_matrix * vec4(animated_position, 1.0f));
 	fragment_texture_coordinate = vertex_texture_coordinate;
 
-	gl_Position = viewMatrix * vec4(fragment_current_world_position, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_current_world_position, 1.0f);
 }

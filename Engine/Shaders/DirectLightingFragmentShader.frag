@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -25,7 +18,7 @@ layout (set = 3, binding = 2) uniform sampler2D sceneFeatures3Texture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
 	//Retrieve the scene features.
 	vec4 sceneFeatures1 = texture(sceneFeatures1Texture, fragmentTextureCoordinate);

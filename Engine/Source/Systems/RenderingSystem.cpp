@@ -569,19 +569,17 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.
-	_DynamicUniformData._ViewMatrixMinusOne = _DynamicUniformData._ViewMatrix;
-	_DynamicUniformData._InversePerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
-	_DynamicUniformData._InverseProjectionMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
-	_DynamicUniformData._PerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
-	_DynamicUniformData._ProjectionMatrix = *Perceiver::Instance->GetProjectionMatrix();
-	_DynamicUniformData._ViewMatrix = *Perceiver::Instance->GetViewMatrix();
+	_DynamicUniformData._PreviousWorldToClipMatrix = _DynamicUniformData._WorldToClipMatrix;
+	_DynamicUniformData._InverseWorldToPerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
+	_DynamicUniformData._InversePerceiverToClipMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
+	_DynamicUniformData._WorldToPerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
+	_DynamicUniformData._WorldToClipMatrix = *Perceiver::Instance->GetViewMatrix();
 
 	//Update vectors.
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
 
-	_DynamicUniformData._ScaledResolution = Vector2<float>(static_cast<float>(GetScaledResolution(0)._Width), static_cast<float>(GetScaledResolution(0)._Height));
-	_DynamicUniformData._InverseScaledResolution = 1.0f / _DynamicUniformData._ScaledResolution;
+	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;
 	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
 
@@ -592,10 +590,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 2.5f;
-
-	_DynamicUniformData._AmbientOcclusionMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetAmbientOcclusionMode());
-	_DynamicUniformData._MotionBlurMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetMotionBlurMode());
-	_DynamicUniformData._ShadowsMode = static_cast<int32>(RenderingConfigurationManager::Instance->GetSurfaceShadowsMode());
 
 	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
 

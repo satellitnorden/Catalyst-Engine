@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -29,7 +22,7 @@ layout (location = 4) in vec2 fragment_texture_coordinate;
 layout (location = 0) out vec4 scene_features_1;
 layout (location = 1) out vec4 scene_features_3;
 
-void main()
+void CatalystShaderMain()
 {
    	//Retrieve the material.
 	Material material = GLOBAL_MATERIALS[material_index];

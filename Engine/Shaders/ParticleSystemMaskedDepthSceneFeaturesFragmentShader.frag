@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystTransparency.glsl"
 
 //Push constant data.
@@ -18,7 +11,7 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragment_texture_coordinate;
 layout (location = 1) in float fragment_opacity;
 
-void main()
+void CatalystShaderMain()
 {
     //Retrieve the material.
     Material material = GLOBAL_MATERIALS[material_index];

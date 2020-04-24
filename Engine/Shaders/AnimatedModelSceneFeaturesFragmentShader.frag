@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -37,15 +30,15 @@ layout (location = 3) out vec4 scene_features_4;
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
 {
-  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
-void main()
+void CatalystShaderMain()
 {
     //Sample the albedo.
    vec3 albedo = texture(sampler2D(GLOBAL_TEXTURES[albedoTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).rgb;
@@ -63,7 +56,7 @@ void main()
 
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentPreviousWorldPosition);
 
     //Write the fragments.
     sceneFeatures1 = vec4(albedo, intBitsToFloat(materialPropertyFlags));

@@ -1,12 +1,3 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
@@ -22,7 +13,7 @@ layout (location = 1) out vec3 fragment_previous_world_position;
 layout (location = 2) out vec3 fragment_normal;
 layout (location = 3) out vec2 fragment_texture_coordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	//Retrieve the current world position.
 	vec3 current_world_position = geometry_positions[0];
@@ -43,7 +34,7 @@ void main()
 	fragment_previous_world_position = previous_world_position;
 	fragment_normal = forward_vector;
 	fragment_texture_coordinate = vec2(0.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(current_world_position - right_vector * (scale.x * 0.5f) - up_vector * (scale.y * 0.5f), 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(current_world_position - right_vector * (scale.x * 0.5f) - up_vector * (scale.y * 0.5f), 1.0f);
 
 	EmitVertex();
 
@@ -51,7 +42,7 @@ void main()
 	fragment_previous_world_position = previous_world_position;
 	fragment_normal = forward_vector;
 	fragment_texture_coordinate = vec2(0.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(current_world_position - right_vector * (scale.x * 0.5f) + up_vector * (scale.y * 0.5f), 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(current_world_position - right_vector * (scale.x * 0.5f) + up_vector * (scale.y * 0.5f), 1.0f);
 
 	EmitVertex();
 
@@ -59,7 +50,7 @@ void main()
 	fragment_previous_world_position = previous_world_position;
 	fragment_normal = forward_vector;
 	fragment_texture_coordinate = vec2(1.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(current_world_position + right_vector * (scale.x * 0.5f) - up_vector * (scale.y * 0.5f), 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(current_world_position + right_vector * (scale.x * 0.5f) - up_vector * (scale.y * 0.5f), 1.0f);
 
 	EmitVertex();
 
@@ -67,7 +58,7 @@ void main()
 	fragment_previous_world_position = previous_world_position;
 	fragment_normal = forward_vector;
 	fragment_texture_coordinate = vec2(1.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(current_world_position + right_vector * (scale.x * 0.5f) + up_vector * (scale.y * 0.5f), 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(current_world_position + right_vector * (scale.x * 0.5f) + up_vector * (scale.y * 0.5f), 1.0f);
 
 	EmitVertex();
 

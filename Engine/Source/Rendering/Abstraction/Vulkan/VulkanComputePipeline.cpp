@@ -63,7 +63,7 @@ void VulkanComputePipeline::CreateComputegPipelineCreateInfo(const VulkanCompute
 	computePipelineCreateInfo->stage.pNext = nullptr;
 	computePipelineCreateInfo->stage.flags = 0;
 	computePipelineCreateInfo->stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-	computePipelineCreateInfo->stage.module = parameters._ShaderModule->Get(); //TODO.
+	computePipelineCreateInfo->stage.module = parameters._ShaderModule->Get();
 	computePipelineCreateInfo->stage.pName = "main";
 	computePipelineCreateInfo->stage.pSpecializationInfo = nullptr;
 	computePipelineCreateInfo->layout = _VulkanPipelineLayout;

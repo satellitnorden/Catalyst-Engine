@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -95,7 +88,7 @@ vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness)
 	return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the current features.
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);

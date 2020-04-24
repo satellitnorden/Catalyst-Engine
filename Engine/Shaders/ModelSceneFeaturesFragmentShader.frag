@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
@@ -44,15 +37,15 @@ vec2 ApplyParallaxMapping(vec2 texture_coordinate, vec3 tangent_space_view_direc
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
 {
-  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the final texture coordinate.
 	vec2 final_texture_coordinate = fragmentTextureCoordinate;
@@ -99,7 +92,7 @@ void main()
 	}
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentPreviousWorldPosition);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentPreviousWorldPosition);
 
     //Write the fragments.
     sceneFeatures1 = vec4(albedo, float(material_index) / 255.0f);

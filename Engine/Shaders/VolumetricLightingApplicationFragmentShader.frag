@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
@@ -63,7 +56,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the current features.
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);

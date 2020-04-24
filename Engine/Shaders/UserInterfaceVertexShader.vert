@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -17,7 +8,7 @@ layout (push_constant) uniform PushConstantData
 //Out parameters.
 layout (location = 0) out vec2 fragment_texture_coordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate X and Y components.
 	float x = float(gl_VertexIndex == 1 || gl_VertexIndex == 2);

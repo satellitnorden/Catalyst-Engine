@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 
@@ -57,7 +50,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the scene features at the current fragment.
 	vec3 currentDiffuseIrradiance = texture(diffuseIrradianceTexture, fragmentTextureCoordinate).rgb;

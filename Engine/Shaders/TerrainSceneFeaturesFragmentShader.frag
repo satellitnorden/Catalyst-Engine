@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
@@ -35,15 +28,15 @@ layout (location = 3) out vec4 scene_features_4;
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
 {
-  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the surrounding heights.
 #define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
@@ -75,7 +68,7 @@ void main()
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragmentWorldPosition) - CalculateScreenCoordinate(viewMatrixMinusOne, fragmentWorldPosition);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentWorldPosition);
 
     //Write the fragments.
     sceneFeatures1 = vec4(final_material.albedo, 0.0f);

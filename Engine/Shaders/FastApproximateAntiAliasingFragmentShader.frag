@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -34,10 +25,10 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
     //Sample the neighboring pixels.
     vec3 indirect_samples[4] = vec3[]
     (  
-        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, -1.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, 1.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, 1.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, -1.0f) * inverseScaledResolution).rgb
+        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb
     );
 
     for (int i = 0; i < 4; ++i)
@@ -55,10 +46,10 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
 
     vec3 straight_samples[4] = vec3[]
     (  
-        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, 0.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, 0.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(0.0f, -1.0f) * inverseScaledResolution).rgb,
-        texture(scene_texture, fragment_texture_coordinate + vec2(0.0f, 1.0f) * inverseScaledResolution).rgb
+        texture(scene_texture, fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb,
+        texture(scene_texture, fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb
     );
 
     for (int i = 0; i < 4; ++i)
@@ -81,7 +72,7 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
     return anti_aliased_fragment;
 }
 
-void main()
+void CatalystShaderMain()
 {
     //Sample the scene.
     vec3 scene = texture(scene_texture, fragment_texture_coordinate).rgb;

@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Defines.
 #define BIAS_AMBIENT_OCCLUSION(X) (X * X * X * X)
 
@@ -23,7 +14,7 @@ layout (set = 1, binding = 1) uniform sampler2D ambient_occlusion_texture;
 //Out parameters.
 layout (location = 0) out vec4 scene_features_3;
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the scene features 3 texture.
 	vec4 scene_features_3_texture_sampler = texture(scene_features_3_texture, fragment_texture_coordinate);

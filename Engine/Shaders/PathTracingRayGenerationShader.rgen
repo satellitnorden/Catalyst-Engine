@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
@@ -26,15 +19,15 @@ layout(location = 0) rayPayloadNV PathTracingRayPayload path_tracing_ray_payload
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
 {
-  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
-void main() 
+void CatalystShaderMain() 
 {
 	//Calculate the screen coordinate.
 	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
@@ -97,10 +90,10 @@ void main()
 
 	//Calculate the velocity.
 	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * hit_distance;
-	vec2 velocity = CalculateScreenCoordinate(viewMatrix, hit_position) - CalculateScreenCoordinate(viewMatrixMinusOne, hit_position);
+	vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, hit_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, hit_position);
 
 	//Calculate the depth.
-	vec4 clip_space_position = viewMatrix * vec4(hit_position, 1.0f);
+	vec4 clip_space_position = WORLD_TO_CLIP_MATRIX * vec4(hit_position, 1.0f);
 	float depth = clip_space_position.z / clip_space_position.w;
 
 	//Write to the images.

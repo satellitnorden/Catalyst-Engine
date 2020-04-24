@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "CatalystOceanCore.glsl"
@@ -56,9 +49,9 @@ vec3 CalculateNormal(vec3 point)
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenViewMatrix, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
 {
-  vec4 viewSpacePosition = givenViewMatrix * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
@@ -112,13 +105,13 @@ float CalculateFoam(vec3 point)
     return height;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the normal.
 	vec3 normal = CalculateNormal(fragment_world_position);
 
 	//Calculate the screen coordinate.
-	vec2 screen_coordinate = (gl_FragCoord.xy + 0.5f) * inverseScaledResolution;
+	vec2 screen_coordinate = (gl_FragCoord.xy + 0.5f) * INVERSE_SCALED_RESOLUTION;
 
 	//Calculate the original world position.
 	vec3 original_world_position = CalculateWorldPosition(screen_coordinate, texture(scene_features_2_texture, screen_coordinate).w);
@@ -143,7 +136,7 @@ void main()
 	vec3 albedo = mix(mix(vec3(0.0f, 1.0f * 0.25f, 1.0f * 0.5f), original_albedo * 0.5f, original_albedo_weight), vec3(foam), foam_weight);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(viewMatrix, fragment_world_position) - CalculateScreenCoordinate(viewMatrixMinusOne, fragment_world_position);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
 
     //Write the fragments.
     scene_features_1 = vec4(albedo, 0.0f);

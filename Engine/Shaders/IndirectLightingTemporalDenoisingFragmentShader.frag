@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Constants.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.99f) //0.025f step.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
@@ -49,7 +40,7 @@ float NeighborhoodWeight(vec3 previous, vec3 minimum, vec3 maximum)
 	return weight;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the unjittered screen coordinate.
 	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
@@ -65,7 +56,7 @@ void main()
 	{
 		for (float y = -INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; y <= INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; ++y)
 		{
-			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * inverseScaledResolution * 2.0f;
+			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION * 2.0f;
 		
 			vec4 neighbordhood_sample = texture(current_indirect_lighting_texture, sample_coordinate);
 

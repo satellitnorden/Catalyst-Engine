@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -19,7 +10,7 @@ layout (set = 1, binding = 0) uniform sampler2D sourceTexture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
     //Write the fragment.
     fragment = texture(sourceTexture, fragmentTextureCoordinate);

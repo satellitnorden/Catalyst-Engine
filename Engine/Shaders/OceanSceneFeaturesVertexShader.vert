@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystOceanCore.glsl"
 
 //Constants.
@@ -28,7 +21,7 @@ layout (location = 1) in int vertex_borders;
 //Out parameters.
 layout (location = 0) out vec3 fragment_world_position;
 
-void main()
+void CatalystShaderMain()
 {
 	//Set the position.
 	vec2 position = vertex_position.xy;
@@ -65,6 +58,6 @@ void main()
 	//Apply the height.
 	fragment_world_position.y += SampleOceanHeight(fragment_world_position, ocean_texture_index);
 
-	gl_Position = viewMatrix * vec4(fragment_world_position, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 	
 }

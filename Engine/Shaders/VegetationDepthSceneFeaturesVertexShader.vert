@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystVegetationUtilities.glsl"
 
 //Push constant data.
@@ -27,7 +20,7 @@ layout (location = 4) in mat4 transformation;
 layout (location = 0) out vec2 fragmentTextureCoordinate;
 layout (location = 1) out float fragmentDistanceSquared;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the normal.
 	vec3 normal = normalize(vec3(transformation * vec4(vertexNormal, 0.0f)));
@@ -44,5 +37,5 @@ void main()
 	fragmentTextureCoordinate = vertexTextureCoordinate;
 	fragmentDistanceSquared = LengthSquared3(worldPosition - PERCEIVER_WORLD_POSITION);
 
-	gl_Position = viewMatrix * vec4(worldPosition, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
 }

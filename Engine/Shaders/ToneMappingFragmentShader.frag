@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
 
 //Constants.
@@ -56,7 +49,7 @@ vec3 ApplyColorGrading(vec3 fragment)
     return mix(current_color_graded_value, next_colorgraded_value, fract(cell));
 }
 
-void main()
+void CatalystShaderMain()
 {
     //Sample the scene texture.
     vec3 sceneTextureColor = texture(scene_texture, fragment_texture_coordinate).rgb;

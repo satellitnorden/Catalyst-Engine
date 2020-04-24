@@ -1,12 +1,3 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Push constant data.
 layout (push_constant) uniform ModelData
 {
@@ -24,7 +15,7 @@ layout (location = 0) out mat3 fragment_tangent_space_matrix;
 layout (location = 3) out vec3 fragment_current_world_position;
 layout (location = 4) out vec2 fragment_texture_coordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	vec3 tangent = normalize(vec3(current_model_matrix * vec4(vertex_tangent, 0.0f)));
 	vec3 bitangent = normalize(vec3(current_model_matrix * vec4(cross(vertex_normal, vertex_tangent), 0.0f)));
@@ -34,5 +25,5 @@ void main()
 	fragment_current_world_position = vec3(current_model_matrix * vec4(vertex_position, 1.0));
 	fragment_texture_coordinate = vertex_texture_coordinate;
 
-	gl_Position = viewMatrix * vec4(fragment_current_world_position, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_current_world_position, 1.0f);
 }

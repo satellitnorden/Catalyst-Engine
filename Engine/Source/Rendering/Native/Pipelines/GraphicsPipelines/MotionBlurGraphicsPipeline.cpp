@@ -9,6 +9,18 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Motion blur push constant data.
+*/
+class MotionBlurPushConstantData final
+{
+
+public:
+
+	float32 _MotionBlurIntensity;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void MotionBlurGraphicsPipeline::Initialize() NOEXCEPT
@@ -34,6 +46,10 @@ void MotionBlurGraphicsPipeline::Initialize() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(MotionBlurPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -77,6 +93,13 @@ void MotionBlurGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	MotionBlurPushConstantData data;
+
+	data._MotionBlurIntensity = 1.0f;
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(MotionBlurPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRandomUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
@@ -84,7 +77,7 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 		vec3 sample_position = ray_origin + ray_direction * float(i);
 
 		//Calculate the sample screen coordinate.
-		vec4 sample_view_space_position = viewMatrix * vec4(sample_position, 1.0f);
+		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
 		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
 		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
 
@@ -128,7 +121,7 @@ bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
 	return false;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the scene features.
 	vec4 scene_features_2 = texture(scene_features_2_texture, fragment_texture_coordinate);

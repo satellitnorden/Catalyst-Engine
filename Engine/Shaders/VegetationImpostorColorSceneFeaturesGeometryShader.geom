@@ -1,12 +1,3 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -26,7 +17,7 @@ layout (location = 0) out vec3 fragment_world_position;
 layout (location = 1) out vec3 fragment_normal;
 layout (location = 2) out vec2 fragment_texture_coordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	//Retrieve the world position.
 	vec3 world_position = geometry_positions[0];
@@ -42,28 +33,28 @@ void main()
 	fragment_world_position = world_position;
 	fragment_normal = forward_vector;
 	fragment_texture_coordinate = vec2(0.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position - right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
 	fragment_normal = forward_vector;
 	fragment_world_position = world_position;
 	fragment_texture_coordinate = vec2(0.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 
 	fragment_normal = forward_vector;
 	fragment_world_position = world_position;
 	fragment_texture_coordinate = vec2(1.0f, 1.0f);
-	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
 	fragment_normal = forward_vector;
 	fragment_world_position = world_position;
 	fragment_texture_coordinate = vec2(1.0f, 0.0f);
-	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 

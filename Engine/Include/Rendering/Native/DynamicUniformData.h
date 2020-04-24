@@ -12,50 +12,34 @@ class DynamicUniformData final
 
 public:
 
-	Matrix4x4 _ViewMatrixMinusOne;
-	Matrix4x4 _UNUSED1;
-	Matrix4x4 _InversePerceiverMatrix;
-	Matrix4x4 _InverseProjectionMatrix;
-	Matrix4x4 _PerceiverMatrix;
-	Matrix4x4 _ProjectionMatrix;
-	Matrix4x4 _ViewMatrix;
+	Matrix4x4 _InversePerceiverToClipMatrix;
+	Matrix4x4 _InverseWorldToPerceiverMatrix;
+	Matrix4x4 _PreviousWorldToClipMatrix;
+	Matrix4x4 _WorldToClipMatrix;
+	Matrix4x4 _WorldToPerceiverMatrix;
 
-	Vector4<float> _UNUSEDX;
-	Vector4<float> _UNUSEDY;
-	Vector4<float> _UNUSED6;
-	Vector4<float> _PerceiverForwardVector;
-	Vector4<float> _PerceiverWorldPosition;
+	Vector4<float32> _PerceiverForwardVector;
+	Vector4<float32> _PerceiverWorldPosition;
 
-	Vector2<float> _ScaledResolution;
-	Vector2<float> _InverseScaledResolution;
-	Vector2<float> _PreviousFrameJitter;
-	Vector2<float> _CurrentFrameJitter;
+	Vector2<float32> _InverseScaledResolution;
+	Vector2<float32> _PreviousFrameJitter;
+	Vector2<float32> _CurrentFrameJitter;
 
-	float _DeltaTime;
-	float _UNUSEDZ;
-	float _GlobalRandomSeed1;
-	float _GlobalRandomSeed2;
-	float _GlobalRandomSeed3;
-	float _UNUSED5;
-	float _TotalTime;
-	float _WindSpeed;
+	float32 _DeltaTime;
+	float32 _GlobalRandomSeed1;
+	float32 _GlobalRandomSeed2;
+	float32 _GlobalRandomSeed3;
+	float32 _TotalTime;
+	float32 _WindSpeed;
 
-	int32 _AmbientOcclusionMode;
-	int32 _MotionBlurMode;
-	int32 _UNUSED3;
-	int32 _ShadowsMode;
-	int32 _UNUSED4;
-
-	float _UNUSED2;
 	float _BloomIntensity;
-	float _UNUSEDWAT;
-	float _UNUSEDW;
 
 	float32 _AspectRatio;
 
 	uint32 _CurrentBlueNoiseTextureIndex;
 	float _CurrentBlueNoiseTextureOffsetX;
 	float _CurrentBlueNoiseTextureOffsetY;
+
 	float _ViewDistance;
 	float _CloudDensity;
 	float _Wetness;
@@ -69,4 +53,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 680, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 456, "Size of dynamic uniform data is wrong!");

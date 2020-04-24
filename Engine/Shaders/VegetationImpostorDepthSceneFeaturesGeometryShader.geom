@@ -1,12 +1,3 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -25,7 +16,7 @@ layout (location = 0) in vec3 geometry_positions[];
 layout (location = 0) out vec2 fragment_texture_coordinate;
 layout (location = 1) out float fragment_distance_squared;
 
-void main()
+void CatalystShaderMain()
 {
 	//Retrieve the world position.
 	vec3 world_position = geometry_positions[0];
@@ -43,25 +34,25 @@ void main()
 	//Construct all the vertices.
 	fragment_texture_coordinate = vec2(0.0f, 1.0f);
 	fragment_distance_squared = distance_squared;
-	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position - right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
 	fragment_texture_coordinate = vec2(0.0f, 0.0f);
 	fragment_distance_squared = distance_squared;
-	gl_Position = viewMatrix * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position - right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 
 	fragment_texture_coordinate = vec2(1.0f, 1.0f);
 	fragment_distance_squared = distance_squared;
-	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * impostor_half_width, 1.0f);
 
 	EmitVertex();
 
 	fragment_texture_coordinate = vec2(1.0f, 0.0f);
 	fragment_distance_squared = distance_squared;
-	gl_Position = viewMatrix * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * impostor_half_width + up_vector * impostor_height, 1.0f);
 
 	EmitVertex();
 

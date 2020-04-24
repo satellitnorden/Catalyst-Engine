@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -26,7 +17,7 @@ layout (set = 1, binding = 1) uniform sampler2D depth_of_field_texture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample neighboring fragments.
 	vec3 blurred_depth_of_field = vec3(0.0f);
@@ -36,7 +27,7 @@ void main()
 		for (int X = -STRIDE; X <= STRIDE; X += STRIDE)
 		{
 			//Calculate the sample coordinate.
-			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * inverseScaledResolution * 2.0f;
+			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * INVERSE_SCALED_RESOLUTION * 2.0f;
 
 			/*
 			*	Calculate the sample weight, depending on these criteria;

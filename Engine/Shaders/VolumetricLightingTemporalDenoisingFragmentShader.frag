@@ -1,12 +1,3 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Constants.
 #define VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.75f) //0.025f step.
 

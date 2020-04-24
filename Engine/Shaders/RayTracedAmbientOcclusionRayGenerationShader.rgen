@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
@@ -25,7 +18,7 @@ float ProbabilityDensityFunction(vec3 pre_rotation_hemisphere_direction)
 	return max(dot(pre_rotation_hemisphere_direction, vec3(0.0f, 0.0f, 1.0f)), 0.0f);
 }
 
-void main() 
+void CatalystShaderMain() 
 {
 	//Calculate the screen coordinate.
 	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);

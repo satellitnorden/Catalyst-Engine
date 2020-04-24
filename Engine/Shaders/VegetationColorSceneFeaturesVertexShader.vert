@@ -1,11 +1,4 @@
-//Version declaration.
-#version 450
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystVegetationUtilities.glsl"
 
 //Push constant data.
@@ -29,7 +22,7 @@ layout (location = 3) out vec3 fragmentPreviousWorldPosition;
 layout (location = 4) out vec3 fragmentCurrentWorldPosition;
 layout (location = 5) out vec2 fragmentTextureCoordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the tangent/bitangent/normal.
 	vec3 tangent = normalize(vec3(transformation * vec4(vertexTangent, 0.0f)));
@@ -49,5 +42,5 @@ void main()
 	fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
 	fragmentTextureCoordinate = vertexTextureCoordinate;
 
-	gl_Position = viewMatrix * vec4(fragmentCurrentWorldPosition, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragmentCurrentWorldPosition, 1.0f);
 }

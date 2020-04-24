@@ -1,16 +1,7 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the viewport coordinates.
 	float x = -1.0f + float((gl_VertexIndex & 2) << 1);

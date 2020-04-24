@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystUserInterfaceCore.glsl"
 
 //Constants.
@@ -30,7 +23,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
 	switch (TYPE)
 	{

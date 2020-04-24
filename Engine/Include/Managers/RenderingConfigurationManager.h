@@ -30,14 +30,6 @@ public:
 		SCREEN_SPACE
 	};
 
-	//Enumeration covering all motion blur modes.
-	enum class MotionBlurMode : uint8
-	{
-		None,
-		Half,
-		Full
-	};
-
 	//Enumeration covering all surface shadows modes.
 	enum class SurfaceShadowsMode : uint8
 	{
@@ -89,14 +81,6 @@ public:
 	}
 
 	/*
-	*	Returns the motion blur mode.
-	*/
-	FORCE_INLINE NO_DISCARD MotionBlurMode GetMotionBlurMode() const NOEXCEPT
-	{
-		return _MotionBlurMode;
-	}
-
-	/*
 	*	Returns the surface shadows mode.
 	*/
 	FORCE_INLINE NO_DISCARD SurfaceShadowsMode GetSurfaceShadowsMode() const NOEXCEPT
@@ -138,9 +122,6 @@ private:
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
-
-	//The motion blur mode.
-	MotionBlurMode _MotionBlurMode{ MotionBlurMode::Full };
 
 	//The surface shadows mode.
 	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RAY_TRACED };

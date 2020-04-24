@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
@@ -66,7 +59,7 @@ layout (set = 1, binding = 1) uniform sampler2D scene_texture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-void main()
+void CatalystShaderMain()
 {
 	//Calculate the current view distance.
 	float current_view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(scene_features_2_texture, fragment_texture_coordinate).w).z);

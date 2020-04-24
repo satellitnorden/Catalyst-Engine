@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRandomUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
@@ -34,7 +27,7 @@ float ProbabilityDensityFunction(vec3 pre_rotation_hemisphere_direction, vec2 sa
 	return max(dot(pre_rotation_hemisphere_direction, vec3(0.0f, 0.0f, 1.0f)), 0.0f) * float(ValidCoordinate(sample_screen_coordinate));
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Sample the scene features.
 	vec4 scene_features = texture(scene_features_2_texture, fragment_texture_coordinate);
@@ -80,7 +73,7 @@ void main()
 		vec3 sample_position = world_position + random_direction * random_length * AMBIENT_OCCLUSION_RADIUS;
 
 		//Calculate the sample screen coordinate.
-		vec4 sample_view_space_position = viewMatrix * vec4(sample_position, 1.0f);
+		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
 		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
 		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
 		float expected_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;

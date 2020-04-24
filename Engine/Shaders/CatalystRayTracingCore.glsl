@@ -29,9 +29,9 @@ struct PathTracingRayPayload
 vec3 CalculateRayDirection(vec2 coordinate)
 {
     vec2 nearPlaneCoordinate = coordinate * 2.0f - 1.0f;
-	vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, 1.0f), 1.0f);
+	vec4 viewSpacePosition = INVERSE_PERCEIVER_TO_CLIP_MATRIX * vec4(vec3(nearPlaneCoordinate, 1.0f), 1.0f);
 	viewSpacePosition /= viewSpacePosition.w;
-	vec4 worldSpacePosition = inversePerceiverMatrix * viewSpacePosition;
+	vec4 worldSpacePosition = INVERSE_WORLD_TO_PERCEIVER_MATRIX * viewSpacePosition;
 
 	vec3 worldPosition = vec3(worldSpacePosition.x, worldSpacePosition.y, worldSpacePosition.z);
 

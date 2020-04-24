@@ -1,18 +1,11 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
-//Includes.
-#include "CatalystShaderCommon.glsl"
-#include "CatalystRayTracingCore.glsl"
-
-//Constants.
-#define MOTION_BLUR_SCALE (1.0f)
-
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float MOTION_BLUR_INTENSITY;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -32,10 +25,10 @@ vec2 GetVelocity()
 	return texture(scene_features_4_texture, fragmentTextureCoordinate).xy;
 }
 
-void main()
+void CatalystShaderMain()
 {
 	//Do just do a passthrough if motion blur is turned off.
-	if (motionBlurMode == MOTION_BLUR_MODE_NONE)
+	if (MOTION_BLUR_INTENSITY == 0.0f)
 	{
 		//Write the fragment.
     	fragment = vec4(texture(scene_texture, fragmentTextureCoordinate).rgb, 1.0f);
@@ -43,11 +36,8 @@ void main()
 	
 	else
 	{
-		//Calculate the motion blur scale.
-		float motion_blur_scale = mix(0.5f, 1.0f, float(motionBlurMode == MOTION_BLUR_MODE_FULL));
-
 		//Calculate the blur direction.
-		vec2 blur_direction = GetVelocity() * -1.0f * motion_blur_scale;
+		vec2 blur_direction = GetVelocity() * -1.0f * MOTION_BLUR_INTENSITY;
 
 		//Sample the noise texture(s).
 		vec4 noise_texture_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);

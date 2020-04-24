@@ -1,11 +1,4 @@
-//Version declaration.
-#version 460
-
-//Extensions.
-#extension GL_GOOGLE_include_directive : enable
-
 //Includes.
-#include "CatalystShaderCommon.glsl"
 #include "CatalystGeometryMath.glsl"
 #include "CatalystLightingData.glsl"
 #include "CatalystPackingUtilities.glsl"
@@ -26,7 +19,7 @@ layout (set = 3, binding = 1, rgba32f) uniform image2D volumetric_lighting_image
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
 
-void main() 
+void CatalystShaderMain() 
 {
 	//Calculate the screen coordinate.
 	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
