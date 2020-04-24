@@ -19,6 +19,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CullingSystem.h>
+#include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
@@ -127,6 +128,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Initialize all systems.
 	CullingSystem::Instance->Initialize();
+	DistributionSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
@@ -261,6 +263,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	TaskSystem::Instance->Terminate();
 
 	//Terminate all systems.
+	DistributionSystem::Instance->Terminate();
 	RenderingSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 }

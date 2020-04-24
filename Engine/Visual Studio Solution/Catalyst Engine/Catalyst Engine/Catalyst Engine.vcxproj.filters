@@ -367,6 +367,12 @@
     <Filter Include="Platform\Inline\Windows">
       <UniqueIdentifier>{342d374f-d35a-4105-a168-aa86e608cdd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Distribution">
+      <UniqueIdentifier>{95dacbdc-0825-4022-aa2f-96662cad2a66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Distribution\Source">
+      <UniqueIdentifier>{efd1ddca-7600-4d37-a138-e9f2ae66189a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -2038,6 +2044,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\DistributionSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Distribution\SteamDistributionSystem.cpp">
+      <Filter>Distribution\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_ENABLE_PATH_TRACING;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_CATALYST;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_DISTRIBUTION_STEAM;CATALYST_ENABLE_PATH_TRACING;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;CATALYST_SOUND_CATALYST;CATALYST_SOUND_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -438,6 +438,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
+    <ClCompile Include="..\..\..\Source\Distribution\SteamDistributionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DistanceTriggerEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />

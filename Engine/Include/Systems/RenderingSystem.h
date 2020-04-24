@@ -95,7 +95,7 @@ public:
 	/*
 	*	Returns the resolution.
 	*/
-	FORCE_INLINE NO_DISCARD Resolution GetFullResolution(const uint8 mip_level = 0) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Resolution GetFullResolution() const NOEXCEPT
 	{
 		return _FullResolution;
 	}

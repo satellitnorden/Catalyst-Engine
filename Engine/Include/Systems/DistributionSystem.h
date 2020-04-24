@@ -19,4 +19,14 @@ public:
 
 	}
 
+	/*
+	*	Initializes the distribution system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
+	*	Terminates the distribution system.
+	*/
+	void Terminate() NOEXCEPT;
+
 };
