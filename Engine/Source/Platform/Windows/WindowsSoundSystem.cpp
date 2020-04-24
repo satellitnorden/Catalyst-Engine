@@ -1,4 +1,4 @@
-#if defined(CATALYST_PLATFORM_WINDOWS) && defined(CATALYST_SOUND_CATALYST)
+#if defined(CATALYST_PLATFORM_WINDOWS)
 //Header file.
 #include <Systems/SoundSystem.h>
 

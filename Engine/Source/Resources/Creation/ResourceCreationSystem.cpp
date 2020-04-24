@@ -182,13 +182,13 @@ void ResourceCreationSystem::CreateTexture2D(Texture2DData *const RESTRICT data,
 /*
 *	Creates a texture 3D.
 */
-void ResourceCreationSystem::CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT
+void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT
 {
 	//Create a texture 3D ouf of the incoming data.
 	Texture3D<Vector4<byte>> temporary_texture{ data->_Width, data->_Height, data->_Depth, data->_Data[0].Data() };
 
 	//Create the texture!
-	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8), texture);
+	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8), &resource->_Texture3DHandle);
 }
 
 /*

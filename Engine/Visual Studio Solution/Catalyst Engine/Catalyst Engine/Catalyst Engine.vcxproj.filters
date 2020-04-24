@@ -1527,6 +1527,12 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\TextureCubeResource.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\Texture3DResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\DistributionSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2009,9 +2015,6 @@
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp">
       <Filter>Resources\Source\Creation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsCatalystSoundSystem.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp">
       <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
@@ -2029,6 +2032,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanCommandBufferSource.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsSoundSystem.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\DistributionSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

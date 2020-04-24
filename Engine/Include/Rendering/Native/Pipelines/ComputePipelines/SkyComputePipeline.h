@@ -23,12 +23,26 @@ public:
 
 private:
 
-	//Keeps track of the current iteration.
-	uint32 _CurrentIteration{ 0 };
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
+
+	//The currently bound sky texture.
+	TextureCubeHandle _CurrentlyBoundSkyTexture{ EMPTY_HANDLE };
+
+	//Keeps track of the current face index.
+	uint32 _CurrentFaceIndex{ 0 };
 
 	/*
-	*	Calculates the parameters difference.
+	*	Creates the render data table layout.
 	*/
-	NO_DISCARD float CalculateParametersDifference() NOEXCEPT;
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 };

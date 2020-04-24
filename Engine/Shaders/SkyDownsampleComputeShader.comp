@@ -4,14 +4,15 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint input_index;
-	layout (offset = 4) uint output_index;
+	layout (offset = 0) uint CURRENT_FACE_INDEX;
+	layout (offset = 4) uint input_index;
+	layout (offset = 8) uint output_index;
 };
 
 void CatalystShaderMain() 
 {
 	//Calculate the coordinate.
-	uvec3 coordinate = uvec3(gl_GlobalInvocationID.xy * 2, gl_GlobalInvocationID.z);
+	uvec3 coordinate = uvec3(gl_GlobalInvocationID.xy * 2, CURRENT_FACE_INDEX);
 
 	//Calculate the blended color.
 	vec4 blended_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -22,5 +23,5 @@ void CatalystShaderMain()
 	blended_color += imageLoad(SKY_IMAGES[input_index], ivec3(coordinate) + ivec3(1, 1, 0)) * 0.25f;
 
 	//Write to the image.
-	imageStore(SKY_IMAGES[output_index], ivec3(gl_GlobalInvocationID), blended_color);
+	imageStore(SKY_IMAGES[output_index], ivec3(gl_GlobalInvocationID.xy, CURRENT_FACE_INDEX), blended_color);
 }

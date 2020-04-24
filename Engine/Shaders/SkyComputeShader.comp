@@ -24,10 +24,14 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 32) vec3 sky_light_direction;
 	layout (offset = 48) vec3 sky_light_luminance;
 	layout (offset = 64) float sky_light_intensity;
-	layout (offset = 68) uint current_iteration;
-	layout (offset = 72) float parameters_difference;
-	layout (offset = 76) float star_intensity;
+	layout (offset = 68) uint CURRENT_FACE_INDEX;
+	layout (offset = 72) float star_intensity;
+	layout (offset = 76) uint HAS_SKY_TEXTURE_OVERRIDE;
+	layout (offset = 80) float SKY_INTENSITY;
 };
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform samplerCube sky_texture_override_texture;
 
 /*
 *	Calculates and returns the direction associated with this texel.
@@ -221,34 +225,40 @@ vec4 CalculateClouds(uvec3 coordinate, vec3 direction)
 void CatalystShaderMain() 
 {
 	//Calculate the coordinate.
-	uvec3 coordinate = uvec3(gl_GlobalInvocationID.xy * 2, gl_GlobalInvocationID.z);
-
-	coordinate.x = coordinate.x + 1 * uint(current_iteration & 1);
-	coordinate.y = coordinate.y + 1 * uint(current_iteration > 1);
+	uvec3 coordinate = uvec3(gl_GlobalInvocationID.xy, CURRENT_FACE_INDEX);
 
 	//Calculate the direction.
 	vec3 direction = CalculateDirection(coordinate);
 
-	//Calculate the sky color.
-	vec3 sky_color = CalculateSky(direction);
+	if (HAS_SKY_TEXTURE_OVERRIDE > 0)
+	{
+		//Write to the image.
+		imageStore(SKY_IMAGES[0], ivec3(coordinate), texture(sky_texture_override_texture, direction) * SKY_INTENSITY);
+	}
 
-	//Calculate the stars and blend them in.
-	vec4 stars = CalculateStars(direction);
+	else
+	{
+		//Calculate the sky color.
+		vec3 sky_color = CalculateSky(direction);
 
-	sky_color = mix(sky_color, stars.rgb, stars.a);
+		//Calculate the stars and blend them in.
+		vec4 stars = CalculateStars(direction);
 
-	//Calculate the clouds.
-	vec4 clouds = CalculateClouds(coordinate, direction);
+		sky_color = mix(sky_color, stars.rgb, stars.a);
 
-	//Load the old color.
-	vec4 old_color = imageLoad(SKY_IMAGES[0], ivec3(coordinate));
+		//Calculate the clouds.
+		vec4 clouds = CalculateClouds(coordinate, direction);
 
-	//Calculate the new color.
-	vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
+		//Load the old color.
+		vec4 old_color = imageLoad(SKY_IMAGES[0], ivec3(coordinate));
 
-	//Calculate the final color.
-	vec4 final_color = mix(new_color, old_color, SKY_FEEDBACK_FACTOR * (1.0f - parameters_difference));
+		//Calculate the new color.
+		vec4 new_color = vec4(mix(sky_color, clouds.rgb, clouds.a), 1.0f);
 
-	//Write to the image.
-	imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color);
+		//Calculate the final color.
+		vec4 final_color = mix(new_color, old_color, SKY_FEEDBACK_FACTOR);
+
+		//Write to the image.
+		imageStore(SKY_IMAGES[0], ivec3(coordinate), final_color * SKY_INTENSITY);
+	}
 }

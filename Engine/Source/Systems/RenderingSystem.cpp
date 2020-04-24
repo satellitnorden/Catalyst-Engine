@@ -482,7 +482,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Bind the cloud texture.
-		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetResourceLoadingSystem()->GetTexture3DResource(HashString("Cloud_Texture3D")), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 
 		//Bind the sky images.
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)

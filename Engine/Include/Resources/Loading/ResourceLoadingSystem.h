@@ -19,6 +19,7 @@
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
+#include <Resources/Loading/Texture3DData.h>
 #include <Resources/Loading/TextureCubeData.h>
 
 //Sound.
@@ -43,22 +44,6 @@ public:
 	FORCE_INLINE NO_DISCARD const Model &GetModelResource(const HashString resource_ID) NOEXCEPT
 	{
 		return _Models[resource_ID];
-	}
-
-	/*
-	*	Returns all texture 3D resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, Texture3DHandle> &GetAllTexture3DResources() NOEXCEPT
-	{
-		return _Texture3Ds;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding texture 3D resource.
-	*/
-	FORCE_INLINE NO_DISCARD const Texture3DHandle& GetTexture3DResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _Texture3Ds[resource_ID];
 	}
 
 	/*
@@ -97,9 +82,9 @@ public:
 	void LoadTexture2D(BinaryFile<IOMode::In> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load a texture 3D.
+	*	Given a file, load texture 3D data.
 	*/
-	void LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT;
+	void LoadTexture3D(BinaryFile<IOMode::In> *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load texture cube data.
@@ -111,7 +96,5 @@ private:
 	//Container for all models.
 	Map<HashString, Model> _Models;
 
-	//Container for all texture 3Ds.
-	Map<HashString, Texture3DHandle> _Texture3Ds;
 
 };

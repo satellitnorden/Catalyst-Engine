@@ -13,6 +13,7 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
+#include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
@@ -146,6 +147,19 @@ public:
 	}
 
 	/*
+	*	Returns the texture 3D resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		Texture3DResource *const RESTRICT *const RESTRICT resource{ _Texture3DResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<Texture3DResource>(*resource);
+	}
+
+	/*
 	*	Returns the texture cube resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT
@@ -188,6 +202,9 @@ private:
 
 	//Container for all texture 2D resources.
 	HashTable<HashString, Texture2DResource *RESTRICT> _Texture2DResources;
+
+	//Container for all texture 3D resources.
+	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
 
 	//Container for all texture cube resources.
 	HashTable<HashString, TextureCubeResource *RESTRICT> _TextureCubeResources;

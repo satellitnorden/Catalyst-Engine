@@ -21,4 +21,9 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+private:
+
+	//The current face index.
+	uint32 _CurrentFaceIndex{ 0 };
+
 };

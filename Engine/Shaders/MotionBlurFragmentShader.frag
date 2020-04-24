@@ -8,7 +8,7 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
@@ -22,7 +22,7 @@ layout (location = 0) out vec4 fragment;
 */
 vec2 GetVelocity()
 {
-	return texture(scene_features_4_texture, fragmentTextureCoordinate).xy;
+	return texture(scene_features_4_texture, fragment_texture_coordinate).xy;
 }
 
 void CatalystShaderMain()
@@ -31,7 +31,7 @@ void CatalystShaderMain()
 	if (MOTION_BLUR_INTENSITY == 0.0f)
 	{
 		//Write the fragment.
-    	fragment = vec4(texture(scene_texture, fragmentTextureCoordinate).rgb, 1.0f);
+    	fragment = vec4(texture(scene_texture, fragment_texture_coordinate).rgb, 1.0f);
 	}
 	
 	else
@@ -43,10 +43,10 @@ void CatalystShaderMain()
 		vec4 noise_texture_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
 		//Calculate the blurred scene.
-		vec3 blurred_scene = (texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.x).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.y).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.z).rgb +
-							texture(scene_texture, fragmentTextureCoordinate + blur_direction * noise_texture_1.w).rgb) * 0.25f;
+		vec3 blurred_scene = (texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.x).rgb +
+							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.y).rgb +
+							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.z).rgb +
+							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.w).rgb) * 0.25f;
 
 	    //Write the fragment.
 	    fragment = vec4(blurred_scene, 1.0f);

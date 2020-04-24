@@ -212,7 +212,25 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 			case ResourceType::TEXTURE_3D:
 			{
-				_ResourceLoadingSystem.LoadTexture3D(file);
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				Texture3DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource() };
+
+				//Load the resource.
+				Texture3DData data;
+				_ResourceLoadingSystem.LoadTexture3D(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateTexture3D(&data, new_resource);
+
+				//Add the new resource.
+				_Texture3DResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}

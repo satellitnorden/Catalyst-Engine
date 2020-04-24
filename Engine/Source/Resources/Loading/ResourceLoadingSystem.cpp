@@ -235,43 +235,33 @@ void ResourceLoadingSystem::LoadTexture2D(BinaryFile<IOMode::In> *const RESTRICT
 }
 
 /*
-*	Given a file, load a texture 3D.
+*	Given a file, load texture 3D data.
 */
-void ResourceLoadingSystem::LoadTexture3D(BinaryFile<IOMode::In>& file) NOEXCEPT
+void ResourceLoadingSystem::LoadTexture3D(BinaryFile<IOMode::In> *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT
 {
-	//Load the texture 3D data.
-	Texture3DData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
 	//Read the number of mipmap levels.
-	file.Read(&data._MipmapLevels, sizeof(uint8));
+	file->Read(&data->_MipmapLevels, sizeof(uint8));
 
 	//Read the width.
-	file.Read(&data._Width, sizeof(uint32));
+	file->Read(&data->_Width, sizeof(uint32));
 
 	//Read the height.
-	file.Read(&data._Height, sizeof(uint32));
+	file->Read(&data->_Height, sizeof(uint32));
 
 	//Read the depth.
-	file.Read(&data._Depth, sizeof(uint32));
+	file->Read(&data->_Depth, sizeof(uint32));
 
 	//Read the data.
-	data._Data.Upsize<true>(data._MipmapLevels);
+	data->_Data.Upsize<true>(data->_MipmapLevels);
 
-	for (uint8 i{ 0 }; i < data._MipmapLevels; ++i)
+	for (uint8 i{ 0 }; i < data->_MipmapLevels; ++i)
 	{
-		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * (data._Depth >> i) * sizeof(Vector4<byte>) };
+		const uint64 textureSize{ (data->_Width >> i) * (data->_Height >> i) * (data->_Depth >> i) * sizeof(Vector4<byte>) };
 
-		data._Data[i].Reserve(textureSize);
+		data->_Data[i].Reserve(textureSize);
 
-		file.Read(data._Data[i].Data(), textureSize);
+		file->Read(data->_Data[i].Data(), textureSize);
 	}
-
-	//Create the texture 3D.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateTexture3D(&data, &_Texture3Ds[resourceID]);
 }
 
 /*

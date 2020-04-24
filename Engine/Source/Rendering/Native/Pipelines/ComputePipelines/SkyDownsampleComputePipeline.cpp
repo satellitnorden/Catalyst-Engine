@@ -17,6 +17,9 @@ class SkyDownsamplePushConstantData final
 
 public:
 
+	//The current face index.
+	uint32 _CurrentFaceIndex;
+
 	//The input index.
 	uint32 _InputIndex;
 
@@ -65,13 +68,14 @@ void SkyDownsampleComputePipeline::Execute() NOEXCEPT
 		//Push constants.
 		SkyDownsamplePushConstantData data;
 
+		data._CurrentFaceIndex = _CurrentFaceIndex;
 		data._InputIndex = i;
 		data._OutputIndex = i + 1;
 
 		command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(SkyDownsamplePushConstantData), &data);
 
 		//Dispatch!
-		command_buffer->Dispatch(this, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), 6);
+		command_buffer->Dispatch(this, CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), CatalystShaderConstants::SKY_TEXTURE_BASE_RESOLUTION >> (1 + i), 1);
 	}
 
 	//End the command buffer.
@@ -79,4 +83,7 @@ void SkyDownsampleComputePipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+
+	//Update the current face index.
+	_CurrentFaceIndex = (_CurrentFaceIndex + 1) % 6;
 }

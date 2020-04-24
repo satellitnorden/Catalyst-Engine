@@ -367,6 +367,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ShaderResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\SoundResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\Texture3DResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\TextureCubeResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h" />
@@ -389,6 +390,7 @@
     <ClInclude Include="..\..\..\Include\Systems\AnimationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\DistributionSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
@@ -451,8 +453,8 @@
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsCatalystSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\Vulkan3DTexture.cpp" />
@@ -584,6 +586,7 @@
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\DistributionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />

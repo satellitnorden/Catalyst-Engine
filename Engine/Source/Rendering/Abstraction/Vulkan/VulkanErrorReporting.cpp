@@ -51,8 +51,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 {
 	PRINT_TO_OUTPUT(pCallbackData->pMessage);
 
-	//ASSERT(pCallbackData->pMessage[0] != 'V', "Yep");
-
 	return VK_FALSE;
 }
 #endif

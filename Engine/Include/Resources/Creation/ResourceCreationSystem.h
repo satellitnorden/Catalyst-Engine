@@ -14,6 +14,7 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
+#include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
@@ -68,7 +69,7 @@ public:
 	/*
 	*	Creates a texture 3D.
 	*/
-	void CreateTexture3D(Texture3DData* const RESTRICT data, Texture3DHandle* const RESTRICT texture) NOEXCEPT;
+	void CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a texture cube.

@@ -64,7 +64,7 @@ void CatalystShaderMain()
 			vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
 
 			//Accumulate occlusion.
-			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.25f;
+			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.5f;
 		}
 
 		//Calculate the disocclusion.

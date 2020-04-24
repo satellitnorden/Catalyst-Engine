@@ -13,10 +13,8 @@
 #include <ShlObj_core.h>
 
 //These technically don't need to be public through the entire engine, but need to be included before the undef's.
-#if defined(CATALYST_SOUND_CATALYST)
 #include <audioclient.h>
 #include <mmdeviceapi.h>
-#endif
 
 //Undefine annoying Windows defines. Fuck Windows. I hate everything.
 #undef CopyMemory
