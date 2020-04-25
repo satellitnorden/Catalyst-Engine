@@ -3,7 +3,7 @@
 
 //Constants.
 #define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.1f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -39,12 +39,12 @@ void CatalystShaderMain()
 	//Calculate the ambient lighting.
 	vec3 ambient_lighting = vec3(0.0f);
 
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.167;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.167;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.16f * 0.5f;
 
 	//Calculate the sky light lighting.
 	vec3 sky_light_lighting = CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
@@ -64,7 +64,7 @@ void CatalystShaderMain()
 			vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
 
 			//Accumulate occlusion.
-			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.5f;
+			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.25f;
 		}
 
 		//Calculate the disocclusion.

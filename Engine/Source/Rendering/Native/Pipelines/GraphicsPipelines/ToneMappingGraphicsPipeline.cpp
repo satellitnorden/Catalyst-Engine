@@ -99,7 +99,7 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	ToneMappingPushConstantData data;
 
-	data._ColorGradingTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Color_Grading_Lookup_Texture2D"))->_Index;
+	data._ColorGradingTextureIndex = RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTextureResource() ? RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTextureResource()->_Index : UINT32_MAXIMUM;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ToneMappingPushConstantData), &data);
 

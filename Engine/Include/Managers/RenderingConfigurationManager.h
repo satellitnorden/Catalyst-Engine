@@ -127,9 +127,9 @@ private:
 	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RAY_TRACED };
 
 	//The volumetric shadows mode.
-	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::RAY_TRACED };
+	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
 
 	//The bloom intensity.
-	float _BloomIntensity{ 0.05f };
+	float _BloomIntensity{ 0.1f };
 
 };

@@ -28,7 +28,6 @@
 #define BUILD_ENGINE_FONTS false
 #define BUILD_ENGINE_OCEAN_TEXTURE false
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
-#define BUILD_ENGINE_COLOR_GRADING_TEXTURES false
 #define BUILD_ENGINE_SHADERS false
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION false
@@ -565,24 +564,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._MipmapLevels = 1;
 		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
 		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_31.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
-		parameters._ApplyGammaCorrection = false;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
-	}
-#endif
-
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_COLOR_GRADING_TEXTURES
-	{
-		Texture2DBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Color_Grading_Lookup_Texture2D";
-		parameters._ID = "Color_Grading_Lookup_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Color_Grading_Lookup_Textures\\LUT_Filmic7.png";
 		parameters._FileG = nullptr;
 		parameters._FileB = nullptr;
 		parameters._FileA = nullptr;
@@ -1452,7 +1433,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_COLOR_GRADING_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 

@@ -11,10 +11,6 @@
 #include "..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
 
 //Constants.
-#define MOTION_BLUR_MODE_NONE (0)
-#define MOTION_BLUR_MODE_HALF (1)
-#define MOTION_BLUR_MODE_FULL (2)
-
 #define RENDER_TARGET_SCENE_FEATURES_1_INDEX                        (0)
 #define RENDER_TARGET_SCENE_FEATURES_2_INDEX                        (1)
 #define RENDER_TARGET_SCENE_FEATURES_3_INDEX                        (2)
@@ -41,6 +37,7 @@
 #define GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS                                            (6)
 
 #define FLOAT_MAXIMUM (3.402823466e+38F)
+#define UINT32_MAXIMUM (0xffffffff)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
 #define EULERS_NUMBER (2.718281f)

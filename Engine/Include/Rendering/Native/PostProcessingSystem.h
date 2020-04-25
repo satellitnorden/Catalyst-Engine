@@ -3,6 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/Texture2DResource.h>
+
 class PostProcessingSystem final
 {
 
@@ -104,6 +108,22 @@ public:
 		_HorizontalBorder = value;
 	}
 
+	/*
+	*	Returns the color grading texture resource.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetColorGradingTextureResource() const NOEXCEPT
+	{
+		return _ColorGradingTextureResource;
+	}
+
+	/*
+	*	Sets the color grading texture resource.
+	*/
+	FORCE_INLINE void SetColorGradingTextureResource(const ResourcePointer<Texture2DResource> resource) NOEXCEPT
+	{
+		_ColorGradingTextureResource = resource;
+	}
+
 private:
 
 	//The contrast.
@@ -123,5 +143,8 @@ private:
 
 	//The horizontal border.
 	float32 _HorizontalBorder{ 0.0f };
+
+	//The color grading texture resource.
+	ResourcePointer<Texture2DResource> _ColorGradingTextureResource;
 
 };
