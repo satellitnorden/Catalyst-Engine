@@ -43,10 +43,7 @@ void CatalystShaderMain()
 		vec4 noise_texture_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
 		//Calculate the blurred scene.
-		vec3 blurred_scene = (texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.x).rgb +
-							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.y).rgb +
-							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.z).rgb +
-							texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.w).rgb) * 0.25f;
+		vec3 blurred_scene = texture(scene_texture, fragment_texture_coordinate + blur_direction * noise_texture_1.x).rgb;
 
 	    //Write the fragment.
 	    fragment = vec4(blurred_scene, 1.0f);
