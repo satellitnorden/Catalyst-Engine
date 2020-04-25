@@ -77,6 +77,22 @@ public:
 	}
 
 	/*
+	*	Returns the exposure.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetExposure() const NOEXCEPT
+	{
+		return _Exposure;
+	}
+
+	/*
+	*	Sets the exposure.
+	*/
+	FORCE_INLINE void SetExposure(const float32 value) NOEXCEPT
+	{
+		_Exposure = value;
+	}
+
+	/*
 	*	Returns the film grain intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetFilmGrainIntensity() const NOEXCEPT
@@ -137,6 +153,9 @@ private:
 
 	//The depth of field size.
 	float32 _DepthOfFieldSize{ 0.001f };
+
+	//The exposure.
+	float32 _Exposure{ 1.0f };
 
 	//The film grain intensity.
 	float32 _FilmGrainIntensity{ 0.01f };

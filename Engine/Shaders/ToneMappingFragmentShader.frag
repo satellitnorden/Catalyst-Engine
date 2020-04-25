@@ -13,7 +13,8 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint COLOR_GRADING_TEXTURE_INDEX;
+    layout (offset = 0) float EXPOSURE;
+    layout (offset = 4) uint COLOR_GRADING_TEXTURE_INDEX;
 };
 
 //In parameters.
@@ -55,7 +56,7 @@ void CatalystShaderMain()
     vec3 scene_texture_sampler = texture(scene_texture, fragment_texture_coordinate).rgb;
 
     //Apply tone mapping.
-    scene_texture_sampler = ApplyToneMapping(scene_texture_sampler);
+    scene_texture_sampler = ApplyToneMapping(scene_texture_sampler * EXPOSURE);
 
     //Apply color grading.
     if (COLOR_GRADING_TEXTURE_INDEX < UINT32_MAXIMUM)
