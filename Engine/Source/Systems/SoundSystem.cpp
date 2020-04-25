@@ -37,6 +37,9 @@ public:
 namespace SoundSystemConstants
 {
 
+	//The maximum number of queued master channel mix components.
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS{ 2 };
+
 	//The maximum number of queued sounds.
 	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_SOUNDS{ 32 };
 
@@ -45,6 +48,9 @@ namespace SoundSystemConstants
 //Sound system data.
 namespace SoundSystemData
 {
+
+	//The queued master channel mix components.
+	AtomicQueue<SoundMixComponent, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedMasterChannelMixComponents;
 
 	//The queued sounds.
 	AtomicQueue<QueuedSound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedSounds;
@@ -59,10 +65,8 @@ namespace SoundSystemData
 */
 void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &component) NOEXCEPT
 {
-	for (uint8 i{ 0 }; i < 2; ++i)
-	{
-		_MasterChannelMixComponents[i].Emplace(component);
-	}
+	//Queue the master channel mix component.
+	SoundSystemData::_QueuedMasterChannelMixComponents.Push(component);
 }
 
 /*
@@ -87,6 +91,15 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								const uint32 number_of_samples,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
+	//Add all queued master channel mix components.
+	while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
+	{
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			_MasterChannelMixComponents[i].Emplace(*component);
+		}
+	}
+
 	//Add all queued sounds to the playing sounds.
 	while (QueuedSound *const RESTRICT queued_sound{ SoundSystemData::_QueuedSounds.Pop() })
 	{
