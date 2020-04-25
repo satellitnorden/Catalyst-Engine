@@ -215,6 +215,11 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 
 								else
 								{
+									if (type_element->_StartHoveredCallback)
+									{
+										type_element->_StartHoveredCallback(type_element);
+									}
+
 									type_element->_CurrentState = ButtonUserInterfaceElement::State::HOVERED;
 								}
 							}
