@@ -55,6 +55,17 @@ namespace SoundSystemData
 }
 
 /*
+*	Adds a mix component to the master mix channel.
+*/
+void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &component) NOEXCEPT
+{
+	for (uint8 i{ 0 }; i < 2; ++i)
+	{
+		_MasterChannelMixComponents[i].Emplace(component);
+	}
+}
+
+/*
 *	Plays a sound.
 */
 void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT
@@ -101,7 +112,11 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 				current_sample += playing_sound._SoundResourcePlayer.NextSample(j);
 			}
 
-			current_sample *= 0.5f;
+			//Apply the master channel mix components.
+			for (SoundMixComponent &component : _MasterChannelMixComponents[j])
+			{
+				component.Process(&current_sample);
+			}
 
 			//Write the current value.
 			switch (bits_per_sample)

@@ -13,6 +13,7 @@
 
 //Sound.
 #include <Sound/SoundCore.h>
+#include <Sound/SoundMixComponent.h>
 
 class SoundSystem final
 {
@@ -51,11 +52,19 @@ public:
 	uint32 GetSampleRate() const NOEXCEPT;
 
 	/*
+	*	Adds a mix component to the master mix channel.
+	*/
+	void AddMasterChannelMixComponent(const SoundMixComponent &component) NOEXCEPT;
+
+	/*
 	*	Plays a sound.
 	*/
 	void PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT;
 
 private:
+
+	//Container for the master channel mix components.
+	StaticArray<DynamicArray<SoundMixComponent>, 2> _MasterChannelMixComponents;
 
 	/*
 	*	The asynchronous update function.

@@ -130,6 +130,6 @@ private:
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::RAY_TRACED };
 
 	//The bloom intensity.
-	float _BloomIntensity{ 0.1f };
+	float _BloomIntensity{ 0.05f };
 
 };

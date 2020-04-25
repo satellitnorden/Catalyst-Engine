@@ -1539,6 +1539,9 @@
     <ClInclude Include="..\..\..\Include\Systems\DistributionSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

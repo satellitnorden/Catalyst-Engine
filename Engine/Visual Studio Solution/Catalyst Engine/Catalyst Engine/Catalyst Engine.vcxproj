@@ -387,6 +387,7 @@
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h" />
     <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h" />
     <ClInclude Include="..\..\..\Include\Systems\AnimationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
