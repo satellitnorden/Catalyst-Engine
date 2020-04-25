@@ -14,7 +14,8 @@ public:
 	//Enumerations covering all types.
 	enum class Type : uint8
 	{
-		EXPONENTIALLY_MOVING_AVERAGE_FILTER
+		EXPONENTIALLY_MOVING_AVERAGE_FILTER,
+		LIMITER
 	};
 
 	/*
@@ -33,6 +34,21 @@ public:
 	}
 
 	/*
+	*	Creates a limiter sound mix component.
+	*/
+	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateLimiter(const float32 initial_boost, const float32 initial_ceiling) NOEXCEPT
+	{
+		SoundMixComponent new_component;
+
+		new_component._Type = Type::LIMITER;
+
+		new_component._LimiterState._Boost = initial_boost;
+		new_component._LimiterState._Ceiling = initial_ceiling;
+
+		return new_component;
+	}
+
+	/*
 	*	The process function.
 	*/
 	FORCE_INLINE void Process(float32 *const RESTRICT sample) NOEXCEPT
@@ -43,6 +59,13 @@ public:
 			case Type::EXPONENTIALLY_MOVING_AVERAGE_FILTER:
 			{
 				ProcessExponentiallyMovingAverageFilter(sample);
+
+				break;
+			}
+
+			case Type::LIMITER:
+			{
+				ProcessLimiter(sample);
 
 				break;
 			}
@@ -74,6 +97,22 @@ private:
 	
 	};
 
+	/*
+	*	Limiter state.
+	*/
+	class LimiterState final
+	{
+
+	public:
+
+		//The boost
+		float32 _Boost;
+
+		//The ceiling
+		float32 _Ceiling;
+
+	};
+
 	//The type.
 	Type _Type;
 
@@ -81,6 +120,7 @@ private:
 	union
 	{
 		ExponentiallyMovingAverageFilterState _ExponentiallyMovingAverageFilterState;
+		LimiterState _LimiterState;
 	};
 
 	/*
@@ -91,6 +131,14 @@ private:
 		_ExponentiallyMovingAverageFilterState._CurrentValue = CatalystBaseMath::LinearlyInterpolate(*sample, _ExponentiallyMovingAverageFilterState._CurrentValue, _ExponentiallyMovingAverageFilterState._FeedbackFactor);
 
 		*sample = _ExponentiallyMovingAverageFilterState._CurrentValue;
+	}
+
+	/*
+	*	The process function for the limiter.
+	*/
+	FORCE_INLINE void ProcessLimiter(float32 *const RESTRICT sample) NOEXCEPT
+	{
+		*sample = CatalystBaseMath::Clamp(*sample * _LimiterState._Boost, -_LimiterState._Ceiling, _LimiterState._Ceiling);
 	}
 
 };
