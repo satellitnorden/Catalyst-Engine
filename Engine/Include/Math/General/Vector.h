@@ -1363,12 +1363,6 @@ public:
 //Vector constants.
 namespace VectorConstants
 {
-	constexpr Vector3<float> FORWARD{ 0.0f, 0.0f, -1.0f };
-	constexpr Vector3<float> BACKWARD{ 0.0f, 0.0f, 1.0f };
-	constexpr Vector3<float> UP{ 0.0f, 1.0f, 0.0f };
-	constexpr Vector3<float> DOWN{ 0.0f, -1.0f, 0.0f };
-	constexpr Vector3<float> RIGHT{ 1.0f, 0.0f, 0.0f };
-	constexpr Vector3<float> LEFT{ -1.0f, 0.0f, 0.0f };
 	constexpr Vector3<float> ZERO{ 0.0f, 0.0f, 0.0f };
 	constexpr Vector3<float> ONE{ 1.0f, 1.0f, 1.0f };
 }

@@ -911,7 +911,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 			position._Y -= 0.5f;
 
 			//Add the vertex.
-			master_vertices.Emplace(position, VectorConstants::UP, VectorConstants::RIGHT, Vector2<float>(0.0f, 0.0f));
+			master_vertices.Emplace(position, CatalystWorldCoordinateSpace::UP, CatalystWorldCoordinateSpace::RIGHT, Vector2<float>(0.0f, 0.0f));
 
 		}
 

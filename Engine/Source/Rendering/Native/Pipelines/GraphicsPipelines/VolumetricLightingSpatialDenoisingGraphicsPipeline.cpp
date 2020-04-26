@@ -71,7 +71,7 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

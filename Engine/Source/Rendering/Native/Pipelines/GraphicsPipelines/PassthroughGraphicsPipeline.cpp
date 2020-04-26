@@ -45,7 +45,7 @@ void PassthroughGraphicsPipeline::Initialize(const RenderTargetHandle source, co
 	SetBlendFactorDestinationColor(BlendFactor::One);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

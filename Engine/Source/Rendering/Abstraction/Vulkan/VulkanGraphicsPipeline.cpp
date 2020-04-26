@@ -179,7 +179,7 @@ void VulkanGraphicsPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipeli
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
 	pipelineRasterizationStateCreateInfo.cullMode = vulkanPipelineCreationParameters._CullMode;
-	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
 	pipelineRasterizationStateCreateInfo.depthBiasClamp = 0.0f;

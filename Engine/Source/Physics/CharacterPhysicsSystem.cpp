@@ -1,6 +1,9 @@
 //Header file.
 #include <Physics/CharacterPhysicsSystem.h>
 
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
 //Systems.
 #include <Systems/PhysicsSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -56,7 +59,7 @@ void CharacterPhysicsSystem::SimulatePhysicsCharacterMovement(const UpdateContex
 	{
 		//Apply the movement input to the velocity.
 		movement->_Velocity += movement->_MovementInput;
-		movement->_Velocity += VectorConstants::UP * movement->_JumpInput;
+		movement->_Velocity += CatalystWorldCoordinateSpace::UP * movement->_JumpInput;
 
 		movement->_IsJumping = true;
 	}

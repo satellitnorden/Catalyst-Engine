@@ -211,15 +211,15 @@ public:
 	/*
 	*	Calculates a perspective projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Perspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
 		Matrix4x4 result{ 0.0f };
 
-		result._Matrix[0]._X = fov;
-		result._Matrix[1]._Y = -aspectRatio;
-		result._Matrix[2]._Z = farPlane / (nearPlane - farPlane);
+		result._Matrix[0]._X = -field_of_view;
+		result._Matrix[1]._Y = -aspect_ratio;
+		result._Matrix[2]._Z = far_plane / (near_plane - far_plane);
 		result._Matrix[2]._W = -1.0f;
-		result._Matrix[3]._Z = (nearPlane * farPlane) / (nearPlane - farPlane);
+		result._Matrix[3]._Z = (near_plane * far_plane) / (near_plane - far_plane);
 
 		return result;
 	}
@@ -227,15 +227,15 @@ public:
 	/*
 	*	Calculates a reverse perspective projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 farPlane) NOEXCEPT
 	{
 		Matrix4x4 result{ 0.0f };
 
-		result._Matrix[0]._X = fov;
-		result._Matrix[1]._Y = -aspectRatio;
-		result._Matrix[2]._Z = -(farPlane / (nearPlane - farPlane)) - 1;
+		result._Matrix[0]._X = -field_of_view;
+		result._Matrix[1]._Y = -aspect_ratio;
+		result._Matrix[2]._Z = -(farPlane / (near_plane - farPlane)) - 1.0f;
 		result._Matrix[2]._W = -1.0f;
-		result._Matrix[3]._Z = -((nearPlane * farPlane) / (nearPlane - farPlane));
+		result._Matrix[3]._Z = -((near_plane * farPlane) / (near_plane - farPlane));
 
 		return result;
 	}

@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -111,7 +114,7 @@ void SkyComputePipeline::Execute() NOEXCEPT
 	data._LowerSkyColor = current_sky_gradient._LowerSkyColor;
 
 	//Pick the first directional light.
-	data._SkyLightDirection = VectorConstants::UP;
+	data._SkyLightDirection = CatalystWorldCoordinateSpace::UP;
 	data._SkyLightLuminance = VectorConstants::ZERO;
 	data._SkyLightIntensity = 0.0f;
 

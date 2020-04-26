@@ -4,6 +4,9 @@
 //Entities.
 #include <Entities/Creation/LightInitializationData.h>
 
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
@@ -30,7 +33,7 @@ void TimeOfDaySystem::Enable(const float32 time_of_day, const TimeOfDayParameter
 		LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
 
 		data->_Properties = EntityInitializationData::Property::NONE;
-		data->_Direction = VectorConstants::DOWN;
+		data->_Direction = CatalystWorldCoordinateSpace::DOWN;
 		data->_Color = VectorConstants::ONE;
 		data->_LightType = LightType::DIRECTIONAL;
 		data->_LightProperties = CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT;
@@ -121,7 +124,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 		rotation._Y = 0.0f;
 		rotation._Z = CatalystBaseMath::DegreesToRadians(22.5f);
 
-		sky_light_direction = Vector3<float32>::Normalize(VectorConstants::DOWN.Rotated(rotation));
+		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}
 	
 	else
@@ -132,7 +135,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 		rotation._Y = 0.0f;
 		rotation._Z = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 
-		sky_light_direction = Vector3<float32>::Normalize(VectorConstants::DOWN.Rotated(rotation));
+		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}
 
 	//Set the sky light direction.
