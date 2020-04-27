@@ -32,25 +32,9 @@ private:
 	//The specular bias lookup texture index.
 	uint32 _SpecularBiasLookupTextureIndex;
 
-	//The render data table layout.
-	RenderDataTableLayoutHandle _RenderDataTableLayout;
-
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
-
 	/*
 	*	Creates the specular bias lookup texture.
 	*/
 	void CreateSpecularBiasLookupTexture() NOEXCEPT;
-
-	/*
-	*	Creates the render data table layout.
-	*/
-	void CreateRenderDataTableLayout() NOEXCEPT;
-
-	/*
-	*	Creates the render data table.
-	*/
-	void CreateRenderDataTable() NOEXCEPT;
 
 };

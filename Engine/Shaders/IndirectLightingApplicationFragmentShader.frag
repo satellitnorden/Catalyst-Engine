@@ -30,12 +30,6 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_1_texture;
-layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
-layout (set = 1, binding = 2) uniform sampler2D scene_features_3_texture;
-layout (set = 1, binding = 3) uniform sampler2D indirect_lighting_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 scene;
 
@@ -44,9 +38,9 @@ layout (location = 0) out vec4 scene;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 scene_features_1 = texture(scene_features_1_texture, coordinate);
-	vec4 scene_features_2 = texture(scene_features_2_texture, coordinate);
-	vec4 scene_features_3 = texture(scene_features_3_texture, coordinate);
+	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
+	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
+	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
 
 	SceneFeatures features;
 
@@ -94,7 +88,7 @@ void CatalystShaderMain()
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample the indirect lighting.
-	vec4 indirect_lighting_sample = INDIRECT_LIGHTING_ENABLED ? texture(indirect_lighting_texture, fragment_texture_coordinate) : vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	vec4 indirect_lighting_sample = INDIRECT_LIGHTING_ENABLED ? texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate) : vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Sample the sky.
 	vec3 sky_diffuse_sample = SampleSkyDiffuse(current_features.normal);
@@ -121,7 +115,4 @@ void CatalystShaderMain()
 
 	//Write the fragment.
 	scene = vec4(max(indirect_lighting, vec3(0.0f)), 1.0f);
-	//scene = vec4(vec3(current_features.ambientOcclusion), 1.0f);
-	//scene = vec4(indirect_lighting_sample.rgb, 1.0f);
-	//scene = vec4(texture(sampler2D(GLOBAL_TEXTURES[SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb, 1.0f);
 }

@@ -10,22 +10,16 @@ layout (early_fragment_tests) in;
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 3, binding = 0) uniform sampler2D scene_features_1_texture;
-layout (set = 3, binding = 1) uniform sampler2D scene_features_2_texture;
-layout (set = 3, binding = 2) uniform sampler2D scene_features_3_texture;
-layout (set = 3, binding = 3) uniform sampler2D shadows_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
 	//Retrieve the scene features.
-	vec4 scene_features_1 = texture(scene_features_1_texture, fragment_texture_coordinate);
-	vec4 scene_features_2 = texture(scene_features_2_texture, fragment_texture_coordinate);
-	vec4 scene_features_3 = texture(scene_features_3_texture, fragment_texture_coordinate);
-	vec4 shadows = texture(shadows_texture, fragment_texture_coordinate);
+	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 shadows = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(scene_features_1.w * 255.0f)];
