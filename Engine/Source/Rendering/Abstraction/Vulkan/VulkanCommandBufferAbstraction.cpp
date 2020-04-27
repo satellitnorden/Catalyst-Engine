@@ -1,6 +1,6 @@
 #if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>

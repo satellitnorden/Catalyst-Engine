@@ -6,7 +6,7 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>

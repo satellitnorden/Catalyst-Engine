@@ -1,0 +1,85 @@
+//Includes.
+#include "CatalystLightingData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRayTracingData.glsl"
+#include "CatalystRenderingUtilities.glsl"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+
+//Descriptor set data.
+layout (set = 3, binding = 0, rgba32f) uniform image2D scene_features_2_image;
+layout (set = 3, binding = 1, rgba32f) uniform image2D shadows_image;
+
+//In parameters.
+layout(location = 1) rayPayloadNV float visibility;
+
+void CatalystShaderMain() 
+{
+	//Calculate the screen coordinate.
+	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Retrieve the scene features.
+	vec4 scene_features_2 = imageLoad(scene_features_2_image, ivec2(gl_LaunchIDNV.xy));
+
+	//Retrieve all properties.
+	vec3 shading_normal = scene_features_2.xyz;
+	float depth = scene_features_2.w;
+
+	//Calculate the world position.
+	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+	world_position += shading_normal * CalculateFloatingPointCompensation(world_position);
+
+	//Sample the noise texture.
+	vec4 random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
+
+	//Calculate the shadows for all lights.
+	vec4 shadows = vec4(1.0f);
+	uint current_shadow_index = 0;
+
+	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	{
+		Light light = UnpackLight(i);
+
+		switch (light.light_type)
+		{
+			case LIGHT_TYPE_DIRECTIONAL:
+			{
+				//Alter the direction a bit to simulare soft shadows.
+				vec3 light_direction = normalize(light.position_or_direction + vec3(random_noise.xyz * 2.0f - 1.0f) * 0.0001f);
+
+				//Determine the visibility.
+				if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+				{
+					visibility = 0.0f;
+
+					traceNV(
+							TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							0, 																							//missIndex
+							world_position, 																			//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light_direction,																			//direction
+							VIEW_DISTANCE,																				//Tmax
+							1 																							//payload
+							);
+
+					shadows[current_shadow_index++] = visibility;
+				}
+
+				break;
+			}
+
+			case LIGHT_TYPE_POINT:
+			{
+
+
+				break;
+			}
+		}
+	}
+
+	//Write to the image.
+	imageStore(shadows_image, ivec2(gl_LaunchIDNV.xy), shadows);
+}

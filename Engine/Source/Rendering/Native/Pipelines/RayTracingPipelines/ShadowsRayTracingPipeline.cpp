@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/RayTracingPipelines/DirectLightingRayTracingPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -17,7 +17,7 @@
 /*
 *	Initializes this ray tracing pipeline.
 */
-void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
+void ShadowsRayTracingPipeline::Initialize() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -33,7 +33,7 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("DirectLightingRayGenerationShader")));
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedShadowsRayGenerationShader")));
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
@@ -43,7 +43,7 @@ void DirectLightingRayTracingPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this ray tracing pipeline.
 */
-void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
+void ShadowsRayTracingPipeline::Execute() NOEXCEPT
 {
 	//Check if ray tracing is possible.
 	if (!RenderingSystem::Instance->IsRayTracingPossible())
@@ -69,7 +69,7 @@ void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Trace rays!
-	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(0)._Width, RenderingSystem::Instance->GetScaledResolution(0)._Height);
+	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(1)._Width, RenderingSystem::Instance->GetScaledResolution(1)._Height);
 
 	//End the command buffer.
 	command_buffer->End(this);
@@ -81,14 +81,12 @@ void DirectLightingRayTracingPipeline::Execute() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void DirectLightingRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void ShadowsRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 4> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::RAY_GENERATION)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -97,12 +95,10 @@ void DirectLightingRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void DirectLightingRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
+void ShadowsRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 }

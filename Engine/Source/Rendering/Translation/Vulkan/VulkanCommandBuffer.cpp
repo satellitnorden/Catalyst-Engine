@@ -4,7 +4,7 @@
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 #include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>

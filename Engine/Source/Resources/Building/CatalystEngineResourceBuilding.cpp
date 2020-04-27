@@ -698,17 +698,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingRayGenerationShader";
-		parameters._ID = "DirectLightingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingRayGenerationShader.rgen";
-		parameters._Stage = ShaderStage::RAY_GENERATION;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
 		parameters._ID = "DynamicModelRayClosestHitShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DynamicModelRayClosestHitShader.rchit";
@@ -723,17 +712,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FastApproximateAntiAliasingFragmentShader";
 		parameters._ID = "FastApproximateAntiAliasingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FireflyReductionFragmentShader";
-		parameters._ID = "FireflyReductionFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FireflyReductionFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -962,17 +940,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingDenoisingFragmentShader";
-		parameters._ID = "PathTracingDenoisingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingDenoisingFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayGenerationShader";
 		parameters._ID = "PathTracingRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
@@ -1009,6 +976,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedShadowsRayGenerationShader";
+		parameters._ID = "RayTracedShadowsRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedShadowsRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1064,17 +1042,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
 		parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SeparableBlurFragmentShader";
-		parameters._ID = "SeparableBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SeparableBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

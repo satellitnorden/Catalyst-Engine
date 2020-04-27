@@ -2,12 +2,11 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/StaticArray.h>
 
 //Rendering.
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 
-class DirectLightingRayTracingPipeline final : public RayTracingPipeline
+class ShadowsRayTracingPipeline final : public RayTracingPipeline
 {
 
 public:

@@ -10,7 +10,7 @@
 #include <Rendering/Abstraction/Vulkan/Vulkan3DTexture.h>
 #include <Rendering/Abstraction/Vulkan/VulkanAccelerationStructure.h>
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
 #include <Rendering/Abstraction/Vulkan/VulkanComputePipeline.h>
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>

@@ -3,9 +3,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanCommandPool.h>
 
 //Vulkan.
-#include <Rendering/Abstraction/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
-#include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
 
 /*
 *	Initializes this Vulkan command pool.

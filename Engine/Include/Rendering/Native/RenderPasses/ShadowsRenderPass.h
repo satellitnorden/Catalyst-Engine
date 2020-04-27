@@ -4,30 +4,27 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
-//Lighting.
-#include <Lighting/LightingCore.h>
-
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DirectLightingRenderPass final : public RenderPass
+class ShadowsRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DirectLightingRenderPass);
+	DECLARE_SINGLETON(ShadowsRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	DirectLightingRenderPass() NOEXCEPT;
+	ShadowsRenderPass() NOEXCEPT;
 
 private:
 
-	//The direct lighting graphics pipeline.
-	DirectLightingGraphicsPipeline _DirectLightingGraphicsPipeline;
+	//The shadows ray tracing pipeline.
+	ShadowsRayTracingPipeline _ShadowsRayTracingPipeline;
 
 	/*
 	*	Initializes this render pass.
