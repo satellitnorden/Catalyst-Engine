@@ -28,6 +28,7 @@
 #include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -215,6 +216,48 @@ NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
 }
 
 /*
+*	Returns a global command buffer from the global command pool.
+*/
+RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::GetGlobalCommandBuffer(const CommandBufferLevel level) NOEXCEPT
+{
+	//Retrieve the thread data for the current frame.
+	GlobalCommandPoolData::ThreadData &thread_data{ _GlobalRenderData._GlobalCommandPoolData[GetCurrentFramebufferIndex()]._ThreadData[Concurrency::CurrentThread::Index()] };
+
+	//Retrieve the command buffer.
+	switch (level)
+	{
+		case CommandBufferLevel::PRIMARY:
+		{
+			//Does a new command buffer need to be allocated?
+			if (thread_data._NumberOfPrimaryCommandBuffersUsed >= thread_data._PrimaryCommandBuffers.Size())
+			{
+				thread_data._PrimaryCommandBuffers.Emplace(AllocateCommandBuffer(thread_data._CommandPool, CommandBufferLevel::PRIMARY));
+			}
+
+			return thread_data._PrimaryCommandBuffers[thread_data._NumberOfPrimaryCommandBuffersUsed++];
+		}
+
+		case CommandBufferLevel::SECONDARY:
+		{
+			//Does a new command buffer need to be allocated?
+			if (thread_data._NumberOfSecondaryCommandBuffersUsed >= thread_data._SecondaryCommandBuffers.Size())
+			{
+				thread_data._SecondaryCommandBuffers.Emplace(AllocateCommandBuffer(thread_data._CommandPool, CommandBufferLevel::SECONDARY));
+			}
+
+			return thread_data._SecondaryCommandBuffers[thread_data._NumberOfSecondaryCommandBuffersUsed++];
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return nullptr;
+		}
+	}
+}
+
+/*
 *	Returns the global render data table.
 */
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
@@ -296,15 +339,16 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 {
 	//Get the number of frame buffers.
-	const uint8 numberOfFrameBuffers{ GetNumberOfFramebuffers() };
+	const uint8 number_of_framebuffers{ GetNumberOfFramebuffers() };
 
 	//Upsize the buffers.
-	_GlobalRenderData._RenderDataTables.Upsize<false>(numberOfFrameBuffers);
-	_GlobalRenderData._DynamicUniformDataBuffers.Upsize<false>(numberOfFrameBuffers);
-	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(numberOfFrameBuffers);
-	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(numberOfFrameBuffers);
+	_GlobalRenderData._RenderDataTables.Upsize<false>(number_of_framebuffers);
+	_GlobalRenderData._DynamicUniformDataBuffers.Upsize<false>(number_of_framebuffers);
+	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
+	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
+	_GlobalRenderData._GlobalCommandPoolData.Upsize<true>(number_of_framebuffers);
 
-	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
+	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{
 		//Create the render data table.
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
@@ -381,41 +425,44 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 9> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 10> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
 			
+			//Render targets
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::NUMBER_OF_RENDER_TARGETS, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
+
 			//Global textures.
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 			
 			//Global samplers.
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 			
 			//Global materials.
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 
 			//Blue noise textures.
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
 
 			//Cloud texture.
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 			
 			//Sky images.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::COMPUTE),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::StorageImage, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::COMPUTE),
 
 			//Sky textures.
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION),
 
 			//Hammersley hemisphere samples uniform buffer.
-			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
 	}
 
 	{
-		//Initialize the dynamic uniform data render data table layout.
+		//Initialize the particle system data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::COMPUTE)
@@ -469,35 +516,41 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 {
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
+		//Bind the render targets
+		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_RENDER_TARGETS; ++j)
+		{
+			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _RenderTargets[j]);
+		}
+
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
-			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
+			BindSampledImageToRenderDataTable(2, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
 		}
 
 		//Bind all the samplers to the render data table.
 		for (uint32 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
 		{
-			BindSamplerToRenderDataTable(2, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
+			BindSamplerToRenderDataTable(3, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 
 		//Bind the cloud texture.
-		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+		BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 
 		//Bind the sky images.
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
 		{
-			BindStorageImageToRenderDataTable(6, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j));
+			BindStorageImageToRenderDataTable(7, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j));
 		}
 
 		//Bind the sky textures.
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_SKY_TEXTURES; ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(7, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+			BindCombinedImageSamplerToRenderDataTable(8, j, &_GlobalRenderData._RenderDataTables[i], WorldSystem::Instance->GetSkySystem()->GetSkyTexture(j), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 		}
 
 		//Bind the Hammersley hemisphere samples uniform buffer.
-		BindUniformBufferToRenderDataTable(8, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
+		BindUniformBufferToRenderDataTable(9, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
 	}
 
 	//Bind all the blue noise textures to the global render data tables.
@@ -514,7 +567,21 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		//Bind the texture to the global render data tables.
 		for (uint8 j{ 0 }; j < GetNumberOfFramebuffers(); ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(4, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+			BindCombinedImageSamplerToRenderDataTable(5, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+		}
+	}
+
+	//Initialize the global command pool data.
+	for (GlobalCommandPoolData &global_command_pool_data : _GlobalRenderData._GlobalCommandPoolData)
+	{
+		//Allocate enough thread data for all threads (main thread + task executor threads).
+		global_command_pool_data._ThreadData.Upsize<true>(1 + TaskSystem::Instance->GetNumberOfTaskExecutors());
+
+		//Initialize all thread data.
+		for (GlobalCommandPoolData::ThreadData &thread_data : global_command_pool_data._ThreadData)
+		{
+			//Create the command pool.
+			CreateCommandPool(Pipeline::Type::Compute, &thread_data._CommandPool);
 		}
 	}
 }
@@ -535,6 +602,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update global materials.
 	UpdateGlobalMaterials(current_framebuffer_index);
+
+	//Update the global command pool data.
+	UpdateGlobalCommandPoolData(current_framebuffer_index);
 }
 
 /*
@@ -630,14 +700,14 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 
 	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
+		BindSampledImageToRenderDataTable(2, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
 	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].Clear();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Second);
+		BindSampledImageToRenderDataTable(2, update._First, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].Clear();
@@ -652,5 +722,23 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 void RenderingSystem::UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Bind the current global material uniform buffer to the global render data table.
-	BindUniformBufferToRenderDataTable(3, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentGlobalMaterialUnifomBuffer());
+	BindUniformBufferToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentGlobalMaterialUnifomBuffer());
+}
+
+/*
+*	Updates the global command pool data.
+*/
+void RenderingSystem::UpdateGlobalCommandPoolData(const uint8 current_framebuffer_index) NOEXCEPT
+{
+	for (GlobalCommandPoolData::ThreadData &thread_data : _GlobalRenderData._GlobalCommandPoolData[current_framebuffer_index]._ThreadData)
+	{
+		//Reset the command pool.
+		ResetCommandPool(&thread_data._CommandPool);
+
+		//Reset the number of primary command buffers used.
+		thread_data._NumberOfPrimaryCommandBuffersUsed = 0;
+
+		//Reset the number of secondary command buffers used.
+		thread_data._NumberOfSecondaryCommandBuffersUsed = 0;
+	}
 }

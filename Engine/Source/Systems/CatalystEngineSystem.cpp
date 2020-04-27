@@ -115,6 +115,9 @@ namespace CatalystEngineSystemLogic
 */
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
+	//Initialize the current thread's index.
+	Concurrency::CurrentThread::InitializeIndex();
+
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources();

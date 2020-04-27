@@ -45,6 +45,11 @@ public:
 	*/
 	void FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
+	/*
+	*	Resets this Vulkan command pool.
+	*/
+	void Reset() NOEXCEPT;
+
 private:
 
 	//The underlying Vulkan command pool.

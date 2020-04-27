@@ -57,33 +57,28 @@ public:
 	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return _PushConstantRanges; }
 
 	/*
-	*	Sets the number of command buffers.
+	*	Returns the command buffer, const.
 	*/
-	FORCE_INLINE void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const CommandBuffer *const RESTRICT GetCommandBuffer() const NOEXCEPT
 	{
-		_CommandBuffers.Reserve(numberOfCommandBuffers);
+		return _CommandBuffer;
 	}
 
 	/*
-	*	Adds a command buffer.
+	*	Returns the command buffer, non-const.
 	*/
-	FORCE_INLINE void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetCommandBuffer() NOEXCEPT
 	{
-		_CommandBuffers.Emplace(newCommandBuffer);
+		return _CommandBuffer;
 	}
 
 	/*
-	*	Returns the current command buffer, const.
+	*	Sets the command buffer.
 	*/
-	RESTRICTED NO_DISCARD const CommandBuffer *const RESTRICT GetCurrentCommandBuffer() const NOEXCEPT
+	FORCE_INLINE void SetCommandBuffer(CommandBuffer *const RESTRICT value) NOEXCEPT
 	{
-		return const_cast<Pipeline *const RESTRICT>(this)->GetCurrentCommandBuffer();
+		_CommandBuffer = value;
 	}
-
-	/*
-	*	Returns the current command buffer, non-const.
-	*/
-	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
 
 	/*
 	*	Returns whether or not this pipeline should be included in the final render.
@@ -145,8 +140,8 @@ private:
 	//The push constant ranges.
 	DynamicArray<PushConstantRange> _PushConstantRanges;
 
-	//The command buffers.
-	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
+	//The command buffer.
+	CommandBuffer *RESTRICT _CommandBuffer{ nullptr };
 
 	//Denotes whether or not this pipeline should be included in the final render.
 	bool _IncludeInRender;

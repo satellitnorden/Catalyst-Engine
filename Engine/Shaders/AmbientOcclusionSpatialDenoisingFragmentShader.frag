@@ -18,15 +18,12 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 INVERSE_RESOLUTION;
-	layout (offset = 8) int STRIDE;
+	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX;
+	layout (offset = 12) int STRIDE;
 };
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D ambientOcclusionTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneFeatures2Texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -36,7 +33,7 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 sceneFeatures2 = texture(sceneFeatures2Texture, coordinate);
+	vec4 sceneFeatures2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
 
 	SceneFeatures features;
 
@@ -48,7 +45,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the ambient occlusion features at the current fragment.
-	vec3 currentAmbientOcclusion = texture(ambientOcclusionTexture, fragmentTextureCoordinate).rgb;
+	vec3 currentAmbientOcclusion = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragmentTextureCoordinate).rgb;
 	SceneFeatures currentFeatures = SampleSceneFeatures(fragmentTextureCoordinate);
 
 	//Sample neighboring fragments.
@@ -61,7 +58,7 @@ void CatalystShaderMain()
 		{
 			vec2 sampleCoordinate = fragmentTextureCoordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 
-			vec3 sampleAmbientOcclusion = texture(ambientOcclusionTexture, sampleCoordinate).rgb;
+			vec3 sampleAmbientOcclusion = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sampleCoordinate).rgb;
 			SceneFeatures sampleFeatures = SampleSceneFeatures(sampleCoordinate);
 
 			/*

@@ -11,23 +11,6 @@
 #include "..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
 
 //Constants.
-#define RENDER_TARGET_SCENE_FEATURES_1_INDEX                        (0)
-#define RENDER_TARGET_SCENE_FEATURES_2_INDEX                        (1)
-#define RENDER_TARGET_SCENE_FEATURES_3_INDEX                        (2)
-#define RENDER_TARGET_AMBIENT_OCCLUSION_INDEX                       (3)
-#define RENDER_TARGET_SCENE_INDEX                                   (4)
-#define RENDER_TARGET_TEMPORAL_ANTI_ALIASING_BUFFER_1_INDEX         (5)
-#define RENDER_TARGET_TEMPORAL_ANTI_ALIASING_BUFFER_2_INDEX         (6)
-#define RENDER_TARGET_INTERMEDIATE_R32G32B32A32_FLOAT_1_INDEX       (7)
-#define RENDER_TARGET_INTERMEDIATE_R32G32B32A32_FLOAT_2_INDEX       (8)
-#define RENDER_TARGET_INTERMEDIATE_R8_BYTE_INDEX                    (9)
-#define RENDER_TARGET_INTERMEDIATE_HALF_R32G32B32A32_FLOAT_1_INDEX  (10)
-#define RENDER_TARGET_INTERMEDIATE_HALF_R32G32B32A32_FLOAT_2_INDEX  (11)
-#define RENDER_TARGET_INTERMEDIATE_QUARTER_R32G32B32A32_FLOAT_INDEX (12)
-#define RENDER_TARGET_INTERMEDIATE_EIGHTH_R32G32B32A32_FLOAT_INDEX  (13)
-#define RENDER_TARGET_SCREEN_INDEX                                  (14)
-#define RENDER_TARGET_NUMBER_OF_RENDER_TARGETS                      (15)
-
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX    (0)
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX           (1)
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX   (2)
@@ -112,32 +95,35 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 456
 };
 
+//The render targets.
+layout (set = 0, binding = 1) uniform texture2D RENDER_TARGETS[NUMBER_OF_RENDER_TARGETS];
+
 //The global textures.
-layout (set = 0, binding = 1) uniform texture2D GLOBAL_TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+layout (set = 0, binding = 2) uniform texture2D GLOBAL_TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
 //The global samplers.
-layout (set = 0, binding = 2) uniform sampler GLOBAL_SAMPLERS[GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS];
+layout (set = 0, binding = 3) uniform sampler GLOBAL_SAMPLERS[GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS];
 
 //Global materials.
-layout (std140, set = 0, binding = 3) uniform GlobalMaterials
+layout (std140, set = 0, binding = 4) uniform GlobalMaterials
 {
     layout (offset = 0) Material GLOBAL_MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
 //The blue noise textures.
-layout (set = 0, binding = 4) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+layout (set = 0, binding = 5) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
 //The cloud texture.
-layout (set = 0, binding = 5) uniform sampler3D CLOUD_TEXTURE;
+layout (set = 0, binding = 6) uniform sampler3D CLOUD_TEXTURE;
 
 //The sky textures.
-layout (set = 0, binding = 6, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
+layout (set = 0, binding = 7, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
 
 //The sky textures.
-layout (set = 0, binding = 7) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
+layout (set = 0, binding = 8) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
 
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 9) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };

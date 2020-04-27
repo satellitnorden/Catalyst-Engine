@@ -43,6 +43,26 @@ namespace Concurrency
 		*/
 		FORCE_INLINE void Yield() NOEXCEPT;
 
+		/*
+		*	Returns the current thread's index.
+		*/
+		FORCE_INLINE uint64 &Index() NOEXCEPT
+		{
+			static thread_local uint64 INDEX{ 0 };
+
+			return INDEX;
+		}
+
+		/*
+		*	Initializes the current thread's index.
+		*/
+		FORCE_INLINE void InitializeIndex() NOEXCEPT
+		{
+			static std::atomic<uint64> INDEX_COUNTER{ 0 };
+
+			Index() = INDEX_COUNTER.fetch_add(1);
+		}
+
 	}
 
 }

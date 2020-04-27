@@ -123,8 +123,11 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		return;
 	}
 
+	//Retrieve and set the command buffer.
+	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
+	SetCommandBuffer(command_buffer);
+
 	//Cache data the will be used.
-	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
 	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
 
 	//Begin the command buffer.

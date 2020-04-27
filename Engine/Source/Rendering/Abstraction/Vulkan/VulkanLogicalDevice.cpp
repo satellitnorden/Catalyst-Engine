@@ -17,10 +17,8 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	FindQueueFamilyIndices();
 
 	//Create the device queue create info.
-	constexpr float QUEUE_PRIORITIES{ 1.0f };
-
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
-	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, &QUEUE_PRIORITIES);
+	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos);
 
 	//Create the physical device features.
 	VkPhysicalDeviceFeatures physicalDeviceFeatures;
@@ -59,8 +57,17 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 /*
 *	Creates the device queue create info.
 */
-void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT
+void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos) const NOEXCEPT
 {
+	//Define constants.
+	constexpr static StaticArray<float32, 4> QUEUE_PRIORITIES
+	{
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f
+	};
+
 	//Gather all unique indices and how many queues will be created from them.
 	Map<uint32, uint8> queue_family_indices;
 
@@ -77,8 +84,8 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.pNext = nullptr;
 		newDeviceQueueCreateInfo.flags = 0;
 		newDeviceQueueCreateInfo.queueFamilyIndex = unique_queue_family_index._First;
-		newDeviceQueueCreateInfo.queueCount = unique_queue_family_index._Second;
-		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
+		newDeviceQueueCreateInfo.queueCount = 1;
+		newDeviceQueueCreateInfo.pQueuePriorities = QUEUE_PRIORITIES.Data();
 
 		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
 	}
@@ -259,9 +266,17 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 	_Queues[UNDERLYING(QueueType::Compute)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
 	_Queues[UNDERLYING(QueueType::Compute)]->Initialize(compute_queue_family_index);
 
-	//Retrieve the graphics queue.
-	_Queues[UNDERLYING(QueueType::Graphics)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
-	_Queues[UNDERLYING(QueueType::Graphics)]->Initialize(graphics_queue_family_index);
+	//Retrieve the graphics queue. Prefer if the graphics queue and the compute queue are the same.
+	if (graphics_queue_family_index == compute_queue_family_index)
+	{
+		_Queues[UNDERLYING(QueueType::Graphics)] = _Queues[UNDERLYING(QueueType::Compute)];
+	}
+
+	else
+	{
+		_Queues[UNDERLYING(QueueType::Graphics)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::Graphics)]->Initialize(graphics_queue_family_index);
+	}
 
 	//Retrieve the present queue. Prefer if the present queue and the graphis queue are the same.
 	if (present_queue_family_index == graphics_queue_family_index)

@@ -64,7 +64,7 @@ private:
 	/*
 	*	Creates the device queue create infos.
 	*/
-	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT;
+	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos) const NOEXCEPT;
 
 	/*
 	*	Creates a physical device features.

@@ -17,10 +17,10 @@ layout (location = 0) out vec4 scene_features_3;
 void CatalystShaderMain()
 {
 	//Sample the scene features 3 texture.
-	vec4 scene_features_3_texture_sampler = texture(scene_features_3_texture, fragment_texture_coordinate);
+	vec4 scene_features_3_texture_sampler = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Sample the ambient occlusion texture.
-	vec4 ambient_occlusion_texture_sampler = Upsample(ambient_occlusion_texture, fragment_texture_coordinate);
+	vec4 ambient_occlusion_texture_sampler = texture(sampler2D(RENDER_TARGETS[AMBIENT_OCCLUSION_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Write the fragment.
 	scene_features_3 = vec4(scene_features_3_texture_sampler.x,

@@ -132,8 +132,9 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 */
 void DepthOfFieldBokehBlurGraphicsPipeline::Execute() NOEXCEPT
 {
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
+	//Retrieve and set the command buffer.
+	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
+	SetCommandBuffer(command_buffer);
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);

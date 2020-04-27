@@ -231,12 +231,22 @@ public:
 	/*
 	*	Creates a command pool.
 	*/
-	void CreateCommandPool(const Pipeline::Type type, const CommandPoolCreateFlags flags, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateCommandPool(const Pipeline::Type type, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Resets a command pool.
+	*/
+	void ResetCommandPool(CommandPoolHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Allocates a command buffer from the given command pool.
 	*/
 	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT;
+
+	/*
+	*	Returns a global command buffer from the global command pool.
+	*/
+	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetGlobalCommandBuffer( const CommandBufferLevel level) NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.
@@ -484,6 +494,11 @@ private:
 	*	Updates the global materials.
 	*/
 	void UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT;
+
+	/*
+	*	Updates the global command pool data.
+	*/
+	void UpdateGlobalCommandPoolData(const uint8 current_framebuffer_index) NOEXCEPT;
 
 	/*
 	*	Updates the terrain height textures.

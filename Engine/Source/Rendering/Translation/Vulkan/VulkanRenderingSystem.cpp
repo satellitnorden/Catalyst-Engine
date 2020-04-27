@@ -142,7 +142,8 @@ namespace VulkanRenderingSystemLogic
 					}
 				}
 
-				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCurrentCommandBuffer()->GetCommandBufferData())->Get());
+				//Record the execution of the secondary command buffer.
+				currentPrimaryCommandBuffer->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCommandBuffer()->GetCommandBufferData())->Get());
 			
 				if (pipeline->GetType() == Pipeline::Type::Graphics)
 				{
@@ -858,29 +859,21 @@ void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const N
 /*
 *	Creates a command pool.
 */
-void RenderingSystem::CreateCommandPool(const Pipeline::Type type, const CommandPoolCreateFlags flags, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateCommandPool(const Pipeline::Type type, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
 {
-	//Retrieve the vulkan flags.
-	VkCommandPoolCreateFlags vulkan_flags{ 0 };
-
-	if (TEST_BIT(flags, CommandPoolCreateFlags::RESET_COMMAND_BUFFER))
-	{
-		vulkan_flags |= VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	}
-
 	switch (type)
 	{
 		case Pipeline::Type::Compute:
 		case Pipeline::Type::RayTracing:
 		{
-			*handle = VulkanInterface::Instance->CreateComputeCommandPool(vulkan_flags);
+			*handle = VulkanInterface::Instance->CreateComputeCommandPool(0);
 
 			break;
 		}
 
 		case Pipeline::Type::Graphics:
 		{
-			*handle = VulkanInterface::Instance->CreateGraphicsCommandPool(vulkan_flags);
+			*handle = VulkanInterface::Instance->CreateGraphicsCommandPool(0);
 
 			break;
 		}
@@ -892,6 +885,14 @@ void RenderingSystem::CreateCommandPool(const Pipeline::Type type, const Command
 			break;
 		}
 	}
+}
+
+/*
+*	Resets a command pool.
+*/
+void RenderingSystem::ResetCommandPool(CommandPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	static_cast<VulkanCommandPool *const RESTRICT>(*handle)->Reset();
 }
 
 /*
@@ -1419,19 +1420,6 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 			
 			break;
 		}
-	}
-
-	//Add the command buffers.
-	const uint64 number_of_command_buffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
-	pipeline->SetNumberOfCommandBuffers(number_of_command_buffers);
-
-	//Create the pipeline command pool.
-	CommandPoolHandle pipeline_command_pool;
-	CreateCommandPool(pipeline->GetType(), CommandPoolCreateFlags::RESET_COMMAND_BUFFER, &pipeline_command_pool);
-
-	for (uint64 i = 0; i < number_of_command_buffers; ++i)
-	{
-		pipeline->AddCommandBuffer(AllocateCommandBuffer(pipeline_command_pool, CommandBufferLevel::SECONDARY));
 	}
 }
 

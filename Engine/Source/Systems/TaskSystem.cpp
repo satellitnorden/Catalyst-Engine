@@ -100,6 +100,9 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT task) NOEXCEPT
 */
 void TaskSystem::ExecuteTasks() NOEXCEPT
 {
+	//Initialize the current thread's index.
+	Concurrency::CurrentThread::InitializeIndex();
+
 	while (_ExecuteTasks)
 	{
 		//Try to pop a task from the task queue, and execute it if it succeeds.

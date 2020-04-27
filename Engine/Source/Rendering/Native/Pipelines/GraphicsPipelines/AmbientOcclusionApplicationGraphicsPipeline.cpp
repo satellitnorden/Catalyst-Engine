@@ -13,12 +13,6 @@
 */
 void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
 {
-	//Create the render data table layout.
-	CreateRenderDataTableLayout();
-
-	//Create the render data table.
-	CreateRenderDataTable();
-
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -31,9 +25,8 @@ void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -65,8 +58,9 @@ void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
 */
 void AmbientOcclusionApplicationGraphicsPipeline::Execute() NOEXCEPT
 {
-	//Cache data the will be used.
-	CommandBuffer *const RESTRICT command_buffer{ GetCurrentCommandBuffer() };
+	//Retrieve and set the command buffer.
+	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
+	SetCommandBuffer(command_buffer);
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);
@@ -76,7 +70,6 @@ void AmbientOcclusionApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -86,29 +79,4 @@ void AmbientOcclusionApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
-}
-
-/*
-*	Creates the render data table layout.
-*/
-void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

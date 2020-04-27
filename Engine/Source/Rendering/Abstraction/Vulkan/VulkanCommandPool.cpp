@@ -55,6 +55,14 @@ void VulkanCommandPool::FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuff
 }
 
 /*
+*	Resets this Vulkan command pool.
+*/
+void VulkanCommandPool::Reset() NOEXCEPT
+{
+	vkResetCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanCommandPool, 0);
+}
+
+/*
 *	Creates a command pool create info.
 */
 void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) const NOEXCEPT

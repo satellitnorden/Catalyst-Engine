@@ -9,7 +9,49 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/CommandBuffer.h>
 
+/*
+*	The global command pool data.
+*/
+class GlobalCommandPoolData final
+{
+
+public:
+
+	/*
+	*	The thread data.
+	*/
+	class ThreadData final
+	{
+
+	public:
+
+		//The command pool.
+		CommandPoolHandle _CommandPool;
+
+		//The primary command buffers.
+		DynamicArray<CommandBuffer *RESTRICT> _PrimaryCommandBuffers;
+
+		//The number of primary command buffers used.
+		uint64 _NumberOfPrimaryCommandBuffersUsed{ 0 };
+
+		//The secondary command buffers.
+		DynamicArray<CommandBuffer *RESTRICT> _SecondaryCommandBuffers;
+
+		//The number of secondary command buffers used.
+		uint64 _NumberOfSecondaryCommandBuffersUsed{ 0 };
+
+	};
+
+	//Container for all the thread data.
+	DynamicArray<ThreadData> _ThreadData;
+
+};
+
+/*
+*	The global render data.
+*/
 class GlobalRenderData final
 {
 
@@ -32,5 +74,8 @@ public:
 
 	//The add global texture updates.
 	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddGlobalTextureUpdates;
+
+	//Container for all the global command pool data.
+	DynamicArray<GlobalCommandPoolData> _GlobalCommandPoolData;
 
 };

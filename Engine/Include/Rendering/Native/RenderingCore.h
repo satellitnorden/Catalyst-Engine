@@ -127,22 +127,6 @@ enum class CommandBufferLevel : uint8
 	SECONDARY
 };
 
-//Enumeration covering all command pool create flags.
-enum class CommandPoolCreateFlags : uint8
-{
-	/*
-	*	None.
-	*/
-	NONE = 0,
-
-	/*
-	*	Setting this flag enables command buffers allocated from this command pool to be reset.
-	*/
-	RESET_COMMAND_BUFFER = BIT(0)
-};
-
-ENUMERATION_BIT_OPERATIONS(CommandPoolCreateFlags);
-
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
