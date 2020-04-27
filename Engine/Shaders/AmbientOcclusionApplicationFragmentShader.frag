@@ -7,10 +7,6 @@ layout (early_fragment_tests) in;
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_3_texture;
-layout (set = 1, binding = 1) uniform sampler2D ambient_occlusion_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 scene_features_3;
 

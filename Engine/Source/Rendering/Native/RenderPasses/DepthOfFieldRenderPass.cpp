@@ -34,25 +34,14 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _DepthOfFieldFloodFillBlurGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(2);
 
 	AddPipeline(&_DepthOfFieldBokehBlurGraphicsPipeline);
-
-	for (DepthOfFieldFloodFillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodFillBlurGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
 
 	AddPipeline(&_DepthOfFieldApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Initialize();
-	_DepthOfFieldFloodFillBlurGraphicsPipelines[0].Initialize(	1,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
-	_DepthOfFieldFloodFillBlurGraphicsPipelines[1].Initialize(	2,
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
-																RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -82,12 +71,5 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 
 	//Execute all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Execute();
-
-	for (DepthOfFieldFloodFillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodFillBlurGraphicsPipelines)
-	{
-		//pipeline.Execute();
-		pipeline.SetIncludeInRender(false);
-	}
-
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
 }

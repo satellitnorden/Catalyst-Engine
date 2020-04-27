@@ -16,11 +16,6 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
-layout (set = 1, binding = 1) uniform sampler2D previous_ambient_occlusion_texture;
-layout (set = 1, binding = 2) uniform sampler2D current_ambient_occlusion_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 current_ambient_occlusion;
 layout (location = 1) out vec4 ambient_occlusion;

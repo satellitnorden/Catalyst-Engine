@@ -52,17 +52,13 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
-layout (set = 1, binding = 1) uniform sampler2D scene_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
 	//Calculate the current view distance.
-	float current_view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(scene_features_2_texture, fragment_texture_coordinate).w).z);
+	float current_view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).w).z);
 
 	//Calculate the depth of field weight for this pixel.
 	float depth_of_field_weight = min(current_view_distance / DEPTH_OF_FIELD_FOCUS_DISTANCE, 1.0f);
@@ -95,7 +91,7 @@ void CatalystShaderMain()
 
 		sample_weight *= float(ValidCoordinate(sample_coordinate));
 
-		blurred_scene += texture(scene_texture, sample_coordinate).rgb * sample_weight;
+		blurred_scene += texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb * sample_weight;
 		total_weight += sample_weight;
 	}
 
