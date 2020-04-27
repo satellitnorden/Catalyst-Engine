@@ -46,9 +46,9 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingDenoisingFragment")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(target);
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

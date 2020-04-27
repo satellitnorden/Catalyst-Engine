@@ -55,10 +55,10 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHa
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(2);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(2);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

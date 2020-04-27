@@ -26,9 +26,9 @@ void PassthroughGraphicsPipeline::Initialize(const RenderTargetHandle source, co
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PassthroughFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(destination);
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(destination);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

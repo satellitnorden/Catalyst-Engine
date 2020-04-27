@@ -26,11 +26,11 @@ void SceneFeaturesDownsampleGraphicsPipeline::Initialize() NOEXCEPT
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("SceneFeaturesDownsampleFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF));
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3_HALF));
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4_HALF));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(3);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3_HALF));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4_HALF));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

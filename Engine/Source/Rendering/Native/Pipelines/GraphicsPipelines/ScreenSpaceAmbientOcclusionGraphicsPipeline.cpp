@@ -29,9 +29,9 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenSpaceAmbientOcclusionFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

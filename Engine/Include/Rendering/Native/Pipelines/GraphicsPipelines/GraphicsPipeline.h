@@ -54,9 +54,9 @@ public:
 	DepthBufferHandle GetDepthBuffer() const NOEXCEPT { return _DepthBuffer; }
 
 	/*
-	*	Returns the render targets.
+	*	Returns the output render targets.
 	*/
-	const DynamicArray<RenderTargetHandle>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
+	const DynamicArray<RenderTargetHandle>& GetOutputRenderTargets() const NOEXCEPT { return _OutputRenderTargets; }
 
 	/*
 	*	Returns the vertex input attribute descriptions.
@@ -199,14 +199,14 @@ public:
 	void SetDepthBuffer(const DepthBufferHandle depthBuffer) NOEXCEPT { _DepthBuffer = depthBuffer; }
 
 	/*
-	*	Sets the number of render targets.
+	*	Sets the number of output render targets.
 	*/
-	void SetNumberOfRenderTargets(const uint64 numberOfRenderTargets) NOEXCEPT { _RenderTargets.Reserve(numberOfRenderTargets); }
+	void SetNumberOfOutputRenderTargets(const uint64 value) NOEXCEPT { _OutputRenderTargets.Reserve(value); }
 
 	/*
-	*	Adds a render target.
+	*	Adds an outputrender target.
 	*/
-	void AddRenderTarget(const RenderTargetHandle newRenderTarget) NOEXCEPT { _RenderTargets.Emplace(newRenderTarget); }
+	void AddOutputRenderTarget(const RenderTargetHandle value) NOEXCEPT { _OutputRenderTargets.Emplace(value); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.
@@ -348,8 +348,8 @@ private:
 	//The depth buffer.
 	DepthBufferHandle _DepthBuffer{ EMPTY_HANDLE };
 
-	//The render targets.
-	DynamicArray<RenderTargetHandle> _RenderTargets;
+	//The output render targets.
+	DynamicArray<RenderTargetHandle> _OutputRenderTargets;
 
 	//The vertex input attribute descriptions.
 	DynamicArray<VertexInputAttributeDescription> _VertexInputAttributeDescriptions;

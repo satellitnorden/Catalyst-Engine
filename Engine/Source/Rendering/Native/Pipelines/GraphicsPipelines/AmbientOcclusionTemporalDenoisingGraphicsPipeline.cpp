@@ -43,10 +43,10 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("AmbientOcclusionTemporalDenoisingFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(2);
-	AddRenderTarget(target);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(2);
+	AddOutputRenderTarget(target);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

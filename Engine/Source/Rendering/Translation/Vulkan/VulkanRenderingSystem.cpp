@@ -198,7 +198,7 @@ namespace VulkanRenderingSystemLogic
 				{
 					if (pipeline->GetType() == Pipeline::Type::Graphics)
 					{
-						for (const RenderTargetHandle render_target : static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->GetRenderTargets())
+						for (const RenderTargetHandle render_target : static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->GetOutputRenderTargets())
 						{
 							if (render_target == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN))
 							{
@@ -303,7 +303,7 @@ namespace VulkanRenderingSystemLogic
 			Map<RenderTargetHandle, uint32> uniqueAttachments;
 			uint32 attachmentCounter{ 0 };
 
-			for (const RenderTargetHandle renderTarget : pipeline->GetRenderTargets())
+			for (const RenderTargetHandle renderTarget : pipeline->GetOutputRenderTargets())
 			{
 				if (!uniqueAttachments.Find(renderTarget))
 				{
@@ -459,7 +459,7 @@ namespace VulkanRenderingSystemLogic
 			parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationColor());
 			parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceAlpha());
 			parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
-			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetRenderTargets().Size());
+			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size());
 			parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
 			parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetDepthCompareOperator());
 			parameters._DepthTestEnable = pipeline->IsDepthTestEnabled();
@@ -537,7 +537,7 @@ namespace VulkanRenderingSystemLogic
 
 			parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 			parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-			parameters._ViewportExtent = pipeline->GetRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+			parameters._ViewportExtent = pipeline->GetOutputRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetOutputRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 
 			parameters._RenderPass = data->_RenderPass;
 

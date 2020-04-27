@@ -26,9 +26,9 @@ void LuminanceLightingGraphicsPipeline::Initialize() NOEXCEPT
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("LuminanceLightingFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

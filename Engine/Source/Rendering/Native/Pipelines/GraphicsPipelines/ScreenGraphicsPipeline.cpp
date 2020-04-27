@@ -26,9 +26,9 @@ void ScreenGraphicsPipeline::Initialize() NOEXCEPT
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PassthroughFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

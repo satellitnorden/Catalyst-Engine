@@ -30,10 +30,10 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Rend
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingTemporalDenoisingFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(2);
-	AddRenderTarget(target);
-	AddRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(2);
+	AddOutputRenderTarget(target);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

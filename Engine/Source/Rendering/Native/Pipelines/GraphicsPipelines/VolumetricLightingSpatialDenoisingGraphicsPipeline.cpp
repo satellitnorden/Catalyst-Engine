@@ -48,9 +48,9 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingSpatialDenoisingFragmentShader")));
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(1);
-	AddRenderTarget(target);
+	//Add the output render targets.
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
