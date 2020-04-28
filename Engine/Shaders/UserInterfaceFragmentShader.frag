@@ -13,7 +13,9 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 16) uint TYPE;
-    layout (offset = 20) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 20) float WIDTH_RANGE_START;
+    layout (offset = 24) float WIDTH_RANGE_END;
+    layout (offset = 28) float ELEMENT_ASPECT_RATIO;
     layout (offset = 32) UserInterfaceMaterial MATERIAL;
 };
 
@@ -25,13 +27,16 @@ layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
+	//Calculate the texture coordinate.
+	vec2 texture_coordinate = vec2(mix(WIDTH_RANGE_START, WIDTH_RANGE_END, fragment_texture_coordinate.x), fragment_texture_coordinate.y);
+
 	switch (TYPE)
 	{
 		case USER_INTERFACE_ELEMENT_TYPE_BUTTON:
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, fragment_texture_coordinate, ELEMENT_ASPECT_RATIO);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO);
 
 			break;
 		}
@@ -39,7 +44,7 @@ void CatalystShaderMain()
 		case USER_INTERFACE_ELEMENT_TYPE_TEXT:
 		{
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).r);
+			fragment = vec4(vec3(1.0f), texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r);
 
 			break;
 		}
@@ -47,7 +52,7 @@ void CatalystShaderMain()
 		default:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, fragment_texture_coordinate, ELEMENT_ASPECT_RATIO);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO);
 
 			break;
 		}

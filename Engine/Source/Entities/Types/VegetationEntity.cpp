@@ -34,9 +34,9 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	const VegetationInitializationData *const RESTRICT vegetation_initialization_data{ static_cast<const VegetationInitializationData *const RESTRICT>(data) };
 	VegetationComponent& component{ ComponentManager::GetVegetationVegetationComponents()[_ComponentsIndex] };
 
-	RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(vegetation_initialization_data->_Transformations, vegetation_initialization_data->_Model->_ModelSpaceAxisAlignedBoundingBox, &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(vegetation_initialization_data->_Transformations, vegetation_initialization_data->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._Visibility = false;
-	component._Model = vegetation_initialization_data->_Model;
+	component._ModelResource = vegetation_initialization_data->_ModelResource;
 	component._GlobalMaterialIndex = vegetation_initialization_data->_GlobalMaterialIndex;
 	component._CutoffDistance = vegetation_initialization_data->_CutoffDistance;
 	component._ImpostorMaterialIndex = vegetation_initialization_data->_ImpostorMaterialIndex;

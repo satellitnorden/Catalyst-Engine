@@ -6,7 +6,10 @@
 
 //Rendering.
 #include <Rendering/Native/MaterialIndexCollection.h>
-#include <Rendering/Native/Model.h>
+
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class DynamicModelComponent final
 {
@@ -27,8 +30,8 @@ public:
 
 	}
 
-	//The model.
-	const Model *RESTRICT _Model{ nullptr };
+	//The model resource.
+	ResourcePointer<ModelResource> _ModelResource;
 
 	//The previous world transform.
 	Matrix4x4 _PreviousWorldTransform;

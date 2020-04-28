@@ -210,10 +210,10 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Draw all meshes.
-		for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+		for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 		{
 			//Cache the mesh.
-			const Mesh& mesh{ component->_Model->_Meshes[i] };
+			const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
 			//Push constants.
 			VegetationVertexPushConstantData vertex_data;

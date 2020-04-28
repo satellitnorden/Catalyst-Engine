@@ -46,11 +46,14 @@ public:
 	//The type.
 	uint32 _Type;
 
+	//The width range start.
+	float32 _WidthRangeStart;
+
+	//The width range end.
+	float32 _WidthRangeEnd;
+
 	//The element aspect ratio.
 	float32 _ElementAspectRatio;
-
-	//Padding.
-	Padding<8> _Padding;
 
 	//The material.
 	UserInterfaceMaterial _Material;
@@ -157,6 +160,8 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				UserInterfaceFragmentPushConstantData fragment_data;
 
 				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::BUTTON);
+				fragment_data._WidthRangeStart = 0.0f;
+				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				
 				switch (type_element->_CurrentState)
@@ -206,6 +211,8 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				UserInterfaceFragmentPushConstantData fragment_data;
 
 				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
+				fragment_data._WidthRangeStart = 0.0f;
+				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				fragment_data._Material = type_element->_Material;
 
@@ -261,8 +268,10 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						UserInterfaceFragmentPushConstantData fragment_data;
 
 						fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
+						fragment_data._WidthRangeStart = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
+						fragment_data._WidthRangeEnd = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
 						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
-						fragment_data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_CharacterDescriptions[character]._TextureIndex);
+						fragment_data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_MasterTextureIndex);
 
 						command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
 

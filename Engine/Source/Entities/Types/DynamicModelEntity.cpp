@@ -35,10 +35,10 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	const DynamicModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const DynamicModelInitializationData *const RESTRICT>(data) };
 	DynamicModelComponent& component{ ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex] };
 
-	component._Model = model_initialization_data->_Model;
+	component._ModelResource = model_initialization_data->_ModelResource;
 	component._PreviousWorldTransform = model_initialization_data->_Transform;
 	component._CurrentWorldTransform = model_initialization_data->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndexCollection = model_initialization_data->_MaterialIndexCollection;
 
 	//Register the model collision data, if there is one.
@@ -90,7 +90,7 @@ RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::ModifyWorldT
 */
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
-	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
 
 /*

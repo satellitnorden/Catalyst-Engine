@@ -8,7 +8,10 @@
 
 //Rendering.
 #include <Rendering/Native/Material.h>
-#include <Rendering/Native/Model.h>
+
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class VegetationComponent final
 {
@@ -31,8 +34,8 @@ public:
 	//The current level of detail.
 	LevelOfDetail _LevelOfDetail{ LevelOfDetail::Full };
 
-	//The model.
-	const Model *RESTRICT _Model;
+	//The model resource.
+	ResourcePointer<ModelResource> _ModelResource;
 
 	//The global material index.
 	uint32 _GlobalMaterialIndex;

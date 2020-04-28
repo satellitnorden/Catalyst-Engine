@@ -6,7 +6,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 
 /*
 *	Reads a bone from file.
@@ -93,72 +92,60 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> *const RESTRICT file
 	{
 		//Read the character description.
 		file->Read(&data->_CharacterDescriptions[i], sizeof(FontResource::CharacterDescription));
-
-		//Read the texture dimensions.
-		file->Read(&data->_CharacterDimensions[i], sizeof(Vector2<float>));
-
-		//Read the texture data.
-		data->_TextureData[i].Upsize<true>(1);
-
-		for (uint8 j{ 0 }; j < 1; ++j)
-		{
-			data->_TextureData[i][j].Initialize(data->_CharacterDimensions[i]._X >> j, data->_CharacterDimensions[i]._Y >> j);
-			file->Read(data->_TextureData[i][j].Data(), (data->_CharacterDimensions[i]._X >> j) * (data->_CharacterDimensions[i]._Y >> j));
-		}
 	}
+
+	//Read the master texture width.
+	file->Read(&data->_MasterTextureWidth, sizeof(uint32));
+
+	//Read the master texture height.
+	file->Read(&data->_MasterTextureHeight, sizeof(uint32));
+
+	//Read the master texture data.
+	data->_MasterTextureData.Upsize<false>(data->_MasterTextureWidth * data->_MasterTextureHeight);
+	file->Read(data->_MasterTextureData.Data(), data->_MasterTextureWidth * data->_MasterTextureHeight);
 }
 
 /*
-*	Given a file, load a model.
+*	Given a file, load model data.
 */
-void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT
 {
-	//Load the model data.
-	ModelData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
 	//Read the axis-aligned bounding box
-	file.Read(&data._AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
+	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
 
 	//Read the number of meshes.
-	file.Read(&data._NumberOfMeshes, sizeof(uint64));
+	file->Read(&data->_NumberOfMeshes, sizeof(uint64));
 
 	//Read the number of level of details.
-	file.Read(&data._NumberOfLevelfDetails, sizeof(uint64));
+	file->Read(&data->_NumberOfLevelfDetails, sizeof(uint64));
 
-	data._Vertices.Upsize<true>(data._NumberOfMeshes);
-	data._Indices.Upsize<true>(data._NumberOfMeshes);
+	data->_Vertices.Upsize<true>(data->_NumberOfMeshes);
+	data->_Indices.Upsize<true>(data->_NumberOfMeshes);
 
-	for (uint64 i{ 0 }; i < data._NumberOfMeshes; ++i)
+	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
 	{
-		data._Vertices[i].Upsize<true>(data._NumberOfLevelfDetails);
-		data._Indices[i].Upsize<true>(data._NumberOfLevelfDetails);
+		data->_Vertices[i].Upsize<true>(data->_NumberOfLevelfDetails);
+		data->_Indices[i].Upsize<true>(data->_NumberOfLevelfDetails);
 
-		for (uint64 j{ 0 }; j < data._NumberOfLevelfDetails; ++j)
+		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
 		{
 			//Read the number of vertices.
 			uint64 number_of_vertices;
-			file.Read(&number_of_vertices, sizeof(uint64));
+			file->Read(&number_of_vertices, sizeof(uint64));
 
 			//Read the vertices.
-			data._Vertices[i][j].Upsize<false>(number_of_vertices);
-			file.Read(data._Vertices[i][j].Data(), sizeof(Vertex) * number_of_vertices);
+			data->_Vertices[i][j].Upsize<false>(number_of_vertices);
+			file->Read(data->_Vertices[i][j].Data(), sizeof(Vertex) * number_of_vertices);
 
 			//Read the number of indices.
 			uint64 number_of_indices;
-			file.Read(&number_of_indices, sizeof(uint64));
+			file->Read(&number_of_indices, sizeof(uint64));
 
 			//Read the indices.
-			data._Indices[i][j].Upsize<false>(number_of_indices);
-			file.Read(data._Indices[i][j].Data(), sizeof(uint32) * number_of_indices);
+			data->_Indices[i][j].Upsize<false>(number_of_indices);
+			file->Read(data->_Indices[i][j].Data(), sizeof(uint32) * number_of_indices);
 		}
 	}
-
-	//Create the model.
-	ResourceSystem::Instance->GetResourceCreationSystem()->CreateModel(&data, &_Models[resourceID]);
 }
 
 /*

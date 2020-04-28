@@ -696,9 +696,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\GlobalRenderData.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h">
-      <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
@@ -1535,6 +1532,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h">
+      <Filter>Resources\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

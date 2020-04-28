@@ -9,6 +9,7 @@
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
+#include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
@@ -108,6 +109,19 @@ public:
 	}
 
 	/*
+	*	Returns the model resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<ModelResource> GetModelResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		ModelResource *const RESTRICT *const RESTRICT resource{ _ModelResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<ModelResource>(*resource);
+	}
+
+	/*
 	*	Returns the shader resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT
@@ -193,6 +207,9 @@ private:
 
 	//Container for all font resources.
 	HashTable<HashString, FontResource *RESTRICT> _FontResources;
+
+	//Container for all model resources.
+	HashTable<HashString, ModelResource *RESTRICT> _ModelResources;
 
 	//Container for all shader resources.
 	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;

@@ -160,10 +160,10 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const DynamicModelComponent& component{ ComponentManager::GetDynamicModelDynamicModelComponents()[highlighted_model._ComponentsIndex] };
 
 		//Draw all meshes.
-		for (uint64 i{ 0 }, size{ component._Model->_Meshes.Size() }; i < size; ++i)
+		for (uint64 i{ 0 }, size{ component._ModelResource->_Meshes.Size() }; i < size; ++i)
 		{
 			//Cache the mesh.
-			const Mesh &mesh{ component._Model->_Meshes[i] };
+			const Mesh &mesh{ component._ModelResource->_Meshes[i] };
 
 			//Push constants.
 			ModelHighlightSceneFeaturesVertexPushConstantData vertex_data;
@@ -176,7 +176,7 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			fragment_data._HighlightColor = highlighted_model._HighlightColor;
 			fragment_data._HighlightStrength = highlighted_model._HighlightStrength;
-			fragment_data._MaterialIndex = component._MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component._Model->_Meshes.Size()));
+			fragment_data._MaterialIndex = component._MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component._ModelResource->_Meshes.Size()));
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), sizeof(ModelHighlightSceneFeaturesFragmentPushConstantData), &fragment_data);
 

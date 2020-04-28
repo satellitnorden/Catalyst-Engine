@@ -112,7 +112,7 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 
 		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 		{
-			for (const Mesh &mesh : component->_Model->_Meshes)
+			for (const Mesh &mesh : component->_ModelResource->_Meshes)
 			{
 				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, mesh_counter, &_RenderDataTable, mesh._VertexBuffers[0]);
 				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, mesh_counter, &_RenderDataTable, mesh._IndexBuffers[0]);
@@ -136,7 +136,7 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 
 		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 		{
-			for (const Mesh &mesh : component->_Model->_Meshes)
+			for (const Mesh &mesh : component->_ModelResource->_Meshes)
 			{
 				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, mesh_counter, &_RenderDataTable, mesh._VertexBuffers[0]);
 				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(5, mesh_counter, &_RenderDataTable, mesh._IndexBuffers[0]);
@@ -197,7 +197,7 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 			material_indices.Emplace(material_index);
 		}
 
-		for (const Mesh &mesh : component->_Model->_Meshes)
+		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
 			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
@@ -241,12 +241,12 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		for (uint64 j{ 0 }, size{ component->_Model->_Meshes.Size() }; j < size; ++j)
+		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
 		{
-			_DynamicModelsMaterialindices.Emplace(component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(j), static_cast<uint8>(component->_Model->_Meshes.Size())));
+			_DynamicModelsMaterialindices.Emplace(component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(j), static_cast<uint8>(component->_ModelResource->_Meshes.Size())));
 		}
 
-		for (const Mesh &mesh : component->_Model->_Meshes)
+		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
 			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 

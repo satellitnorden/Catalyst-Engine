@@ -14,7 +14,10 @@
 
 //Rendering.
 #include <Rendering/Native/Material.h>
-#include <Rendering/Native/Model.h>
+
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class StaticModelInitializationData final : public EntityInitializationData
 {
@@ -24,8 +27,8 @@ public:
 	//The transform.
 	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
-	//The model.
-	const Model *RESTRICT _Model{ nullptr };
+	//The model resource.
+	ResourcePointer<ModelResource> _ModelResource;
 
 	//The material indices.
 	DynamicArray<uint32> _MaterialIndices;

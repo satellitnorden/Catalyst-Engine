@@ -58,40 +58,28 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 	//Just copy the character descriptions.
 	resource->_CharacterDescriptions = data->_CharacterDescriptions;
 
-	//Create all textures for each character description.
-	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
-	{
-		//It's valid for some characters to be missing (the font might be missing them), so just skip them. (:
-		if (data->_CharacterDimensions[i]._X == 0
-			|| data->_CharacterDimensions[i]._Y == 0)
-		{
-			continue;
-		}
+	//Create the master texture.
+	Texture2DHandle master_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData.Data(), data->_MasterTextureWidth, data->_MasterTextureHeight, 1, 1), TextureFormat::R_UINT8), &master_texture);
 
-		//Create the texture.
-		Texture2DHandle texture;
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_TextureData[i]), TextureFormat::R_UINT8), &texture);
-
-		//Add the texture to the global render data.
-		resource->_CharacterDescriptions[i]._TextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
-	}
+	resource->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(master_texture);
 }
 
 /*
 *	Creates a model.
 */
-void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT
+void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelResource *const RESTRICT resource) NOEXCEPT
 {
 	//Copy the model space axis aligned bounding box.
-	model->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
+	resource->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
 
-	model->_Meshes.Upsize<true>(data->_NumberOfMeshes);
+	resource->_Meshes.Upsize<true>(data->_NumberOfMeshes);
 
 	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
 	{
-		model->_Meshes[i]._VertexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
-		model->_Meshes[i]._IndexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
-		model->_Meshes[i]._IndexCounts.Upsize<false>(data->_NumberOfLevelfDetails);
+		resource->_Meshes[i]._VertexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
+		resource->_Meshes[i]._IndexBuffers.Upsize<false>(data->_NumberOfLevelfDetails);
+		resource->_Meshes[i]._IndexCounts.Upsize<false>(data->_NumberOfLevelfDetails);
 
 		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
 		{
@@ -99,32 +87,32 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, Model *
 			{
 				const void* const RESTRICT dataChunks[]{ data->_Vertices[i][j].Data() };
 				const uint64 dataSizes[]{ sizeof(Vertex) * data->_Vertices[i][j].Size() };
-				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &model->_Meshes[i]._VertexBuffers[j]);
-				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_Meshes[i]._VertexBuffers[j]);
+				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._VertexBuffers[j]);
+				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._VertexBuffers[j]);
 			}
 
 			{
 				const void* const RESTRICT dataChunks[]{ data->_Indices[i][j].Data() };
 				const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices[i][j].Size() };
-				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &model->_Meshes[i]._IndexBuffers[j]);
-				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &model->_Meshes[i]._IndexBuffers[j]);
+				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._IndexBuffers[j]);
+				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._IndexBuffers[j]);
 			}
 
 			//Write the index count.
-			model->_Meshes[i]._IndexCounts[j] = static_cast<uint32>(data->_Indices[i][j].Size());
+			resource->_Meshes[i]._IndexCounts[j] = static_cast<uint32>(data->_Indices[i][j].Size());
 		}
 
 		//Create the bottom level acceleration structure.
-		RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	model->_Meshes[i]._VertexBuffers[0],
+		RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	resource->_Meshes[i]._VertexBuffers[0],
 																			static_cast<uint32>(data->_Vertices[i][0].Size()),
-																			model->_Meshes[i]._IndexBuffers[0],
+																			resource->_Meshes[i]._IndexBuffers[0],
 																			static_cast<uint32>(data->_Indices[i][0].Size()),
-																			&model->_Meshes[i]._BottomLevelAccelerationStructure);
+																			&resource->_Meshes[i]._BottomLevelAccelerationStructure);
 	
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 		//Copy the vertices and indices.
-		model->_Meshes[i]._Vertices = data->_Vertices[i][0];
-		model->_Meshes[i]._Indices = data->_Indices[i][0];
+		resource->_Meshes[i]._Vertices = data->_Vertices[i][0];
+		resource->_Meshes[i]._Indices = data->_Indices[i][0];
 #endif
 	}
 }

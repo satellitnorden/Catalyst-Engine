@@ -105,7 +105,25 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 
 			case ResourceType::MODEL:
 			{
-				_ResourceLoadingSystem.LoadModel(file);
+				//Read the identifier.
+				HashString identifier;
+				file.Read(&identifier, sizeof(HashString));
+
+				//Allocate the new resource.
+				ModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource() };
+
+				//Load the resource.
+				ModelData data;
+				_ResourceLoadingSystem.LoadModel(&file, &data);
+
+				//Create the resource.
+				_ResourceCreationSystem.CreateModel(&data, new_resource);
+
+				//Add the new resource.
+				_ModelResources.Add(identifier, new_resource);
+
+				//Register that the resource is now loaded.
+				new_resource->_LoadState = ResourceLoadState::LOADED;
 
 				break;
 			}

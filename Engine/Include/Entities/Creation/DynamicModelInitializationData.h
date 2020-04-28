@@ -16,7 +16,10 @@
 
 //Rendering.
 #include <Rendering/Native/MaterialIndexCollection.h>
-#include <Rendering/Native/Model.h>
+
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class DynamicModelInitializationData final : public EntityInitializationData
 {
@@ -26,8 +29,8 @@ public:
 	//The transform.
 	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
-	//The model.
-	const Model *RESTRICT _Model{ nullptr };
+	//The model resource.
+	ResourcePointer<ModelResource> _ModelResource;
 
 	//The material index collection.
 	MaterialIndexCollection _MaterialIndexCollection;

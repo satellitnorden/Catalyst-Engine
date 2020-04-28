@@ -35,9 +35,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	const StaticModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const StaticModelInitializationData *const RESTRICT>(data) };
 	StaticModelComponent& component{ ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex] };
 
-	component._Model = model_initialization_data->_Model;
+	component._ModelResource = model_initialization_data->_ModelResource;
 	component._WorldTransform = model_initialization_data->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._Model->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
 
 	//Register the model collision data, if there is one.
@@ -47,7 +47,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	}
 
 	//Upsize the level of detail indices.
-	component._LevelOfDetailIndices.Upsize<false>(component._Model->_Meshes.Size());
+	component._LevelOfDetailIndices.Upsize<false>(component._ModelResource->_Meshes.Size());
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
@@ -75,7 +75,7 @@ RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT StaticModelEntity::GetWorl
 */
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
-	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._Model->_ModelSpaceAxisAlignedBoundingBox;
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
 
 /*

@@ -11,15 +11,18 @@
 
 //Rendering.
 #include <Rendering/Native/Material.h>
-#include <Rendering/Native/Model.h>
+
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
 
 class VegetationInitializationData final : public EntityInitializationData
 {
 
 public:
 
-	//The model.
-	const Model *RESTRICT _Model{ nullptr };
+	//The model resource.
+	ResourcePointer<ModelResource> _ModelResource;
 
 	//The global material index.
 	uint32 _GlobalMaterialIndex;

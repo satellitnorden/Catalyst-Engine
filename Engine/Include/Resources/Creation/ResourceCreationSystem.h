@@ -4,13 +4,13 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Model.h>
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
+#include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
@@ -49,7 +49,7 @@ public:
 	/*
 	*	Creates a model.
 	*/
-	void CreateModel(ModelData *const RESTRICT data, Model *const RESTRICT model) NOEXCEPT;
+	void CreateModel(ModelData *const RESTRICT data, ModelResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a shader.

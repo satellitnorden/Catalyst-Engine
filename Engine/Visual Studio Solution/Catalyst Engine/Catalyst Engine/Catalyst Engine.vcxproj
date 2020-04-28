@@ -230,7 +230,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Mesh.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Model.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
@@ -359,6 +358,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />

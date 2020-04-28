@@ -241,7 +241,10 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 */
 void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 {
-	//What should the material be called?
+	//Define constants.
+	constexpr uint32 PADDING_BETWEEN_CHARACTERS{ 1 };
+
+	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
 	file_name += ".cr";
 
@@ -275,6 +278,35 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	//Set the maximum font size.
 	FT_Set_Pixel_Sizes(free_type_face, 0, parameters._MaximumFontResolution);
 
+	//Determine the width of the master texture.
+	uint32 master_texture_width{ 0 };
+
+	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	{
+		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
+		{
+			ASSERT(false, "Failed to load the FreeType character!");
+		}
+
+		ASSERT(free_type_face->glyph->bitmap.width <= 128 && free_type_face->glyph->bitmap.rows <= 128, "Something went wrong here!");
+
+		const Vector2<uint32> character_dimensions{ free_type_face->glyph->bitmap.width, free_type_face->glyph->bitmap.rows };
+
+		//Skip this character the dimensions are zero.
+		if (character_dimensions._X == 0 || character_dimensions._Y == 0)
+		{
+			continue;
+		}
+
+		master_texture_width += free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS;
+	}
+
+	//Initialize the master texture.
+	Texture2D<byte> master_texture{ master_texture_width, parameters._MaximumFontResolution };
+	uint32 current_width_offset{ 0 };
+
+	Memory::Set(master_texture.Data(), 0, master_texture.GetWidth() * master_texture.GetHeight());
+
 	//Load all characters.
 	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
 	{
@@ -286,34 +318,43 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 		//Write the character description to the file.
 		FontResource::CharacterDescription character_description;
 
-		character_description._TextureIndex = UINT32_MAXIMUM;
-		character_description._Size._X = static_cast<float>(free_type_face->glyph->bitmap.width) / static_cast<float>(parameters._MaximumFontResolution);
-		character_description._Size._Y = static_cast<float>(free_type_face->glyph->bitmap.rows) / static_cast<float>(parameters._MaximumFontResolution);
-		character_description._Bearing._X = static_cast<float>(free_type_face->glyph->bitmap_left) / static_cast<float>(parameters._MaximumFontResolution);
-		character_description._Bearing._Y = static_cast<float>(free_type_face->glyph->bitmap_top) / static_cast<float>(parameters._MaximumFontResolution);
-		character_description._Advance = static_cast<float>(free_type_face->glyph->advance.x >> 6) / static_cast<float>(parameters._MaximumFontResolution);
+		character_description._Size._X = static_cast<float32>(free_type_face->glyph->bitmap.width) / static_cast<float32>(parameters._MaximumFontResolution);
+		character_description._Size._Y = static_cast<float32>(free_type_face->glyph->bitmap.rows) / static_cast<float32>(parameters._MaximumFontResolution);
+		character_description._Bearing._X = static_cast<float32>(free_type_face->glyph->bitmap_left) / static_cast<float32>(parameters._MaximumFontResolution);
+		character_description._Bearing._Y = static_cast<float32>(free_type_face->glyph->bitmap_top) / static_cast<float32>(parameters._MaximumFontResolution);
+		character_description._Advance = static_cast<float32>(free_type_face->glyph->advance.x >> 6) / static_cast<float32>(parameters._MaximumFontResolution);
+		character_description._TextureWidthOffsetStart = static_cast<float32>(current_width_offset) / static_cast<float32>(master_texture_width);
+		character_description._TextureWidthOffsetEnd = static_cast<float32>(current_width_offset + free_type_face->glyph->bitmap.width) / static_cast<float32>(master_texture_width);
 
 		file.Write(&character_description, sizeof(FontResource::CharacterDescription));
 
 		//Write the character dimensions.
 		const Vector2<uint32> character_dimensions{ free_type_face->glyph->bitmap.width, free_type_face->glyph->bitmap.rows };
 
-		if (free_type_face->glyph->bitmap.width > 128 || free_type_face->glyph->bitmap.rows > 128)
-		{
-			CRASH();
-		}
-
-		file.Write(&character_dimensions, sizeof(Vector2<uint32>));
-
-		//Write the texture data for this character to the file.
+		//Skip this character the dimensions are zero.
 		if (character_dimensions._X == 0 || character_dimensions._Y == 0)
 		{
 			continue;
 		}
 
-		//Write the bitmap data.
-		file.Write(free_type_face->glyph->bitmap.buffer, free_type_face->glyph->bitmap.width * free_type_face->glyph->bitmap.rows);
+		//Write the bitmap data into the master texture.
+		for (uint32 Y{ 0 }; Y < character_dimensions._Y; ++Y)
+		{
+			for (uint32 X{ 0 }; X < character_dimensions._X; ++X)
+			{
+				master_texture.At(X + current_width_offset, Y) = free_type_face->glyph->bitmap.buffer[X + (Y * character_dimensions._X)];
+			}
+		}
+
+		current_width_offset += free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS;
 	}
+
+	//Write the master texture dimensions to the file.
+	file.Write(&master_texture_width, sizeof(uint32));
+	file.Write(&parameters._MaximumFontResolution, sizeof(uint32));
+
+	//Write the master texture data to the file.
+	file.Write(master_texture.Data(), master_texture.GetWidth() * master_texture.GetHeight());
 
 	//Free FreeType's resources.
 	FT_Done_Face(free_type_face);

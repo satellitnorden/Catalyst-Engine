@@ -23,9 +23,6 @@ public:
 
 	public:
 
-		//The texture index.
-		uint32 _TextureIndex;
-
 		//The size.
 		Vector2<float32> _Size;
 
@@ -35,9 +32,18 @@ public:
 		//The advance.
 		float32 _Advance;
 
+		//The texture width offset start.
+		float32 _TextureWidthOffsetStart;
+
+		//The texture width offset end.
+		float32 _TextureWidthOffsetEnd;
+
 	};
 
 	//Container for all character descriptions.
 	StaticArray<CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
+
+	//The master texture index.
+	uint32 _MasterTextureIndex;
 
 };

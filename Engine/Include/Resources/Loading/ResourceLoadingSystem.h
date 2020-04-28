@@ -2,20 +2,17 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/Map.h>
 #include <Core/General/HashString.h>
 
 //File.
 #include <File/Core/BinaryFile.h>
-
-//Rendering.
-#include <Rendering/Native/Model.h>
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
+#include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -29,22 +26,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Returns all model resources.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<HashString, Model> &GetAllModelResources() NOEXCEPT
-	{
-		return _Models;
-	}
-
-	/*
-	*	Given a resource ID, return the corresponding model resource.
-	*/
-	FORCE_INLINE NO_DISCARD const Model &GetModelResource(const HashString resource_ID) NOEXCEPT
-	{
-		return _Models[resource_ID];
-	}
 
 	/*
 	*	Given a file, load animated model data.
@@ -62,9 +43,9 @@ public:
 	void LoadFont(BinaryFile<IOMode::In> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load a model.
+	*	Given a file, load model data.
 	*/
-	void LoadModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	void LoadModel(BinaryFile<IOMode::In> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load shader data.
@@ -90,11 +71,6 @@ public:
 	*	Given a file, load texture cube data.
 	*/
 	void LoadTextureCube(BinaryFile<IOMode::In> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT;
-
-private:
-
-	//Container for all models.
-	Map<HashString, Model> _Models;
 
 
 };

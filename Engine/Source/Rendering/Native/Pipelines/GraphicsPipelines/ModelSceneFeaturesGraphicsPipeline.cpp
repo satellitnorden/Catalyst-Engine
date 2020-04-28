@@ -150,10 +150,10 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Draw all meshes.
-			for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Cache the mesh.
-				const Mesh& mesh{ component->_Model->_Meshes[i] };
+				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Push constants.
 				VertexPushConstantData vertexData;
@@ -191,10 +191,10 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Draw all meshes.
-			for (uint64 i{ 0 }, size{ component->_Model->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Cache the mesh.
-				const Mesh& mesh{ component->_Model->_Meshes[i] };
+				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Push constants.
 				VertexPushConstantData vertexData;
@@ -206,7 +206,7 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 				FragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component->_Model->_Meshes.Size()));
+				fragmentData._MaterialIndex = component->_MaterialIndexCollection.GetMaterialIndexAt(static_cast<uint8>(i), static_cast<uint8>(component->_ModelResource->_Meshes.Size()));
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

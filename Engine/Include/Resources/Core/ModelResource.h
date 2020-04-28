@@ -10,7 +10,10 @@
 //Rendering.
 #include <Rendering/Native/Mesh.h>
 
-class Model final
+//Resources.
+#include <Resources/Core/Resource.h>
+
+class ModelResource final : public Resource
 {
 
 public:
