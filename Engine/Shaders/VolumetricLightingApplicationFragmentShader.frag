@@ -25,10 +25,6 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 8) float volumetric_lighting_thickness;
 };
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
-layout (set = 1, binding = 1) uniform sampler2D volumetric_lighting_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
@@ -37,7 +33,7 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 sceneFeatures2 = texture(scene_features_2_texture, coordinate);
+	vec4 sceneFeatures2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
 
 	SceneFeatures features;
 
@@ -62,7 +58,7 @@ void CatalystShaderMain()
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample the current volumetric lighting.
-	vec3 current_volumetric_lighting = Upsample(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
+	vec3 current_volumetric_lighting = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
 	//Calculate the volumetric lighting opacity.
 	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness, PERCEIVER_WORLD_POSITION.y);

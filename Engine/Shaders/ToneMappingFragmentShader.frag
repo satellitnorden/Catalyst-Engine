@@ -20,9 +20,6 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
@@ -53,7 +50,7 @@ vec3 ApplyColorGrading(vec3 fragment)
 void CatalystShaderMain()
 {
     //Sample the scene texture.
-    vec3 scene_texture_sampler = texture(scene_texture, fragment_texture_coordinate).rgb;
+    vec3 scene_texture_sampler = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
     //Apply tone mapping.
     scene_texture_sampler = ApplyToneMapping(scene_texture_sampler * EXPOSURE);

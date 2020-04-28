@@ -296,7 +296,7 @@ namespace VulkanRenderingSystemLogic
 		pipeline->SetData(data);
 
 		{
-			//Create the vulkan render pass.
+			//Create the Vulkan render pass.
 			VulkanRenderPassCreationParameters parameters;
 
 			//Determine the attachments that will be used by the pipelines in this render pass.

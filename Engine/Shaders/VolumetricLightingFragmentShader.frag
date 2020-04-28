@@ -18,16 +18,13 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 16) vec2 SKY_LIGHT_SCREEN_SPACE_POSITION;
 };
 
-//Texture samplers.
-layout (set = 3, binding = 0) uniform sampler2D scene_features_2_texture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
 	//Load the scene features.
-	vec4 scene_features_2 = texture(scene_features_2_texture, fragment_texture_coordinate);
+	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Retrieve all properties.
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
@@ -64,7 +61,7 @@ void CatalystShaderMain()
 			vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
 
 			//Accumulate occlusion.
-			occlusion += float(texture(scene_features_2_texture, sample_point).w > 0.0f) * 0.25f;
+			occlusion += float(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_point).w > 0.0f) * 0.25f;
 		}
 
 		//Calculate the disocclusion.
