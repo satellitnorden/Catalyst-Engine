@@ -20,7 +20,4 @@ public:
 	//The file.
 	const char *RESTRICT _File{ nullptr };
 
-	//The maximum font resolution.
-	uint32 _MaximumFontResolution{ 0 };
-
 };

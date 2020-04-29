@@ -303,6 +303,25 @@ public:
 	}
 
 	/*
+	*	Rounds the given uint32 up to the nearest power of two.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD uint32 RoundUpToNearestPowerOfTwo(const uint32 value) NOEXCEPT
+	{
+		uint32 output{ value };
+
+		--output;
+		output |= output >> 1;
+		output |= output >> 2;
+		output |= output >> 4;
+		output |= output >> 8;
+		output |= output >> 16;
+		++output;
+
+		return output;
+	}
+
+
+	/*
 	*	Scales a value from one range to another.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Scale(const float value, const float originalMinimum, const float originalMaximum, const float newMinimum, const float newMaximum) NOEXCEPT

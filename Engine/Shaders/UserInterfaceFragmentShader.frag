@@ -43,8 +43,14 @@ void CatalystShaderMain()
 
 		case USER_INTERFACE_ELEMENT_TYPE_TEXT:
 		{
+			//Sample the distance.
+			float distance = texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r;
+
+			//Calculate the opacity.
+			float opacity = smoothstep(0.45f, 0.5f, distance);
+
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r);
+			fragment = vec4(vec3(1.0f), opacity);
 
 			break;
 		}

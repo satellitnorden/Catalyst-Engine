@@ -10,6 +10,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Texture2D.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -121,6 +122,38 @@ public:
 		const uint64 dataSizes[]{ sizeof(Matrix4x4) * transformations.Size() };
 		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, buffer);
 		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, buffer);
+	}
+
+	/*
+	*	Generates a mipchain out of the given texture.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static void GenerateMipChain(const Texture2D<TYPE> &input_texture, const uint8 levels, DynamicArray<Texture2D<TYPE>> *const RESTRICT output_textures) NOEXCEPT
+	{
+		//Upsize the output textures accordingly.
+		output_textures->Upsize<true>(levels);
+
+		//Copy the original mip level.
+		output_textures->At(0) = input_texture;
+
+		//Generate all mip levels.
+		for (uint8 i{ 1 }; i < levels; ++i)
+		{
+			//Initialize this mip level.
+			output_textures->At(i).Initialize(output_textures->At(i - 1).GetWidth() >> 1, output_textures->At(i - 1).GetHeight() >> 1);
+
+			for (uint32 Y{ 0 }; Y < output_textures->At(i).GetHeight(); ++Y)
+			{
+				for (uint32 X{ 0 }; X < output_textures->At(i).GetWidth(); ++X)
+				{
+					//Calculate the normalized coordinate.
+					const Vector2<float32> normalized_coordinate{ (static_cast<float32>(X) + 0.5f) / static_cast<float32>(output_textures->At(i).GetWidth()), (static_cast<float32>(Y) + 0.5f) / static_cast<float32>(output_textures->At(i).GetHeight()) };
+
+					//Retrieve the value at this texel.
+					output_textures->At(i).At(X, Y) = static_cast<uint8>(output_textures->At(i - 1).Sample(normalized_coordinate, AddressMode::ClampToEdge) * static_cast<float32>(UINT8_MAXIMUM));
+				}
+			}
+		}
 	}
 
 	/*
