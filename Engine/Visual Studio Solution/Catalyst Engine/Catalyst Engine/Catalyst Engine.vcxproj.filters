@@ -373,6 +373,9 @@
     <Filter Include="Distribution\Source">
       <UniqueIdentifier>{efd1ddca-7600-4d37-a138-e9f2ae66189a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Distribution\Include">
+      <UniqueIdentifier>{f30ff478-603f-47ce-b2c7-eb615532ab88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1535,6 +1538,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h">
       <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Distribution\AchievementIdentifier.h">
+      <Filter>Distribution\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -243,10 +243,10 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 INTERNAL_FONT_RESOLUTION{ 512 };
+	constexpr uint32 INTERNAL_FONT_RESOLUTION{ 1'024 };
 	constexpr int32 PADDING_BETWEEN_CHARACTERS{ INTERNAL_FONT_RESOLUTION / 4 };
-	constexpr uint8 BASE_MIP_LEVEL{ 3 };
-	constexpr uint8 EXTRA_MIP_LEVELS{ 4 };
+	constexpr uint8 BASE_MIP_LEVEL{ 4 };
+	constexpr uint8 EXTRA_MIP_LEVELS{ 3 };
 	constexpr uint8 MIP_CHAIN_LEVELS{ BASE_MIP_LEVEL + 1 + EXTRA_MIP_LEVELS };
 	constexpr uint8 TOTAL_NUMBER_OF_MIPMAP_LEVELS{ 1 + EXTRA_MIP_LEVELS };
 
