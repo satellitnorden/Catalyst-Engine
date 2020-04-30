@@ -4,8 +4,18 @@
 #include "CatalystRenderingUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
+//Constants.
+#define SURFACE_SHADOWS_MODE_NONE (0)
+#define SURFACE_SHADOWS_MODE_RAY_TRACED (1)
+
 //Layout specification.
 layout (early_fragment_tests) in;
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint SURFACE_SHADOWS_MODE;
+};
 
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
@@ -19,7 +29,17 @@ void CatalystShaderMain()
 	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-	vec4 shadows = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 shadows;
+
+	if (SURFACE_SHADOWS_MODE == SURFACE_SHADOWS_MODE_NONE)
+	{
+		shadows = vec4(1.0f);
+	}
+
+	else
+	{
+		shadows = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	}
 
 	//Retrieve all properties.
 	Material material = GLOBAL_MATERIALS[int(scene_features_1.w * 255.0f)];

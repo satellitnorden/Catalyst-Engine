@@ -1,12 +1,28 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+
+/*
+*	Direct lighting fragment push constant data definition.
+*/
+class DirectLightingFragmentPushConstantData final
+{
+
+public:
+
+	//The surface shadows mode.
+	uint32 _SurfaceShadowsMode;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -29,6 +45,10 @@ void DirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(DirectLightingFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -74,6 +94,13 @@ void DirectLightingGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+
+	//Push constants.
+	DirectLightingFragmentPushConstantData data;
+
+	data._SurfaceShadowsMode = static_cast<uint32>(RenderingConfigurationManager::Instance->GetSurfaceShadowsMode());
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DirectLightingFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
