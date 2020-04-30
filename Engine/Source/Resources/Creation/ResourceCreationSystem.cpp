@@ -60,7 +60,7 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 
 	//Create the master texture.
 	Texture2DHandle master_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData.Data(), data->_MasterTextureWidth, data->_MasterTextureHeight, 1, 1), TextureFormat::R_UINT8), &master_texture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData, data->_MasterTextureWidth, data->_MasterTextureHeight, 1), TextureFormat::R_UINT8), &master_texture);
 
 	resource->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(master_texture);
 }

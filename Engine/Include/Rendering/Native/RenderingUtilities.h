@@ -150,7 +150,7 @@ public:
 					const Vector2<float32> normalized_coordinate{ (static_cast<float32>(X) + 0.5f) / static_cast<float32>(output_textures->At(i).GetWidth()), (static_cast<float32>(Y) + 0.5f) / static_cast<float32>(output_textures->At(i).GetHeight()) };
 
 					//Retrieve the value at this texel.
-					output_textures->At(i).At(X, Y) = static_cast<uint8>(output_textures->At(i - 1).Sample(normalized_coordinate, AddressMode::ClampToEdge) * static_cast<float32>(UINT8_MAXIMUM));
+					output_textures->At(i).At(X, Y) = output_textures->At(i - 1).Sample(normalized_coordinate, AddressMode::ClampToEdge);
 				}
 			}
 		}

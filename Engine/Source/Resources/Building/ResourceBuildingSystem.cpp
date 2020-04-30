@@ -243,10 +243,12 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 INTERNAL_FONT_RESOLUTION{ 1'024 };
+	constexpr uint32 INTERNAL_FONT_RESOLUTION{ 256 };
 	constexpr int32 PADDING_BETWEEN_CHARACTERS{ INTERNAL_FONT_RESOLUTION / 4 };
-	constexpr uint8 BASE_MIP_LEVEL{ 4 };
-	constexpr uint8 MIP_CHAIN_LEVELS{ BASE_MIP_LEVEL + 1 };
+	constexpr uint8 BASE_MIP_LEVEL{ 2 };
+	constexpr uint8 EXTRA_MIP_LEVELS{ 0 };
+	constexpr uint8 MIP_CHAIN_LEVELS{ BASE_MIP_LEVEL + 1 + EXTRA_MIP_LEVELS };
+	constexpr uint8 TOTAL_NUMBER_OF_MIPMAP_LEVELS{ 1 + EXTRA_MIP_LEVELS };
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
@@ -449,9 +451,6 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 		{
 			for (uint32 X{ 0 }; X < final_final_master_textures[i].GetWidth(); ++X)
 			{
-				//Calculate the normalized coordinate.
-				const Vector2<float32> normalized_coordinate{ (static_cast<float32>(X) + 0.5f) / static_cast<float32>(final_final_master_textures[i].GetWidth()), (static_cast<float32>(Y) + 0.5f) / static_cast<float32>(final_final_master_textures[i].GetHeight()) };
-
 				//Retrieve the value at this texel.
 				final_final_master_textures[i].At(X, Y) = static_cast<uint8>(final_master_textures[i].At(X, Y) * static_cast<float32>(UINT8_MAXIMUM));
 			}
@@ -464,8 +463,15 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	const uint32 final_master_texture_height{ final_final_master_textures[BASE_MIP_LEVEL].GetHeight() };
 	file.Write(&final_master_texture_height, sizeof(uint32));
 
-	//Write the master texture data to the file.
-	file.Write(final_final_master_textures[BASE_MIP_LEVEL].Data(), final_final_master_textures[BASE_MIP_LEVEL].GetWidth() * final_final_master_textures[BASE_MIP_LEVEL].GetHeight());
+	//Write the number of mipmap levels to the file.
+	file.Write(&TOTAL_NUMBER_OF_MIPMAP_LEVELS, sizeof(uint8));
+
+	//Write all the mip levels of the master texture to the file.
+	for (uint8 i{ 0 }; i < TOTAL_NUMBER_OF_MIPMAP_LEVELS; ++i)
+	{
+		//Write the master texture data to the file.
+		file.Write(final_final_master_textures[BASE_MIP_LEVEL + i].Data(), final_final_master_textures[BASE_MIP_LEVEL + i].GetWidth() * final_final_master_textures[BASE_MIP_LEVEL + i].GetHeight());
+	}
 
 	//Free FreeType's resources.
 	FT_Done_Face(free_type_face);

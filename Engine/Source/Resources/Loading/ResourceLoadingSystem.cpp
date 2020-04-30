@@ -100,9 +100,21 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> *const RESTRICT file
 	//Read the master texture height.
 	file->Read(&data->_MasterTextureHeight, sizeof(uint32));
 
+	//Read the number of mipmap levels.
+	file->Read(&data->_NumberOfMipmapLevels, sizeof(uint8));
+
 	//Read the master texture data.
-	data->_MasterTextureData.Upsize<false>(data->_MasterTextureWidth * data->_MasterTextureHeight);
-	file->Read(data->_MasterTextureData.Data(), data->_MasterTextureWidth * data->_MasterTextureHeight);
+	data->_MasterTextureData.Upsize<true>(data->_NumberOfMipmapLevels);
+
+	for (uint8 i{ 0 }; i < data->_NumberOfMipmapLevels; ++i)
+	{
+		const uint32 mip_width{ data->_MasterTextureWidth >> i };
+		const uint32 mip_height{ data->_MasterTextureHeight >> i };
+
+		data->_MasterTextureData[i].Upsize<false>(mip_width * mip_height);
+
+		file->Read(data->_MasterTextureData[i].Data(), mip_width * mip_height);
+	}
 }
 
 /*

@@ -38,7 +38,7 @@ namespace TGAWriter
 	/*
 	*	Writes the given image to the given file as a .tga file.
 	*/
-	FORCE_INLINE void Write(const Texture2D<Vector4<float>> &image, const char *const RESTRICT file) NOEXCEPT
+	FORCE_INLINE void Write(const Texture2D<Vector4<float32>> &image, const char *const RESTRICT file) NOEXCEPT
 	{
 		//Create the output file.
 		BinaryFile<IOMode::Out> output_file{ file };

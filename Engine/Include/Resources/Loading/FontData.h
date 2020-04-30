@@ -21,7 +21,10 @@ public:
 	//The master texture height.
 	uint32 _MasterTextureHeight;
 
+	//The number of mipmap levels.
+	uint8 _NumberOfMipmapLevels;
+
 	//The master texture data.
-	DynamicArray<byte> _MasterTextureData;
+	DynamicArray<DynamicArray<byte>> _MasterTextureData;
 
 };

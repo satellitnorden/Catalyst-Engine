@@ -29,4 +29,9 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
+	/*
+	*	Returns the current user name.
+	*/
+	RESTRICTED NO_DISCARD const char *const RESTRICT CurrentUserName() const NOEXCEPT;
+
 };
