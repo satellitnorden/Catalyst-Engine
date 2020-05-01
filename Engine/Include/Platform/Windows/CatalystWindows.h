@@ -23,6 +23,7 @@
 #undef CreateEvent
 #undef CreateSemaphore
 #undef GetCurrentTime
+#undef INFINITE
 #undef MemoryBarrier
 #undef far
 #undef max

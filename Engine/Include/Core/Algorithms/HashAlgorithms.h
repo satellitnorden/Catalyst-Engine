@@ -322,14 +322,14 @@ namespace HashAlgorithms
 	static constexpr uint64 DJB2Hash(const char *const RESTRICT data, const uint64 length) NOEXCEPT
 	{
 		//Set up the hash's initial value.
-		uint64 hash{ 5381 };
+		uint64 hash{ 5'381 };
 
 		//For each byte, mutate the hash.
-		for (uint64 i = 0; i < length; ++i)
+		for (uint64 i{ 0 }; i < length; ++i)
 		{
-			const byte byteData{ static_cast<byte>(data[i]) };
+			const byte byte_data{ static_cast<byte>(data[i]) };
 
-			hash = ((hash << 5) + hash) + byteData;
+			hash = ((hash << 5) + hash) + byte_data;
 		}
 
 		return hash;
@@ -356,8 +356,8 @@ namespace HashAlgorithms
 		}
 
 		//Treat the data as a stream of bytes.
-		const byte byteDataBegin{ static_cast<byte>(data[0]) };
-		const byte *RESTRICT byteData{ static_cast<const byte *RESTRICT>(&byteDataBegin) };
+		const byte byte_data_begin{ static_cast<byte>(data[0]) };
+		const byte *RESTRICT byte_data{ static_cast<const byte *RESTRICT>(&byte_data_begin) };
 
 		//Set up the hash's initial value.
 		uint64 a{ 0x9e3779b };
@@ -366,13 +366,13 @@ namespace HashAlgorithms
 
 		while (length >= 12)
 		{
-			a += (byteData[0] + (static_cast<uint64>(byteData[1]) << 8) + (static_cast<uint64>(byteData[2]) << 16) + (static_cast<uint64>(byteData[3]) << 24));
-			b += (byteData[4] + (static_cast<uint64>(byteData[5]) << 8) + (static_cast<uint64>(byteData[6]) << 16) + (static_cast<uint64>(byteData[7]) << 24));
-			hash += (byteData[8] + (static_cast<uint64>(byteData[9]) << 8) + (static_cast<uint64>(byteData[10]) << 16) + (static_cast<uint64>(byteData[11]) << 24));
+			a += (byte_data[0] + (static_cast<uint64>(byte_data[1]) << 8) + (static_cast<uint64>(byte_data[2]) << 16) + (static_cast<uint64>(byte_data[3]) << 24));
+			b += (byte_data[4] + (static_cast<uint64>(byte_data[5]) << 8) + (static_cast<uint64>(byte_data[6]) << 16) + (static_cast<uint64>(byte_data[7]) << 24));
+			hash += (byte_data[8] + (static_cast<uint64>(byte_data[9]) << 8) + (static_cast<uint64>(byte_data[10]) << 16) + (static_cast<uint64>(byte_data[11]) << 24));
 
 			mix(a, b, hash);
 
-			byteData += 12;
+			byte_data += 12;
 			length -= 12;
 		}
 
@@ -380,17 +380,17 @@ namespace HashAlgorithms
 
 		switch (length)
 		{
-			case 11: hash += (static_cast<uint64>(byteData[10]) << 24);
-			case 10: hash += (static_cast<uint64>(byteData[9]) << 16);
-			case 9: hash += (static_cast<uint64>(byteData[8]) << 8);
-			case 8: b += (static_cast<uint64>(byteData[7]) << 24);
-			case 7: b += (static_cast<uint64>(byteData[6]) << 16);
-			case 6: b += (static_cast<uint64>(byteData[5]) << 8);
-			case 5: b += byteData[4];
-			case 4: a += (static_cast<uint64>(byteData[3]) << 24);
-			case 3: a += (static_cast<uint64>(byteData[2]) << 16);
-			case 2: a += (static_cast<uint64>(byteData[1]) << 8);
-			case 1: a += byteData[0];
+			case 11: hash += (static_cast<uint64>(byte_data[10]) << 24);
+			case 10: hash += (static_cast<uint64>(byte_data[9]) << 16);
+			case 9: hash += (static_cast<uint64>(byte_data[8]) << 8);
+			case 8: b += (static_cast<uint64>(byte_data[7]) << 24);
+			case 7: b += (static_cast<uint64>(byte_data[6]) << 16);
+			case 6: b += (static_cast<uint64>(byte_data[5]) << 8);
+			case 5: b += byte_data[4];
+			case 4: a += (static_cast<uint64>(byte_data[3]) << 24);
+			case 3: a += (static_cast<uint64>(byte_data[2]) << 16);
+			case 2: a += (static_cast<uint64>(byte_data[1]) << 8);
+			case 1: a += byte_data[0];
 		}
 
 		mix(a, b, hash);
