@@ -118,13 +118,13 @@ private:
 	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
-	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::RAY_TRACED };
+	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
 
 	//The surface shadows mode.
-	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RAY_TRACED };
+	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::NONE };
 
 	//The volumetric shadows mode.
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
