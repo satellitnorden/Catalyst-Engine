@@ -63,5 +63,6 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+
 	_DirectLightingGraphicsPipeline.Execute();
 }

@@ -65,5 +65,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 	_ShadowsRayTracingPipeline.Execute();
 
+	//Enable this render pass.
 	SetEnabled(true);
 }

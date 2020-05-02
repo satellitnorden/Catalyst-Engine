@@ -97,6 +97,14 @@ public:
 	}
 
 	/*
+	*	Sets the surface shadows mode.
+	*/
+	FORCE_INLINE void SetSurfaceShadowsMode(const SurfaceShadowsMode value) NOEXCEPT
+	{
+		_SurfaceShadowsMode = value;
+	}
+
+	/*
 	*	Returns the volumetric shadows mode.
 	*/
 	FORCE_INLINE NO_DISCARD VolumetricShadowsMode GetVolumetricShadowsMode() const NOEXCEPT
