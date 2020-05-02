@@ -127,7 +127,11 @@ void IndirectLightingApplicationGraphicsPipeline::CreateSpecularBiasLookupTextur
 	constexpr uint32 SIZE{ 512 };
 
 	//Open the file.
+#if defined(CATALYST_CONFIGURATION_FINAL)
+	BinaryFile<IOMode::In> file{ "SpecularBiasLookupTextureData.cr" };
+#else
 	BinaryFile<IOMode::In> file{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\SpecularBiasLookupTextureData.cr" };
+#endif
 
 	//Load the data into the texture.
 	Texture2D<Vector2<float32>> texture{ SIZE };

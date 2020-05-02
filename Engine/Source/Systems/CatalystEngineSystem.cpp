@@ -146,7 +146,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	WorldSystem::Instance->Initialize();
 
 	//Register the Catalyst Engine resource collection. 
+#if defined(CATALYST_CONFIGURATION_FINAL)
+	ResourceSystem::Instance->LoadsResourceCollection("CatalystEngineResourceCollection.crc");
+#else
 	ResourceSystem::Instance->LoadsResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
+#endif
 
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
