@@ -132,4 +132,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
+
+	//Enable this render pass.
+	SetEnabled(true);
 }

@@ -73,6 +73,14 @@ public:
 	}
 
 	/*
+	*	Sets the ambient occlusion mode.
+	*/
+	FORCE_INLINE void SetAmbientOcclusionMode(const AmbientOcclusionMode value) NOEXCEPT
+	{
+		_AmbientOcclusionMode = value;
+	}
+
+	/*
 	*	Returns the indirect lighting mode.
 	*/
 	FORCE_INLINE NO_DISCARD IndirectLightingMode GetIndirectLightingMode() const NOEXCEPT
