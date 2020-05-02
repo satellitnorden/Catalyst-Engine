@@ -32,10 +32,7 @@ float NeighborhoodWeight(vec3 previous, vec3 minimum, vec3 maximum)
 	weight *= 1.0f - clamp(previous.x - maximum.x, 0.0f, 1.0f);
 	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
 	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
-
-	//Bias the weight.
-	weight = weight * weight * weight * weight;
-
+	
 	//Return the weight.
 	return weight;
 }

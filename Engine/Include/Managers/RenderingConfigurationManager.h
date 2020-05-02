@@ -89,6 +89,14 @@ public:
 	}
 
 	/*
+	*	Sets the indirect lighting mode.
+	*/
+	FORCE_INLINE void SetIndirectLightingMode(const IndirectLightingMode value) NOEXCEPT
+	{
+		_IndirectLightingMode = value;
+	}
+
+	/*
 	*	Returns the surface shadows mode.
 	*/
 	FORCE_INLINE NO_DISCARD SurfaceShadowsMode GetSurfaceShadowsMode() const NOEXCEPT
