@@ -1,10 +1,11 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
-#include "CatalystRandomUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 //Constants.
-#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (2)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP (1.0f / SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)
 
@@ -15,9 +16,10 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_2_texture;
-layout (set = 1, binding = 1) uniform sampler2D scene_features_3_texture;
-layout (set = 1, binding = 2) uniform sampler2D scene_texture;
+layout (set = 1, binding = 0) uniform sampler2D scene_features_1_texture;
+layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
+layout (set = 1, binding = 2) uniform sampler2D scene_features_3_texture;
+layout (set = 1, binding = 3) uniform sampler2D scene_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -25,9 +27,9 @@ layout (location = 0) out vec4 fragment;
 /*
 *	The probability density function.	
 */
-float ProbabilityDensityFunction(vec3 normal, vec3 ray_direction)
+float ProbabilityDensityFunction(vec3 normal, vec3 ray_direction, float roughness, float metallic)
 {
-	return max(dot(normal, ray_direction), 0.0f);
+	return mix(1.0f, max(dot(normal, ray_direction), 0.0f), roughness * (1.0f - metallic));
 }
 
 /*
@@ -116,14 +118,54 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 		//If the sample position's depth is greater then the sample depth, there is a hit!
 		if (screen_space_sample_position.z < sample_depth)
 		{
-			//Test the (world space) surface normal against the (world space) direction.
+			//Test the (world space) surface normal against the (world space) ray direction.
 			if (dot(ray_direction, sample_scene_features_2.xyz) <= 0.0f)
 			{
-				//Sample the scene at the sample screen coordinate.
-				hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
+				//Test the (world space) direction towards the hit position against the (world space) ray direction.
+				vec3 hit_position = CalculateWorldPosition(sample_scene_features_2.xy, sample_scene_features_2.w);
+				vec3 direction_to_hit_position = normalize(hit_position - ray_origin);
 
-				//Return that there was a hit.
-				return 1.0f;
+				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
+				{
+					//Sample the scene at the sample screen coordinate.
+					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
+
+					//Since the hit radiance only contains emissive and direct lighting, add some simple indirect and volumetric lighting to the point.
+					{
+						//Sample the sample's material properties.
+						vec4 sample_scene_features_1 = texture(scene_features_1_texture, screen_space_sample_position.xy);
+						vec4 sample_scene_features_3 = texture(scene_features_3_texture, screen_space_sample_position.xy);
+
+						//Add indirect lighting.
+						{
+							//Sample the sky.
+							vec3 sky_diffuse_sample = SampleSkyDiffuse(sample_scene_features_2.xyz);
+							vec3 sky_specular_sample = SampleSkySpecular(ray_direction, sample_scene_features_2.xyz, sample_scene_features_3[0], sample_scene_features_3[1]);
+
+							//Calculate the indirect lighting.
+							vec3 indirect_lighting = CalculatePrecomputedLighting(	-ray_direction,
+																					sample_scene_features_1.rgb,
+																					sample_scene_features_2.xyz,
+																					sample_scene_features_3[0],
+																					sample_scene_features_3[1],
+																					sample_scene_features_3[2],
+																					1.0f,
+																					sky_diffuse_sample,
+																					sky_specular_sample,
+																					vec2(1.0f, 0.0f));
+
+							hit_radiance += indirect_lighting;
+						}
+
+						//Add volumetric lighting.
+						{
+
+						}
+					}
+
+					//Return that there was a hit.
+					return 1.0f;
+				}
 			}
 		}
 
@@ -170,7 +212,7 @@ void CatalystShaderMain()
 		float hit = CastRayScene(world_position + ray_direction , ray_direction, start_offset, sample_indirect_lighting);
 
 		//Calculate the sample weight.
-		float sample_weight = ProbabilityDensityFunction(normal, ray_direction) * hit;
+		float sample_weight = ProbabilityDensityFunction(normal, ray_direction, roughness, metallic) * hit;
 
 		//Accumulate.
 		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * sample_weight : vec3(0.0f);

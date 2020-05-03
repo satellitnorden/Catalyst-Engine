@@ -277,6 +277,33 @@ void SampleHammersleyHemisphereSample(uint index, out vec3 direction, out float 
 }
 
 /*
+*   Samples the sky diffuse.
+*/
+vec3 SampleSkyDiffuse(vec3 normal)
+{
+    return texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], normal).rgb;
+}
+
+/*
+*   Samples the sky specular.
+*/
+vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness, float metallic)
+{
+    //Calculate the reflection vector.
+    vec3 reflection_vector = reflect(view_direction, normal);
+
+    //Calculate the indices for the sky textures.
+    float float_index = roughness * (1.0f - metallic) * float(NUMBER_OF_SKY_TEXTURES - 1);
+
+    uint first_index = uint(float_index);
+    uint second_index = first_index + 1;
+
+    float alpha = fract(float_index);
+
+    return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
+}
+
+/*
 *   Scales a value from one range to another.
 */
 float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum)

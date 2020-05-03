@@ -55,33 +55,6 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	return features;
 }
 
-/*
-*	Samples the sky diffuse.
-*/
-vec3 SampleSkyDiffuse(vec3 normal)
-{
-	return texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], normal).rgb;
-}
-
-/*
-*	Samples the sky specular.
-*/
-vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness)
-{
-	//Calculate the reflection vector.
-	vec3 reflection_vector = reflect(view_direction, normal);
-
-	//Calculate the indices for the sky textures.
-	float float_index = roughness * float(NUMBER_OF_SKY_TEXTURES - 1);
-
-	uint first_index = uint(float_index);
-	uint second_index = first_index + 1;
-
-	float alpha = fract(float_index);
-
-	return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
-}
-
 void CatalystShaderMain()
 {
 	//Sample the current features.
@@ -92,13 +65,13 @@ void CatalystShaderMain()
 
 	//Sample the sky.
 	vec3 sky_diffuse_sample = SampleSkyDiffuse(current_features.normal);
-	vec3 sky_specular_sample = SampleSkySpecular(current_features.view_direction, current_features.normal, current_features.roughness);
+	vec3 sky_specular_sample = SampleSkySpecular(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
 
 	//Calculate the blended specular irradiance
 	vec3 blended_specular_irradiance = mix(sky_specular_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
 	//Calculate the specular bias.
-	vec2 specular_bias_texture_coordinate = vec2(max(dot(current_features.normal, -current_features.view_direction), 0.0f), current_features.roughness);
+	vec2 specular_bias_texture_coordinate = vec2(max(dot(current_features.normal, -current_features.view_direction), 0.0f), current_features.roughness * (1.0f - current_features.metallic));
 	vec2 specular_bias = texture(sampler2D(GLOBAL_TEXTURES[SPECULAR_BIAS_LOOKUP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), specular_bias_texture_coordinate).xy;	
 
 	//Calculate the indirect lighting.
