@@ -19,6 +19,9 @@ public:
 	//The chromatic aberration intensity.
 	float32 _ChromaticAberrationIntensity;
 
+	//The brightness.
+	float32 _Brightness;
+
 	//The contrast.
 	float32 _Contrast;
 
@@ -109,6 +112,7 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	PostProcessingFragmentPushConstantData data;
 
 	data._ChromaticAberrationIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetChromaticAberrationIntensity();
+	data._Brightness = RenderingSystem::Instance->GetPostProcessingSystem()->GetBrightness();
 	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
 	data._FilmGrainIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetFilmGrainIntensity();
 	data._HorizontalBorder = RenderingSystem::Instance->GetPostProcessingSystem()->GetHorizontalBorder();

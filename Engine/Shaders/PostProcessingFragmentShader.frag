@@ -1,14 +1,14 @@
 //Includes.
 #include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 4) float CONTRAST;
-	layout (offset = 8) float FILM_GRAIN_INTENSITY;
-	layout (offset = 12) float HORIZONTAL_BORDER;
+	layout (offset = 4) float BRIGHTNESS;
+	layout (offset = 8) float CONTRAST;
+	layout (offset = 12) float FILM_GRAIN_INTENSITY;
+	layout (offset = 16) float HORIZONTAL_BORDER;
 };
 
 //Layout specification.
@@ -24,9 +24,9 @@ layout (set = 1, binding = 0) uniform sampler2D source_texture;
 layout (location = 0) out vec4 fragment;
 
 /*
-*	Applies chromatic aberration.
+*	Samples with chromatic aberration.
 */
-vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
+vec3 SampleWithChromaticAberration(float edge_factor)
 {
 	//Determine the offset weight.
 	vec2 offset_weight = vec2(1.0f - edge_factor);
@@ -36,6 +36,22 @@ vec3 ApplyChromaticAberration(vec3 fragment, float edge_factor)
 
 	//Calculate the chromatic aberration.
 	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.x).r, texture(source_texture, fragment_texture_coordinate + vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.y).gb);
+}
+
+/*
+*	Applies brightness.
+*/
+vec3 ApplyBrightness(vec3 fragment)
+{
+	return fragment + vec3(BRIGHTNESS - 1.0f);
+}
+
+/*
+*	Applies contrast.
+*/
+vec3 ApplyContrast(vec3 fragment)
+{
+	return ((fragment - 0.5f) * CONTRAST) + 0.5f;
 }
 
 /*
@@ -64,20 +80,20 @@ vec3 ApplyBorders(vec3 fragment)
 
 void CatalystShaderMain()
 {
-	//Sample the source texture.
-	vec3 post_processed_fragment = texture(source_texture, fragment_texture_coordinate).rgb;
-
 	//Determine the direction of the current fragment.
 	vec3 fragment_direction = CalculateRayDirection(fragment_texture_coordinate);
 
 	//Calculate the edge factor.
 	float edge_factor = max(dot(PERCEIVER_FORWARD_VECTOR, fragment_direction), 0.0f);
 
-	//Apply chromatic aberration.
-	post_processed_fragment = ApplyChromaticAberration(post_processed_fragment, edge_factor);
+	//Sample with chromatic aberration.
+	vec3 post_processed_fragment = SampleWithChromaticAberration(edge_factor);
+
+	//Apply brightness.
+	post_processed_fragment = ApplyBrightness(post_processed_fragment);
 
 	//Apply contrast.
-	post_processed_fragment = ApplyContrast(post_processed_fragment, CONTRAST);
+	post_processed_fragment = ApplyContrast(post_processed_fragment);
 
 	//Apply film grain.
 	post_processed_fragment = ApplyFilmGrain(post_processed_fragment);

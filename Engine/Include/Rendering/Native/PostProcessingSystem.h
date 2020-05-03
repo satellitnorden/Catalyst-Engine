@@ -13,6 +13,22 @@ class PostProcessingSystem final
 public:
 
 	/*
+	*	Returns the brightness.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetBrightness() const NOEXCEPT
+	{
+		return _Brightness;
+	}
+
+	/*
+	*	Sets the brightness.
+	*/
+	FORCE_INLINE void SetBrightness(const float32 value) NOEXCEPT
+	{
+		_Brightness = value;
+	}
+
+	/*
 	*	Returns the contrast.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetContrast() const NOEXCEPT
@@ -141,6 +157,9 @@ public:
 	}
 
 private:
+
+	//The brightness.
+	float32 _Brightness{ 1.0f };
 
 	//The contrast.
 	float32 _Contrast{ 1.0f };
