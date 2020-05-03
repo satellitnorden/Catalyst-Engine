@@ -4,8 +4,9 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (2)
-#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_SAMPLES (16)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP (1.0f / SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -68,57 +69,69 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_d
 /*
 *	Casts a ray against the scene. Returns if there was a hit.	
 */
-bool CastRayScene(vec3 ray_origin, vec3 ray_direction, out vec3 hit_radiance)
+float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out vec3 hit_radiance)
 {
+	//Calculate the screen space origin.
+	vec3 screen_space_origin;
+
+	{
+		vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(ray_origin, 1.0f);
+		float screen_coordinate_inverse_denominator = 1.0f / view_space_position.w;
+		screen_space_origin = view_space_position.xyz * screen_coordinate_inverse_denominator;
+		screen_space_origin.xy = screen_space_origin.xy * 0.5f + 0.5f;
+		screen_space_origin.z = LinearizeDepth(screen_space_origin.z);
+	}
+
+	//Calculate the screen space direction.
+	vec3 screen_space_direction;
+
+	{
+		vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(ray_origin + ray_direction, 1.0f);
+		float screen_coordinate_inverse_denominator = 1.0f / view_space_position.w;
+		screen_space_direction = view_space_position.xyz * screen_coordinate_inverse_denominator;
+		screen_space_direction.xy = screen_space_direction.xy * 0.5f + 0.5f;
+		screen_space_direction.z = LinearizeDepth(screen_space_direction.z);
+
+		screen_space_direction = normalize(screen_space_direction - screen_space_origin);
+	}
+
 	//Perform the raycast.
-	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_RAY_SAMPLES; ++i)
+	float current_step = SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP * start_offset;
+
+	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
-		vec3 sample_position = ray_origin + ray_direction * float(i);
+		vec3 screen_space_sample_position = screen_space_origin + screen_space_direction * current_step;
 
-		//Calculate the sample screen coordinate.
-		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
-		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
-		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
-
-		//If the sample screen coordinate goes outisde of the screen, there can't be a hit.
-		if (!ValidCoordinate(sample_screen_coordinate))
+		//Terminate the ray if outside the screen.
+		if (!ValidCoordinate(screen_space_sample_position.xy))
 		{
-			return false;
+			return 0.0f;
 		}
 
-		//Calculate the expected view distance.
-		float expected_view_distance = CalculateViewSpacePosition(sample_screen_coordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
+		//Sample the depth at the current sample position.
+		vec4 sample_scene_features_2 = texture(scene_features_2_texture, screen_space_sample_position.xy);
+		float sample_depth = LinearizeDepth(sample_scene_features_2.w);
 
-		//Sample the sample scene features.
-		vec4 sample_scene_features = texture(scene_features_2_texture, sample_screen_coordinate);
-		float sample_view_distance = CalculateViewSpacePosition(sample_screen_coordinate, sample_scene_features.w).z;
-
-		//If the expected hit distance is greater then the sample hit distance, there is a hit!
-		if (expected_view_distance < sample_view_distance)
+		//If the sample position's depth is greater then the sample depth, there is a hit!
+		if (screen_space_sample_position.z < sample_depth)
 		{
-			//Test the normal of the hit surface against the ray direction - if not within the hemisphere, then there is no hit.
-			if (dot(sample_scene_features.xyz, ray_direction) <= 0.0f)
+			//Test the (world space) surface normal against the (world space) direction.
+			if (dot(ray_direction, sample_scene_features_2.xyz) <= 0.0f)
 			{
-				//Test the direction to the hit position against the ray direction - they must match somewhat for this to be considered a valid hit.
-				vec3 sample_world_position = CalculateWorldPosition(sample_screen_coordinate, sample_scene_features.w);
+				//Sample the scene at the sample screen coordinate.
+				hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
 
-				vec3 direction_to_hit_position = normalize(sample_world_position - ray_origin);
-
-				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
-				{
-					//Sample the scene at the sample screen coordinate.
-					hit_radiance = texture(scene_texture, sample_screen_coordinate).rgb;
-
-					//Return that there was a hit.
-					return true;
-				}
+				//Return that there was a hit.
+				return 1.0f;
 			}
 		}
+
+		current_step += SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP;
 	}
 
 	//There was no hit.
-	return false;
+	return 0.0f;
 }
 
 void CatalystShaderMain()
@@ -154,13 +167,13 @@ void CatalystShaderMain()
 		//Calculate the indirect lighting.
 		vec3 sample_indirect_lighting;
 
-		bool hit = CastRayScene(world_position + ray_direction * start_offset, ray_direction, sample_indirect_lighting);
+		float hit = CastRayScene(world_position + ray_direction , ray_direction, start_offset, sample_indirect_lighting);
 
 		//Calculate the sample weight.
-		float sample_weight = ProbabilityDensityFunction(normal, ray_direction) * float(hit);
+		float sample_weight = ProbabilityDensityFunction(normal, ray_direction) * hit;
 
 		//Accumulate.
-		indirect_lighting += hit ? sample_indirect_lighting * sample_weight : vec3(0.0f);
+		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * sample_weight : vec3(0.0f);
 		total_weight += sample_weight;
 	}
 
