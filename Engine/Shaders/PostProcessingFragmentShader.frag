@@ -26,7 +26,7 @@ layout (location = 0) out vec4 fragment;
 /*
 *	Samples with chromatic aberration.
 */
-vec3 SampleWithChromaticAberration(float edge_factor)
+vec3 SampleWithChromaticAberration(float edge_factor, vec2 coordinate)
 {
 	//Determine the offset weight.
 	vec2 offset_weight = vec2(1.0f - edge_factor);
@@ -35,7 +35,23 @@ vec3 SampleWithChromaticAberration(float edge_factor)
 	offset_weight.y *= ASPECT_RATIO;
 
 	//Calculate the chromatic aberration.
-	return vec3(texture(source_texture, fragment_texture_coordinate - vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.x).r, texture(source_texture, fragment_texture_coordinate + vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.y).gb);
+	return vec3(texture(source_texture, coordinate - vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.x).r, texture(source_texture, coordinate + vec2(CHROMATIC_ABERRATION_INTENSITY, CHROMATIC_ABERRATION_INTENSITY) * offset_weight.y).gb);
+}
+
+/*
+*	Samples with sharpen.
+*/
+vec3 SampleWithSharpen(float edge_factor)
+{
+	vec3 original_sample = SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate);
+
+	vec3 sharpened_sample = original_sample * 5.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+
+	return sharpened_sample;
 }
 
 /*
@@ -87,7 +103,7 @@ void CatalystShaderMain()
 	float edge_factor = max(dot(PERCEIVER_FORWARD_VECTOR, fragment_direction), 0.0f);
 
 	//Sample with chromatic aberration.
-	vec3 post_processed_fragment = SampleWithChromaticAberration(edge_factor);
+	vec3 post_processed_fragment = SampleWithSharpen(edge_factor);
 
 	//Apply brightness.
 	post_processed_fragment = ApplyBrightness(post_processed_fragment);
