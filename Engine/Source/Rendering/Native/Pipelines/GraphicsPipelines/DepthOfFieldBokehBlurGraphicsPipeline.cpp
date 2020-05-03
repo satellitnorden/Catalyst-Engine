@@ -24,58 +24,11 @@ public:
 
 };
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-/*
-*	Prints the sample points.
-*/
-void PrintSamplePoints() NOEXCEPT
-{
-	//Define constants.
-	constexpr uint8 RESOLUTION{ 3 };
-
-	//Calculate all sample points.
-	DynamicArray<Vector2<float32>> sample_points;
-
-	for (int8 X{ -RESOLUTION }; X <= RESOLUTION; ++X)
-	{
-		for (int8 Y{ -RESOLUTION }; Y <= RESOLUTION; ++Y)
-		{
-			//Calculate the normalized coordinate.
-			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(RESOLUTION), static_cast<float32>(Y) / static_cast<float32>(RESOLUTION) };
-
-			//Skip this coordinate if it is not within the unit disk.
-			if (normalized_coordinate.LengthSquared() <= 1.0f)
-			{
-				sample_points.Emplace(normalized_coordinate);
-			}
-		}
-	}
-
-	//Print the sample points.
-	PRINT_TO_OUTPUT("#define DEPTH_OF_FIELD_BOKEH_BLUR_SAMPLES (" << sample_points.Size() << ")");
-	PRINT_TO_OUTPUT("");
-	PRINT_TO_OUTPUT("vec2 SAMPLE_POINTS[" << sample_points.Size() << "] = vec2[]");
-	PRINT_TO_OUTPUT("(");
-
-	for (const Vector2<float32> &sample_point : sample_points)
-	{
-		PRINT_TO_OUTPUT("\tvec2(" << sample_point._X << "f, " << sample_point._Y << "f),");
-	}
-
-	PRINT_TO_OUTPUT(");");
-}
-#endif
-
 /*
 *	Initializes this graphics pipeline.
 */
 void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 {
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	//Print the sample points.
-	//PrintSamplePoints();
-#endif
-
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());

@@ -4,40 +4,40 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define DEPTH_OF_FIELD_BOKEH_BLUR_SAMPLES (29)
+#define MAXIMUM_NUMBER_OF_SAMPLES (512)
 
-vec2 SAMPLE_POINTS[29] = vec2[]
-(
-	vec2(-1.0f, 0.0f),
-	vec2(-0.666667f, -0.666667f),
-	vec2(-0.666667f, -0.333333f),
-	vec2(-0.666667f, 0.0f),
-	vec2(-0.666667f, 0.333333f),
-	vec2(-0.666667f, 0.666667f),
-	vec2(-0.333333f, -0.666667f),
-	vec2(-0.333333f, -0.333333f),
-	vec2(-0.333333f, 0.0f),
-	vec2(-0.333333f, 0.333333f),
-	vec2(-0.333333f, 0.666667f),
-	vec2(0.0f, -1.0f),
-	vec2(0.0f, -0.666667f),
-	vec2(0.0f, -0.333333f),
-	vec2(0.0f, 0.0f),
-	vec2(0.0f, 0.333333f),
-	vec2(0.0f, 0.666667f),
-	vec2(0.0f, 1.0f),
-	vec2(0.333333f, -0.666667f),
-	vec2(0.333333f, -0.333333f),
-	vec2(0.333333f, 0.0f),
-	vec2(0.333333f, 0.333333f),
-	vec2(0.333333f, 0.666667f),
-	vec2(0.666667f, -0.666667f),
-	vec2(0.666667f, -0.333333f),
-	vec2(0.666667f, 0.0f),
-	vec2(0.666667f, 0.333333f),
-	vec2(0.666667f, 0.666667f),
-	vec2(1.0f, 0.0f)
-);
+vec2 UnitSquareToUnitDiskPolarCoordinates(float x, float y)
+{
+    float radius;
+    float angle;
+
+    if (abs(x) > abs(y))
+    {
+        radius = x;
+        angle = y / (x + 0.000001f) * 0.785398f;
+    }
+
+    else
+    {
+        radius = y;
+        angle = 1.5707963f - (x / (y + 0.000001f) * 0.785398f);
+    }
+
+    if (radius < 0)
+    {
+        radius *= -1.0f;
+        angle += PI;
+    }
+
+    return vec2(radius, angle);
+}
+
+vec2 UnitSquareToUnitDiskCoordinates(float x, float y)
+{
+    vec2 polar_coordinates = UnitSquareToUnitDiskPolarCoordinates(x, y);
+
+    return vec2(polar_coordinates.x * cos(polar_coordinates.y), polar_coordinates.x * sin(polar_coordinates.y));
+}
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -67,32 +67,38 @@ void CatalystShaderMain()
 	vec3 blurred_scene = vec3(0.0f);
 	float total_weight = 0.0f;
 
-	for (uint i = 0; i < DEPTH_OF_FIELD_BOKEH_BLUR_SAMPLES; ++i)
+	//Calculate the number of samples.
+	int number_of_samples = int(mix(1.0f, MAXIMUM_NUMBER_OF_SAMPLES, DEPTH_OF_FIELD_SIZE * depth_of_field_weight));
+
+	for (int Y = -number_of_samples; Y <= number_of_samples; ++Y)
 	{
-		//Calculate the unit square coordinates.
-		vec2 unit_disk_coordinate = SAMPLE_POINTS[i];
+		for (int X = -number_of_samples; X <= number_of_samples; ++X)
+		{
+			//Calculate the unit square coordinates.
+			vec2 unit_disk_coordinate = UnitSquareToUnitDiskCoordinates(float(X) / float(number_of_samples), float(Y) / float(number_of_samples));
 
-		//Scale the unit disk coordinate depending on the depth of field weight/size.
-		unit_disk_coordinate *= depth_of_field_weight;
-		unit_disk_coordinate *= DEPTH_OF_FIELD_SIZE;
+			//Scale the unit disk coordinate depending on the depth of field weight/size.
+			unit_disk_coordinate *= depth_of_field_weight;
+			unit_disk_coordinate *= DEPTH_OF_FIELD_SIZE;
 
-		//Scale the unit disk coordinate depending on the depth of field weight/size.
-		unit_disk_coordinate.y *= ASPECT_RATIO;
+			//Scale the unit disk coordinate depending on the depth of field weight/size.
+			unit_disk_coordinate.y *= ASPECT_RATIO;
 
-		//Calculate the sample coordinate.
-		vec2 sample_coordinate = fragment_texture_coordinate + unit_disk_coordinate;
+			//Calculate the sample coordinate.
+			vec2 sample_coordinate = fragment_texture_coordinate + unit_disk_coordinate;
 
-		/*
-		*	Calculate the sample weight, depending on these criteria;
-		*	
-		*	1. Is the sample coordinate a valid coordinate?
-		*/
-		float sample_weight = 1.0f;
+			/*
+			*	Calculate the sample weight, depending on these criteria;
+			*	
+			*	1. Is the sample coordinate a valid coordinate?
+			*/
+			float sample_weight = 1.0f;
 
-		sample_weight *= float(ValidCoordinate(sample_coordinate));
+			sample_weight *= float(ValidCoordinate(sample_coordinate));
 
-		blurred_scene += texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb * sample_weight;
-		total_weight += sample_weight;
+			blurred_scene += texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb * sample_weight;
+			total_weight += sample_weight;
+		}
 	}
 
 	//Normalize the blurred scene.
