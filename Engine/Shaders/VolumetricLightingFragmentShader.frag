@@ -36,12 +36,12 @@ void CatalystShaderMain()
 	//Calculate the ambient lighting.
 	vec3 ambient_lighting = vec3(0.0f);
 
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
 
 	//Calculate the sky light lighting.
 	vec3 sky_light_lighting = CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;

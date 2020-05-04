@@ -92,7 +92,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 448) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
     layout (offset = 452) float TERRAIN_MAP_RESOLUTION;
 
-    //Total size; 456
+    layout (offset = 456) float SKY_INTENSITY;
+
+    //Total size; 460
 };
 
 //The render targets.
@@ -278,7 +280,7 @@ void SampleHammersleyHemisphereSample(uint index, out vec3 direction, out float 
 */
 vec3 SampleSkyDiffuse(vec3 normal)
 {
-    return textureLod(SKY_TEXTURE, normal, MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb;
+    return textureLod(SKY_TEXTURE, normal, MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * SKY_INTENSITY;
 }
 
 /*
@@ -292,7 +294,7 @@ vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness, float 
     //Calculate the mipmap level
     float mipmap_level = roughness * (1.0f - metallic) * (MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f);
 
-    return textureLod(SKY_TEXTURE, reflection_vector, mipmap_level).rgb;
+    return textureLod(SKY_TEXTURE, reflection_vector, mipmap_level).rgb * SKY_INTENSITY;
 }
 
 /*

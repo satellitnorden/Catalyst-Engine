@@ -51,6 +51,8 @@ public:
 	uint32 _TerrainBlendMapTextureIndex;
 	float32 _TerrainMapResolution;
 
+	float32 _SkyIntensity;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 456, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 460, "Size of dynamic uniform data is wrong!");
