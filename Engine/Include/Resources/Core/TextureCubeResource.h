@@ -14,6 +14,9 @@ class TextureCubeResource final : public Resource
 
 public:
 
+	//The number of mipmap levels.
+	uint8 _MipmapLevels;
+
 	//The texture cube handle.
 	TextureCubeHandle _TextureCubeHandle{ EMPTY_HANDLE };
 

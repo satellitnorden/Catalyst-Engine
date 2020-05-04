@@ -12,7 +12,10 @@ public:
 	//The resolution.
 	uint32 _Resolution;
 
+	//The number of mipmap levels.
+	uint8 _MipmapLevels;
+
 	//The data.
-	DynamicArray<float> _Data;
+	DynamicArray<DynamicArray<float32>> _Data;
 
 };

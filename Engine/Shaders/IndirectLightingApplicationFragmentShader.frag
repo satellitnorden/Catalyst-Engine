@@ -68,6 +68,7 @@ void CatalystShaderMain()
 	vec3 sky_specular_sample = SampleSkySpecular(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
 
 	//Calculate the blended specular irradiance
+	vec3 blended_diffuse_irradiance = mix(sky_diffuse_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 	vec3 blended_specular_irradiance = mix(sky_specular_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
 
 	//Calculate the specular bias.
@@ -82,7 +83,7 @@ void CatalystShaderMain()
 															current_features.metallic,
 															current_features.ambientOcclusion,
 															1.0f,
-															sky_diffuse_sample,
+															blended_diffuse_irradiance,
 															blended_specular_irradiance,
 															specular_bias);
 

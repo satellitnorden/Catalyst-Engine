@@ -380,7 +380,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferComm
 /*
 *	Creates and returns a cube map texture.
 */
-RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
+RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTexture(const DynamicArray<DynamicArray<float32>> &data, const uint32 width, const uint32 height) NOEXCEPT
 {
 	VulkanCubeMapTexture *const RESTRICT newCubeMapTexture{ new (Memory::Allocate(sizeof(VulkanCubeMapTexture))) VulkanCubeMapTexture() };
 	newCubeMapTexture->Initialize(data, width, height);

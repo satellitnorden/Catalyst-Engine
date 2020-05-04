@@ -11,7 +11,7 @@
 /*
 *	Initializes this texture.
 */
-void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
+void VulkanCubeMapTexture::Initialize(const DynamicArray<DynamicArray<float32>> &data, const uint32 width, const uint32 height) NOEXCEPT
 {
 	//Set the format.
 	_VulkanFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -19,43 +19,56 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-	//Calculate the image size and the side size.
-	const VkDeviceSize layerSize{ width * height * 4 * sizeof(float) };
-	const VkDeviceSize imageSize{ layerSize * 6 };
-	
+	//Calculate the image size.
+	VkDeviceSize image_size{ 0 };
+
+	for (uint64 i{ 0 }; i < data.Size(); ++i)
+	{
+		image_size += (width >> i) * (height >> i) * 4 * sizeof(float32) * 6;
+	}
+
 	//Set up the staging buffer.
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferDeviceMemory;
+	VkBuffer staging_buffer;
+	VkDeviceMemory staging_buffer_device_memory;
 
 	//Create the staging buffer.
-	VulkanUtilities::CreateVulkanBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferDeviceMemory);
-
-	void *RESTRICT mappedData;
-	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, (void**) &mappedData));
+	VulkanUtilities::CreateVulkanBuffer(image_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, staging_buffer, staging_buffer_device_memory);
 
 	//Copy the data into the staging buffer.
-	Memory::Copy(mappedData, data, static_cast<uint64>(imageSize));
+	void *mapped_data;
 
-	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), staging_buffer_device_memory, 0, VK_WHOLE_SIZE, 0, &mapped_data));
+
+	VkDeviceSize current_offset{ 0 };
+
+	for (uint64 i{ 0 }; i < data.Size(); ++i)
+	{
+		const VkDeviceSize mip_size{ (width >> i) * (height >> i) * 4 * sizeof(float32) * 6 };
+		Memory::Copy(static_cast<byte*>(mapped_data) + current_offset, data[i].Data(), mip_size);
+
+		current_offset += mip_size;
+	}
+
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), staging_buffer_device_memory);
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VkImageType::VK_IMAGE_TYPE_2D, VK_FORMAT_R32G32B32A32_SFLOAT, width, height, 1, 1, 6, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _VulkanImage, _VulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VkImageType::VK_IMAGE_TYPE_2D, VK_FORMAT_R32G32B32A32_SFLOAT, width, height, 1, static_cast<uint32>(data.Size()), 6, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _VulkanImage, _VulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
-	VulkanUtilities::TransitionImageToLayout(0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, 6, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, _VulkanImage);
+	VulkanUtilities::TransitionImageToLayout(0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(data.Size()), 6, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, _VulkanImage);
 
 	//Copy the buffer to the Vulkan image.
-	VulkanUtilities::CopyBufferToImage(stagingBuffer, _VulkanImage, 1, 6, width, height, 1, 4);
+	VulkanUtilities::CopyBufferToImage(staging_buffer, _VulkanImage, static_cast<uint32>(data.Size()), 6, width, height, 1, 4);
 
 	//Transition the Vulkan image to the correct layout for reading.
-	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, 1, 6, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, _VulkanImage);
+	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, static_cast<uint32>(data.Size()), 6, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, _VulkanImage);
 
 	//Clean up the staging buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), staging_buffer, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), staging_buffer_device_memory, nullptr);
 
 	//Create the image view.
-	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, 1, 6, _VulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, static_cast<uint32>(data.Size()), 6, _VulkanImageView);
 }
 
 /*

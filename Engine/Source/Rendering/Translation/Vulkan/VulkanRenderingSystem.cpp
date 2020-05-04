@@ -1387,7 +1387,7 @@ void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) c
 void RenderingSystem::CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture cube.
-	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data.Data(), data._Resolution, data._Resolution));
+	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data, data._Resolution, data._Resolution));
 }
 
 /*

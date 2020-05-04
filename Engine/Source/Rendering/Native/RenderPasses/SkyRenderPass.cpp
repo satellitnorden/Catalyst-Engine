@@ -40,14 +40,10 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 void SkyRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(3);
-	AddPipeline(&_SkyComputePipeline);
-	AddPipeline(&_SkyDownsampleComputePipeline);
+	SetNumberOfPipelines(1);
 	AddPipeline(&_SkyGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_SkyComputePipeline.Initialize();
-	_SkyDownsampleComputePipeline.Initialize();
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 
 	//Post-initialize all pipelines.
@@ -63,9 +59,6 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_SkyComputePipeline.Execute();
-	_SkyDownsampleComputePipeline.Execute();
-
 	if (RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::MAIN)
 	{
 		_SkyGraphicsPipeline.Execute();

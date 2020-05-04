@@ -82,7 +82,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 416) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
     layout (offset = 420) float VIEW_DISTANCE;
-    layout (offset = 424) float CLOUD_DENSITY;
+    layout (offset = 424) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
     layout (offset = 428) float WETNESS;
     layout (offset = 432) float NEAR_PLANE;
     layout (offset = 436) float FAR_PLANE;
@@ -116,14 +116,11 @@ layout (set = 0, binding = 5) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BL
 //The cloud texture.
 layout (set = 0, binding = 6) uniform sampler3D CLOUD_TEXTURE;
 
-//The sky textures.
-layout (set = 0, binding = 7, rgba32f) uniform imageCube SKY_IMAGES[NUMBER_OF_SKY_TEXTURES];
-
-//The sky textures.
-layout (set = 0, binding = 8) uniform samplerCube SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES];
+//The sky texture.
+layout (set = 0, binding = 7) uniform samplerCube SKY_TEXTURE;
 
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 9) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };
@@ -281,7 +278,7 @@ void SampleHammersleyHemisphereSample(uint index, out vec3 direction, out float 
 */
 vec3 SampleSkyDiffuse(vec3 normal)
 {
-    return texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], normal).rgb;
+    return textureLod(SKY_TEXTURE, normal, MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb;
 }
 
 /*
@@ -292,15 +289,10 @@ vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness, float 
     //Calculate the reflection vector.
     vec3 reflection_vector = reflect(view_direction, normal);
 
-    //Calculate the indices for the sky textures.
-    float float_index = roughness * (1.0f - metallic) * float(NUMBER_OF_SKY_TEXTURES - 1);
+    //Calculate the mipmap level
+    float mipmap_level = roughness * (1.0f - metallic) * (MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f);
 
-    uint first_index = uint(float_index);
-    uint second_index = first_index + 1;
-
-    float alpha = fract(float_index);
-
-    return mix(texture(SKY_TEXTURES[first_index], reflection_vector).rgb, texture(SKY_TEXTURES[second_index], reflection_vector).rgb, alpha);
+    return textureLod(SKY_TEXTURE, reflection_vector, mipmap_level).rgb;
 }
 
 /*

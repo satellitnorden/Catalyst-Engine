@@ -29,6 +29,7 @@
 #define BUILD_ENGINE_OCEAN_TEXTURE false
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
 #define BUILD_ENGINE_SHADERS false
+#define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION false
 
@@ -1038,28 +1039,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyComputeShader";
-		parameters._ID = "SkyComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyComputeShader.comp";
-		parameters._Stage = ShaderStage::COMPUTE;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyDownsampleComputeShader";
-		parameters._ID = "SkyDownsampleComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyDownsampleComputeShader.comp";
-		parameters._Stage = ShaderStage::COMPUTE;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
 		parameters._ID = "SkyFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
@@ -1388,7 +1367,11 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_DEFAULT_SKY_TEXTURE
+	BuildDefaultSkyTexture();
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 
@@ -1657,6 +1640,49 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 
 	//Write the texture data to the file.
 	file.Write(final_texture.Data(), OCEAN_TEXTURE_RESOLUTION * OCEAN_TEXTURE_RESOLUTION * 4);
+
+	//Cloe the file.
+	file.Close();
+}
+
+/*
+*	Builds the default sky texture.
+*/
+void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
+{
+	//What should the file be called?
+	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube" };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource type to the file.
+	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_CUBE };
+	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	constexpr HashString RESOURCE_ID{ "Default_Sky_TextureCube" };
+	file.Write(&RESOURCE_ID, sizeof(HashString));
+
+	//Write the resolution to the file.
+	constexpr uint32 RESOLUTION{ 2 };
+	file.Write(&RESOLUTION, sizeof(uint32));
+
+	//Write the number of mipmap levels to the file.
+	constexpr uint8 MIPMAP_LEVELS{ 1 };
+	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
+
+	//Write the texture data to the file.
+	DynamicArray<float32> data;
+	data.Upsize<false>(RESOLUTION * RESOLUTION * 4 * 6);
+
+	for (float32 &value : data)
+	{
+		value = 0.01f;
+	}
+
+	file.Write(data.Data(), RESOLUTION * RESOLUTION * 4 * 6 * sizeof(float32));
 
 	//Cloe the file.
 	file.Close();

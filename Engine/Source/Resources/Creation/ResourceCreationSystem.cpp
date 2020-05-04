@@ -184,6 +184,9 @@ void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data,
 */
 void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeResource *const RESTRICT resource) NOEXCEPT
 {
+	//Set the number of mipmap levels.
+	resource->_MipmapLevels = data->_MipmapLevels;
+
 	//Create the texture cube.
 	RenderingSystem::Instance->CreateTextureCube(*data, &resource->_TextureCubeHandle);
 }

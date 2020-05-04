@@ -193,7 +193,7 @@ public:
 	/*
 	*	Creates and returns a cube map texture.
 	*/
-	RESTRICTED VulkanCubeMapTexture *const RESTRICT CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
+	RESTRICTED VulkanCubeMapTexture *const RESTRICT CreateCubeMapTexture(const DynamicArray<DynamicArray<float32>> &data, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
 	*	Creates and returns a depth buffer.

@@ -38,12 +38,12 @@ void CatalystShaderMain()
 	vec3 volumetric_lighting = vec3(0.0f);
 
 	//Add the ambient lighting.
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(-1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(1.0f, 0.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, -1.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 1.0f, 0.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, -1.0f)).rgb * 0.167;
-	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * texture(SKY_TEXTURES[NUMBER_OF_SKY_TEXTURES - 1], vec3(0.0f, 0.0f, 1.0f)).rgb * 0.167;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
+	volumetric_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f;
 
 	//Sample the noise texture.
 	vec4 noise_texture = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);

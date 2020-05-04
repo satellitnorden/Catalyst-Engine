@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanImage.h>
@@ -23,7 +24,7 @@ public:
 	/*
 	*	Initializes this texture.
 	*/
-	void Initialize(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
+	void Initialize(const DynamicArray<DynamicArray<float32>> &data, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
 	*	Releases this texture.

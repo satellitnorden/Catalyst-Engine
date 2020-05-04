@@ -41,7 +41,7 @@ public:
 	float _CurrentBlueNoiseTextureOffsetY;
 
 	float _ViewDistance;
-	float _CloudDensity;
+	float _MaximumSkyTextureMipmapLevel;
 	float _Wetness;
 	float _NearPlane;
 	float _FarPlane;

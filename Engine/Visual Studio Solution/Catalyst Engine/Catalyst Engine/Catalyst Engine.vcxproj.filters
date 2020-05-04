@@ -1221,17 +1221,11 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\VolumetricDescription.h">
       <Filter>Rendering\Include\Native\Rendering Reference</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\SkyDownsampleComputePipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h">
       <Filter>World\Include\Core</Filter>
@@ -1924,12 +1918,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\RenderingReferenceRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\SkyDownsampleComputePipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp">
       <Filter>World\Source\Core</Filter>

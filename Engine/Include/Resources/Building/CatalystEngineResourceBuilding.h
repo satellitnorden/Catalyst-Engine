@@ -28,6 +28,11 @@ namespace CatalystEngineResourceBuilding
 	*	Builds the ocean texture.
 	*/
 	void BuildOceanTexture();
+
+	/*
+	*	Builds the default sky texture.
+	*/
+	void BuildDefaultSkyTexture();
 #endif
 
 }
