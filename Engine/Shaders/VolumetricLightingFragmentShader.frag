@@ -2,8 +2,7 @@
 #include "CatalystLightingData.glsl"
 
 //Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR (vec3(0.6f, 0.8f, 1.0f))
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.1f)
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -34,17 +33,10 @@ void CatalystShaderMain()
 	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
 
 	//Calculate the ambient lighting.
-	vec3 ambient_lighting = vec3(0.0f);
-
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
-	ambient_lighting += CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+	vec3 ambient_lighting = CalculateVolumetricAmbientLighting();
 
 	//Calculate the sky light lighting.
-	vec3 sky_light_lighting = CATALYST_VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
+	vec3 sky_light_lighting = VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
 	//Different logic depending on if the sky light is on the screen or not.
 	if (ValidCoordinate(SKY_LIGHT_SCREEN_SPACE_POSITION))

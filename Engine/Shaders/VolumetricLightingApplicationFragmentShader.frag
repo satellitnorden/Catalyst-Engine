@@ -17,14 +17,6 @@ layout (early_fragment_tests) in;
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) float volumetric_lighting_distance;
-	layout (offset = 4) float volumetric_lighting_height;
-	layout (offset = 8) float volumetric_lighting_thickness;
-};
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
@@ -39,8 +31,8 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	if (sceneFeatures2.w == 0.0f)
 	{
-		features.hit_position = CalculateRayDirection(fragment_texture_coordinate) * volumetric_lighting_distance;
-		features.hit_distance = volumetric_lighting_distance;
+		features.hit_position = CalculateRayDirection(fragment_texture_coordinate) * VOLUMETRIC_LIGHTING_DISTANCE;
+		features.hit_distance = VOLUMETRIC_LIGHTING_DISTANCE;
 	}
 
 	else
@@ -61,7 +53,7 @@ void CatalystShaderMain()
 	vec3 current_volumetric_lighting = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
 	//Calculate the volumetric lighting opacity.
-	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, volumetric_lighting_distance, current_features.hit_position.y, volumetric_lighting_height, volumetric_lighting_thickness, PERCEIVER_WORLD_POSITION.y);
+	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, current_features.hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
 
 	//Write the fragment.
 	fragment = vec4(current_volumetric_lighting.rgb, volumetric_lighting_opacity);

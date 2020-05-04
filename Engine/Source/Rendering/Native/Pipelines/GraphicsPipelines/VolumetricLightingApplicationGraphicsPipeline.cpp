@@ -10,25 +10,6 @@
 #include <Systems/WorldSystem.h>
 
 /*
-*	Volumetric lighting application push constant data definition.
-*/
-class VolumetricLightingApplicationPushConstantData final
-{
-
-public:
-
-	//The volumetric lighting distance.
-	float _VolumetricLightingDistance;
-
-	//The volumetric lighting height.
-	float _VolumetricLightingHeight;
-
-	//The volumetric lighting thickness.
-	float _VolumetricLightingThickness;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
 void VolumetricLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
@@ -47,10 +28,6 @@ void VolumetricLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(VolumetricLightingApplicationPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -94,15 +71,6 @@ void VolumetricLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-
-	//Push constants.
-	VolumetricLightingApplicationPushConstantData data;
-
-	data._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
-	data._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
-	data._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
-
-	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(VolumetricLightingApplicationPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

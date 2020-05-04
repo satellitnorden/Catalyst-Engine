@@ -53,6 +53,10 @@ public:
 
 	float32 _SkyIntensity;
 
+	float32 _VolumetricLightingDistance;
+	float32 _VolumetricLightingHeight;
+	float32 _VolumetricLightingThickness;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 460, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 472, "Size of dynamic uniform data is wrong!");

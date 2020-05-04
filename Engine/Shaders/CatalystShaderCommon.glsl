@@ -94,7 +94,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     layout (offset = 456) float SKY_INTENSITY;
 
-    //Total size; 460
+    layout (offset = 460) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 464) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 468) float VOLUMETRIC_LIGHTING_THICKNESS;
+
+    //Total size; 472
 };
 
 //The render targets.
@@ -167,6 +171,23 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
+}
+
+/*
+*   Calculates volumetric ambient lighting.
+*/
+vec3 CalculateVolumetricAmbientLighting()
+{
+    vec3 ambient_lighting = vec3(0.0f);
+
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.16f * 0.5f * SKY_INTENSITY;
+
+    return ambient_lighting;
 }
 
 /*

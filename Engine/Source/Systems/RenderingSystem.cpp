@@ -668,6 +668,10 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 
+	_DynamicUniformData._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
+	_DynamicUniformData._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
+	_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
+
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 
