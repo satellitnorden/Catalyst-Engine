@@ -4,7 +4,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_SAMPLES (512)
+#define MAXIMUM_NUMBER_OF_SAMPLES (256)
 
 vec2 UnitSquareToUnitDiskPolarCoordinates(float x, float y)
 {
