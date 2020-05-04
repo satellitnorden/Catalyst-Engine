@@ -123,7 +123,8 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 			{
 				//Test the (world space) direction towards the hit position against the (world space) ray direction.
 				vec3 hit_position = CalculateWorldPosition(sample_scene_features_2.xy, sample_scene_features_2.w);
-				vec3 direction_to_hit_position = normalize(hit_position - ray_origin);
+				float distance_to_hit_position = length(hit_position - ray_origin);;
+				vec3 direction_to_hit_position = vec3(hit_position - ray_origin) / distance_to_hit_position;
 
 				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
 				{
@@ -154,12 +155,18 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 																					sky_specular_sample,
 																					vec2(1.0f, 0.0f));
 
+							//Blend in volumetric lighting into the indirect lighting to mesh better with the scene.
+							vec3 volumetric_ambient_lighting = CalculateVolumetricAmbientLighting();
+							float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, vec3(hit_position + sample_scene_features_2.xyz * VIEW_DISTANCE).y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, hit_position.y);
+
+							indirect_lighting = mix(indirect_lighting, volumetric_ambient_lighting, volumetric_lighting_opacity);
+
 							hit_radiance += indirect_lighting;
-						}
 
-						//Add volumetric lighting.
-						{
-
+							//Blend in volumetric lighting into the hit radiance to mesh better with the scene.
+							volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(distance_to_hit_position, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, ray_origin.y);
+						
+							hit_radiance = mix(hit_radiance, volumetric_ambient_lighting, volumetric_lighting_opacity);
 						}
 					}
 

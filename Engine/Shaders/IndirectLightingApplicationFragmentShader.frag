@@ -3,6 +3,7 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRenderingUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 /*
 *	Scene features struct definition.
@@ -11,6 +12,7 @@ struct SceneFeatures
 {
 	vec3 albedo;
 	vec3 normal;
+	vec3 world_position;
 	vec3 view_direction;
 	float roughness;
 	float metallic;
@@ -46,8 +48,8 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	features.albedo = scene_features_1.rgb;
 	features.normal = scene_features_2.xyz;
-	vec3 world_position = CalculateWorldPosition(coordinate, scene_features_2.w);
-	features.view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
+	features.world_position = CalculateWorldPosition(coordinate, scene_features_2.w);
+	features.view_direction = normalize(features.world_position - PERCEIVER_WORLD_POSITION);
 	features.roughness = scene_features_3.x;
 	features.metallic = scene_features_3.y;
 	features.ambientOcclusion = scene_features_3.z;
@@ -66,6 +68,15 @@ void CatalystShaderMain()
 	//Sample the sky.
 	vec3 sky_diffuse_sample = SampleSkyDiffuse(current_features.normal);
 	vec3 sky_specular_sample = SampleSkySpecular(current_features.view_direction, current_features.normal, current_features.roughness, current_features.metallic);
+
+	//Blend in volumetric lighting into the sky samples to mesh better with the scene.
+	{
+		vec3 volumetric_ambient_lighting = CalculateVolumetricAmbientLighting();
+		float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, vec3(current_features.world_position + current_features.normal * VIEW_DISTANCE).y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, current_features.world_position.y);
+
+		sky_diffuse_sample = mix(sky_diffuse_sample, volumetric_ambient_lighting, volumetric_lighting_opacity);
+		sky_specular_sample = mix(sky_specular_sample, volumetric_ambient_lighting, volumetric_lighting_opacity);
+	}
 
 	//Calculate the blended specular irradiance
 	vec3 blended_diffuse_irradiance = mix(sky_diffuse_sample, indirect_lighting_sample.rgb, indirect_lighting_sample.a);
