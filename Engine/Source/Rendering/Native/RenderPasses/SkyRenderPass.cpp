@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/SkyRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Rendering.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
@@ -59,7 +56,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() == RenderingConfiguration::RenderingPath::MAIN)
 	{
 		_SkyGraphicsPipeline.Execute();
 	}

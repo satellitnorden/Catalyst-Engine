@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/OceanRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Rendering.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
@@ -63,7 +60,7 @@ void OceanRenderPass::Initialize() NOEXCEPT
 void OceanRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 

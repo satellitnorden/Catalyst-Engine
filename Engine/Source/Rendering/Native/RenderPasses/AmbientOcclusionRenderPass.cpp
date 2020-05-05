@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/AmbientOcclusionRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -81,7 +78,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 
@@ -89,7 +86,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Nothing to do here if ambient occlusion isn't enabled.
-	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::NONE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::NONE)
 	{
 		SetEnabled(false);
 
@@ -97,13 +94,13 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::SCREEN_SPACE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
 		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	else if (RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::RAY_TRACED)
+	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
 		_AmbientOcclusionRayTracingPipeline.Execute();

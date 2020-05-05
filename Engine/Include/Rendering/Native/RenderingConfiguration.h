@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class RenderingConfigurationManager final
+class RenderingConfiguration final
 {
 
 public:
@@ -44,17 +44,6 @@ public:
 		SCREEN_SPACE,
 		RAY_TRACED
 	};
-
-	//Singleton declaration.
-	DECLARE_SINGLETON(RenderingConfigurationManager);
-
-	/*
-	*	Default constructor.
-	*/
-	RenderingConfigurationManager() NOEXCEPT
-	{
-	
-	}
 
 	/*
 	*	Returns the rendering path.
@@ -123,7 +112,7 @@ public:
 	/*
 	*	Returns the bloom intensity.
 	*/
-	FORCE_INLINE NO_DISCARD float GetBloomIntensity() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
 	{
 		return _BloomIntensity;
 	}
@@ -131,7 +120,7 @@ public:
 	/*
 	*	Sets the bloom intensity.
 	*/
-	FORCE_INLINE void SetBloomIntensity(const float intensity) NOEXCEPT
+	FORCE_INLINE void SetBloomIntensity(const float32 intensity) NOEXCEPT
 	{
 		_BloomIntensity = intensity;
 	}
@@ -154,6 +143,6 @@ private:
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
 
 	//The bloom intensity.
-	float _BloomIntensity{ 0.1f };
+	float32 _BloomIntensity{ 0.1f };
 
 };

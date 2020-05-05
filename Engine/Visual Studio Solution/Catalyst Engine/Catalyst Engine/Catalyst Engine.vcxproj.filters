@@ -34,15 +34,6 @@
     <Filter Include="Entities\Source">
       <UniqueIdentifier>{875c5ba3-f47b-4430-a434-4fa4da1bb117}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Managers">
-      <UniqueIdentifier>{6adfa0ab-d04f-4f58-af67-afc2a1403c2f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Include">
-      <UniqueIdentifier>{1de414f0-c39c-4ab7-bcc4-3cc647736548}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Managers\Source">
-      <UniqueIdentifier>{d2babfe6-002e-4b03-b4f0-9cb8242fb9a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{5c500688-40a7-4551-af99-30304f530369}</UniqueIdentifier>
     </Filter>
@@ -419,9 +410,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
-      <Filter>Managers\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h">
       <Filter>Platform\Include\Windows</Filter>
@@ -1536,6 +1524,9 @@
     <ClInclude Include="..\..\..\Include\Distribution\AchievementIdentifier.h">
       <Filter>Distribution\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingConfiguration.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1558,9 +1549,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
-      <Filter>Managers\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp">
       <Filter>Platform\Source\Windows</Filter>

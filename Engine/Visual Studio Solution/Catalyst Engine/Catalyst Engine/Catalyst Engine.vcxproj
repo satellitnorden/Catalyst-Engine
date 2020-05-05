@@ -135,7 +135,6 @@
     <ClInclude Include="..\..\..\Include\Input\TouchState.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
-    <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystCoordinateSpaces.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
@@ -290,6 +289,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\VolumetricLightingRayTracingPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\PostProcessingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RayTracingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingReference\RenderingReferenceSystem.h" />
@@ -447,7 +447,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
-    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />

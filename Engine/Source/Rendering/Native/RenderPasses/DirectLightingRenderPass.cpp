@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/DirectLightingRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -56,7 +53,7 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 void DirectLightingRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 

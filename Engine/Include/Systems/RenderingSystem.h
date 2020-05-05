@@ -23,6 +23,7 @@
 #include <Rendering/Native/ModelSystem.h>
 #include <Rendering/Native/PostProcessingSystem.h>
 #include <Rendering/Native/RayTracingSystem.h>
+#include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
@@ -91,6 +92,14 @@ public:
 	*	Returns whether or not ray tracing is possible.
 	*/
 	NO_DISCARD bool IsRayTracingPossible() const NOEXCEPT;
+
+	/*
+	*	Returns the rendering configuration.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD RenderingConfiguration *const RESTRICT GetRenderingConfiguration() NOEXCEPT
+	{
+		return &_RenderingConfiguration;
+	}
 
 	/*
 	*	Returns the resolution.
@@ -366,6 +375,9 @@ public:
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
 
 private:
+
+	//The rendering configuration.
+	RenderingConfiguration _RenderingConfiguration;
 
 	//The full resolution.
 	Resolution _FullResolution;

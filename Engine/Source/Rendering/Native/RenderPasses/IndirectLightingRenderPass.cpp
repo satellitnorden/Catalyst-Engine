@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/IndirectLightingRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -83,7 +80,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 
@@ -91,19 +88,19 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::NONE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		_ScreenSpaceIndirectLightingGraphicsPipeline.SetIncludeInRender(false);
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	else if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() == RenderingConfigurationManager::IndirectLightingMode::SCREEN_SPACE)
+	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE && false)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE && false)
 	{
 		for (IndirectLightingSpatialDenoisingGraphicsPipeline& pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
 		{
@@ -120,7 +117,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute the current buffer, don't include the rest.
-	if (RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{

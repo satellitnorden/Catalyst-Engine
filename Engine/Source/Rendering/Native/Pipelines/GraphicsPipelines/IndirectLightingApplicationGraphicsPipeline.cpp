@@ -4,9 +4,6 @@
 //File.
 #include <File/Core/BinaryFile.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -103,7 +100,7 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingApplicationPushConstantData data;
 
-	data._IndirectLightingEnabled = RenderingConfigurationManager::Instance->GetIndirectLightingMode() != RenderingConfigurationManager::IndirectLightingMode::NONE;
+	data._IndirectLightingEnabled = RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE;
 	data._SpecularBiasLookupTextureIndex = _SpecularBiasLookupTextureIndex;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingApplicationPushConstantData), &data);

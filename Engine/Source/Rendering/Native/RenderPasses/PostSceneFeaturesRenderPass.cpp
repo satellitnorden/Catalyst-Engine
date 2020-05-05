@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -56,7 +53,7 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 

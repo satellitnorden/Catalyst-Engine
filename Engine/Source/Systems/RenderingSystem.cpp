@@ -8,9 +8,6 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystRandomMath.h>
@@ -201,10 +198,10 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 {
 	return	IsRayTracingSupported() &&
-			(RenderingConfigurationManager::Instance->GetRenderingPath() == RenderingConfigurationManager::RenderingPath::PATH_TRACING
-			|| RenderingConfigurationManager::Instance->GetAmbientOcclusionMode() == RenderingConfigurationManager::AmbientOcclusionMode::RAY_TRACED
-			|| RenderingConfigurationManager::Instance->GetSurfaceShadowsMode() == RenderingConfigurationManager::SurfaceShadowsMode::RAY_TRACED
-			|| RenderingConfigurationManager::Instance->GetVolumetricShadowsMode() == RenderingConfigurationManager::VolumetricShadowsMode::RAY_TRACED);
+			(_RenderingConfiguration.GetRenderingPath() == RenderingConfiguration::RenderingPath::PATH_TRACING
+			|| _RenderingConfiguration.GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED
+			|| _RenderingConfiguration.GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED
+			|| _RenderingConfiguration.GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED);
 }
 
 /*
@@ -649,7 +646,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
 	_DynamicUniformData._WindSpeed = 2.5f;
 
-	_DynamicUniformData._BloomIntensity = RenderingConfigurationManager::Instance->GetBloomIntensity();
+	_DynamicUniformData._BloomIntensity = _RenderingConfiguration.GetBloomIntensity();
 
 	_DynamicUniformData._AspectRatio = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 

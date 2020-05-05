@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -98,7 +95,7 @@ void DirectLightingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	DirectLightingFragmentPushConstantData data;
 
-	data._SurfaceShadowsMode = static_cast<uint32>(RenderingConfigurationManager::Instance->GetSurfaceShadowsMode());
+	data._SurfaceShadowsMode = static_cast<uint32>(RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode());
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DirectLightingFragmentPushConstantData), &data);
 

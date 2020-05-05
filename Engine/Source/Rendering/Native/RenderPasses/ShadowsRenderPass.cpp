@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/ShadowsRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -56,7 +53,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 void ShadowsRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetSurfaceShadowsMode() == RenderingConfigurationManager::SurfaceShadowsMode::NONE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::NONE)
 	{
 		SetEnabled(false);
 

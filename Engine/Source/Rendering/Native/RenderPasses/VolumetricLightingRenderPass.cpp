@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/VolumetricLightingRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -82,7 +79,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
 	{
 		SetEnabled(false);
 
@@ -90,8 +87,8 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute all pipelines.
-	if (RenderingConfigurationManager::Instance->GetVolumetricShadowsMode() == RenderingConfigurationManager::VolumetricShadowsMode::NONE
-		|| RenderingConfigurationManager::Instance->GetVolumetricShadowsMode() == RenderingConfigurationManager::VolumetricShadowsMode::SCREEN_SPACE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::NONE
+		|| RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::SCREEN_SPACE)
 	{
 		_VolumetricLightingGraphicsPipeline.Execute();
 		_VolumetricLightingRayTracingPipeline.SetIncludeInRender(false);

@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/PathTracingRenderPass.h>
 
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -56,7 +53,7 @@ void PathTracingRenderPass::Initialize() NOEXCEPT
 void PathTracingRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingConfigurationManager::Instance->GetRenderingPath() != RenderingConfigurationManager::RenderingPath::PATH_TRACING)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::PATH_TRACING)
 	{
 		SetEnabled(false);
 
