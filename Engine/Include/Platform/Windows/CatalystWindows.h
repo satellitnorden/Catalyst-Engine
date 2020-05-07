@@ -1,5 +1,4 @@
 #if defined(CATALYST_PLATFORM_WINDOWS)
-
 #pragma once
 
 //Core.

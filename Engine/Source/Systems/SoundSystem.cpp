@@ -91,6 +91,8 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								const uint32 number_of_samples,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
+	//CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+
 	//Add all queued master channel mix components.
 	while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
 	{
@@ -190,4 +192,6 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 			++i;
 		}
 	}
+
+	//CATALYST_BENCHMARK_AVERAGE_SECTION_END("SoundSystem::SoundCallback");
 }

@@ -603,6 +603,7 @@
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl" />
+    <None Include="..\..\..\Include\Platform\Windows\WindowsMemory.inl" />
     <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
     <None Include="..\..\..\Include\Systems\MemorySystem.inl" />
   </ItemGroup>

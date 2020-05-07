@@ -215,8 +215,9 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	vkGetPhysicalDeviceQueueFamilyProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &queue_family_count, queue_family_properties.Data());
 
 	/*
-	*	Does a couple of runs here.
-	*	Ideally a queue family exists with all kinds of queue types available.
+	*	Find the queue family index that supports all possible operations.
+	*	According to the Vulkan specification, implementations must expose at least one queue family that has both graphics and compute functionality.
+	*	Furthermore, any queue that reports graphics or compute functionality also implicitly supports transfer functionality.
 	*/
 	uint32 queue_family_counter{ 0 };
 
@@ -227,11 +228,11 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		VkBool32 has_present_support{ false };
 		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queue_family_counter, VulkanInterface::Instance->GetSurface().Get(), &has_present_support));
 
-		if (queue_family_property.queueCount >= 2
+		if (queue_family_property.queueCount >= 1
 			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT
 			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT
 			&& has_present_support
-			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT)
+			/*Transfer functionality is implicit.*/)
 		{
 			_QueueFamilyIndices[UNDERLYING(QueueType::Compute)] = queue_family_counter;
 			_QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] = queue_family_counter;
@@ -278,8 +279,8 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 		_Queues[UNDERLYING(QueueType::Graphics)]->Initialize(graphics_queue_family_index);
 	}
 
-	//Retrieve the present queue. Prefer if the present queue and the graphis queue are the same.
-	if (present_queue_family_index == graphics_queue_family_index)
+	//Retrieve the present queue. Prefer if the present queue and the compute queue are the same.
+	if (present_queue_family_index == compute_queue_family_index)
 	{
 		_Queues[UNDERLYING(QueueType::Present)] = _Queues[UNDERLYING(QueueType::Graphics)];
 	}
@@ -290,8 +291,8 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 		_Queues[UNDERLYING(QueueType::Present)]->Initialize(present_queue_family_index);
 	}
 
-	//Retrieve the transfer queue. Prefer if the transer queue and the graphis queue are the same.
-	if (transfer_queue_family_index == graphics_queue_family_index)
+	//Retrieve the transfer queue. Prefer if the transer queue and the compute queue are the same.
+	if (transfer_queue_family_index == compute_queue_family_index)
 	{
 		_Queues[UNDERLYING(QueueType::Transfer)] = _Queues[UNDERLYING(QueueType::Graphics)];
 	}
@@ -309,31 +310,31 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 {
 	//Store the queue family indices.
-	const uint32 computeQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Compute)] };
-	const uint32 graphicsQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] };
-	const uint32 presentQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Present)] };
-	const uint32 transferQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Transfer)] };
+	const uint32 compute_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::Compute)] };
+	const uint32 graphics_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::Graphics)] };
+	const uint32 present_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::Present)] };
+	const uint32 transfer_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::Transfer)] };
 
 	//Destroy the compute queue.
 	Memory::Free(_Queues[UNDERLYING(QueueType::Compute)]);
 
 	//Destroy the graphics queue.
-	if (graphicsQueueFamilyIndex != computeQueueFamilyIndex)
+	if (graphics_queue_family_index != compute_queue_family_index)
 	{
 		Memory::Free(_Queues[UNDERLYING(QueueType::Graphics)]);
 	}
 
 	//Destroy the present queue.
-	if (	presentQueueFamilyIndex != computeQueueFamilyIndex &&
-			presentQueueFamilyIndex != graphicsQueueFamilyIndex)
+	if (present_queue_family_index != compute_queue_family_index &&
+		present_queue_family_index != graphics_queue_family_index)
 	{
 		Memory::Free(_Queues[UNDERLYING(QueueType::Present)]);
 	}
 
 	//Destroy the transfer queue.
-	if (	transferQueueFamilyIndex != computeQueueFamilyIndex &&
-			transferQueueFamilyIndex != graphicsQueueFamilyIndex &&
-			transferQueueFamilyIndex != presentQueueFamilyIndex)
+	if (transfer_queue_family_index != compute_queue_family_index &&
+		transfer_queue_family_index != graphics_queue_family_index &&
+		transfer_queue_family_index != present_queue_family_index)
 	{
 		Memory::Free(_Queues[UNDERLYING(QueueType::Transfer)]);
 	}

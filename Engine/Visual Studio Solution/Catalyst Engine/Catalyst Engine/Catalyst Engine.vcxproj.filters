@@ -2038,5 +2038,8 @@
     <None Include="..\..\..\Include\Systems\MemorySystem.inl">
       <Filter>Systems\Inline</Filter>
     </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsMemory.inl">
+      <Filter>Platform\Inline\Windows</Filter>
+    </None>
   </ItemGroup>
 </Project>
