@@ -59,9 +59,17 @@ public:
 	/*
 	*	Plays a sound.
 	*/
-	void PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT;
+	void PlaySound(const ResourcePointer<SoundResource> resource, SoundInstanceHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Stops a sound.
+	*/
+	void StopSound(const SoundInstanceHandle handle) NOEXCEPT;
 
 private:
+
+	//The sound instance counter.
+	uint64 _SoundInstanceCounter{ 1 };
 
 	//Container for the master channel mix components.
 	StaticArray<DynamicArray<SoundMixComponent>, 2> _MasterChannelMixComponents;

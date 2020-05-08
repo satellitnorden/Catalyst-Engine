@@ -3,24 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Enumeration covering all note durations.
-enum class NoteDuration : uint8
-{
-	WHOLE,
-	HALF,
-	QUARTER,
-	EIGHTH,
-	SIXTEENTH,
-	THIRTYSECOND,
-	SIXTYFOURTH
-};
+//Type aliases.
+using SoundInstanceHandle = uint64;
 
-//Enumeration covering all playback states.
-enum class PlaybackState : uint8
-{
-	Playing,
-	Starting,
-	Stopped,
-	Stopping,
-	Sustaining
-};
+/*
+*	Definition of an empty sound instance handle.
+*/
+constexpr SoundInstanceHandle EMPTY_SOUND_INSTANCE_HANDLE{ 0 };

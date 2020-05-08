@@ -8,15 +8,31 @@
 DEFINE_SINGLETON(SoundSystem);
 
 /*
-*	Queued sound class definition.
+*	Queued play sound class definition.
 */
-class QueuedSound final
+class QueuedPlaySound final
 {
 
 public:
 
 	//The sound resource.
 	ResourcePointer<SoundResource> _SoundResource;
+
+	//The sound instance handle.
+	SoundInstanceHandle _SoundInstanceHandle;
+
+};
+
+/*
+*	Queued stop sound class definition.
+*/
+class QueuedStopSound final
+{
+
+public:
+
+	//The sound instance handle.
+	SoundInstanceHandle _SoundInstanceHandle;
 
 };
 
@@ -31,6 +47,9 @@ public:
 	//The sound resource players.
 	SoundResourcePlayer _SoundResourcePlayer;
 
+	//The sound instance handle.
+	SoundInstanceHandle _SoundInstanceHandle;
+
 };
 
 //Sound system constants.
@@ -40,8 +59,11 @@ namespace SoundSystemConstants
 	//The maximum number of queued master channel mix components.
 	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS{ 2 };
 
-	//The maximum number of queued sounds.
-	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_SOUNDS{ 32 };
+	//The maximum number of queued play sounds.
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS{ 64 };
+
+	//The maximum number of queued stop sounds.
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS{ 64 };
 
 }
 
@@ -52,8 +74,11 @@ namespace SoundSystemData
 	//The queued master channel mix components.
 	AtomicQueue<SoundMixComponent, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedMasterChannelMixComponents;
 
-	//The queued sounds.
-	AtomicQueue<QueuedSound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedSounds;
+	//The queued play sounds.
+	AtomicQueue<QueuedPlaySound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedPlaySounds;
+
+	//The queued stop sounds.
+	AtomicQueue<QueuedStopSound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedStopSounds;
 
 	//The playing sounds.
 	DynamicArray<PlayingSound> _PlayingSounds;
@@ -72,14 +97,33 @@ void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &componen
 /*
 *	Plays a sound.
 */
-void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource) NOEXCEPT
+void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource, SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
 {
-	//Queue the sound.
-	QueuedSound queued_sound;
+	//Queue the play sound.
+	QueuedPlaySound queued_Play_sound;
 
-	queued_sound._SoundResource = resource;
+	queued_Play_sound._SoundResource = resource;
+	queued_Play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
 
-	SoundSystemData::_QueuedSounds.Push(queued_sound);
+	if (handle)
+	{
+		*handle = queued_Play_sound._SoundInstanceHandle;
+	}
+
+	SoundSystemData::_QueuedPlaySounds.Push(queued_Play_sound);
+}
+
+/*
+*	Stops a sound.
+*/
+void SoundSystem::StopSound(const SoundInstanceHandle handle) NOEXCEPT
+{
+	//Queue the stop sound.
+	QueuedStopSound queued_stop_sound;
+
+	queued_stop_sound._SoundInstanceHandle = handle;
+
+	SoundSystemData::_QueuedStopSounds.Push(queued_stop_sound);
 }
 
 /*
@@ -102,15 +146,30 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		}
 	}
 
-	//Add all queued sounds to the playing sounds.
-	while (QueuedSound *const RESTRICT queued_sound{ SoundSystemData::_QueuedSounds.Pop() })
+	//Add all queued play sounds to the playing sounds.
+	while (QueuedPlaySound *const RESTRICT queued_play_sound{ SoundSystemData::_QueuedPlaySounds.Pop() })
 	{
 		PlayingSound new_playing_sound;
 
-		new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_sound->_SoundResource);
-		new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_sound->_SoundResource->_SampleRate / GetSampleRate());
+		new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound->_SoundResource);
+		new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound->_SoundResource->_SampleRate / GetSampleRate());
+		new_playing_sound._SoundInstanceHandle = queued_play_sound->_SoundInstanceHandle;
 
 		SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+	}
+
+	//Stop all queued stop sounds.
+	while (QueuedStopSound *const RESTRICT queued_stop_sound{ SoundSystemData::_QueuedStopSounds.Pop() })
+	{
+		for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
+		{
+			if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound->_SoundInstanceHandle)
+			{
+				SoundSystemData::_PlayingSounds.EraseAt(i);
+
+				break;
+			}
+		}
 	}
 
 	//Write all samples.
