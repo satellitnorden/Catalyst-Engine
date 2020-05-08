@@ -447,6 +447,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
+    <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />

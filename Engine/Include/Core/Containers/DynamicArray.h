@@ -347,10 +347,10 @@ public:
 		const uint64 second_index{ first_index < LastIndex() ? first_index + 1 : first_index };
 		const float32 alpha{ index - static_cast<float32>(first_index) };
 
-		const TYPE first_element{ At(first_index) };
-		const TYPE Second_element{ At(second_index) };
+		const TYPE &first_element{ At(first_index) };
+		const TYPE &second_element{ At(second_index) };
 
-		return (first_element * (1.0f - alpha)) + (Second_element * alpha);
+		return (first_element * (1.0f - alpha)) + (second_element * alpha);
 	}
 
 	/*
@@ -362,8 +362,8 @@ public:
 		const uint64 second_index{ first_index < LastIndex() ? first_index + 1 : first_index };
 		const float64 alpha{ index - static_cast<float64>(first_index) };
 
-		const TYPE first_element{ At(first_index) };
-		const TYPE second_element{ At(second_index) };
+		const TYPE &first_element{ At(first_index) };
+		const TYPE &second_element{ At(second_index) };
 
 		return (first_element * (1.0 - alpha)) + (second_element * alpha);
 	}

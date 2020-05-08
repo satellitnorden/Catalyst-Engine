@@ -198,11 +198,11 @@ void ResourceLoadingSystem::LoadSound(BinaryFile<IOMode::In> *const RESTRICT fil
 	file->Read(&number_of_samples, sizeof(uint64));
 
 	//Read the samples.
-	for (DynamicArray<float32> &channel : data->_Samples)
+	for (DynamicArray<int16> &channel : data->_Samples)
 	{
 		channel.Upsize<false>(number_of_samples);
 
-		file->Read(channel.Data(), sizeof(float32) * number_of_samples);
+		file->Read(channel.Data(), sizeof(int16) * number_of_samples);
 	}
 }
 

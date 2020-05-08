@@ -47,9 +47,10 @@ public:
     /*
     *   Sets the current sample.
     */
-    FORCE_INLINE void SetCurrentSample(const float32 sample) NOEXCEPT
+    FORCE_INLINE void SetCurrentSample(const int64 sample) NOEXCEPT
     {
         _CurrentSample = sample;
+        _CurrentSampleFraction = 0.0f;
     }
 
     /*
@@ -57,26 +58,41 @@ public:
     */
     FORCE_INLINE void Advance() NOEXCEPT
     {
-        _CurrentSample += _PlaybackSpeed;
+        _CurrentSampleFraction += _PlaybackSpeed;
+
+        while (_CurrentSampleFraction >= 1.0f)
+        {
+            ++_CurrentSample;
+            _CurrentSampleFraction -= 1.0f;
+        }
     }
 
     /*
     *   Returns the next sample.
     */
-    FORCE_INLINE float32 NextSample(const uint64 channel) NOEXCEPT
+    FORCE_INLINE int16 NextSample(const uint64 channel) NOEXCEPT
     {
+        //If the playback position is before the beginning of the sound resource, just return.
+        if (_CurrentSample < 0)
+        {
+            return 0;
+        }
+
         const uint64 actual_channel{ channel < _SoundResource->_Samples.Size() ? channel : 0 };
 
-        if (_CurrentSample < _SoundResource->_Samples[actual_channel].Size())
+        if (_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel].Size()))
         {
-            return _SoundResource->_Samples[actual_channel].Interpolate(_CurrentSample) * _Gain;
+            const int16 first_sample{ _SoundResource->_Samples[actual_channel][_CurrentSample] };
+            const int16 second_sample{ _SoundResource->_Samples[actual_channel][_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel].Size() - 1) ? _CurrentSample + 1 : _CurrentSample] };
+
+            return static_cast<int16>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction));
         }
 
         else
         {
             _IsActive = false;
 
-            return 0.0f;
+            return 0;
         }
     }
 
@@ -100,7 +116,10 @@ private:
     float32 _PlaybackSpeed{ 1.0f };
 
     //The current sample.
-    float32 _CurrentSample{ 0.0f };
+    int64 _CurrentSample{ 0 };
+
+    //The current sample fraction.
+    float32 _CurrentSampleFraction{ 0.0f };
 
     //Denotes if this sound resource player is active.
     bool _IsActive{ true };

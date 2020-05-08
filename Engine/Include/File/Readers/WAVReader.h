@@ -220,9 +220,12 @@ public:
 
 			for (uint64 i{ 0 }, size{ resource->_Samples.Size() }; i < size; ++i)
 			{
-				resource->_Samples[i].Upsize<false>(audio_file.samples[i].size());
+				resource->_Samples[i].Reserve(audio_file.samples[i].size());
 
-				Memory::Copy(resource->_Samples[i].Data(), audio_file.samples[i].data(), sizeof(float32) * audio_file.samples[i].size());
+				for (const float32 sample : audio_file.samples[i])
+				{
+					resource->_Samples[i].Emplace(static_cast<int16>(sample * static_cast<float32>(INT16_MAXIMUM)));
+				}
 			}
 
 			return true;

@@ -124,7 +124,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 
 			for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
 			{
-				current_sample += playing_sound._SoundResourcePlayer.NextSample(j);
+				current_sample += static_cast<float32>(playing_sound._SoundResourcePlayer.NextSample(j)) / static_cast<float32>(INT16_MAXIMUM);
 			}
 
 			//Apply the master channel mix components.

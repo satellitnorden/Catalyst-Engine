@@ -928,9 +928,9 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 		file.Write(&number_of_samples, sizeof(uint64));
 
 		//Write the samples.
-		for (const DynamicArray<float32>& channel : resource._Samples)
+		for (const DynamicArray<int16>& channel : resource._Samples)
 		{
-			file.Write(channel.Data(), sizeof(float32) * number_of_samples);
+			file.Write(channel.Data(), sizeof(int16) * number_of_samples);
 		}
 
 		//Close the file.

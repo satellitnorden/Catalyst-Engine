@@ -31,7 +31,7 @@
 #define BUILD_ENGINE_SHADERS false
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
 
-#define BUILD_ENGINE_RESOURCE_COLLECTION false
+#define BUILD_ENGINE_RESOURCE_COLLECTION true
 
 /*
 *	Builds resources for the Catalyst Engine.
