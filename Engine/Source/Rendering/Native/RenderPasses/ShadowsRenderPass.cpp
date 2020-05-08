@@ -53,7 +53,8 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 void ShadowsRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::NONE)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::NONE
+		|| RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RASTERIZED)
 	{
 		SetEnabled(false);
 

@@ -34,6 +34,7 @@ public:
 	enum class SurfaceShadowsMode : uint8
 	{
 		NONE,
+		RASTERIZED,
 		RAY_TRACED
 	};
 
@@ -134,10 +135,10 @@ private:
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
 
 	//The indirect lighting mode.
-	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::NONE };
+	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
 
 	//The surface shadows mode.
-	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::NONE };
+	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RASTERIZED };
 
 	//The volumetric shadows mode.
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
