@@ -101,7 +101,8 @@ namespace WindowsSoundSystemData
 	//The audio render client.
 	IAudioRenderClient *RESTRICT _AudioRenderClient{ nullptr };
 
-
+	//The sample rate.
+	float32 _SampleRate;
 
 }
 
@@ -159,7 +160,7 @@ uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
 /*
 *	Returns the sample rate for the chosen audio output device.
 */
-uint32 SoundSystem::GetSampleRate() const NOEXCEPT
+float32 SoundSystem::GetSampleRate() const NOEXCEPT
 {
 	//Don't do anything if the Windows Catalyst sound system isn't initialized.
 	if (!WindowsSoundSystemData::_Initialized)
@@ -167,7 +168,7 @@ uint32 SoundSystem::GetSampleRate() const NOEXCEPT
 		return 0;
 	}
 
-	return 0;
+	return WindowsSoundSystemData::_SampleRate;
 }
 
 /*
@@ -257,6 +258,9 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 	//Retrieve the audio render client.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetService(	WindowsSoundSystemConstants::IAudioRenderClient_IID,
 																	reinterpret_cast<void* RESTRICT* const RESTRICT>(&WindowsSoundSystemData::_AudioRenderClient)));
+
+	//Set the sample rate.
+	WindowsSoundSystemData::_SampleRate = static_cast<float32>(chosen_mix_format->nSamplesPerSec);
 
 	//The Windows sound system is successfully initialized!
 	WindowsSoundSystemData::_Initialized = true;

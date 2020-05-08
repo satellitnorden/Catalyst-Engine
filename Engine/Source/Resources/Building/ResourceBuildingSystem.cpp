@@ -14,6 +14,7 @@
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
+#include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
 
 //Math.
@@ -902,6 +903,42 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 
 	if (WAVReader::Read(parameters._File, &resource))
 	{
+		//Resample the sound resource to the desired sample rate.
+		if (resource._SampleRate != parameters._DesiredSampleRate)
+		{
+			const float32 playback_rate{ resource._SampleRate / parameters._DesiredSampleRate };
+
+			DynamicArray<DynamicArray<int16>> temporary_samples{ resource._Samples };
+
+			for (uint64 i{ 0 }, size{ temporary_samples.Size() }; i < size; ++i)
+			{
+				resource._Samples[i].Clear();
+
+				DynamicArray<int16>& channel{ temporary_samples[i] };
+
+				uint64 current_sample{ 0 };
+				float32 current_sample_fraction{ 0.0f };
+
+				while (current_sample < channel.Size())
+				{
+					const int16 first_sample{ channel[current_sample] };
+					const int16 second_sample{ channel[current_sample < channel.Size() - 1 ? current_sample + 1 : current_sample] };
+
+					const int16 interpolated_sample{ CatalystBaseMath::Round<int16>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), current_sample_fraction)) };
+				
+					resource._Samples[i].Emplace(interpolated_sample);
+
+					current_sample_fraction += playback_rate;
+
+					while (current_sample_fraction >= 1.0f)
+					{
+						++current_sample;
+						current_sample_fraction -= 1.0f;
+					}
+				}
+			}
+		}
+
 		//What should the resource be called?
 		DynamicString file_name{ parameters._Output };
 		file_name += ".cr";
@@ -918,7 +955,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 		file.Write(&resource_identifier, sizeof(HashString));
 
 		//Write the sample rate to the file.
-		file.Write(&resource._SampleRate, sizeof(float32));
+		file.Write(&parameters._DesiredSampleRate, sizeof(float32));
 
 		//Write the number of channels to the file.
 		file.Write(&resource._NumberOfChannels, sizeof(uint8));
@@ -948,7 +985,200 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 */
 void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT
 {
-	//What should the material be called?
+#if 1
+	//Load the input textures.
+	StaticArray<Texture2D<Vector4<float32>>, 4> input_textures;
+
+	ASSERT(parameters._File1, "ResourceBuildingSystem::BuildTexture2D - Needs at least 1 input texuture!");
+
+	switch (File::GetExtension(parameters._File1))
+	{
+		case File::Extension::PNG:
+		{
+			PNGReader::Read(parameters._File1, &input_textures[0]);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	if (parameters._File2)
+	{
+		switch (File::GetExtension(parameters._File2))
+		{
+			case File::Extension::PNG:
+			{
+				PNGReader::Read(parameters._File2, &input_textures[1]);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	if (parameters._File3)
+	{
+		switch (File::GetExtension(parameters._File3))
+		{
+			case File::Extension::PNG:
+			{
+				PNGReader::Read(parameters._File3, &input_textures[2]);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	if (parameters._File4)
+	{
+		switch (File::GetExtension(parameters._File4))
+		{
+			case File::Extension::PNG:
+			{
+				PNGReader::Read(parameters._File4, &input_textures[3]);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	//Create the composite texture. Assume that all input textures are the same size.
+	Texture2D<Vector4<float32>> composite_texture{ input_textures[0].GetWidth(), input_textures[0].GetHeight() };
+
+	for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+		{
+			//Calculate the texel.
+			Vector4<float32> &texel{ composite_texture.At(X, Y) };
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				if (input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetWidth() > 0
+					&& input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetHeight() > 0)
+				{
+					texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
+				}
+
+				else
+				{
+					Vector4<float32> defaults{ 1.0f, 0.0f, 1.0f, 0.0f };
+					texel[i] = defaults[i];
+				}
+			}
+
+			//Apply gamma correction, if desired.
+			if (parameters._ApplyGammaCorrection)
+			{
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					texel[i] = powf(texel[i], 2.2f);
+				}
+			}
+
+			//Apply normal map strength, if desired.
+			if (parameters._NormalMapStrength != 1.0f)
+			{
+				Vector3<float32> normal_map_direction{ texel._X * 2.0f - 1.0f, texel._Y * 2.0f - 1.0f, texel._Z * 2.0f - 1.0f };
+
+				normal_map_direction._X *= parameters._NormalMapStrength;
+				normal_map_direction._Y *= parameters._NormalMapStrength;
+
+				normal_map_direction.Normalize();
+
+				texel._X = normal_map_direction._X * 0.5f + 0.5f;
+				texel._Y = normal_map_direction._Y * 0.5f + 0.5f;
+				texel._Z = normal_map_direction._Z * 0.5f + 0.5f;
+			}
+		}
+	}
+
+	//Generate the mip chain.
+	DynamicArray<Texture2D<Vector4<float32>>> mip_chain;
+
+	RenderingUtilities::GenerateMipChain(composite_texture, parameters._MipmapLevels, &mip_chain);
+
+	//Create the output textures.
+	DynamicArray<Texture2D<Vector4<uint8>>> output_textures;
+
+	output_textures.Upsize<true>(mip_chain.Size());
+
+	for (uint64 i{ 0 }, size{ output_textures.Size() }; i < size; ++i)
+	{
+		output_textures[i].Initialize(mip_chain[i].GetWidth(), mip_chain[i].GetHeight());
+
+		for (uint32 Y{ 0 }; Y < output_textures[i].GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < output_textures[i].GetWidth(); ++X)
+			{
+				for (uint8 j{ 0 }; j < 4; ++j)
+				{
+					output_textures[i].At(X, Y)[j] = static_cast<uint8>(mip_chain[i].At(X, Y)[j] * static_cast<float32>(UINT8_MAXIMUM));
+				}
+			}
+		}
+	}
+
+	//What should the file be called?
+	DynamicString file_name{ parameters._Output };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource type to the file.
+	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_2D };
+	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
+
+	//Write the resource ID to the file.
+	const HashString resource_id{ parameters._ID };
+	file.Write(&resource_id, sizeof(HashString));
+
+	//Write the number of mipmap levels to the file.
+	file.Write(&parameters._MipmapLevels, sizeof(uint8));
+
+	//Write the width and height of the texture to the file.
+	const uint32 output_width{ output_textures[0].GetWidth() };
+	file.Write(&output_width, sizeof(uint32));
+	const uint32 output_height{ output_textures[0].GetHeight() };
+	file.Write(&output_height, sizeof(uint32));
+
+	//Write the texture data to the file.
+	for (const Texture2D<Vector4<uint8>> &output_texture : output_textures)
+	{
+		file.Write(output_texture.Data(), sizeof(Vector4<uint8>) * output_texture.GetWidth() * output_texture.GetHeight());
+	}
+
+	//Close the file.
+	file.Close();
+#else
+	//What should the file be called?
 	DynamicString fileName{ parameters._Output };
 	fileName += ".cr";
 
@@ -972,7 +1202,7 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 		{
 			//Load the texture data.
 			int32 width, height, numberOfChannels;
-			byte *RESTRICT data{ stbi_load(parameters._FileR, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+			byte *RESTRICT data{ stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			const uint32 uWidth{ static_cast<uint32>(width) };
 			const uint32 uHeight{ static_cast<uint32>(height) };
@@ -1029,8 +1259,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 			//Load the files for the R and A channels.
 			int32 width, height, numberOfChannels;
 
-			byte* RESTRICT dataR{ parameters._FileR ? stbi_load(parameters._FileR, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte* RESTRICT dataA{ parameters._FileA ? stbi_load(parameters._FileA, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte* RESTRICT dataR{ parameters._File1 ? stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte* RESTRICT dataA{ parameters._File4 ? stbi_load(parameters._File4, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
 
 			const uint32 uWidth{ static_cast<uint32>(width) };
 			const uint32 uHeight{ static_cast<uint32>(height) };
@@ -1095,10 +1325,10 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 			//Load the files for the R, G, B and A channels.
 			int32 width, height, numberOfChannels;
 
-			byte *RESTRICT dataR{ parameters._FileR ? stbi_load(parameters._FileR, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataG{ parameters._FileG ? stbi_load(parameters._FileG, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataB{ parameters._FileB ? stbi_load(parameters._FileB, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataA{ parameters._FileA ? stbi_load(parameters._FileA, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte *RESTRICT dataR{ parameters._File1 ? stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte *RESTRICT dataG{ parameters._File2 ? stbi_load(parameters._File2, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte *RESTRICT dataB{ parameters._File3 ? stbi_load(parameters._File3, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
+			byte *RESTRICT dataA{ parameters._File4 ? stbi_load(parameters._File4, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
 
 			const uint32 uWidth{ static_cast<uint32>(width) };
 			const uint32 uHeight{ static_cast<uint32>(height) };
@@ -1175,6 +1405,7 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 			break;
 		}
 	}
+#endif
 }
 
 /*

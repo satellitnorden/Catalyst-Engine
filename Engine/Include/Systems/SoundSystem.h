@@ -49,7 +49,7 @@ public:
 	/*
 	*	Returns the sample rate for the chosen audio output device.
 	*/
-	uint32 GetSampleRate() const NOEXCEPT;
+	float32 GetSampleRate() const NOEXCEPT;
 
 	/*
 	*	Adds a mix component to the master mix channel.

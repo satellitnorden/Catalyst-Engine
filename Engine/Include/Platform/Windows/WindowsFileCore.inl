@@ -21,7 +21,7 @@ namespace WindowsFile
 }
 
 /*
-*	File namespace, containing common functions relating to files.
+*	File namespace, containing common code relating to files.
 */
 namespace File
 {

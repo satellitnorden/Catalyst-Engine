@@ -27,7 +27,7 @@
 #define BUILD_ENGINE_CLOUD_TEXTURE false
 #define BUILD_ENGINE_FONTS false
 #define BUILD_ENGINE_OCEAN_TEXTURE false
-#define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
+#define BUILD_ENGINE_BLUE_NOISE_TEXTURES true
 #define BUILD_ENGINE_SHADERS false
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
 
@@ -65,13 +65,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D";
 		parameters._ID = "Blue_Noise_0_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_0.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_0.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -81,13 +85,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_1_Texture2D";
 		parameters._ID = "Blue_Noise_1_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_1.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_1.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -97,13 +105,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_2_Texture2D";
 		parameters._ID = "Blue_Noise_2_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_2.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_2.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -113,13 +125,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_3_Texture2D";
 		parameters._ID = "Blue_Noise_3_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_3.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_3.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -129,13 +145,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_4_Texture2D";
 		parameters._ID = "Blue_Noise_4_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_4.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_4.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -145,13 +165,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_5_Texture2D";
 		parameters._ID = "Blue_Noise_5_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_5.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_5.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -161,13 +185,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_6_Texture2D";
 		parameters._ID = "Blue_Noise_6_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_6.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_6.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -177,13 +205,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_7_Texture2D";
 		parameters._ID = "Blue_Noise_7_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_7.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_7.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -193,13 +225,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_8_Texture2D";
 		parameters._ID = "Blue_Noise_8_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_8.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_8.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -209,13 +245,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_9_Texture2D";
 		parameters._ID = "Blue_Noise_9_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_9.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_9.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -225,13 +265,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_10_Texture2D";
 		parameters._ID = "Blue_Noise_10_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_10.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_10.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -241,13 +285,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_11_Texture2D";
 		parameters._ID = "Blue_Noise_11_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_11.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_11.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -257,13 +305,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_12_Texture2D";
 		parameters._ID = "Blue_Noise_12_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_12.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_12.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -273,13 +325,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_13_Texture2D";
 		parameters._ID = "Blue_Noise_13_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_13.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_13.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -289,13 +345,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_14_Texture2D";
 		parameters._ID = "Blue_Noise_14_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_14.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_14.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -305,13 +365,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_15_Texture2D";
 		parameters._ID = "Blue_Noise_15_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_15.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_15.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -321,13 +385,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_16_Texture2D";
 		parameters._ID = "Blue_Noise_16_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_16.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_16.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -337,13 +405,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_17_Texture2D";
 		parameters._ID = "Blue_Noise_17_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_17.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_17.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -353,13 +425,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_18_Texture2D";
 		parameters._ID = "Blue_Noise_18_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_18.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_18.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -369,13 +445,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_19_Texture2D";
 		parameters._ID = "Blue_Noise_19_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_19.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_19.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -385,13 +465,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_20_Texture2D";
 		parameters._ID = "Blue_Noise_20_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_0.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_0.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -401,13 +485,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_21_Texture2D";
 		parameters._ID = "Blue_Noise_21_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_21.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_21.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -417,13 +505,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_22_Texture2D";
 		parameters._ID = "Blue_Noise_22_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_22.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_22.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -433,13 +525,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_23_Texture2D";
 		parameters._ID = "Blue_Noise_23_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_23.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_23.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -449,13 +545,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_24_Texture2D";
 		parameters._ID = "Blue_Noise_24_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_24.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_24.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -465,13 +565,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_25_Texture2D";
 		parameters._ID = "Blue_Noise_25_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_25.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_25.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -481,13 +585,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_26_Texture2D";
 		parameters._ID = "Blue_Noise_26_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_26.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_26.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -497,13 +605,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_27_Texture2D";
 		parameters._ID = "Blue_Noise_27_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_27.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_27.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -513,13 +625,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_28_Texture2D";
 		parameters._ID = "Blue_Noise_28_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_28.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_28.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -529,13 +645,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_29_Texture2D";
 		parameters._ID = "Blue_Noise_29_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_29.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_29.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -545,13 +665,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_30_Texture2D";
 		parameters._ID = "Blue_Noise_30_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_30.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_30.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}
@@ -561,13 +685,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_31_Texture2D";
 		parameters._ID = "Blue_Noise_31_Texture2D";
-		parameters._MipmapLevels = 1;
-		parameters._Mode = Texture2DBuildParameters::Mode::RToRGBA;
-		parameters._FileR = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_31.png";
-		parameters._FileG = nullptr;
-		parameters._FileB = nullptr;
-		parameters._FileA = nullptr;
+		parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Blue_Noise_Textures\\HDR_RGBA_31.png";
+		parameters._File2 = nullptr;
+		parameters._File3 = nullptr;
+		parameters._File4 = nullptr;
+		parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
+		parameters._NormalMapStrength = 1.0f;
+		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 	}

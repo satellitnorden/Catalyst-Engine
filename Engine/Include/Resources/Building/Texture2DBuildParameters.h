@@ -2,33 +2,64 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 class Texture2DBuildParameters final
 {
 
 public:
 
-	//Enumeration covering all modes.
-	enum class Mode : uint8
+	//Enumeration covering all files.
+	enum class File : uint8
 	{
-		/*
-		*	Uses the file specified for the R channel for the R, G, B and A channels.
-		*/
-		RToRGBA,
+		FILE_1,
+		FILE_2,
+		FILE_3,
+		FILE_4
+	};
+
+	//Enumeration covering all channels.
+	enum class Channel : uint8
+	{
+		RED,
+		GREEN,
+		BLUE,
+		ALPHA
+	};
+
+	/*
+	*	Channel mapping class definition.
+	*/
+	class ChannelMapping final
+	{
+
+	public:
+
+		//The file.
+		File _File;
+
+		//The channel.
+		Channel _Channel;
 
 		/*
-		*	Uses the file specified for the R channel for the R, G and A channels
-		*	and the file specified for the A channel for the A channel.
+		*	Default constructor.
 		*/
-		RToRGBAToA,
+		FORCE_INLINE ChannelMapping() NOEXCEPT
+		{
+
+		}
 
 		/*
-		*	Uses the file specified for the R channel for the R channel,
-		*	the file specified for the G channel for the G channel,
-		*	the file specified for the B channel for the B channel
-		*	and the file specified for the A channel for the A channel.
+		*	Constructor taking all values as arguments.
 		*/
-		RToRGToGBToBAToA
+		FORCE_INLINE ChannelMapping(const File initial_file, const Channel initial_channel) NOEXCEPT
+			:
+			_File(initial_file),
+			_Channel(initial_channel)
+		{
+
+		}
+
 	};
 
 	//The output file path.
@@ -37,25 +68,28 @@ public:
 	//The resource ID.
 	const char *RESTRICT _ID{ nullptr };
 
-	//The number of mipmap levels.
-	uint8 _MipmapLevels{ 0 };
+	//The first file path.
+	const char *RESTRICT _File1{ nullptr };
 
-	//The mode.
-	Mode _Mode{ Mode::RToRGBA };
+	//The second file path.
+	const char *RESTRICT _File2{ nullptr };
 
-	//The file path for the R channel.
-	const char *RESTRICT _FileR{ nullptr };
+	//The third file path.
+	const char *RESTRICT _File3{ nullptr };
 
-	//The file path for the G channel.
-	const char *RESTRICT _FileG{ nullptr };
+	//The fourth file path.
+	const char *RESTRICT _File4{ nullptr };
 
-	//The file path for the B channel.
-	const char *RESTRICT _FileB{ nullptr };
-
-	//The file path for the A channel.
-	const char *RESTRICT _FileA{ nullptr };
+	//The channel mappings.
+	StaticArray<ChannelMapping, 4> _ChannelMappings;
 
 	//Whether or not to apply gamma correction.
 	bool _ApplyGammaCorrection{ false };
+
+	//The normal map strength. Setting this to 1.0f leaves the texture unaffected.
+	float32 _NormalMapStrength{ 1.0f };
+
+	//The number of mipmap levels.
+	uint8 _MipmapLevels{ 0 };
 
 };

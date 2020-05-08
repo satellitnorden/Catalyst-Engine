@@ -108,6 +108,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		PlayingSound new_playing_sound;
 
 		new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_sound->_SoundResource);
+		new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_sound->_SoundResource->_SampleRate / GetSampleRate());
 
 		SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
 	}

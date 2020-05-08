@@ -17,4 +17,7 @@ public:
 	//The file path.
 	const char *RESTRICT _File{ nullptr };
 
+	//The desired sample rate. If the file is not in the same sample rate, the sound will be resampled using linear interpolation.
+	float32 _DesiredSampleRate{ 44'100.0f };
+
 };

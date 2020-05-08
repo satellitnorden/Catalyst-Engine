@@ -1530,6 +1530,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderingConfiguration.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Readers\PNGReader.h">
+      <Filter>File\Include\Readers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
