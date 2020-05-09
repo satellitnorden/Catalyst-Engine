@@ -25,20 +25,12 @@ layout (set = 1, binding = 3) uniform sampler2D scene_texture;
 layout (location = 0) out vec4 fragment;
 
 /*
-*	The probability density function.	
-*/
-float ProbabilityDensityFunction(vec3 normal, vec3 ray_direction, float roughness, float metallic)
-{
-	return mix(1.0f, max(dot(normal, ray_direction), 0.0f), roughness * (1.0f - metallic));
-}
-
-/*
 *	Calculates the indirect lighting ray direction and start offset.
 */
 void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_direction, vec3 normal, float roughness, float metallic, out vec3 ray_direction, out float start_offset)
 {
 	//Sample the noise texture.
-	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), index);
 
 	//Calculate the random rotation matrix.
 	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
@@ -122,11 +114,11 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 			if (dot(ray_direction, sample_scene_features_2.xyz) <= 0.0f)
 			{
 				//Test the (world space) direction towards the hit position against the (world space) ray direction.
-				vec3 hit_position = CalculateWorldPosition(sample_scene_features_2.xy, sample_scene_features_2.w);
-				float distance_to_hit_position = length(hit_position - ray_origin);;
+				vec3 hit_position = CalculateWorldPosition(screen_space_sample_position.xy, sample_scene_features_2.w);
+				float distance_to_hit_position = length(hit_position - ray_origin);
 				vec3 direction_to_hit_position = vec3(hit_position - ray_origin) / distance_to_hit_position;
 
-				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
+				if (dot(ray_direction, direction_to_hit_position) >= 0.5f)
 				{
 					//Sample the scene at the sample screen coordinate.
 					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
@@ -219,7 +211,7 @@ void CatalystShaderMain()
 		float hit = CastRayScene(world_position + ray_direction , ray_direction, start_offset, sample_indirect_lighting);
 
 		//Calculate the sample weight.
-		float sample_weight = ProbabilityDensityFunction(normal, ray_direction, roughness, metallic) * hit;
+		float sample_weight = hit;
 
 		//Accumulate.
 		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * sample_weight : vec3(0.0f);
