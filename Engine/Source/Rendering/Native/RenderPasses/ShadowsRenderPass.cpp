@@ -41,18 +41,29 @@ ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 void ShadowsRenderPass::Initialize() NOEXCEPT
 {
 	//Create the shadow map depth buffer.
-	RenderingSystem::Instance->CreateDepthBuffer(Resolution(RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION), &_ShadowMapDepthBuffer);
+	RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), &_ShadowMapDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(3);
+	SetNumberOfPipelines(3 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
 	AddPipeline(&_ModelShadowMapGraphicsPipeline);
 	AddPipeline(&_RasterizedShadowsGraphicsPipeline);
 	AddPipeline(&_ShadowsRayTracingPipeline);
+
+	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	//Initialize all pipelines.
 	_ModelShadowMapGraphicsPipeline.Initialize(_ShadowMapDepthBuffer);
 	_RasterizedShadowsGraphicsPipeline.Initialize();
 	_ShadowsRayTracingPipeline.Initialize();
+	_ShadowsSpatialDenoisingGraphicsPipelines[0].Initialize(CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
+															1,
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
+	_ShadowsSpatialDenoisingGraphicsPipelines[1].Initialize(CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_2_RENDER_TARGET_INDEX,
+															2,
+															RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 
 	//Post-initialize all pipelines.
 	for (Pipeline *const RESTRICT pipeline : GetPipelines())
@@ -110,6 +121,11 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		_ModelShadowMapGraphicsPipeline.SetIncludeInRender(false);
 		_RasterizedShadowsGraphicsPipeline.SetIncludeInRender(false);
 		_ShadowsRayTracingPipeline.Execute();
+	}
+
+	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	{
+		pipeline.Execute();
 	}
 
 	//Enable this render pass.

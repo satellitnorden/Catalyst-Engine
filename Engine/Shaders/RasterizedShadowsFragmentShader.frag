@@ -1,6 +1,7 @@
 //Constants.
-#define SHADOW_MAP_SAMPLES (8)
-#define SHADOW_MAP_OFFSET (0.001f);
+#define SHADOW_MAP_SAMPLES (4)
+#define SHADOW_MAP_OFFSET (0.00125f) //0.00025f step.
+#define SHADOW_MAP_BIAS (0.00012f) //0.0000025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -74,7 +75,7 @@ void CatalystShaderMain()
 
 		float actual_shadow_map_depth = texture(sampler2D(RENDER_TARGETS[SHADOW_MAP_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), offset_shadow_map_coordinate).x;
 
-		shadow_factor += ValidCoordinate(offset_shadow_map_coordinate) ? float(shadow_map_depth < actual_shadow_map_depth) : 1.0f;
+		shadow_factor += ValidCoordinate(offset_shadow_map_coordinate) ? float(shadow_map_depth < actual_shadow_map_depth + SHADOW_MAP_BIAS) : 1.0f;
 	}
 
 	shadow_factor /= float(SHADOW_MAP_SAMPLES);

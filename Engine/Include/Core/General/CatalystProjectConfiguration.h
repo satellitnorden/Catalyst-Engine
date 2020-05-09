@@ -87,6 +87,12 @@ public:
 	float32 _ViewDistance;
 
 	/*
+	*	The shadow map resolution.
+	*	Recommended: 1'024.
+	*/
+	uint32 _ShadowMapResolution;
+
+	/*
 	*	Default constructor.
 	*/
 	CatalystProjectRenderingConfiguration() NOEXCEPT

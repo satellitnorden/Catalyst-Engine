@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -77,7 +78,7 @@ void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_bu
 	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION));
+	SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetShouldClear(true);

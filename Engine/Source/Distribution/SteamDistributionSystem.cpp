@@ -82,7 +82,7 @@ void DistributionSystem::Initialize() NOEXCEPT
 
 	if (!succeeded)
 	{
-		//ASSERT(false, "Failed to initialize Steam!");
+		ASSERT(false, "Failed to initialize Steam!");
 
 		return;
 	}

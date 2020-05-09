@@ -128,7 +128,7 @@ namespace VulkanRenderingSystemLogic
 						Vector4<float32> clear_color;
 						float32 depth_value;
 
-						if (pipelineData->_Extent.width == RenderingConstants::SHADOW_MAP_RESOLUTION)
+						if (pipelineData->_Extent.width == CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution)
 						{
 							clear_color = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
 							depth_value = 1.0f;

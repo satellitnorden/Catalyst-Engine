@@ -39,7 +39,7 @@ private:
 	ShadowsRayTracingPipeline _ShadowsRayTracingPipeline;
 
 	//The shadows spatial denoising graphics pipelines.
-	StaticArray<ShadowsSpatialDenoisingGraphicsPipeline, 2> _ShadowsSpatialDenoisingGraphicsPipeline;
+	StaticArray<ShadowsSpatialDenoisingGraphicsPipeline, 2> _ShadowsSpatialDenoisingGraphicsPipelines;
 
 	/*
 	*	Initializes this render pass.
