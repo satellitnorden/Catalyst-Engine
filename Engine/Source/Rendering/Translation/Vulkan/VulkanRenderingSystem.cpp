@@ -125,8 +125,23 @@ namespace VulkanRenderingSystemLogic
 
 					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->ShouldClear())
 					{
-						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(Vector4<float>(0.0f, 0.0f, 0.0f, 0.0f),
-																					0.0f,
+						Vector4<float32> clear_color;
+						float32 depth_value;
+
+						if (pipelineData->_Extent.width == RenderingConstants::SHADOW_MAP_RESOLUTION)
+						{
+							clear_color = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+							depth_value = 1.0f;
+						}
+
+						else
+						{
+							clear_color = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+							depth_value = 0.0f;
+						}
+
+						currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(clear_color,
+																					depth_value,
 																					pipelineData->_RenderPass->Get(),
 																					pipelineData->_FrameBuffers[0]->Get(),
 																					pipelineData->_Extent,

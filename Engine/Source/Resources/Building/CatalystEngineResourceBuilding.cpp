@@ -28,7 +28,7 @@
 #define BUILD_ENGINE_FONTS false
 #define BUILD_ENGINE_OCEAN_TEXTURE false
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
-#define BUILD_ENGINE_SHADERS false
+#define BUILD_ENGINE_SHADERS true
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION true
@@ -1112,6 +1112,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RasterizedShadowsFragmentShader";
+		parameters._ID = "RasterizedShadowsFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
@@ -1181,6 +1192,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
 		parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ShadowsSpatialDenoisingFragmentShader";
+		parameters._ID = "ShadowsSpatialDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ShadowsSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

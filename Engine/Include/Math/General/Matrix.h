@@ -116,9 +116,9 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 LookAt(const Vector3<float> &position, const Vector3<float> &target, const Vector3<float> &up) NOEXCEPT
 	{
-		Vector3<float> F{ Vector3<float>::Normalize(direction - position) };
+		Vector3<float> F{ Vector3<float>::Normalize(target - position) };
 		Vector3<float> S{ Vector3<float>::CrossProduct(F, up) };
 		Vector3<float> U{ Vector3<float>::CrossProduct(S, F) };
 
@@ -190,18 +190,18 @@ public:
 	}
 
 	/*
-	*	Calculates an ortographic projection matrix.
+	*	Calculates an orthographic projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Orthographic(const float32 left, const float32 right, const float32 bottom, const float32 top, const float32 near, const float32 far) NOEXCEPT
 	{
 		Matrix4x4 result;
 
 		result._Matrix[0]._X = 2.0f / (right - left);
 		result._Matrix[1]._Y = 2.0f / (top - bottom);
-		result._Matrix[2]._Z = -1.0f / (farPlane - nearPlane);
+		result._Matrix[2]._Z = -1.0f / (far - near);
 		result._Matrix[3]._X = -(right + left) / (right - left);
 		result._Matrix[3]._Y = -(top + bottom) / (top - bottom);
-		result._Matrix[3]._Z = -nearPlane / (farPlane - nearPlane);
+		result._Matrix[3]._Z = -near / (far - near);
 
 		result._Matrix[1]._Y *= -1.0f;
 

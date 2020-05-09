@@ -6,7 +6,8 @@
 
 //Constants.
 #define SURFACE_SHADOWS_MODE_NONE (0)
-#define SURFACE_SHADOWS_MODE_RAY_TRACED (1)
+#define SURFACE_SHADOWS_MODE_RASTERIZED (1)
+#define SURFACE_SHADOWS_MODE_RAY_TRACED (2)
 
 //Layout specification.
 layout (early_fragment_tests) in;
