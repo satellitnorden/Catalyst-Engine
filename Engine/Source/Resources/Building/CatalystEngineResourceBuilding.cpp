@@ -27,7 +27,7 @@
 #define BUILD_ENGINE_CLOUD_TEXTURE false
 #define BUILD_ENGINE_FONTS false
 #define BUILD_ENGINE_OCEAN_TEXTURE false
-#define BUILD_ENGINE_BLUE_NOISE_TEXTURES true
+#define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
 #define BUILD_ENGINE_SHADERS false
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
 
@@ -928,6 +928,28 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelSceneFeaturesVertexShader";
 		parameters._ID = "ModelSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapFragmentShader";
+		parameters._ID = "ModelShadowMapFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapVertexShader";
+		parameters._ID = "ModelShadowMapVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

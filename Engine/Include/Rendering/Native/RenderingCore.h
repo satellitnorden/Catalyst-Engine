@@ -27,6 +27,8 @@ namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_MESHES_PER_MODEL{ 4 };
 
+	constexpr uint32 SHADOW_MAP_RESOLUTION{ 1'024 };
+
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 
 	constexpr uint32 TERRAIN_HIT_GROUP_INDEX{ 0 };
@@ -255,6 +257,11 @@ enum class RenderTarget : uint8
 	*	Contains the second temporal anti aliasing buffer.
 	*/
 	TEMPORAL_ANTI_ALIASING_BUFFER_2,
+
+	/*
+	*	Contains the shadow map.
+	*/
+	SHADOW_MAP,
 
 	/*
 	*	Intermediate render target.
