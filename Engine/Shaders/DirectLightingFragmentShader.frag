@@ -66,6 +66,13 @@ void CatalystShaderMain()
 	{
 		Light light = UnpackLight(i);
 
+		float shadow_factor = 1.0f;
+
+		if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+		{
+			shadow_factor = shadows[current_shadow_index++];
+		}
+
 		switch (light.light_type)
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
@@ -78,7 +85,7 @@ void CatalystShaderMain()
 													ambient_occlusion,
 													material.thickness,
 													light.position_or_direction,
-													light.color * light.intensity) * shadows[current_shadow_index++];
+													light.color * light.intensity) * shadow_factor;
 
 				break;
 			}
@@ -109,7 +116,7 @@ void CatalystShaderMain()
 															ambient_occlusion,
 															material.thickness,
 															light_direction,
-															light.color * light.intensity) * attenuation * shadows[current_shadow_index++];
+															light.color * light.intensity) * attenuation * shadow_factor;
 				}
 
 				break;
