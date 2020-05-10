@@ -18,6 +18,9 @@ public:
 	//The sound resource.
 	ResourcePointer<SoundResource> _SoundResource;
 
+	//Denotes if the sound is looping.
+	bool _IsLooping;
+
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
 
@@ -97,20 +100,23 @@ void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &componen
 /*
 *	Plays a sound.
 */
-void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource, SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
+void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
+							const bool is_looping,
+							SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Queue the play sound.
-	QueuedPlaySound queued_Play_sound;
+	QueuedPlaySound queued_play_sound;
 
-	queued_Play_sound._SoundResource = resource;
-	queued_Play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
+	queued_play_sound._SoundResource = resource;
+	queued_play_sound._IsLooping = is_looping;
+	queued_play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
 
 	if (handle)
 	{
-		*handle = queued_Play_sound._SoundInstanceHandle;
+		*handle = queued_play_sound._SoundInstanceHandle;
 	}
 
-	SoundSystemData::_QueuedPlaySounds.Push(queued_Play_sound);
+	SoundSystemData::_QueuedPlaySounds.Push(queued_play_sound);
 }
 
 /*
@@ -153,6 +159,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 
 		new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound->_SoundResource);
 		new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound->_SoundResource->_SampleRate / GetSampleRate());
+		new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound->_IsLooping);
 		new_playing_sound._SoundInstanceHandle = queued_play_sound->_SoundInstanceHandle;
 
 		SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);

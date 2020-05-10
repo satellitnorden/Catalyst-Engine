@@ -65,6 +65,11 @@ public:
             ++_CurrentSample;
             _CurrentSampleFraction -= 1.0f;
         }
+
+        if (_IsLooping && _CurrentSample >= static_cast<int64>(_SoundResource->_Samples[0].Size()))
+        {
+            _CurrentSample = 0;
+        }
     }
 
     /*
@@ -97,6 +102,14 @@ public:
     }
 
     /*
+    *   Sets whether or not the sound resource is looping.
+    */
+    FORCE_INLINE void SetIsLooping(const bool is_looping) NOEXCEPT
+    {
+        _IsLooping = is_looping;
+    }
+
+    /*
     *   Returns if this sound resource player is active.
     */
     FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
@@ -120,6 +133,9 @@ private:
 
     //The current sample fraction.
     float32 _CurrentSampleFraction{ 0.0f };
+
+    //Denotes if the sound resource is looping.
+    bool _IsLooping{ false };
 
     //Denotes if this sound resource player is active.
     bool _IsActive{ true };

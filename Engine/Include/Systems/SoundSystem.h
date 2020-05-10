@@ -59,7 +59,9 @@ public:
 	/*
 	*	Plays a sound.
 	*/
-	void PlaySound(const ResourcePointer<SoundResource> resource, SoundInstanceHandle *const RESTRICT handle) NOEXCEPT;
+	void PlaySound(	const ResourcePointer<SoundResource> resource,
+					const bool is_looping,
+					SoundInstanceHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Stops a sound.
