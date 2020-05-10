@@ -70,6 +70,11 @@ void UnpackParticleSystemInputData(out ParticleSystemInputData data)
 */
 bool ShouldSpawn(ParticleSystemInputData data, uint index)
 {
+	if (data.first_particle_index_to_spawn >= data.number_of_instances)
+	{
+		return false;
+	}
+
 	uint begin = data.first_particle_index_to_spawn;
 	uint end = data.first_particle_index_to_spawn + data.number_of_particles_to_spawn;
 
@@ -78,8 +83,7 @@ bool ShouldSpawn(ParticleSystemInputData data, uint index)
 		return true;
 	}
 
-	else if (	data.first_particle_index_to_spawn < data.number_of_instances
-				&& end >= data.number_of_instances
+	else if (	end >= data.number_of_instances
 				&& index < (end - data.number_of_instances))
 	{
 		return true;
