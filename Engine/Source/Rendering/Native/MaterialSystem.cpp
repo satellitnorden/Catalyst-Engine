@@ -49,7 +49,7 @@ void MaterialSystem::RegisterGlobalMaterial(const uint32 index, const Material &
 /*
 *	Returns the global material at the given index.
 */
-const Material& MaterialSystem::GetGlobalMaterial(const uint32 index) NOEXCEPT
+Material& MaterialSystem::GetGlobalMaterial(const uint32 index) NOEXCEPT
 {
 	return _GlobalMaterials[index];
 }
