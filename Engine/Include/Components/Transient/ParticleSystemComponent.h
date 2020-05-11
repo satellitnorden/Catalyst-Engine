@@ -23,43 +23,43 @@ public:
 	ParticleSystemEntity::Property _ParticleSystemProperties;
 
 	//The position.
-	Vector3<float> _Position;
+	Vector3<float32> _Position;
 
 	//The minimum position.
-	Vector3<float> _MinimumPosition;
+	Vector3<float32> _MinimumPosition;
 
 	//The maximum position.
-	Vector3<float> _MaximumPosition;
+	Vector3<float32> _MaximumPosition;
 
 	//The minimum velocity.
-	Vector3<float> _MinimumVelocity;
+	Vector3<float32> _MinimumVelocity;
 
 	//The maximum velocity.
-	Vector3<float> _MaximumVelocity;
+	Vector3<float32> _MaximumVelocity;
 
 	//The minimum scale.
-	Vector2<float> _MinimumScale;
+	Vector2<float32> _MinimumScale;
 
 	//The maximum scale.
-	Vector2<float> _MaximumScale;
+	Vector2<float32> _MaximumScale;
 
 	//The number of instances.
 	uint32 _NumberOfInstances;
 
-	//The spawn frequency.
-	float _SpawnFrequency;
+	//The spawn frequency, defined in particles per seconds.
+	float32 _SpawnFrequency;
 
 	//The lifetime.
-	float _Lifetime;
+	float32 _Lifetime;
 
 	//The fade time.
-	float _FadeTime;
+	float32 _FadeTime;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
 	//The time since the last instance spawn.
-	float _TimeSinceLastSpawn;
+	float32 _TimeSinceLastSpawn;
 
 	//The first particle index to spawn this frame.
 	uint32 _FirstParticleIndexToSpawn;

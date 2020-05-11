@@ -92,9 +92,11 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 		//Calculate the number of particles to spawn this update.
 		component->_NumberOfParticlesToSpawn = 0;
 
-		while (component->_TimeSinceLastSpawn >= component->_SpawnFrequency)
+		const float32 spawn_frequency_reciprocal{ 1.0f / component->_SpawnFrequency };
+
+		while (component->_TimeSinceLastSpawn >= spawn_frequency_reciprocal)
 		{
-			component->_TimeSinceLastSpawn -= component->_SpawnFrequency;
+			component->_TimeSinceLastSpawn -= spawn_frequency_reciprocal;
 
 			++component->_NumberOfParticlesToSpawn;
 		}

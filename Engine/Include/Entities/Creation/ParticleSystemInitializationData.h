@@ -19,36 +19,36 @@ public:
 	ParticleSystemEntity::Property _ParticleSystemProperties;
 
 	//The initial position.
-	Vector3<float> _InitialPosition;
+	Vector3<float32> _InitialPosition;
 
 	//The material index.
 	uint32 _MaterialIndex;
 
 	//The minimum position.
-	Vector3<float> _MinimumPosition;
+	Vector3<float32> _MinimumPosition;
 
 	//The maximum position.
-	Vector3<float> _MaximumPosition;
+	Vector3<float32> _MaximumPosition;
 
 	//The minimum velocity.
-	Vector3<float> _MinimumVelocity;
+	Vector3<float32> _MinimumVelocity;
 
 	//The maximum velocity.
-	Vector3<float> _MaximumVelocity;
+	Vector3<float32> _MaximumVelocity;
 
 	//The minimum scale.
-	Vector2<float> _MinimumScale;
+	Vector2<float32> _MinimumScale;
 
 	//The maximum scale.
-	Vector2<float> _MaximumScale;
+	Vector2<float32> _MaximumScale;
 
-	//The initial spawn frequency.
-	float _InitialSpawnFrequency;
+	//The initial spawn frequency, defined in particles per seconds.
+	float32 _InitialSpawnFrequency;
 
 	//The lifetime.
-	float _Lifetime;
+	float32 _Lifetime;
 
 	//The fade time.
-	float _FadeTime;
+	float32 _FadeTime;
 
 };

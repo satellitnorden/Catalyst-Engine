@@ -48,7 +48,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	component._MaximumVelocity = particle_system_initialization_data->_MaximumVelocity;
 	component._MinimumScale = particle_system_initialization_data->_MinimumScale;
 	component._MaximumScale = particle_system_initialization_data->_MaximumScale;
-	component._NumberOfInstances = static_cast<uint32>(particle_system_initialization_data->_Lifetime / particle_system_initialization_data->_InitialSpawnFrequency);
+	component._NumberOfInstances = CatalystBaseMath::Ceiling<uint32>(particle_system_initialization_data->_Lifetime * particle_system_initialization_data->_InitialSpawnFrequency);
 	component._SpawnFrequency = particle_system_initialization_data->_InitialSpawnFrequency;
 	component._Lifetime = particle_system_initialization_data->_Lifetime;
 	component._FadeTime = particle_system_initialization_data->_FadeTime;
