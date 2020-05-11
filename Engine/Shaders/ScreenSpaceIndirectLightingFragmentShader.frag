@@ -42,7 +42,7 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_d
 	vec3 random_hemisphere_direction;
 	float random_length;
 
-	SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), random_hemisphere_direction, random_length);
+	SampleHammersleyHemisphereSample(index + random_hemisphere_sample_start_index + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), random_hemisphere_direction, random_length);
 
 	//Rotate the random direction.
 	random_hemisphere_direction = random_rotation * random_hemisphere_direction;
@@ -118,7 +118,7 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 				float distance_to_hit_position = length(hit_position - ray_origin);
 				vec3 direction_to_hit_position = vec3(hit_position - ray_origin) / distance_to_hit_position;
 
-				if (dot(ray_direction, direction_to_hit_position) >= 0.5f)
+				if (dot(ray_direction, direction_to_hit_position) >= 0.9f)
 				{
 					//Sample the scene at the sample screen coordinate.
 					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
