@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\File\Core\FileCore.h" />
+    <ClInclude Include="..\..\..\Include\File\Readers\JPGReader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\PNGReader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h" />

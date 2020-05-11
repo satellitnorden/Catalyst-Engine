@@ -13,6 +13,7 @@ namespace File
 	//Enumeration covering all extensions.
 	enum class Extension : uint8
 	{
+		JPG,
 		PNG,
 		TGA,
 		WAV,
@@ -63,6 +64,11 @@ namespace File
 		if (!dot_position)
 		{
 			return Extension::UNKNOWN;
+		}
+
+		if (strcmp(dot_position, ".jpg") == 0)
+		{
+			return Extension::JPG;
 		}
 
 		if (strcmp(dot_position, ".png") == 0)

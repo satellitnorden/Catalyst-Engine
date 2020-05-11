@@ -75,6 +75,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -95,6 +96,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -115,6 +117,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -135,6 +138,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -155,6 +159,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -175,6 +180,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -195,6 +201,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -215,6 +222,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -235,6 +243,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -255,6 +264,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -275,6 +285,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -295,6 +306,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -315,6 +327,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -335,6 +348,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -355,6 +369,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -375,6 +390,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -395,6 +411,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -415,6 +432,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -435,6 +453,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -455,6 +474,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -475,6 +495,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -495,6 +516,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -515,6 +537,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -535,6 +558,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -555,6 +579,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -575,6 +600,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -595,6 +621,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -615,6 +642,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -635,6 +663,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -655,6 +684,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -675,6 +705,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
@@ -695,6 +726,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
 		parameters._ApplyGammaCorrection = false;
 		parameters._NormalMapStrength = 1.0f;
+		parameters._BaseMipmapLevel = 0;
 		parameters._MipmapLevels = 1;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);

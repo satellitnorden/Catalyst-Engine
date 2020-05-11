@@ -89,7 +89,10 @@ public:
 	//The normal map strength. Setting this to 1.0f leaves the texture unaffected.
 	float32 _NormalMapStrength{ 1.0f };
 
+	//The base mipmap level.
+	uint8 _BaseMipmapLevel{ 0 };
+
 	//The number of mipmap levels.
-	uint8 _MipmapLevels{ 0 };
+	uint8 _MipmapLevels{ 1 };
 
 };

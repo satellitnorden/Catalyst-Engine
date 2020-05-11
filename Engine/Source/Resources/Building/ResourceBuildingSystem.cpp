@@ -14,6 +14,7 @@
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
+#include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
 
@@ -993,6 +994,13 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	switch (File::GetExtension(parameters._File1))
 	{
+		case File::Extension::JPG:
+		{
+			JPGReader::Read(parameters._File1, &input_textures[0]);
+
+			break;
+		}
+
 		case File::Extension::PNG:
 		{
 			PNGReader::Read(parameters._File1, &input_textures[0]);
@@ -1012,6 +1020,13 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	{
 		switch (File::GetExtension(parameters._File2))
 		{
+			case File::Extension::JPG:
+			{
+				JPGReader::Read(parameters._File2, &input_textures[1]);
+
+				break;
+			}
+
 			case File::Extension::PNG:
 			{
 				PNGReader::Read(parameters._File2, &input_textures[1]);
@@ -1032,6 +1047,13 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	{
 		switch (File::GetExtension(parameters._File3))
 		{
+			case File::Extension::JPG:
+			{
+				JPGReader::Read(parameters._File3, &input_textures[2]);
+
+				break;
+			}
+
 			case File::Extension::PNG:
 			{
 				PNGReader::Read(parameters._File3, &input_textures[2]);
@@ -1052,6 +1074,13 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	{
 		switch (File::GetExtension(parameters._File4))
 		{
+			case File::Extension::JPG:
+			{
+				JPGReader::Read(parameters._File4, &input_textures[3]);
+
+				break;
+			}
+
 			case File::Extension::PNG:
 			{
 				PNGReader::Read(parameters._File4, &input_textures[3]);
@@ -1122,7 +1151,7 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	//Generate the mip chain.
 	DynamicArray<Texture2D<Vector4<float32>>> mip_chain;
 
-	RenderingUtilities::GenerateMipChain(composite_texture, parameters._MipmapLevels, &mip_chain);
+	RenderingUtilities::GenerateMipChain(composite_texture,	parameters._BaseMipmapLevel + parameters._MipmapLevels, &mip_chain);
 
 	//Create the output textures.
 	DynamicArray<Texture2D<Vector4<uint8>>> output_textures;
@@ -1164,15 +1193,15 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	file.Write(&parameters._MipmapLevels, sizeof(uint8));
 
 	//Write the width and height of the texture to the file.
-	const uint32 output_width{ output_textures[0].GetWidth() };
+	const uint32 output_width{ output_textures[parameters._BaseMipmapLevel].GetWidth() };
 	file.Write(&output_width, sizeof(uint32));
-	const uint32 output_height{ output_textures[0].GetHeight() };
+	const uint32 output_height{ output_textures[parameters._BaseMipmapLevel].GetHeight() };
 	file.Write(&output_height, sizeof(uint32));
 
 	//Write the texture data to the file.
-	for (const Texture2D<Vector4<uint8>> &output_texture : output_textures)
+	for (uint64 i{ parameters._BaseMipmapLevel }, size{ output_textures.Size() }; i < size; ++i)
 	{
-		file.Write(output_texture.Data(), sizeof(Vector4<uint8>) * output_texture.GetWidth() * output_texture.GetHeight());
+		file.Write(output_textures[i].Data(), sizeof(Vector4<uint8>) * output_textures[i].GetWidth() * output_textures[i].GetHeight());
 	}
 
 	//Close the file.
