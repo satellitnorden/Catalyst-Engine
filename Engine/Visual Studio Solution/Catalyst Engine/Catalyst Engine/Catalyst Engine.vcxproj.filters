@@ -1548,6 +1548,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Color.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\WorldTransform.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 //World.
 #include <World/Core/EnvironmentSystem.h>
@@ -27,7 +28,7 @@ public:
 	/*
 	*	Initializes the world system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const CatalystProjectWorldConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Post-initializes the world system.
@@ -38,6 +39,14 @@ public:
 	*	Updates the world system during the logic update phase.
 	*/
 	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Returns the world grid size.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetWorldGridSize() const NOEXCEPT
+	{
+		return _WorldGridSize;
+	}
 
 	/*
 	*	Returns the environment system.
@@ -80,6 +89,9 @@ public:
 	}
 
 private:
+
+	//The world grid size.
+	float32 _WorldGridSize;
 
 	//The environment system.
 	EnvironmentSystem _EnvironmentSystem;

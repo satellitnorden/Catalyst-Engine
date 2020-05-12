@@ -146,6 +146,7 @@
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h" />
     <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />

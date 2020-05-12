@@ -19,8 +19,11 @@ DEFINE_SINGLETON(WorldSystem);
 /*
 *	Initializes the world system.
 */
-void WorldSystem::Initialize() NOEXCEPT
+void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configuration) NOEXCEPT
 {
+	//Set the world grid size.
+	_WorldGridSize = configuration._WorldGridSize;
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{

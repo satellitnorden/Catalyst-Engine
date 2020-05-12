@@ -102,39 +102,6 @@ public:
 
 };
 
-class CatalystProjectSoundConfiguration final
-{
-
-public:
-
-	/*
-	*	The maximum number of channels.
-	*	Recommended: 64.
-	*/
-	uint32 _MaximumNumberOfChannels;
-
-	/*
-	*	The number of mixing buffers.
-	*	Recommended: 4.
-	*/
-	uint8 _NumberOfMixingBuffers;
-
-	/*
-	*	The mixing buffer size.
-	*	Recommended: 1'024.
-	*/
-	uint32 _MixingBufferSize;
-
-	/*
-	*	Default constructor.
-	*/
-	CatalystProjectSoundConfiguration() NOEXCEPT
-	{
-
-	}
-
-};
-
 class CatalystProjectTerrainConfiguration final
 {
 
@@ -174,6 +141,29 @@ public:
 
 };
 
+class CatalystProjectWorldConfiguration final
+{
+
+public:
+
+	/*
+	*	The world grid size.
+	*	The world is divided into a three-dimensional grid in the Catalyst Engine™ to enable infinite worlds. 
+	*	This is the size of each grid cell.
+	*	Recommended: 1'024.0f.
+	*/
+	float32 _WorldGridSize;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectWorldConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
 class CatalystProjectConfiguration final
 {
 
@@ -188,10 +178,10 @@ public:
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
 
-	//The project sound configuration.
-	CatalystProjectSoundConfiguration _SoundConfiguration;
-
 	//The project terrain configuration.
 	CatalystProjectTerrainConfiguration _TerrainConfiguration;
+
+	//The project world configuration.
+	CatalystProjectWorldConfiguration _WorldConfiguration;
 
 };

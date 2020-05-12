@@ -34,7 +34,7 @@ public:
 	/*
 	*	Initializes the sound system.
 	*/
-	void Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Terminates the sound system.

@@ -139,11 +139,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	MemorySystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
-	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
+	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
 	UserInterfaceSystem::Instance->Initialize();
-	WorldSystem::Instance->Initialize();
+	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_CONFIGURATION_FINAL)

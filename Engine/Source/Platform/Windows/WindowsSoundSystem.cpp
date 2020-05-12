@@ -109,7 +109,7 @@ namespace WindowsSoundSystemData
 /*
 *	Initializes the sound system.
 */
-void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
+void SoundSystem::Initialize() NOEXCEPT
 {
 	//Set up the thread.
 	WindowsSoundSystemData::_Thread.SetFunction([]()
