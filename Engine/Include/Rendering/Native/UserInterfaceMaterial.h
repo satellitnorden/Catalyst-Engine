@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 
 //Rendering.
-#include <Rendering/Native/RenderingUtilities.h>
+#include <Rendering/Native/Color.h>
 
 class UserInterfaceMaterial final
 {
@@ -21,6 +21,14 @@ public:
 		COLOR,
 		TEXTURE_INDEX
 	};
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE UserInterfaceMaterial() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Returns the primary type.
@@ -77,7 +85,7 @@ public:
 		SET_BIT(_Properties, BIT(0));
 
 		//Set the primary color.
-		_PrimaryColor = RenderingUtilities::PackColor(color, false);
+		_PrimaryColor = Color(color);
 	}
 
 	/*
@@ -109,7 +117,7 @@ public:
 		SET_BIT(_Properties, BIT(2));
 
 		//Set the secondary color.
-		_SecondaryColor = RenderingUtilities::PackColor(color, false);
+		_SecondaryColor = Color(color);
 	}
 
 	/*
@@ -144,7 +152,7 @@ private:
 	union
 	{
 		//The primary color.
-		uint32 _PrimaryColor;
+		Color _PrimaryColor;
 
 		//The primary texture index.
 		uint32 _PrimaryTextureIndex;
@@ -153,7 +161,7 @@ private:
 	union
 	{
 		//The secondary color.
-		uint32 _SecondaryColor;
+		Color _SecondaryColor;
 
 		//The secondary texture index.
 		uint32 _SecondaryTextureIndex;

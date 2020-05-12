@@ -13,41 +13,46 @@ DEFINE_SINGLETON(TaskSystem);
 */
 void TaskSystem::Initialize() NOEXCEPT
 {
-	//Retrieve the number of hardware threads.
-	const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
-
-	//Set the number of task executors. Leave one slot open for the main thread.
-	_NumberOfTaskExecutors = number_of_hardware_threads - 1;
-
-	//Kick off all task executor threads.
-	_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
-
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	//Keep track of the task executor number.
-	uint32 task_executor_number{ 1 };
-#endif
-
-	for (Thread& task_executor_thread : _TaskExecutorThreads)
+	if (!_IsInitialized)
 	{
-		//Set the function.
-		task_executor_thread.SetFunction([]()
-		{
-			TaskSystem::Instance->ExecuteTasks();
-		});
+		//Retrieve the number of hardware threads.
+		const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
 
-		//Set the priority.
-		task_executor_thread.SetPriority(Thread::Priority::NORMAL);
+		//Set the number of task executors. Leave one slot open for the main thread.
+		_NumberOfTaskExecutors = number_of_hardware_threads - 1;
+
+		//Kick off all task executor threads.
+		_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-		//Set the name.
-		char buffer[32];
-		sprintf_s(buffer, "TASK EXECUTOR %u", task_executor_number++);
-
-		task_executor_thread.SetName(buffer);
+		//Keep track of the task executor number.
+		uint32 task_executor_number{ 1 };
 #endif
 
-		//Launch the thread!
-		task_executor_thread.Launch();
+		for (Thread& task_executor_thread : _TaskExecutorThreads)
+		{
+			//Set the function.
+			task_executor_thread.SetFunction([]()
+			{
+				TaskSystem::Instance->ExecuteTasks();
+			});
+
+			//Set the priority.
+			task_executor_thread.SetPriority(Thread::Priority::NORMAL);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+			//Set the name.
+			char buffer[32];
+			sprintf_s(buffer, "TASK EXECUTOR %u", task_executor_number++);
+
+			task_executor_thread.SetName(buffer);
+#endif
+
+			//Launch the thread!
+			task_executor_thread.Launch();
+		}
+
+		_IsInitialized = true;
 	}
 }
 
@@ -92,6 +97,17 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT task) NOEXCEPT
 
 		//Update the number of tasks in the queue.
 		++_TasksInQueue;
+	}
+}
+
+/*
+*	Waits for all tasks to finish.
+*/
+void TaskSystem::WaitForAllTasksToFinish() const NOEXCEPT
+{
+	while (_TasksInQueue > 0)
+	{
+		Concurrency::CurrentThread::Yield();
 	}
 }
 

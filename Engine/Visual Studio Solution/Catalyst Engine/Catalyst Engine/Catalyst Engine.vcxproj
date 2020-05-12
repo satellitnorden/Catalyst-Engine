@@ -221,6 +221,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanSwapChain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\AccelerationStructure.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Color.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\CommonModelData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\DebugRenderingSystem.h" />

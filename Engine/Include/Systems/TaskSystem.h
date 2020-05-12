@@ -50,10 +50,18 @@ public:
 	*/
 	void ExecuteTask(Task *const RESTRICT task) NOEXCEPT;
 
+	/*
+	*	Waits for all tasks to finish.
+	*/
+	void WaitForAllTasksToFinish() const NOEXCEPT;
+
 private:
 
 	//The maximum number of tasks.
 	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 1'024 };
+
+	//Denotes whether or not the task system is initialized.
+	bool _IsInitialized{ false };
 
 	//Denotes whether or not tasks should be executed.
 	bool _ExecuteTasks{ true };
