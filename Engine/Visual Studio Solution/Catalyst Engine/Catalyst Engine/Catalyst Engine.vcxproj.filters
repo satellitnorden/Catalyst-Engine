@@ -1548,8 +1548,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Color.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\General\WorldTransform.h">
-      <Filter>Math\Include\General</Filter>
+    <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h">
+      <Filter>World\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

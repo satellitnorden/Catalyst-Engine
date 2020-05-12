@@ -146,7 +146,6 @@
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h" />
     <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
-    <ClInclude Include="..\..\..\Include\Math\General\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
@@ -436,6 +435,7 @@
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h" />
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />

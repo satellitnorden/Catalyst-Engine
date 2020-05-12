@@ -49,6 +49,14 @@ public:
 	}
 
 	/*
+	*	Returns the current world grid cell.
+	*/
+	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCurrentWorldGridCell() const NOEXCEPT
+	{
+		return _CurrentWorldGridCell;
+	}
+
+	/*
 	*	Returns the environment system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EnvironmentSystem *const RESTRICT GetEnvironmentSystem() NOEXCEPT
@@ -92,6 +100,9 @@ private:
 
 	//The world grid size.
 	float32 _WorldGridSize;
+
+	//The current world grid cell.
+	Vector3<int32> _CurrentWorldGridCell{ 0, 0, 0 };
 
 	//The environment system.
 	EnvironmentSystem _EnvironmentSystem;

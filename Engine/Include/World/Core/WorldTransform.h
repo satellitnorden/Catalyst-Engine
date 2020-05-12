@@ -21,18 +21,6 @@ class WorldTransform final
 
 public:
 
-	//The cell.
-	Vector3<int32> _Cell;
-
-	//The position.
-	Vector3<float32> _Position;
-
-	//The rotation.
-	Vector3<float32> _Rotation;
-
-	//The scale.
-	float32 _Scale;
-
 	/*
 	*	Default constructor.
 	*/
@@ -62,6 +50,65 @@ public:
 		const Vector3<int32> delta{ _Cell - cell };
 
 		return Matrix4x4(_Position + Vector3<float32>(static_cast<float32>(delta._X), static_cast<float32>(delta._Y), static_cast<float32>(delta._Z)) * WorldSystem::Instance->GetWorldGridSize(), _Rotation, Vector3<float32>(_Scale));
+	}
+
+private:
+
+	//The cell.
+	Vector3<int32> _Cell;
+
+	//The position.
+	Vector3<float32> _Position;
+
+	//The rotation.
+	Vector3<float32> _Rotation;
+
+	//The scale.
+	float32 _Scale;
+
+	/*
+	*	Updates the cell.
+	*/
+	FORCE_INLINE void UpdateCell() NOEXCEPT
+	{
+		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
+		const float32 half_world_grid_size{ world_grid_size * 0.5f };
+
+		while (_Position._X < -half_world_grid_size)
+		{
+			_Position._X += world_grid_size;
+			--_Cell._X;
+		}
+
+		while (_Position._X > half_world_grid_size)
+		{
+			_Position._X -= world_grid_size;
+			++_Cell._X;
+		}
+
+		while (_Position._Y < -half_world_grid_size)
+		{
+			_Position._Y += world_grid_size;
+			--_Cell._Y;
+		}
+
+		while (_Position._Y > half_world_grid_size)
+		{
+			_Position._Y -= world_grid_size;
+			++_Cell._Y;
+		}
+
+		while (_Position._Z < -half_world_grid_size)
+		{
+			_Position._Z += world_grid_size;
+			--_Cell._Z;
+		}
+
+		while (_Position._Z > half_world_grid_size)
+		{
+			_Position._Z -= world_grid_size;
+			++_Cell._Z;
+		}
 	}
 
 };
