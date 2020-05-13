@@ -435,6 +435,7 @@
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\WorldPosition.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h" />
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />

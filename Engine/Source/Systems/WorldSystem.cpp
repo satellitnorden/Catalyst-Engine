@@ -24,7 +24,16 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	//Set the world grid size.
 	_WorldGridSize = configuration._WorldGridSize;
 
-	//Register the update.
+	//Register the updates.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<WorldSystem *const RESTRICT>(arguments)->PreUpdate();
+	},
+	this,
+	UpdatePhase::PRE,
+	UpdatePhase::ENTITY,
+	false);
+
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
 		static_cast<WorldSystem *const RESTRICT>(arguments)->InputUpdate();
@@ -32,6 +41,15 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	this,
 	UpdatePhase::INPUT,
 	UpdatePhase::RENDER,
+	false);
+
+	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+	{
+		static_cast<WorldSystem *const RESTRICT>(arguments)->LogicUpdate();
+	},
+	this,
+	UpdatePhase::LOGIC,
+	UpdatePhase::PHYSICS,
 	false);
 }
 
@@ -45,12 +63,12 @@ void WorldSystem::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the world system during the logic update phase.
+*	Updates the world system during the PRE update phase.
 */
-void WorldSystem::LogicUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
+void WorldSystem::PreUpdate() NOEXCEPT
 {
-	//Update all distance triggers.
-	UpdateDistanceTriggers();
+	//Cache the current world grid cell.
+	//_CurrentWorldGridCell = WorldPosition(Perceiver::Instance->GetPosition()).GetCell();
 }
 
 /*
@@ -60,6 +78,15 @@ void WorldSystem::InputUpdate() NOEXCEPT
 {
 	//Update all particle systems.
 	UpdateParticleSystems();
+}
+
+/*
+*	Updates the world system during the logic update phase.
+*/
+void WorldSystem::LogicUpdate() NOEXCEPT
+{
+	//Update all distance triggers.
+	UpdateDistanceTriggers();
 }
 
 /*

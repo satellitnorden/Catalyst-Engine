@@ -10,6 +10,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class ParticleSystemInitializationData final : public EntityInitializationData
 {
 
@@ -18,8 +21,8 @@ public:
 	//The particle system properties.
 	ParticleSystemEntity::Property _ParticleSystemProperties;
 
-	//The initial position.
-	Vector3<float32> _InitialPosition;
+	//The initial world position.
+	WorldPosition _InitialWorldPosition;
 
 	//The material index.
 	uint32 _MaterialIndex;

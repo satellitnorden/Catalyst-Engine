@@ -213,8 +213,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*/
 	UpdateIndividualPhase(UpdatePhase::LOGIC);
 
-	WorldSystem::Instance->LogicUpdate(&context);
-
 	/*
 	*	Physics update phase.
 	*/

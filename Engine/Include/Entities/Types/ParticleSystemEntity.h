@@ -6,6 +6,9 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class ParticleSystemEntity : public Entity
 {
 
@@ -51,9 +54,14 @@ public:
 	NO_DISCARD bool IsLooping() const NOEXCEPT;
 
 	/*
-	*	Sets the position.
+	*	Returns the world position.
 	*/
-	void SetPosition(const Vector3<float>& position) NOEXCEPT;
+	NO_DISCARD const WorldPosition &GetWorldPosition() const NOEXCEPT;
+
+	/*
+	*	Sets the world position.
+	*/
+	void SetPosition(const WorldPosition &value) NOEXCEPT;
 
 	/*
 	*	Sets the minimum velocity.

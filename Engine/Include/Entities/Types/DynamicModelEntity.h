@@ -9,6 +9,9 @@
 //Rendering.
 #include <Rendering/Native/Material.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 class DynamicModelEntity : public Entity
 {
 
@@ -42,12 +45,12 @@ public:
 	/*
 	*	Returns the world transform.
 	*/
-	RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetWorldTransform() const NOEXCEPT;
+	RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT GetWorldTransform() const NOEXCEPT;
 
 	/*
 	*	Returns the world transform. Assumes the world transform will be modified, and will notify relevant systems.
 	*/
-	RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT ModifyWorldTransform() NOEXCEPT;
+	RESTRICTED NO_DISCARD WorldTransform *const RESTRICT ModifyWorldTransform() NOEXCEPT;
 
 	/*
 	*	Returns the model space axis aligned bounding box.

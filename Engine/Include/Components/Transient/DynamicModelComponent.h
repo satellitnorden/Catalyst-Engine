@@ -11,6 +11,9 @@
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 class DynamicModelComponent final
 {
 
@@ -34,10 +37,10 @@ public:
 	ResourcePointer<ModelResource> _ModelResource;
 
 	//The previous world transform.
-	Matrix4x4 _PreviousWorldTransform;
+	WorldTransform _PreviousWorldTransform;
 
 	//The current world transform.
-	Matrix4x4 _CurrentWorldTransform;
+	WorldTransform _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;

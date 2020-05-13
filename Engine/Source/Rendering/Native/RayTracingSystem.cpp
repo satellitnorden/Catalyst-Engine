@@ -248,7 +248,7 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}

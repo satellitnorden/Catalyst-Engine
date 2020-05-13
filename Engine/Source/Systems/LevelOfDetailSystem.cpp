@@ -131,7 +131,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			}
 
 			//TODO: Shouldn't recaulcate AABB here!
-			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform, &component->_WorldSpaceAxisAlignedBoundingBox);
+			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &component->_WorldSpaceAxisAlignedBoundingBox);
 
 			//Calculate the squared distance.
 			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };

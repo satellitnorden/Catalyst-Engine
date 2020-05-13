@@ -36,11 +36,6 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
-	*	Updates the world system during the logic update phase.
-	*/
-	void LogicUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
 	*	Returns the world grid size.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetWorldGridSize() const NOEXCEPT
@@ -117,9 +112,19 @@ private:
 	float _Wetness{ 0.0f };
 
 	/*
+	*	Updates the world system during the PRE update phase.
+	*/
+	void PreUpdate() NOEXCEPT;
+
+	/*
 	*	Updates the world system during the input update phase.
 	*/
 	void InputUpdate() NOEXCEPT;
+
+	/*
+	*	Updates the world system during the logic update phase.
+	*/
+	void LogicUpdate() NOEXCEPT;
 
 	/*
 	*	Updates all particle systems.

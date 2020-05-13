@@ -41,7 +41,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	//Initialize the component.
 	component._ParticleSystemProperties = particle_system_initialization_data->_ParticleSystemProperties;
-	component._Position = particle_system_initialization_data->_InitialPosition;
+	component._WorldPosition = particle_system_initialization_data->_InitialWorldPosition;
 	component._MinimumPosition = particle_system_initialization_data->_MinimumPosition;
 	component._MaximumPosition = particle_system_initialization_data->_MaximumPosition;
 	component._MinimumVelocity = particle_system_initialization_data->_MinimumVelocity;
@@ -126,11 +126,19 @@ NO_DISCARD bool ParticleSystemEntity::IsLooping() const NOEXCEPT
 }
 
 /*
-*	Sets the position.
+*	Returns the world position.
 */
-void ParticleSystemEntity::SetPosition(const Vector3<float>& position) NOEXCEPT
+NO_DISCARD const WorldPosition &ParticleSystemEntity::GetWorldPosition() const NOEXCEPT
 {
-	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Position = position;
+	return ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._WorldPosition;
+}
+
+/*
+*	Sets the world position.
+*/
+void ParticleSystemEntity::SetPosition(const WorldPosition &value) NOEXCEPT
+{
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._WorldPosition = value;
 }
 
 /*

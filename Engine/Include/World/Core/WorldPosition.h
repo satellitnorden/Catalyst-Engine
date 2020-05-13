@@ -4,13 +4,12 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/General/Matrix.h>
 #include <Math/General/Vector.h>
 
 //Systems.
 #include <Systems/WorldSystem.h>
 
-class WorldTransform final
+class WorldPosition final
 {
 
 public:
@@ -18,12 +17,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE explicit WorldTransform() NOEXCEPT
+	FORCE_INLINE explicit WorldPosition() NOEXCEPT
 		:
 		_Cell(0, 0, 0),
-		_LocalPosition(0.0f, 0.0f, 0.0f),
-		_Rotation(0.0f, 0.0f, 0.0f),
-		_Scale(1.0f)
+		_LocalPosition(0.0f, 0.0f, 0.0f)
 	{
 
 	}
@@ -31,31 +28,23 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
-											const Vector3<float32> &initial_local_position,
-											const Vector3<float32> &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+	FORCE_INLINE explicit WorldPosition(	const Vector3<int32> &initial_cell,
+								const Vector3<float32> &initial_local_position) NOEXCEPT
 		:
 		_Cell(initial_cell),
-		_LocalPosition(initial_local_position),
-		_Rotation(initial_rotation),
-		_Scale(initial_scale)
+		_LocalPosition(initial_local_position)
 	{
 		//Update the cell.
 		UpdateCell();
 	}
 
 	/*
-	*	Constructor taking the local position, rotation and scale.
+	*	Constructor taking the local position.
 	*/
-	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
-											const Vector3<float32> &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+	FORCE_INLINE explicit WorldPosition(	const Vector3<float32> &initial_local_position) NOEXCEPT
 		:
 		_Cell(0, 0, 0),
-		_LocalPosition(initial_local_position),
-		_Rotation(initial_rotation),
-		_Scale(initial_scale)
+		_LocalPosition(initial_local_position)
 	{
 		//Update the cell.
 		UpdateCell();
@@ -139,60 +128,6 @@ public:
 		UpdateCell();
 	}
 
-	/*
-	*	Returns the rotation.
-	*/
-	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetRotation() const NOEXCEPT
-	{
-		return _Rotation;
-	}
-
-	/*
-	*	Sets the rotation.
-	*/
-	FORCE_INLINE void SetRotation(const Vector3<float32> &value) NOEXCEPT
-	{
-		_Rotation = value;
-	}
-
-	/*
-	*	Returns the scale.
-	*/
-	FORCE_INLINE NO_DISCARD float32 GetScale() const NOEXCEPT
-	{
-		return _Scale;
-	}
-
-	/*
-	*	Sets the scale.
-	*/
-	FORCE_INLINE void SetScale(const float32 value) NOEXCEPT
-	{
-		_Scale = value;
-	}
-
-	/*
-	*	Converts this world transform into an absolute Matrix4x4.
-	*/
-	FORCE_INLINE NO_DISCARD Matrix4x4 ToAbsoluteMatrix4x4() const NOEXCEPT
-	{
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		return Matrix4x4(_LocalPosition + Vector3<float32>(static_cast<float32>(_Cell._X), static_cast<float32>(_Cell._Y), static_cast<float32>(_Cell._Z)) * world_grid_size, _Rotation, Vector3<float32>(_Scale));
-	}
-
-	/*
-	*	Converts this world transform into a relative Matrix4x4 as seen from the given cell.
-	*/
-	FORCE_INLINE NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32> &cell) const NOEXCEPT
-	{
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		const Vector3<int32> delta{ _Cell - cell };
-
-		return Matrix4x4(_LocalPosition + Vector3<float32>(static_cast<float32>(delta._X), static_cast<float32>(delta._Y), static_cast<float32>(delta._Z)) * world_grid_size, _Rotation, Vector3<float32>(_Scale));
-	}
-
 private:
 
 	//The cell.
@@ -200,12 +135,6 @@ private:
 
 	//The local position.
 	Vector3<float32> _LocalPosition;
-
-	//The rotation.
-	Vector3<float32> _Rotation;
-
-	//The scale.
-	float32 _Scale;
 
 	/*
 	*	Updates the cell.

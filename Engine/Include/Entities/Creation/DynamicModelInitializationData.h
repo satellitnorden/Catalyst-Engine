@@ -6,9 +6,6 @@
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Physics.
 #include <Physics/ModelCollisionData.h>
 #include <Physics/ModelPhysicsSimulationData.h>
@@ -21,13 +18,16 @@
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 class DynamicModelInitializationData final : public EntityInitializationData
 {
 
 public:
 
-	//The transform.
-	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
+	//The initial world transform.
+	WorldTransform _InitialWorldTransform;
 
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;

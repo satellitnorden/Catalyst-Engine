@@ -168,7 +168,7 @@ void ModelHighlightSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Push constants.
 			ModelHighlightSceneFeaturesVertexPushConstantData vertex_data;
 
-			vertex_data._CurrentModelMatrix = component._CurrentWorldTransform;
+			vertex_data._CurrentModelMatrix = component._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(ModelHighlightSceneFeaturesVertexPushConstantData), &vertex_data);
 

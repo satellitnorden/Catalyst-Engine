@@ -199,8 +199,8 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				VertexPushConstantData vertexData;
 
-				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
-				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 

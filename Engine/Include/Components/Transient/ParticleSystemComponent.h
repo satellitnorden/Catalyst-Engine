@@ -14,6 +14,9 @@
 //Rendering.
 #include <Rendering/Native/ParticleInstanceData.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class ParticleSystemComponent final
 {
 
@@ -22,8 +25,8 @@ public:
 	//The particle system properties.
 	ParticleSystemEntity::Property _ParticleSystemProperties;
 
-	//The position.
-	Vector3<float32> _Position;
+	//The world position.
+	WorldPosition _WorldPosition;
 
 	//The minimum position.
 	Vector3<float32> _MinimumPosition;

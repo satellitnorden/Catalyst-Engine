@@ -36,9 +36,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	DynamicModelComponent& component{ ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex] };
 
 	component._ModelResource = model_initialization_data->_ModelResource;
-	component._PreviousWorldTransform = model_initialization_data->_Transform;
-	component._CurrentWorldTransform = model_initialization_data->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
+	component._PreviousWorldTransform = model_initialization_data->_InitialWorldTransform;
+	component._CurrentWorldTransform = model_initialization_data->_InitialWorldTransform;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndexCollection = model_initialization_data->_MaterialIndexCollection;
 
 	//Register the model collision data, if there is one.
@@ -69,7 +69,7 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 /*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT
+RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT
 {
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
 }
@@ -77,7 +77,7 @@ RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT DynamicModelEntity::GetWor
 /*
 *	Returns the world transform. Assumes the world transform will be modified, and will notify relevant systems.
 */
-RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DynamicModelEntity::ModifyWorldTransform() NOEXCEPT
+RESTRICTED NO_DISCARD WorldTransform *const RESTRICT DynamicModelEntity::ModifyWorldTransform() NOEXCEPT
 {
 	//Remember that the world space axis aligned bounding box needs to be updated.
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags |= DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX;
@@ -102,7 +102,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModel
 	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
 	{
 		//Update the world space axis aligned bounding box.
-		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), *GetWorldTransform(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
 	
 		//Clear the update flag.
 		CLEAR_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);
