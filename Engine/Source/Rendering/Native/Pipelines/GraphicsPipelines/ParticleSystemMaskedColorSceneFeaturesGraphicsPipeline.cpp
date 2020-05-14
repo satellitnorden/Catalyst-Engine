@@ -14,7 +14,23 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Particle system masked depth push constant data definition.
+*	Particle system masked color geometry push constant data definition.
+*/
+class ParticleSystemMaskedColorGeometryPushConstantData final
+{
+
+public:
+
+	//The position delta.
+	Vector3<float32> _PositionDelta;
+
+	//Padding.
+	Padding<4> _Padding;
+
+};
+
+/*
+*	Particle system masked color fragment push constant data definition.
 */
 class ParticleSystemMaskedColorFragmentPushConstantData final
 {
@@ -52,8 +68,9 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::GEOMETRY, 0, sizeof(ParticleSystemMaskedColorGeometryPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(ParticleSystemMaskedColorGeometryPushConstantData), sizeof(ParticleSystemMaskedColorFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -128,7 +145,8 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	SetCommandBuffer(command_buffer);
 
 	//Cache data the will be used.
-	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
+	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
+	const ParticleSystemRenderComponent *RESTRICT render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);
@@ -139,20 +157,33 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component)
+	for (uint64 i = 0; i < number_of_particle_system_components; ++i, ++component, ++render_component)
 	{
 		//Push constants.
-		ParticleSystemMaskedColorFragmentPushConstantData data;
+		{
+			ParticleSystemMaskedColorGeometryPushConstantData data;
 
-		data._MaterialIndex = component->_MaterialIndex;
+			const Vector3<int32> position_delta{ component->_OriginalWorldPosition.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell() };
+			const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
 
-		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
+			data._PositionDelta = Vector3<float32>(static_cast<float32>(position_delta._X), static_cast<float32>(position_delta._Y), static_cast<float32>(position_delta._Z)) * world_grid_size;
+
+			command_buffer->PushConstants(this, ShaderStage::GEOMETRY, 0, sizeof(ParticleSystemMaskedColorGeometryPushConstantData), &data);
+		}
+
+		{
+			ParticleSystemMaskedColorFragmentPushConstantData data;
+
+			data._MaterialIndex = render_component->_MaterialIndex;
+
+			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(ParticleSystemMaskedColorGeometryPushConstantData), sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
+		}
 
 		//Bind the transformations buffer.
-		command_buffer->BindVertexBuffer(this, 0, component->_TransformationsBuffer, &OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, render_component->_TransformationsBuffer, &OFFSET);
 
 		//Draw!
-		command_buffer->Draw(this, 1, component->_NumberOfInstances);
+		command_buffer->Draw(this, 1, render_component->_NumberOfInstances);
 	}
 
 	//End the command buffer.

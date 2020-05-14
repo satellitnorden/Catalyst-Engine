@@ -57,7 +57,7 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 {
 	//Update the perceiver matrix.
-	_PerceiverMatrix = Matrix4x4::LookAt(_Position, _Position + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_Rotation));
+	_PerceiverMatrix = Matrix4x4::LookAt(_WorldTransform.GetLocalPosition(), _WorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation()));
 
 	//Update the inverse perceiver matrix.
 	_InversePerceiverMatrix = _PerceiverMatrix;
@@ -76,23 +76,23 @@ void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
 void Perceiver::UpdateFrustumPlanes() NOEXCEPT
 {
 	//Construct the frustum planes.
-	for (uint8 i = 4; i--;) _FrustumPlanes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.
-	for (uint8 i = 4; i--;) _FrustumPlanes[1][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][0]; //Right.
-	for (uint8 i = 4; i--;) _FrustumPlanes[2][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][1]; //Bottom.
-	for (uint8 i = 4; i--;) _FrustumPlanes[3][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][1]; //Top.
-	for (uint8 i = 4; i--;) _FrustumPlanes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
-	for (uint8 i = 4; i--;) _FrustumPlanes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[1][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][0]; //Right.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[2][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][1]; //Bottom.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[3][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][1]; //Top.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
+	for (uint8 i{ 4 }; i--;) _FrustumPlanes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
 
 	//Normalize the frustum planes.
-	for (uint8 i = 0; i < 6; ++i)
+	for (uint8 i{ 0 }; i < 6; ++i)
 	{
-		const float length{ CatalystBaseMath::SquareRoot(_FrustumPlanes[i]._X * _FrustumPlanes[i]._X + _FrustumPlanes[i]._Y * _FrustumPlanes[i]._Y + _FrustumPlanes[i]._Z * _FrustumPlanes[i]._Z) };
-		const float inverseLength{ 1.0f / length };
+		const float32 length{ CatalystBaseMath::SquareRoot(_FrustumPlanes[i]._X * _FrustumPlanes[i]._X + _FrustumPlanes[i]._Y * _FrustumPlanes[i]._Y + _FrustumPlanes[i]._Z * _FrustumPlanes[i]._Z) };
+		const float32 length_reciprocal{ 1.0f / length };
 
-		_FrustumPlanes[i]._X *= inverseLength;
-		_FrustumPlanes[i]._Y *= inverseLength;
-		_FrustumPlanes[i]._Z *= inverseLength;
-		_FrustumPlanes[i]._W *= inverseLength;
+		_FrustumPlanes[i]._X *= length_reciprocal;
+		_FrustumPlanes[i]._Y *= length_reciprocal;
+		_FrustumPlanes[i]._Z *= length_reciprocal;
+		_FrustumPlanes[i]._W *= length_reciprocal;
 	}
 
 	//Reset the dirtyness of the frustum planes.

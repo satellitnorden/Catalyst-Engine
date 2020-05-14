@@ -78,7 +78,7 @@ public:
 	{
 		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - std::numeric_limits<float>::epsilon()) };
 
-		return Vector3<float>::Normalize(world_position - Perceiver::Instance->GetPosition());
+		return Vector3<float>::Normalize(world_position - Perceiver::Instance->GetWorldTransform().GetLocalPosition());
 	}
 
 	/*

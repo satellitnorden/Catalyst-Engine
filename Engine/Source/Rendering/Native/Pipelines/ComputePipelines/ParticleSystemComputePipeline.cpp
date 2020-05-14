@@ -100,7 +100,7 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 		//Push constants.
 		ParticleSystemComputePushConstantData data;
 
-		data._Position = component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+		data._Position = component->_CurrentWorldPosition.GetRelativePosition(component->_OriginalWorldPosition.GetCell());
 		data._MinimumPosition = component->_MinimumPosition;
 		data._MaximumPosition = component->_MaximumPosition;
 		data._MinimumVelocity = component->_MinimumVelocity;

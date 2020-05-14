@@ -620,20 +620,28 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
 
+	//Update the previous Perceiver world transform.
+	_PreviousPerceiverWorldTransform = _CurrentPerceiverWorldTransform;
+	_CurrentPerceiverWorldTransform = Perceiver::Instance->GetWorldTransform();
+
+	//Calculate the previous and current Perceiver matrices, as well as their inverses.
+	const Matrix4x4 previous_perceiver_matrix{ Matrix4x4::LookAt(_PreviousPerceiverWorldTransform.GetRelativePosition(_CurrentPerceiverWorldTransform.GetCell()), _PreviousPerceiverWorldTransform.GetRelativePosition(_CurrentPerceiverWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousPerceiverWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousPerceiverWorldTransform.GetRotation())) };
+	const Matrix4x4 current_perceiver_matrix{ Matrix4x4::LookAt(_CurrentPerceiverWorldTransform.GetLocalPosition(), _CurrentPerceiverWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentPerceiverWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentPerceiverWorldTransform.GetRotation())) };
+
 	//Jitter the projection matrix a bit.
 	Vector2<float> current_frame_jitter{ JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution };
 	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.
-	_DynamicUniformData._PreviousWorldToClipMatrix = _DynamicUniformData._WorldToClipMatrix;
+	_DynamicUniformData._PreviousWorldToClipMatrix = *Perceiver::Instance->GetProjectionMatrix() * previous_perceiver_matrix;
 	_DynamicUniformData._InverseWorldToPerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
 	_DynamicUniformData._InversePerceiverToClipMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
 	_DynamicUniformData._WorldToPerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
-	_DynamicUniformData._WorldToClipMatrix = *Perceiver::Instance->GetViewMatrix();
+	_DynamicUniformData._WorldToClipMatrix = *Perceiver::Instance->GetProjectionMatrix() * current_perceiver_matrix;
 
 	//Update vectors.
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
-	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetPosition();
+	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetWorldTransform().GetLocalPosition();
 
 	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;

@@ -25,8 +25,11 @@ public:
 	//The particle system properties.
 	ParticleSystemEntity::Property _ParticleSystemProperties;
 
-	//The world position.
-	WorldPosition _WorldPosition;
+	//The original world position.
+	WorldPosition _OriginalWorldPosition;
+
+	//The current world position.
+	WorldPosition _CurrentWorldPosition;
 
 	//The minimum position.
 	Vector3<float32> _MinimumPosition;

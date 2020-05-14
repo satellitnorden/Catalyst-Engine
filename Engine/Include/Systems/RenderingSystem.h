@@ -36,6 +36,9 @@
 //Resources.
 #include <Resources/Core/Texture2DResource.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 //Forward declarations.
 class CatalystProjectRenderingConfiguration;
 class Entity;
@@ -436,6 +439,12 @@ private:
 
 	//The Hammersley hemisphere samples uniform buffer.
 	BufferHandle _HammersleyHemisphereSamplesUniformBuffer;
+
+	//The previous Perceiver world transform.
+	WorldTransform _PreviousPerceiverWorldTransform;
+
+	//The current Perceiver world transform
+	WorldTransform _CurrentPerceiverWorldTransform;
 
 	/*
 	*	Pre-initializes the rendering system.

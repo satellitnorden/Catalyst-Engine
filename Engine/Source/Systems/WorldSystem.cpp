@@ -27,15 +27,6 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	//Register the updates.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
-		static_cast<WorldSystem *const RESTRICT>(arguments)->PreUpdate();
-	},
-	this,
-	UpdatePhase::PRE,
-	UpdatePhase::ENTITY,
-	false);
-
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
 		static_cast<WorldSystem *const RESTRICT>(arguments)->InputUpdate();
 	},
 	this,
@@ -63,12 +54,12 @@ void WorldSystem::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the world system during the PRE update phase.
+*	Returns the current world grid cell.
 */
-void WorldSystem::PreUpdate() NOEXCEPT
+NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NOEXCEPT
 {
-	//Cache the current world grid cell.
-	//_CurrentWorldGridCell = WorldPosition(Perceiver::Instance->GetPosition()).GetCell();
+	//This should probably be cached somehow, but let's just ask the Perceiver for now. (:
+	return Perceiver::Instance->GetWorldTransform().GetCell();
 }
 
 /*
@@ -139,7 +130,7 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 void WorldSystem::UpdateDistanceTriggers() NOEXCEPT
 {
 	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Update all distance triggers.
 	const uint64 number_of_distance_trigger_components{ ComponentManager::GetNumberOfDistanceTriggerComponents() };

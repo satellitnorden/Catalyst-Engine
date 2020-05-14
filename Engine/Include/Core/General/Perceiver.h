@@ -15,6 +15,9 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 class Perceiver final
 {
 
@@ -32,72 +35,23 @@ public:
 	}
 
 	/*
-	*	Returns the position of the perceiver.
+	*	Returns the world transform of the perceiver.
 	*/
-	const Vector3<float>& GetPosition() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const WorldTransform &GetWorldTransform() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		return _Position;
+		return _WorldTransform;
 	}
 
 	/*
-	*	Moves the perceiver.
+	*	Sets the world transform of the perceiver.
 	*/
-	void Move(const Vector3<float> &amount) NOEXCEPT
+	FORCE_INLINE void SetWorldTransform(const WorldTransform &value) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		_Position += amount;
-
-		_PerceiverMatrixDirty = true;
-		_FrustumPlanesDirty = true;
-	}
-
-	/*
-	*	Sets the position of the perceiver.
-	*/
-	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT
-	{
-		SCOPED_LOCK(_Lock);
-
-		_Position = newPosition;
-
-		_PerceiverMatrixDirty = true;
-		_FrustumPlanesDirty = true;
-	}
-
-	/*
-	*	Returns the rotation of the perceiver.
-	*/
-	const Vector3<float>& GetRotation() const NOEXCEPT
-	{
-		SCOPED_LOCK(_Lock);
-
-		return _Rotation;
-	}
-
-	/*
-	*	Rotates the perceiver.
-	*/
-	void Rotate(const Vector3<float> &amount) NOEXCEPT
-	{
-		SCOPED_LOCK(_Lock);
-
-		_Rotation += amount;
-
-		_PerceiverMatrixDirty = true;
-		_FrustumPlanesDirty = true;
-	}
-
-	/*
-	*	Sets the rotation of the perceiver.
-	*/
-	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
-	{
-		SCOPED_LOCK(_Lock);
-
-		_Rotation = newRotation;
+		_WorldTransform = value;
 
 		_PerceiverMatrixDirty = true;
 		_FrustumPlanesDirty = true;
@@ -106,37 +60,37 @@ public:
 	/*
 	*	Returns the right vector of the perceiver.
 	*/
-	Vector3<float> GetRightVector() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetRightVector() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_Rotation);
+		return CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_WorldTransform.GetRotation());
 	}
 
 	/*
 	*	Returns the up vector of the perceiver.
 	*/
-	Vector3<float> GetUpVector() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetUpVector() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_Rotation);
+		return CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation());
 	}
 
 	/*
 	*	Returns the forward vector of the perceiver.
 	*/
-	Vector3<float> GetForwardVector() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetForwardVector() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation);
+		return CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation());
 	}
 
 	/*
 	*	Returns the field of view in radians.
 	*/
-	float GetFieldOfView() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 GetFieldOfView() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -146,11 +100,11 @@ public:
 	/*
 	*	Sets the field of view in radians.
 	*/
-	void SetFieldOfView(const float fieldOfView) NOEXCEPT
+	FORCE_INLINE void SetFieldOfView(const float32 new_field_of_view) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		_FieldOfView = fieldOfView;
+		_FieldOfView = new_field_of_view;
 
 		_ProjectionMatrixDirty = true;
 		_PerceiverMatrixDirty = true;
@@ -160,7 +114,7 @@ public:
 	/*
 	*	Returns the near plane.
 	*/
-	float GetNearPlane() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 GetNearPlane() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -168,9 +122,21 @@ public:
 	}
 
 	/*
+	*	Sets the near plane.
+	*/
+	FORCE_INLINE void SetNearPlane(const float32 new_near_plane) NOEXCEPT
+	{
+		SCOPED_LOCK(_Lock);
+
+		_NearPlane = new_near_plane;
+
+		_ProjectionMatrixDirty = true;
+	}
+
+	/*
 	*	Returns the far plane.
 	*/
-	float GetFarPlane() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 GetFarPlane() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -180,23 +146,23 @@ public:
 	/*
 	*	Sets the far plane.
 	*/
-	void SetFarPlane(const float far_plane) NOEXCEPT
+	FORCE_INLINE void SetFarPlane(const float32 new_far_plane) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		_ProjectionMatrixDirty = true;
+		_FarPlane = new_far_plane;
 
-		_FarPlane = far_plane;
+		_ProjectionMatrixDirty = true;
 	}
 
 	/*
 	*	Sets the jitter of the projection matrix.
 	*/
-	void SetProjectionMatrixJitter(const Vector2<float> &newProjectionMatrixJitter) NOEXCEPT
+	FORCE_INLINE void SetProjectionMatrixJitter(const Vector2<float32> &new_projection_matrix_jitter) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
-		_ProjectionMatrixJitter = newProjectionMatrixJitter;
+		_ProjectionMatrixJitter = new_projection_matrix_jitter;
 
 		_ProjectionMatrixDirty = true;
 	}
@@ -204,7 +170,7 @@ public:
 	/*
 	*	Returns the projection matrix.
 	*/
-	RESTRICTED const Matrix4x4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -216,7 +182,7 @@ public:
 	/*
 	*	Returns the inverse projection matrix.
 	*/
-	RESTRICTED const Matrix4x4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -228,7 +194,7 @@ public:
 	/*
 	*	Returns the perceiver matrix.
 	*/
-	RESTRICTED const Matrix4x4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -240,7 +206,7 @@ public:
 	/*
 	*	Returns the inverse perceiver matrix.
 	*/
-	RESTRICTED const Matrix4x4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -252,7 +218,7 @@ public:
 	/*
 	*	Returns the view matrix.
 	*/
-	RESTRICTED const Matrix4x4 *const RESTRICT GetViewMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -264,7 +230,7 @@ public:
 	/*
 	*	Returns the frustum planes.
 	*/
-	RESTRICTED const StaticArray<Vector4<float>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const StaticArray<Vector4<float32>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -278,23 +244,20 @@ private:
 	//The lock for the perceiver.
 	mutable Spinlock _Lock;
 
-	//The position.
-	Vector3<float> _Position{ VectorConstants::ZERO };
-
-	//The rotation.
-	Vector3<float> _Rotation{ VectorConstants::ZERO };
+	//The world transform.
+	WorldTransform _WorldTransform;
 
 	//The field of view.
-	float _FieldOfView{ CatalystBaseMath::DegreesToRadians(60.0f) };
+	float32 _FieldOfView{ CatalystBaseMath::DegreesToRadians(60.0f) };
 
 	//The near plane.
-	float _NearPlane{ 0.1f };
+	float32 _NearPlane{ 0.1f };
 
 	//The far plane.
-	float _FarPlane{ 1'024.0f };
+	float32 _FarPlane{ 1'024.0f };
 
 	//The projection matrix jitter.
-	Vector2<float> _ProjectionMatrixJitter{ 0.0f, 0.0f };
+	Vector2<float32> _ProjectionMatrixJitter{ 0.0f, 0.0f };
 
 	//Denotes whether or not the projection matrix is dirty.
 	bool _ProjectionMatrixDirty{ true };
@@ -321,7 +284,7 @@ private:
 	Matrix4x4 _ViewMatrix;
 
 	//The frustum planes.
-	StaticArray<Vector4<float>, 6> _FrustumPlanes;
+	StaticArray<Vector4<float32>, 6> _FrustumPlanes;
 
 	/*
 	*	Checks for updates.

@@ -5,7 +5,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) int material_index;
+    layout (offset = 16) int material_index;
 };
 
 //In parameters.

@@ -111,7 +111,7 @@ void EntityPlacementSystem::AsynchronousUpdate() NOEXCEPT
 void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
 {
 	//Calculate the current grid point based on the perceiver's position.
-	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(perceiverPosition, data->_GridCellSize) };
 
 	//Calculate the wanted grid points.
@@ -137,7 +137,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 		{
 			const EntityPlacementData *const RESTRICT data{ static_cast<const EntityPlacementData *const RESTRICT>(userData) };
 
-			const Vector3<float> perceiverPosition{ Perceiver::Instance->GetPosition() };
+			const Vector3<float> perceiverPosition{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 			const Vector3<float> firstPosition{ GridPoint2::GridPointToWorldPosition(*first, data->_GridCellSize) };
 			const Vector3<float> secondPosition{ GridPoint2::GridPointToWorldPosition(*second, data->_GridCellSize) };

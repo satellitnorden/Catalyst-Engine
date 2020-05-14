@@ -116,7 +116,7 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 		if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
 		{
 			data._SkyLightLuminance = component->_Color * component->_Intensity;
-			data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetPosition() - component->_Direction);
+			data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - component->_Direction);
 
 			break;
 		}

@@ -67,7 +67,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
 
 	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Iterate over all static model components and calculate their level of detail.
 	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -112,7 +112,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
 
 	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Iterate over all dynamic model components and calculate their level of detail.
 	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -123,7 +123,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
 		{
 			//If the mesh used only has one level of detail, skip it.
-			if (component->_ModelResource->_Meshes[j]._VertexBuffers.Size() == 1)
+			if (component->_ModelResource->_Meshes[j]._VertexBuffers.Size() == 1 || true)
 			{
 				component->_LevelOfDetailIndices[j] = 0;
 
@@ -131,7 +131,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			}
 
 			//TODO: Shouldn't recaulcate AABB here!
-			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &component->_WorldSpaceAxisAlignedBoundingBox);
+			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToAbsoluteMatrix4x4(), &component->_WorldSpaceAxisAlignedBoundingBox);
 
 			//Calculate the squared distance.
 			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) };
@@ -156,7 +156,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
 {
 	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Iterate over all vegetation components and calculate their level of detail.
 	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };

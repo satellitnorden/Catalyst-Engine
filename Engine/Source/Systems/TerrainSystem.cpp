@@ -369,7 +369,7 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 	}
 
 	//Get the current perceiver position.
-	const Vector3<float> current_perceiver_position{ Perceiver::Instance->GetPosition() };
+	const Vector3<float> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Calculate the perceiver grid point.
 	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_perceiver_position, _Properties._PatchSize) };

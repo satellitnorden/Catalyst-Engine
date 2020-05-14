@@ -102,7 +102,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			{
 				const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 
-				const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetPosition() + -component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, Perceiver::Instance->GetPosition() + component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, CatalystWorldCoordinateSpace::UP) };
+				const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, CatalystWorldCoordinateSpace::UP) };
 				const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, -SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, 0.0f, view_distance * 2.0f) };
 
 				world_to_light_matrix = projection_matrix * light_matrix;

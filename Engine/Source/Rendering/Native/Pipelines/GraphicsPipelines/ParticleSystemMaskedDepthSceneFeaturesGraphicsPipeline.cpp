@@ -21,6 +21,12 @@ class ParticleSystemMaskedDepthGeometryPushConstantData final
 
 public:
 
+	//The position delta.
+	Vector3<float32> _PositionDelta;
+
+	//Padding.
+	Padding<4> _Padding;
+
 	//The lifetime.
 	float32 _Lifetime;
 
@@ -156,6 +162,10 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		{
 			ParticleSystemMaskedDepthGeometryPushConstantData data;
 
+			const Vector3<int32> position_delta{ component->_OriginalWorldPosition.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell() };
+			const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
+
+			data._PositionDelta = Vector3<float32>(static_cast<float32>(position_delta._X), static_cast<float32>(position_delta._Y), static_cast<float32>(position_delta._Z)) * world_grid_size;
 			data._Lifetime = component->_Lifetime;
 			data._FadeTime = component->_FadeTime;
 

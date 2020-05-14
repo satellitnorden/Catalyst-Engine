@@ -61,7 +61,7 @@ public:
 	/*
 	*	Sets the world position.
 	*/
-	void SetPosition(const WorldPosition &value) NOEXCEPT;
+	void SetWorldPosition(const WorldPosition &value) NOEXCEPT;
 
 	/*
 	*	Sets the minimum velocity.

@@ -1,8 +1,9 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float LIFETIME;
-    layout (offset = 4) float FADE_TIME;
+    layout (offset = 0) vec3 POSITION_DELTA;
+    layout (offset = 16) float LIFETIME;
+    layout (offset = 20) float FADE_TIME;
 };
 
 //Layout specification.
@@ -21,7 +22,7 @@ layout (location = 1) out float fragment_opacity;
 void CatalystShaderMain()
 {
 	//Retrieve the world position.
-	vec3 world_position = geometry_positions[0];
+	vec3 world_position = geometry_positions[0] + POSITION_DELTA;
 
 	//Retrieve the scale.
 	vec2 scale = geometry_scales[0];
@@ -30,7 +31,8 @@ void CatalystShaderMain()
 	float time = geometry_times[0];
 
 	//Calculate the forward, up and right vectors.
-	vec3 forward_vector = normalize(PERCEIVER_WORLD_POSITION - world_position);
+	vec3 offset_perceiver_world_position = PERCEIVER_WORLD_POSITION - POSITION_DELTA;
+	vec3 forward_vector = normalize(offset_perceiver_world_position - world_position);
 	vec3 up_vector = vec3(0.0f, 1.0f, 0.0f);
 	vec3 right_vector = normalize(cross(forward_vector, up_vector));
 	

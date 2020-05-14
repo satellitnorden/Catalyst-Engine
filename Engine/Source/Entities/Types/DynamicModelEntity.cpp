@@ -38,7 +38,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._PreviousWorldTransform = model_initialization_data->_InitialWorldTransform;
 	component._CurrentWorldTransform = model_initialization_data->_InitialWorldTransform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToAbsoluteMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndexCollection = model_initialization_data->_MaterialIndexCollection;
 
 	//Register the model collision data, if there is one.
@@ -102,7 +102,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModel
 	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
 	{
 		//Update the world space axis aligned bounding box.
-		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
 	
 		//Clear the update flag.
 		CLEAR_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);

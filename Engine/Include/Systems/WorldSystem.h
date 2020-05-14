@@ -28,7 +28,7 @@ public:
 	/*
 	*	Initializes the world system.
 	*/
-	void Initialize(const CatalystProjectWorldConfiguration &configuration) NOEXCEPT;
+	void Initialize(const CatalystProjectWorldConfiguration& configuration) NOEXCEPT;
 
 	/*
 	*	Post-initializes the world system.
@@ -46,10 +46,7 @@ public:
 	/*
 	*	Returns the current world grid cell.
 	*/
-	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCurrentWorldGridCell() const NOEXCEPT
-	{
-		return _CurrentWorldGridCell;
-	}
+	NO_DISCARD const Vector3<int32>& GetCurrentWorldGridCell() const NOEXCEPT;
 
 	/*
 	*	Returns the environment system.
@@ -96,9 +93,6 @@ private:
 	//The world grid size.
 	float32 _WorldGridSize;
 
-	//The current world grid cell.
-	Vector3<int32> _CurrentWorldGridCell{ 0, 0, 0 };
-
 	//The environment system.
 	EnvironmentSystem _EnvironmentSystem;
 
@@ -110,11 +104,6 @@ private:
 
 	//The wetness.
 	float _Wetness{ 0.0f };
-
-	/*
-	*	Updates the world system during the PRE update phase.
-	*/
-	void PreUpdate() NOEXCEPT;
 
 	/*
 	*	Updates the world system during the input update phase.
