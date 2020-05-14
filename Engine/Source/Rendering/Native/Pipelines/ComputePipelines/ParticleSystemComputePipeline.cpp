@@ -100,7 +100,13 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 		//Push constants.
 		ParticleSystemComputePushConstantData data;
 
-		data._Position = component->_CurrentWorldPosition.GetRelativePosition(component->_OriginalWorldPosition.GetCell());
+		/*
+		*	The particle position's are always stored relative to the particle systems original world cell,
+		*	since the world position of the particle system itself can move to a different world cell.
+		*	This means that particle system positions will degrade in precision the further away they get from their original world grid cell,
+		*	but is a reasonable trade-off compared to the alternative, which would be that every particle would need to store their world grid cell separately.
+		*/
+		data._Position = component->_WorldPosition.GetRelativePosition(component->_OriginalWorldGridCell);
 		data._MinimumPosition = component->_MinimumPosition;
 		data._MaximumPosition = component->_MaximumPosition;
 		data._MinimumVelocity = component->_MinimumVelocity;

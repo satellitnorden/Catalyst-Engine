@@ -41,8 +41,8 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	//Initialize the component.
 	component._ParticleSystemProperties = particle_system_initialization_data->_ParticleSystemProperties;
-	component._OriginalWorldPosition = particle_system_initialization_data->_InitialWorldPosition;
-	component._CurrentWorldPosition = particle_system_initialization_data->_InitialWorldPosition;
+	component._OriginalWorldGridCell = particle_system_initialization_data->_InitialWorldPosition.GetCell();
+	component._WorldPosition = particle_system_initialization_data->_InitialWorldPosition;
 	component._MinimumPosition = particle_system_initialization_data->_MinimumPosition;
 	component._MaximumPosition = particle_system_initialization_data->_MaximumPosition;
 	component._MinimumVelocity = particle_system_initialization_data->_MinimumVelocity;
@@ -131,7 +131,7 @@ NO_DISCARD bool ParticleSystemEntity::IsLooping() const NOEXCEPT
 */
 NO_DISCARD const WorldPosition &ParticleSystemEntity::GetWorldPosition() const NOEXCEPT
 {
-	return ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._CurrentWorldPosition;
+	return ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._WorldPosition;
 }
 
 /*
@@ -139,7 +139,7 @@ NO_DISCARD const WorldPosition &ParticleSystemEntity::GetWorldPosition() const N
 */
 void ParticleSystemEntity::SetWorldPosition(const WorldPosition &value) NOEXCEPT
 {
-	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._CurrentWorldPosition = value;
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._WorldPosition = value;
 }
 
 /*
