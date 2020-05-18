@@ -365,6 +365,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\ResourceHeader.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ShaderResource.h" />

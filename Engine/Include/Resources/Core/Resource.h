@@ -5,11 +5,15 @@
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
+#include <Resources/Core/ResourceHeader.h>
 
 class Resource
 {
 
 public:
+
+	//The header.
+	ResourceHeader _Header;
 
 	//The reference count.
 	uint32 _ReferenceCount{ 0 };

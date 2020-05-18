@@ -26,7 +26,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	constexpr HashString() NOEXCEPT
+	FORCE_INLINE constexpr HashString() NOEXCEPT
 		:
 		_Hash(0)
 	{
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Constructor taking a string.
 	*/
-	constexpr HashString(const char *const RESTRICT string) NOEXCEPT
+	FORCE_INLINE constexpr HashString(const char *const RESTRICT string) NOEXCEPT
 		:
 #if defined(HASHING_ALGORITHM_CATALYST)
 		_Hash(HashAlgorithms::CatalystHash(string, StringUtilities::StringLength(string)))
@@ -52,7 +52,7 @@ public:
 	/*
 	*	Constructor taking an already hashed value.
 	*/
-	constexpr HashString(const uint64 initialHash) NOEXCEPT
+	FORCE_INLINE constexpr HashString(const uint64 initialHash) NOEXCEPT
 		:
 		_Hash(initialHash)
 	{
@@ -62,7 +62,7 @@ public:
 	/*
 	*	Equal operator overload.
 	*/
-	constexpr bool operator==(const HashString otherHashString) const NOEXCEPT
+	FORCE_INLINE constexpr bool operator==(const HashString otherHashString) const NOEXCEPT
 	{
 		return this->_Hash == otherHashString._Hash;
 	}
@@ -70,9 +70,17 @@ public:
 	/*
 	*	Less than operator overload.
 	*/
-	constexpr bool operator<(const HashString otherHashString) const NOEXCEPT
+	FORCE_INLINE constexpr bool operator<(const HashString otherHashString) const NOEXCEPT
 	{
 		return this->_Hash < otherHashString._Hash;
+	}
+
+	/*
+	*	uint64 operator overload.
+	*/
+	FORCE_INLINE constexpr operator uint64() const NOEXCEPT
+	{
+		return _Hash;
 	}
 
 private:

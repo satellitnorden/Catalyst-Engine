@@ -115,13 +115,9 @@ void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParamete
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
-	//Write the resource type to the file.
-	constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::ANIMATED_MODEL) };
-	file.Write(&resourceType, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resourceID{ parameters._ID };
-	file.Write(&resourceID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Build the model.
 	DynamicArray<AnimatedVertex> vertices;
@@ -178,9 +174,6 @@ void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParamete
 */
 void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT
 {
-	//Define constants.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::ANIMATION) };
-
 	//What should the material be called?
 	DynamicString file_name{ parameters._Output };
 	file_name += ".cr";
@@ -188,12 +181,9 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_ID{ parameters._ID };
-	file.Write(&resource_ID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::ANIMATION_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Build the animation.
 	AnimationResource animation;
@@ -259,13 +249,9 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::FONT) };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_id{ parameters._ID };
-	file.Write(&resource_id, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::FONT_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Initialize the FreeType library.
 	FT_Library free_type_library;
@@ -495,13 +481,9 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
-	//Write the resource type to the file.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::MODEL) };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_ID{ parameters._ID };
-	file.Write(&resource_ID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Determine the model space axis aligned bounding box. Assume the first level of detail will be representative in this sense for the rest level of details.
 	{
@@ -857,13 +839,9 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::SHADER) };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource identifier to the file.
-	const HashString resource_identifier{ parameters._ID };
-	file.Write(&resource_identifier, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the stage.
 	file.Write(&parameters._Stage, sizeof(ShaderStage));
@@ -947,13 +925,9 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-		//Write the resource type to the file.
-		constexpr uint8 RESOURCE_TYPE{ static_cast<uint8>(ResourceType::SOUND) };
-		file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-		//Write the resource identifier to the file.
-		const HashString resource_identifier{ parameters._ID };
-		file.Write(&resource_identifier, sizeof(HashString));
+		//Write the resource header to the file.
+		const ResourceHeader header{ ResourceConstants::SOUND_TYPE_IDENTIFIER, HashString(parameters._ID) };
+		file.Write(&header, sizeof(ResourceHeader));
 
 		//Write the sample rate to the file.
 		file.Write(&parameters._DesiredSampleRate, sizeof(float32));
@@ -982,11 +956,110 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 }
 
 /*
+*	Builds a texture cube
+*/
+void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
+{
+	//Define constants.
+	constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
+
+	//What should the material be called?
+	DynamicString file_name{ parameters._Output };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
+
+	//Load the texture.
+	int32 width, height, number_of_channels;
+	float32 *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &number_of_channels, STBI_rgb_alpha) };
+
+	//Wrap the data into a texture 2D for easier manipulation.
+	Texture2D<Vector4<float32>> hdr_texture{ static_cast<uint32>(width), static_cast<uint32>(height) };
+
+	//Copy the data into the cpu texture.
+	Memory::Copy(hdr_texture.Data(), data, width * height * 4 * sizeof(float32));
+
+	//Create the diffuse output textures.
+	StaticArray<Texture2D<Vector4<float32>>, 6> output_textures
+	{
+		Texture2D<Vector4<float32>>(parameters._Resolution),
+		Texture2D<Vector4<float32>>(parameters._Resolution),
+		Texture2D<Vector4<float32>>(parameters._Resolution),
+		Texture2D<Vector4<float32>>(parameters._Resolution),
+		Texture2D<Vector4<float32>>(parameters._Resolution),
+		Texture2D<Vector4<float32>>(parameters._Resolution)
+	};
+
+	for (uint8 i{ 0 }; i < 6; ++i)
+	{
+		for (uint32 j{ 0 }; j < parameters._Resolution; ++j)
+		{
+			for (uint32 k{ 0 }; k < parameters._Resolution; ++k)
+			{
+				Vector3<float32> position;
+
+				const float32 x_weight{ static_cast<float32>(j) / static_cast<float32>(parameters._Resolution) };
+				const float32 y_weight{ static_cast<float32>(k) / static_cast<float32>(parameters._Resolution) };
+
+				switch (i)
+				{
+				default: CRASH(); break;
+				case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+				case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+				case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+				case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+				case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+				case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+				}
+
+				position.Normalize();
+
+				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
+				texture_coordinate *= INVERSE_ATAN;
+				texture_coordinate += 0.5f;
+
+				output_textures[i].At(j, k) = hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
+			}
+		}
+	}
+
+	//Write the resolution to the file.
+	file.Write(&parameters._Resolution, sizeof(uint32));
+
+	//Write the number of mipmap levels to the file.
+	file.Write(&parameters._MipmapLevels, sizeof(uint8));
+
+	//Create the mipmap chains.
+	StaticArray<DynamicArray<Texture2D<Vector4<float32>>>, 6> mip_chains;
+
+	for (uint8 i{ 0 }; i < 6; ++i)
+	{
+		RenderingUtilities::GenerateMipChain(output_textures[i], parameters._MipmapLevels, &mip_chains[i]);
+	}
+
+	//Write the data to the file.
+	for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
+	{
+		for (uint8 j{ 0 }; j < 6; ++j)
+		{
+			file.Write(mip_chains[j][i].Data(), (parameters._Resolution >> i) * (parameters._Resolution >> i) * 4 * sizeof(float32));
+		}
+	}
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Builds a texture 2D.
 */
 void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT
 {
-#if 1
 	//Load the input textures.
 	StaticArray<Texture2D<Vector4<float32>>, 4> input_textures;
 
@@ -1181,13 +1254,9 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_2D };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_id{ parameters._ID };
-	file.Write(&resource_id, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
 	file.Write(&parameters._MipmapLevels, sizeof(uint8));
@@ -1206,235 +1275,6 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	//Close the file.
 	file.Close();
-#else
-	//What should the file be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
-
-	//Write the resource type to the file.
-	constexpr ResourceType resourceType{ ResourceType::TEXTURE_2D };
-	file.Write(&resourceType, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resourceID{ parameters._ID };
-	file.Write(&resourceID, sizeof(HashString));
-
-	//Write the number of mipmap levels to the file.
-	file.Write(&parameters._MipmapLevels, sizeof(uint8));
-
-	switch (parameters._Mode)
-	{
-		case Texture2DBuildParameters::Mode::RToRGBA:
-		{
-			//Load the texture data.
-			int32 width, height, numberOfChannels;
-			byte *RESTRICT data{ stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
-
-			const uint32 uWidth{ static_cast<uint32>(width) };
-			const uint32 uHeight{ static_cast<uint32>(height) };
-
-			//Write the width and height of the texture to the file.
-			file.Write(&uWidth, sizeof(uint32));
-			file.Write(&uHeight, sizeof(uint32));
-
-			//Apply gamma correction.
-			if (parameters._ApplyGammaCorrection)
-			{
-				for (uint64 i{ 0 }; i < uWidth * uHeight * 4; ++i)
-				{
-					byte& texel{ data[i] };
-
-					float texel_float{ static_cast<float>(texel) / 255.0f };
-					texel_float = powf(texel_float, 2.2f);
-
-					texel = static_cast<byte>(texel_float * 255.0f);
-				}
-			}
-
-			//Write the texture to the file.
-			for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
-			{
-				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
-
-				//If this is the base mipmap level, just copy the thing directly into memory.
-				if (i == 0)
-				{
-					file.Write(data, textureSize);
-				}
-
-				//Else, the image data should be resized.
-				else
-				{
-					byte *RESTRICT downsampledData{ static_cast<byte *RESTRICT>(Memory::Allocate(textureSize)) };
-					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
-
-					file.Write(downsampledData, textureSize);
-
-					Memory::Free(downsampledData);
-				}
-			}
-
-			//Free the texture data.
-			stbi_image_free(data);
-
-			break;
-		}
-
-		case Texture2DBuildParameters::Mode::RToRGBAToA:
-		{
-			//Load the files for the R and A channels.
-			int32 width, height, numberOfChannels;
-
-			byte* RESTRICT dataR{ parameters._File1 ? stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte* RESTRICT dataA{ parameters._File4 ? stbi_load(parameters._File4, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-
-			const uint32 uWidth{ static_cast<uint32>(width) };
-			const uint32 uHeight{ static_cast<uint32>(height) };
-
-			//Write the width and height of the texture to the file.
-			file.Write(&uWidth, sizeof(uint32));
-			file.Write(&uHeight, sizeof(uint32));
-
-			//Write the R and A channel data to the file.
-			constexpr byte DEFAULT_R{ 255 };
-			constexpr byte DEFAULT_A{ 255 };
-
-			for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
-			{
-				const uint64 textureSize{ (uWidth >> i)* (uHeight >> i) };
-
-				//If this is the base mipmap level, treat it differently.
-				if (i == 0)
-				{
-					for (uint64 j = 0; j < textureSize; ++j)
-					{
-						file.Write(dataR ? &dataR[j * 4 + 0] : &DEFAULT_R, sizeof(byte));
-						file.Write(dataR ? &dataR[j * 4 + 1] : &DEFAULT_R, sizeof(byte));
-						file.Write(dataR ? &dataR[j * 4 + 2] : &DEFAULT_R, sizeof(byte));
-						file.Write(dataA ? &dataA[j * 4] : &DEFAULT_A, sizeof(byte));
-					}
-				}
-
-				else
-				{
-					byte* RESTRICT downsampledDataR{ dataR ? static_cast<byte * RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-					byte* RESTRICT downsampledDataA{ dataA ? static_cast<byte * RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-
-					if (dataR) stbir_resize_uint8(dataR, width, height, 0, downsampledDataR, uWidth >> i, uHeight >> i, 0, 4);
-					if (dataA) stbir_resize_uint8(dataA, width, height, 0, downsampledDataA, uWidth >> i, uHeight >> i, 0, 4);
-
-					for (uint64 j = 0; j < textureSize; ++j)
-					{
-						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 0] : &DEFAULT_R, sizeof(byte));
-						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 1] : &DEFAULT_R, sizeof(byte));
-						file.Write(downsampledDataR ? &downsampledDataR[j * 4 + 2] : &DEFAULT_R, sizeof(byte));
-						file.Write(downsampledDataA ? &downsampledDataA[j * 4] : &DEFAULT_A, sizeof(byte));
-					}
-
-					Memory::Free(downsampledDataR);
-					Memory::Free(downsampledDataA);
-				}
-			}
-
-			//Free the R and A channel data.
-			stbi_image_free(dataR);
-			stbi_image_free(dataA);
-
-			//Close the file.
-			file.Close();
-
-			break;
-		}
-
-		case Texture2DBuildParameters::Mode::RToRGToGBToBAToA:
-		{
-			//Load the files for the R, G, B and A channels.
-			int32 width, height, numberOfChannels;
-
-			byte *RESTRICT dataR{ parameters._File1 ? stbi_load(parameters._File1, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataG{ parameters._File2 ? stbi_load(parameters._File2, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataB{ parameters._File3 ? stbi_load(parameters._File3, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-			byte *RESTRICT dataA{ parameters._File4 ? stbi_load(parameters._File4, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr };
-
-			const uint32 uWidth{ static_cast<uint32>(width) };
-			const uint32 uHeight{ static_cast<uint32>(height) };
-
-			//Write the width and height of the texture to the file.
-			file.Write(&uWidth, sizeof(uint32));
-			file.Write(&uHeight, sizeof(uint32));
-
-			//Write the R, G, B and A channel data to the file.
-			constexpr byte DEFAULT_R{ 255 };
-			constexpr byte DEFAULT_G{ 0 };
-			constexpr byte DEFAULT_B{ 255 };
-			constexpr byte DEFAULT_A{ 0 };
-
-			for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
-			{
-				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) };
-
-				//If this is the base mipmap level, treat it differently.
-				if (i == 0)
-				{
-					for (uint64 j = 0; j < textureSize; ++j)
-					{
-						file.Write(dataR ? &dataR[j * 4] : &DEFAULT_R, sizeof(byte));
-						file.Write(dataG ? &dataG[j * 4] : &DEFAULT_G, sizeof(byte));
-						file.Write(dataB ? &dataB[j * 4] : &DEFAULT_B, sizeof(byte));
-						file.Write(dataA ? &dataA[j * 4] : &DEFAULT_A, sizeof(byte));
-					}
-				}
-
-				else
-				{
-					byte *RESTRICT downsampledDataR{ dataR ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataG{ dataG ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataB{ dataB ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-					byte *RESTRICT downsampledDataA{ dataA ? static_cast<byte *RESTRICT>(Memory::Allocate(textureSize * 4)) : nullptr };
-
-					if (dataR) stbir_resize_uint8(dataR, width, height, 0, downsampledDataR, uWidth >> i, uHeight >> i, 0, 4);
-					if (dataG) stbir_resize_uint8(dataG, width, height, 0, downsampledDataG, uWidth >> i, uHeight >> i, 0, 4);
-					if (dataB) stbir_resize_uint8(dataB, width, height, 0, downsampledDataB, uWidth >> i, uHeight >> i, 0, 4);
-					if (dataA) stbir_resize_uint8(dataA, width, height, 0, downsampledDataA, uWidth >> i, uHeight >> i, 0, 4);
-
-					for (uint64 j = 0; j < textureSize; ++j)
-					{
-						file.Write(downsampledDataR ? &downsampledDataR[j * 4] : &DEFAULT_R, sizeof(byte));
-						file.Write(downsampledDataG ? &downsampledDataG[j * 4] : &DEFAULT_G, sizeof(byte));
-						file.Write(downsampledDataB ? &downsampledDataB[j * 4] : &DEFAULT_B, sizeof(byte));
-						file.Write(downsampledDataA ? &downsampledDataA[j * 4] : &DEFAULT_A, sizeof(byte));
-					}
-
-					Memory::Free(downsampledDataR);
-					Memory::Free(downsampledDataG);
-					Memory::Free(downsampledDataB);
-					Memory::Free(downsampledDataA);
-				}
-			}
-
-			//Free the R, G, B and A channel data.
-			stbi_image_free(dataR);
-			stbi_image_free(dataG);
-			stbi_image_free(dataB);
-			stbi_image_free(dataA);
-
-			//Close the file.
-			file.Close();
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Not implemented yet. ):");
-
-			break;
-		}
-	}
-#endif
 }
 
 /*
@@ -1449,13 +1289,9 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_3D };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_ID{ parameters._ID };
-	file.Write(&resource_ID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
 	constexpr uint8 MIPMAP_LEVELS{ 1 };
@@ -1472,109 +1308,5 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 
 	//Write the data.
 	file.Write(parameters._Texture->Data(), width * height * depth * sizeof(Vector4<byte>));
-}
-
-/*
-*	Builds a texture cube
-*/
-void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
-{
-	//Define constants.
-	constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
-
-	//What should the material be called?
-	DynamicString file_name{ parameters._Output };
-	file_name += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
-
-	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_CUBE };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	const HashString resource_id{ parameters._ID };
-	file.Write(&resource_id, sizeof(HashString));
-
-	//Load the texture.
-	int32 width, height, number_of_channels;
-	float32 *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &number_of_channels, STBI_rgb_alpha) };
-
-	//Wrap the data into a texture 2D for easier manipulation.
-	Texture2D<Vector4<float32>> hdr_texture{ static_cast<uint32>(width), static_cast<uint32>(height) };
-
-	//Copy the data into the cpu texture.
-	Memory::Copy(hdr_texture.Data(), data, width * height * 4 * sizeof(float32));
-
-	//Create the diffuse output textures.
-	StaticArray<Texture2D<Vector4<float32>>, 6> output_textures
-	{
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution)
-	};
-
-	for (uint8 i{ 0 }; i < 6; ++i)
-	{
-		for (uint32 j{ 0 }; j < parameters._Resolution; ++j)
-		{
-			for (uint32 k{ 0 }; k < parameters._Resolution; ++k)
-			{
-				Vector3<float32> position;
-
-				const float32 x_weight{ static_cast<float32>(j) / static_cast<float32>(parameters._Resolution) };
-				const float32 y_weight{ static_cast<float32>(k) / static_cast<float32>(parameters._Resolution) };
-
-				switch (i)
-				{
-					default: CRASH(); break;
-					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
-				}
-
-				position.Normalize();
-
-				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
-				texture_coordinate *= INVERSE_ATAN;
-				texture_coordinate += 0.5f;
-
-				output_textures[i].At(j, k) = hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
-			}
-		}
-	}
-
-	//Write the resolution to the file.
-	file.Write(&parameters._Resolution, sizeof(uint32));
-
-	//Write the number of mipmap levels to the file.
-	file.Write(&parameters._MipmapLevels, sizeof(uint8));
-
-	//Create the mipmap chains.
-	StaticArray<DynamicArray<Texture2D<Vector4<float32>>>, 6> mip_chains;
-
-	for (uint8 i{ 0 }; i < 6; ++i)
-	{
-		RenderingUtilities::GenerateMipChain(output_textures[i], parameters._MipmapLevels, &mip_chains[i]);
-	}
-
-	//Write the data to the file.
-	for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
-	{
-		for (uint8 j{ 0 }; j < 6; ++j)
-		{
-			file.Write(mip_chains[j][i].Data(), (parameters._Resolution >> i) * (parameters._Resolution >> i) * 4 * sizeof(float32));
-		}
-	}
-
-	//Close the file.
-	file.Close();
 }
 #endif

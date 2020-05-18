@@ -57,6 +57,11 @@ public:
 	void BuildSound(const SoundBuildParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Builds a texture cube
+	*/
+	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
+
+	/*
 	*	Builds a texture 2D.
 	*/
 	void BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT;
@@ -65,11 +70,6 @@ public:
 	*	Builds a texture 3D.
 	*/
 	void BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT;
-
-	/*
-	*	Builds a texture cube
-	*/
-	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
 
 };
 #endif

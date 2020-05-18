@@ -22,18 +22,14 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 	//For each resource, load it.
 	for (uint64 i{ 0 }; i < number_of_resources; ++i)
 	{
-		//Read the resource type.
-		ResourceType resource_type;
-		file.Read(&resource_type, sizeof(ResourceType));
+		//Read the resource header.
+		ResourceHeader header;
+		file.Read(&header, sizeof(ResourceHeader));
 
-		switch (resource_type)
+		switch (header._TypeIdentifier)
 		{
-			case ResourceType::ANIMATED_MODEL:
+			case ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				AnimatedModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource() };
 
@@ -45,7 +41,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateAnimatedModel(&data, new_resource);
 
 				//Add the new resource.
-				_AnimatedModelResources.Add(identifier, new_resource);
+				_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -53,12 +49,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::ANIMATION:
+			case ResourceConstants::ANIMATION_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				AnimationResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource() };
 
@@ -70,7 +62,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateAnimation(&data, new_resource);
 
 				//Add the new resource.
-				_AnimationResources.Add(identifier, new_resource);
+				_AnimationResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -78,12 +70,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::FONT:
+			case ResourceConstants::FONT_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				FontResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource() };
 
@@ -95,7 +83,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateFont(&data, new_resource);
 
 				//Add the new resource.
-				_FontResources.Add(identifier, new_resource);
+				_FontResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -103,12 +91,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::MODEL:
+			case ResourceConstants::MODEL_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				ModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource() };
 
@@ -120,7 +104,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateModel(&data, new_resource);
 
 				//Add the new resource.
-				_ModelResources.Add(identifier, new_resource);
+				_ModelResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -128,12 +112,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::SHADER:
+			case ResourceConstants::SHADER_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				ShaderResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource() };
 
@@ -145,7 +125,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateShader(&data, new_resource);
 
 				//Add the new resource.
-				_ShaderResources.Add(identifier, new_resource);
+				_ShaderResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -153,12 +133,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::SOUND:
+			case ResourceConstants::SOUND_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				SoundResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource() };
 
@@ -170,7 +146,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateSound(&data, new_resource);
 
 				//Add the new resource.
-				_SoundResources.Add(identifier, new_resource);
+				_SoundResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -178,12 +154,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::TEXTURE_CUBE:
+			case ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				TextureCubeResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource() };
 
@@ -195,7 +167,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
 
 				//Add the new resource.
-				_TextureCubeResources.Add(identifier, new_resource);
+				_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -203,12 +175,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::TEXTURE_2D:
+			case ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				Texture2DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource() };
 
@@ -220,7 +188,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateTexture2D(&data, new_resource);
 
 				//Add the new resource.
-				_Texture2DResources.Add(identifier, new_resource);
+				_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;
@@ -228,12 +196,8 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				break;
 			}
 
-			case ResourceType::TEXTURE_3D:
+			case ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER:
 			{
-				//Read the identifier.
-				HashString identifier;
-				file.Read(&identifier, sizeof(HashString));
-
 				//Allocate the new resource.
 				Texture3DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource() };
 
@@ -245,7 +209,7 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 				_ResourceCreationSystem.CreateTexture3D(&data, new_resource);
 
 				//Add the new resource.
-				_Texture3DResources.Add(identifier, new_resource);
+				_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
 
 				//Register that the resource is now loaded.
 				new_resource->_LoadState = ResourceLoadState::LOADED;

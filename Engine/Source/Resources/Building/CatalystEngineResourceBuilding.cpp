@@ -1571,7 +1571,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_DEFAULT_SKY_TEXTURE
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_SKY_TEXTURE
 	BuildDefaultSkyTexture();
 #endif
 
@@ -1826,13 +1826,9 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_2D };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	constexpr HashString RESOURCE_ID{ "Ocean_Texture2D" };
-	file.Write(&RESOURCE_ID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString("Ocean_Texture2D") };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
 	constexpr uint8 MIPMAP_LEVELS{ 1 };
@@ -1861,13 +1857,9 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
 	//Open the file to be written to.
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
-	//Write the resource type to the file.
-	constexpr ResourceType RESOURCE_TYPE{ ResourceType::TEXTURE_CUBE };
-	file.Write(&RESOURCE_TYPE, sizeof(ResourceType));
-
-	//Write the resource ID to the file.
-	constexpr HashString RESOURCE_ID{ "Default_Sky_TextureCube" };
-	file.Write(&RESOURCE_ID, sizeof(HashString));
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube") };
+	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the resolution to the file.
 	constexpr uint32 RESOLUTION{ 2 };
