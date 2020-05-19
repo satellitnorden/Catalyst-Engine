@@ -76,6 +76,14 @@ public:
 	*/
 	void ShowCursor() const NOEXCEPT;
 
+	/*
+	*	Sets the number of supported gamepads.
+	*/
+	FORCE_INLINE void SetNumberOfSupportedGamepads(const uint8 value) NOEXCEPT
+	{
+		_NumberOfSupportedGamepads = value;
+	}
+
 private:
 
 	/*
