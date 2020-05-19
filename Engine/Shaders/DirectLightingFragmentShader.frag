@@ -43,8 +43,8 @@ void CatalystShaderMain()
 	}
 
 	//Retrieve all properties.
-	Material material = GLOBAL_MATERIALS[int(scene_features_1.w * 255.0f)];
 	vec3 albedo = scene_features_1.rgb;
+	float thickness = scene_features_1.w;
 	float depth = scene_features_2.w;
 	vec3 shading_normal = scene_features_2.xyz;
 	float roughness = scene_features_3.x;
@@ -83,7 +83,7 @@ void CatalystShaderMain()
 													roughness,
 													metallic,
 													ambient_occlusion,
-													material.thickness,
+													thickness,
 													light.position_or_direction,
 													light.color * light.intensity) * shadow_factor;
 
@@ -114,7 +114,7 @@ void CatalystShaderMain()
 															roughness,
 															metallic,
 															ambient_occlusion,
-															material.thickness,
+															thickness,
 															light_direction,
 															light.color * light.intensity) * attenuation * shadow_factor;
 				}

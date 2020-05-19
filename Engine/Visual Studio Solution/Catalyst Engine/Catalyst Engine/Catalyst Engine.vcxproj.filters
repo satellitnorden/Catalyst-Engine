@@ -921,12 +921,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\LuminanceLightingGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\LuminanceLightingRenderPass.h">
-      <Filter>Rendering\Include\Native\Render Passes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1133,9 +1127,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h">
       <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelHighlightSceneFeaturesGraphicsPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h">
       <Filter>Rendering\Include\Native</Filter>
@@ -1557,6 +1548,12 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourceHeader.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\MaterialBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\MaterialResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1802,12 +1799,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\AmbientOcclusionRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\LuminanceLightingGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\LuminanceLightingRenderPass.cpp">
-      <Filter>Rendering\Source\Native\Render Passes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -1908,9 +1899,6 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelHighlightSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingApplicationGraphicsPipeline.cpp">

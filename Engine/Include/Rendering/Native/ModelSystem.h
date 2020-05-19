@@ -57,34 +57,6 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentModelDataRenderDataTable() const NOEXCEPT;
 
-	/*
-	*	Enables highlight on a model entity.
-	*/
-	void EnableHighlight(const DynamicModelEntity *const RESTRICT entity, const Vector3<float>& color, const float strength) NOEXCEPT;
-
-	/*
-	*	Sets the highlight color on a model entity.
-	*/
-	void SetHighlightColor(const DynamicModelEntity *const RESTRICT entity, const Vector3<float> &color) NOEXCEPT;
-
-	/*
-	*	Sets the highlight strength on a model entity.
-	*/
-	void SetHighlightStrength(const DynamicModelEntity *const RESTRICT entity, const float32 strength) NOEXCEPT;
-
-	/*
-	*	Disables highlight on a model entity.
-	*/
-	void DisableHighlight(const DynamicModelEntity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Returns the highlighted models.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<HighlightedModel>* const RESTRICT GetHighlightedModels() const NOEXCEPT
-	{
-		return &_HighlightedModels;
-	}
-
 private:
 
 	//The top level acceleration structure instances.
@@ -98,9 +70,6 @@ private:
 
 	//The model data render data tables.
 	DynamicArray<RenderDataTableHandle> _ModelDataRenderDataTables;
-
-	//The highlighted models.
-	DynamicArray<HighlightedModel> _HighlightedModels;
 
 	/*
 	*	Creates the render data table layout.

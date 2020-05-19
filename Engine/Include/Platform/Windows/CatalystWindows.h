@@ -24,6 +24,7 @@
 #undef GetCurrentTime
 #undef INFINITE
 #undef MemoryBarrier
+#undef OPAQUE
 #undef far
 #undef max
 #undef min

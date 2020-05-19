@@ -34,7 +34,7 @@ class FragmentPushConstantData final
 
 public:
 
-	int32 _MaterialIndex;
+	uint32 _MaterialIndex;
 
 };
 
@@ -54,11 +54,12 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetDepthBuffer(depthBuffer);
 
 	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(4);
+	SetNumberOfOutputRenderTargets(5);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

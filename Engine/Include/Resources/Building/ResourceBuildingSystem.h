@@ -8,6 +8,7 @@
 #include <Resources/Building/AnimatedModelBuildParameters.h>
 #include <Resources/Building/AnimationBuildParameters.h>
 #include <Resources/Building/FontBuildParameters.h>
+#include <Resources/Building/MaterialBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/ShaderBuildParameters.h>
