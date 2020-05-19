@@ -470,6 +470,26 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 }
 
 /*
+*	Builds a material.
+*/
+void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parameters) NOEXCEPT
+{
+	//What should the material be called?
+	DynamicString fileName{ parameters._Output };
+	fileName += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ fileName.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	file.Write(&header, sizeof(ResourceHeader));
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Builds a model.
 */
 void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) NOEXCEPT

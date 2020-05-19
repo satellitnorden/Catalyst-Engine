@@ -43,6 +43,11 @@ public:
 	void BuildFont(const FontBuildParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Builds a material.
+	*/
+	void BuildMaterial(const MaterialBuildParameters &parameters) NOEXCEPT;
+
+	/*
 	*	Builds a model.
 	*/
 	void BuildModel(const ModelBuildParameters &parameters) NOEXCEPT;

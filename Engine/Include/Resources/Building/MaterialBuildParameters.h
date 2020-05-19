@@ -7,6 +7,9 @@
 //Rendering.
 #include <Rendering/Native/Color.h>
 
+//Resources.
+#include <Resources/Core/MaterialResource.h>
+
 class MaterialBuildParameters final
 {
 
@@ -47,6 +50,9 @@ public:
 	//The resource ID.
 	const char *RESTRICT _ID{ nullptr };
 
+	//The type.
+	MaterialResource::Type _Type;
+
 	//The albedo component.
 	MaterialBuildParameterComponent _AlbedoComponent;
 
@@ -55,5 +61,8 @@ public:
 
 	//The material properties component.
 	MaterialBuildParameterComponent _MaterialPropertiesComponent;
+
+	//The emissive multiplier.
+	float32 _EmissiveMultiplier;
 
 };

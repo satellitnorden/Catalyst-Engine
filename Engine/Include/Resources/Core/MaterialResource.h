@@ -64,6 +64,14 @@ public:
 			ResourcePointer<Texture2DResource> _TextureResource;
 		};
 
+		/*
+		*	Default destructor.
+		*/
+		FORCE_INLINE ~MaterialResourceComponent() NOEXCEPT
+		{
+
+		}
+
 	};
 
 	//The type.
@@ -92,5 +100,8 @@ public:
 	*	Expects the opacity to be in the R channel.
 	*/
 	MaterialResourceComponent _OpacityComponent;
+
+	//The emissive multiplier.
+	float32 _EmissiveMultiplier;
 
 };

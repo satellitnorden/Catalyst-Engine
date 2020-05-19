@@ -28,6 +28,7 @@ namespace ResourceConstants
 	constexpr HashString ANIMATED_MODEL_TYPE_IDENTIFIER{ "AnimatedModel" };
 	constexpr HashString ANIMATION_TYPE_IDENTIFIER{ "Animation" };
 	constexpr HashString FONT_TYPE_IDENTIFIER{ "Font" };
+	constexpr HashString MATERIAL_TYPE_IDENTIFIER{ "Material" };
 	constexpr HashString MODEL_TYPE_IDENTIFIER{ "Model" };
 	constexpr HashString SHADER_TYPE_IDENTIFIER{ "Shader" };
 	constexpr HashString SOUND_TYPE_IDENTIFIER{ "Sound" };
