@@ -54,11 +54,11 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize();
 	_IndirectLightingRayTracingPipeline.Initialize();
-	_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
+	_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
+																		1,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
-	_IndirectLightingSpatialDenoisingGraphicsPipelines[1].Initialize(	2,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
+	_IndirectLightingSpatialDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_2_RENDER_TARGET_INDEX,
+																		2,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 	_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_2),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_1));

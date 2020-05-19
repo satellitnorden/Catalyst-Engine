@@ -4,40 +4,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_SAMPLES (256)
-
-vec2 UnitSquareToUnitDiskPolarCoordinates(float x, float y)
-{
-    float radius;
-    float angle;
-
-    if (abs(x) > abs(y))
-    {
-        radius = x;
-        angle = y / (x + 0.000001f) * 0.785398f;
-    }
-
-    else
-    {
-        radius = y;
-        angle = 1.5707963f - (x / (y + 0.000001f) * 0.785398f);
-    }
-
-    if (radius < 0)
-    {
-        radius *= -1.0f;
-        angle += PI;
-    }
-
-    return vec2(radius, angle);
-}
-
-vec2 UnitSquareToUnitDiskCoordinates(float x, float y)
-{
-    vec2 polar_coordinates = UnitSquareToUnitDiskPolarCoordinates(x, y);
-
-    return vec2(polar_coordinates.x * cos(polar_coordinates.y), polar_coordinates.x * sin(polar_coordinates.y));
-}
+#define MAXIMUM_NUMBER_OF_SAMPLES (128)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -55,6 +22,48 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
+/*
+*	Converts unit square coordinates to unit disk polar coordinates.
+*/
+vec2 UnitSquareToUnitDiskPolarCoordinates(float x, float y)
+{
+    float radius;
+    float angle;
+
+    if (abs(x) > abs(y))
+    {
+        radius = x;
+        angle = y / (x + 0.000001f) * 0.785398f;
+    }
+
+    else
+    {
+        radius = y;
+        angle = 1.5707963f - (x / (y + 0.000001f) * 0.785398f);
+    }
+
+    if (radius < 0.0f)
+    {
+        radius *= -1.0f;
+        angle += PI;
+    }
+
+    return vec2(radius, angle);
+}
+
+/*
+*	Converts unit square coordinates to unit disk coordinates.
+*/
+vec2 UnitSquareToUnitDiskCoordinates(float x, float y)
+{
+    vec2 polar_coordinates = UnitSquareToUnitDiskPolarCoordinates(x, y);
+
+    return vec2(polar_coordinates.x * cos(polar_coordinates.y), polar_coordinates.x * sin(polar_coordinates.y));
+}
+
+/*
+*	Main function.
+*/
 void CatalystShaderMain()
 {
 	//Calculate the current view distance.

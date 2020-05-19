@@ -18,15 +18,12 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 INVERSE_RESOLUTION;
-	layout (offset = 8) int STRIDE;
+	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX;
+	layout (offset = 12) int STRIDE;
 };
 
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D indirect_lighting_texture;
-layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -36,7 +33,7 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 scene_feature_2 = texture(scene_features_2_texture, coordinate);
+	vec4 scene_feature_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
 
 	SceneFeatures features;
 
@@ -48,7 +45,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the indirect lighting features at the current fragment.
-	vec4 current_indirect_lighting = texture(indirect_lighting_texture, fragment_texture_coordinate);
+	vec4 current_indirect_lighting = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample neighboring fragments.
@@ -61,7 +58,7 @@ void CatalystShaderMain()
 		{
 			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 
-			vec4 sample_indirect_lighting = texture(indirect_lighting_texture, sample_coordinate);
+			vec4 sample_indirect_lighting = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
 			SceneFeatures sample_features = SampleSceneFeatures(sample_coordinate);
 
 			/*
