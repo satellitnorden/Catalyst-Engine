@@ -1,4 +1,5 @@
 //Constants.
+#define MOTION_BLUR_MAXIMUM_MAGNITUDE (0.2f)
 #define MOTION_BLUR_SAMPLES (4)
 
 //Layout specification.
@@ -35,8 +36,13 @@ void CatalystShaderMain()
 	
 	else
 	{
+		//Calculate the velocity.
+		vec2 velocity = GetVelocity();
+		float velocity_magnitude = length(velocity);
+		velocity = velocity_magnitude > 0.0f ? velocity / velocity_magnitude * min(velocity_magnitude, MOTION_BLUR_MAXIMUM_MAGNITUDE) : vec2(0.0f, 0.0f);
+
 		//Calculate the blur direction.
-		vec2 blur_direction = GetVelocity() * -1.0f * MOTION_BLUR_INTENSITY;
+		vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
 
 		//Calculate the offsets.
 		float offsets[MOTION_BLUR_SAMPLES];
