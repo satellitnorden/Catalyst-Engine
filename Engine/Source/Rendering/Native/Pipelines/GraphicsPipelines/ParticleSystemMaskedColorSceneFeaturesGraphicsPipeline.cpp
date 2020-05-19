@@ -37,7 +37,7 @@ class ParticleSystemMaskedColorFragmentPushConstantData final
 
 public:
 
-	int32 _MaterialIndex;
+	uint32 _MaterialIndex;
 
 };
 
@@ -57,11 +57,12 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 	SetDepthBuffer(depth_buffer);
 
 	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(4);
+	SetNumberOfOutputRenderTargets(5);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
