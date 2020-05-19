@@ -1,5 +1,5 @@
 //Constants.
-#define MOTION_BLUR_SAMPLES (2)
+#define MOTION_BLUR_SAMPLES (4)
 
 //Layout specification.
 layout (early_fragment_tests) in;

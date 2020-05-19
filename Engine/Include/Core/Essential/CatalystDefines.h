@@ -1,8 +1,5 @@
 #pragma once
 
-//Core.
-#include <Core/Essential/CatalystPreDefines.h>
-
 /*
 *	Defines that a function's return value cannot be discarded by the caller.
 */

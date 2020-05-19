@@ -1,6 +1,29 @@
 #pragma once
 
 /*
+*	Pre-defines - should be included first.
+*/
+#include <Core/Essential/CatalystPreDefines.h>
+
+/*
+*	Compiler-specific defines.
+*/
+#if defined(CATALYST_MSVC)
+	/*
+	*	Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+	*	This is because STL libraries use exceptions, but exceptions are usually turned off in game builds.
+	*/
+	#pragma warning(disable: 4530)
+
+	/*
+	*	Improve the inlining behavior of the compiler.
+	*/
+	#pragma inline_depth(255)
+	#pragma inline_recursion(on)
+	#pragma auto_inline(on)
+#endif
+
+/*
 *	STL includes. Included here so that it is more easily trackable.
 *	The goal is to decrease the number of STL dependencies in the future.
 */
