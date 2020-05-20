@@ -82,6 +82,9 @@ public:
 
 	};
 
+	//The index.
+	uint32 _Index;
+
 	//The type.
 	Type _Type;
 

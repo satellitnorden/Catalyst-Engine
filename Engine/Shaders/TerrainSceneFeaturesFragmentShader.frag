@@ -1,6 +1,5 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 

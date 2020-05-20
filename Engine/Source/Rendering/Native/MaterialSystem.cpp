@@ -15,6 +15,12 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 		_MaterialSlots[i] = false;
 	}
 
+	//Reset all material resources.
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
+	{
+		_MaterialResources[i] = nullptr;
+	}
+
 	//Create all the global material uniform buffers.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
@@ -22,7 +28,7 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 
 	for (BufferHandle &buffer : _MaterialUniformBuffers)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS,
+		RenderingSystem::Instance->CreateBuffer(sizeof(ShaderMaterial) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS,
 												BufferUsage::UniformBuffer,
 												MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
 												&buffer);
@@ -34,30 +40,54 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 */
 void MaterialSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Update all shader materials.
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
+	{
+		if (_MaterialResources[i])
+		{
+			_ShaderMaterials[i] = ShaderMaterial(_MaterialResources[i]);
+		}
+
+		else
+		{
+			break;
+		}
+	}
+
 	//Update the current global material uniform buffer.
-	const void *const RESTRICT data_chunks[]{ _GlobalMaterials.Data() };
-	const uint64 data_sizes[]{ sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS };
+	const void *const RESTRICT data_chunks[]{ _ShaderMaterials.Data() };
+	const uint64 data_sizes[]{ sizeof(ShaderMaterial) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS };
 	BufferHandle &current_buffer{ _MaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_buffer);
 }
 
 /*
-*	Registers a global material.
+*	Registers a material.
 */
-void MaterialSystem::RegisterGlobalMaterial(const uint32 index, const Material &material) NOEXCEPT
+NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialResource *const RESTRICT resource) NOEXCEPT
 {
-	ASSERT(index < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS, "Index cannot be higher or equal to the maximum amount of global materials!");
+	//Find the first free index.
+	uint32 index{ UINT32_MAXIMUM };
 
-	Memory::Copy(&_GlobalMaterials[index], &material, sizeof(Material));
-}
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
+	{
+		if (!_MaterialSlots[i])
+		{
+			_MaterialSlots[i] = true;
+			index = i;
 
-/*
-*	Returns the global material at the given index.
-*/
-Material& MaterialSystem::GetGlobalMaterial(const uint32 index) NOEXCEPT
-{
-	return _GlobalMaterials[index];
+			break;
+		}
+	}
+
+	ASSERT(index != UINT32_MAXIMUM, "Couldn't find a free material slot, increase maximum number of materials!");
+
+	//Add the material resources.
+	_MaterialResources[index] = resource;
+
+	//Return the index.
+	return index;
 }
 
 /*

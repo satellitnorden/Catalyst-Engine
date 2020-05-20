@@ -6,9 +6,6 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 class AnimatedModelEntity : public Entity
 {
 
@@ -53,10 +50,5 @@ public:
 	*	Returns the world space axis aligned bounding box.
 	*/
 	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
-
-	/*
-	*	Returns the material.
-	*/
-	RESTRICTED NO_DISCARD Material *const RESTRICT GetMaterial() NOEXCEPT;
 
 };

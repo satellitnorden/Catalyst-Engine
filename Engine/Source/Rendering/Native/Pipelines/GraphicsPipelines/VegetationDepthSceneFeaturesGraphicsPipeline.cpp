@@ -185,7 +185,7 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not a masked material.
-		if (RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex)._Type != Material::Type::Masked)
+		if (component->_MaterialResource->_Type != MaterialResource::Type::MASKED)
 		{
 			continue;
 		}
@@ -207,7 +207,7 @@ void VegetationDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			VegetationFragmentPushConstantData fragment_data;
 
-			fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
+			fragment_data._GlobalMaterialIndex = component->_MaterialResource->_Index;
 			fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);

@@ -207,7 +207,7 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 				FragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialIndices[i];
+				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

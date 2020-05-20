@@ -1,7 +1,5 @@
 //Includes.
 #include "CatalystLightingData.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Constants.

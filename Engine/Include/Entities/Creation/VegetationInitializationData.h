@@ -9,10 +9,8 @@
 //Math.
 #include <Math/General/Matrix.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 //Resources.
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
@@ -24,8 +22,8 @@ public:
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 
-	//The global material index.
-	uint32 _GlobalMaterialIndex;
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The cutoff distance.
 	float _CutoffDistance;

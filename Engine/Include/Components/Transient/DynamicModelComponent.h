@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Resources.
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
@@ -42,8 +43,8 @@ public:
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material indices.
-	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialIndices;
+	//The material resources.
+	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
 	//The level of detail indices.
 	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;

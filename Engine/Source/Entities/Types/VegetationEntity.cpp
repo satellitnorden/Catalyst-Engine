@@ -37,7 +37,7 @@ void VegetationEntity::Initialize(EntityInitializationData *const RESTRICT data)
 	RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(vegetation_initialization_data->_Transformations, vegetation_initialization_data->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._Visibility = false;
 	component._ModelResource = vegetation_initialization_data->_ModelResource;
-	component._GlobalMaterialIndex = vegetation_initialization_data->_GlobalMaterialIndex;
+	component._MaterialResource = vegetation_initialization_data->_MaterialResource;
 	component._CutoffDistance = vegetation_initialization_data->_CutoffDistance;
 	component._ImpostorMaterialIndex = vegetation_initialization_data->_ImpostorMaterialIndex;
 	component._ImpostorDistanceSquared = vegetation_initialization_data->_ImpostorDistance * vegetation_initialization_data->_ImpostorDistance;

@@ -3,7 +3,6 @@
 #include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
 
 //The random samples.
 vec4 RANDOM_SAMPLES[64] = vec4[]

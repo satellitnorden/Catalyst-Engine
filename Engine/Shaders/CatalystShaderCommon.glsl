@@ -40,14 +40,14 @@
 */
 struct Material
 {
-	uint albedo_texture_index;
-	uint normal_map_texture_index;
-	uint material_properties_texture_index;
-	uint optional_texture_index;
-	uint type;
-	uint properties;
-	float luminance_multiplier;
-	float thickness;
+	uint _Properties;
+	uint _AlbedoThickness;
+	uint _NormalMapDisplacement;
+	uint _MaterialProperties;
+	uint _Opacity;
+	float _EmissiveMultiplier;
+    uint _Padding1;
+    uint _Padding2;
 };
 
 //Global uniform data.

@@ -1,6 +1,5 @@
 //Includes.
-#include "CatalystPackingUtilities.glsl"
-#include "CatalystRenderingUtilities.glsl"
+#include "CatalystMaterialCore.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -35,41 +34,31 @@ void CatalystShaderMain()
 	//Retrieve the material.
 	Material material = GLOBAL_MATERIALS[material_index];
 
-	//Sample the albedo.
-	vec3 albedo = RetrieveAlbedo(material, fragment_texture_coordinate);
+	//Evaluate the material.
+	vec4 albedo_thickness;
+	vec4 normal_map_displacement;
+	vec4 material_properties;
+	vec4 opacity;
 
-	//Sample the material properties.
-	vec4 material_properties = RetrieveMaterialProperties(material, fragment_texture_coordinate);
+	EvaluateMaterial(material, fragment_texture_coordinate, albedo_thickness, normal_map_displacement, material_properties, opacity);
 
-	//Calculate the shading normal.
-	vec3 shading_normal;
+	//Construct the tanget space matrix.
+	vec3 tangent = vec3(0.0f, 1.0f, 0.0f);
+	vec3 bitangent = cross(tangent, fragment_normal);
+	vec3 normal = fragment_normal;
 
-	if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
-	{
-		shading_normal = fragment_normal;
-	}
+	mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
 
-	else
-	{
-		//Construct the tanget space matrix.
-		vec3 tangent = vec3(0.0f, 1.0f, 0.0f);
-		vec3 bitangent = cross(tangent, fragment_normal);
-		vec3 normal = fragment_normal;
-
-		mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
-
-		//Sample the normal map.
-		vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragment_texture_coordinate).xyz;
-		shading_normal = normal_map * 2.0f - 1.0f;
-		shading_normal = tangent_space_matrix * shading_normal;
-		shading_normal = normalize(shading_normal);
-	}
+	//Sample the normal map.
+	vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+	shading_normal = tangent_space_matrix * shading_normal;
+	shading_normal = normalize(shading_normal);
 
   	//Calculate the velocity.
   	vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
 
     //Write the fragments.
-    sceneFeatures1 = vec4(albedo, 1.0f);
+    sceneFeatures1 = albedo_thickness;
     sceneFeatures2 = vec4(shading_normal, gl_FragCoord.z);
     sceneFeatures3 = material_properties;
     scene_features_4 = vec4(velocity, 0.0f, 0.0f);

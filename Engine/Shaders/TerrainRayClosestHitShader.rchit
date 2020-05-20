@@ -2,7 +2,6 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"

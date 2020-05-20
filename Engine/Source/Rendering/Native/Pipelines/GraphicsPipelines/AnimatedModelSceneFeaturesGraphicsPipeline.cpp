@@ -184,11 +184,11 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 		FragmentPushConstantData fragmentData;
 
-		fragmentData._AlbedoTextureIndex = component->_Material._AlbedoTextureIndex;
-		fragmentData._NormalMapTextureIndex = component->_Material._NormalMapTextureIndex;
-		fragmentData._MaterialPropertiesTextureIndex = component->_Material._MaterialPropertiesTextureIndex;
-		fragmentData._MaterialProperties = static_cast<int32>(component->_Material._Properties);
-		fragmentData._LuminanceMultiplier = component->_Material._LuminanceMultiplier;
+		fragmentData._AlbedoTextureIndex = 0;
+		fragmentData._NormalMapTextureIndex = 0;
+		fragmentData._MaterialPropertiesTextureIndex = 0;
+		fragmentData._MaterialProperties = 0;
+		fragmentData._LuminanceMultiplier = 0.0f;
 
 		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

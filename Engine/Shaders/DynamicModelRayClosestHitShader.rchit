@@ -1,8 +1,8 @@
 //Includes.
 #include "CatalystLightingData.glsl"
+#include "CatalystMaterialCore.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "CatalystTerrainUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
@@ -50,36 +50,25 @@ SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
 	//Retrieve the material.
 	Material material = GLOBAL_MATERIALS[UnpackDynamicModelMaterialindex(gl_InstanceCustomIndexNV)];
 
-	//Sample the albedo.
-	vec3 albedo = RetrieveAlbedo(material, final_vertex.texture_coordinate);
+	//Evaluate the material.
+	vec4 albedo_thickness;
+	vec4 normal_map_displacement;
+	vec4 material_properties;
+	vec4 opacity;
 
-	//Sample the material properties.
-	vec4 material_properties = RetrieveMaterialProperties(material, final_vertex.texture_coordinate);
+	EvaluateMaterial(material, final_vertex.texture_coordinate, albedo_thickness, normal_map_displacement, material_properties, opacity);
 
 	//Calculate the shading normal.
-	vec3 shading_normal;
-
-	if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
-	{
-		shading_normal = final_vertex.normal;
-	}
-
-	else
-	{
-		//Sample the normal map.
-		vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), final_vertex.texture_coordinate).xyz;
-		shading_normal = normal_map * 2.0f - 1.0f;
-		shading_normal = mat3(final_vertex.tangent, cross(final_vertex.normal, final_vertex.tangent), final_vertex.normal) * shading_normal;
-		shading_normal = normalize(shading_normal);
-	}
-
-	//Gather the surface properties.
-	SurfaceProperties surface_properties;
+	vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+	shading_normal = mat3(final_vertex.tangent, cross(final_vertex.normal, final_vertex.tangent), final_vertex.normal) * shading_normal;
+	shading_normal = normalize(shading_normal);
 
 	//Fill in the surface properties.
-	surface_properties.albedo = albedo;
+	SurfaceProperties surface_properties;
+
+	surface_properties.albedo = albedo_thickness.rgb;
 	surface_properties.shading_normal = shading_normal;
-	surface_properties.material_properties = vec4(material_properties[0], material_properties[1], material_properties[2], material_properties[3] * material.luminance_multiplier);
+	surface_properties.material_properties = vec4(material_properties[0], material_properties[1], material_properties[2], material_properties[3] * material._EmissiveMultiplier);
 
 	return surface_properties;
 }

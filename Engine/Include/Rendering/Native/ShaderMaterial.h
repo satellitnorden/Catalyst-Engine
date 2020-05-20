@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>
@@ -45,6 +46,12 @@ public:
 	*	The emissive multiplier.
 	*/
 	float32 _EmissiveMultiplier;
+
+	/*
+	*	Some padding.
+	*	Needed because each material needs to be a multiple of 16 bytes in size for the GPU.
+	*/
+	Padding<8> _Padding;
 
 	/*
 	*	Default constructor.
@@ -200,3 +207,5 @@ public:
 	}
 
 };
+
+static_assert(sizeof(ShaderMaterial) == 32, "ShaderMaterial size must be a multiple of 16!");

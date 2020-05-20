@@ -39,7 +39,7 @@ void AnimatedModelEntity::Initialize(EntityInitializationData *const RESTRICT da
 	AnimatedModelComponent& animated_model_component{ ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex] };
 
 	animated_model_component._AnimatedModelResource = animated_model_initialization_data->_AnimatedModelResource;
-	animated_model_component._Material = animated_model_initialization_data->_Material;
+	animated_model_component._MaterialResource = animated_model_initialization_data->_MaterialResource;
 	animated_model_component._CurrentAnimationResource = animated_model_initialization_data->_InitialAnimationResource;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_component._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox, animated_model_initialization_data->_Transform, &animated_model_component._WorldSpaceAxisAlignedBoundingBox);
 	animated_model_component._PreviousWorldTransform = animated_model_initialization_data->_Transform;
@@ -102,12 +102,4 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedMode
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
-}
-
-/*
-*	Returns the material.
-*/
-RESTRICTED NO_DISCARD Material *const RESTRICT AnimatedModelEntity::GetMaterial() NOEXCEPT
-{
-	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._Material;
 }

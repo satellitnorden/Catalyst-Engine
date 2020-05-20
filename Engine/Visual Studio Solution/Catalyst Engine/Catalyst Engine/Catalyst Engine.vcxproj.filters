@@ -774,9 +774,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRayTracingPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h">
-      <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>

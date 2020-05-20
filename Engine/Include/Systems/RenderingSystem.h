@@ -18,7 +18,6 @@
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
 #include <Rendering/Native/LightingSystem.h>
-#include <Rendering/Native/Material.h>
 #include <Rendering/Native/MaterialSystem.h>
 #include <Rendering/Native/ModelSystem.h>
 #include <Rendering/Native/PostProcessingSystem.h>

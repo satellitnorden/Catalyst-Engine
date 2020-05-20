@@ -1,7 +1,5 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
 
 layout (early_fragment_tests) in;
 

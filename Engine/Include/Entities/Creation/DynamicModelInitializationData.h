@@ -12,6 +12,7 @@
 #include <Physics/PhysicsCore.h>
 
 //Resources.
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
@@ -29,8 +30,8 @@ public:
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 
-	//The material indices.
-	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialIndices;
+	//The material resources.
+	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
 	//The model collision data.
 	ModelCollisionData _ModelCollisionData;

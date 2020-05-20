@@ -17,7 +17,7 @@ void CatalystShaderMain()
     Material material = GLOBAL_MATERIALS[material_index];
 
     //Discard conditionally.
-    float final_opacity = texture(sampler2D(GLOBAL_TEXTURES[material.optional_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragment_texture_coordinate).r * fragment_opacity;
+    float final_opacity = texture(sampler2D(GLOBAL_TEXTURES[material._Opacity], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragment_texture_coordinate).r * fragment_opacity;
     
     if (ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), final_opacity))
     {

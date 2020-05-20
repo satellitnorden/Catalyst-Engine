@@ -1,7 +1,6 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 

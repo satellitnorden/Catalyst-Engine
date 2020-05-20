@@ -191,7 +191,7 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not a masked material.
-		if (RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex)._Type != Material::Type::Masked)
+		if (component->_MaterialResource->_Type != MaterialResource::Type::MASKED)
 		{
 			continue;
 		}
@@ -213,7 +213,7 @@ void VegetationColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			VegetationFragmentPushConstantData fragment_data;
 
-			fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
+			fragment_data._GlobalMaterialIndex = component->_MaterialResource->_Index;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 

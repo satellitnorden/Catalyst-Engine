@@ -1,6 +1,5 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "CatalystOceanCore.glsl"
 
 //Constants.

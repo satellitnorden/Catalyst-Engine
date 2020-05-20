@@ -12,9 +12,6 @@
 //Physics.
 #include <Physics/ModelCollisionData.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 //Resources.
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>

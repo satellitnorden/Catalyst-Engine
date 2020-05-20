@@ -195,16 +195,7 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 
 		//Don't draw if it's not an opaque material.
-		const Material& material{ RenderingSystem::Instance->GetMaterialSystem()->GetGlobalMaterial(component->_GlobalMaterialIndex) };
-
-		if (material._Type != Material::Type::Opaque)
-		{
-			continue;
-		}
-
-		//Don't draw double-sided materials if not supposed to.
-		if ((_DrawDoubleSidedMaterials && !TEST_BIT(material._Properties, Material::Property::DOUBLE_SIDED))
-			|| (!_DrawDoubleSidedMaterials && TEST_BIT(material._Properties, Material::Property::DOUBLE_SIDED)))
+		if (component->_MaterialResource->_Type != MaterialResource::Type::OPAQUE)
 		{
 			continue;
 		}
@@ -226,7 +217,7 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 			VegetationFragmentPushConstantData fragment_data;
 
-			fragment_data._GlobalMaterialIndex = component->_GlobalMaterialIndex;
+			fragment_data._GlobalMaterialIndex = component->_MaterialResource->_Index;
 			fragment_data._CutoffDistanceSquared = component->_CutoffDistance * component->_CutoffDistance;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);

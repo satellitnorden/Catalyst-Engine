@@ -2,7 +2,6 @@
 #include "CatalystLightingData.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
-#include "CatalystRenderingUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Descriptor set data.

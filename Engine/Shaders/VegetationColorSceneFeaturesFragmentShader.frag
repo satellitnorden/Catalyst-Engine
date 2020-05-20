@@ -1,7 +1,5 @@
 //Includes.
-#include "CatalystPackingUtilities.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "CatalystRenderingUtilities.glsl"
+#include "CatalystMaterialCore.glsl"
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -13,10 +11,10 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
-layout (location = 3) in vec3 fragmentPreviousWorldPosition;
-layout (location = 4) in vec3 fragmentCurrentWorldPosition;
-layout (location = 5) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in mat3 fragment_tangent_space_matrix;
+layout (location = 3) in vec3 fragment_previous_world_position;
+layout (location = 4) in vec3 fragment_current_world_position;
+layout (location = 5) in vec2 fragment_texture_coordinate;
 
 //Out parameters.
 layout (location = 0) out vec4 sceneFeatures1;
@@ -27,9 +25,9 @@ layout (location = 3) out vec4 scene_features_4;
 /*
 * Returns the screen coordinate with the given view matrix and world position.
 */
-vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
+vec2 CalculateScreenCoordinate(mat4 given_matrix, vec3 world_position)
 {
-  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
+  vec4 viewSpacePosition = given_matrix * vec4(world_position, 1.0f);
   viewSpacePosition.xy /= viewSpacePosition.w;
 
   return viewSpacePosition.xy * 0.5f + 0.5f;
@@ -40,37 +38,27 @@ void CatalystShaderMain()
   //Retrieve the material.
   Material material = GLOBAL_MATERIALS[material_index];
 
-  //Sample the albedo.
-  vec3 albedo = RetrieveAlbedo(material, fragmentTextureCoordinate);
+  //Evaluate the material.
+  vec4 albedo_thickness;
+  vec4 normal_map_displacement;
+  vec4 material_properties;
+  vec4 opacity;
 
-  //Sample the material properties.
-  vec4 materialProperties = RetrieveMaterialProperties(material, fragmentTextureCoordinate);
+  EvaluateMaterial(material, fragment_texture_coordinate, albedo_thickness, normal_map_displacement, material_properties, opacity);
 
   //Calculate the shading normal.
-  vec3 shading_normal;
-
-  if (bool(material.properties & MATERIAL_PROPERTY_NO_NORMAL_MAP_TEXTURE_BIT))
-  {
-  	shading_normal = fragmentTangentSpaceMatrix[2];
-  }
-
-  else
-  {
-  	//Sample the normal map.
-  	vec3 normal_map = texture(sampler2D(GLOBAL_TEXTURES[material.normal_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), fragmentTextureCoordinate).xyz;
-  	shading_normal = normal_map * 2.0f - 1.0f;
-  	shading_normal = fragmentTangentSpaceMatrix * shading_normal;
-  	shading_normal = normalize(shading_normal);
-  }
+  vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+  shading_normal = fragment_tangent_space_matrix * shading_normal;
+  shading_normal = normalize(shading_normal);
 
   shading_normal *= gl_FrontFacing ? 1.0f : -1.0f;
   
   //Calculate the velocity.
-  vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentPreviousWorldPosition);
+  vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_current_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_previous_world_position);
 
   //Write the fragments.
-  sceneFeatures1 = vec4(albedo, 1.0f);
+  sceneFeatures1 = albedo_thickness;
   sceneFeatures2 = vec4(shading_normal, gl_FragCoord.z);
-  sceneFeatures3 = materialProperties;
+  sceneFeatures3 = material_properties;
   scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }

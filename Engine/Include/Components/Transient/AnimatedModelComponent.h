@@ -3,12 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
 class AnimatedModelComponent final
@@ -19,8 +17,8 @@ public:
 	//The animated model resource.
 	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
-	//The material.
-	Material _Material;
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;

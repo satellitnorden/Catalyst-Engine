@@ -9,12 +9,10 @@
 //Math.
 #include <Math/General/Matrix.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
 class AnimatedModelInitializationData final : public EntityInitializationData
@@ -28,8 +26,8 @@ public:
 	//The transform.
 	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
 
-	//The material.
-	Material _Material;
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The initial animation resource.
 	ResourcePointer<AnimationResource> _InitialAnimationResource;

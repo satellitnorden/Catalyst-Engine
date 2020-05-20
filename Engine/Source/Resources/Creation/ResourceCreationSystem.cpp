@@ -184,6 +184,9 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 
 	//Copy the emissive multiplier.
 	resource->_EmissiveMultiplier = data->_EmissiveMultiplier;
+
+	//Register the material.
+	resource->_Index = RenderingSystem::Instance->GetMaterialSystem()->RegisterMaterial(resource);
 }
 
 /*

@@ -6,9 +6,6 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-//Rendering.
-#include <Rendering/Native/Material.h>
-
 //World.
 #include <World/Core/WorldTransform.h>
 
