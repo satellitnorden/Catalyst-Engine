@@ -722,7 +722,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 void RenderingSystem::UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Bind the current global material uniform buffer to the global render data table.
-	BindUniformBufferToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentGlobalMaterialUnifomBuffer());
+	BindUniformBufferToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
 }
 
 /*

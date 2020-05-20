@@ -45,6 +45,22 @@ public:
 	}
 
 	/*
+	*	Returns the underlying data, const.
+	*/
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const uint32 *const RESTRICT Data() const NOEXCEPT
+	{
+		return &_Data;
+	}
+
+	/*
+	*	Returns the underlying data, non-const.
+	*/
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD uint32 *const RESTRICT Data() NOEXCEPT
+	{
+		return &_Data;
+	}
+
+	/*
 	*	Returns the color.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector4<float32> Get() const NOEXCEPT

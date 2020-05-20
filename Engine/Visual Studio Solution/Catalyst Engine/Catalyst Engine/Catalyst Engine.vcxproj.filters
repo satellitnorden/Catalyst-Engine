@@ -1557,6 +1557,9 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\MaterialData.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderMaterial.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

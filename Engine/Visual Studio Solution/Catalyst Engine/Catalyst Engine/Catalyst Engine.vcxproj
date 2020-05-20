@@ -324,6 +324,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\UserInterfaceRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystLighting.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h" />

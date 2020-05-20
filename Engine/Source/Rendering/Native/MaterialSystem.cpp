@@ -9,12 +9,18 @@
 */
 void MaterialSystem::PostInitialize() NOEXCEPT
 {
+	//Mark all material slots as free.
+	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
+	{
+		_MaterialSlots[i] = false;
+	}
+
 	//Create all the global material uniform buffers.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
-	_GlobalMaterialUniformBuffers.Upsize<false>(number_of_framebuffers);
+	_MaterialUniformBuffers.Upsize<false>(number_of_framebuffers);
 
-	for (BufferHandle &buffer : _GlobalMaterialUniformBuffers)
+	for (BufferHandle &buffer : _MaterialUniformBuffers)
 	{
 		RenderingSystem::Instance->CreateBuffer(sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS,
 												BufferUsage::UniformBuffer,
@@ -31,7 +37,7 @@ void MaterialSystem::RenderUpdate(const UpdateContext *const RESTRICT context) N
 	//Update the current global material uniform buffer.
 	const void *const RESTRICT data_chunks[]{ _GlobalMaterials.Data() };
 	const uint64 data_sizes[]{ sizeof(Material) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS };
-	BufferHandle &current_buffer{ _GlobalMaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+	BufferHandle &current_buffer{ _MaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_buffer);
 }
@@ -55,9 +61,9 @@ Material& MaterialSystem::GetGlobalMaterial(const uint32 index) NOEXCEPT
 }
 
 /*
-*	Returns the current global material uniform buffer.
+*	Returns the current material uniform buffer.
 */
-BufferHandle MaterialSystem::GetCurrentGlobalMaterialUnifomBuffer() NOEXCEPT
+BufferHandle MaterialSystem::GetCurrentMaterialUnifomBuffer() NOEXCEPT
 {
-	return _GlobalMaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+	return _MaterialUniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
 }

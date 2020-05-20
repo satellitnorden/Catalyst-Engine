@@ -9,6 +9,7 @@
 //Rendering.
 #include <Rendering/Native/Material.h>
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/ShaderMaterial.h>
 
 class MaterialSystem final
 {
@@ -36,16 +37,22 @@ public:
 	Material& GetGlobalMaterial(const uint32 index) NOEXCEPT;
 
 	/*
-	*	Returns the current global material uniform buffer.
+	*	Returns the current material uniform buffer.
 	*/
-	BufferHandle GetCurrentGlobalMaterialUnifomBuffer() NOEXCEPT;
+	BufferHandle GetCurrentMaterialUnifomBuffer() NOEXCEPT;
 
 private:
 
+	//Container for all material slots.
+	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialSlots;
+
+	//Container for all shader materials.
+	StaticArray<ShaderMaterial, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _ShaderMaterials;
+
+	//The material uniform buffers.
+	DynamicArray<BufferHandle> _MaterialUniformBuffers;
+
 	//The global materials.
 	StaticArray<Material, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _GlobalMaterials;
-
-	//The global material uniform buffers.
-	DynamicArray<BufferHandle> _GlobalMaterialUniformBuffers;
 
 };
