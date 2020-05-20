@@ -60,6 +60,33 @@ public:
 		_Data = Pack(value);
 	}
 
+	/*
+	*	Applies gamma correction to this color.
+	*/
+	FORCE_INLINE void ApplyGammaCorrection() NOEXCEPT
+	{
+		const Vector4<float32> unpacked{ Unpack(_Data) };
+		float32 first{ 0.0f };
+		float32 second{ 0.0f };
+		Vector4<float32> corrected;
+
+		first = unpacked._X * unpacked._X;
+		second = first * first;
+		corrected._X = first * 0.8f + second * 0.2f;
+
+		first = unpacked._Y * unpacked._Y;
+		second = first * first;
+		corrected._Y = first * 0.8f + second * 0.2f;
+
+		first = unpacked._Z * unpacked._Z;
+		second = first * first;
+		corrected._Z = first * 0.8f + second * 0.2f;
+
+		corrected._W = unpacked._W;
+
+		_Data = Pack(corrected);
+	}
+
 private:
 
 	//The underlying data.
