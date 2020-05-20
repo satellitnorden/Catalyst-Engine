@@ -1086,29 +1086,30 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	//Load the input textures.
 	StaticArray<Texture2D<Vector4<float32>>, 4> input_textures;
 
-	ASSERT(parameters._File1, "ResourceBuildingSystem::BuildTexture2D - Needs at least 1 input texuture!");
-
-	switch (File::GetExtension(parameters._File1))
+	if (parameters._File1)
 	{
-		case File::Extension::JPG:
+		switch (File::GetExtension(parameters._File1))
 		{
-			JPGReader::Read(parameters._File1, &input_textures[0]);
+			case File::Extension::JPG:
+			{
+				JPGReader::Read(parameters._File1, &input_textures[0]);
 
-			break;
-		}
+				break;
+			}
 
-		case File::Extension::PNG:
-		{
-			PNGReader::Read(parameters._File1, &input_textures[0]);
+			case File::Extension::PNG:
+			{
+				PNGReader::Read(parameters._File1, &input_textures[0]);
 
-			break;
-		}
+				break;
+			}
 
-		default:
-		{
-			ASSERT(false, "Invalid case!");
+			default:
+			{
+				ASSERT(false, "Invalid case!");
 
-			break;
+				break;
+			}
 		}
 	}
 
@@ -1193,8 +1194,27 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 		}
 	}
 
+	//Determine the width and height. Prefer if any of the input textures can report the dimensions, otherwise use the defaults.
+	uint32 width{ 0 };
+	uint32 height{ 0 };
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		if (input_textures[i].GetWidth() > 0 && input_textures[i].GetHeight() > 0)
+		{
+			width = input_textures[i].GetWidth();
+			height = input_textures[i].GetHeight();
+		}
+	}
+	
+	if (width == 0 && height == 0)
+	{
+		width = parameters._DefaultWidth;
+		height = parameters._DefaultHeight;
+	}
+
 	//Create the composite texture. Assume that all input textures are the same size.
-	Texture2D<Vector4<float32>> composite_texture{ input_textures[0].GetWidth(), input_textures[0].GetHeight() };
+	Texture2D<Vector4<float32>> composite_texture{ width, height };
 
 	for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 	{
@@ -1205,7 +1225,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				if (input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetWidth() > 0
+				if (UNDERLYING(parameters._ChannelMappings[i]._File) <= UNDERLYING(Texture2DBuildParameters::File::FILE_4)
+					&& input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetWidth() > 0
 					&& input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetHeight() > 0)
 				{
 					texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
@@ -1213,33 +1234,23 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 				else
 				{
-					Vector4<float32> defaults{ 1.0f, 0.0f, 1.0f, 0.0f };
-					texel[i] = defaults[i];
+					texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
 				}
 			}
 
 			//Apply gamma correction, if desired.
 			if (parameters._ApplyGammaCorrection)
 			{
-				for (uint8 i{ 0 }; i < 4; ++i)
+				for (uint8 i{ 0 }; i < 3; ++i)
 				{
 					texel[i] = powf(texel[i], 2.2f);
 				}
 			}
 
-			//Apply normal map strength, if desired.
-			if (parameters._NormalMapStrength != 1.0f)
+			//Apply the transform function.
+			if (parameters._TransformFunction)
 			{
-				Vector3<float32> normal_map_direction{ texel._X * 2.0f - 1.0f, texel._Y * 2.0f - 1.0f, texel._Z * 2.0f - 1.0f };
-
-				normal_map_direction._X *= parameters._NormalMapStrength;
-				normal_map_direction._Y *= parameters._NormalMapStrength;
-
-				normal_map_direction.Normalize();
-
-				texel._X = normal_map_direction._X * 0.5f + 0.5f;
-				texel._Y = normal_map_direction._Y * 0.5f + 0.5f;
-				texel._Z = normal_map_direction._Z * 0.5f + 0.5f;
+				parameters._TransformFunction(X, Y, &texel);
 			}
 		}
 	}
