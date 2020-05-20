@@ -2,23 +2,19 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/HashString.h>
-
-//Rendering.
-#include <Rendering/Native/Color.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>
 
-class MaterialBuildParameters final
+class MaterialData final
 {
 
 public:
 
 	/*
-	*	Material build parameter component class definition.
+	*	Material data component class definition.
 	*/
-	class MaterialBuildParameterComponent final
+	class MaterialDataComponent final
 	{
 
 	public:
@@ -38,33 +34,27 @@ public:
 		/*
 		*	Default constructor.
 		*/
-		FORCE_INLINE MaterialBuildParameterComponent() NOEXCEPT
+		FORCE_INLINE MaterialDataComponent() NOEXCEPT
 		{
 
 		}
 
 	};
 
-	//The output file path.
-	const char *RESTRICT _Output{ nullptr };
-
-	//The resource ID.
-	const char *RESTRICT _ID{ nullptr };
-
 	//The type.
 	MaterialResource::Type _Type;
 
 	//The albedo/thickness component.
-	MaterialBuildParameterComponent _AlbedoThicknessComponent;
+	MaterialDataComponent _AlbedoThicknessComponent;
 
 	//The normal map/displacement component.
-	MaterialBuildParameterComponent _NormalMapDisplacementComponent;
+	MaterialDataComponent _NormalMapDisplacementComponent;
 
 	//The material properties component.
-	MaterialBuildParameterComponent _MaterialPropertiesComponent;
+	MaterialDataComponent _MaterialPropertiesComponent;
 
 	//The opacity component.
-	MaterialBuildParameterComponent _OpacityComponent;
+	MaterialDataComponent _OpacityComponent;
 
 	//The emissive multiplier.
 	float32 _EmissiveMultiplier;

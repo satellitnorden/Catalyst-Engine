@@ -12,6 +12,7 @@
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
+#include <Resources/Loading/MaterialData.h>
 #include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
@@ -41,6 +42,11 @@ public:
 	*	Given a file, load font data.
 	*/
 	void LoadFont(BinaryFile<IOMode::In> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Given a file, load material data.
+	*/
+	void LoadMaterial(BinaryFile<IOMode::In> *const RESTRICT file, MaterialData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load model data.

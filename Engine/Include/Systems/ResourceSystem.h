@@ -9,6 +9,7 @@
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
@@ -83,6 +84,11 @@ public:
 	}
 
 	/*
+	*	Returns or creates the animated model resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<AnimatedModelResource> FindOrCreateAnimatedModelResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns the animation resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT
@@ -94,6 +100,11 @@ public:
 
 		return ResourcePointer<AnimationResource>(*resource);
 	}
+
+	/*
+	*	Returns or creates the animation resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<AnimationResource> FindOrCreateAnimationResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns the font resource with the given identifier.
@@ -109,6 +120,29 @@ public:
 	}
 
 	/*
+	*	Returns or creates the font resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<FontResource> FindOrCreateFontResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns the material resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<MaterialResource> GetMaterialResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		MaterialResource *const RESTRICT *const RESTRICT resource{ _MaterialResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<MaterialResource>(*resource);
+	}
+
+	/*
+	*	Returns or creates the material resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<MaterialResource> FindOrCreateMaterialResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns the model resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<ModelResource> GetModelResource(const HashString identifier) NOEXCEPT
@@ -120,6 +154,11 @@ public:
 
 		return ResourcePointer<ModelResource>(*resource);
 	}
+
+	/*
+	*	Returns or creates the model resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<ModelResource> FindOrCreateModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns the shader resource with the given identifier.
@@ -135,6 +174,11 @@ public:
 	}
 
 	/*
+	*	Returns or creates the shader resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<ShaderResource> FindOrCreateShaderResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns the sound resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<SoundResource> GetSoundResource(const HashString identifier) NOEXCEPT
@@ -146,6 +190,29 @@ public:
 
 		return ResourcePointer<SoundResource>(*resource);
 	}
+
+	/*
+	*	Returns or creates the sound resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<SoundResource> FindOrCreateSoundResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns the texture cube resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		TextureCubeResource *const RESTRICT *const RESTRICT resource{ _TextureCubeResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<TextureCubeResource>(*resource);
+	}
+
+	/*
+	*	Returns or creates the texture cube resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<TextureCubeResource> FindOrCreateTextureCubeResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns the texture 2D resource with the given identifier.
@@ -161,6 +228,11 @@ public:
 	}
 
 	/*
+	*	Returns or creates the texture 2D resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<Texture2DResource> FindOrCreateTexture2DResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT
@@ -174,17 +246,9 @@ public:
 	}
 
 	/*
-	*	Returns the texture cube resource with the given identifier.
+	*	Returns or creates the texture 3D resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		TextureCubeResource *const RESTRICT *const RESTRICT resource{ _TextureCubeResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return ResourcePointer<TextureCubeResource>(*resource);
-	}
+	NO_DISCARD ResourcePointer<Texture3DResource> FindOrCreateTexture3DResource(const HashString identifier) NOEXCEPT;
 
 private:
 
@@ -208,6 +272,9 @@ private:
 	//Container for all font resources.
 	HashTable<HashString, FontResource *RESTRICT> _FontResources;
 
+	//Container for all material resources.
+	HashTable<HashString, MaterialResource *RESTRICT> _MaterialResources;
+
 	//Container for all model resources.
 	HashTable<HashString, ModelResource *RESTRICT> _ModelResources;
 
@@ -217,13 +284,13 @@ private:
 	//Container for all sound resources.
 	HashTable<HashString, SoundResource *RESTRICT> _SoundResources;
 
+	//Container for all texture cube resources.
+	HashTable<HashString, TextureCubeResource *RESTRICT> _TextureCubeResources;
+
 	//Container for all texture 2D resources.
 	HashTable<HashString, Texture2DResource *RESTRICT> _Texture2DResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
-
-	//Container for all texture cube resources.
-	HashTable<HashString, TextureCubeResource *RESTRICT> _TextureCubeResources;
 
 };

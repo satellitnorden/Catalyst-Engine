@@ -376,6 +376,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimationData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\FontData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Loading\MaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoadingSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h" />

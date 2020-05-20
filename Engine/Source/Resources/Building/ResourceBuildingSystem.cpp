@@ -485,6 +485,9 @@ void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parame
 	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID) };
 	file.Write(&header, sizeof(ResourceHeader));
 
+	//Write the rest of the material to the file.
+	file.Write(&parameters._Type, sizeof(MaterialBuildParameters) - sizeof(const char *const RESTRICT) - sizeof(const char *const RESTRICT));
+
 	//Close the file.
 	file.Close();
 }

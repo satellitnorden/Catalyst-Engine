@@ -118,6 +118,15 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> *const RESTRICT file
 }
 
 /*
+*	Given a file, load material data.
+*/
+void ResourceLoadingSystem::LoadMaterial(BinaryFile<IOMode::In> *const RESTRICT file, MaterialData* const RESTRICT data) NOEXCEPT
+{
+	//Just read the data. (:
+	file->Read(data, sizeof(MaterialData));
+}
+
+/*
 *	Given a file, load model data.
 */
 void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT

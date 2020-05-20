@@ -65,6 +65,14 @@ public:
 		};
 
 		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE MaterialResourceComponent() NOEXCEPT
+		{
+
+		}
+
+		/*
 		*	Default destructor.
 		*/
 		FORCE_INLINE ~MaterialResourceComponent() NOEXCEPT

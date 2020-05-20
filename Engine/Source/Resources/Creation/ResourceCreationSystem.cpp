@@ -3,6 +3,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 /*
 *	Creates an animated model.
@@ -63,6 +64,126 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData, data->_MasterTextureWidth, data->_MasterTextureHeight, 1), TextureFormat::R_UINT8), &master_texture);
 
 	resource->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(master_texture);
+}
+
+/*
+*	Creates a material.
+*/
+void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, MaterialResource* const RESTRICT resource) NOEXCEPT
+{
+	//Copy the type.
+	resource->_Type = data->_Type;
+
+	//Copy the albedo/thickness component.
+	switch (data->_AlbedoThicknessComponent._Type)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			resource->_AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			resource->_AlbedoThicknessComponent._Color = data->_AlbedoThicknessComponent._Color;
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			resource->_AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			resource->_AlbedoThicknessComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_AlbedoThicknessComponent._TextureResourceIdentifier);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Copy the normal map/displacement component.
+	switch (data->_NormalMapDisplacementComponent._Type)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			resource->_NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			resource->_NormalMapDisplacementComponent._Color = data->_NormalMapDisplacementComponent._Color;
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			resource->_NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			resource->_NormalMapDisplacementComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_NormalMapDisplacementComponent._TextureResourceIdentifier);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Copy the material properties component.
+	switch (data->_MaterialPropertiesComponent._Type)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			resource->_MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			resource->_MaterialPropertiesComponent._Color = data->_MaterialPropertiesComponent._Color;
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			resource->_MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			resource->_MaterialPropertiesComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_MaterialPropertiesComponent._TextureResourceIdentifier);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Copy the opacity component.
+	switch (data->_OpacityComponent._Type)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			resource->_OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			resource->_OpacityComponent._Color = data->_OpacityComponent._Color;
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			resource->_OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			resource->_OpacityComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_OpacityComponent._TextureResourceIdentifier);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Copy the emissive multiplier.
+	resource->_EmissiveMultiplier = data->_EmissiveMultiplier;
 }
 
 /*
