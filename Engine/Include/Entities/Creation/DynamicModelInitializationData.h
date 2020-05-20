@@ -11,9 +11,6 @@
 #include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 
-//Rendering.
-#include <Rendering/Native/MaterialIndexCollection.h>
-
 //Resources.
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -32,8 +29,8 @@ public:
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 
-	//The material index collection.
-	MaterialIndexCollection _MaterialIndexCollection;
+	//The material indices.
+	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialIndices;
 
 	//The model collision data.
 	ModelCollisionData _ModelCollisionData;

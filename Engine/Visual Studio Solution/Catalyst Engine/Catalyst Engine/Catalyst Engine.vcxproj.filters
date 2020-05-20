@@ -1383,9 +1383,6 @@
     <ClInclude Include="..\..\..\Include\Memory\FrameAllocator.h">
       <Filter>Memory\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h">
-      <Filter>Rendering\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\UserInterfaceMaterial.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>

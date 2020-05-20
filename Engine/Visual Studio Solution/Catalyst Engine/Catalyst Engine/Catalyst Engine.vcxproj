@@ -230,7 +230,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\HighlightedModel.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Material.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialIndexCollection.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Mesh.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />

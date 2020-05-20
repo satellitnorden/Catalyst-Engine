@@ -39,7 +39,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._PreviousWorldTransform = model_initialization_data->_InitialWorldTransform;
 	component._CurrentWorldTransform = model_initialization_data->_InitialWorldTransform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToAbsoluteMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
-	component._MaterialIndexCollection = model_initialization_data->_MaterialIndexCollection;
+	component._MaterialIndices = model_initialization_data->_MaterialIndices;
 
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
