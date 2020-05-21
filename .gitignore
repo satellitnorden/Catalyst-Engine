@@ -2,6 +2,10 @@ Engine/Visual Studio Solution/Catalyst Engine/.vs/*
 Engine/Visual Studio Solution/Catalyst Engine/x64/*
 Engine/Visual Studio Solution/Catalyst Engine/Catalyst Engine/x64/*
 
+Tools/Catalyst Project Duplicator/Visual Studio Solution/Catalyst Project Duplicator/.vs/*
+Tools/Catalyst Project Duplicator/Visual Studio Solution/Catalyst Project Duplicator/x64/*
+Tools/Catalyst Project Duplicator/Visual Studio Solution/Catalyst Project Duplicator/Catalyst Project Duplicator/x64/*
+
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/.vs/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/x64/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/Microbenchmarker/x64/*
