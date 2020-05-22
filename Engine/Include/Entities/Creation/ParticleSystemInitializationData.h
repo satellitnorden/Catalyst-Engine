@@ -10,6 +10,10 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Resources.
+#include <Resources/Core/MaterialResource.h>
+#include <Resources/Core/ResourcePointer.h>
+
 //World.
 #include <World/Core/WorldPosition.h>
 
@@ -24,8 +28,8 @@ public:
 	//The initial world position.
 	WorldPosition _InitialWorldPosition;
 
-	//The material index.
-	uint32 _MaterialIndex;
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The minimum position.
 	Vector3<float32> _MinimumPosition;

@@ -71,7 +71,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 	component._NumberOfParticlesToSpawn = 0;
 
 	//Initialize the render component.
-	render_component._MaterialIndex = particle_system_initialization_data->_MaterialIndex;
+	render_component._MaterialResource = particle_system_initialization_data->_MaterialResource;
 	RenderingSystem::Instance->CreateBuffer(sizeof(ParticleInstanceData) * component._NumberOfInstances,
 											BufferUsage::StorageBuffer | BufferUsage::VertexBuffer,
 											MemoryProperty::DeviceLocal,

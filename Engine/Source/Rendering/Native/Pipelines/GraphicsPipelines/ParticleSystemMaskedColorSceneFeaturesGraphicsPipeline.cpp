@@ -175,7 +175,7 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		{
 			ParticleSystemMaskedColorFragmentPushConstantData data;
 
-			data._MaterialIndex = render_component->_MaterialIndex;
+			data._MaterialIndex = render_component->_MaterialResource->_Index;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(ParticleSystemMaskedColorGeometryPushConstantData), sizeof(ParticleSystemMaskedColorFragmentPushConstantData), &data);
 		}
