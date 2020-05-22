@@ -331,6 +331,43 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 }
 
 /*
+*	Starts taking a screenshot.
+*	This will pause the game, turn off denoising for all effects and start accumulating results across frames.
+*	This can be used to, for example, take reference screenshots to tweak visual effects, or to take "prettier" screenshots of the game.
+*/
+void RenderingSystem::StartTakingScreenshot() NOEXCEPT
+{
+	//Pause the game.
+	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
+
+	//Signal to other systems that the rendering system is taking a screenshot.
+	_IsTakingScreenshot = true;
+}
+
+/*
+*	Returns if the rendering system is currently taking a screenshot.
+*/
+NO_DISCARD bool RenderingSystem::IsTakingScreenshot() NOEXCEPT
+{
+	return _IsTakingScreenshot;
+}
+
+/*
+*	Stops taking a screenshot and writes the result to the given file path.
+*/
+void RenderingSystem::StopTakingScreenshot(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Signal to other systems that the rendering system is no longertaking a screenshot.
+	_IsTakingScreenshot = false;
+
+	//Take the screenshot.
+	TakeImmediateScreenshot(file_path);
+
+	//Unpause the game.
+	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
+}
+
+/*
 *	Pre-initializes the global render data.
 */
 void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT

@@ -59,12 +59,32 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 */
 void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 {
+	//Calculate the weight override/weight override weight depending on if the rendering system is taking a screenshot.
+	float32 weight_override;
+	float32 weight_override_weight;
+
+	if (RenderingSystem::Instance->IsTakingScreenshot())
+	{
+		++_NumberOfAccumulations;
+
+		weight_override = 1.0f - (1.0f / static_cast<float32>(_NumberOfAccumulations));
+		weight_override_weight = 1.0f;
+	}
+
+	else
+	{
+		_NumberOfAccumulations = 0;
+
+		weight_override = 0.0f;
+		weight_override_weight = 0.0f;
+	}
+
 	//Execute the current buffer, don't include the rest.
 	for (uint64 i{ 0 }, size{ _TemporalAntiAliasingGraphicsPipelines.Size() }; i < size; ++i)
 	{
 		if (i == _CurrentBufferIndex)
 		{
-			_TemporalAntiAliasingGraphicsPipelines[i].Execute();
+			_TemporalAntiAliasingGraphicsPipelines[i].Execute(weight_override, weight_override_weight);
 		}
 
 		else

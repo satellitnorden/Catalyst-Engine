@@ -376,6 +376,28 @@ public:
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
 
+	/*
+	*	Takes an immedate screenshot and writes it to the given file path.
+	*/
+	void TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Starts taking a screenshot.
+	*	This will pause the game, turn off denoising for all effects and start accumulating results across frames.
+	*	This can be used to, for example, take reference screenshots to tweak visual effects, or to take "prettier" screenshots of the game.
+	*/
+	void StartTakingScreenshot() NOEXCEPT;
+
+	/*
+	*	Returns if the rendering system is currently taking a screenshot.
+	*/
+	NO_DISCARD bool IsTakingScreenshot() NOEXCEPT;
+
+	/*
+	*	Stops taking a screenshot and writes the result to the given file path.
+	*/
+	void StopTakingScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
+
 private:
 
 	//The rendering configuration.
@@ -444,6 +466,9 @@ private:
 
 	//The current Perceiver world transform
 	WorldTransform _CurrentPerceiverWorldTransform;
+
+	//Denotes if the rendering system is currently taking a screenshot.
+	bool _IsTakingScreenshot{ false };
 
 	/*
 	*	Pre-initializes the rendering system.

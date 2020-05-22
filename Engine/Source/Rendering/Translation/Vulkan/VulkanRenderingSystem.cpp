@@ -7,6 +7,7 @@
 
 //File.
 #include <File/Core/BinaryFile.h>
+#include <File/Writers/TGAWriter.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -1436,6 +1437,70 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 			break;
 		}
 	}
+}
+
+/*
+*	Takes an immedate screenshot and writes it to the given file path.
+*/
+void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//First of all, wait for all queues to finish their tasks.
+	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
+	VulkanInterface::Instance->GetGraphicsQueue()->WaitIdle();
+	VulkanInterface::Instance->GetPresentQueue()->WaitIdle();
+	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
+
+	//Cache the Vulkan render target.
+	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(GetRenderTarget(RenderTarget::SCENE)) };
+
+	//Calculate the image size.
+	VkDeviceSize image_size{ GetScaledResolution(0)._Width * GetScaledResolution(0)._Height * sizeof(Vector4<float32>) };
+
+	//Create a temporary CPU-accesible buffer and copy the data over there.
+	VkBuffer temporary_buffer;
+	VkDeviceMemory temporary_buffer_device_memory;
+
+	VulkanUtilities::CreateVulkanBuffer(image_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, temporary_buffer, temporary_buffer_device_memory);
+
+	//Copy the image to the buffer.
+	VulkanUtilities::CopyImageToBuffer(GetScaledResolution(0)._Width, GetScaledResolution(0)._Height, vulkan_render_target->GetImage(), temporary_buffer);
+
+	//Map the memory and copy it over into a Texture2D<Vector4<float32>>.
+	Texture2D<Vector4<float32>> image{ GetScaledResolution(0)._Width, GetScaledResolution(0)._Height };
+
+	void *data;
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), temporary_buffer_device_memory, 0, VK_WHOLE_SIZE, 0, &data));
+
+	Memory::Copy(image.Data(), data, image_size);
+
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), temporary_buffer_device_memory);
+
+	//Destroy the temporary buffer.
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), temporary_buffer, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), temporary_buffer_device_memory, nullptr);
+
+	//Usually the alpha channel is set to non-one values due to alpha blending, which might look funky when exporting the image, so fix that.
+	for (uint32 Y{ 0 }; Y < image.GetHeight(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < image.GetWidth(); ++X)
+		{
+			image.At(X, Y)._A = 1.0f;
+		}
+	}
+
+	//Vulkan works with a flipped Y axis, so need to flip the image.
+	Texture2D<Vector4<float32>> temporary_image{ image };
+
+	for (uint32 Y{ 0 }; Y < image.GetHeight(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < image.GetWidth(); ++X)
+		{
+			image.At(X, Y) = temporary_image.At(X, image.GetHeight() - 1 - Y);
+		}
+	}
+
+	//Write to file.
+	TGAWriter::Write(image, file_path);
 }
 
 /*

@@ -29,6 +29,9 @@ private:
 	//The current buffer index.
 	uint8 _CurrentBufferIndex{ 0 };
 
+	//The number of accumulations.
+	uint32 _NumberOfAccumulations{ 0 };
+
 	/*
 	*	Initializes this render pass.
 	*/

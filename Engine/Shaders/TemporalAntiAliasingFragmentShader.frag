@@ -9,6 +9,13 @@ layout (early_fragment_tests) in;
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float WEIGHT_OVERRIDE;
+	layout (offset = 4) float WEIGHT_OVERRIDE_WEIGHT;
+};
+
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
 layout (set = 1, binding = 1) uniform sampler2D previousFrameTexture;
@@ -40,51 +47,74 @@ vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
 
 void CatalystShaderMain()
 {
-	//Calculate the unjittered screen coordinate.
-	vec2 unjitteredScreenCoordinate = fragmentTextureCoordinate - currentFrameJitter;
-
-	//Sample the current frame texture.
-	vec4 currentFrameTextureSampler = texture(currentFrameTexture, unjitteredScreenCoordinate);
-
-	//Calculate the minimum/maximum color values in the neighborhood of the current frame.
-	vec3 minimum = currentFrameTextureSampler.rgb;
-	vec3 maximum = currentFrameTextureSampler.rgb;
-
-	for (float x = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; x <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++x)
+	if (WEIGHT_OVERRIDE_WEIGHT == 0.0f)
 	{
-		for (float y = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; y <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++y)
-		{
-			vec2 sampleCoordinate = unjitteredScreenCoordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION;
-		
-			vec3 neighbordhoodSample = texture(currentFrameTexture, sampleCoordinate).rgb;
+		//Calculate the unjittered screen coordinate.
+		vec2 unjitteredScreenCoordinate = fragmentTextureCoordinate - currentFrameJitter;
 
-			minimum = min(minimum, neighbordhoodSample);
-			maximum = max(maximum, neighbordhoodSample);
+		//Sample the current frame texture.
+		vec4 currentFrameTextureSampler = texture(currentFrameTexture, unjitteredScreenCoordinate);
+
+		//Calculate the minimum/maximum color values in the neighborhood of the current frame.
+		vec3 minimum = currentFrameTextureSampler.rgb;
+		vec3 maximum = currentFrameTextureSampler.rgb;
+
+		for (float x = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; x <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++x)
+		{
+			for (float y = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; y <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++y)
+			{
+				vec2 sampleCoordinate = unjitteredScreenCoordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION;
+			
+				vec3 neighbordhoodSample = texture(currentFrameTexture, sampleCoordinate).rgb;
+
+				minimum = min(minimum, neighbordhoodSample);
+				maximum = max(maximum, neighbordhoodSample);
+			}
 		}
+
+		//Calculate the previous screen coordinate.
+		vec2 previous_screen_coordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
+
+		//Sample the previous frame texture.
+		vec4 previousFrameTextureSampler = texture(previousFrameTexture, previous_screen_coordinate);
+
+		//Constrain the previous sample.
+		previousFrameTextureSampler.rgb = Constrain(previousFrameTextureSampler.rgb, minimum, maximum);
+
+		/*
+		*	Calculate the weight between the current frame and the history depending on certain criteria.
+		*
+		*	1. Is the sample coordinate valid?
+		*/
+		float previous_sample_weight = 1.0f;
+
+		previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
+
+		//Calculate the final weight.
+		float final_weight = TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight;
+
+		//Blend the previous and the current frame.
+		vec3 blended_frame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, final_weight);
+
+		//Write the fragments.
+		currentFrame = vec4(blended_frame, 1.0f);
+		scene = vec4(blended_frame, 1.0f);
 	}
 
-	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
+	else
+	{
+		//Sample the previous frame texture.
+		vec4 previous_frame_texture_sampler = texture(previousFrameTexture, fragmentTextureCoordinate);
 
-	//Sample the previous frame texture.
-	vec4 previousFrameTextureSampler = texture(previousFrameTexture, previous_screen_coordinate);
+		//Sample the current frame texture.
+		vec4 current_frame_texture_sampler = texture(currentFrameTexture, fragmentTextureCoordinate);
 
-	//Constrain the previous sample.
-	previousFrameTextureSampler.rgb = Constrain(previousFrameTextureSampler.rgb, minimum, maximum);
+		//Blend the previous and the current frame.
+		vec3 blended_frame = mix(current_frame_texture_sampler.rgb, previous_frame_texture_sampler.rgb, WEIGHT_OVERRIDE);
 
-	/*
-	*	Calculate the weight between the current frame and the history depending on certain criteria.
-	*
-	*	1. Is the sample coordinate valid?
-	*/
-	float previous_sample_weight = 1.0f;
-
-	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-
-	//Blend the previous and the current frame.
-	vec3 blended_frame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight);
-
-	//Write the fragments.
-	currentFrame = vec4(blended_frame, 1.0f);
-	scene = vec4(blended_frame, 1.0f);
+		//Write the fragments.
+		currentFrame = vec4(blended_frame, 1.0f);
+		scene = vec4(blended_frame, 1.0f);
+	}
+	
 }

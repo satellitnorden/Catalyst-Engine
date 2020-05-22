@@ -100,7 +100,8 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE && false)
+	if (!RenderingSystem::Instance->IsTakingScreenshot()
+		&& RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE && false)
 	{
 		for (IndirectLightingSpatialDenoisingGraphicsPipeline& pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
 		{
@@ -117,7 +118,8 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute the current buffer, don't include the rest.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
+	if (!RenderingSystem::Instance->IsTakingScreenshot()
+		&& RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		for (uint64 i{ 0 }, size{ _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{

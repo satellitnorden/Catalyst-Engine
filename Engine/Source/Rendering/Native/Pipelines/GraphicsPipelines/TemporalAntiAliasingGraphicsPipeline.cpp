@@ -12,6 +12,22 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Temporal antial aliasing fragment push constant data definition.
+*/
+class TemporalAntiAliasingFragmentPushConstantData final
+{
+
+public:
+
+	//The weight override.
+	float32 _WeightOverride;
+
+	//The weight override weight.
+	float32 _WeightOverrideWeight;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle source,
@@ -39,6 +55,10 @@ void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle 
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(TemporalAntiAliasingFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -68,7 +88,7 @@ void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle 
 /*
 *	Executes this graphics pipeline.
 */
-void TemporalAntiAliasingGraphicsPipeline::Execute() NOEXCEPT
+void TemporalAntiAliasingGraphicsPipeline::Execute(const float32 weight_override, const float32 weight_override_weight) NOEXCEPT
 {
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
@@ -83,6 +103,14 @@ void TemporalAntiAliasingGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	TemporalAntiAliasingFragmentPushConstantData data;
+
+	data._WeightOverride = weight_override;
+	data._WeightOverrideWeight = weight_override_weight;
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(TemporalAntiAliasingFragmentPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

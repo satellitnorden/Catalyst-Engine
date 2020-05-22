@@ -24,7 +24,7 @@ public:
 	/*
 	*	Executes this graphics pipeline.
 	*/
-	void Execute() NOEXCEPT;
+	void Execute(const float32 weight_override, const float32 weight_override_weight) NOEXCEPT;
 
 private:
 

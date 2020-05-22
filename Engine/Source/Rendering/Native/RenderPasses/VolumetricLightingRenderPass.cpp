@@ -100,22 +100,38 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 		_VolumetricLightingRayTracingPipeline.Execute();
 	}
 
-	for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		pipeline.Execute();
-	}
-
-	//Execute the current buffer, don't include the rest.
-	for (uint64 i{ 0 }, size{ _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-	{
-		if (i == _CurrentTemporalBufferIndex)
+		for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
 		{
-			_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].Execute();
+			pipeline.Execute();
 		}
 
-		else
+		//Execute the current buffer, don't include the rest.
+		for (uint64 i{ 0 }, size{ _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{
-			_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			if (i == _CurrentTemporalBufferIndex)
+			{
+				_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].Execute();
+			}
+
+			else
+			{
+				_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			}
+		}
+	}
+	
+	else
+	{
+		for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+
+		for (VolumetricLightingTemporalDenoisingGraphicsPipeline &pipeline : _VolumetricLightingTemporalDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
 		}
 	}
 

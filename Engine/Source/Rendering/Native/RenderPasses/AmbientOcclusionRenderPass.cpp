@@ -106,27 +106,43 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 		_AmbientOcclusionRayTracingPipeline.Execute();
 	}
 	
-	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		pipeline.Execute();
-	}
-
-	//Execute the current buffer, don't include the rest.
-	for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-	{
-		if (i == _CurrentTemporalBufferIndex)
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 		{
-			_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+			pipeline.Execute();
 		}
 
-		else
+		//Execute the current buffer, don't include the rest.
+		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{
-			_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			if (i == _CurrentTemporalBufferIndex)
+			{
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+			}
+
+			else
+			{
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			}
+		}
+
+		//Update the current buffer index.
+		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+	}
+	
+	else
+	{
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+
+		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
 		}
 	}
-
-	//Update the current buffer index.
-	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
 
