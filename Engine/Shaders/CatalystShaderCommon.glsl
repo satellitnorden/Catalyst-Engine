@@ -137,11 +137,6 @@ layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
 #define BIT(INDEX) (1 << (INDEX))
 
 /*
-*   Clears the bit of the specified bitfield.
-*/
-#define CLEAR_BIT(BIT_FIELD, BIT) (BIT_FIELD = BIT_FIELD & ~(BIT))
-
-/*
 *   Tests the bit of the specified bitfield
 */
 #define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)

@@ -4,7 +4,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_SAMPLES (1024)
+#define MAXIMUM_NUMBER_OF_SAMPLES (128)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -79,25 +79,12 @@ void CatalystShaderMain()
 	//Calculate the number of samples.
 	int number_of_samples = int(mix(1.0f, MAXIMUM_NUMBER_OF_SAMPLES, DEPTH_OF_FIELD_SIZE * depth_of_field_weight));
 
-	//The number of samples must be a multiple of two, round up.
-	if (TEST_BIT(number_of_samples, BIT(0)))
+	for (int Y = -number_of_samples; Y <= number_of_samples; ++Y)
 	{
-		++ number_of_samples;
-	}
-
-	for (uint i = 0; i < number_of_samples; i += 2)
-	{
-		//Sample the blue noise texture.
-		vec4 blue_noise = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), i);
-
-		//Perform the blur.
-		for (uint j = 0; j < 2; ++j)
+		for (int X = -number_of_samples; X <= number_of_samples; ++X)
 		{
-			//Sample the coordinate.
-			vec2 coordinate = vec2(blue_noise[j + 0], blue_noise[j + 1]) * 2.0f - 1.0f;
-
 			//Calculate the unit square coordinates.
-			vec2 unit_disk_coordinate = UnitSquareToUnitDiskCoordinates(coordinate.x, coordinate.y);
+			vec2 unit_disk_coordinate = UnitSquareToUnitDiskCoordinates(float(X) / float(number_of_samples), float(Y) / float(number_of_samples));
 
 			//Scale the unit disk coordinate depending on the depth of field weight/size.
 			unit_disk_coordinate *= depth_of_field_weight;
