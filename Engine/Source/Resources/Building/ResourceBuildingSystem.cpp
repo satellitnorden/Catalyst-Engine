@@ -606,8 +606,12 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	DynamicString compiled_file_path{ parameters._ID };
 	compiled_file_path += ".compiled";
 
+	//Determine the temporary batch file path.
+	DynamicString temporary_batch_file_path{ parameters._ID };
+	temporary_batch_file_path += ".bat";
+
 	//Remember the name of the temporary shader file path.
-	std::string temporary_shader_file_path;
+	DynamicString temporary_shader_file_path;
 
 	//First, compile the shader.
 	{
@@ -639,10 +643,11 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 			}
 
 			//Determine the temporary shader file path.
-			temporary_shader_file_path = parameters._FilePath + std::string(".glsl");
+			temporary_shader_file_path = parameters._FilePath;
+			temporary_shader_file_path += ".glsl";
 
 			//Write the compiler-ready version to a new temporary file.
-			std::ofstream shader_file{ temporary_shader_file_path };
+			std::ofstream shader_file{ temporary_shader_file_path.Data() };
 
 			shader_file << file_string;
 
@@ -654,11 +659,11 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 			//Create a temporary batch file that stores all commands.
 			std::ofstream batch_file;
 
-			batch_file.open("temporary_batch_file.bat", std::ios::out);
+			batch_file.open(temporary_batch_file_path.Data(), std::ios::out);
 
 			batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
 			batch_file << " -V ";
-			batch_file << temporary_shader_file_path;
+			batch_file << temporary_shader_file_path.Data();
 			batch_file << " -o ";
 			batch_file << compiled_file_path.Data();
 
@@ -744,10 +749,10 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 			batch_file.close();
 
-			system("temporary_batch_file.bat");
+			system(temporary_batch_file_path.Data());
 
 			//Delete the temporary batch file.
-			File::Delete("temporary_batch_file.bat");
+			File::Delete(temporary_batch_file_path.Data());
 		}
 	}
 
@@ -756,11 +761,11 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	{
 		std::ofstream batch_file;
 
-		batch_file.open("temporary_batch_file.bat", std::ios::out);
+		batch_file.open(temporary_batch_file_path.Data(), std::ios::out);
 
 		batch_file << "C:\\Github\\Catalyst-Engine\\Engine\\Binaries\\glslangValidator.exe";
 		batch_file << " -V ";
-		batch_file << temporary_shader_file_path;
+		batch_file << temporary_shader_file_path.Data();
 		batch_file << " -o ";
 		batch_file << compiled_file_path.Data();
 
@@ -849,11 +854,11 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 		batch_file.close();
 
-		system("temporary_batch_file.bat");
+		system(temporary_batch_file_path.Data());
 	}
 
 	//Delete the temporary shader file.
-	File::Delete(temporary_shader_file_path.c_str());
+	File::Delete(temporary_shader_file_path.Data());
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
