@@ -1,6 +1,33 @@
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+
+/*
+*	Returns if a file should be processed.
+*/
+bool ShouldProcessFile(const std::string &file)
+{
+	constexpr std::array<const char*, 6> FILES_TO_PROCESS
+	{
+		".cpp",
+		".gitignore",
+		".h",
+		".sln",
+		".vcxproj",
+		".vcxproj.filters"
+	};
+
+	for (const char* file_to_process : FILES_TO_PROCESS)
+	{
+		if (file.find(file_to_process) != std::string::npos)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /*
 *	Processes a file.
@@ -22,6 +49,12 @@ void ProcessFile(const std::string& file, const std::string& original_name, cons
 
 		std::error_code error_code;
 		std::filesystem::rename(file, new_file, error_code);
+	}
+
+	//Should the file be processed?
+	if (!ShouldProcessFile(new_file))
+	{
+		return;
 	}
 
 	//Nofity the user that the file is processing.
@@ -75,8 +108,16 @@ void ProcessDirectory(const std::string& directory, const std::string& original_
 			position = new_directory.find(original_name);
 		}
 
-		std::error_code error_code;
-		std::filesystem::rename(directory, new_directory, error_code);
+		if (directory != new_directory)
+		{
+			std::error_code error_code;
+			std::filesystem::rename(directory, new_directory, error_code);
+
+			if (!error_code)
+			{
+				int x = 0;
+			}
+		}
 	}
 
 	//Iterate over all files in the directory and change every occuerence from the original name to the new name.

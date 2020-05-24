@@ -144,6 +144,6 @@ private:
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
 
 	//The bloom intensity.
-	float32 _BloomIntensity{ 0.1f };
+	float32 _BloomIntensity{ 0.05f };
 
 };
