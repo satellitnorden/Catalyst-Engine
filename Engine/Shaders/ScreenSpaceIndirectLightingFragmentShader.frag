@@ -105,7 +105,15 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 
 		//Sample the depth at the current sample position.
 		vec4 sample_scene_features_2 = texture(scene_features_2_texture, screen_space_sample_position.xy);
-		float sample_depth = LinearizeDepth(sample_scene_features_2.w);
+		float sample_depth = sample_scene_features_2.w;
+
+		//Discard hit's against the sky.
+		if (sample_depth == 0.0f)
+		{
+			continue;
+		}
+
+		sample_depth = LinearizeDepth(sample_depth);
 
 		//If the sample position's depth is greater then the sample depth, there is a hit!
 		if (screen_space_sample_position.z < sample_depth)
