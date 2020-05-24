@@ -75,6 +75,13 @@ public:
 	*/
 	void Draw(const Pipeline *const RESTRICT pipeline, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
 
+#if defined(CATALYST_EDITOR)
+	/*
+	*	Draws the current ImGui state.
+	*/
+	void DrawImGui(const Pipeline *const RESTRICT pipeline) NOEXCEPT;
+#endif
+
 	/*
 	*	Draws indexed.
 	*/

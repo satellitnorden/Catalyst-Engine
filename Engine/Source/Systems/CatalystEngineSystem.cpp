@@ -18,6 +18,9 @@
 
 //Systems.
 #include <Systems/AnimationSystem.h>
+#if defined(CATALYST_EDITOR)
+#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/CullingSystem.h>
 #include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
@@ -130,6 +133,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
+#if defined(CATALYST_EDITOR)
+	CatalystEditorSystem::Instance->Initialize();
+#endif
 	CullingSystem::Instance->Initialize();
 	DistributionSystem::Instance->Initialize();
 	EntityPlacementSystem::Instance->Initialize();
@@ -156,6 +162,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	AnimationSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitialize();
 	WorldSystem::Instance->PostInitialize();
+#if defined(CATALYST_EDITOR)
+	RenderingSystem::Instance->EditorPostInitialize();
+#endif
 
 	//Initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
@@ -268,6 +277,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	TaskSystem::Instance->Terminate();
 
 	//Terminate all systems.
+#if defined(CATALYST_EDITOR)
+	CatalystEditorSystem::Instance->Terminate();
+#endif
 	DistributionSystem::Instance->Terminate();
 	RenderingSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();

@@ -15,6 +15,12 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Third party.
+#if defined(CATALYST_EDITOR)
+#include <ThirdParty/imgui.h>
+#include <ThirdParty/imgui_impl_vulkan.h>
+#endif
+
 /*
 *	Begins the command buffer.
 */
@@ -142,6 +148,17 @@ void CommandBuffer::Draw(const Pipeline *const RESTRICT pipeline, const uint32 v
 	//Draw.
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandDraw(vertexCount, instanceCount);
 }
+
+#if defined(CATALYST_EDITOR)
+/*
+*	Draws the current ImGui state.
+*/
+void CommandBuffer::DrawImGui(const Pipeline *const RESTRICT pipeline) NOEXCEPT
+{
+	ImGui::Render();
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->Get());
+}
+#endif
 
 /*
 *	Draws indexed.

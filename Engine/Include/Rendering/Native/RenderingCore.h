@@ -87,6 +87,9 @@ enum class RenderPassStage : uint8
 	RENDERING_REFERENCE,
 #endif
 	USER_INTERFACE,
+#if defined(CATALYST_EDITOR)
+	EDITOR_USER_INTERFACE,
+#endif
 	SCREEN,
 	
 	NUMBER_OF_RENDER_PASS_STAGES

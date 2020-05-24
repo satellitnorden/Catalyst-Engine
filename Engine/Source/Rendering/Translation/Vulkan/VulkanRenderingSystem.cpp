@@ -23,6 +23,9 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
+#if defined(CATALYST_EDITOR)
+#include <Rendering/Native/RenderPasses/EditorUserInterfaceRenderPass.h>
+#endif
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
@@ -41,6 +44,12 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanUtilities.h>
+
+//Third party.
+#if defined(CATALYST_EDITOR)
+#include <ThirdParty/imgui.h>
+#include <ThirdParty/imgui_impl_vulkan.h>
+#endif
 
 //Vulkan rendering system data.
 namespace VulkanRenderingSystemData
@@ -732,6 +741,17 @@ namespace VulkanRenderingSystemLogic
 */
 void RenderingSystem::Terminate() NOEXCEPT
 {
+	//First of all, wait for all queues to finish their tasks.
+	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
+	VulkanInterface::Instance->GetGraphicsQueue()->WaitIdle();
+	VulkanInterface::Instance->GetPresentQueue()->WaitIdle();
+	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
+
+#if defined(CATALYST_EDITOR)
+	//Shut down ImGui.
+	ImGui_ImplVulkan_Shutdown();
+#endif
+
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();
 }
@@ -1502,6 +1522,57 @@ void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_pa
 	//Write to file.
 	TGAWriter::Write(image, file_path);
 }
+
+#if defined(CATALYST_EDITOR)
+/*
+*	Post initializes the rendering system in editor builds.
+*/
+void RenderingSystem::EditorPostInitialize() NOEXCEPT
+{
+	//Set up ImGui for Vulkan.
+	{
+		ImGui_ImplVulkan_InitInfo imgui_init_info{ };
+
+		imgui_init_info.Instance = VulkanInterface::Instance->GetInstance().Get();
+		imgui_init_info.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
+		imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
+		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics);
+		imgui_init_info.Queue = VulkanInterface::Instance->GetGraphicsQueue()->Get();
+		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
+		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
+		imgui_init_info.Allocator = nullptr;
+		imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+		imgui_init_info.CheckVkResultFn = nullptr;
+
+		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(EditorUserInterfaceRenderPass::Instance->GetEditorUserInterfaceGraphicsPipeline()->GetData())->_RenderPass->Get());
+	}
+
+	//Create the fonts texture.
+	{
+		CommandBuffer *const RESTRICT command_buffer{ GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
+		VkCommandBuffer vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(command_buffer->GetCommandBufferData())->Get() };
+
+		VkCommandBufferBeginInfo begin_info = {};
+		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		vkBeginCommandBuffer(vulkan_command_buffer, &begin_info);
+
+		ImGui_ImplVulkan_CreateFontsTexture(vulkan_command_buffer);
+
+		VkSubmitInfo end_info = {};
+		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		end_info.commandBufferCount = 1;
+		end_info.pCommandBuffers = &vulkan_command_buffer;
+		vkEndCommandBuffer(vulkan_command_buffer);
+
+		vkQueueSubmit(VulkanInterface::Instance->GetGraphicsQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
+		vkDeviceWaitIdle(VulkanInterface::Instance->GetLogicalDevice().Get());
+
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
+}
+#endif
 
 /*
 *	Pre-initializes the rendering system.

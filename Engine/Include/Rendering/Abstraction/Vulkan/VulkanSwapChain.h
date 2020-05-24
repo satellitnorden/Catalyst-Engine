@@ -84,7 +84,7 @@ private:
 	VkExtent2D _SwapExtent;
 
 	//The current image index.
-	uint32 _CurrentImageIndex;
+	uint32 _CurrentImageIndex{ 0 };
 
 	/*
 	*	Finds the most optimal swap extent.

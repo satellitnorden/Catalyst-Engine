@@ -398,6 +398,13 @@ public:
 	*/
 	void StopTakingScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
 
+#if defined(CATALYST_EDITOR)
+	/*
+	*	Post initializes the rendering system in editor builds.
+	*/
+	void EditorPostInitialize() NOEXCEPT;
+#endif
+
 private:
 
 	//The rendering configuration.
