@@ -55,6 +55,14 @@ public:
 	}
 
 	/*
+	*	Sets the rendering path.
+	*/
+	FORCE_INLINE void SetRenderingPath(const RenderingPath value) NOEXCEPT
+	{
+		_RenderingPath = value;
+	}
+
+	/*
 	*	Returns the ambient occlusion mode.
 	*/
 	FORCE_INLINE NO_DISCARD AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
