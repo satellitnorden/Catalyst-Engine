@@ -64,12 +64,12 @@ public:
 																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		//Find the minimum/maximum.
-		float minimum{ -FLOAT_MAXIMUM };
-		float maximum{ FLOAT_MAXIMUM };
+		float32 minimum{ -FLOAT_MAXIMUM };
+		float32 maximum{ FLOAT_MAXIMUM };
 
 		//Test the X-axis slab.
-		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
+		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
+		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
 
 		if (minimum > maximum)
 		{
@@ -77,8 +77,8 @@ public:
 		}
 
 		//Test the Y-axis slab.
-		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
+		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
+		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
 
 		if (minimum > maximum)
 		{
@@ -86,10 +86,16 @@ public:
 		}
 
 		//Test the Z-axis slab.
-		minimum = CatalystBaseMath::Maximum<float>(minimum, (box[1 - ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
-		maximum = CatalystBaseMath::Minimum<float>(maximum, (box[ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
+		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
+		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
 
 		if (minimum > maximum)
+		{
+			return false;
+		}
+
+		//Maximum needs to be positive.
+		if (maximum <= 0.0f)
 		{
 			return false;
 		}

@@ -441,6 +441,9 @@ void CatalystShaderMain()
 
 	CalculateVertexPositionAndNormal(gl_VertexIndex, vertex_position, vertex_normal);
 
+	//Pass data to the fragment shader.
+	fragment_normal = vertex_normal;
+
     //Write the position.
     gl_Position = WORLD_TO_CLIP_MATRIX * vec4(vertex_position, 1.0f);
 } 

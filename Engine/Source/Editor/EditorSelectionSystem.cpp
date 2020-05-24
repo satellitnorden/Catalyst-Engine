@@ -117,6 +117,9 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 
 	else
 	{
+		//Reset the currently hovered entity.
+		_CurrentlyHoveredEntity = nullptr;
+
 		//If the left mouse button was pressed without any hit, reset the currently selected entity.
 		if (left_mouse_button_pressed)
 		{
@@ -124,8 +127,24 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 		}
 	}
 
+	//Render a bounding box for the currently hovered entity.
+	if (_CurrentlyHoveredEntity && _CurrentlyHoveredEntity->_Initialized)
+	{
+		switch (_CurrentlyHoveredEntity->_Type)
+		{
+			case EntityType::DynamicModel:
+			{
+				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlyHoveredEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
+
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(box, Vector4<float32>(1.0f, 0.0f, 0.0f, 0.125f), 0.0f);
+
+				break;
+			}
+		}
+	}
+
 	//Render a bounding box for the currently selected entity.
-	if (_CurrentlySelectedEntity)
+	if (_CurrentlySelectedEntity && _CurrentlySelectedEntity->_Initialized)
 	{
 		switch (_CurrentlySelectedEntity->_Type)
 		{
@@ -133,7 +152,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 			{
 				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(box, Vector4<float32>(0.0f, 1.0f, 1.0f, 0.5f), 0.0f);
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(box, Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), 0.0f);
 
 				break;
 			}
