@@ -166,7 +166,7 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, surface_properties.shading_normal);
 
 	//Blend the random hemisphere direction and the reflection direction based on the material properties.
-	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0]));
+	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0] * (1.0f - surface_properties.material_properties[1])));
 
 	if (current_recursion_depth < 1)
 	{

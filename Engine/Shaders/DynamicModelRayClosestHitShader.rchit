@@ -12,8 +12,8 @@
 */
 struct SurfaceProperties
 {
-	vec3 albedo;
-	vec3 shading_normal;
+	vec4 albedo_thickness;
+	vec4 normal_displacement;
 	vec4 material_properties;
 };
 
@@ -66,8 +66,8 @@ SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
 	//Fill in the surface properties.
 	SurfaceProperties surface_properties;
 
-	surface_properties.albedo = albedo_thickness.rgb;
-	surface_properties.shading_normal = shading_normal;
+	surface_properties.albedo_thickness = albedo_thickness;
+	surface_properties.normal_displacement = vec4(shading_normal, normal_map_displacement.w);
 	surface_properties.material_properties = vec4(material_properties[0], material_properties[1], material_properties[2], material_properties[3] * material._EmissiveMultiplier);
 
 	return surface_properties;
@@ -78,7 +78,7 @@ SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
 */
 vec3 CalculateLuminanceLighting(SurfaceProperties surface_properties)
 {
-	return surface_properties.albedo * surface_properties.material_properties[3];
+	return surface_properties.albedo_thickness.rgb * surface_properties.material_properties[3];
 }
 
 /*
@@ -125,12 +125,12 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 				if (!hit_anything)
 				{
 					direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
-															surface_properties.albedo,
-															surface_properties.shading_normal,
+															surface_properties.albedo_thickness.rgb,
+															surface_properties.normal_displacement.xyz,
 															surface_properties.material_properties[0],
 															surface_properties.material_properties[1],
 															surface_properties.material_properties[2],
-															1.0f,
+															surface_properties.albedo_thickness.w,
 															light_direction,
 															light.color * light.intensity);
 				}
@@ -157,16 +157,16 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, SurfaceProperties surface_properties)
 {
 	//Calculate the indirect lighting direction.
-	vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(surface_properties.shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
+	vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(surface_properties.normal_displacement.xyz, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
 
 	//Flip the direction, if needed.
-	indirect_lighting_direction = dot(indirect_lighting_direction, surface_properties.shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
+	indirect_lighting_direction = dot(indirect_lighting_direction, surface_properties.normal_displacement.xyz) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
 
 	//Calculate the reflection direction.
-	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, surface_properties.shading_normal);
+	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, surface_properties.normal_displacement.xyz);
 
 	//Blend the random hemisphere direction and the reflection direction based on the material properties.
-	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0]));
+	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0] * (1.0f - surface_properties.material_properties[1])));
 
 	if (current_recursion_depth < 1)
 	{
@@ -205,12 +205,12 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 		if (has_hit)
 		{
 			return CalculateLighting(	-gl_WorldRayDirectionNV,
-										surface_properties.albedo,
-										surface_properties.shading_normal,
+										surface_properties.albedo_thickness.rgb,
+										surface_properties.normal_displacement.xyz,
 										surface_properties.material_properties[0],
 										surface_properties.material_properties[1],
 										surface_properties.material_properties[2],
-										1.0f,
+										surface_properties.albedo_thickness.w,
 										-indirect_lighting_direction,
 										path_tracing_ray_payload.radiance);
 		}
@@ -218,12 +218,12 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 		else
 		{
 			return CalculateLighting(	-gl_WorldRayDirectionNV,
-										surface_properties.albedo,
-										surface_properties.shading_normal,
+										surface_properties.albedo_thickness.rgb,
+										surface_properties.normal_displacement.xyz,
 										surface_properties.material_properties[0],
 										surface_properties.material_properties[1],
 										surface_properties.material_properties[2],
-										1.0f,
+										surface_properties.albedo_thickness.w,
 										-indirect_lighting_direction,
 										texture(SKY_TEXTURE, indirect_lighting_direction).rgb * SKY_INTENSITY);
 		}
@@ -232,12 +232,12 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 	else
 	{
 		return CalculateLighting(	-gl_WorldRayDirectionNV,
-									surface_properties.albedo,
-									surface_properties.shading_normal,
+									surface_properties.albedo_thickness.rgb,
+									surface_properties.normal_displacement.xyz,
 									surface_properties.material_properties[0],
 									surface_properties.material_properties[1],
 									surface_properties.material_properties[2],
-									1.0f,
+									surface_properties.albedo_thickness.w,
 									-indirect_lighting_direction,
 									texture(SKY_TEXTURE, indirect_lighting_direction).rgb * SKY_INTENSITY);
 	}
@@ -268,8 +268,8 @@ void CatalystShaderMain()
 
 	//Write to the ray payload.
 	path_tracing_ray_payload.radiance 				= lighting;
-	path_tracing_ray_payload.albedo 				= surface_properties.albedo;
-	path_tracing_ray_payload.shading_normal 		= surface_properties.shading_normal;
+	path_tracing_ray_payload.albedo 				= surface_properties.albedo_thickness.rgb;
+	path_tracing_ray_payload.shading_normal 		= surface_properties.normal_displacement.xyz;
 	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;
 	path_tracing_ray_payload.material_properties 	= surface_properties.material_properties;
 }
