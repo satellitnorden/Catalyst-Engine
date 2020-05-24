@@ -60,6 +60,11 @@ void PathTracingRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
 }

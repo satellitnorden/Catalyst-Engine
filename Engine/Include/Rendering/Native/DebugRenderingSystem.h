@@ -18,6 +18,25 @@ class DebugRenderingSystem final
 public:
 
 	/*
+	*	Debug render class definition.
+	*/
+	class DebugRender final
+	{
+
+	public:
+
+		//The color.
+		Vector4<float32> _Color;
+
+		//Whether or not to perform depth test.
+		bool _DepthTest;
+
+		//Whether or not to render as wireframe.
+		bool _Wireframe;
+
+	};
+
+	/*
 	*	Debug axis aligned bounding box 3D render class definition.
 	*/
 	class DebugAxisAlignedBoundingBox3DRender final
@@ -25,11 +44,11 @@ public:
 
 	public:
 
+		//The debug render.
+		DebugRender _DebugRender;
+
 		//The axis aligned bounding box 3D.
 		AxisAlignedBoundingBox3 _AxisAlignedBoundingBox3D;
-
-		//The color.
-		Vector4<float32> _Color;
 
 		//The current lifetime.
 		float32 _CurrentLifetime;
@@ -47,11 +66,11 @@ public:
 
 	public:
 
+		//The debug render.
+		DebugRender _DebugRender;
+
 		//The sphere.
 		Sphere _Sphere;
-
-		//The color.
-		Vector4<float32> _Color;
 
 		//The number of segments.
 		uint32 _NumberOfSegments;
@@ -72,15 +91,19 @@ public:
 	/*
 	*	Debug renders an axis aligned bounding box 3D.
 	*/
-	void DebugRenderAxisAlignedBoundingBox3D(	const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
-												const Vector4<float32> &color,
+	void DebugRenderAxisAlignedBoundingBox3D(	const Vector4<float32> &color,
+												const bool depth_test,
+												const bool wireframe,
+												const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
 												const float32 lifetime) NOEXCEPT;
 
 	/*
 	*	Debug renders a sphere.
 	*/
-	void DebugRenderSphere(	const Sphere &sphere,
-							const Vector4<float32> &color,
+	void DebugRenderSphere(	const Vector4<float32> &color,
+							const bool depth_test,
+							const bool wireframe,
+							const Sphere &sphere,
 							const uint32 number_of_segments,
 							const float32 lifetime) NOEXCEPT;
 

@@ -86,6 +86,11 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::NONE
 		|| RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::SCREEN_SPACE)

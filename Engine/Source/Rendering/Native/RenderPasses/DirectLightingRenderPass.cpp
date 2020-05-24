@@ -60,6 +60,10 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
 
 	_DirectLightingGraphicsPipeline.Execute();
 }

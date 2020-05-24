@@ -27,15 +27,19 @@ void DebugRenderingSystem::Initialize() NOEXCEPT
 /*
 *	Debug renders an axis aligned bounding box 3D.
 */
-void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox3D(	const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
-																const Vector4<float32> &color,
+void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox3D(	const Vector4<float32> &color,
+																const bool depth_test,
+																const bool wireframe,
+																const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
 																const float32 lifetime) NOEXCEPT
 {
 	//Add the debug axis aligned bounding box 3D render.
 	DebugAxisAlignedBoundingBox3DRender debug_axis_aligned_bounding_box_3D_render;
 
+	debug_axis_aligned_bounding_box_3D_render._DebugRender._Color = color;
+	debug_axis_aligned_bounding_box_3D_render._DebugRender._DepthTest = depth_test;
+	debug_axis_aligned_bounding_box_3D_render._DebugRender._Wireframe = wireframe;
 	debug_axis_aligned_bounding_box_3D_render._AxisAlignedBoundingBox3D = axis_aligned_bounding_box_3D;
-	debug_axis_aligned_bounding_box_3D_render._Color = color;
 	debug_axis_aligned_bounding_box_3D_render._CurrentLifetime = 0.0f;
 	debug_axis_aligned_bounding_box_3D_render._MaximumLifetime = lifetime;
 
@@ -49,16 +53,20 @@ void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox3D(	const AxisAligne
 /*
 *	Debug renders a sphere.
 */
-void DebugRenderingSystem::DebugRenderSphere(	const Sphere &sphere,
-												const Vector4<float32> &color,
+void DebugRenderingSystem::DebugRenderSphere(	const Vector4<float32> &color,
+												const bool depth_test,
+												const bool wireframe,
+												const Sphere &sphere,
 												const uint32 number_of_segments,
 												const float32 lifetime) NOEXCEPT
 {
 	//Add the debug sphere render.
 	DebugSphereRender debug_sphere_render;
 
+	debug_sphere_render._DebugRender._Color = color;
+	debug_sphere_render._DebugRender._DepthTest = depth_test;
+	debug_sphere_render._DebugRender._Wireframe = wireframe;
 	debug_sphere_render._Sphere = sphere;
-	debug_sphere_render._Color = color;
 	debug_sphere_render._NumberOfSegments = number_of_segments;
 	debug_sphere_render._CurrentLifetime = 0.0f;
 	debug_sphere_render._MaximumLifetime = lifetime;

@@ -149,7 +149,7 @@ void DebugRenderSphereGraphicsPipeline::Execute() NOEXCEPT
 		{
 			DebugRenderSphereFragmentPushConstantData data;
 
-			data._Color = sphere._Color;
+			data._Color = sphere._DebugRender._Color;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(DebugRenderSphereVertexPushConstantData), sizeof(DebugRenderSphereFragmentPushConstantData), &data);
 		}

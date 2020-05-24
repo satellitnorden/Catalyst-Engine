@@ -5,6 +5,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/RenderingSystem.h>
 
 //Third party.
 #include <ThirdParty/imgui.h>
@@ -98,11 +99,43 @@ void CatalystEditorSystem::PreUpdate() NOEXCEPT
 		//Add the main window.
 		ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 64.0f));
+		ImGui::SetWindowSize(ImVec2(256.0f, 128.0f));
 
+		//Add the enter game button.
 		if (ImGui::Button("Enter Game"))
 		{
 			_IsInGame = true;
+		}
+
+		//Add the start/stop taking screenshot button.
+		if (RenderingSystem::Instance->IsTakingScreenshot())
+		{
+			if (ImGui::Button("Stop Taking Screenshot"))
+			{
+				RenderingSystem::Instance->StopTakingScreenshot("Catalyst Editor Screenshot.tga");
+			}
+		}
+
+		else
+		{
+			if (ImGui::Button("Start Taking Screenshot"))
+			{
+				RenderingSystem::Instance->StartTakingScreenshot();
+			}
+		}
+
+		//Add button to toggle path tracing rendering path.
+		static bool path_tracing{ false };
+		ImGui::Checkbox("Path Tracing", &path_tracing);
+
+		if (path_tracing)
+		{
+			RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::PATH_TRACING);
+		}
+
+		else
+		{
+			RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
 		}
 
 		ImGui::End();

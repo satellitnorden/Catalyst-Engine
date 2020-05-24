@@ -184,7 +184,7 @@ void VulkanGraphicsPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipeli
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
 	pipelineRasterizationStateCreateInfo.depthBiasClamp = 0.0f;
 	pipelineRasterizationStateCreateInfo.depthBiasSlopeFactor = 0.0f;
-	pipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
+	pipelineRasterizationStateCreateInfo.lineWidth = 4.0f;
 }
 
 /*

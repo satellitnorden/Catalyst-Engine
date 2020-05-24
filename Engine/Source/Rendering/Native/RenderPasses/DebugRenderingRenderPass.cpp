@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/DebugRenderingRenderPass.h>
 
+//Rendering.
+#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -35,12 +38,20 @@ DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 void DebugRenderingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
-	AddPipeline(&_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline);
+	SetNumberOfPipelines(_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1);
+
+	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_DebugRenderSphereGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.Initialize();
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[0].Initialize(EMPTY_HANDLE, false, false);
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[1].Initialize(EMPTY_HANDLE, false, true);
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, false);
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[3].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, true);
 	_DebugRenderSphereGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -56,7 +67,11 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 void DebugRenderingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.Execute();
+	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	_DebugRenderSphereGraphicsPipeline.Execute();
 }
 #endif

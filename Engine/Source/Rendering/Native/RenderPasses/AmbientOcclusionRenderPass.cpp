@@ -93,6 +93,11 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE)
 	{

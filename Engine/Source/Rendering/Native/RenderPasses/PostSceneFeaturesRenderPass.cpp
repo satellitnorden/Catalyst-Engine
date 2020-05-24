@@ -60,6 +60,11 @@ void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
 }

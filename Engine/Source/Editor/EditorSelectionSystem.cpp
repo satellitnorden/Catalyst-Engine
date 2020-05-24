@@ -128,7 +128,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 	}
 
 	//Render a bounding box for the currently hovered entity.
-	if (_CurrentlyHoveredEntity && _CurrentlyHoveredEntity->_Initialized)
+	if (_CurrentlyHoveredEntity && _CurrentlyHoveredEntity->_Initialized && _CurrentlyHoveredEntity != _CurrentlySelectedEntity)
 	{
 		switch (_CurrentlyHoveredEntity->_Type)
 		{
@@ -136,7 +136,11 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 			{
 				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlyHoveredEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(box, Vector4<float32>(1.0f, 0.0f, 0.0f, 0.125f), 0.0f);
+				box._Minimum -= 0.1f;
+				box._Maximum += 0.1f;
+
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f * 0.5f), true, true, box, 0.0f);
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f * 0.5f * 0.125f), true, false, box, 0.0f);
 
 				break;
 			}
@@ -152,7 +156,11 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 			{
 				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(box, Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), 0.0f);
+				box._Minimum -= 0.1f;
+				box._Maximum += 0.1f;
+
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), true, true, box, 0.0f);
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f * 0.125f), true, false, box, 0.0f);
 
 				break;
 			}

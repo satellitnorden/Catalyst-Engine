@@ -50,14 +50,26 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize() NOEXCEPT
+void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool depth_test, const bool wireframe) NOEXCEPT
 {
+	//Set whether or not to perform depth test.
+	_DepthTest = depth_test;
+
+	//Set whether or not to draw as wireframe.
+	_Wireframe = wireframe;
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AxisAlignedBoundingBox3DVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugRenderFragmentShader")));
+
+	//Set the depth buffer.
+	if (_DepthTest)
+	{
+		SetDepthBuffer(depth_buffer);
+	}
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
@@ -83,9 +95,21 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize() NOEXCEPT
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Always);
-	SetDepthTestEnabled(false);
-	SetDepthWriteEnabled(false);
+
+	if (_DepthTest)
+	{
+		SetDepthCompareOperator(CompareOperator::Greater);
+		SetDepthTestEnabled(true);
+		SetDepthWriteEnabled(true);
+	}
+	
+	else
+	{
+		SetDepthCompareOperator(CompareOperator::Always);
+		SetDepthTestEnabled(false);
+		SetDepthWriteEnabled(false);
+	}
+
 	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Keep);
@@ -94,7 +118,16 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize() NOEXCEPT
 	SetStencilCompareMask(0);
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
-	SetTopology(Topology::TriangleList);
+
+	if (_Wireframe)
+	{
+		SetTopology(Topology::LineList);
+	}
+	
+	else
+	{
+		SetTopology(Topology::TriangleList);
+	}
 }
 
 /*
@@ -132,6 +165,13 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Execute() NOEXCEPT
 	//Render all debug sphere renders.
 	for (const DebugRenderingSystem::DebugAxisAlignedBoundingBox3DRender &axis_aligned_bounding_box_3D_render : debug_axis_aligned_bounding_box_3D_renders)
 	{
+		//Skip this entry if it doesn't match the debug render state.
+		if (_DepthTest != axis_aligned_bounding_box_3D_render._DebugRender._DepthTest
+			|| _Wireframe != axis_aligned_bounding_box_3D_render._DebugRender._Wireframe)
+		{
+			continue;
+		}
+		
 		//Push constants.
 		{
 			DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData data;
@@ -145,7 +185,7 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Execute() NOEXCEPT
 		{
 			DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData data;
 
-			data._Color = axis_aligned_bounding_box_3D_render._Color;
+			data._Color = axis_aligned_bounding_box_3D_render._DebugRender._Color;
 
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData), sizeof(DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData), &data);
 		}

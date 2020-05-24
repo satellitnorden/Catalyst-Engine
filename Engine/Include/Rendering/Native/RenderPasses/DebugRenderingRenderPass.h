@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h>
@@ -24,8 +25,8 @@ public:
 
 private:
 
-	//The debug render axis aligned bounding box 3D graphics pipeline.
-	DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline _DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline;
+	//The debug render axis aligned bounding box 3D graphics pipelines.
+	StaticArray<DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline, 4> _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines;
 
 	//The debug render sphere graphics pipeline
 	DebugRenderSphereGraphicsPipeline _DebugRenderSphereGraphicsPipeline;

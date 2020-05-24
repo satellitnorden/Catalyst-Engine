@@ -67,6 +67,11 @@ void OceanRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	_SceneFeatures1CopyGraphicsPipeline.Execute();
 	_SceneFeatures2CopyGraphicsPipeline.Execute();

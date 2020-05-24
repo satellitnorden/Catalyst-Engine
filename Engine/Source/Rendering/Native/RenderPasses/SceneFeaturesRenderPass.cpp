@@ -87,6 +87,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
 	_ParticleSystemComputePipeline.Execute();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
