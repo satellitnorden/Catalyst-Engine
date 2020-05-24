@@ -21,9 +21,14 @@ class ModelPhysicsSystem final
 public:
 
 	/*
-	*	Updates the model physics system during the physics update phase.
+	*	Registers dynamic model collision data.
 	*/
-	void PhysicsUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
+	void RegisterDynamicModelCollisionData(const uint64 entity_identifier, const ModelCollisionData &data) NOEXCEPT;
+
+	/*
+	*	Unregisters dynamic model collision data.
+	*/
+	void UnregisterDynamicModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
 
 	/*
 	*	Registers static model collision data.
@@ -36,19 +41,14 @@ public:
 	void UnregisterStaticModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
 
 	/*
-	*	Registers model physics simulation data.
+	*	Casts a ray against dynamic models.
 	*/
-	void RegisterModelPhysicsSimulationData(const uint64 entity_identifier, const ModelPhysicsSimulationData &data) NOEXCEPT;
+	void CastRayDynamicModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
 
 	/*
-	*	Unregisters model physics simulation data.
+	*	Casts a ray against static models.
 	*/
-	void UnregisterModelPhysicsSimulationData(const uint64 entity_identifier) NOEXCEPT;
-
-	/*
-	*	Casts a ray against models.
-	*/
-	void CastRayModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
+	void CastRayStaticModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Returns the static model collision data.
@@ -60,15 +60,10 @@ public:
 
 private:
 
+	//Container for all dynamic model collision data.
+	Map<uint64, ModelCollisionData> _DynamicModelCollisionData;
+
 	//Container for all static model collision data.
 	Map<uint64, ModelCollisionData> _StaticModelCollisionData;
-
-	//Container for all model physics simulation data.
-	Map<uint64, ModelPhysicsSimulationData> _ModelPhysicsSimulationData;
-
-	/*
-	*	Simulates physics for one model.
-	*/
-	void SimulatePhysics(const UpdateContext *const RESTRICT context, Pair<uint64, ModelPhysicsSimulationData> *const RESTRICT data) NOEXCEPT;
 
 };

@@ -1,6 +1,6 @@
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h>
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
@@ -13,34 +13,31 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Debug render sphere vertex push constant data definition.
+*	Debug render axis aligned bounding box 3D vertex push constant data definition.
 */
-class DebugRenderSphereVertexPushConstantData final
+class DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData final
 {
 
 public:
 
-	//The position.
-	Vector3<float32> _Position;
+	//The minimum.
+	Vector3<float32> _Minimum;
 
 	//Padding.
 	Padding<4> _Padding1;
 
-	//The radius.
-	float32 _Radius;
-
-	//The number of segments.
-	uint32 _NumberOfSegments;
+	//The maximum.
+	Vector3<float32> _Maximum;
 
 	//Padding.
-	Padding<8> _Padding2;
+	Padding<4> _Padding2;
 
 };
 
 /*
-*	Debug render sphere fragment push constant data definition.
+*	Debug render axis aligned bounding box 3D fragment push constant data definition.
 */
-class DebugRenderSphereFragmentPushConstantData final
+class DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData final
 {
 
 public:
@@ -53,10 +50,10 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void DebugRenderSphereGraphicsPipeline::Initialize() NOEXCEPT
+void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("SphereVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AxisAlignedBoundingBox3DVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
@@ -72,8 +69,8 @@ void DebugRenderSphereGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(DebugRenderSphereVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(DebugRenderSphereVertexPushConstantData), sizeof(DebugRenderSphereFragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData), sizeof(DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -97,22 +94,22 @@ void DebugRenderSphereGraphicsPipeline::Initialize() NOEXCEPT
 	SetStencilCompareMask(0);
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
-	SetTopology(Topology::TriangleFan);
+	SetTopology(Topology::TriangleList);
 }
 
 /*
 *	Executes this graphics pipeline.
 */
-void DebugRenderSphereGraphicsPipeline::Execute() NOEXCEPT
+void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Execute() NOEXCEPT
 {
-	//Lock the debug sphere renders.
-	SCOPED_LOCK(*RenderingSystem::Instance->GetDebugRenderingSystem()->GetDebugSphereRendersLock());
+	//Lock the debug axis aligned bounding box 3D renders.
+	SCOPED_LOCK(*RenderingSystem::Instance->GetDebugRenderingSystem()->GetDebugAxisAlignedBoundingBox3DRendersLock());
 
-	//Cache the debug sphere renders.
-	const DynamicArray<DebugRenderingSystem::DebugSphereRender> &debug_sphere_renders{ RenderingSystem::Instance->GetDebugRenderingSystem()->GetDebugSphereRenders() };
+	//Cache the debug axis aligned bounding box 3D renders.
+	const DynamicArray<DebugRenderingSystem::DebugAxisAlignedBoundingBox3DRender> &debug_axis_aligned_bounding_box_3D_renders{ RenderingSystem::Instance->GetDebugRenderingSystem()->GetDebugAxisAlignedBoundingBox3DRenders() };
 
 	//Just return if there's none to draw.
-	if (debug_sphere_renders.Empty())
+	if (debug_axis_aligned_bounding_box_3D_renders.Empty())
 	{
 		SetIncludeInRender(false);
 
@@ -133,29 +130,28 @@ void DebugRenderSphereGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Render all debug sphere renders.
-	for (const DebugRenderingSystem::DebugSphereRender& sphere : debug_sphere_renders)
+	for (const DebugRenderingSystem::DebugAxisAlignedBoundingBox3DRender &axis_aligned_bounding_box_3D_render : debug_axis_aligned_bounding_box_3D_renders)
 	{
 		//Push constants.
 		{
-			DebugRenderSphereVertexPushConstantData data;
+			DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData data;
 
-			data._Position = sphere._Sphere._Position;
-			data._Radius = sphere._Sphere._Radius;
-			data._NumberOfSegments = sphere._NumberOfSegments;
+			data._Minimum = axis_aligned_bounding_box_3D_render._AxisAlignedBoundingBox3D._Minimum;
+			data._Maximum = axis_aligned_bounding_box_3D_render._AxisAlignedBoundingBox3D._Maximum;
 
-			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(DebugRenderSphereVertexPushConstantData), &data);
+			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData), &data);
 		}
 
 		{
-			DebugRenderSphereFragmentPushConstantData data;
+			DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData data;
 
-			data._Color = sphere._Color;
+			data._Color = axis_aligned_bounding_box_3D_render._Color;
 
-			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(DebugRenderSphereVertexPushConstantData), sizeof(DebugRenderSphereFragmentPushConstantData), &data);
+			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(DebugRenderAxisAlignedBoundingBox3DVertexPushConstantData), sizeof(DebugRenderAxisAlignedBoundingBox3DFragmentPushConstantData), &data);
 		}
 
 		//Draw!
-		command_buffer->Draw(this, sphere._NumberOfSegments * sphere._NumberOfSegments, 1);
+		command_buffer->Draw(this, 36, 1);
 	}
 
 	//End the command buffer.

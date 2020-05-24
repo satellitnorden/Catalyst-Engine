@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_FINAL;CATALYST_CONFIGURATION_PROFILE;CATALYST_DISTRIBUTION_STEAM;CATALYST_EDITOR;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_DISTRIBUTION_STEAM;CATALYST_EDITOR;CATALYST_ENABLE_RESOURCE_BUILDING;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -104,6 +104,8 @@
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h" />
     <ClInclude Include="..\..\..\Include\Distribution\AchievementIdentifier.h" />
+    <ClInclude Include="..\..\..\Include\Editor\EditorPerceiverSystem.h" />
+    <ClInclude Include="..\..\..\Include\Editor\EditorSelectionSystem.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\DistanceTriggerInitializationData.h" />
@@ -242,6 +244,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\BloomApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\BloomIsolationGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehBlurGraphicsPipeline.h" />
@@ -448,6 +451,8 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
     <ClCompile Include="..\..\..\Source\Distribution\SteamDistributionSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Editor\EditorPerceiverSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Editor\EditorSelectionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DistanceTriggerEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />
@@ -512,6 +517,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AnimatedModelSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\BloomIsolationGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DepthOfFieldBokehBlurGraphicsPipeline.cpp" />

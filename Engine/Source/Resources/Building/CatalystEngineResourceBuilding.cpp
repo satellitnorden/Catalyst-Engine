@@ -35,6 +35,7 @@
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
 #define BUILD_ENGINE_SHADERS false
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
+#define BUILD_ENGINE_MODELS false
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION true
 
@@ -954,6 +955,27 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AxisAlignedBoundingBox3DVertexShader";
+			parameters._ID = "AxisAlignedBoundingBox3DVertexShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AxisAlignedBoundingBox3DVertexShader.vert";
+			parameters._Stage = ShaderStage::VERTEX;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\BloomIsolationFragmentShader";
 			parameters._ID = "BloomIsolationFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\BloomIsolationFragmentShader.frag";
@@ -975,9 +997,9 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugRenderSphereFragmentShader";
-			parameters._ID = "DebugRenderSphereFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderSphereFragmentShader.frag";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugRenderFragmentShader";
+			parameters._ID = "DebugRenderFragmentShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderFragmentShader.frag";
 			parameters._Stage = ShaderStage::FRAGMENT;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -2421,6 +2443,32 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	BuildDefaultSkyTexture();
 #endif
 
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_MODELS
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Editor_Arrow_Model";
+			parameters._ID = "Editor_Arrow_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Editor_Arrow.fbx");
+			parameters._Transformation = Matrix4x4(VectorConstants::ZERO, Vector3<float32>(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+#endif
+
 	//Wait for all tasks to finish.
 	TaskSystem::Instance->WaitForAllTasksToFinish();
 
@@ -2430,7 +2478,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 

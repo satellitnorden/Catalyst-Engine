@@ -44,13 +44,7 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	//Register the model collision data, if there is one.
 	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
 	{
-		//PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
-	}
-
-	//Register the model physics simulation data, if physics should be simulated.
-	if (model_initialization_data->_SimulatePhysics)
-	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterModelPhysicsSimulationData(_ComponentsIndex, model_initialization_data->_ModelPhysicsSimulationData);
+		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterDynamicModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
 	}
 
 	//Destroy the initialization data.

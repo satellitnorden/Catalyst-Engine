@@ -25,6 +25,28 @@ void DebugRenderingSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Debug renders an axis aligned bounding box 3D.
+*/
+void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox3D(	const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
+																const Vector4<float32> &color,
+																const float32 lifetime) NOEXCEPT
+{
+	//Add the debug axis aligned bounding box 3D render.
+	DebugAxisAlignedBoundingBox3DRender debug_axis_aligned_bounding_box_3D_render;
+
+	debug_axis_aligned_bounding_box_3D_render._AxisAlignedBoundingBox3D = axis_aligned_bounding_box_3D;
+	debug_axis_aligned_bounding_box_3D_render._Color = color;
+	debug_axis_aligned_bounding_box_3D_render._CurrentLifetime = 0.0f;
+	debug_axis_aligned_bounding_box_3D_render._MaximumLifetime = lifetime;
+
+	{
+		SCOPED_LOCK(_DebugAxisAlignedBoundingBox3DRendersLock);
+
+		_DebugAxisAlignedBoundingBox3DRenders.Emplace(debug_axis_aligned_bounding_box_3D_render);
+	}
+}
+
+/*
 *	Debug renders a sphere.
 */
 void DebugRenderingSystem::DebugRenderSphere(	const Sphere &sphere,
@@ -55,6 +77,26 @@ void DebugRenderingSystem::PostUpdate() NOEXCEPT
 {
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
+	//Update all debug axis aligned bounding box 3D renders.
+	{
+		SCOPED_LOCK(_DebugAxisAlignedBoundingBox3DRendersLock);
+
+		for (uint64 i{ 0 }; i < _DebugAxisAlignedBoundingBox3DRenders.Size();)
+		{
+			_DebugAxisAlignedBoundingBox3DRenders[i]._CurrentLifetime += delta_time;
+
+			if (_DebugAxisAlignedBoundingBox3DRenders[i]._CurrentLifetime >= _DebugAxisAlignedBoundingBox3DRenders[i]._MaximumLifetime)
+			{
+				_DebugAxisAlignedBoundingBox3DRenders.EraseAt(i);
+			}
+
+			else
+			{
+				++i;
+			}
+		}
+	}
 
 	//Update all debug sphere renders.
 	{

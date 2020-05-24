@@ -370,6 +370,15 @@
     <Filter Include="Memory\Source">
       <UniqueIdentifier>{31982fcc-a543-4633-9c6e-37ab7c0f414b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{b31e8b79-2e75-4e30-818b-2cea32b7381f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Include">
+      <UniqueIdentifier>{3f518c68-04d4-4a0c-be8d-b9fa7bd4e470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Source">
+      <UniqueIdentifier>{2f38f6e1-5842-4c54-a1b0-cd5a1442ed7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1563,6 +1572,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\EditorUserInterfaceRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Editor\EditorPerceiverSystem.h">
+      <Filter>Editor\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Editor\EditorSelectionSystem.h">
+      <Filter>Editor\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2068,6 +2086,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\EditorUserInterfaceRenderPass.cpp">
       <Filter>Rendering\Source\Native\Render Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Editor\EditorPerceiverSystem.cpp">
+      <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Editor\EditorSelectionSystem.cpp">
+      <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

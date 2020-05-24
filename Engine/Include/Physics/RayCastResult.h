@@ -6,12 +6,23 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
-class ModelRaycastResult final
+class DynamicModelRaycastResult final
 {
 
 public:
 
-	//Empty. (:
+	//The entity.
+	Entity *RESTRICT _Entity;
+
+};
+
+class StaticModelRaycastResult final
+{
+
+public:
+
+	//The entity.
+	Entity *RESTRICT _Entity;
 
 };
 
@@ -34,7 +45,8 @@ public:
 	{
 		NONE,
 
-		MODEL,
+		DYNAMIC_MODEL,
+		STATIC_MODEL,
 		TERRAIN
 	};
 
@@ -42,15 +54,18 @@ public:
 	bool _HasHit;
 
 	//The hit distance.
-	float _HitDistance;
+	float32 _HitDistance;
 
 	//Denotes the type of entity hit.
 	Type _Type;
 
 	union
 	{
-		//The model raycast result, if a model was hit.
-		ModelRaycastResult _ModelRaycastResult;
+		//The dynamic model raycast result, if a dynamic model was hit.
+		DynamicModelRaycastResult _DynamicModelRaycastResult;
+
+		//The static model raycast result, if a static model was hit.
+		StaticModelRaycastResult _StaticModelRaycastResult;
 
 		//The terrain raycast result, if the terrain was hit.
 		TerrainRaycastResult _TerrainRaycastResult;

@@ -20,9 +20,6 @@ void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) N
 {
 	//Update the character physics system.
 	_CharacterPhysicsSystem.PhysicsUpdate(context);
-
-	//Update the model physics system.
-	_ModelPhysicsSystem.PhysicsUpdate(context);
 }
 
 /*
@@ -35,10 +32,16 @@ void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configur
 	result->_HitDistance = configuration._MaximumHitDistance;
 	result->_Type = RaycastResult::Type::NONE;
 
-	//Raycast against models.
-	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::MODEL))
+	//Raycast against dynamic models.
+	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::DYNAMIC_MODELS))
 	{
-		_ModelPhysicsSystem.CastRayModels(ray, configuration, result);
+		_ModelPhysicsSystem.CastRayDynamicModels(ray, configuration, result);
+	}
+
+	//Raycast against static models.
+	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::STATIC_MODELS))
+	{
+		_ModelPhysicsSystem.CastRayStaticModels(ray, configuration, result);
 	}
 
 	//Raycast against the terrain.

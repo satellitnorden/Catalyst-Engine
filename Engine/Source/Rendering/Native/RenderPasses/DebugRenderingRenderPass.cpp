@@ -35,10 +35,12 @@ DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 void DebugRenderingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline);
 	AddPipeline(&_DebugRenderSphereGraphicsPipeline);
 
 	//Initialize all pipelines.
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.Initialize();
 	_DebugRenderSphereGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -54,6 +56,7 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 void DebugRenderingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.Execute();
 	_DebugRenderSphereGraphicsPipeline.Execute();
 }
 #endif

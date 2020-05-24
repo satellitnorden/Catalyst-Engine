@@ -1,19 +1,26 @@
 //Header file.
 #include <Physics/ModelPhysicsSystem.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
 /*
-*	Updates the model physics system during the physics update phase.
+*	Registers dynamic model collision data.
 */
-void ModelPhysicsSystem::PhysicsUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
+void ModelPhysicsSystem::RegisterDynamicModelCollisionData(const uint64 entity_identifier, const ModelCollisionData &data) NOEXCEPT
 {
-	//Simulate physics for all models.
-	for (Pair<uint64, ModelPhysicsSimulationData> &model_physics_simulation_data : _ModelPhysicsSimulationData)
-	{
-		SimulatePhysics(context, &model_physics_simulation_data);
-	}
+	_DynamicModelCollisionData[entity_identifier] = data;
+}
+
+/*
+*	Unregisters dynamic model collision data.
+*/
+void ModelPhysicsSystem::UnregisterDynamicModelCollisionData(const uint64 entity_identifier) NOEXCEPT
+{
+
 }
 
 /*
@@ -33,25 +40,44 @@ void ModelPhysicsSystem::UnregisterStaticModelCollisionData(const uint64 entity_
 }
 
 /*
-*	Registers model physics simulation data.
+*	Casts a ray against dynamic models.
 */
-void ModelPhysicsSystem::RegisterModelPhysicsSimulationData(const uint64 entity_identifier, const ModelPhysicsSimulationData &data) NOEXCEPT
+void ModelPhysicsSystem::CastRayDynamicModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	_ModelPhysicsSimulationData[entity_identifier] = data;
+	for (const Pair<uint64, ModelCollisionData>& data : _DynamicModelCollisionData)
+	{
+		switch (data._Second._Type)
+		{
+			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
+			{
+				float intersection_distance{ FLOAT_MAXIMUM };
+
+				if (CatalystGeometryMath::RayBoxIntersection(ray, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox, &intersection_distance)
+					&& result->_HitDistance > intersection_distance)
+				{
+					result->_HasHit = true;
+					result->_HitDistance = intersection_distance;
+					result->_Type = RaycastResult::Type::DYNAMIC_MODEL;
+					result->_DynamicModelRaycastResult._Entity = ComponentManager::GetDynamicModelEntities()->At(data._First);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
 }
 
 /*
-*	Unregisters model physics simulation data.
+*	Casts a ray against static models.
 */
-void ModelPhysicsSystem::UnregisterModelPhysicsSimulationData(const uint64 entity_identifier) NOEXCEPT
-{
-
-}
-
-/*
-*	Casts a ray against models.
-*/
-void ModelPhysicsSystem::CastRayModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
+void ModelPhysicsSystem::CastRayStaticModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
 	for (const Pair<uint64, ModelCollisionData>& data : _StaticModelCollisionData)
 	{
@@ -66,19 +92,19 @@ void ModelPhysicsSystem::CastRayModels(const Ray &ray, const RaycastConfiguratio
 				{
 					result->_HasHit = true;
 					result->_HitDistance = intersection_distance;
-					result->_Type = RaycastResult::Type::MODEL;
+					result->_Type = RaycastResult::Type::STATIC_MODEL;
+					result->_DynamicModelRaycastResult._Entity = ComponentManager::GetStaticModelEntities()->At(data._First);
 				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
 
 				break;
 			}
 		}
 	}
-}
-
-/*
-*	Simulates physics for one model.
-*/
-void ModelPhysicsSystem::SimulatePhysics(const UpdateContext *const RESTRICT context, Pair<uint64, ModelPhysicsSimulationData>* const RESTRICT data) NOEXCEPT
-{
-
 }
