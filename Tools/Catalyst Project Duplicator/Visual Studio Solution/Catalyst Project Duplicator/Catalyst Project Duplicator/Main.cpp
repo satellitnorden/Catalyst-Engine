@@ -7,11 +7,28 @@
 */
 void ProcessFile(const std::string& file, const std::string& original_name, const std::string& new_name)
 {
+	//Rename the file, if needed.
+	std::string new_file{ file };
+
+	{
+		size_t position{ new_file.find(original_name) };
+
+		while (position != std::string::npos)
+		{
+			new_file.replace(position, original_name.length(), new_name);
+
+			position = new_file.find(original_name);
+		}
+
+		std::error_code error_code;
+		std::filesystem::rename(file, new_file, error_code);
+	}
+
 	//Nofity the user that the file is processing.
-	std::cout << "Processing file; " << file << std::endl;
+	std::cout << "Processing file; " << new_file << std::endl;
 
 	//Read the input file.
-	std::ifstream input_file{ file };
+	std::ifstream input_file{ new_file };
 	std::string file_string;
 
 	input_file.seekg(0, std::ios::end);   
@@ -35,7 +52,7 @@ void ProcessFile(const std::string& file, const std::string& original_name, cons
 	}
 
 	//Write to the output file.
-	std::ofstream output_file{ file };
+	std::ofstream output_file{ new_file };
 	output_file << file_string;
 	output_file.close();
 }
@@ -45,8 +62,25 @@ void ProcessFile(const std::string& file, const std::string& original_name, cons
 */
 void ProcessDirectory(const std::string& directory, const std::string& original_name, const std::string& new_name)
 {
+	//Rename the directory, if needed.
+	std::string new_directory{ directory };
+
+	{
+		size_t position{ new_directory.find(original_name) };
+
+		while (position != std::string::npos)
+		{
+			new_directory.replace(position, original_name.length(), new_name);
+
+			position = new_directory.find(original_name);
+		}
+
+		std::error_code error_code;
+		std::filesystem::rename(directory, new_directory, error_code);
+	}
+
 	//Iterate over all files in the directory and change every occuerence from the original name to the new name.
-	for (const auto& entry : std::filesystem::directory_iterator(directory))
+	for (const auto& entry : std::filesystem::directory_iterator(new_directory))
 	{
 		if (entry.is_directory())
 		{
