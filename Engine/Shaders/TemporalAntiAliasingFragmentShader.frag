@@ -1,13 +1,11 @@
 //Constants.
 #define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.99f)
-#define TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_SIZE (3.0f)
-#define TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END ((TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -18,11 +16,11 @@ layout (push_constant) uniform PushConstantData
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
-layout (set = 1, binding = 1) uniform sampler2D previousFrameTexture;
-layout (set = 1, binding = 2) uniform sampler2D currentFrameTexture;
+layout (set = 1, binding = 1) uniform sampler2D previous_frame_texture;
+layout (set = 1, binding = 2) uniform sampler2D current_frame_texture;
 
 //Out parameters.
-layout (location = 0) out vec4 currentFrame;
+layout (location = 0) out vec4 current_frame;
 layout (location = 1) out vec4 scene;
 
 /*
@@ -50,36 +48,46 @@ void CatalystShaderMain()
 	if (WEIGHT_OVERRIDE_WEIGHT == 0.0f)
 	{
 		//Calculate the unjittered screen coordinate.
-		vec2 unjitteredScreenCoordinate = fragmentTextureCoordinate - currentFrameJitter;
+		vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
 
 		//Sample the current frame texture.
-		vec4 currentFrameTextureSampler = texture(currentFrameTexture, unjitteredScreenCoordinate);
+		vec4 current_frame_texture_sampler = texture(current_frame_texture, unjittered_screen_coordinate);
 
-		//Calculate the minimum/maximum color values in the neighborhood of the current frame.
-		vec3 minimum = currentFrameTextureSampler.rgb;
-		vec3 maximum = currentFrameTextureSampler.rgb;
+		//Calculate the minimum/maximum color values in the neighborhood of the current frame. Also find the velocity of the closest fragment.
+		float closest_depth = 0.0f;
+		vec2 closest_velocity = texture(scene_features_4_texture, unjittered_screen_coordinate).xy;
+		vec3 minimum = current_frame_texture_sampler.rgb;
+		vec3 maximum = current_frame_texture_sampler.rgb;
 
-		for (float x = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; x <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++x)
+		for (int Y = -1; Y <= 1; ++Y)
 		{
-			for (float y = -TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; y <= TEMPORAL_ANTI_ALIASING_NEIGHBORHOOD_START_END; ++y)
+			for (int X = -1; X <= 1; ++X)
 			{
-				vec2 sampleCoordinate = unjitteredScreenCoordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION;
+				vec2 sample_coordinate = unjittered_screen_coordinate + vec2(float(X), float(Y)) * INVERSE_SCALED_RESOLUTION;
 			
-				vec3 neighbordhoodSample = texture(currentFrameTexture, sampleCoordinate).rgb;
+				vec3 neighbordhood_sample = texture(current_frame_texture, sample_coordinate).rgb;
 
-				minimum = min(minimum, neighbordhoodSample);
-				maximum = max(maximum, neighbordhoodSample);
+				minimum = min(minimum, neighbordhood_sample);
+				maximum = max(maximum, neighbordhood_sample);
+
+				float neighborhood_depth = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).w;
+
+				if (closest_depth < neighborhood_depth)
+				{
+					closest_depth = neighborhood_depth;
+					closest_velocity = texture(scene_features_4_texture, sample_coordinate).xy;
+				}
 			}
 		}
 
 		//Calculate the previous screen coordinate.
-		vec2 previous_screen_coordinate = unjitteredScreenCoordinate - texture(scene_features_4_texture, unjitteredScreenCoordinate).xy;
+		vec2 previous_screen_coordinate = unjittered_screen_coordinate - closest_velocity;
 
 		//Sample the previous frame texture.
-		vec4 previousFrameTextureSampler = texture(previousFrameTexture, previous_screen_coordinate);
+		vec4 previous_frame_texture_sampler = texture(previous_frame_texture, previous_screen_coordinate);
 
 		//Constrain the previous sample.
-		previousFrameTextureSampler.rgb = Constrain(previousFrameTextureSampler.rgb, minimum, maximum);
+		previous_frame_texture_sampler.rgb = Constrain(previous_frame_texture_sampler.rgb, minimum, maximum);
 
 		/*
 		*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -94,27 +102,26 @@ void CatalystShaderMain()
 		float final_weight = TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight;
 
 		//Blend the previous and the current frame.
-		vec3 blended_frame = mix(currentFrameTextureSampler.rgb, previousFrameTextureSampler.rgb, final_weight);
+		vec3 blended_frame = mix(current_frame_texture_sampler.rgb, previous_frame_texture_sampler.rgb, final_weight);
 
 		//Write the fragments.
-		currentFrame = vec4(blended_frame, 1.0f);
+		current_frame = vec4(blended_frame, 1.0f);
 		scene = vec4(blended_frame, 1.0f);
 	}
 
 	else
 	{
 		//Sample the previous frame texture.
-		vec4 previous_frame_texture_sampler = texture(previousFrameTexture, fragmentTextureCoordinate);
+		vec4 previous_frame_texture_sampler = texture(previous_frame_texture, fragment_texture_coordinate);
 
 		//Sample the current frame texture.
-		vec4 current_frame_texture_sampler = texture(currentFrameTexture, fragmentTextureCoordinate);
+		vec4 current_frame_texture_sampler = texture(current_frame_texture, fragment_texture_coordinate);
 
 		//Blend the previous and the current frame.
 		vec3 blended_frame = mix(current_frame_texture_sampler.rgb, previous_frame_texture_sampler.rgb, WEIGHT_OVERRIDE);
 
 		//Write the fragments.
-		currentFrame = vec4(blended_frame, 1.0f);
+		current_frame = vec4(blended_frame, 1.0f);
 		scene = vec4(blended_frame, 1.0f);
 	}
-	
 }
