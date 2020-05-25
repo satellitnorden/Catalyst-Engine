@@ -50,7 +50,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 	}
 
 	//Cast a ray from the mouse position and forward.
-	if (!ImGui::IsAnyItemHovered())
+	if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemHovered())
 	{
 		//Cache if the left mouse button is pressed.
 		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED };
@@ -202,7 +202,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
 				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
 
-				if (ImGui::DragFloat3("Rotation", reinterpret_cast<float32 *const RESTRICT>(&rotation), 0.01f))
+				if (ImGui::DragFloat3("Rotation", reinterpret_cast<float32 *const RESTRICT>(&rotation), 0.1f))
 				{
 					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
 					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
