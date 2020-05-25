@@ -21,8 +21,8 @@ public:
 	Vector4<float32> _PerceiverForwardVector;
 	Vector4<float32> _PerceiverWorldPosition;
 
+	Vector2<float32> _ScaledResolution;
 	Vector2<float32> _InverseScaledResolution;
-	Vector2<float32> _PreviousFrameJitter;
 	Vector2<float32> _CurrentFrameJitter;
 
 	float32 _DeltaTime;

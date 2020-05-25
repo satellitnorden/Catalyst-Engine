@@ -62,8 +62,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 320) vec3 PERCEIVER_FORWARD_VECTOR;
     layout (offset = 336) vec3 PERCEIVER_WORLD_POSITION;
 
-    layout (offset = 352) vec2 INVERSE_SCALED_RESOLUTION;
-    layout (offset = 360) vec2 previousFrameJitter;
+    layout (offset = 352) vec2 SCALED_RESOLUTION;
+    layout (offset = 360) vec2 INVERSE_SCALED_RESOLUTION;
     layout (offset = 368) vec2 currentFrameJitter;
 
     layout (offset = 376) float DELTA_TIME;

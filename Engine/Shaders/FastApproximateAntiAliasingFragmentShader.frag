@@ -69,6 +69,22 @@ vec3 ApplyFastApproximateAntiAliasing(vec3 fragment)
     return anti_aliased_fragment;
 }
 
+/*
+*   Applies sharpen.
+*/
+vec3 ApplySharpen(vec3 scene)
+{
+    return  scene * 9.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f
+            + texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION).rgb * -1.0f;
+}
+
 void CatalystShaderMain()
 {
     //Sample the scene.
@@ -76,6 +92,9 @@ void CatalystShaderMain()
 
     //Apply fast approximate anti aliasing.
     scene = ApplyFastApproximateAntiAliasing(scene);
+
+    //Apply sharpen.
+    //scene = ApplySharpen(scene);
 
     //Write the fragment.
     fragment = vec4(scene, 1.0f);

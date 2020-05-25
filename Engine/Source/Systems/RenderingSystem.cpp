@@ -680,8 +680,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetWorldTransform().GetLocalPosition();
 
+	_DynamicUniformData._ScaledResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
-	_DynamicUniformData._PreviousFrameJitter = _DynamicUniformData._CurrentFrameJitter;
 	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
 
 	//Update floats.

@@ -6,7 +6,7 @@
 
 //Constants.
 #define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
-#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (32)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP (1.0f / SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)
 
 //Layout specification.
@@ -126,7 +126,7 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 				float distance_to_hit_position = length(hit_position - ray_origin);
 				vec3 direction_to_hit_position = vec3(hit_position - ray_origin) / distance_to_hit_position;
 
-				if (dot(ray_direction, direction_to_hit_position) >= 0.9f)
+				if (dot(ray_direction, direction_to_hit_position) >= 0.999f)
 				{
 					//Sample the scene radiance at the sample screen coordinate.
 					vec3 scene_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
