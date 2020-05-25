@@ -59,6 +59,12 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_R_UINT8_HALF_RENDER_TARGET_INDEX,
 																		2,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[2].Initialize(	CatalystShaderConstants::AMBIENT_OCCLUSION_RENDER_TARGET_INDEX,
+																		3,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[3].Initialize(	CatalystShaderConstants::INTERMEDIATE_R_UINT8_HALF_RENDER_TARGET_INDEX,
+																		4,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2_RENDER_TARGET_INDEX,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1));
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1_RENDER_TARGET_INDEX,

@@ -5,7 +5,7 @@
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 //Constants.
-#define DEPTH_WEIGHT (64.0f)
+#define DEPTH_WEIGHT (1024.0f)
 
 /*
 *	Scene features struct definition.

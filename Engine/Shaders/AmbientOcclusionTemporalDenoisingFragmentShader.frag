@@ -1,5 +1,6 @@
 //Constants.
-#define AMBIENT_OCCLUSION_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.99f)
+#define AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR (0.5f)
+#define AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR (0.99f - AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR)
 #define AMBIENT_OCCLUSION_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
 #define AMBIENT_OCCLUSION_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END ((AMBIENT_OCCLUSION_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
@@ -82,7 +83,7 @@ void CatalystShaderMain()
 
 
 	//Blend the previous and the current ambient occlusion.
-	float blended_ambient_occlusion = mix(current_ambient_occlusion_texture_sampler.x, previous_ambient_occlusion_texture_sampler.x, AMBIENT_OCCLUSION_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);
+	float blended_ambient_occlusion = mix(current_ambient_occlusion_texture_sampler.x, previous_ambient_occlusion_texture_sampler.x, AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR + AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR * previous_sample_weight);
 
 	//Write the fragments.
 	current_ambient_occlusion = vec4(vec3(blended_ambient_occlusion), 1.0f);
