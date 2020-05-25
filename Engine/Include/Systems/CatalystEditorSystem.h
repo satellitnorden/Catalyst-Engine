@@ -44,8 +44,19 @@ public:
 
 private:
 
+	//Enumeration covering all contextual windows.
+	enum class ContextualWindow : uint8
+	{
+		NONE,
+		RENDERING,
+		WORLD
+	};
+
 	//Denotes if the editor is in a game.
 	bool _IsInGame{ false };
+
+	//The current contextual window.
+	ContextualWindow _CurrentContextualWindow{ ContextualWindow::NONE };
 
 	//The editor perceiver system.
 	EditorPerceiverSystem _EditorPerceiverSystem;
@@ -54,9 +65,29 @@ private:
 	EditorSelectionSystem _EditorSelectionSystem;
 
 	/*
-	*	Updates the Catalyst editor system during the PRE update phase.
+	*	Updates the Catalyst editor system during the USER_INTERFACE update phase.
 	*/
-	void PreUpdate() NOEXCEPT;
+	void UserInterfaceUpdate() NOEXCEPT;
+
+	/*
+	*	Updates when the Catalyst editor is in a game.
+	*/
+	void UpdateInGame() NOEXCEPT;
+
+	/*
+	*	Updates when the Catalyst editor is not in a game.
+	*/
+	void UpdateNotInGame() NOEXCEPT;
+
+	/*
+	*	Adds the main window.
+	*/
+	void AddMainWindow() NOEXCEPT;
+
+	/*
+	*	Adds the contextual window.
+	*/
+	void AddContextualWindow() NOEXCEPT;
 
 };
 #endif

@@ -9,7 +9,6 @@
 
 //Third party.
 #include <ThirdParty/imgui.h>
-#include <ThirdParty/imgui_impl_win32.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CatalystEditorSystem);
@@ -22,22 +21,16 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Set up ImGui.
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-
-	//ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	//ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-	//ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(CatalystPlatform::_Window);
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
-		static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->PreUpdate();
+		static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->UserInterfaceUpdate();
 	},
 	this,
-	UpdatePhase::PRE,
-	UpdatePhase::ENTITY,
+	UpdatePhase::USER_INTERFACE,
+	UpdatePhase::LOGIC,
 	false);
 
 	//Updates the editor perceiver system.
@@ -54,91 +47,205 @@ void CatalystEditorSystem::Terminate() NOEXCEPT
 {
 	//Shut down ImGui.
 	ImGui::DestroyContext();
-	ImGui_ImplWin32_Shutdown();
 }
 
 /*
-*	Updates the Catalyst editor system during the PRE update phase.
+*	Updates the Catalyst editor system during the USER_INTERFACE update phase.
 */
-void CatalystEditorSystem::PreUpdate() NOEXCEPT
+void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 {
+	//Fill in ImGui's IO struct.
+	ImGuiIO& io{ ImGui::GetIO() };
+
+	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
+	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
+	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
+	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState()->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState()->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
+	io.MouseDown[0] = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED_HELD;
+	io.MouseDown[1] = InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED_HELD;
+	io.MouseDown[2] = InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED_HELD;
+
 	//Begin the new ImGui frame.
-	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
 	if (_IsInGame)
 	{
-		//Add the game window.
-		ImGui::Begin(	"Catalyst Editor",
-						nullptr,
-						ImGuiWindowFlags_NoMove
-						| ImGuiWindowFlags_NoScrollWithMouse
-						| ImGuiWindowFlags_NoBackground
-						| ImGuiWindowFlags_NoSavedSettings
-						| ImGuiWindowFlags_NoMouseInputs
-						| ImGuiWindowFlags_NoFocusOnAppearing
-						| ImGuiWindowFlags_NoBringToFrontOnFocus
-						| ImGuiWindowFlags_NoNav
-						| ImGuiWindowFlags_NoDecoration
-						| ImGuiWindowFlags_NoInputs);
-		ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 64.0f));
-
-		ImGui::Text("Press ESCAPE to exit game");
-
-		if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) == ButtonState::PRESSED)
-		{
-			_IsInGame = false;
-		}
-
-		ImGui::End();
+		UpdateInGame();
 	}
 	
 	else
 	{
-		//Add the main window.
-		ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 128.0f));
+		UpdateNotInGame();
+	}
+}
 
-		//Add the enter game button.
-		if (ImGui::Button("Enter Game"))
+/*
+*	Updates when the Catalyst editor is in a game.
+*/
+void CatalystEditorSystem::UpdateInGame() NOEXCEPT
+{
+	//Add the game window.
+	ImGui::Begin(	"Catalyst Editor",
+					nullptr,
+					ImGuiWindowFlags_NoMove
+					| ImGuiWindowFlags_NoScrollWithMouse
+					| ImGuiWindowFlags_NoBackground
+					| ImGuiWindowFlags_NoSavedSettings
+					| ImGuiWindowFlags_NoMouseInputs
+					| ImGuiWindowFlags_NoFocusOnAppearing
+					| ImGuiWindowFlags_NoBringToFrontOnFocus
+					| ImGuiWindowFlags_NoNav
+					| ImGuiWindowFlags_NoDecoration
+					| ImGuiWindowFlags_NoInputs);
+	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
+	ImGui::SetWindowSize(ImVec2(256.0f, 64.0f));
+
+	ImGui::Text("Press ESCAPE to exit game");
+
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) == ButtonState::PRESSED)
+	{
+		_IsInGame = false;
+	}
+
+	ImGui::End();
+}
+
+/*
+*	Updates when the Catalyst editor is not in a game.
+*/
+void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
+{
+	//Add the main window.
+	AddMainWindow();
+
+	//Add the contextual window, if there is any.
+	if (_CurrentContextualWindow != ContextualWindow::NONE)
+	{
+		AddContextualWindow();
+	}
+}
+
+/*
+*	Adds the main window.
+*/
+void CatalystEditorSystem::AddMainWindow() NOEXCEPT
+{
+	//Add the main window.
+	ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
+	ImGui::SetWindowSize(ImVec2(256.0f, 128.0f));
+
+	//Add the enter game button.
+	if (ImGui::Button("Enter Game"))
+	{
+		_IsInGame = true;
+	}
+
+	//Opens the world rendering window.
+	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
+	{
+		if (ImGui::Button("Close Rendering Window"))
 		{
-			_IsInGame = true;
+			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
+	}
 
-		//Add the start/stop taking screenshot button.
-		if (RenderingSystem::Instance->IsTakingScreenshot())
+	else
+	{
+		if (ImGui::Button("Open Rendering Window"))
 		{
-			if (ImGui::Button("Stop Taking Screenshot"))
+			_CurrentContextualWindow = ContextualWindow::RENDERING;
+		}
+	}
+
+	//Opens the world contextual window.
+	if (_CurrentContextualWindow == ContextualWindow::WORLD)
+	{
+		if (ImGui::Button("Close World Window"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Open World Window"))
+		{
+			_CurrentContextualWindow = ContextualWindow::WORLD;
+		}
+	}
+
+	ImGui::End();
+}
+
+/*
+*	Adds the contextual window.
+*/
+void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
+{
+	switch (_CurrentContextualWindow)
+	{
+		case ContextualWindow::RENDERING:
+		{
+			//Add the rendering window.
+			ImGui::Begin("Rendering", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
+			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+
+			//Add the start/stop taking screenshot button.
+			if (RenderingSystem::Instance->IsTakingScreenshot())
 			{
-				RenderingSystem::Instance->StopTakingScreenshot("Catalyst Editor Screenshot.tga");
+				if (ImGui::Button("Stop Taking Screenshot"))
+				{
+					RenderingSystem::Instance->StopTakingScreenshot("Catalyst Editor Screenshot.tga");
+				}
 			}
-		}
 
-		else
-		{
-			if (ImGui::Button("Start Taking Screenshot"))
+			else
 			{
-				RenderingSystem::Instance->StartTakingScreenshot();
+				if (ImGui::Button("Start Taking Screenshot"))
+				{
+					RenderingSystem::Instance->StartTakingScreenshot();
+				}
 			}
+
+			//Add button to toggle path tracing rendering path.
+			static bool path_tracing{ false };
+			ImGui::Checkbox("Path Tracing", &path_tracing);
+
+			if (path_tracing)
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::PATH_TRACING);
+			}
+
+			else
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
+			}
+
+			ImGui::End();
+
+			break;
 		}
 
-		//Add button to toggle path tracing rendering path.
-		static bool path_tracing{ false };
-		ImGui::Checkbox("Path Tracing", &path_tracing);
-
-		if (path_tracing)
+		case ContextualWindow::WORLD:
 		{
-			RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::PATH_TRACING);
+			//Add the world window.
+			ImGui::Begin("World", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
+			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+
+			ImGui::End();
+
+			break;
 		}
 
-		else
+		default:
 		{
-			RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
-		}
+			ASSERT(false, "Invalid case!");
 
-		ImGui::End();
+			break;
+		}
 	}
 }
 #endif

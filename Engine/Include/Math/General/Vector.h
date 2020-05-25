@@ -325,7 +325,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT_EPSILON) };
+		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT32_EPSILON) };
 		const float inverseLength{ 1.0f / length };
 
 		_X *= inverseLength;
@@ -879,7 +879,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT_EPSILON) };
+		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT32_EPSILON) };
 		const float inverseLength{ 1.0f / length };
 
 		_X *= inverseLength;

@@ -4,11 +4,6 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
-//Third party.
-#if defined(CATALYST_EDITOR)
-#include <ThirdParty/imgui.h>
-#endif
-
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
 
@@ -87,13 +82,4 @@ void InputSystem::InputUpdate() NOEXCEPT
 			_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
 		}
 	}
-
-#if defined(CATALYST_EDITOR)
-	//Fill in ImGui's IO struct.
-	ImGuiIO& io{ ImGui::GetIO() };
-
-	io.MouseDown[0] = _InputState._MouseState._Left == ButtonState::PRESSED || _InputState._MouseState._Left == ButtonState::PRESSED_HELD;
-	io.MouseDown[1] = _InputState._MouseState._Right == ButtonState::PRESSED || _InputState._MouseState._Right == ButtonState::PRESSED_HELD;
-	io.MouseDown[2] = _InputState._MouseState._ScrollWheel == ButtonState::PRESSED || _InputState._MouseState._ScrollWheel == ButtonState::PRESSED_HELD;
-#endif
 }

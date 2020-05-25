@@ -235,8 +235,8 @@ NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const
 		Vector2<float32> coordinate{ (position._X - 0.5f + half_resolution) / full_resolution, (position._Z - 0.5f + half_resolution) / full_resolution };
 
 		//Clamp the coordinate.
-		coordinate._X = CatalystBaseMath::Clamp<float32>(coordinate._X, 0.0f, 1.0f - FLOAT_EPSILON);
-		coordinate._Y = CatalystBaseMath::Clamp<float32>(coordinate._Y, 0.0f, 1.0f - FLOAT_EPSILON);
+		coordinate._X = CatalystBaseMath::Clamp<float32>(coordinate._X, 0.0f, 1.0f - FLOAT32_EPSILON);
+		coordinate._Y = CatalystBaseMath::Clamp<float32>(coordinate._Y, 0.0f, 1.0f - FLOAT32_EPSILON);
 
 		//Return the coordinate.
 		return coordinate;
