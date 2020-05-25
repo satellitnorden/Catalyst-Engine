@@ -63,7 +63,7 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_d
 /*
 *	Casts a ray against the scene. Returns if there was a hit.	
 */
-float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out vec3 hit_radiance)
+float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_features_3, vec3 view_direction, vec3 ray_origin, vec3 ray_direction, float start_offset, out vec3 hit_radiance)
 {
 	//Calculate the screen space origin.
 	vec3 screen_space_origin;
@@ -128,46 +128,41 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 
 				if (dot(ray_direction, direction_to_hit_position) >= 0.9f)
 				{
-					//Sample the scene at the sample screen coordinate.
-					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
+					//Sample the scene radiance at the sample screen coordinate.
+					vec3 scene_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
 
-					//Since the hit radiance only contains emissive and direct lighting, add some simple indirect and volumetric lighting to the point.
+					//The scene radiance at this point has only received direct lighting, so add some indirect lighting from the sky texture to simulate multiple bounces.
 					{
-						//Sample the sample's material properties.
 						vec4 sample_scene_features_1 = texture(scene_features_1_texture, screen_space_sample_position.xy);
 						vec4 sample_scene_features_3 = texture(scene_features_3_texture, screen_space_sample_position.xy);
 
-						//Add indirect lighting.
-						{
-							//Sample the sky.
-							vec3 sky_diffuse_sample = SampleSkyDiffuse(sample_scene_features_2.xyz);
-							vec3 sky_specular_sample = SampleSkySpecular(ray_direction, sample_scene_features_2.xyz, sample_scene_features_3[0], sample_scene_features_3[1]);
+						vec3 sample_ray_direction;
+						float sample_start_offset;
 
-							//Calculate the indirect lighting.
-							vec3 indirect_lighting = CalculatePrecomputedLighting(	-ray_direction,
-																					sample_scene_features_1.rgb,
-																					sample_scene_features_2.xyz,
-																					sample_scene_features_3[0],
-																					sample_scene_features_3[1],
-																					sample_scene_features_3[2],
-																					1.0f,
-																					sky_diffuse_sample,
-																					sky_specular_sample,
-																					vec2(1.0f, 0.0f));
+						CalculateIndirectLightingRayDirectionAndStartOffset(uint(start_offset * 64.0f), ray_direction, sample_scene_features_2.xyz, sample_scene_features_3[0], sample_scene_features_3[1], sample_ray_direction, sample_start_offset);
+					
+						scene_radiance += CalculateLighting(-ray_direction,
+															sample_scene_features_1.rgb,
+															sample_scene_features_2.xyz,
+															sample_scene_features_3[0],
+															sample_scene_features_3[1],
+															sample_scene_features_3[2],
+															sample_scene_features_1.w,
+															-sample_ray_direction,
+															textureLod(SKY_TEXTURE, sample_ray_direction, 0).rgb * SKY_INTENSITY);
+					}
 
-							//Blend in volumetric lighting into the indirect lighting to mesh better with the scene.
-							vec3 volumetric_ambient_lighting = CalculateVolumetricAmbientLighting();
-							float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, vec3(hit_position + sample_scene_features_2.xyz * VIEW_DISTANCE).y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, hit_position.y);
-
-							indirect_lighting = mix(indirect_lighting, volumetric_ambient_lighting, volumetric_lighting_opacity);
-
-							hit_radiance += indirect_lighting;
-
-							//Blend in volumetric lighting into the hit radiance to mesh better with the scene.
-							volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(distance_to_hit_position, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, ray_origin.y);
-						
-							hit_radiance = mix(hit_radiance, volumetric_ambient_lighting, volumetric_lighting_opacity);
-						}
+					//Calculate the hit radiance.
+					{
+						hit_radiance = CalculateLighting(	-view_direction,
+															scene_features_1.rgb,
+															scene_features_2.xyz,
+															scene_features_3[0],
+															scene_features_3[1],
+															scene_features_3[2],
+															scene_features_1.w,
+															-ray_direction,
+															scene_radiance);
 					}
 
 					//Return that there was a hit.
@@ -186,17 +181,12 @@ float CastRayScene(vec3 ray_origin, vec3 ray_direction, float start_offset, out 
 void CatalystShaderMain()
 {
 	//Sample the scene features.
+	vec4 scene_features_1 = texture(scene_features_1_texture, fragment_texture_coordinate);
 	vec4 scene_features_2 = texture(scene_features_2_texture, fragment_texture_coordinate);
 	vec4 scene_features_3 = texture(scene_features_3_texture, fragment_texture_coordinate);
 
-	//Unpack the scene features.
-	vec3 normal = scene_features_2.xyz;
-	float depth = scene_features_2.w;
-	float roughness = scene_features_3.x;
-	float metallic = scene_features_3.y;
-
 	//Calculate the world position at this fragment.
-	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, depth);
+	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
 
 	//Calculate the view direction.
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
@@ -211,23 +201,42 @@ void CatalystShaderMain()
 		vec3 ray_direction;
 		float start_offset;
 
-		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, normal, roughness, metallic, ray_direction, start_offset);
+		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, scene_features_2.xyz, scene_features_3[0], scene_features_3[1], ray_direction, start_offset);
 
 		//Calculate the indirect lighting.
 		vec3 sample_indirect_lighting;
 
-		float hit = CastRayScene(world_position + ray_direction , ray_direction, start_offset, sample_indirect_lighting);
-
-		//Calculate the sample weight.
-		float sample_weight = hit;
+		float hit = CastRayScene(scene_features_1, scene_features_2, scene_features_3, view_direction, world_position, ray_direction, start_offset, sample_indirect_lighting);
 
 		//Accumulate.
-		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * sample_weight : vec3(0.0f);
-		total_weight += sample_weight;
+		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * hit : vec3(0.0f);
+		total_weight += hit;
 	}
 
 	//Normalize the indirect lighting.
 	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
+
+	//Blend in the sky a bit to account for misses.
+	{
+		//Calculate the ray direction and start offset.
+		vec3 ray_direction;
+		float start_offset;
+
+		CalculateIndirectLightingRayDirectionAndStartOffset(SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES, view_direction, scene_features_2.xyz, scene_features_3[0], scene_features_3[1], ray_direction, start_offset);
+
+		vec3 sky_indirect_lighting = 	CalculateLighting(	-view_direction,
+															scene_features_1.rgb,
+															scene_features_2.xyz,
+															scene_features_3[0],
+															scene_features_3[1],
+															scene_features_3[2],
+															scene_features_1.w,
+															-ray_direction,
+															textureLod(SKY_TEXTURE, ray_direction, 0).rgb * SKY_INTENSITY);
+
+		indirect_lighting = mix(sky_indirect_lighting, indirect_lighting, min(total_weight, 1.0f));
+	}
+	
 
     //Write the fragment
     fragment = vec4(indirect_lighting, min(total_weight, 1.0f));
