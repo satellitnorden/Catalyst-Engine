@@ -139,7 +139,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 				box._Minimum -= 0.1f;
 				box._Maximum += 0.1f;
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f * 0.5f), true, true, box, 0.0f);
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 1.0f), true, true, box, 0.0f);
 				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f * 0.5f * 0.125f), true, false, box, 0.0f);
 
 				break;
@@ -159,7 +159,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 				box._Minimum -= 0.1f;
 				box._Maximum += 0.1f;
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), true, true, box, 0.0f);
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 1.0f), true, true, box, 0.0f);
 				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f * 0.125f), true, false, box, 0.0f);
 
 				break;
