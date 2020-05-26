@@ -27,8 +27,8 @@ public:
 
 private:
 
-	//The screen space indirect lighting graphics pipeline.
-	ScreenSpaceIndirectLightingGraphicsPipeline _ScreenSpaceIndirectLightingGraphicsPipeline;
+	//The screen space indirect lighting graphics pipelines.
+	StaticArray<ScreenSpaceIndirectLightingGraphicsPipeline, 2> _ScreenSpaceIndirectLightingGraphicsPipelines;
 
 	//The indirect lighting ray tracing pipeline.
 	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;

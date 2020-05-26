@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
 class ScreenSpaceIndirectLightingGraphicsPipeline final : public GraphicsPipeline
@@ -14,7 +15,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const RenderingConfiguration::IndirectLightingQuality quality) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -37,6 +38,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
+	void CreateRenderDataTable(const RenderingConfiguration::IndirectLightingQuality quality) NOEXCEPT;
 
 };

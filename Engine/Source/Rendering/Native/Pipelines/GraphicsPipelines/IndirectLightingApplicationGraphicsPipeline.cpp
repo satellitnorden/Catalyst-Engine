@@ -19,11 +19,8 @@ class IndirectLightingApplicationPushConstantData final
 
 public:
 
-	//Denotes whether or not indirect lighting is enabled
-	int32 _IndirectLightingEnabled;
-
-	//The specular bias lookup texture index.
-	uint32 _SpecularBiasLookupTextureIndex;
+	//The indirect lighting quality.
+	uint32 _IndirectLightingQuality;
 
 };
 
@@ -32,9 +29,6 @@ public:
 */
 void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 {
-	//Create the specular bias lookup texture.
-	CreateSpecularBiasLookupTexture();
-
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -100,8 +94,7 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingApplicationPushConstantData data;
 
-	data._IndirectLightingEnabled = RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE;
-	data._SpecularBiasLookupTextureIndex = _SpecularBiasLookupTextureIndex;
+	data._IndirectLightingQuality = static_cast<uint32>(RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality());
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingApplicationPushConstantData), &data);
 
@@ -113,31 +106,4 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
-}
-
-/*
-*	Creates the specular bias lookup texture.
-*/
-void IndirectLightingApplicationGraphicsPipeline::CreateSpecularBiasLookupTexture() NOEXCEPT
-{
-	//Define constants.
-	constexpr uint32 SIZE{ 512 };
-
-	//Open the file.
-#if defined(CATALYST_CONFIGURATION_FINAL)
-	BinaryFile<IOMode::In> file{ "SpecularBiasLookupTextureData.cr" };
-#else
-	BinaryFile<IOMode::In> file{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\SpecularBiasLookupTextureData.cr" };
-#endif
-
-	//Load the data into the texture.
-	Texture2D<Vector2<float32>> texture{ SIZE };
-	file.Read(texture.Data(), sizeof(Vector2<float32>) * SIZE * SIZE);
-
-	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(texture), TextureFormat::RG_FLOAT32), &_SpecularBiasLookupTexture);
-
-	//Add the texture to the global render data.
-	_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);
-
 }

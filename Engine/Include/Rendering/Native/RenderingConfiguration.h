@@ -30,6 +30,20 @@ public:
 		SCREEN_SPACE
 	};
 
+	//Enumeration covering all indirect lighting qualities.
+	enum class IndirectLightingQuality : uint8
+	{
+		/*
+		*	This setting will render the indirect lighting at half resolution.
+		*/
+		LOW,
+
+		/*
+		*	This setting will render the indirect lighting at full resolution.
+		*/
+		HIGH
+	};
+
 	//Enumeration covering all surface shadows modes.
 	enum class SurfaceShadowsMode : uint8
 	{
@@ -95,6 +109,22 @@ public:
 	}
 
 	/*
+	*	Returns the indirect lighting quality.
+	*/
+	FORCE_INLINE NO_DISCARD IndirectLightingQuality GetIndirectLightingQuality() const NOEXCEPT
+	{
+		return _IndirectLightingQuality;
+	}
+
+	/*
+	*	Sets the indirect lighting quality.
+	*/
+	FORCE_INLINE void SetIndirectLightingQuality(const IndirectLightingQuality value) NOEXCEPT
+	{
+		_IndirectLightingQuality = value;
+	}
+
+	/*
 	*	Returns the surface shadows mode.
 	*/
 	FORCE_INLINE NO_DISCARD SurfaceShadowsMode GetSurfaceShadowsMode() const NOEXCEPT
@@ -144,6 +174,9 @@ private:
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
+
+	//The indirect lighting quality.
+	IndirectLightingQuality _IndirectLightingQuality{ IndirectLightingQuality::LOW };
 
 	//The surface shadows mode.
 	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RASTERIZED };

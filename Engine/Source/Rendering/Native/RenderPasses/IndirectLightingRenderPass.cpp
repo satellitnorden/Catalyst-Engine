@@ -34,9 +34,13 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + _IndirectLightingSpatialDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(_ScreenSpaceIndirectLightingGraphicsPipelines.Size() + 1 + _IndirectLightingSpatialDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
-	AddPipeline(&_ScreenSpaceIndirectLightingGraphicsPipeline);
+	for (ScreenSpaceIndirectLightingGraphicsPipeline &pipeline : _ScreenSpaceIndirectLightingGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_IndirectLightingRayTracingPipeline);
 
 	for (IndirectLightingSpatialDenoisingGraphicsPipeline& pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
@@ -52,7 +56,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_IndirectLightingApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize();
+	_ScreenSpaceIndirectLightingGraphicsPipelines[0].Initialize(RenderingConfiguration::IndirectLightingQuality::LOW);
+	_ScreenSpaceIndirectLightingGraphicsPipelines[1].Initialize(RenderingConfiguration::IndirectLightingQuality::HIGH);
 	_IndirectLightingRayTracingPipeline.Initialize();
 	_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
 																		1,
@@ -95,13 +100,42 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::NONE)
 	{
-		_ScreenSpaceIndirectLightingGraphicsPipeline.SetIncludeInRender(false);
+		for (ScreenSpaceIndirectLightingGraphicsPipeline &pipeline : _ScreenSpaceIndirectLightingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 	{
-		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
+		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
+		{
+			case RenderingConfiguration::IndirectLightingQuality::LOW:
+			{
+				_ScreenSpaceIndirectLightingGraphicsPipelines[0].Execute();
+				_ScreenSpaceIndirectLightingGraphicsPipelines[1].SetIncludeInRender(false);
+
+				break;
+			}
+
+			case RenderingConfiguration::IndirectLightingQuality::HIGH:
+			{
+				_ScreenSpaceIndirectLightingGraphicsPipelines[0].SetIncludeInRender(false);
+				_ScreenSpaceIndirectLightingGraphicsPipelines[1].Execute();
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
 		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
 	}
 
