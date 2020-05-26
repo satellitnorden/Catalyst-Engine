@@ -61,6 +61,14 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the model resources.
+*/
+NO_DISCARD ResourcePointer<ModelResource> DynamicModelEntity::GetModelResource() const NOEXCEPT
+{
+	return ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelResource;
+}
+
+/*
 *	Returns the world transform.
 */
 RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT

@@ -25,7 +25,8 @@ public:
 	FORCE_INLINE constexpr ResourceHeader() NOEXCEPT
 		:
 		_TypeIdentifier(),
-		_ResourceIdentifier()
+		_ResourceIdentifier(),
+		_ResourceName()
 	{
 
 	}

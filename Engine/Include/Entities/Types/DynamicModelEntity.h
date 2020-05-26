@@ -6,6 +6,10 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Resources.
+#include <Resources/Core/ModelResource.h>
+#include <Resources/Core/ResourcePointer.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
@@ -38,6 +42,11 @@ public:
 
 		return false;
 	}
+
+	/*
+	*	Returns the model resources.
+	*/
+	NO_DISCARD ResourcePointer<ModelResource> GetModelResource() const NOEXCEPT;
 
 	/*
 	*	Returns the world transform.

@@ -183,6 +183,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 			{
 				//Add the header text.
 				ImGui::Text("Dynamic Model");
+				ImGui::Text("Model Resource: %s", static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetModelResource()->_Header._ResourceName.Data());
 
 				//Cache the world transform.
 				WorldTransform *const RESTRICT world_transform{ static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->ModifyWorldTransform() };

@@ -32,6 +32,14 @@ public:
 		Memory::Copy(_Data.Data(), string, string_length + 1);
 	}
 
+	/*
+	*	Returns the underlying data.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char* const RESTRICT Data() NOEXCEPT
+	{
+		return _Data.Data();
+	}
+
 private:
 
 	//The underlying data.
