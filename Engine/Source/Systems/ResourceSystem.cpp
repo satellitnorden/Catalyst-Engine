@@ -47,6 +47,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
 				}
 
+				//Set the resource hader.
+				new_resource->_Header = header;
+
 				//Load the resource.
 				AnimatedModelData data;
 				_ResourceLoadingSystem.LoadAnimatedModel(&file, &data);
@@ -78,6 +81,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					new_resource = new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource();
 					_AnimationResources.Add(header._ResourceIdentifier, new_resource);
 				}
+
+				//Set the resource hader.
+				new_resource->_Header = header;
 
 				//Load the resource.
 				AnimationData data;
@@ -111,6 +117,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					_FontResources.Add(header._ResourceIdentifier, new_resource);
 				}
 
+				//Set the resource hader.
+				new_resource->_Header = header;
+
 				//Load the resource.
 				FontData data;
 				_ResourceLoadingSystem.LoadFont(&file, &data);
@@ -142,6 +151,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					new_resource = new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource();
 					_MaterialResources.Add(header._ResourceIdentifier, new_resource);
 				}
+
+				//Set the resource hader.
+				new_resource->_Header = header;
 
 				//Load the resource.
 				MaterialData data;
@@ -175,6 +187,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					_ModelResources.Add(header._ResourceIdentifier, new_resource);
 				}
 
+				//Set the resource hader.
+				new_resource->_Header = header;
+
 				//Load the resource.
 				ModelData data;
 				_ResourceLoadingSystem.LoadModel(&file, &data);
@@ -206,6 +221,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					new_resource = new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource();
 					_ShaderResources.Add(header._ResourceIdentifier, new_resource);
 				}
+
+				//Set the resource hader.
+				new_resource->_Header = header;
 
 				//Load the resource.
 				ShaderData data;
@@ -239,6 +257,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					_SoundResources.Add(header._ResourceIdentifier, new_resource);
 				}
 
+				//Set the resource hader.
+				new_resource->_Header = header;
+
 				//Load the resource.
 				SoundData data;
 				_ResourceLoadingSystem.LoadSound(&file, &data);
@@ -270,6 +291,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					new_resource = new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource();
 					_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
 				}
+
+				//Set the resource hader.
+				new_resource->_Header = header;
 
 				//Load the resource.
 				TextureCubeData data;
@@ -303,6 +327,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
 				}
 
+				//Set the resource hader.
+				new_resource->_Header = header;
+
 				//Load the resource.
 				Texture2DData data;
 				_ResourceLoadingSystem.LoadTexture2D(&file, &data);
@@ -334,6 +361,9 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 					new_resource = new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource();
 					_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
 				}
+
+				//Set the resource hader.
+				new_resource->_Header = header;
 
 				//Load the resource.
 				Texture3DData data;
