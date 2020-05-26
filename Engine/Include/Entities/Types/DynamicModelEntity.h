@@ -7,6 +7,7 @@
 #include <Entities/Types/Entity.h>
 
 //Resources.
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
@@ -47,6 +48,11 @@ public:
 	*	Returns the model resources.
 	*/
 	NO_DISCARD ResourcePointer<ModelResource> GetModelResource() const NOEXCEPT;
+
+	/*
+	*	Returns the material resources.
+	*/
+	NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &GetMaterialResources() const NOEXCEPT;
 
 	/*
 	*	Returns the world transform.

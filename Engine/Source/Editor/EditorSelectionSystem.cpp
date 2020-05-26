@@ -174,8 +174,8 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 256.0f, 8.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 128.0f));
+		ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f, 8.0f));
+		ImGui::SetWindowSize(ImVec2(512.0f, 128.0f));
 		
 		switch (_CurrentlySelectedEntity->_Type)
 		{
@@ -184,6 +184,14 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 				//Add the header text.
 				ImGui::Text("Dynamic Model");
 				ImGui::Text("Model Resource: %s", static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetModelResource()->_Header._ResourceName.Data());
+
+				for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					if (static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i])
+					{
+						ImGui::Text("Material Resource #%u: %s", i, static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i]->_Header._ResourceName.Data());
+					}
+				}
 
 				//Cache the world transform.
 				WorldTransform *const RESTRICT world_transform{ static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->ModifyWorldTransform() };

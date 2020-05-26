@@ -69,6 +69,14 @@ NO_DISCARD ResourcePointer<ModelResource> DynamicModelEntity::GetModelResource()
 }
 
 /*
+*	Returns the material resources.
+*/
+NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &DynamicModelEntity::GetMaterialResources() const NOEXCEPT
+{
+	return ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._MaterialResources;
+}
+
+/*
 *	Returns the world transform.
 */
 RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT

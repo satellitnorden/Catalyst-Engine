@@ -49,6 +49,7 @@ private:
 	{
 		NONE,
 		RENDERING,
+		RESOURCES,
 		WORLD
 	};
 

@@ -6,6 +6,7 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 //Third party.
 #include <ThirdParty/imgui.h>
@@ -144,7 +145,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	//Opens the world rendering window.
 	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
 	{
-		if (ImGui::Button("Close Rendering Window"))
+		if (ImGui::Button("Close Rendering"))
 		{
 			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
@@ -152,16 +153,33 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 
 	else
 	{
-		if (ImGui::Button("Open Rendering Window"))
+		if (ImGui::Button("Open Rendering"))
 		{
 			_CurrentContextualWindow = ContextualWindow::RENDERING;
+		}
+	}
+
+	//Opens the world rendering window.
+	if (_CurrentContextualWindow == ContextualWindow::RESOURCES)
+	{
+		if (ImGui::Button("Close Resources"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Open Resources"))
+		{
+			_CurrentContextualWindow = ContextualWindow::RESOURCES;
 		}
 	}
 
 	//Opens the world contextual window.
 	if (_CurrentContextualWindow == ContextualWindow::WORLD)
 	{
-		if (ImGui::Button("Close World Window"))
+		if (ImGui::Button("Close World"))
 		{
 			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
@@ -169,7 +187,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 
 	else
 	{
-		if (ImGui::Button("Open World Window"))
+		if (ImGui::Button("Open World"))
 		{
 			_CurrentContextualWindow = ContextualWindow::WORLD;
 		}
@@ -221,6 +239,26 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 			else
 			{
 				RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
+			}
+
+			ImGui::End();
+
+			break;
+		}
+
+		case ContextualWindow::RESOURCES:
+		{
+			//Add the world window.
+			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
+			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+
+			//List all models resources, for now.
+			const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
+
+			for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
+			{
+				ImGui::Text(model_resource->_Header._ResourceName.Data());
 			}
 
 			ImGui::End();

@@ -89,6 +89,14 @@ public:
 	NO_DISCARD ResourcePointer<AnimatedModelResource> FindOrCreateAnimatedModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns all animated model resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, AnimatedModelResource *RESTRICT> &GetAllAnimatedModelResources() const NOEXCEPT
+	{
+		return _AnimatedModelResources;
+	}
+
+	/*
 	*	Returns the animation resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT
@@ -105,6 +113,14 @@ public:
 	*	Returns or creates the animation resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<AnimationResource> FindOrCreateAnimationResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all animation resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, AnimationResource *RESTRICT> &GetAllAnimationResources() const NOEXCEPT
+	{
+		return _AnimationResources;
+	}
 
 	/*
 	*	Returns the font resource with the given identifier.
@@ -125,6 +141,14 @@ public:
 	NO_DISCARD ResourcePointer<FontResource> FindOrCreateFontResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns all font resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, FontResource *RESTRICT> &GetAllFontResources() const NOEXCEPT
+	{
+		return _FontResources;
+	}
+
+	/*
 	*	Returns the material resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<MaterialResource> GetMaterialResource(const HashString identifier) NOEXCEPT
@@ -141,6 +165,14 @@ public:
 	*	Returns or creates the material resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<MaterialResource> FindOrCreateMaterialResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all material resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, MaterialResource *RESTRICT> &GetAllMaterialResources() const NOEXCEPT
+	{
+		return _MaterialResources;
+	}
 
 	/*
 	*	Returns the model resource with the given identifier.
@@ -161,6 +193,14 @@ public:
 	NO_DISCARD ResourcePointer<ModelResource> FindOrCreateModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns all model resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, ModelResource *RESTRICT> &GetAllModelResources() const NOEXCEPT
+	{
+		return _ModelResources;
+	}
+
+	/*
 	*	Returns the shader resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT
@@ -177,6 +217,14 @@ public:
 	*	Returns or creates the shader resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<ShaderResource> FindOrCreateShaderResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all shader resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, ShaderResource *RESTRICT> &GetAllShaderResources() const NOEXCEPT
+	{
+		return _ShaderResources;
+	}
 
 	/*
 	*	Returns the sound resource with the given identifier.
@@ -197,6 +245,14 @@ public:
 	NO_DISCARD ResourcePointer<SoundResource> FindOrCreateSoundResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns all sound resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, SoundResource *RESTRICT> &GetAllSoundResources() const NOEXCEPT
+	{
+		return _SoundResources;
+	}
+
+	/*
 	*	Returns the texture cube resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT
@@ -213,6 +269,14 @@ public:
 	*	Returns or creates the texture cube resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<TextureCubeResource> FindOrCreateTextureCubeResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all texture cube resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, TextureCubeResource *RESTRICT> &GetAllTextureCubeResources() const NOEXCEPT
+	{
+		return _TextureCubeResources;
+	}
 
 	/*
 	*	Returns the texture 2D resource with the given identifier.
@@ -233,6 +297,14 @@ public:
 	NO_DISCARD ResourcePointer<Texture2DResource> FindOrCreateTexture2DResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns all texture cube 2D.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, Texture2DResource *RESTRICT> &GetAllTexture2DResources() const NOEXCEPT
+	{
+		return _Texture2DResources;
+	}
+
+	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT
@@ -249,6 +321,14 @@ public:
 	*	Returns or creates the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> FindOrCreateTexture3DResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all texture cube 3D.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, Texture3DResource *RESTRICT> &GetAllTexture3DResources() const NOEXCEPT
+	{
+		return _Texture3DResources;
+	}
 
 private:
 

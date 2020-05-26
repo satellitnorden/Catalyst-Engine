@@ -35,7 +35,7 @@ public:
 	/*
 	*	Returns the underlying data.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const char* const RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const char* const RESTRICT Data() const NOEXCEPT
 	{
 		return _Data.Data();
 	}
