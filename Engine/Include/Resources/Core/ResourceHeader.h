@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/HashString.h>
+#include <Core/General/StaticString.h>
 
 class ResourceHeader final
 {
@@ -14,6 +15,9 @@ public:
 
 	//The resource identifier.
 	HashString _ResourceIdentifier;
+
+	//The resource name.
+	StaticString<64> _ResourceName;
 
 	/*
 	*	Default constuctor.
@@ -29,10 +33,11 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr ResourceHeader(const HashString initial_type_identifier, const HashString initial_resource_identifier) NOEXCEPT
+	FORCE_INLINE constexpr ResourceHeader(const HashString initial_type_identifier, const HashString initial_resource_identifier, const StaticString<64> initial_resource_name) NOEXCEPT
 		:
 		_TypeIdentifier(initial_type_identifier),
-		_ResourceIdentifier(initial_resource_identifier)
+		_ResourceIdentifier(initial_resource_identifier),
+		_ResourceName(initial_resource_name)
 	{
 
 	}

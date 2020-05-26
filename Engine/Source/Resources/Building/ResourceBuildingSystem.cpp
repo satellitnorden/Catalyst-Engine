@@ -116,7 +116,7 @@ void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParamete
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Build the model.
@@ -182,7 +182,7 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::ANIMATION_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::ANIMATION_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Build the animation.
@@ -250,7 +250,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::FONT_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::FONT_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Initialize the FreeType library.
@@ -482,7 +482,7 @@ void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parame
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the rest of the material to the file.
@@ -505,7 +505,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	BinaryFile<IOMode::Out> file{ fileName.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Determine the model space axis aligned bounding box. Assume the first level of detail will be representative in this sense for the rest level of details.
@@ -868,7 +868,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the stage.
@@ -954,7 +954,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 		BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 		//Write the resource header to the file.
-		const ResourceHeader header{ ResourceConstants::SOUND_TYPE_IDENTIFIER, HashString(parameters._ID) };
+		const ResourceHeader header{ ResourceConstants::SOUND_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 		file.Write(&header, sizeof(ResourceHeader));
 
 		//Write the sample rate to the file.
@@ -999,7 +999,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Load the texture.
@@ -1294,7 +1294,7 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
@@ -1329,7 +1329,7 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER, HashString(parameters._ID) };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.

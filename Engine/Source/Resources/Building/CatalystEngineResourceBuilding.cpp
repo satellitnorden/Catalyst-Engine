@@ -2730,7 +2730,7 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString("Ocean_Texture2D") };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString("Ocean_Texture2D"), "Ocean_Texture2D" };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
@@ -2761,7 +2761,7 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
 	BinaryFile<IOMode::Out> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube") };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube"), "Default_Sky_TextureCube" };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the resolution to the file.
