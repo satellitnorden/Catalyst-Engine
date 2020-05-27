@@ -45,11 +45,15 @@ vec3 SampleWithSharpen(float edge_factor)
 {
 	vec3 original_sample = SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate);
 
-	vec3 sharpened_sample = original_sample * 5.0f
+	vec3 sharpened_sample = original_sample * 9.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
 
 	return sharpened_sample;
 }
@@ -87,6 +91,16 @@ vec3 ApplyVignette(vec3 fragment, float edge_factor)
 }
 
 /*
+*	Apply dithering.
+*/
+vec3 ApplyDithering(vec3 fragment)
+{
+	vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+
+	return max(fragment + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * 0.125f * 0.125f), vec3(0.0f, 0.0f, 0.0f));
+}
+
+/*
 *	Applies borders.
 */
 vec3 ApplyBorders(vec3 fragment)
@@ -116,6 +130,9 @@ void CatalystShaderMain()
 
 	//Apply vignette.
 	post_processed_fragment = ApplyVignette(post_processed_fragment, edge_factor);
+
+	//Apply dithering.
+	post_processed_fragment = ApplyDithering(post_processed_fragment);
 
 	//Apply borders.
 	post_processed_fragment = ApplyBorders(post_processed_fragment);
