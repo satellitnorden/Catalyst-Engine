@@ -1,6 +1,6 @@
 //Defines.
 #define DEPTH_WEIGHT (2.0f)
-#define DITHER_STRENGTH (0.125f)
+#define DITHER_STRENGTH (0.1f)
 #define BIAS_AMBIENT_OCCLUSION(X) (X * X * X)
 
 //Layout specification.

@@ -6,7 +6,7 @@
 
 //Constants.
 #define DEPTH_WEIGHT (2.0f)
-#define DITHER_STRENGTH (0.125f)
+#define DITHER_STRENGTH (0.1f)
 #define INDIRECT_LIGHTING_QUALITY_LOW (0)
 #define INDIRECT_LIGHTING_QUALITY_HIGH (1)
 
@@ -93,11 +93,15 @@ vec3 SampleIndirectLighting(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the indirect lighting while sharpening it a bit.
-	vec3 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 5.0f
+	vec3 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 9.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
 
 	//Apply some dithering.
 	vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
