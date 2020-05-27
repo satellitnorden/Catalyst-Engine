@@ -35,6 +35,7 @@
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
 #define BUILD_ENGINE_SHADERS false
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
+#define BUILD_ENGINE_MATERIALS false
 #define BUILD_ENGINE_MODELS false
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION true
@@ -2443,6 +2444,39 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	BuildDefaultSkyTexture();
 #endif
 
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_MATERIALS
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the material.
+			MaterialBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Catalyst_Engine_Default_Material";
+			parameters._ID = "Catalyst_Engine_Default_Material";
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(0.25f, 0.25f, 0.25f, 1.0f));
+			parameters._AlbedoThicknessComponent._Color.ApplyGammaCorrection();
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.25f, 0.75f, 1.0f, 0.0f));
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+#endif
+
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_MODELS
 	{
 		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
@@ -2478,7 +2512,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
 
