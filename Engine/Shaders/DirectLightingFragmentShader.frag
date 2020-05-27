@@ -80,7 +80,7 @@ void CatalystShaderMain()
 													shading_normal,
 													roughness,
 													metallic,
-													ambient_occlusion,
+													1.0f,
 													thickness,
 													light.position_or_direction,
 													light.color * light.intensity) * shadow_factor;

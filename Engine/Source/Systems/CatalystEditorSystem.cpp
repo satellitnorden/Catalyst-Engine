@@ -227,6 +227,37 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 				}
 			}
 
+			//Add button for toggling indirect lighting quality.
+			switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
+			{
+				case RenderingConfiguration::IndirectLightingQuality::LOW:
+				{
+					if (ImGui::Button("Indirect Lighting Quality: Low"))
+					{
+						RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingQuality(RenderingConfiguration::IndirectLightingQuality::HIGH);
+					}
+
+					break;
+				}
+
+				case RenderingConfiguration::IndirectLightingQuality::HIGH:
+				{
+					if (ImGui::Button("Indirect Lighting Quality: High"))
+					{
+						RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingQuality(RenderingConfiguration::IndirectLightingQuality::LOW);
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
 			//Add button to toggle path tracing rendering path.
 			static bool path_tracing{ false };
 			ImGui::Checkbox("Path Tracing", &path_tracing);

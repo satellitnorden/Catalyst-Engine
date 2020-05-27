@@ -19,19 +19,35 @@ class IndirectLightingTemporalDenoisingPushConstantData final
 
 public:
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
+	//The first source render target index.
+	uint32 _SourceRenderTargetIndex1;
+
+	//The second source render target index.
+	uint32 _SourceRenderTargetIndex2;
+
+	//The scene features 4 render target index.
+	uint32 _SceneFeatures4RenderTargetIndex;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
-																	const RenderTargetHandle target) NOEXCEPT
+void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index_1,
+																	const uint32 source_render_target_index_2,
+																	const uint32 scene_features_4_render_target_index,
+																	const RenderTargetHandle target_1,
+																	const RenderTargetHandle target_2,
+																	const Resolution render_resolution) NOEXCEPT
 {
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	//Set the first source render target index.
+	_SourceRenderTargetIndex1 = source_render_target_index_1;
+
+	//Set the second source render target index.
+	_SourceRenderTargetIndex2 = source_render_target_index_2;
+
+	//Set the scene features 4 render target index.
+	_SceneFeatures4RenderTargetIndex = scene_features_4_render_target_index;
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -42,8 +58,8 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
-	AddOutputRenderTarget(target);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	AddOutputRenderTarget(target_1);
+	AddOutputRenderTarget(target_2);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -54,7 +70,7 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingTemporalDenoisingPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
+	SetRenderResolution(render_resolution);
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
@@ -99,7 +115,9 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingTemporalDenoisingPushConstantData data;
 
-	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
+	data._SourceRenderTargetIndex1 = _SourceRenderTargetIndex1;
+	data._SourceRenderTargetIndex2 = _SourceRenderTargetIndex2;
+	data._SceneFeatures4RenderTargetIndex = _SceneFeatures4RenderTargetIndex;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingTemporalDenoisingPushConstantData), &data);
 

@@ -229,14 +229,24 @@ enum class RenderTarget : uint8
 	TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2,
 
 	/*
-	*	Contains the first temporal indirect lighting buffer.
+	*	Contains the first half resolution temporal indirect lighting buffer.
 	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_1,
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1,
 
 	/*
-	*	Contains the second temporal indirect lighting buffer.
+	*	Contains the second half resolution temporal indirect lighting buffer.
 	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_2,
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_2,
+
+	/*
+	*	Contains the first full resolution temporal indirect lighting buffer.
+	*/
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_1,
+
+	/*
+	*	Contains the second full resolution temporal indirect lighting buffer.
+	*/
+	TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2,
 
 	/*
 	*	Contains the first temporal volumetric lighting buffer.

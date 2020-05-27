@@ -1,8 +1,6 @@
 //Constants.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR (0.5f)
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR (0.99f - INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR)
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE (3.0f)
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END ((INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_SIZE - 1.0f) * 0.5f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -13,7 +11,9 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint SOURCE_RENDER_TARGET_INDEX;
+	layout (offset = 0) uint SOURCE_RENDER_TARGET_INDEX_1;
+	layout (offset = 4) uint SOURCE_RENDER_TARGET_INDEX_2;
+	layout (offset = 8) uint SCENE_FEATURES_4_TARGET_INDEX;
 };
 
 //Out parameters.
@@ -21,57 +21,55 @@ layout (location = 0) out vec4 current_indirect_lighting;
 layout (location = 1) out vec4 indirect_lighting;
 
 /*
-*	Calculates the neighborhood weight.
+*	Constrains the previous sample.
 */
-float NeighborhoodWeight(vec3 previous, vec3 minimum, vec3 maximum)
+vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
 {
-	//Calculate the weight.
-	float weight = 1.0f;
+	vec3 p_clip = 0.5f * (maximum + minimum);
+	vec3 e_clip = 0.5f * (maximum - minimum);
 
-	weight *= 1.0f - clamp(minimum.x - previous.x, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(minimum.y - previous.y, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(minimum.z - previous.z, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.x - maximum.x, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.y - maximum.y, 0.0f, 1.0f);
-	weight *= 1.0f - clamp(previous.z - maximum.z, 0.0f, 1.0f);
-	
-	//Bias the weight a bit.
-	weight = weight * weight;
+	vec3 v_clip = previous - p_clip;
+	vec3 v_unit = v_clip / e_clip;
+	vec3 a_unit = abs(v_unit);
 
-	//Return the weight.
-	return weight;
+	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
+
+	if (ma_unit > 1.0f)
+		return p_clip + v_clip / ma_unit;
+	else
+		return previous;
 }
 
 void CatalystShaderMain()
 {
-	//Calculate the unjittered screen coordinate.
-	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
-
 	//Sample the current indirect lighting texture.
-	vec4 current_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate);
+	vec4 current_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_1], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Calculate the minimum/maximum color values in the neighborhood of the current frame.
 	vec3 minimum = current_indirect_lighting_texture_sampler.rgb;
 	vec3 maximum = current_indirect_lighting_texture_sampler.rgb;
 
-	for (float x = -INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; x <= INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; ++x)
+	for (int Y = -1; Y <= 1; ++Y)
 	{
-		for (float y = -INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; y <= INDIRECT_LIGHTING_TEMPORAL_DENOISING_NEIGHBORHOOD_START_END; ++y)
+		for (int X = -1; X <= 1; ++X)
 		{
-			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION * 2.0f;
+			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * INVERSE_SCALED_RESOLUTION;
 		
-			vec4 neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
+			vec4 neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_1], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
 
-			minimum = mix(minimum, min(minimum, neighbordhood_sample.rgb), neighbordhood_sample.a);
-			maximum = mix(maximum, max(maximum, neighbordhood_sample.rgb), neighbordhood_sample.a);
+			minimum = min(minimum, neighbordhood_sample.rgb);
+			maximum = max(maximum, neighbordhood_sample.rgb);
 		}
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate).xy;
+	vec2 previous_screen_coordinate = fragment_texture_coordinate - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy - currentFrameJitter;
 
 	//Sample the previous indirect lighting texture.
-	vec4 previous_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
+	vec4 previous_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_2], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
+
+	//Constrain the previous sample.
+	previous_indirect_lighting_texture_sampler.rgb = Constrain(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -82,10 +80,12 @@ void CatalystShaderMain()
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	previous_sample_weight *= NeighborhoodWeight(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
+
+	//Calculate the final weight.
+	float final_weight = INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR + INDIRECT_LIGHTING_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR * previous_sample_weight;
 
 	//Blend the previous and the current indirect lighting.
-	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR + INDIRECT_LIGHTING_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR * previous_sample_weight);
+	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, final_weight);
 
 	//Write the fragments.
 	current_indirect_lighting = blended_indirect_lighting;

@@ -37,7 +37,7 @@ private:
 	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 2> _IndirectLightingSpatialDenoisingGraphicsPipelines;
 
 	//The indirect lighting temporal denoising graphics pipelines.
-	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 2> _IndirectLightingTemporalDenoisingGraphicsPipelines;
+	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 4> _IndirectLightingTemporalDenoisingGraphicsPipelines;
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };
