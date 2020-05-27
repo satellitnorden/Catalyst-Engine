@@ -5,9 +5,10 @@
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 //Constants.
+#define DEPTH_WEIGHT (2.0f)
+#define DITHER_STRENGTH (0.125f)
 #define INDIRECT_LIGHTING_QUALITY_LOW (0)
 #define INDIRECT_LIGHTING_QUALITY_HIGH (1)
-#define DEPTH_WEIGHT (1024.0f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -29,8 +30,11 @@ void CatalystShaderMain()
 	//If the indirect lighting quality is set to high (rendering at full resolution), then no upsampling needs to happen.
 	if (INDIRECT_LIGHTING_QUALITY == INDIRECT_LIGHTING_QUALITY_HIGH)
 	{
+		//Sample the final blend.
+		vec3 final_blend = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
+
 		//Write the fragment.
-		scene = vec4(texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb, 1.0f);
+		scene = vec4(final_blend, 1.0f);
 	}
 
 	else
@@ -77,7 +81,6 @@ void CatalystShaderMain()
 							+ sample_2_color * second_weight
 							+ sample_3_color * third_weight
 							+ sample_4_color * fourth_weight;
-
 
 		//Write the fragment.
 		scene = vec4(final_blend, 1.0f);
