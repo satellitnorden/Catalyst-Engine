@@ -98,7 +98,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 464) float VOLUMETRIC_LIGHTING_HEIGHT;
     layout (offset = 468) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    //Total size; 472
+    layout (offset = 472) vec2 PREVIOUS_FRAME_JITTER;
+
+    //Total size; 480
 };
 
 //The render targets.

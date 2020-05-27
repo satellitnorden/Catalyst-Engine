@@ -57,6 +57,8 @@ public:
 	float32 _VolumetricLightingHeight;
 	float32 _VolumetricLightingThickness;
 
+	Vector2<float32> _PreviousFramejitter;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 472, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 480, "Size of dynamic uniform data is wrong!");

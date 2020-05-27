@@ -25,7 +25,10 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Out parameters.
 layout (location = 0) out vec4 scene;
 
-void CatalystShaderMain()
+/*
+*	Samples the indirect lighting at the given coordinate.
+*/
+vec3 SampleIndirectLighting(vec2 coordinate)
 {
 	//If the indirect lighting quality is set to high (rendering at full resolution), then no upsampling needs to happen.
 	if (INDIRECT_LIGHTING_QUALITY == INDIRECT_LIGHTING_QUALITY_HIGH)
@@ -33,13 +36,8 @@ void CatalystShaderMain()
 		//Sample the final blend.
 		vec3 final_blend = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
-		//Apply some dithering.
-		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-
-		final_blend = max(final_blend + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * DITHER_STRENGTH), vec3(0.0f, 0.0f, 0.0f));
-
-		//Write the fragment.
-		scene = vec4(final_blend, 1.0f);
+		//Return the final blend.
+		return final_blend;
 	}
 
 	else
@@ -87,12 +85,25 @@ void CatalystShaderMain()
 							+ sample_3_color * third_weight
 							+ sample_4_color * fourth_weight;
 
-		//Apply some dithering.
-		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-
-		final_blend = max(final_blend + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * DITHER_STRENGTH), vec3(0.0f, 0.0f, 0.0f));
-
-		//Write the fragment.
-		scene = vec4(final_blend, 1.0f);
+		//Return the final blend.
+		return final_blend;
 	}
+}
+
+void CatalystShaderMain()
+{
+	//Sample the indirect lighting while sharpening it a bit.
+	vec3 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 5.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+
+	//Apply some dithering.
+	vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+
+	indirect_lighting = max(indirect_lighting + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * DITHER_STRENGTH), vec3(0.0f, 0.0f, 0.0f));
+
+	//Write the fragment.
+	scene = vec4(indirect_lighting, 1.0f);
 }
