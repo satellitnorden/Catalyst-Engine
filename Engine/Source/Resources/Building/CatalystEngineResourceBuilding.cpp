@@ -2454,7 +2454,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the material.
 			MaterialBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Catalyst_Engine_Default_Material";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Material";
 			parameters._ID = "Catalyst_Engine_Default_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
