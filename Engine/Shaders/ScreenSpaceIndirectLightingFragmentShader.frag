@@ -119,14 +119,14 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 		if (screen_space_sample_position.z < sample_depth)
 		{
 			//Test the (world space) surface normal against the (world space) ray direction.
-			if (dot(ray_direction, sample_scene_features_2.xyz) <= 0.0f)
+			if (dot(ray_direction, sample_scene_features_2.xyz) < 0.0f)
 			{
 				//Test the (world space) direction towards the hit position against the (world space) ray direction.
 				vec3 hit_position = CalculateWorldPosition(screen_space_sample_position.xy, sample_scene_features_2.w);
 				float distance_to_hit_position = length(hit_position - ray_origin);
 				vec3 direction_to_hit_position = vec3(hit_position - ray_origin) / distance_to_hit_position;
 
-				if (dot(ray_direction, direction_to_hit_position) >= 0.0f)
+				if (dot(ray_direction, direction_to_hit_position) > 0.0f)
 				{
 					//Sample the scene radiance at the sample screen coordinate.
 					vec3 scene_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
