@@ -127,7 +127,7 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<IOMode::In> *const RESTRICT fil
 	file->Read(&number_of_level_entries, sizeof(uint64));
 
 	//Reserve the appropriate amount of memory.
-	data->_LevelEntries.Reserve(number_of_level_entries);
+	data->_LevelEntries.Upsize<false>(number_of_level_entries);
 
 	//Read the level entries.
 	file->Read(data->_LevelEntries.Data(), sizeof(LevelEntry) * number_of_level_entries);

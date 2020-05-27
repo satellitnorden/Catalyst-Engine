@@ -7,11 +7,20 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Entities.
+#include <Entities/Creation/DynamicModelInitializationData.h>
+#include <Entities/Types/DynamicModelEntity.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Resources.
+#include <Resources/Core/LevelResource.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/EntitySystem.h>
+#include <Systems/ResourceSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(WorldSystem);
@@ -60,6 +69,43 @@ NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NO
 {
 	//This should probably be cached somehow, but let's just ask the Perceiver for now. (:
 	return Perceiver::Instance->GetWorldTransform().GetCell();
+}
+
+/*
+*	Loads a level.
+*/
+void WorldSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
+{
+	for (const LevelEntry &level_entry : resource->_LevelEntries)
+	{
+		switch (level_entry._Type)
+		{
+			case LevelEntry::Type::DYNAMIC_MODEL:
+			{
+				DynamicModelEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<DynamicModelEntity>() };
+				DynamicModelInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicModelInitializationData>() };
+
+				data->_Properties = EntityInitializationData::Property::NONE;
+				data->_InitialWorldTransform = level_entry._DynamicModelData._InitialWorldTransform;
+				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
+				data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[0]);
+				data->_ModelCollisionData._Type = ModelCollisionType::NONE;
+				data->_SimulatePhysics = false;
+				data->_ModelPhysicsSimulationData = ModelPhysicsSimulationData();
+
+				EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
 }
 
 /*

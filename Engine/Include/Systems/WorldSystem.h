@@ -4,10 +4,16 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+
 //World.
 #include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
 #include <World/Core/TimeOfDaySystem.h>
+
+//Forward declarations.
+class LevelResource;
 
 class WorldSystem final
 {
@@ -71,6 +77,11 @@ public:
 	{
 		return &_TimeOfDaySystem;
 	}
+
+	/*
+	*	Loads a level.
+	*/
+	void LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
 
 	/*
 	*	Returns the wetness.
