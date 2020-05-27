@@ -67,6 +67,15 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 }
 
 /*
+*	Creates a level.
+*/
+void ResourceCreationSystem::CreateLevel(LevelData *const RESTRICT data, LevelResource *const RESTRICT resource) NOEXCEPT
+{
+	//Just copy over the level entries.
+	resource->_LevelEntries = std::move(data->_LevelEntries);
+}
+
+/*
 *	Creates a material.
 */
 void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, MaterialResource* const RESTRICT resource) NOEXCEPT

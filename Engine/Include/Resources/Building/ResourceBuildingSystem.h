@@ -8,6 +8,7 @@
 #include <Resources/Building/AnimatedModelBuildParameters.h>
 #include <Resources/Building/AnimationBuildParameters.h>
 #include <Resources/Building/FontBuildParameters.h>
+#include <Resources/Building/LevelBuildParameters.h>
 #include <Resources/Building/MaterialBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
@@ -41,6 +42,11 @@ public:
 	*	Builds a font.
 	*/
 	void BuildFont(const FontBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a level.
+	*/
+	void BuildLevel(const LevelBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a material.

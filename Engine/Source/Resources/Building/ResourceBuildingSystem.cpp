@@ -470,6 +470,33 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 }
 
 /*
+*	Builds a level.
+*/
+void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) NOEXCEPT
+{
+	//What should the output file path name be?
+	DynamicString output_file_path_name{ parameters._OutputFilePath };
+	output_file_path_name += ".cr";
+
+	//Open the output file to be written to.
+	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
+
+	//Write the resource header to the output file.
+	const ResourceHeader header{ ResourceConstants::LEVEL_TYPE_IDENTIFIER, HashString(parameters._Identifier), parameters._Identifier };
+	output_file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the number of level entries to the output file.
+	const uint64 number_of_level_entries{ parameters._LevelEntries.Size() };
+	output_file.Write(&number_of_level_entries, sizeof(uint64));
+
+	//Write all the level entries to the output file.
+	output_file.Write(parameters._LevelEntries.Data(), sizeof(LevelEntry) * number_of_level_entries);
+
+	//Close the output file.
+	output_file.Close();
+}
+
+/*
 *	Builds a material.
 */
 void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parameters) NOEXCEPT

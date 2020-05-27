@@ -127,6 +127,29 @@ NO_DISCARD ResourcePointer<FontResource> ResourceSystem::FindOrCreateFontResourc
 }
 
 /*
+*	Returns or creates the level resource with the given identifier.
+*/
+NO_DISCARD ResourcePointer<LevelResource> ResourceSystem::FindOrCreateLevelResource(const HashString identifier) NOEXCEPT
+{
+	//Find the resource.
+	LevelResource *const RESTRICT *const RESTRICT resource{ _LevelResources.Find(identifier) };
+
+	if (!resource)
+	{
+		//If the resource couldn't be found, create it.
+		LevelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource() };
+		_LevelResources.Add(identifier, new_resource);
+
+		return ResourcePointer<LevelResource>(new_resource);
+	}
+
+	else
+	{
+		return ResourcePointer<LevelResource>(*resource);
+	}
+}
+
+/*
 *	Returns or creates the material resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<MaterialResource> ResourceSystem::FindOrCreateMaterialResource(const HashString identifier) NOEXCEPT
@@ -396,6 +419,41 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 
 			//Create the resource.
 			_ResourceCreationSystem.CreateFont(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::LEVEL_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			LevelResource *RESTRICT new_resource;
+
+			if (LevelResource *const RESTRICT *const RESTRICT found_resource{ _LevelResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource();
+				_LevelResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			LevelData data;
+			_ResourceLoadingSystem.LoadLevel(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateLevel(&data, new_resource);
 
 			//Register that the resource is now loaded.
 			new_resource->_LoadState = ResourceLoadState::LOADED;

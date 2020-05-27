@@ -9,6 +9,7 @@
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
+#include <Resources/Core/LevelResource.h>
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -151,6 +152,32 @@ public:
 	FORCE_INLINE NO_DISCARD const HashTable<HashString, FontResource *RESTRICT> &GetAllFontResources() const NOEXCEPT
 	{
 		return _FontResources;
+	}
+
+	/*
+	*	Returns the level resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<LevelResource> GetLevelResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		LevelResource *const RESTRICT *const RESTRICT resource{ _LevelResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<LevelResource>(*resource);
+	}
+
+	/*
+	*	Returns or creates the level resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<LevelResource> FindOrCreateLevelResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all level resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, LevelResource *RESTRICT> &GetAllLevelResources() const NOEXCEPT
+	{
+		return _LevelResources;
 	}
 
 	/*
@@ -356,6 +383,9 @@ private:
 
 	//Container for all font resources.
 	HashTable<HashString, FontResource *RESTRICT> _FontResources;
+
+	//Container for all level resources.
+	HashTable<HashString, LevelResource *RESTRICT> _LevelResources;
 
 	//Container for all material resources.
 	HashTable<HashString, MaterialResource *RESTRICT> _MaterialResources;

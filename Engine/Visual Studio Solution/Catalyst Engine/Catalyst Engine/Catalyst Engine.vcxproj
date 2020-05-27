@@ -354,6 +354,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\LevelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\MaterialBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuildingSystem.h" />
@@ -366,6 +367,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\LevelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\MaterialResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
@@ -381,6 +383,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimationData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\FontData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Loading\LevelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\MaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoadingSystem.h" />
@@ -445,6 +448,7 @@
     <ClInclude Include="..\..\..\Include\World\Core\WorldPosition.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h" />
+    <ClInclude Include="..\..\..\Include\World\Level\LevelEntry.h" />
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />
   </ItemGroup>

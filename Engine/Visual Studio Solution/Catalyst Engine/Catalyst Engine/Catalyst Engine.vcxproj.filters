@@ -379,6 +379,9 @@
     <Filter Include="Editor\Source">
       <UniqueIdentifier>{2f38f6e1-5842-4c54-a1b0-cd5a1442ed7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Include\Level">
+      <UniqueIdentifier>{7e3346f9-c514-4eaf-9340-e539807513b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1583,6 +1586,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\StaticString.h">
       <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Level\LevelEntry.h">
+      <Filter>World\Include\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\LevelBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\LevelData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\LevelResource.h">
+      <Filter>Resources\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

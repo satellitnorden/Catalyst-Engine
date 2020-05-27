@@ -10,6 +10,7 @@
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
+#include <Resources/Core/LevelResource.h>
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ShaderResource.h>
@@ -20,6 +21,7 @@
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
+#include <Resources/Loading/LevelData.h>
 #include <Resources/Loading/MaterialData.h>
 #include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/ShaderData.h>
@@ -47,6 +49,11 @@ public:
 	*	Creates a font.
 	*/
 	void CreateFont(FontData *const RESTRICT data, FontResource *const RESTRICT resource) NOEXCEPT;
+
+	/*
+	*	Creates a level.
+	*/
+	void CreateLevel(LevelData *const RESTRICT data, LevelResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a material.

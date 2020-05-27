@@ -118,6 +118,22 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<IOMode::In> *const RESTRICT file
 }
 
 /*
+*	Given a file, load level data.
+*/
+void ResourceLoadingSystem::LoadLevel(BinaryFile<IOMode::In> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT
+{
+	//Read the number of level entries.
+	uint64 number_of_level_entries;
+	file->Read(&number_of_level_entries, sizeof(uint64));
+
+	//Reserve the appropriate amount of memory.
+	data->_LevelEntries.Reserve(number_of_level_entries);
+
+	//Read the level entries.
+	file->Read(data->_LevelEntries.Data(), sizeof(LevelEntry) * number_of_level_entries);
+}
+
+/*
 *	Given a file, load material data.
 */
 void ResourceLoadingSystem::LoadMaterial(BinaryFile<IOMode::In> *const RESTRICT file, MaterialData* const RESTRICT data) NOEXCEPT
