@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/ResourceSystem.h>
 
+//File.
+#include <File/Core/FileCore.h>
+
 //Systems.
 #include <Systems/MemorySystem.h>
 
@@ -10,7 +13,7 @@ DEFINE_SINGLETON(ResourceSystem);
 /*
 *	Loads the resource collection with the given file path.
 */
-void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_path) NOEXCEPT
+void ResourceSystem::LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT
 {
 	//Load the file.
 	BinaryFile<IOMode::In> file{ file_path };
@@ -22,369 +25,35 @@ void ResourceSystem::LoadsResourceCollection(const char *const RESTRICT file_pat
 	//For each resource, load it.
 	for (uint64 i{ 0 }; i < number_of_resources; ++i)
 	{
-		//Read the resource header.
-		ResourceHeader header;
-		file.Read(&header, sizeof(ResourceHeader));
+		LoadResource(&file);
+	}
+}
 
-		switch (header._TypeIdentifier)
+/*
+*	Loads the resources contained in the given directory path.
+*/
+void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NOEXCEPT
+{
+	//Iterate over all the files in the directory and load them.
+	for (const auto &resource : std::filesystem::directory_iterator(std::string(directory_path)))
+	{
+		//Get the extension for this file.
+		const File::Extension file_extension{ File::GetExtension(resource.path().string().c_str()) };
+
+		//Only load this file if it is actually a Catalyst resource.
+		if (file_extension != File::Extension::CR)
 		{
-			case ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				AnimatedModelResource *RESTRICT new_resource;
-
-				if (AnimatedModelResource *const RESTRICT *const RESTRICT found_resource{ _AnimatedModelResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource();
-					_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				AnimatedModelData data;
-				_ResourceLoadingSystem.LoadAnimatedModel(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateAnimatedModel(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::ANIMATION_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				AnimationResource *RESTRICT new_resource;
-
-				if (AnimationResource *const RESTRICT *const RESTRICT found_resource{ _AnimationResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource();
-					_AnimationResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				AnimationData data;
-				_ResourceLoadingSystem.LoadAnimation(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateAnimation(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::FONT_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				FontResource *RESTRICT new_resource;
-
-				if (FontResource *const RESTRICT *const RESTRICT found_resource{ _FontResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource();
-					_FontResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				FontData data;
-				_ResourceLoadingSystem.LoadFont(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateFont(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::MATERIAL_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				MaterialResource *RESTRICT new_resource;
-
-				if (MaterialResource *const RESTRICT *const RESTRICT found_resource{ _MaterialResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource();
-					_MaterialResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				MaterialData data;
-				_ResourceLoadingSystem.LoadMaterial(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateMaterial(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::MODEL_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				ModelResource *RESTRICT new_resource;
-
-				if (ModelResource *const RESTRICT *const RESTRICT found_resource{ _ModelResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource();
-					_ModelResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				ModelData data;
-				_ResourceLoadingSystem.LoadModel(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateModel(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::SHADER_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				ShaderResource *RESTRICT new_resource;
-
-				if (ShaderResource *const RESTRICT *const RESTRICT found_resource{ _ShaderResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource();
-					_ShaderResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				ShaderData data;
-				_ResourceLoadingSystem.LoadShader(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateShader(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::SOUND_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				SoundResource *RESTRICT new_resource;
-
-				if (SoundResource *const RESTRICT *const RESTRICT found_resource{ _SoundResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource();
-					_SoundResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				SoundData data;
-				_ResourceLoadingSystem.LoadSound(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateSound(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				TextureCubeResource *RESTRICT new_resource;
-
-				if (TextureCubeResource *const RESTRICT *const RESTRICT found_resource{ _TextureCubeResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource();
-					_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				TextureCubeData data;
-				_ResourceLoadingSystem.LoadTextureCube(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				Texture2DResource *RESTRICT new_resource;
-
-				if (Texture2DResource *const RESTRICT *const RESTRICT found_resource{ _Texture2DResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource();
-					_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				Texture2DData data;
-				_ResourceLoadingSystem.LoadTexture2D(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateTexture2D(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			case ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER:
-			{
-				/*
-				*	Find or allocate the new resource.
-				*	The resource might have been created already by other dependant resources, but not loaded yet.
-				*/
-				Texture3DResource *RESTRICT new_resource;
-
-				if (Texture3DResource *const RESTRICT *const RESTRICT found_resource{ _Texture3DResources.Find(header._ResourceIdentifier) })
-				{
-					new_resource = *found_resource;
-				}
-
-				else
-				{
-					new_resource = new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource();
-					_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
-				}
-
-				//Set the resource hader.
-				new_resource->_Header = header;
-
-				//Load the resource.
-				Texture3DData data;
-				_ResourceLoadingSystem.LoadTexture3D(&file, &data);
-
-				//Create the resource.
-				_ResourceCreationSystem.CreateTexture3D(&data, new_resource);
-
-				//Register that the resource is now loaded.
-				new_resource->_LoadState = ResourceLoadState::LOADED;
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Undefined resource type.");
-
-				break;
-			}
+			continue;
 		}
+
+		//Open the file.
+		BinaryFile<IOMode::In> file{ resource.path().string().c_str() };
+
+		//Load the resource.
+		LoadResource(&file);
+
+		//Close the file.
+		file.Close();
 	}
 }
 
@@ -615,5 +284,375 @@ NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::FindOrCreateTextur
 	else
 	{
 		return ResourcePointer<Texture3DResource>(*resource);
+	}
+}
+
+/*
+*	Loads a resource from the given binary file.
+*/
+void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT
+{
+	//Read the resource header.
+	ResourceHeader header;
+	file->Read(&header, sizeof(ResourceHeader));
+
+	switch (header._TypeIdentifier)
+	{
+		case ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			AnimatedModelResource *RESTRICT new_resource;
+
+			if (AnimatedModelResource *const RESTRICT *const RESTRICT found_resource{ _AnimatedModelResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource();
+				_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			AnimatedModelData data;
+			_ResourceLoadingSystem.LoadAnimatedModel(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateAnimatedModel(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::ANIMATION_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			AnimationResource *RESTRICT new_resource;
+
+			if (AnimationResource *const RESTRICT *const RESTRICT found_resource{ _AnimationResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource();
+				_AnimationResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			AnimationData data;
+			_ResourceLoadingSystem.LoadAnimation(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateAnimation(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::FONT_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			FontResource *RESTRICT new_resource;
+
+			if (FontResource *const RESTRICT *const RESTRICT found_resource{ _FontResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource();
+				_FontResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			FontData data;
+			_ResourceLoadingSystem.LoadFont(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateFont(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::MATERIAL_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			MaterialResource *RESTRICT new_resource;
+
+			if (MaterialResource *const RESTRICT *const RESTRICT found_resource{ _MaterialResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource();
+				_MaterialResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			MaterialData data;
+			_ResourceLoadingSystem.LoadMaterial(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateMaterial(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::MODEL_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			ModelResource *RESTRICT new_resource;
+
+			if (ModelResource *const RESTRICT *const RESTRICT found_resource{ _ModelResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource();
+				_ModelResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			ModelData data;
+			_ResourceLoadingSystem.LoadModel(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateModel(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::SHADER_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			ShaderResource *RESTRICT new_resource;
+
+			if (ShaderResource *const RESTRICT *const RESTRICT found_resource{ _ShaderResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource();
+				_ShaderResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			ShaderData data;
+			_ResourceLoadingSystem.LoadShader(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateShader(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::SOUND_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			SoundResource *RESTRICT new_resource;
+
+			if (SoundResource *const RESTRICT *const RESTRICT found_resource{ _SoundResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource();
+				_SoundResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			SoundData data;
+			_ResourceLoadingSystem.LoadSound(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateSound(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			TextureCubeResource *RESTRICT new_resource;
+
+			if (TextureCubeResource *const RESTRICT *const RESTRICT found_resource{ _TextureCubeResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource();
+				_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			TextureCubeData data;
+			_ResourceLoadingSystem.LoadTextureCube(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			Texture2DResource *RESTRICT new_resource;
+
+			if (Texture2DResource *const RESTRICT *const RESTRICT found_resource{ _Texture2DResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource();
+				_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			Texture2DData data;
+			_ResourceLoadingSystem.LoadTexture2D(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateTexture2D(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			Texture3DResource *RESTRICT new_resource;
+
+			if (Texture3DResource *const RESTRICT *const RESTRICT found_resource{ _Texture3DResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource();
+				_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource hader.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			Texture3DData data;
+			_ResourceLoadingSystem.LoadTexture3D(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateTexture3D(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Undefined resource type.");
+
+			break;
+		}
 	}
 }

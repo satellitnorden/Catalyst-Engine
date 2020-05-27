@@ -68,7 +68,12 @@ public:
 	/*
 	*	Loads the resource collection with the given file path.
 	*/
-	void LoadsResourceCollection(const char *const RESTRICT file_path) NOEXCEPT;
+	void LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Loads the resources contained in the given directory path.
+	*/
+	void LoadResources(const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
 	*	Returns the animated model resource with the given identifier.
@@ -372,5 +377,10 @@ private:
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
+
+	/*
+	*	Loads a resource from the given binary file.
+	*/
+	void LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT;
 
 };
