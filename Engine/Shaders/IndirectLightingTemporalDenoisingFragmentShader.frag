@@ -11,9 +11,10 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint SOURCE_RENDER_TARGET_INDEX_1;
-	layout (offset = 4) uint SOURCE_RENDER_TARGET_INDEX_2;
-	layout (offset = 8) uint SCENE_FEATURES_4_TARGET_INDEX;
+	layout (offset = 0) vec2 DELTA;
+	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX_1;
+	layout (offset = 12) uint SOURCE_RENDER_TARGET_INDEX_2;
+	layout (offset = 16) uint SCENE_FEATURES_4_TARGET_INDEX;
 };
 
 //Out parameters.
@@ -53,7 +54,7 @@ void CatalystShaderMain()
 	{
 		for (int X = -1; X <= 1; ++X)
 		{
-			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * INVERSE_SCALED_RESOLUTION;
+			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * DELTA;
 		
 			vec4 neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_1], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
 

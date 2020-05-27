@@ -33,6 +33,11 @@ void CatalystShaderMain()
 		//Sample the final blend.
 		vec3 final_blend = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
+		//Apply some dithering.
+		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+
+		final_blend = max(final_blend + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * DITHER_STRENGTH), vec3(0.0f, 0.0f, 0.0f));
+
 		//Write the fragment.
 		scene = vec4(final_blend, 1.0f);
 	}
@@ -81,6 +86,11 @@ void CatalystShaderMain()
 							+ sample_2_color * second_weight
 							+ sample_3_color * third_weight
 							+ sample_4_color * fourth_weight;
+
+		//Apply some dithering.
+		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+
+		final_blend = max(final_blend + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * DITHER_STRENGTH), vec3(0.0f, 0.0f, 0.0f));
 
 		//Write the fragment.
 		scene = vec4(final_blend, 1.0f);

@@ -19,6 +19,9 @@ class IndirectLightingTemporalDenoisingPushConstantData final
 
 public:
 
+	//The delta.
+	Vector2<float32> _Delta;
+
 	//The first source render target index.
 	uint32 _SourceRenderTargetIndex1;
 
@@ -115,6 +118,7 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingTemporalDenoisingPushConstantData data;
 
+	data._Delta = Vector2<float32>(1.0f / static_cast<float32>(GetRenderResolution()._Width), 1.0f / static_cast<float32>(GetRenderResolution()._Height));
 	data._SourceRenderTargetIndex1 = _SourceRenderTargetIndex1;
 	data._SourceRenderTargetIndex2 = _SourceRenderTargetIndex2;
 	data._SceneFeatures4RenderTargetIndex = _SceneFeatures4RenderTargetIndex;
