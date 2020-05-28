@@ -2487,6 +2487,30 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Model";
+			parameters._ID = "Catalyst_Engine_Default_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Catalyst_Engine_Default_Model.fbx");
+			parameters._Transformation = Matrix4x4(VectorConstants::ZERO, Vector3<float32>(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Editor_Arrow_Model";
 			parameters._ID = "Editor_Arrow_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Editor_Arrow.fbx");
