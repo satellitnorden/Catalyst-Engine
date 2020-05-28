@@ -206,40 +206,40 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	{
 		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
 		{
-		case RenderingConfiguration::IndirectLightingQuality::LOW:
-		{
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[1].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[2].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[3].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[4].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[5].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[6].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[7].SetIncludeInRender(false);
+			case RenderingConfiguration::IndirectLightingQuality::LOW:
+			{
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[0].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[1].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[2].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[3].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[4].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[5].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[6].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[7].SetIncludeInRender(false);
 
-			break;
-		}
+				break;
+			}
 
-		case RenderingConfiguration::IndirectLightingQuality::HIGH:
-		{
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[0].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[1].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[2].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[3].SetIncludeInRender(false);
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[4].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[5].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[6].Execute();
-			_IndirectLightingSpatialDenoisingGraphicsPipelines[7].Execute();
+			case RenderingConfiguration::IndirectLightingQuality::HIGH:
+			{
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[0].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[1].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[2].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[3].SetIncludeInRender(false);
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[4].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[5].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[6].Execute();
+				_IndirectLightingSpatialDenoisingGraphicsPipelines[7].Execute();
 
-			break;
-		}
+				break;
+			}
 
-		default:
-		{
-			ASSERT(false, "Invalid case!");
+			default:
+			{
+				ASSERT(false, "Invalid case!");
 
-			break;
-		}
+				break;
+			}
 		}
 	}
 
