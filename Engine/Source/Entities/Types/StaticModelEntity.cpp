@@ -41,9 +41,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
 
 	//Register the model collision data, if there is one.
-	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
+	if (model_initialization_data->_ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
 	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterStaticModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
+		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterStaticModelCollisionConfiguration(this, model_initialization_data->_ModelCollisionConfiguration);
 	}
 
 	//Upsize the level of detail indices.

@@ -2,14 +2,18 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/Map.h>
+#include <Core/Containers/HashTable.h>
 #include <Core/General/UpdateContext.h>
+
+//Entities.
+#include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
 
 //Math.
 #include <Math/Geometry/Ray.h>
 
 //Physics.
-#include <Physics/ModelCollisionData.h>
+#include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RaycastConfiguration.h>
@@ -21,24 +25,14 @@ class ModelPhysicsSystem final
 public:
 
 	/*
-	*	Registers dynamic model collision data.
+	*	Registers dynamic model collision configuration.
 	*/
-	void RegisterDynamicModelCollisionData(const uint64 entity_identifier, const ModelCollisionData &data) NOEXCEPT;
+	void RegisterDynamicModelCollisionConfiguration(DynamicModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT;
 
 	/*
-	*	Unregisters dynamic model collision data.
+	*	Registers static model collision configuration.
 	*/
-	void UnregisterDynamicModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
-
-	/*
-	*	Registers static model collision data.
-	*/
-	void RegisterStaticModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT;
-
-	/*
-	*	Unregisters static model collision data.
-	*/
-	void UnregisterStaticModelCollisionData(const uint64 entity_identifier) NOEXCEPT;
+	void RegisterStaticModelCollisionConfiguration(StaticModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Casts a ray against dynamic models.
@@ -50,20 +44,12 @@ public:
 	*/
 	void CastRayStaticModels(const Ray& ray, const RaycastConfiguration& configuration, RaycastResult* const RESTRICT result) NOEXCEPT;
 
-	/*
-	*	Returns the static model collision data.
-	*/
-	FORCE_INLINE NO_DISCARD const Map<uint64, ModelCollisionData> &GetStaticModelCollisionData() const NOEXCEPT
-	{
-		return _StaticModelCollisionData;
-	}
-
 private:
 
-	//Container for all dynamic model collision data.
-	Map<uint64, ModelCollisionData> _DynamicModelCollisionData;
+	//Container for all dynamic model collision configurations.
+	HashTable<DynamicModelEntity *RESTRICT, ModelCollisionConfiguration> _DynamicModelCollisionConfigurations;
 
-	//Container for all static model collision data.
-	Map<uint64, ModelCollisionData> _StaticModelCollisionData;
+	//Container for all static model collision configurations.
+	HashTable<StaticModelEntity *RESTRICT, ModelCollisionConfiguration> _StaticModelCollisionConfigurations;
 
 };

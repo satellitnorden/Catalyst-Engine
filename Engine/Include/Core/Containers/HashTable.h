@@ -152,6 +152,46 @@ public:
 		return nullptr;
 	}
 
+	/*
+	*	Returns the key at the given index, const.
+	*/
+	FORCE_INLINE NO_DISCARD const KEY_TYPE &KeyAt(const uint64 index) const NOEXCEPT
+	{
+		return _Keys[index];
+	}
+
+	/*
+	*	Returns the key at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD KEY_TYPE &KeyAt(const uint64 index) NOEXCEPT
+	{
+		return _Keys[index];
+	}
+
+	/*
+	*	Returns the value at the given index, const.
+	*/
+	FORCE_INLINE NO_DISCARD const VALUE_TYPE &ValueAt(const uint64 index) const NOEXCEPT
+	{
+		return _Values[index];
+	}
+
+	/*
+	*	Returns the value at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD VALUE_TYPE &ValueAt(const uint64 index) NOEXCEPT
+	{
+		return _Values[index];
+	}
+
+	/*
+	*	Returns the size of this hashtable.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 Size() const NOEXCEPT
+	{
+		return _Keys.Size();
+	}
+
 private:
 
 	//The underlying keys.

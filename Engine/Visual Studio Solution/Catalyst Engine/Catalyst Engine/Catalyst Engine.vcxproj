@@ -170,7 +170,7 @@
     <ClInclude Include="..\..\..\Include\Memory\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\CharacterPhysicsSystem.h" />
-    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h" />
+    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSimulationData.h" />
     <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />

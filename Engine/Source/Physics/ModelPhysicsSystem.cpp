@@ -8,35 +8,35 @@
 #include <Math/Core/CatalystGeometryMath.h>
 
 /*
-*	Registers dynamic model collision data.
+*	Registers dynamic model collision configuration.
 */
-void ModelPhysicsSystem::RegisterDynamicModelCollisionData(const uint64 entity_identifier, const ModelCollisionData &data) NOEXCEPT
+void ModelPhysicsSystem::RegisterDynamicModelCollisionConfiguration(DynamicModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT
 {
-	_DynamicModelCollisionData[entity_identifier] = data;
+	if (ModelCollisionConfiguration *const RESTRICT existing_configuration{ _DynamicModelCollisionConfigurations.Find(entity) })
+	{
+		*existing_configuration = configuration;
+	}
+
+	else
+	{
+		_DynamicModelCollisionConfigurations.Add(entity, configuration);
+	}
 }
 
 /*
-*	Unregisters dynamic model collision data.
+*	Registers static model collision configuration.
 */
-void ModelPhysicsSystem::UnregisterDynamicModelCollisionData(const uint64 entity_identifier) NOEXCEPT
+void ModelPhysicsSystem::RegisterStaticModelCollisionConfiguration(StaticModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT
 {
+	if (ModelCollisionConfiguration *const RESTRICT existing_configuration{ _StaticModelCollisionConfigurations.Find(entity) })
+	{
+		*existing_configuration = configuration;
+	}
 
-}
-
-/*
-*	Registers static model collision data.
-*/
-void ModelPhysicsSystem::RegisterStaticModelCollisionData(const uint64 entity_identifier, const ModelCollisionData& data) NOEXCEPT
-{
-	_StaticModelCollisionData[entity_identifier] = data;
-}
-
-/*
-*	Unregisters static model collision data.
-*/
-void ModelPhysicsSystem::UnregisterStaticModelCollisionData(const uint64 entity_identifer) NOEXCEPT
-{
-
+	else
+	{
+		_StaticModelCollisionConfigurations.Add(entity, configuration);
+	}
 }
 
 /*
@@ -44,21 +44,21 @@ void ModelPhysicsSystem::UnregisterStaticModelCollisionData(const uint64 entity_
 */
 void ModelPhysicsSystem::CastRayDynamicModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	for (const Pair<uint64, ModelCollisionData>& data : _DynamicModelCollisionData)
+	for (uint64 i{ 0 }, size{ _DynamicModelCollisionConfigurations.Size() }; i < size; ++i)
 	{
-		switch (data._Second._Type)
+		switch (_DynamicModelCollisionConfigurations.ValueAt(i)._Type)
 		{
 			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
 			{
 				float intersection_distance{ FLOAT_MAXIMUM };
 
-				if (CatalystGeometryMath::RayBoxIntersection(ray, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox, &intersection_distance)
+				if (CatalystGeometryMath::RayBoxIntersection(ray, *_DynamicModelCollisionConfigurations.KeyAt(i)->GetWorldSpaceAxisAlignedBoundingBox(), &intersection_distance)
 					&& result->_HitDistance > intersection_distance)
 				{
 					result->_HasHit = true;
 					result->_HitDistance = intersection_distance;
 					result->_Type = RaycastResult::Type::DYNAMIC_MODEL;
-					result->_DynamicModelRaycastResult._Entity = ComponentManager::GetDynamicModelEntities()->At(data._First);
+					result->_DynamicModelRaycastResult._Entity = _DynamicModelCollisionConfigurations.KeyAt(i);
 				}
 
 				break;
@@ -79,32 +79,32 @@ void ModelPhysicsSystem::CastRayDynamicModels(const Ray &ray, const RaycastConfi
 */
 void ModelPhysicsSystem::CastRayStaticModels(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	for (const Pair<uint64, ModelCollisionData>& data : _StaticModelCollisionData)
+	for (uint64 i{ 0 }, size{ _StaticModelCollisionConfigurations.Size() }; i < size; ++i)
 	{
-		switch (data._Second._Type)
+		switch (_StaticModelCollisionConfigurations.ValueAt(i)._Type)
 		{
-			case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
+		case ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX:
+		{
+			float intersection_distance{ FLOAT_MAXIMUM };
+
+			if (CatalystGeometryMath::RayBoxIntersection(ray, *_StaticModelCollisionConfigurations.KeyAt(i)->GetWorldSpaceAxisAlignedBoundingBox(), &intersection_distance)
+				&& result->_HitDistance > intersection_distance)
 			{
-				float intersection_distance{ FLOAT_MAXIMUM };
-
-				if (CatalystGeometryMath::RayBoxIntersection(ray, data._Second._AxisAlignedBoundingBoxData._AxisAlignedBoundingBox, &intersection_distance)
-					&& result->_HitDistance > intersection_distance)
-				{
-					result->_HasHit = true;
-					result->_HitDistance = intersection_distance;
-					result->_Type = RaycastResult::Type::STATIC_MODEL;
-					result->_DynamicModelRaycastResult._Entity = ComponentManager::GetStaticModelEntities()->At(data._First);
-				}
-
-				break;
+				result->_HasHit = true;
+				result->_HitDistance = intersection_distance;
+				result->_Type = RaycastResult::Type::STATIC_MODEL;
+				result->_DynamicModelRaycastResult._Entity = _StaticModelCollisionConfigurations.KeyAt(i);
 			}
 
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+			break;
+		}
 
-				break;
-			}
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
 		}
 	}
 }

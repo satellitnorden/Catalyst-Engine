@@ -7,7 +7,7 @@
 #include <Entities/Creation/EntityInitializationData.h>
 
 //Physics.
-#include <Physics/ModelCollisionData.h>
+#include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 
@@ -33,8 +33,8 @@ public:
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
-	//The model collision data.
-	ModelCollisionData _ModelCollisionData;
+	//The model collision configuration.
+	ModelCollisionConfiguration _ModelCollisionConfiguration;
 
 	//Denotes whether or not to simulate physics.
 	bool _SimulatePhysics;

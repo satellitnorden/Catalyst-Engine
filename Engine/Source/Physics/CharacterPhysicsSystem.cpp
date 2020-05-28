@@ -115,6 +115,7 @@ NO_DISCARD bool CharacterPhysicsSystem::CheckCollisionCharacterMovement(const Ch
 		}
 	}
 
+	/*
 	//Check collision against static models.
 	for (const Pair<uint64, ModelCollisionData> &data : PhysicsSystem::Instance->GetModelPhysicsSystem()->GetStaticModelCollisionData())
 	{
@@ -134,6 +135,7 @@ NO_DISCARD bool CharacterPhysicsSystem::CheckCollisionCharacterMovement(const Ch
 			}
 		}
 	}
+	*/
 
 	//No collision was found!
 	return false;

@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Physics.
-#include <Physics/ModelCollisionData.h>
+#include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
 
 //World.
@@ -38,8 +38,8 @@ public:
 		//The material resourceidentifiers.
 		StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResourceIdentifiers;
 
-		//The model collision data.
-		ModelCollisionData _ModelCollisionData;
+		//The model collision configuration.
+		ModelCollisionConfiguration _ModelCollisionConfiguration;
 
 		//Denotes whether or not to simulate physics.
 		bool _SimulatePhysics;

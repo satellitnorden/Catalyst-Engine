@@ -89,9 +89,9 @@ void WorldSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_InitialWorldTransform = level_entry._DynamicModelData._InitialWorldTransform;
 				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
 				data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[0]);
-				data->_ModelCollisionData._Type = ModelCollisionType::NONE;
-				data->_SimulatePhysics = false;
-				data->_ModelPhysicsSimulationData = ModelPhysicsSimulationData();
+				data->_ModelCollisionConfiguration._Type = level_entry._DynamicModelData._ModelCollisionConfiguration._Type;
+				data->_SimulatePhysics = level_entry._DynamicModelData._SimulatePhysics;
+				data->_ModelPhysicsSimulationData = level_entry._DynamicModelData._ModelPhysicsSimulationData;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

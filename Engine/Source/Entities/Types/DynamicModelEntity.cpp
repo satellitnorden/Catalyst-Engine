@@ -42,9 +42,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 
 	//Register the model collision data, if there is one.
-	if (model_initialization_data->_ModelCollisionData._Type != ModelCollisionType::NONE)
+	if (model_initialization_data->_ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
 	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterDynamicModelCollisionData(_ComponentsIndex, model_initialization_data->_ModelCollisionData);
+		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterDynamicModelCollisionConfiguration(this, model_initialization_data->_ModelCollisionConfiguration);
 	}
 
 	//Destroy the initialization data.

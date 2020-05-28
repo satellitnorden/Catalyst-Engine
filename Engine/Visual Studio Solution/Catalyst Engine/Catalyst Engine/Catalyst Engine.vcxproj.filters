@@ -1230,9 +1230,6 @@
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h">
       <Filter>World\Include\Sky</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionData.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
@@ -1598,6 +1595,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Core\LevelResource.h">
       <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionConfiguration.h">
+      <Filter>Physics\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
