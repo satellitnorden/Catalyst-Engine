@@ -69,6 +69,14 @@ NO_DISCARD ResourcePointer<ModelResource> DynamicModelEntity::GetModelResource()
 }
 
 /*
+*	Sets the model resource.
+*/
+void DynamicModelEntity::SetModelResource(const ResourcePointer<ModelResource> resource) NOEXCEPT
+{
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelResource = resource;
+}
+
+/*
 *	Returns the material resources.
 */
 NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &DynamicModelEntity::GetMaterialResources() const NOEXCEPT

@@ -39,6 +39,18 @@ void EditorSelectionSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Sets the currently selected entity.
+*/
+void EditorSelectionSystem::SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Set the currently selected entity.
+	_CurrentlySelectedEntity = entity;
+
+	//Reset the state of the selected entity.
+	Memory::Set(reinterpret_cast<byte* const RESTRICT>(this) + offsetof(EditorSelectionSystem, _DynamicModelSelectionData), 0, sizeof(EditorSelectionSystem) - sizeof(void* const RESTRICT));
+}
+
+/*
 *	Updates the editor selection system during the PHYSICS update phase.
 */
 void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
@@ -55,100 +67,60 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 		//Cache if the left mouse button is pressed.
 		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED };
 
-		Ray ray;
-
-		ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetAbsolutePosition());
-		ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
-
-		RaycastConfiguration configuration;
-
-		configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS;
-		configuration._MaximumHitDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
-		configuration._TerrainRayMarchStep = 1.0f;
-
-		RaycastResult result;
-
-		PhysicsSystem::Instance->CastRay(ray, configuration, &result);
-
-		if (result._HasHit)
+		if (left_mouse_button_pressed)
 		{
-			switch (result._Type)
+			Ray ray;
+
+			ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetAbsolutePosition());
+			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
+
+			RaycastConfiguration configuration;
+
+			configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS;
+			configuration._MaximumHitDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
+			configuration._TerrainRayMarchStep = 1.0f;
+
+			RaycastResult result;
+
+			PhysicsSystem::Instance->CastRay(ray, configuration, &result);
+
+			if (result._HasHit)
 			{
-				case RaycastResult::Type::DYNAMIC_MODEL:
+				switch (result._Type)
 				{
-					if (left_mouse_button_pressed)
+					case RaycastResult::Type::DYNAMIC_MODEL:
 					{
-						_CurrentlySelectedEntity = result._DynamicModelRaycastResult._Entity;
+						SetCurrentlySelectedEntity(result._DynamicModelRaycastResult._Entity);
+
+						break;
 					}
 
-					else
+					case RaycastResult::Type::STATIC_MODEL:
 					{
-						_CurrentlyHoveredEntity = result._DynamicModelRaycastResult._Entity;
+						SetCurrentlySelectedEntity(result._StaticModelRaycastResult._Entity);
+
+						break;
 					}
 
-					break;
-				}
-
-				case RaycastResult::Type::STATIC_MODEL:
-				{
-					if (left_mouse_button_pressed)
+					case RaycastResult::Type::TERRAIN:
 					{
-						_CurrentlySelectedEntity = result._StaticModelRaycastResult._Entity;
+						//HWEL
+
+						break;
 					}
 
-					else
+					default:
 					{
-						_CurrentlyHoveredEntity = result._StaticModelRaycastResult._Entity;
+						ASSERT(false, "Invalid case!");
+
+						break;
 					}
-
-					break;
-				}
-
-				case RaycastResult::Type::TERRAIN:
-				{
-
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
 				}
 			}
-		}
 
-		else
-		{
-			//Reset the currently hovered entity.
-			_CurrentlyHoveredEntity = nullptr;
-
-			//If the left mouse button was pressed without any hit, reset the currently selected entity.
-			if (left_mouse_button_pressed)
+			else
 			{
-				_CurrentlySelectedEntity = nullptr;
-			}
-		}
-	}
-
-	//Render a bounding box for the currently hovered entity.
-	if (_CurrentlyHoveredEntity && _CurrentlyHoveredEntity->_Initialized && _CurrentlyHoveredEntity != _CurrentlySelectedEntity)
-	{
-		switch (_CurrentlyHoveredEntity->_Type)
-		{
-			case EntityType::DynamicModel:
-			{
-				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlyHoveredEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
-
-				box._Minimum -= 0.1f;
-				box._Maximum += 0.1f;
-
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 1.0f), true, true, box, 0.0f);
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f * 0.5f * 0.125f), true, false, box, 0.0f);
-
-				break;
+				SetCurrentlySelectedEntity(nullptr);
 			}
 		}
 	}
@@ -175,7 +147,7 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f, 8.0f));
-		ImGui::SetWindowSize(ImVec2(512.0f, 128.0f));
+		ImGui::SetWindowSize(ImVec2(512.0f, 256.0f));
 		
 		switch (_CurrentlySelectedEntity->_Type)
 		{
@@ -183,7 +155,38 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 			{
 				//Add the header text.
 				ImGui::Text("Dynamic Model");
-				ImGui::Text("Model Resource: %s", static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetModelResource()->_Header._ResourceName.Data());
+
+				char buffer[64];
+
+				sprintf_s(buffer, "Model Resource: %s", static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetModelResource()->_Header._ResourceName.Data());
+
+				if (ImGui::Button(buffer))
+				{
+					_DynamicModelSelectionData._IsSelectingModelResource = !_DynamicModelSelectionData._IsSelectingModelResource;
+				}
+
+				if (_DynamicModelSelectionData._IsSelectingModelResource)
+				{
+					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f - 8.0f - 256.0f, 8.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+
+					const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
+
+					for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
+					{
+						if (ImGui::Button(model_resource->_Header._ResourceName.Data()))
+						{
+							static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetModelResource(ResourceSystem::Instance->GetModelResource(model_resource->_Header._ResourceIdentifier));
+
+							_DynamicModelSelectionData._IsSelectingModelResource = false;
+
+							break;
+						}
+					}
+
+					ImGui::End();
+				}
 
 				for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 				{

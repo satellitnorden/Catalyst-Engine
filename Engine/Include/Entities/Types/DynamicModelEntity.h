@@ -45,9 +45,14 @@ public:
 	}
 
 	/*
-	*	Returns the model resources.
+	*	Returns the model resource.
 	*/
 	NO_DISCARD ResourcePointer<ModelResource> GetModelResource() const NOEXCEPT;
+
+	/*
+	*	Sets the model resource.
+	*/
+	void SetModelResource(const ResourcePointer<ModelResource> resource) NOEXCEPT;
 
 	/*
 	*	Returns the material resources.
