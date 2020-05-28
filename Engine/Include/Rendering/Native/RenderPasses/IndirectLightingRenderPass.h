@@ -34,7 +34,7 @@ private:
 	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;
 
 	//The indirect lighting spatial denoising graphics pipelines.
-	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 2> _IndirectLightingSpatialDenoisingGraphicsPipelines;
+	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 8> _IndirectLightingSpatialDenoisingGraphicsPipelines;
 
 	//The indirect lighting temporal denoising graphics pipelines.
 	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 4> _IndirectLightingTemporalDenoisingGraphicsPipelines;

@@ -1,6 +1,5 @@
 //Constants.
 #define INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR (0.5f)
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR (0.99f - INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -70,7 +69,7 @@ void CatalystShaderMain()
 	vec4 previous_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_2], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
 
 	//Constrain the previous sample.
-	previous_indirect_lighting_texture_sampler.rgb = Constrain(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
+	vec3 constrained_previous_sample = Constrain(previous_indirect_lighting_texture_sampler.rgb, minimum, maximum);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -82,13 +81,13 @@ void CatalystShaderMain()
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
 
-	//Calculate the final weight.
-	float final_weight = INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR + INDIRECT_LIGHTING_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR * previous_sample_weight;
-
 	//Blend the previous and the current indirect lighting.
-	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, final_weight);
+	vec3 blended_indirect_lighting = vec3(0.0f);
+
+	blended_indirect_lighting += previous_indirect_lighting_texture_sampler.rgb * INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR;
+	blended_indirect_lighting += mix(current_indirect_lighting_texture_sampler.rgb, constrained_previous_sample, previous_sample_weight) * (1.0f - INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR);
 
 	//Write the fragments.
-	current_indirect_lighting = blended_indirect_lighting;
-	indirect_lighting = blended_indirect_lighting;
+	current_indirect_lighting = vec4(blended_indirect_lighting, 1.0f);
+	indirect_lighting = vec4(blended_indirect_lighting, 1.0f);
 }

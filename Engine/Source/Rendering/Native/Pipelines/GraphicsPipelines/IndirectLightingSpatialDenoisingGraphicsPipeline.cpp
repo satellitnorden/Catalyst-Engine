@@ -25,6 +25,12 @@ public:
 	//The source render target index.
 	uint32 _SourceRenderTargetIndex;
 
+	//The scene features 2 render target index.
+	uint32 _SceneFeatures2RenderTargetIndex;
+
+	//The scene features 3 render target index.
+	uint32 _SceneFeatures3RenderTargetIndex;
+
 	//The stride.
 	int32 _Stride;
 
@@ -33,10 +39,21 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT
+void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
+																	const uint32 scene_features_2_render_target_index,
+																	const uint32 scene_features_3_render_target_index,
+																	const int32 stride,
+																	const RenderTargetHandle target,
+																	const Resolution render_resolution) NOEXCEPT
 {
 	//Set the source render target index.
 	_SourceRenderTargetIndex = source_render_target_index;
+
+	//Set the scene features 2 render target index.
+	_SceneFeatures2RenderTargetIndex = scene_features_2_render_target_index;
+
+	//Set the scene features 3 render target index.
+	_SceneFeatures3RenderTargetIndex = scene_features_3_render_target_index;
 
 	//Set the stride.
 	_Stride = stride;
@@ -61,7 +78,7 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(const uint32 s
 	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
+	SetRenderResolution(render_resolution);
 
 	//Set the properties of the render pass.
 	SetShouldClear(false);
@@ -106,8 +123,10 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	IndirectLightingSpatialDenoisingPushConstantData data;
 
-	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
+	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(GetRenderResolution()._Width), 1.0f / static_cast<float32>(GetRenderResolution()._Height));
 	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
+	data._SceneFeatures2RenderTargetIndex = _SceneFeatures2RenderTargetIndex;
+	data._SceneFeatures3RenderTargetIndex = _SceneFeatures3RenderTargetIndex;
 	data._Stride = _Stride;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);

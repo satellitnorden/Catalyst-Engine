@@ -17,7 +17,12 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const uint32 source_render_target_index,
+					const uint32 scene_features_2_render_target_index,
+					const uint32 scene_features_3_render_target_index,
+					const int32 stride,
+					const RenderTargetHandle target,
+					const Resolution render_resolution) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -28,6 +33,12 @@ private:
 
 	//The source render target index.
 	uint32 _SourceRenderTargetIndex;
+
+	//The scene features 2 render target index.
+	uint32 _SceneFeatures2RenderTargetIndex;
+
+	//The scene features 3 render target index.
+	uint32 _SceneFeatures3RenderTargetIndex;
 
 	//The stride.
 	int32 _Stride;
