@@ -60,6 +60,11 @@ public:
 	NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &GetMaterialResources() const NOEXCEPT;
 
 	/*
+	*	Sets the material resource at the given index.
+	*/
+	void SetMaterialResource(const uint8 index, const ResourcePointer<MaterialResource> resource) NOEXCEPT;
+
+	/*
 	*	Returns the world transform.
 	*/
 	RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT GetWorldTransform() const NOEXCEPT;

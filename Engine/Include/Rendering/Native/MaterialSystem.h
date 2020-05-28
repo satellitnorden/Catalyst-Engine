@@ -16,6 +16,11 @@ class MaterialSystem final
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	MaterialSystem() NOEXCEPT;
+
+	/*
 	*	Post-initializes the material system.
 	*/
 	void PostInitialize() NOEXCEPT;

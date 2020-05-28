@@ -85,6 +85,14 @@ NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstan
 }
 
 /*
+*	Sets the material resource at the given index.
+*/
+void DynamicModelEntity::SetMaterialResource(const uint8 index, const ResourcePointer<MaterialResource> resource) NOEXCEPT
+{
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._MaterialResources[index] = resource;
+}
+
+/*
 *	Returns the world transform.
 */
 RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT DynamicModelEntity::GetWorldTransform() const NOEXCEPT

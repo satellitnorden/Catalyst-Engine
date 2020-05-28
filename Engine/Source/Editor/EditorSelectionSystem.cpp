@@ -156,13 +156,33 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 				//Add the header text.
 				ImGui::Text("Dynamic Model");
 
-				char buffer[64];
+				char buffer[128];
 
 				sprintf_s(buffer, "Model Resource: %s", static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetModelResource()->_Header._ResourceName.Data());
 
 				if (ImGui::Button(buffer))
 				{
-					_DynamicModelSelectionData._IsSelectingModelResource = !_DynamicModelSelectionData._IsSelectingModelResource;
+					_DynamicModelSelectionData._IsSelectingModelResource = true;
+					_DynamicModelSelectionData._IsSelectingMaterialResource = false;
+				}
+
+				for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					if (static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i])
+					{
+						char buffer[128];
+
+						sprintf_s(buffer, "Material Resource #%u: %s", i, static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i]->_Header._ResourceName.Data());
+
+						if (ImGui::Button(buffer))
+						{
+							_DynamicModelSelectionData._IsSelectingModelResource = false;
+							_DynamicModelSelectionData._IsSelectingMaterialResource = true;
+							_DynamicModelSelectionData._SelectedMaterialIndex = i;
+
+							break;
+						}
+					}
 				}
 
 				if (_DynamicModelSelectionData._IsSelectingModelResource)
@@ -188,12 +208,27 @@ void EditorSelectionSystem::PhysicsUpdate() NOEXCEPT
 					ImGui::End();
 				}
 
-				for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				if (_DynamicModelSelectionData._IsSelectingMaterialResource)
 				{
-					if (static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i])
+					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f - 8.0f - 256.0f, 8.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+
+					const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
+
+					for (const MaterialResource *const RESTRICT material_resource : all_material_resources.ValueIterator())
 					{
-						ImGui::Text("Material Resource #%u: %s", i, static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetMaterialResources()[i]->_Header._ResourceName.Data());
+						if (ImGui::Button(material_resource->_Header._ResourceName.Data()))
+						{
+							static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetMaterialResource(_DynamicModelSelectionData._SelectedMaterialIndex, ResourceSystem::Instance->GetMaterialResource(material_resource->_Header._ResourceIdentifier));
+
+							_DynamicModelSelectionData._IsSelectingMaterialResource = false;
+
+							break;
+						}
 					}
+
+					ImGui::End();
 				}
 
 				//Cache the world transform.

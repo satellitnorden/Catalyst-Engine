@@ -38,6 +38,12 @@ private:
 		//Denotes if the user is currently selecting a model resource.
 		bool _IsSelectingModelResource{ false };
 
+		//Denotes if the user is currently selecting a material resource.
+		bool _IsSelectingMaterialResource{ false };
+
+		//The material index currently being selected.
+		uint8 _SelectedMaterialIndex{ 0 };
+
 	};
 
 	//The currently selected entity.

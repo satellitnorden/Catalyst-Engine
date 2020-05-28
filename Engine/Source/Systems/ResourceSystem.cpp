@@ -340,7 +340,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -375,7 +375,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_AnimationResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -410,7 +410,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_FontResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -445,7 +445,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_LevelResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -480,7 +480,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_MaterialResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -515,7 +515,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_ModelResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -550,7 +550,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_ShaderResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -585,7 +585,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_SoundResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -620,7 +620,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -655,7 +655,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.
@@ -690,7 +690,7 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 				_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
 			}
 
-			//Set the resource hader.
+			//Set the resource header.
 			new_resource->_Header = header;
 
 			//Load the resource.

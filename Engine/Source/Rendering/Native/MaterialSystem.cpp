@@ -5,9 +5,9 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Post-initializes the material system.
+*	Default constructor.
 */
-void MaterialSystem::PostInitialize() NOEXCEPT
+MaterialSystem::MaterialSystem() NOEXCEPT
 {
 	//Mark all material slots as free.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
@@ -20,7 +20,13 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 	{
 		_MaterialResources[i] = nullptr;
 	}
+}
 
+/*
+*	Post-initializes the material system.
+*/
+void MaterialSystem::PostInitialize() NOEXCEPT
+{
 	//Create all the global material uniform buffers.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
