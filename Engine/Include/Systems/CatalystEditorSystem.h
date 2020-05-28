@@ -71,6 +71,11 @@ private:
 	void UserInterfaceUpdate() NOEXCEPT;
 
 	/*
+	*	Updates IO.
+	*/
+	void UpdateIO() NOEXCEPT;
+
+	/*
 	*	Updates when the Catalyst editor is in a game.
 	*/
 	void UpdateInGame() NOEXCEPT;

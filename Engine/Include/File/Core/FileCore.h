@@ -23,6 +23,12 @@ namespace File
 	};
 
 	/*
+	*	Browses for a file.
+	*	Returns if the action was successful.
+	*/
+	FORCE_INLINE NO_DISCARD bool BrowseForFile(DynamicString* const RESTRICT chosen_file) NOEXCEPT;
+
+	/*
 	*	Browses for a folder.
 	*	Returns if the action was successful.
 	*/

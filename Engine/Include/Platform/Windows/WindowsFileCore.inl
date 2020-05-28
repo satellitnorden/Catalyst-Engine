@@ -27,6 +27,39 @@ namespace File
 {
 
 	/*
+	*	Browses for a file.
+	*	Returns if the action was successful.
+	*/
+	FORCE_INLINE NO_DISCARD bool BrowseForFile(DynamicString* const RESTRICT chosen_file) NOEXCEPT
+	{
+		char file_path[MAX_PATH];
+
+		OPENFILENAME ofn;
+
+		ZeroMemory(&file_path, sizeof(file_path));
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize  = sizeof(ofn);
+		ofn.hwndOwner    = NULL;  // If you have a window to center over, put its HANDLE here
+		ofn.lpstrFilter  = "Any File\0*.*\0";
+		ofn.lpstrFile    = file_path;
+		ofn.nMaxFile     = MAX_PATH;
+		ofn.lpstrTitle   = "Choose File";
+		ofn.Flags        = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
+
+		if (GetOpenFileNameA(&ofn))
+		{
+			*chosen_file = file_path;
+
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
+	/*
 	*	Browses for a folder.
 	*/
 	FORCE_INLINE NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT

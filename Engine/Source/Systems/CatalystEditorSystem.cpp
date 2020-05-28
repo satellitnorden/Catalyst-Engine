@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/CatalystEditorSystem.h>
 
+//File.
+#include <File/Core/FileCore.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
@@ -55,16 +58,8 @@ void CatalystEditorSystem::Terminate() NOEXCEPT
 */
 void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 {
-	//Fill in ImGui's IO struct.
-	ImGuiIO& io{ ImGui::GetIO() };
-
-	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
-	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
-	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
-	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState()->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState()->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
-	io.MouseDown[0] = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED_HELD;
-	io.MouseDown[1] = InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED_HELD;
-	io.MouseDown[2] = InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED_HELD;
+	//Update IO.
+	UpdateIO();
 
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
@@ -77,6 +72,57 @@ void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 	else
 	{
 		UpdateNotInGame();
+	}
+}
+
+/*
+*	Updates IO.
+*/
+void CatalystEditorSystem::UpdateIO() NOEXCEPT
+{
+	//Fill in ImGui's IO struct.
+	ImGuiIO& io{ ImGui::GetIO() };
+
+	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
+	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
+	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
+	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState()->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState()->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
+	io.MouseDown[0] = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED_HELD;
+	io.MouseDown[1] = InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED_HELD;
+	io.MouseDown[2] = InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED_HELD;
+	io.KeyCtrl = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightControl) == ButtonState::PRESSED;
+	io.KeyShift = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED;
+	io.KeyAlt = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftAlt) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightAlt) == ButtonState::PRESSED;
+	io.KeySuper = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftWindows) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightWindows) == ButtonState::PRESSED;
+
+	//Update the KeyMap.
+	io.KeyMap[ImGuiKey_Tab] = UNDERLYING(KeyboardButton::Tab);
+	io.KeyMap[ImGuiKey_LeftArrow] = UNDERLYING(KeyboardButton::LeftArrow);
+	io.KeyMap[ImGuiKey_RightArrow] = UNDERLYING(KeyboardButton::RightArrow);
+	io.KeyMap[ImGuiKey_UpArrow] = UNDERLYING(KeyboardButton::UpArrow);
+	io.KeyMap[ImGuiKey_DownArrow] = UNDERLYING(KeyboardButton::DownArrow);
+	io.KeyMap[ImGuiKey_PageUp] = UNDERLYING(KeyboardButton::PageUp);
+	io.KeyMap[ImGuiKey_PageDown] = UNDERLYING(KeyboardButton::PageDown);
+	io.KeyMap[ImGuiKey_Home] = UNDERLYING(KeyboardButton::Home);
+	io.KeyMap[ImGuiKey_End] = UNDERLYING(KeyboardButton::Home);
+	io.KeyMap[ImGuiKey_Insert] = UNDERLYING(KeyboardButton::Insert);
+	io.KeyMap[ImGuiKey_Delete] = UNDERLYING(KeyboardButton::Delete);
+	io.KeyMap[ImGuiKey_Backspace] = UNDERLYING(KeyboardButton::Backspace);
+	io.KeyMap[ImGuiKey_Space] = UNDERLYING(KeyboardButton::Spacebar);
+	io.KeyMap[ImGuiKey_Enter] = UNDERLYING(KeyboardButton::Enter);
+	io.KeyMap[ImGuiKey_Escape] = UNDERLYING(KeyboardButton::Escape);
+	io.KeyMap[ImGuiKey_KeyPadEnter] = UNDERLYING(KeyboardButton::Enter);
+	io.KeyMap[ImGuiKey_A] = UNDERLYING(KeyboardButton::A);
+	io.KeyMap[ImGuiKey_C] = UNDERLYING(KeyboardButton::C);
+	io.KeyMap[ImGuiKey_V] = UNDERLYING(KeyboardButton::V);
+	io.KeyMap[ImGuiKey_X] = UNDERLYING(KeyboardButton::X);
+	io.KeyMap[ImGuiKey_Y] = UNDERLYING(KeyboardButton::Y);
+	io.KeyMap[ImGuiKey_Z] = UNDERLYING(KeyboardButton::Z);
+
+	//Update the KeyDown array.
+	for (uint8 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
+	{
+		io.KeysDown[i] = InputSystem::Instance->GetKeyboardState()->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
 	}
 }
 
@@ -207,8 +253,8 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 		{
 			//Add the rendering window.
 			ImGui::Begin("Rendering", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
-			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+			ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
+			ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 			//Add the start/stop taking screenshot button.
 			if (RenderingSystem::Instance->IsTakingScreenshot())
@@ -281,8 +327,8 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 		{
 			//Add the world window.
 			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
-			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+			ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
+			ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 			//List all models resources, for now.
 			const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
@@ -301,8 +347,19 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 		{
 			//Add the world window.
 			ImGui::Begin("World", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowPos(ImVec2(8.0f, 1'080.0f - 8.0f - 128.0f));
-			ImGui::SetWindowSize(ImVec2(1'920.0f - 8.0f - 8.0f, 128.0f));
+			ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
+			ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+			
+			//Add the "Save Current Level" button.
+			if (ImGui::Button("Save Current Level"))
+			{
+				DynamicString chosen_file;
+				
+				if (File::BrowseForFile(&chosen_file))
+				{
+					int x = 0;
+				}
+			}
 
 			ImGui::End();
 
