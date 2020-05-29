@@ -22,9 +22,7 @@ public:
 	{
 		NONE,
 		ENTITIES,
-		RENDERING,
-		RESOURCES,
-		WORLD
+		RENDERING
 	};
 
 	/*
@@ -64,9 +62,25 @@ public:
 	/*
 	*	Returns the editor entity system.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorEntitySystem* const RESTRICT GetEditorEntitySystem() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorEntitySystem *const RESTRICT GetEditorEntitySystem() NOEXCEPT
 	{
 		return &_EditorEntitySystem;
+	}
+
+	/*
+	*	Returns the editor perceiver system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorPerceiverSystem *const RESTRICT GetEditorPerceiverSystem() NOEXCEPT
+	{
+		return &_EditorPerceiverSystem;
+	}
+
+	/*
+	*	Returns the editor selection system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorSelectionSystem *const RESTRICT GetEditorSelectionSystem() NOEXCEPT
+	{
+		return &_EditorSelectionSystem;
 	}
 
 private:

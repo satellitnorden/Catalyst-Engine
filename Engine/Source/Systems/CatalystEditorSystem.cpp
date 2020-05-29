@@ -228,40 +228,6 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		}
 	}
 
-	//Opens the world rendering window.
-	if (_CurrentContextualWindow == ContextualWindow::RESOURCES)
-	{
-		if (ImGui::Button("Resources"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Resources"))
-		{
-			_CurrentContextualWindow = ContextualWindow::RESOURCES;
-		}
-	}
-
-	//Opens the world contextual window.
-	if (_CurrentContextualWindow == ContextualWindow::WORLD)
-	{
-		if (ImGui::Button("World"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("World"))
-		{
-			_CurrentContextualWindow = ContextualWindow::WORLD;
-		}
-	}
-
 	ImGui::End();
 }
 
@@ -346,49 +312,6 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 			else
 			{
 				RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
-			}
-
-			ImGui::End();
-
-			break;
-		}
-
-		case ContextualWindow::RESOURCES:
-		{
-			//Add the world window.
-			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
-			ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
-
-			//List all models resources, for now.
-			const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
-
-			for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
-			{
-				ImGui::Text(model_resource->_Header._ResourceName.Data());
-			}
-
-			ImGui::End();
-
-			break;
-		}
-
-		case ContextualWindow::WORLD:
-		{
-			//Add the world window.
-			ImGui::Begin("World", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
-			ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
-			
-			//Add the "Save Current Level" button.
-			if (ImGui::Button("Save Current Level"))
-			{
-				DynamicString chosen_file;
-				
-				if (File::BrowseForFile(&chosen_file))
-				{
-					int x = 0;
-				}
 			}
 
 			ImGui::End();

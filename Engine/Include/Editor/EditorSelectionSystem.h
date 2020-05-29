@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Math.
+#include <Math/Geometry/Ray.h>
+
 class EditorSelectionSystem final
 {
 
@@ -29,6 +32,14 @@ public:
 	*	Updates the editor selection system.
 	*/
 	void Update() NOEXCEPT;
+
+	/*
+	*	Sets the currently selected entity override.
+	*/
+	FORCE_INLINE void SetCurrentlySelectedEntityOverride(Entity *const RESTRICT value) NOEXCEPT
+	{
+		_CurrentlySelectedEntityOverride = value;
+	}
 
 private:
 
@@ -54,6 +65,9 @@ private:
 	//The currently selected entity.
 	Entity *RESTRICT _CurrentlySelectedEntity{ nullptr };
 
+	//The currently selected entity override.
+	Entity *RESTRICT _CurrentlySelectedEntityOverride{ nullptr };
+
 	union
 	{
 		//The dynamic model selection data.
@@ -64,6 +78,11 @@ private:
 	*	Sets the currently selected entity.
 	*/
 	void SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Transforms the currently selected entity.
+	*/
+	void TransformCurrentlySelectedEntity(const Ray &ray);
 
 };
 #endif

@@ -129,6 +129,8 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 
+			CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntityOverride(entity);
+
 			break;
 		}
 
