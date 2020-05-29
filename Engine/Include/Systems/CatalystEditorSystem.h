@@ -5,6 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Editor.
+#include <Editor/EditorEntitySystem.h>
 #include <Editor/EditorPerceiverSystem.h>
 #include <Editor/EditorSelectionSystem.h>
 
@@ -15,6 +16,16 @@ public:
 
 	//Singleton declaration.
 	DECLARE_SINGLETON(CatalystEditorSystem);
+
+	//Enumeration covering all contextual windows.
+	enum class ContextualWindow : uint8
+	{
+		NONE,
+		ENTITIES,
+		RENDERING,
+		RESOURCES,
+		WORLD
+	};
 
 	/*
 	*	Default constructor.
@@ -42,22 +53,32 @@ public:
 		return _IsInGame;
 	}
 
-private:
-
-	//Enumeration covering all contextual windows.
-	enum class ContextualWindow : uint8
+	/*
+	*	Returns the current contextual window.
+	*/
+	FORCE_INLINE NO_DISCARD ContextualWindow GetCurrentContextualWindow() const NOEXCEPT
 	{
-		NONE,
-		RENDERING,
-		RESOURCES,
-		WORLD
-	};
+		return _CurrentContextualWindow;
+	}
+
+	/*
+	*	Returns the editor entity system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorEntitySystem* const RESTRICT GetEditorEntitySystem() NOEXCEPT
+	{
+		return &_EditorEntitySystem;
+	}
+
+private:
 
 	//Denotes if the editor is in a game.
 	bool _IsInGame{ false };
 
 	//The current contextual window.
 	ContextualWindow _CurrentContextualWindow{ ContextualWindow::NONE };
+
+	//The editor entity system.
+	EditorEntitySystem _EditorEntitySystem;
 
 	//The editor perceiver system.
 	EditorPerceiverSystem _EditorPerceiverSystem;

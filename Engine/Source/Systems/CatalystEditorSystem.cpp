@@ -64,6 +64,12 @@ void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
 
+	//Update the editor entitiy system.
+	_EditorEntitySystem.Update();
+
+	//Update the editor selection system.
+	_EditorSelectionSystem.Update();
+
 	if (_IsInGame)
 	{
 		UpdateInGame();
@@ -188,10 +194,10 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		_IsInGame = true;
 	}
 
-	//Opens the world rendering window.
-	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
+	//Opens the entities window.
+	if (_CurrentContextualWindow == ContextualWindow::ENTITIES)
 	{
-		if (ImGui::Button("Close Rendering"))
+		if (ImGui::Button("Entities"))
 		{
 			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
@@ -199,7 +205,24 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 
 	else
 	{
-		if (ImGui::Button("Open Rendering"))
+		if (ImGui::Button("Entities"))
+		{
+			_CurrentContextualWindow = ContextualWindow::ENTITIES;
+		}
+	}
+
+	//Opens the rendering window.
+	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
+	{
+		if (ImGui::Button("Rendering"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Rendering"))
 		{
 			_CurrentContextualWindow = ContextualWindow::RENDERING;
 		}
@@ -208,7 +231,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	//Opens the world rendering window.
 	if (_CurrentContextualWindow == ContextualWindow::RESOURCES)
 	{
-		if (ImGui::Button("Close Resources"))
+		if (ImGui::Button("Resources"))
 		{
 			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
@@ -216,7 +239,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 
 	else
 	{
-		if (ImGui::Button("Open Resources"))
+		if (ImGui::Button("Resources"))
 		{
 			_CurrentContextualWindow = ContextualWindow::RESOURCES;
 		}
@@ -225,7 +248,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	//Opens the world contextual window.
 	if (_CurrentContextualWindow == ContextualWindow::WORLD)
 	{
-		if (ImGui::Button("Close World"))
+		if (ImGui::Button("World"))
 		{
 			_CurrentContextualWindow = ContextualWindow::NONE;
 		}
@@ -233,7 +256,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 
 	else
 	{
-		if (ImGui::Button("Open World"))
+		if (ImGui::Button("World"))
 		{
 			_CurrentContextualWindow = ContextualWindow::WORLD;
 		}
@@ -249,6 +272,13 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 {
 	switch (_CurrentContextualWindow)
 	{
+		case ContextualWindow::ENTITIES:
+		{
+			//Handled by the editor entity system. (:
+
+			break;
+		}
+
 		case ContextualWindow::RENDERING:
 		{
 			//Add the rendering window.

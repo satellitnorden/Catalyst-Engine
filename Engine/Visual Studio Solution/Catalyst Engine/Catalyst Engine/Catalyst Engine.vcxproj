@@ -105,6 +105,7 @@
     <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\StringUtilities.h" />
     <ClInclude Include="..\..\..\Include\Distribution\AchievementIdentifier.h" />
+    <ClInclude Include="..\..\..\Include\Editor\EditorEntitySystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorPerceiverSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorSelectionSystem.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
@@ -456,6 +457,7 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
     <ClCompile Include="..\..\..\Source\Distribution\SteamDistributionSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Editor\EditorEntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorPerceiverSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorSelectionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp" />

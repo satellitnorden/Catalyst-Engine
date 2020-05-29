@@ -25,6 +25,11 @@ public:
 	*/
 	void Initialize() NOEXCEPT;
 
+	/*
+	*	Updates the editor selection system.
+	*/
+	void Update() NOEXCEPT;
+
 private:
 
 	/*
@@ -59,11 +64,6 @@ private:
 	*	Sets the currently selected entity.
 	*/
 	void SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Updates the editor selection system during the PHYSICS update phase.
-	*/
-	void PhysicsUpdate() NOEXCEPT;
 
 };
 #endif
