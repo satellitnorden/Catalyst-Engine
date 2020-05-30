@@ -27,6 +27,9 @@ public:
 
 private:
 
+	//Define constants.
+	constexpr static uint8 NUMBER_OF_SPATIAL_DENOISING_PASSES{ 2 };
+
 	//The screen space indirect lighting graphics pipelines.
 	StaticArray<ScreenSpaceIndirectLightingGraphicsPipeline, 2> _ScreenSpaceIndirectLightingGraphicsPipelines;
 
@@ -34,7 +37,7 @@ private:
 	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;
 
 	//The indirect lighting spatial denoising graphics pipelines.
-	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 8> _IndirectLightingSpatialDenoisingGraphicsPipelines;
+	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, NUMBER_OF_SPATIAL_DENOISING_PASSES * 2 * 2> _IndirectLightingSpatialDenoisingGraphicsPipelines;
 
 	//The indirect lighting temporal denoising graphics pipelines.
 	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 4> _IndirectLightingTemporalDenoisingGraphicsPipelines;
