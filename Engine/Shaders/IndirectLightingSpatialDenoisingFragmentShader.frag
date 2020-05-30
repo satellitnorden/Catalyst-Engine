@@ -68,7 +68,7 @@ void CatalystShaderMain()
 		{
 			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(x), float(y)) * altered_stride * INVERSE_RESOLUTION;
 
-			vec3 sample_indirect_lighting = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb;
+			vec3 sample_indirect_lighting = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb;
 			SceneFeatures sample_features = SampleSceneFeatures(sample_coordinate);
 
 			/*
