@@ -14,8 +14,8 @@ class TerrainProperties final
 
 public:
 
-	//The patch size of the root nodes.
-	float _PatchSize;
+	//The patch size.
+	float32 _PatchSize;
 
 	//The patch resolution.
 	uint32 _PatchResolution;
