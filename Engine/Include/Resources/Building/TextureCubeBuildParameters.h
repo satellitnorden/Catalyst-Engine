@@ -17,10 +17,4 @@ public:
 	//The file path.
 	const char *RESTRICT _File{ nullptr };
 
-	//The resolution.
-	uint32 _Resolution;
-
-	//The number of mipmap levels.
-	uint8 _MipmapLevels;
-
 };

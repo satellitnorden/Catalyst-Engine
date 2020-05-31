@@ -24,6 +24,7 @@
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/TextureCube.h>
 #include <Rendering/Native/Vertex.h>
 
 //Resources
@@ -1016,9 +1017,11 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
+	constexpr uint8 MIPMAP_LEVELS{ 7 };
+	constexpr uint32 BASE_RESOLUTION{ 512 };
 	constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
 
-	//What should the material be called?
+	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
 	file_name += ".cr";
 
@@ -1029,7 +1032,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
-	//Load the texture.
+	//Load the HDR texture.
 	int32 width, height, number_of_channels;
 	float32 *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &number_of_channels, STBI_rgb_alpha) };
 
@@ -1039,37 +1042,33 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	//Copy the data into the cpu texture.
 	Memory::Copy(hdr_texture.Data(), data, width * height * 4 * sizeof(float32));
 
-	//Create the diffuse output textures.
-	StaticArray<Texture2D<Vector4<float32>>, 6> output_textures
-	{
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution),
-		Texture2D<Vector4<float32>>(parameters._Resolution)
-	};
+	//Free the data, not needed anymore.
+	stbi_image_free(data);
 
-	for (uint8 i{ 0 }; i < 6; ++i)
+	//Create the base texture.
+	TextureCube base_texture;
+	base_texture.Initialize(BASE_RESOLUTION);
+
+	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 	{
-		for (uint32 j{ 0 }; j < parameters._Resolution; ++j)
+		for (uint32 Y{ 0 }; Y < BASE_RESOLUTION; ++Y)
 		{
-			for (uint32 k{ 0 }; k < parameters._Resolution; ++k)
+			for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
 			{
 				Vector3<float32> position;
 
-				const float32 x_weight{ static_cast<float32>(j) / static_cast<float32>(parameters._Resolution) };
-				const float32 y_weight{ static_cast<float32>(k) / static_cast<float32>(parameters._Resolution) };
+				const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(BASE_RESOLUTION) };
+				const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(BASE_RESOLUTION) };
 
-				switch (i)
+				switch (face_index)
 				{
-				default: CRASH(); break;
-				case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-				case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-				case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-				case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-				case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-				case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+					default: CRASH(); break;
+					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
 				}
 
 				position.Normalize();
@@ -1078,31 +1077,65 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 				texture_coordinate *= INVERSE_ATAN;
 				texture_coordinate += 0.5f;
 
-				output_textures[i].At(j, k) = hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
+				base_texture.At(face_index, X, Y) = hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
+			}
+		}
+	}
+
+	//Create the mipmap levels.
+	StaticArray<TextureCube, MIPMAP_LEVELS - 1> mip_chain;
+
+	for (uint8 mipmap_level{ 1 }; mipmap_level < MIPMAP_LEVELS; ++mipmap_level)
+	{
+		const uint32 mip_resolution{ BASE_RESOLUTION >> mipmap_level };
+
+		mip_chain[mipmap_level - 1].Initialize(mip_resolution);
+
+		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
+		{
+			for (uint32 Y{ 0 }; Y < mip_resolution; ++Y)
+			{
+				for (uint32 X{ 0 }; X < mip_resolution; ++X)
+				{
+					Vector3<float32> position;
+
+					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(mip_resolution) };
+					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(mip_resolution) };
+
+					switch (face_index)
+					{
+						default: CRASH(); break;
+						case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+						case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+						case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+						case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+						case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+						case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+					}
+
+					mip_chain[mipmap_level - 1].At(face_index, X, Y) = base_texture.Sample(position);
+				}
 			}
 		}
 	}
 
 	//Write the resolution to the file.
-	file.Write(&parameters._Resolution, sizeof(uint32));
+	file.Write(&BASE_RESOLUTION, sizeof(uint32));
 
 	//Write the number of mipmap levels to the file.
-	file.Write(&parameters._MipmapLevels, sizeof(uint8));
-
-	//Create the mipmap chains.
-	StaticArray<DynamicArray<Texture2D<Vector4<float32>>>, 6> mip_chains;
-
-	for (uint8 i{ 0 }; i < 6; ++i)
-	{
-		RenderingUtilities::GenerateMipChain(output_textures[i], parameters._MipmapLevels, &mip_chains[i]);
-	}
+	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
 
 	//Write the data to the file.
-	for (uint8 i{ 0 }; i < parameters._MipmapLevels; ++i)
+	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 	{
-		for (uint8 j{ 0 }; j < 6; ++j)
+		file.Write(base_texture.Face(face_index).Data(), BASE_RESOLUTION * BASE_RESOLUTION * sizeof(Vector4<float32>));
+	}
+
+	for (uint8 mipmap_level{ 1 }; mipmap_level < MIPMAP_LEVELS; ++mipmap_level)
+	{
+		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			file.Write(mip_chains[j][i].Data(), (parameters._Resolution >> i) * (parameters._Resolution >> i) * 4 * sizeof(float32));
+			file.Write(mip_chain[mipmap_level - 1].Face(face_index).Data(), (BASE_RESOLUTION >> mipmap_level) * (BASE_RESOLUTION >> mipmap_level) * sizeof(Vector4<float32>));
 		}
 	}
 

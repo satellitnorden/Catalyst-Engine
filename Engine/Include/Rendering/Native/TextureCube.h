@@ -35,6 +35,35 @@ public:
 	}
 
 	/*
+	*	Returns the texel at the given face index and coordinate.
+	*/
+	FORCE_INLINE NO_DISCARD Vector4<float32> &At(const uint8 face_index, const uint32 X, const uint32 Y) NOEXCEPT
+	{
+		return _Faces[face_index].At(X, Y);
+	}
+
+	/*
+	*	Returns the face with the given index.
+	*/
+	FORCE_INLINE NO_DISCARD Texture2D<Vector4<float32>> &Face(const uint8 face_index) NOEXCEPT
+	{
+		return _Faces[face_index];
+	}
+
+	/*
+	*	Initializes this texture cube.
+	*/
+	FORCE_INLINE void Initialize(const uint32 resolution) NOEXCEPT
+	{
+		_Resolution = resolution;
+
+		for (uint8 i{ 0 }; i < _Faces.Size(); ++i)
+		{
+			_Faces[i].Initialize(resolution);
+		}
+	}
+
+	/*
 	*	Initializes this texture cube.
 	*/
 	FORCE_INLINE void Initialize(const uint32 resolution, const Vector4<float> *const RESTRICT data) NOEXCEPT
@@ -74,7 +103,7 @@ private:
 	*	Face 4: Right.
 	*	Face 5: Left;
 	*/
-	StaticArray<Texture2D<Vector4<float>>, 6> _Faces;
+	StaticArray<Texture2D<Vector4<float32>>, 6> _Faces;
 
 	//The resolution.
 	uint32 _Resolution;
