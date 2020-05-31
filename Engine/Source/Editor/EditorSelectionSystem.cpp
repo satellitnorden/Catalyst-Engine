@@ -72,7 +72,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 			RaycastConfiguration configuration;
 
-			configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS;
+			configuration._PhysicsChannels = PhysicsChannel::ALL;
 			configuration._MaximumHitDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
 			configuration._TerrainRayMarchStep = 1.0f;
 
