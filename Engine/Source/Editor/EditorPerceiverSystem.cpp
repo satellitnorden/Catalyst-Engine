@@ -10,39 +10,30 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 
-/*
-*	Initializes the editor perceiver system.
-*/
-void EditorPerceiverSystem::Initialize() NOEXCEPT
-{
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<EditorPerceiverSystem *const RESTRICT>(arguments)->LogicUpdate();
-	},
-	this,
-	UpdatePhase::LOGIC,
-	UpdatePhase::PHYSICS,
-	false);
-}
+//Third party.
+#include <ThirdParty/imgui.h>
 
 /*
-*	Updates the editor perceiver systen during the LOGIC update phase.
+*	Updates the editor perceiver systen .
 */
-void EditorPerceiverSystem::LogicUpdate() NOEXCEPT
+void EditorPerceiverSystem::Update() NOEXCEPT
 {
 	//Define constants.
 	constexpr float32 MOUSE_ROTATION_SPEED{ CatalystBaseMath::DegreesToRadians(90.0f) };
 	constexpr float32 GAMEPAD_ROTATION_SPEED{ CatalystBaseMath::DegreesToRadians(45.0f) };
-	constexpr float32 MOVEMENT_SPEED{ 2.0f };
-
-#if defined(CATALYST_EDITOR)
-	//Only update if the editor is not in a game.
-	if (CatalystEditorSystem::Instance->IsInGame())
+	
+	//Is the current contextual window PERCEIVER?
+	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() == CatalystEditorSystem::ContextualWindow::PERCEIVER)
 	{
-		return;
+		//Add the entities window.
+		ImGui::Begin("Perceiver", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+		ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
+		ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+
+		ImGui::DragFloat("Movement Speed", &_MovementSpeed);
+
+		ImGui::End();
 	}
-#endif
 
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
@@ -74,22 +65,22 @@ void EditorPerceiverSystem::LogicUpdate() NOEXCEPT
 
 	//Update the position.
 #if 1 //Use keyboard/mouse controls.
-	_Position -= CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::Q) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position -= CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::Q) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
-	_Position += CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::E) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position += CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::E) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
-	_Position -= forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position -= forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
-	_Position += forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position += forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
-	_Position -= right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position -= right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
-	_Position += right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED) * MOVEMENT_SPEED * delta_time;
-	_Position += right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD) * MOVEMENT_SPEED * delta_time;
+	_Position -= CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::Q) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position -= CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::Q) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
+	_Position += CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::E) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position += CatalystWorldCoordinateSpace::UP * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::E) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
+	_Position -= forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position -= forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
+	_Position += forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position += forward_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
+	_Position -= right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position -= right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
+	_Position += right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED) * _MovementSpeed * delta_time;
+	_Position += right_vector * static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD) * _MovementSpeed * delta_time;
 #endif
 #if 1 //Use gamepad controls.
-	_Position += forward_vector * gamepad_state->_LeftThumbstickY * MOVEMENT_SPEED * delta_time;
-	_Position += right_vector * gamepad_state->_LeftThumbstickX * MOVEMENT_SPEED * delta_time;
+	_Position += forward_vector * gamepad_state->_LeftThumbstickY * _MovementSpeed * delta_time;
+	_Position += right_vector * gamepad_state->_LeftThumbstickX * _MovementSpeed * delta_time;
 #endif
 
 	//Set the world transform for the Perceiver.

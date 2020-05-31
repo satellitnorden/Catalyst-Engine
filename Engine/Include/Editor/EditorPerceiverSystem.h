@@ -13,9 +13,9 @@ class EditorPerceiverSystem final
 public:
 
 	/*
-	*	Initializes the editor perceiver system.
+	*	Updates the editor perceiver system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Update() NOEXCEPT;
 
 private:
 
@@ -25,10 +25,8 @@ private:
 	//The rotation.
 	Vector3<float32> _Rotation;
 
-	/*
-	*	Updates the editor perceiver system during the LOGIC update phase.
-	*/
-	void LogicUpdate() NOEXCEPT;
+	//The speed.
+	float32 _MovementSpeed{ 2.0f };
 
 };
 

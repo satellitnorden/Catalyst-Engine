@@ -22,6 +22,7 @@ public:
 	{
 		NONE,
 		ENTITIES,
+		PERCEIVER,
 		RENDERING
 	};
 

@@ -37,9 +37,6 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	UpdatePhase::LOGIC,
 	false);
 
-	//Updates the editor perceiver system.
-	_EditorPerceiverSystem.Initialize();
-
 	//Initialize the editor selection system.
 	_EditorSelectionSystem.Initialize();
 }
@@ -63,12 +60,6 @@ void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
-
-	//Update the editor entitiy system.
-	_EditorEntitySystem.Update();
-
-	//Update the editor selection system.
-	_EditorSelectionSystem.Update();
 
 	if (_IsInGame)
 	{
@@ -177,6 +168,15 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	{
 		AddContextualWindow();
 	}
+
+	//Update the editor entitiy system.
+	_EditorEntitySystem.Update();
+
+	//Update the editor Perceiver system.
+	_EditorPerceiverSystem.Update();
+
+	//Update the editor selection system.
+	_EditorSelectionSystem.Update();
 }
 
 /*
@@ -212,6 +212,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		}
 	}
 
+	//Opens the perceiver window.
+	if (_CurrentContextualWindow == ContextualWindow::PERCEIVER)
+	{
+		if (ImGui::Button("Perceiver"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Perceiver"))
+		{
+			_CurrentContextualWindow = ContextualWindow::PERCEIVER;
+		}
+	}
+
 	//Opens the rendering window.
 	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
 	{
@@ -242,6 +259,13 @@ void CatalystEditorSystem::AddContextualWindow() NOEXCEPT
 		case ContextualWindow::ENTITIES:
 		{
 			//Handled by the editor entity system. (:
+
+			break;
+		}
+
+		case ContextualWindow::PERCEIVER:
+		{
+			//Handled by the editor perceiver system. (:
 
 			break;
 		}
