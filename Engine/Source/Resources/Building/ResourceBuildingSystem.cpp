@@ -11,6 +11,9 @@
 //Animation.
 #include <Animation/AnimatedVertex.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
@@ -21,6 +24,7 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Noise/HaltonSequence.h>
 #include <Math/Noise/HammersleySequence.h>
 
 //Rendering.
@@ -33,6 +37,9 @@
 #include <Resources/Building/AssimpBuilder.h>
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/ResourcesCore.h>
+
+//Systems.
+#include <Systems/TaskSystem.h>
 
 //Third party.
 #include <ThirdParty/ft2build.h>
@@ -1018,10 +1025,40 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 */
 void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
+	/*
+	*	Texture cube building concurrency data class definition.
+	*/
+	class TextureCubeBuildingConcurrencyData final
+	{
+
+	public:
+
+		//The task.
+		Task _Task;
+
+		//The base resolution.
+		uint32 _BaseResolution;
+
+		//The mipmap level.
+		uint8 _MipmapLevel;
+
+		//The number of mipmap levels.
+		uint8 _MipmapLevels;
+
+		//The face index.
+		uint8 _FaceIndex;
+
+		//The HDR texture.
+		Texture2D<Vector4<float32>> *RESTRICT _HDRTexture;
+
+		//The texture cube.
+		TextureCube *RESTRICT _TextureCube;
+
+	};
+
 	//Define constants.
 	constexpr uint8 MIPMAP_LEVELS{ 7 };
 	constexpr uint32 BASE_RESOLUTION{ 512 };
-	constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
@@ -1057,6 +1094,9 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		{
 			for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
 			{
+				//Define constants.
+				constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
+
 				//Calculate the direction
 				Vector3<float32> direction;
 
@@ -1086,80 +1126,121 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		}
 	}
 
-	//Create the mipmap levels.
+	//Create the mip chain.
 	StaticArray<TextureCube, MIPMAP_LEVELS - 1> mip_chain;
+
+	//The task system is going to be needed from this point, so make sure it is initialized.
+	TaskSystem::Instance->Initialize();
+
+	//Create a number of tasks to make texture cube building more efficient.
+	DynamicArray<TextureCubeBuildingConcurrencyData> concurrency_data;
+	concurrency_data.Upsize<true>((MIPMAP_LEVELS - 1) * 6);
+
+	uint32 concurrency_data_counter{ 0 };
 
 	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
-		const uint32 mip_resolution{ BASE_RESOLUTION >> (mipmap_level + 1) };
-
-		mip_chain[mipmap_level].Initialize(mip_resolution);
+		mip_chain[mipmap_level].Initialize(BASE_RESOLUTION >> (mipmap_level + 1));
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			for (uint32 Y{ 0 }; Y < mip_resolution; ++Y)
+			concurrency_data[concurrency_data_counter]._Task._Function = [](void *const RESTRICT arguments)
 			{
-				for (uint32 X{ 0 }; X < mip_resolution; ++X)
+				//Define constants.
+				constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
+
+				const uint32 mip_resolution{ static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_BaseResolution >> (static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_MipmapLevel + 1) };
+
+				for (uint32 Y{ 0 }; Y < mip_resolution; ++Y)
 				{
-					//Calculate the direction.
-					Vector3<float32> direction;
-
-					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(mip_resolution) };
-					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(mip_resolution) };
-
-					switch (face_index)
+					for (uint32 X{ 0 }; X < mip_resolution; ++X)
 					{
-						default: CRASH(); break;
-						case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-						case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-						case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-						case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-						case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-						case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+						//Calculate the direction.
+						Vector3<float32> direction;
+
+						const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(mip_resolution) };
+						const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(mip_resolution) };
+
+						switch (static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_FaceIndex)
+						{
+							default: CRASH(); break;
+							case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+							case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+							case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+							case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+							case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+							case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+						}
+
+						direction.Normalize();
+
+						//Take N samples, varying the directions depending on the roughness of the mip level.
+						const uint32 number_of_samples{ static_cast<uint32>(4'096 << static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_MipmapLevel) };
+
+						Vector4<float32> total{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+						for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+						{
+							//Calculate the uniform hemisphere sample.
+							Vector3<float32> sample_direction{ HammersleySequence::CalculateCoordinateHemisphereUniform(sample_index, number_of_samples) };
+
+							//Rotate the uniform hemisphere sample in relation to the direction.
+							const Vector3<float32> random_tilt{ HaltonSequence::Generate(X + Y + static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_FaceIndex + sample_index + 0, 3) * 2.0f - 1.0f,
+																HaltonSequence::Generate(X + Y + static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_FaceIndex + sample_index + 1, 3) * 2.0f - 1.0f,
+																HaltonSequence::Generate(X + Y + static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_FaceIndex + sample_index + 2, 3) * 2.0f - 1.0f };
+							const Vector3<float32> tangent{ Vector3<float32>::Normalize(random_tilt - direction * Vector3<float32>::DotProduct(random_tilt, direction)) };
+							const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(direction, tangent) };
+
+							const Matrix3x3 rotation{ tangent, bitangent, direction };
+
+							sample_direction = rotation * sample_direction;
+
+							//Flip the uniform hemisphere sample, if needed.
+							sample_direction = Vector3<float32>::DotProduct(sample_direction, direction) >= 0.0f ? sample_direction : -sample_direction;
+
+							//Blend the uniform hemisphere sample with the original normal depending on the roughness of the mipmap level.
+							float32 mipmap_level_roughness{ static_cast<float32>(static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_MipmapLevel + 1) / static_cast<float32>(static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_MipmapLevels - 1) };
+							mipmap_level_roughness *= mipmap_level_roughness;
+
+							sample_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(direction, sample_direction, mipmap_level_roughness));
+
+							//Sample the HDR texture.
+							Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(sample_direction._Z, sample_direction._X), CatalystBaseMath::Arcsine(sample_direction._Y) };
+							texture_coordinate *= INVERSE_ATAN;
+							texture_coordinate += 0.5f;
+
+							total += static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_HDRTexture->Sample(texture_coordinate, AddressMode::ClampToEdge);
+						}
+
+						static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_TextureCube->At(static_cast<TextureCubeBuildingConcurrencyData *const RESTRICT>(arguments)->_FaceIndex, X, Y) = total / static_cast<float32>(number_of_samples);
 					}
-
-					direction.Normalize();
-
-					//Take N samples, varying the directions depending on the roughness of the mip level.
-					const uint32 number_of_samples{ static_cast<uint32>(256 << mipmap_level) };
-
-					Vector4<float32> total{ 0.0f, 0.0f, 0.0f, 0.0f };
-
-					for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
-					{
-						//Calculate the uniform hemisphere sample.
-						Vector3<float32> sample_direction{ HammersleySequence::CalculateCoordinateHemisphereUniform(sample_index, number_of_samples) };
-
-						//Rotate the uniform hemisphere sample in relation to the direction.
-						const Vector3<float32> random_tilt{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
-						const Vector3<float32> tangent{ Vector3<float32>::Normalize(random_tilt - direction * Vector3<float32>::DotProduct(random_tilt, direction)) };
-						const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(direction, tangent) };
-
-						const Matrix3x3 rotation{ tangent, bitangent, direction };
-
-						sample_direction = rotation * sample_direction;
-
-						//Flip the uniform hemisphere sample, if needed.
-						sample_direction = Vector3<float32>::DotProduct(sample_direction, direction) >= 0.0f ? sample_direction : -sample_direction;
-
-						//Blend the uniform hemisphere sample with the original normal depending on the roughness of the mipmap level.
-						float32 mipmap_level_roughness{ static_cast<float32>(mipmap_level + 1) / static_cast<float32>(MIPMAP_LEVELS - 1) };
-						mipmap_level_roughness *= mipmap_level_roughness;
-
-						sample_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(direction, sample_direction, mipmap_level_roughness));
-
-						//Sample the HDR texture.
-						Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(sample_direction._Z, sample_direction._X), CatalystBaseMath::Arcsine(sample_direction._Y) };
-						texture_coordinate *= INVERSE_ATAN;
-						texture_coordinate += 0.5f;
-
-						total += hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
-					}
-
-					mip_chain[mipmap_level].At(face_index, X, Y) = total / static_cast<float32>(number_of_samples);
 				}
-			}
+			};
+			concurrency_data[concurrency_data_counter]._Task._Arguments = &concurrency_data[concurrency_data_counter];
+			concurrency_data[concurrency_data_counter]._Task._ExecutableOnSameThread = false;
+			concurrency_data[concurrency_data_counter]._BaseResolution = BASE_RESOLUTION;
+			concurrency_data[concurrency_data_counter]._MipmapLevel = mipmap_level;
+			concurrency_data[concurrency_data_counter]._MipmapLevels = MIPMAP_LEVELS;
+			concurrency_data[concurrency_data_counter]._FaceIndex = face_index;
+			concurrency_data[concurrency_data_counter]._HDRTexture = &hdr_texture;
+			concurrency_data[concurrency_data_counter]._TextureCube = &mip_chain[mipmap_level];
+
+			TaskSystem::Instance->ExecuteTask(&concurrency_data[concurrency_data_counter]._Task);
+
+			++concurrency_data_counter;
 		}
+	}
+
+	//Wait for all tasks to finish.
+	uint32 tasks_finished_counter{ 0 };
+
+	for (TextureCubeBuildingConcurrencyData &data : concurrency_data)
+	{
+		data._Task.Wait<WaitMode::YIELD>();
+
+		++tasks_finished_counter;
+
+		PRINT_TO_OUTPUT(tasks_finished_counter << " out of " << concurrency_data.Size() << " texture cube building tasks done.");
 	}
 
 	//Write the resolution to the file.
