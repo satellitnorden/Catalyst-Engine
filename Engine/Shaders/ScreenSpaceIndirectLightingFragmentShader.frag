@@ -136,11 +136,13 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 						vec4 sample_scene_features_1 = texture(scene_features_1_texture, screen_space_sample_position.xy);
 						vec4 sample_scene_features_3 = texture(scene_features_3_texture, screen_space_sample_position.xy);
 
-						vec3 sample_ray_direction;
-						float sample_start_offset;
+						vec3 sample_specular_direction = reflect(ray_direction, sample_scene_features_2.xyz);
+						vec3 sample_diffuse_direction = sample_scene_features_2.xyz;
 
-						CalculateIndirectLightingRayDirectionAndStartOffset(uint(start_offset * 64.0f), ray_direction, sample_scene_features_2.xyz, sample_scene_features_3[0], sample_scene_features_3[1], sample_ray_direction, sample_start_offset);
-					
+						float diffuse_weight = sample_scene_features_3[0] * (1.0f - sample_scene_features_3[1]);
+
+						vec3 sample_ray_direction = normalize(mix(sample_specular_direction, sample_diffuse_direction, diffuse_weight));
+
 						scene_radiance += CalculateLighting(-ray_direction,
 															sample_scene_features_1.rgb,
 															sample_scene_features_2.xyz,
@@ -149,20 +151,12 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 															sample_scene_features_3[2],
 															sample_scene_features_1.w,
 															-sample_ray_direction,
-															textureLod(SKY_TEXTURE, sample_ray_direction, 0).rgb * SKY_INTENSITY);
+															textureLod(SKY_TEXTURE, sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY);
 					}
 
 					//Calculate the hit radiance.
 					{
-						hit_radiance = CalculateLighting(	-view_direction,
-															scene_features_1.rgb,
-															scene_features_2.xyz,
-															scene_features_3[0],
-															scene_features_3[1],
-															scene_features_3[2],
-															scene_features_1.w,
-															-ray_direction,
-															scene_radiance);
+						hit_radiance = scene_radiance;
 					}
 
 					//Return that there was a hit.
@@ -215,27 +209,6 @@ void CatalystShaderMain()
 
 	//Normalize the indirect lighting.
 	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
-
-	//Blend in the sky a bit to account for misses.
-	{
-		//Calculate the ray direction and start offset.
-		vec3 ray_direction;
-		float start_offset;
-
-		CalculateIndirectLightingRayDirectionAndStartOffset(SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES, view_direction, scene_features_2.xyz, scene_features_3[0], scene_features_3[1], ray_direction, start_offset);
-
-		vec3 sky_indirect_lighting = 	CalculateLighting(	-view_direction,
-															scene_features_1.rgb,
-															scene_features_2.xyz,
-															scene_features_3[0],
-															scene_features_3[1],
-															scene_features_3[2],
-															scene_features_1.w,
-															-ray_direction,
-															textureLod(SKY_TEXTURE, ray_direction, 0).rgb * SKY_INTENSITY);
-
-		indirect_lighting = mix(sky_indirect_lighting, indirect_lighting, min(total_weight, 1.0f));
-	}
 	
 
     //Write the fragment

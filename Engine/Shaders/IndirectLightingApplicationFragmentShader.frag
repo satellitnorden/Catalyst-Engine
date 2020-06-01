@@ -28,13 +28,13 @@ layout (location = 0) out vec4 scene;
 /*
 *	Samples the indirect lighting at the given coordinate.
 */
-vec3 SampleIndirectLighting(vec2 coordinate)
+vec4 SampleIndirectLighting(vec2 coordinate)
 {
 	//If the indirect lighting quality is set to high (rendering at full resolution), then no upsampling needs to happen.
 	if (INDIRECT_LIGHTING_QUALITY == INDIRECT_LIGHTING_QUALITY_HIGH)
 	{
 		//Sample the final blend.
-		vec3 final_blend = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).rgb;
+		vec4 final_blend = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
 
 		//Return the final blend.
 		return final_blend;
@@ -46,13 +46,13 @@ vec3 SampleIndirectLighting(vec2 coordinate)
 		float current_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).w);
 
 		//Sample the four neighbor samples along with their depth.
-		vec3 sample_1_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f)).rgb;
+		vec4 sample_1_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f));
 		float sample_1_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f)).w);
-		vec3 sample_2_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).rgb;
+		vec4 sample_2_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f));
 		float sample_2_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
-		vec3 sample_3_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).rgb;
+		vec4 sample_3_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f));
 		float sample_3_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).w);
-		vec3 sample_4_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).rgb;
+		vec4 sample_4_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f));
 		float sample_4_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
 
 		//Calculate the horizontal and vertical weights.
@@ -80,7 +80,7 @@ vec3 SampleIndirectLighting(vec2 coordinate)
 		fourth_weight *= total_weight_reciprocal;
 
 		//Perform the final blend.
-		vec3 final_blend = 	sample_1_color * first_weight
+		vec4 final_blend = 	sample_1_color * first_weight
 							+ sample_2_color * second_weight
 							+ sample_3_color * third_weight
 							+ sample_4_color * fourth_weight;
@@ -93,7 +93,7 @@ vec3 SampleIndirectLighting(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the indirect lighting while sharpening it a bit.
-	vec3 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 9.0f
+	vec4 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 9.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
@@ -104,8 +104,34 @@ void CatalystShaderMain()
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
 
 	//No negative values. \o/
-	indirect_lighting = max(indirect_lighting, vec3(0.0f, 0.0f, 0.0f));
+	indirect_lighting = vec4(max(indirect_lighting.rgb, vec3(0.0f, 0.0f, 0.0f)), clamp(indirect_lighting.a, 0.0f, 1.0f));
+
+	//Blend in the sky a bit to account for misses.
+	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+
+	vec3 view_direction = normalize(CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w) - PERCEIVER_WORLD_POSITION);
+	vec3 specular_direction = reflect(view_direction, scene_features_2.xyz);
+	vec3 diffuse_direction = scene_features_2.xyz;
+
+	float diffuse_weight = scene_features_3[0] * (1.0f - scene_features_3[1]);
+
+	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
+
+	indirect_lighting.rgb = mix(textureLod(SKY_TEXTURE, indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY, indirect_lighting.rgb, indirect_lighting.a);
+
+	//Calculate the indirect lighting.
+	indirect_lighting.rgb = CalculateLighting(	-view_direction,
+												scene_features_1.rgb,
+												scene_features_2.xyz,
+												scene_features_3[0],
+												scene_features_3[1],
+												scene_features_3[2],
+												scene_features_1.w,
+												-indirect_lighting_direction,
+												indirect_lighting.rgb);
 
 	//Write the fragment.
-	scene = vec4(indirect_lighting, 1.0f);
+	scene = vec4(indirect_lighting.rgb, 1.0f);
 }
