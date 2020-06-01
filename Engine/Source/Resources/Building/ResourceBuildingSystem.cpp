@@ -19,7 +19,9 @@
 #include <File/Readers/WAVReader.h>
 
 //Math.
+#include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Noise/HammersleySequence.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -1055,7 +1057,8 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		{
 			for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
 			{
-				Vector3<float32> position;
+				//Calculate the direction
+				Vector3<float32> direction;
 
 				const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(BASE_RESOLUTION) };
 				const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(BASE_RESOLUTION) };
@@ -1063,17 +1066,18 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 				switch (face_index)
 				{
 					default: CRASH(); break;
-					case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-					case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-					case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-					case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-					case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-					case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+					case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+					case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+					case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+					case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+					case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+					case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
 				}
 
-				position.Normalize();
+				direction.Normalize();
 
-				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(position._Z, position._X), CatalystBaseMath::Arcsine(position._Y) };
+				//Sample the HDR texture.
+				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(direction._Z, direction._X), CatalystBaseMath::Arcsine(direction._Y) };
 				texture_coordinate *= INVERSE_ATAN;
 				texture_coordinate += 0.5f;
 
@@ -1085,11 +1089,11 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	//Create the mipmap levels.
 	StaticArray<TextureCube, MIPMAP_LEVELS - 1> mip_chain;
 
-	for (uint8 mipmap_level{ 1 }; mipmap_level < MIPMAP_LEVELS; ++mipmap_level)
+	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
-		const uint32 mip_resolution{ BASE_RESOLUTION >> mipmap_level };
+		const uint32 mip_resolution{ BASE_RESOLUTION >> (mipmap_level + 1) };
 
-		mip_chain[mipmap_level - 1].Initialize(mip_resolution);
+		mip_chain[mipmap_level].Initialize(mip_resolution);
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
@@ -1097,7 +1101,8 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 			{
 				for (uint32 X{ 0 }; X < mip_resolution; ++X)
 				{
-					Vector3<float32> position;
+					//Calculate the direction.
+					Vector3<float32> direction;
 
 					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(mip_resolution) };
 					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(mip_resolution) };
@@ -1105,15 +1110,53 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 					switch (face_index)
 					{
 						default: CRASH(); break;
-						case 0: position = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-						case 1: position = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-						case 2: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-						case 3: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-						case 4: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-						case 5: position = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+						case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+						case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+						case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+						case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+						case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+						case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
 					}
 
-					mip_chain[mipmap_level - 1].At(face_index, X, Y) = base_texture.Sample(position);
+					direction.Normalize();
+
+					//Take N samples, varying the directions depending on the roughness of the mip level.
+					const uint32 number_of_samples{ static_cast<uint32>(256 << mipmap_level) };
+
+					Vector4<float32> total{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+					for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+					{
+						//Calculate the uniform hemisphere sample.
+						Vector3<float32> sample_direction{ HammersleySequence::CalculateCoordinateHemisphereUniform(sample_index, number_of_samples) };
+
+						//Rotate the uniform hemisphere sample in relation to the direction.
+						const Vector3<float32> random_tilt{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
+						const Vector3<float32> tangent{ Vector3<float32>::Normalize(random_tilt - direction * Vector3<float32>::DotProduct(random_tilt, direction)) };
+						const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(direction, tangent) };
+
+						const Matrix3x3 rotation{ tangent, bitangent, direction };
+
+						sample_direction = rotation * sample_direction;
+
+						//Flip the uniform hemisphere sample, if needed.
+						sample_direction = Vector3<float32>::DotProduct(sample_direction, direction) >= 0.0f ? sample_direction : -sample_direction;
+
+						//Blend the uniform hemisphere sample with the original normal depending on the roughness of the mipmap level.
+						float32 mipmap_level_roughness{ static_cast<float32>(mipmap_level + 1) / static_cast<float32>(MIPMAP_LEVELS - 1) };
+						mipmap_level_roughness *= mipmap_level_roughness;
+
+						sample_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(direction, sample_direction, mipmap_level_roughness));
+
+						//Sample the HDR texture.
+						Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(sample_direction._Z, sample_direction._X), CatalystBaseMath::Arcsine(sample_direction._Y) };
+						texture_coordinate *= INVERSE_ATAN;
+						texture_coordinate += 0.5f;
+
+						total += hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
+					}
+
+					mip_chain[mipmap_level].At(face_index, X, Y) = total / static_cast<float32>(number_of_samples);
 				}
 			}
 		}
@@ -1131,11 +1174,11 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		file.Write(base_texture.Face(face_index).Data(), BASE_RESOLUTION * BASE_RESOLUTION * sizeof(Vector4<float32>));
 	}
 
-	for (uint8 mipmap_level{ 1 }; mipmap_level < MIPMAP_LEVELS; ++mipmap_level)
+	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			file.Write(mip_chain[mipmap_level - 1].Face(face_index).Data(), (BASE_RESOLUTION >> mipmap_level) * (BASE_RESOLUTION >> mipmap_level) * sizeof(Vector4<float32>));
+			file.Write(mip_chain[mipmap_level].Face(face_index).Data(), (BASE_RESOLUTION >> (mipmap_level + 1)) * (BASE_RESOLUTION >> (mipmap_level + 1)) * sizeof(Vector4<float32>));
 		}
 	}
 

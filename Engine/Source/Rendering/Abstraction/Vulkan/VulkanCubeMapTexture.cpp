@@ -58,7 +58,7 @@ void VulkanCubeMapTexture::Initialize(const DynamicArray<DynamicArray<float32>> 
 	VulkanUtilities::TransitionImageToLayout(0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(data.Size()), 6, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, _VulkanImage);
 
 	//Copy the buffer to the Vulkan image.
-	VulkanUtilities::CopyBufferToImage(staging_buffer, _VulkanImage, static_cast<uint32>(data.Size()), 6, width, height, 1, 4);
+	VulkanUtilities::CopyBufferToImage(staging_buffer, _VulkanImage, static_cast<uint32>(data.Size()), 6, width, height, 1, 4, sizeof(float32));
 
 	//Transition the Vulkan image to the correct layout for reading.
 	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, static_cast<uint32>(data.Size()), 6, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, _VulkanImage);
