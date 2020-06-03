@@ -382,6 +382,9 @@
     <Filter Include="World\Include\Level">
       <UniqueIdentifier>{7e3346f9-c514-4eaf-9340-e539807513b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{26c8ef79-a743-4d57-ad9a-b48a349e1363}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1602,6 +1605,9 @@
     <ClInclude Include="..\..\..\Include\Editor\EditorEntitySystem.h">
       <Filter>Editor\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\LevelSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2119,6 +2125,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Editor\EditorEntitySystem.cpp">
       <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\LevelSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
