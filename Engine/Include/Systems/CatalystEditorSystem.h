@@ -6,7 +6,9 @@
 
 //Editor.
 #include <Editor/EditorEntitySystem.h>
+#include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPerceiverSystem.h>
+#include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorSelectionSystem.h>
 
 class CatalystEditorSystem final
@@ -22,6 +24,7 @@ public:
 	{
 		NONE,
 		ENTITIES,
+		LEVEL,
 		PERCEIVER,
 		RENDERING
 	};
@@ -95,8 +98,14 @@ private:
 	//The editor entity system.
 	EditorEntitySystem _EditorEntitySystem;
 
+	//The editor level system.
+	EditorLevelSystem _EditorLevelSystem;
+
 	//The editor perceiver system.
 	EditorPerceiverSystem _EditorPerceiverSystem;
+
+	//The editor rendering system.
+	EditorRenderingSystem _EditorRenderingSystem;
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;
@@ -125,11 +134,6 @@ private:
 	*	Adds the main window.
 	*/
 	void AddMainWindow() NOEXCEPT;
-
-	/*
-	*	Adds the contextual window.
-	*/
-	void AddContextualWindow() NOEXCEPT;
 
 };
 #endif

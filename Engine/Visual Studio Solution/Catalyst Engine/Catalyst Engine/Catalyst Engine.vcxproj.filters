@@ -1608,6 +1608,12 @@
     <ClInclude Include="..\..\..\Include\Systems\LevelSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Editor\EditorRenderingSystem.h">
+      <Filter>Editor\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Editor\EditorLevelSystem.h">
+      <Filter>Editor\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2128,6 +2134,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\LevelSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Editor\EditorRenderingSystem.cpp">
+      <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Editor\EditorLevelSystem.cpp">
+      <Filter>Editor\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
