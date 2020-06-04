@@ -66,7 +66,8 @@ void EditorLevelSystem::Update() NOEXCEPT
 		{
 			if (ImGui::Button(level_resource->_Header._ResourceName.Data()))
 			{
-				LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
+				LevelSystem::Instance->DespawnAllLevels();
+				LevelSystem::Instance->SpawnLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
 
 				_IsCurrentlyOpeningLevel = false;
 

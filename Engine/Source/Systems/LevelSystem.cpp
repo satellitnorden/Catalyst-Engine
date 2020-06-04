@@ -13,10 +13,18 @@
 DEFINE_SINGLETON(LevelSystem);
 
 /*
-*	Loads a level.
+*	Spawns a level.
 */
-void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
+void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
 {
+	//Add the spawned level.
+	_SpawnedLevels.Emplace();
+	SpawnedLevel &spawned_level{ _SpawnedLevels.Back() };
+
+	//Set the level resource.
+	spawned_level._LevelResource = resource;
+
+	//Process all level entries.
 	for (const LevelEntry &level_entry : resource->_LevelEntries)
 	{
 		switch (level_entry._Type)
@@ -36,6 +44,8 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 
+				spawned_level._Entities.Emplace(entity);
+
 				break;
 			}
 
@@ -47,4 +57,23 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 			}
 		}
 	}
+}
+
+/*
+*	Despawns all levels.
+*/
+void LevelSystem::DespawnAllLevels() NOEXCEPT
+{
+	//Terminate and destroy all entities.
+	for (const SpawnedLevel &spawned_level : _SpawnedLevels)
+	{
+		for (Entity *const RESTRICT entity : spawned_level._Entities)
+		{
+			EntitySystem::Instance->RequestTermination(entity);
+			EntitySystem::Instance->RequestDestruction(entity);
+		}
+	}
+
+	//Clear the spawned levels.
+	_SpawnedLevels.Clear();
 }

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Entities.
+#include <Entities/Types/Entity.h>
+
 //Resources.
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -24,8 +27,34 @@ public:
 	}
 
 	/*
-	*	Loads a level.
+	*	Spawns a level.
 	*/
-	void LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
+	void SpawnLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
+
+	/*
+	*	Despawns all levels.
+	*/
+	void DespawnAllLevels() NOEXCEPT;
+
+private:
+
+	/*
+	*	Spawned level class definition.
+	*/
+	class SpawnedLevel final
+	{
+
+	public:
+
+		//The level resource.
+		ResourcePointer<LevelResource> _LevelResource;
+
+		//The entities.
+		DynamicArray<Entity *RESTRICT> _Entities;
+
+	};
+
+	//The spawned levels.
+	DynamicArray<SpawnedLevel> _SpawnedLevels;
 
 };
