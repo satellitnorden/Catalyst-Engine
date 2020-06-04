@@ -77,6 +77,11 @@ public:
 	void LoadResources(const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
+	*	Loads a single resource conainted in the given file path.
+	*/
+	void LoadResource(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
 	*	Returns the animated model resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<AnimatedModelResource> GetAnimatedModelResource(const HashString identifier) NOEXCEPT

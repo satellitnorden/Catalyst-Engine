@@ -58,6 +58,21 @@ void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NO
 }
 
 /*
+*	Loads a single resource conainted in the given file path.
+*/
+void ResourceSystem::LoadResource(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Open the file.
+	BinaryFile<IOMode::In> file{ file_path };
+
+	//Load the resource.
+	LoadResource(&file);
+
+	//Close the file.
+	file.Close();
+}
+
+/*
 *	Returns or creates the animated model resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<AnimatedModelResource> ResourceSystem::FindOrCreateAnimatedModelResource(const HashString identifier) NOEXCEPT

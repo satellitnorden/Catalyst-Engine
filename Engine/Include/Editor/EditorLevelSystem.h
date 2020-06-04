@@ -14,6 +14,23 @@ public:
 	*/
 	void Update() NOEXCEPT;
 
+private:
+
+	/*
+	*	Called then the "New Level" button is pressed.
+	*/
+	void NewLevel() NOEXCEPT;
+
+	/*
+	*	Called then the "Open Level" button is pressed.
+	*/
+	void OpenLevel() NOEXCEPT;
+
+	/*
+	*	Called then the "Save Level" button is pressed.
+	*/
+	void SaveLevel() NOEXCEPT;
+
 };
 
 #endif
