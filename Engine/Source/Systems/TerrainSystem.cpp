@@ -261,7 +261,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
 
 		//Sample the height map.
-		*height = _Properties._HeightMap.Sample(coordinate, AddressMode::ClampToEdge);
+		*height = _Properties._HeightMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE);
 
 		//Return that the retrieval succeeded.
 		return true;
@@ -322,7 +322,7 @@ bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position,
 		*indices = _Properties._IndexMap.At(x_coordinate, y_coordinate);
 
 		//Sample the blend map.
-		const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::ClampToEdge) };
+		const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE) };
 		*blend = Vector4<float>(static_cast<float>(blend_map_sample._X) / static_cast<float>(UINT8_MAXIMUM),
 								static_cast<float>(blend_map_sample._Y) / static_cast<float>(UINT8_MAXIMUM),
 								static_cast<float>(blend_map_sample._Z) / static_cast<float>(UINT8_MAXIMUM),

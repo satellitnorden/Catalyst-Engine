@@ -1374,7 +1374,8 @@ void RenderingSystem::CreateSampler(const SamplerProperties &properties, Sampler
 {
 	*handle = VulkanInterface::Instance->CreateSampler(	VulkanTranslationUtilities::GetVulkanTextureFilter(properties._MagnificationFilter),
 														VulkanTranslationUtilities::GetVulkanMipmapMode(properties._MipmapMode),
-														VulkanTranslationUtilities::GetVulkanAddressMode(properties._AddressMode));
+														VulkanTranslationUtilities::GetVulkanAddressMode(properties._AddressMode),
+														properties._AnisotropicSamples);
 }
 
 /*

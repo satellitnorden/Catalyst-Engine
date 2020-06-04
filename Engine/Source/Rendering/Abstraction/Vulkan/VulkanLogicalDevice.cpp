@@ -115,7 +115,17 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.largePoints = VK_FALSE;
 	physicalDeviceFeatures.alphaToOne = VK_FALSE;
 	physicalDeviceFeatures.multiViewport = VK_FALSE;
-	physicalDeviceFeatures.samplerAnisotropy = VK_FALSE;
+
+	if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().samplerAnisotropy == VK_TRUE)
+	{
+		physicalDeviceFeatures.samplerAnisotropy = VK_TRUE;
+	}
+	
+	else
+	{
+		physicalDeviceFeatures.samplerAnisotropy = VK_FALSE;
+	}
+
 	physicalDeviceFeatures.textureCompressionETC2 = VK_FALSE;
 	physicalDeviceFeatures.textureCompressionASTC_LDR = VK_FALSE;
 	physicalDeviceFeatures.textureCompressionBC = VK_FALSE;

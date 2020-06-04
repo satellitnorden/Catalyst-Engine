@@ -88,7 +88,7 @@ public:
 		CubeSampling(direction, &textureCoordinate, &faceIndex);
 
 		//Return the sampled face.
-		return _Faces[faceIndex].Sample(textureCoordinate, AddressMode::ClampToEdge);
+		return _Faces[faceIndex].Sample(textureCoordinate, AddressMode::CLAMP_TO_EDGE);
 	}
 
 private:

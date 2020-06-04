@@ -27,11 +27,11 @@ public:
 	{
 		switch (addressMode)
 		{
-			case AddressMode::ClampToBorder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-			case AddressMode::ClampToEdge: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-			case AddressMode::MirrorClampToEdge: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
-			case AddressMode::MirroredRepeat: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-			case AddressMode::Repeat: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			case AddressMode::CLAMP_TO_BORDER: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+			case AddressMode::CLAMP_TO_EDGE: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			case AddressMode::MIRROR_CLAMP_TO_EDGE: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+			case AddressMode::MIRRORED_REPEAT: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+			case AddressMode::REPEAT: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 			default:
 			{
@@ -254,8 +254,8 @@ public:
 	{
 		switch (mipmapMode)
 		{
-			case MipmapMode::Linear: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
-			case MipmapMode::Nearest: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+			case MipmapMode::LINEAR: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			case MipmapMode::NEAREST: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
 			default:
 			{

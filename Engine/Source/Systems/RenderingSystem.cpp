@@ -447,12 +447,12 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 */
 void RenderingSystem::InitializeSamplers() NOEXCEPT
 {
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::Linear, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::Linear, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
-	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::Nearest, AddressMode::ClampToEdge), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::Nearest, AddressMode::Repeat), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat)]);
+	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)]);
+	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::REPEAT, 8), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
+	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::NEAREST, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)]);
+	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::NEAREST, AddressMode::REPEAT, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
+	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::NEAREST, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
+	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::NEAREST, AddressMode::REPEAT, 0), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat)]);
 }
 
 /*

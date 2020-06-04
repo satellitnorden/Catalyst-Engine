@@ -268,7 +268,7 @@ public:
 	/*
 	*	Creates and returns a sampler.
 	*/
-	RESTRICTED VulkanSampler *const RESTRICT CreateSampler(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	RESTRICTED VulkanSampler *const RESTRICT CreateSampler(const VkFilter magnification_filter, const VkSamplerMipmapMode mipmap_mode, const VkSamplerAddressMode address_mode, const uint8 anisotropic_samples) NOEXCEPT;
 
 	/*
 	*	Creates and returns a shader module.

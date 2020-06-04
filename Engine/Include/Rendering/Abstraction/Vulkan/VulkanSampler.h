@@ -20,7 +20,7 @@ public:
 	/*
 	*	Initializes this Vulkan sampler.
 	*/
-	void Initialize(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	void Initialize(const VkFilter magnification_filter, const VkSamplerMipmapMode mipmap_mode, const VkSamplerAddressMode address_mode, const uint8 anisotropic_samples) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan sampler.
@@ -35,7 +35,7 @@ private:
 	/*
 	*	Creates a sampler create info.
 	*/
-	void CreateSamplerCreateInfo(VkSamplerCreateInfo &samplerCreateInfo, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) const NOEXCEPT;
+	void CreateSamplerCreateInfo(VkSamplerCreateInfo &sampler_create_info, const VkFilter magnification_filter, const VkSamplerMipmapMode mipmap_mode, const VkSamplerAddressMode address_mode, const uint8 anisotropic_samples) const NOEXCEPT;
 
 };
 #endif

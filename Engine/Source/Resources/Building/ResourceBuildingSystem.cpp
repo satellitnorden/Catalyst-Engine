@@ -1090,7 +1090,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 				texture_coordinate *= INVERSE_ATAN;
 				texture_coordinate += 0.5f;
 
-				base_texture.At(face_index, X, Y) = hdr_texture.Sample(texture_coordinate, AddressMode::ClampToEdge);
+				base_texture.At(face_index, X, Y) = hdr_texture.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
 			}
 		}
 	}
@@ -1126,7 +1126,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 					{
 						for (int32 sub_x{ -1 }; sub_x <= 1; ++sub_x)
 						{
-							total += previous_texture.Sample(normalized_coordinate + Vector2<float32>(-1.0f, -1.0f) * sample_delta, AddressMode::ClampToEdge);
+							total += previous_texture.Sample(normalized_coordinate + Vector2<float32>(-1.0f, -1.0f) * sample_delta, AddressMode::CLAMP_TO_EDGE);
 						}
 					}
 

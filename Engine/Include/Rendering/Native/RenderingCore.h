@@ -420,18 +420,18 @@ enum class Topology : uint8
 //Enumeration covering all address modes.
 enum class AddressMode : uint8
 {
-	ClampToBorder,
-	ClampToEdge,
-	MirrorClampToEdge,
-	MirroredRepeat,
-	Repeat
+	CLAMP_TO_BORDER,
+	CLAMP_TO_EDGE,
+	MIRROR_CLAMP_TO_EDGE,
+	MIRRORED_REPEAT,
+	REPEAT
 };
 
 //Enumeration covering all mipmap modes.
 enum class MipmapMode : uint8
 {
-	Linear,
-	Nearest
+	LINEAR,
+	NEAREST
 };
 
 //Enumeration covering all texture filters.
@@ -531,47 +531,6 @@ public:
 		_ShaderStage(initialShaderStage)
 	{
 
-	}
-
-};
-
-/*
-*	Sampler properties.
-*/
-class SamplerProperties final
-{
-
-public:
-
-	//The magnification filter.
-	TextureFilter _MagnificationFilter;
-
-	//The mipmap mode.
-	MipmapMode _MipmapMode;
-
-	//The address mode.
-	AddressMode _AddressMode;
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	SamplerProperties(const TextureFilter initialMagnificationFilter, const MipmapMode initialMipmapMode, const AddressMode initialAddressMode) NOEXCEPT
-		:
-		_MagnificationFilter(initialMagnificationFilter),
-		_MipmapMode(initialMipmapMode),
-		_AddressMode(initialAddressMode)
-	{
-
-	}
-
-	/*
-	*	Equality operator overload.
-	*/
-	bool operator==(const SamplerProperties &other) const NOEXCEPT
-	{
-		return	_MagnificationFilter == other._MagnificationFilter
-				&& _MipmapMode == other._MipmapMode
-				&& _AddressMode == other._AddressMode;
 	}
 
 };

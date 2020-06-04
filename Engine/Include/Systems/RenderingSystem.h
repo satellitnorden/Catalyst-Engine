@@ -25,6 +25,7 @@
 #include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
+#include <Rendering/Native/SamplerProperties.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>

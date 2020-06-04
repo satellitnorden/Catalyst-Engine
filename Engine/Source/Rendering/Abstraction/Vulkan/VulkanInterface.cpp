@@ -614,10 +614,10 @@ RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NO
 /*
 *	Creates and returns a sampler.
 */
-RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const VkFilter magnification_filter, const VkSamplerMipmapMode mipmap_mode, const VkSamplerAddressMode address_mode, const uint8 anisotropic_samples) NOEXCEPT
 {
 	VulkanSampler *const RESTRICT newSampler{ new (Memory::Allocate(sizeof(VulkanSampler))) VulkanSampler() };
-	newSampler->Initialize(magnificationFilter, mipmapMode, addressMode);
+	newSampler->Initialize(magnification_filter, mipmap_mode, address_mode, anisotropic_samples);
 
 	static Spinlock lock;
 	SCOPED_LOCK(lock);
