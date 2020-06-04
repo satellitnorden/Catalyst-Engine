@@ -140,16 +140,15 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 	//Have the user pick the file to save it to.
 	DynamicString chosen_file;
 
-	if (!File::BrowseForFile(false, &chosen_file))
+	if (!File::BrowseForFile(true, &chosen_file))
 	{
 		return;
 	}
 
+	ASSERT(File::GetExtension(chosen_file.Data()) == File::Extension::CR, "The file must be a Catalast resource!");
+
 	//The user might already have chosen an existing level, so remove the ".cr" extension if that's the case.
-	if (File::GetExtension(chosen_file.Data()) == File::Extension::CR)
-	{
-		chosen_file[chosen_file.Length() - 3] = '\0';
-	}
+	chosen_file[chosen_file.Length() - 3] = '\0';
 
 	//Retrieve the identifier.
 	DynamicString identifier;
@@ -201,8 +200,6 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 	//The resource building system automatically adds the ".cr" extension to Catalyst resources, so add it to the chosen file path.
 	chosen_file[chosen_file.Length() - 3] = '.';
-	chosen_file[chosen_file.Length() - 2] = 'c';
-	chosen_file[chosen_file.Length() - 1] = 'r';
 
 	//Now load the resource into memory!
 	ResourceSystem::Instance->LoadResource(chosen_file.Data());
