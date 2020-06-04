@@ -16,6 +16,9 @@ public:
 
 private:
 
+	//Denotes if the user is currently opening a level.
+	bool _IsCurrentlyOpeningLevel{ false };
+
 	/*
 	*	Called then the "New Level" button is pressed.
 	*/

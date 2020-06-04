@@ -7,6 +7,7 @@
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
+#include <Systems/LevelSystem.h>
 #include <Systems/ResourceSystem.h>
 
 //Third party.
@@ -47,6 +48,31 @@ void EditorLevelSystem::Update() NOEXCEPT
 	}
 
 	ImGui::End();
+
+	//If the user is opening a level, open a new window and display the options.
+	if (_IsCurrentlyOpeningLevel)
+	{
+		//Add the level window.
+		ImGui::Begin("Open Level", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+		ImGui::SetWindowPos(ImVec2(8.0f + 256.0f + 8.0f, 8.0f + 256.0f + 8.0f));
+		ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+
+		const HashTable<HashString, LevelResource *RESTRICT> &all_level_resources{ ResourceSystem::Instance->GetAllLevelResources() };
+
+		for (const LevelResource *const RESTRICT level_resource : all_level_resources.ValueIterator())
+		{
+			if (ImGui::Button(level_resource->_Header._ResourceName.Data()))
+			{
+				LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
+
+				_IsCurrentlyOpeningLevel = false;
+
+				break;
+			}
+		}
+
+		ImGui::End();
+	}
 }
 
 /*
@@ -98,7 +124,8 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 */
 void EditorLevelSystem::OpenLevel() NOEXCEPT
 {
-
+	//The user wants to open a level (or stop opening a level).
+	_IsCurrentlyOpeningLevel = !_IsCurrentlyOpeningLevel;
 }
 
 /*
