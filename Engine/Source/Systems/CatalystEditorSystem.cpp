@@ -77,6 +77,79 @@ void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 */
 void CatalystEditorSystem::UpdateIO() NOEXCEPT
 {
+	/*
+	*	Keyboard button input character mapping class definition.
+	*/
+	class KeyboardButtonInputCharacterMapping final
+	{
+
+	public:
+
+		//The keyboard button.
+		KeyboardButton _KeyboardButton;
+
+		//The upper case input character.
+		char _UpperCaseInputCharacter;
+
+		//The lower case input character.
+		char _LowerCaseInputCharacter;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE constexpr KeyboardButtonInputCharacterMapping(	const KeyboardButton initial_keyboard_button,
+																	const char initial_upper_case_input_character,
+																	const char initial_lower_case_input_character) NOEXCEPT
+			:
+			_KeyboardButton(initial_keyboard_button),
+			_UpperCaseInputCharacter(initial_upper_case_input_character),
+			_LowerCaseInputCharacter(initial_lower_case_input_character)
+		{
+
+		}
+	};
+
+	//Define constants.
+	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 36> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
+	{
+		KeyboardButtonInputCharacterMapping(KeyboardButton::A, 'A', 'a'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::B, 'B', 'b'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::C, 'C', 'c'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::D, 'D', 'd'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::E, 'E', 'e'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::F, 'F', 'f'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::G, 'G', 'g'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::H, 'H', 'h'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::I, 'I', 'i'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::J, 'J', 'J'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::K, 'K', 'k'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::L, 'L', 'l'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::M, 'M', 'm'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::N, 'N', 'n'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::O, 'O', 'o'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::P, 'P', 'p'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::Q, 'Q', 'q'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::R, 'R', 'r'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::S, 'S', 's'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::T, 'T', 't'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::U, 'U', 'u'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::V, 'V', 'v'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::W, 'W', 'w'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::X, 'X', 'x'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::Y, 'Y', 'y'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::Z, 'Z', 'z'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadZero, '0', '0'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadOne, '1', '1'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadTwo, '2', '2'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadThree, '3', '3'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadFour, '4', '4'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadFive, '5', '5'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSix, '6', '6'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSeven, '7', '7'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadEight, '8', '8'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadNine, '9', '9')
+	};
+
 	//Fill in ImGui's IO struct.
 	ImGuiIO& io{ ImGui::GetIO() };
 
@@ -122,6 +195,32 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 	for (uint8 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
 	{
 		io.KeysDown[i] = InputSystem::Instance->GetKeyboardState()->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
+	}
+
+	//Add the input characters.
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
+		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
+		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
+		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD)
+	{
+		for (const KeyboardButtonInputCharacterMapping &mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
+		{
+			if (InputSystem::Instance->GetKeyboardState()->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
+			{
+				io.AddInputCharacter(mapping._UpperCaseInputCharacter);
+			}
+		}
+	}
+	
+	else
+	{
+		for (const KeyboardButtonInputCharacterMapping &mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
+		{
+			if (InputSystem::Instance->GetKeyboardState()->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
+			{
+				io.AddInputCharacter(mapping._LowerCaseInputCharacter);
+			}
+		}
 	}
 }
 
