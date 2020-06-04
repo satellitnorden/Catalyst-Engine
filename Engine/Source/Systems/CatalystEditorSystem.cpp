@@ -275,6 +275,9 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Update the editor rendering system.
 	_EditorRenderingSystem.Update();
 
+	//Update the editor resources system.
+	_EditorResourcesSystem.Update();
+
 	//Update the editor selection system.
 	_EditorSelectionSystem.Update();
 }
@@ -360,6 +363,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Rendering"))
 		{
 			_CurrentContextualWindow = ContextualWindow::RENDERING;
+		}
+	}
+
+	//Opens the resources window.
+	if (_CurrentContextualWindow == ContextualWindow::RESOURCES)
+	{
+		if (ImGui::Button("Resources"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Resources"))
+		{
+			_CurrentContextualWindow = ContextualWindow::RESOURCES;
 		}
 	}
 

@@ -9,6 +9,7 @@
 #include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPerceiverSystem.h>
 #include <Editor/EditorRenderingSystem.h>
+#include <Editor/EditorResourcesSystem.h>
 #include <Editor/EditorSelectionSystem.h>
 
 class CatalystEditorSystem final
@@ -26,7 +27,8 @@ public:
 		ENTITIES,
 		LEVEL,
 		PERCEIVER,
-		RENDERING
+		RENDERING,
+		RESOURCES
 	};
 
 	/*
@@ -106,6 +108,9 @@ private:
 
 	//The editor rendering system.
 	EditorRenderingSystem _EditorRenderingSystem;
+
+	//The editor resources system.
+	EditorResourcesSystem _EditorResourcesSystem;
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;
