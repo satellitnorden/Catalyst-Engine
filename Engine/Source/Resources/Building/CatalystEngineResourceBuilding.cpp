@@ -1,4 +1,4 @@
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 

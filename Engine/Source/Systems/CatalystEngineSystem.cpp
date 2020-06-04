@@ -12,7 +12,7 @@
 #include <Profiling/ProfilingCore.h>
 
 //Resources.
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 #endif
 
@@ -121,7 +121,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize the current thread's index.
 	Concurrency::CurrentThread::InitializeIndex();
 
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources();
 #endif

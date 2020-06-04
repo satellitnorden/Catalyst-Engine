@@ -18,7 +18,7 @@
 #include <Resources/Core/Texture2DResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#include <Resources/Building/ResourceBuildingSystem.h>
 #endif
 #include <Resources/Creation/ResourceCreationSystem.h>
@@ -40,7 +40,7 @@ public:
 
 	}
 
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Returns the resource building system.
 	*/
@@ -364,7 +364,7 @@ public:
 
 private:
 
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The resource building system.
 	ResourceBuildingSystem _ResourceBuildingSystem;
 #endif

@@ -38,8 +38,8 @@ void EditorEntitySystem::Update() NOEXCEPT
 
 	//Add the entities window.
 	ImGui::Begin("Entities", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 128.0f + 8.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 256.0f + 8.0f));
+	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
 
 	//Add the button for creating a dynamic model entity.
 	if (ImGui::Button("Create Dynamic Model Entity"))

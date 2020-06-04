@@ -30,7 +30,7 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFile(DynamicString* const RESTRICT chosen_file) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool file_must_exist, DynamicString* const RESTRICT chosen_file) NOEXCEPT
 	{
 		char file_path[MAX_PATH];
 
@@ -44,7 +44,7 @@ namespace File
 		ofn.lpstrFile    = file_path;
 		ofn.nMaxFile     = MAX_PATH;
 		ofn.lpstrTitle   = "Choose File";
-		ofn.Flags        = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
+		ofn.Flags        = file_must_exist ? OFN_FILEMUSTEXIST : 0;
 
 		if (GetOpenFileNameA(&ofn))
 		{

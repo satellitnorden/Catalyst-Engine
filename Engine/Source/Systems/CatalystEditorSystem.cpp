@@ -187,7 +187,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	//Add the main window.
 	ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 128.0f));
+	ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 	//Add the enter game button.
 	if (ImGui::Button("Enter Game"))
