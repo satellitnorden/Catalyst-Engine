@@ -2,6 +2,9 @@
 //Header file.
 #include <Editor/EditorLevelSystem.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -101,7 +104,7 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 		}
 	}
 
-	//Create the empty level resource.
+	//Build the empty level resource.
 	{
 		//Build the level.
 		LevelBuildParameters parameters;
@@ -133,6 +136,74 @@ void EditorLevelSystem::OpenLevel() NOEXCEPT
 */
 void EditorLevelSystem::SaveLevel() NOEXCEPT
 {
+	//Have the user pick the file to save it to.
+	DynamicString chosen_file;
 
+	if (!File::BrowseForFile(false, &chosen_file))
+	{
+		return;
+	}
+
+	//The user might already have chosen an existing level, so remove the ".cr" extension if that's the case.
+	if (File::GetExtension(chosen_file.Data()) == File::Extension::CR)
+	{
+		chosen_file[chosen_file.Length() - 3] = '\0';
+	}
+
+	//Retrieve the identifier.
+	DynamicString identifier;
+
+	for (int64 i{ static_cast<int64>(chosen_file.Length()) - 1 }; i >= 0; --i)
+	{
+		if (chosen_file[i] == '\\')
+		{
+			identifier = &chosen_file[i + 1];
+
+			break;
+		}
+	}
+
+	//Build the empty level resource.
+	{
+		LevelBuildParameters parameters;
+
+		parameters._OutputFilePath = chosen_file.Data();
+		parameters._Identifier = identifier.Data();
+
+		//Add all dynamic model entities.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+			const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+			for (uint64 i = 0; i < number_of_components; ++i, ++component)
+			{
+				LevelEntry level_entry;
+
+				level_entry._Type = LevelEntry::Type::DYNAMIC_MODEL;
+				level_entry._DynamicModelData._InitialWorldTransform = component->_CurrentWorldTransform;
+				level_entry._DynamicModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
+
+				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					level_entry._DynamicModelData._MaterialResourceIdentifiers[i] = component->_MaterialResources[i] ? component->_MaterialResources[i]->_Header._ResourceIdentifier : HashString("");
+				}
+
+				level_entry._DynamicModelData._ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+				level_entry._DynamicModelData._SimulatePhysics = false;
+
+				parameters._LevelEntries.Emplace(level_entry);
+			}
+		}
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
+	}
+
+	//The resource building system automatically adds the ".cr" extension to Catalyst resources, so add it to the chosen file path.
+	chosen_file[chosen_file.Length() - 3] = '.';
+	chosen_file[chosen_file.Length() - 2] = 'c';
+	chosen_file[chosen_file.Length() - 1] = 'r';
+
+	//Now load the resource into memory!
+	ResourceSystem::Instance->LoadResource(chosen_file.Data());
 }
 #endif
