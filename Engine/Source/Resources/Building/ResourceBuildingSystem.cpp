@@ -17,6 +17,7 @@
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
+#include <File/Readers/FBXReader.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
@@ -534,74 +535,32 @@ void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parame
 */
 void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) NOEXCEPT
 {
-	//What should the material be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
+	//What should the output file path name be?
+	DynamicString output_file_path_name{ parameters._Output };
+	output_file_path_name += ".cr";
 
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
+	//Open the output file to be written to.
+	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
-	file.Write(&header, sizeof(ResourceHeader));
+	output_file.Write(&header, sizeof(ResourceHeader));
 
-	//Determine the model space axis aligned bounding box. Assume the first level of detail will be representative in this sense for the rest level of details.
+	//Read all model files into memory.
+	DynamicArray<ModelFile> model_files;
+	model_files.Upsize<true>(parameters._LevelOfDetails.Size());
+
+	for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
 	{
-		//Build the model.
-		DynamicArray<DynamicArray<Vertex>> vertices;
-		DynamicArray<DynamicArray<uint32>> indices;
-
-		AssimpBuilder::BuildModel(parameters._LevelOfDetails[0], &vertices, &indices);
-
-		//Transform all vertices and simultaneously calculate the bounding box.
-		AxisAlignedBoundingBox3 aixs_aligned_bounding_box;
-
-		aixs_aligned_bounding_box._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
-		aixs_aligned_bounding_box._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
-
-		for (DynamicArray<Vertex>& mesh_vertices : vertices)
-		{
-			for (Vertex& vertex : mesh_vertices)
-			{
-				if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
-				{
-					vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
-				}
-
-				aixs_aligned_bounding_box._Minimum = Vector3<float>::Minimum(aixs_aligned_bounding_box._Minimum, vertex._Position);
-				aixs_aligned_bounding_box._Maximum = Vector3<float>::Maximum(aixs_aligned_bounding_box._Maximum, vertex._Position);
-			}
-		}
-
-		//Write the axis-aligned bounding box to the file.
-		file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3));
+		FBXReader::Read(parameters._LevelOfDetails[i], &model_files[i]);
 	}
 
-	//Determine the number of meshes. Assume that each level of detail has the same number of meshes.
-	const uint64 number_of_meshes{ AssimpBuilder::DetermineNumberOfMeshes(parameters._LevelOfDetails[0]) };
-
-	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more then the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
-
-	//Write the number of meshes.
-	file.Write(&number_of_meshes, sizeof(uint64));
-
-	//Write the number of level of details.
-	const uint64 number_of_level_of_details{ parameters._LevelOfDetails.Size() };
-	file.Write(&number_of_level_of_details, sizeof(uint64));
-
-	//Process each mesh individually.
-	for (uint64 i{ 0 }; i < number_of_meshes; ++i)
+	//Transform all vertices in all meshes.
+	for (ModelFile &model_file : model_files)
 	{
-		for (const char* const RESTRICT level_of_detail : parameters._LevelOfDetails)
+		for (ModelFile::Mesh &mesh : model_file._Meshes)
 		{
-			//Build the model.
-			DynamicArray<DynamicArray<Vertex>> vertices;
-			DynamicArray<DynamicArray<uint32>> indices;
-
-			AssimpBuilder::BuildModel(level_of_detail, &vertices, &indices);
-
-			//Transform all vertices for this mesh.
-			for (Vertex& vertex : vertices[i])
+			for (Vertex &vertex : mesh._Vertices)
 			{
 				if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
 				{
@@ -613,25 +572,61 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 					vertex._TextureCoordinate *= parameters._TextureCoordinateMultiplier;
 				}
 			}
-
-			//Write the number of vertices to the file.
-			const uint64 number_of_vertices{ vertices[i].Size() };
-			file.Write(&number_of_vertices, sizeof(uint64));
-
-			//Write the vertices to the file.
-			file.Write(vertices[i].Data(), sizeof(Vertex) * number_of_vertices);
-
-			//Write the number of indices to the file.
-			const uint64 number_of_indices{ indices[i].Size() };
-			file.Write(&number_of_indices, sizeof(uint64));
-
-			//Write the vertices to the file.
-			file.Write(indices[i].Data(), sizeof(uint32) * number_of_indices);
 		}
 	}
 
-	//Close the file.
-	file.Close();
+	//Determine the model space axis aligned bounding box.
+	{
+		//Iterate over all vertices in all meshes and expand the bounding box.
+		AxisAlignedBoundingBox3 aixs_aligned_bounding_box;
+
+		for (ModelFile &model_file : model_files)
+		{
+			for (ModelFile::Mesh &mesh : model_file._Meshes)
+			{
+				for (Vertex &vertex : mesh._Vertices)
+				{
+					aixs_aligned_bounding_box.Expand(vertex._Position);
+				}
+			}
+		}
+
+		//Write the axis-aligned bounding box to the file.
+		output_file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3));
+	}
+
+	//Write the number of meshes.
+	const uint64 number_of_meshes{ model_files[0]._Meshes.Size() };
+	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more then the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
+	output_file.Write(&number_of_meshes, sizeof(uint64));
+
+	//Write the number of level of details.
+	const uint64 number_of_level_of_details{ model_files.Size() };
+	output_file.Write(&number_of_level_of_details, sizeof(uint64));
+
+	//Process each mesh individually.
+	for (uint64 mesh_index{ 0 }; mesh_index < number_of_meshes; ++mesh_index)
+	{
+		for (uint64 level_of_detail_index{ 0 }; level_of_detail_index < number_of_level_of_details; ++level_of_detail_index)
+		{
+			//Write the number of vertices to the file.
+			const uint64 number_of_vertices{ model_files[level_of_detail_index]._Meshes[mesh_index]._Vertices.Size() };
+			output_file.Write(&number_of_vertices, sizeof(uint64));
+
+			//Write the vertices to the file.
+			output_file.Write(model_files[level_of_detail_index]._Meshes[mesh_index]._Vertices.Data(), sizeof(Vertex) * number_of_vertices);
+
+			//Write the number of indices to the file.
+			const uint64 number_of_indices{ model_files[level_of_detail_index]._Meshes[mesh_index]._Indices.Size() };
+			output_file.Write(&number_of_indices, sizeof(uint64));
+
+			//Write the vertices to the file.
+			output_file.Write(model_files[level_of_detail_index]._Meshes[mesh_index]._Indices.Data(), sizeof(uint32) * number_of_indices);
+		}
+	}
+
+	//Close the output file.
+	output_file.Close();
 }
 
 /*

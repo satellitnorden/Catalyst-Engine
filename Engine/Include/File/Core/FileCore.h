@@ -101,6 +101,11 @@ namespace File
 		return Extension::UNKNOWN;
 	}
 
+	/*
+	*	Returns the size of the file with the given file path.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT;
+
 }
 
 //Implementation.

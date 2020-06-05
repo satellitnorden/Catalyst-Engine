@@ -170,5 +170,40 @@ namespace File
 		DeleteFile(file);
 	}
 
+	/*
+	*	Returns the size of the file with the given file path.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT
+	{
+		HANDLE file_handle{ CreateFileA(file_path,
+										GENERIC_READ,
+										FILE_SHARE_READ | FILE_SHARE_WRITE,
+										nullptr,
+										OPEN_EXISTING,
+										FILE_ATTRIBUTE_NORMAL,
+										nullptr) };
+		if (file_handle == INVALID_HANDLE_VALUE)
+		{
+			ASSERT(false, "File::GetSize() failed!");
+
+			return 0;
+		}
+
+		LARGE_INTEGER file_size;
+
+		if (!GetFileSizeEx(file_handle, &file_size))
+		{
+			CloseHandle(file_handle);
+
+			ASSERT(false, "File::GetSize() failed!");
+
+			return 0;
+		}
+
+		CloseHandle(file_handle);
+
+		return static_cast<uint64>(file_size.QuadPart);
+	}
+
 }
 #endif
