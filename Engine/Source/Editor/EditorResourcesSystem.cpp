@@ -81,14 +81,17 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			{
 				DynamicString chosen_file;
 
-				if (File::BrowseForFile(false, &chosen_file))
+				if (File::BrowseForFile(true, &chosen_file))
 				{
 					_CreateModelResourceData._LevelOfDetailFilepaths.Emplace(chosen_file);
 				}
 			}
 
+			//Add some padding before the "Create Model Resource" button.
+			ImGui::Text("");
+
 			//Add the create button.
-			if (ImGui::Button("Create"))
+			if (ImGui::Button("Create Model Resource"))
 			{
 				//Retrieve the identifier.
 				DynamicString identifier;
@@ -125,6 +128,9 @@ void EditorResourcesSystem::Update() NOEXCEPT
 				//Now load the model.
 				_CreateModelResourceData._OutputFilePath += ".cr";
 				ResourceSystem::Instance->LoadResource(_CreateModelResourceData._OutputFilePath.Data());
+
+				//No longer creating a resource.
+				_CurrentCreateResourceMode = CreateResourceMode::NONE;
 			}
 
 			ImGui::End();

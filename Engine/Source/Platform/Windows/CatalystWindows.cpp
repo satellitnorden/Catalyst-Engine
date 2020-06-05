@@ -18,7 +18,6 @@
 #include <Systems/CatalystEngineSystem.h>
 
 //Windows.
-#include <tchar.h>
 #include <Xinput.h>
 
 //Static variable definitions.

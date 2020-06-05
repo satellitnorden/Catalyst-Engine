@@ -33,20 +33,33 @@ namespace File
 	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool file_must_exist, DynamicString* const RESTRICT chosen_file) NOEXCEPT
 	{
 		char file_path[MAX_PATH];
-
-		OPENFILENAME ofn;
+		OPENFILENAME open_file_name_parameters;
 
 		ZeroMemory(&file_path, sizeof(file_path));
-		ZeroMemory(&ofn, sizeof(ofn));
-		ofn.lStructSize  = sizeof(ofn);
-		ofn.hwndOwner    = NULL;  // If you have a window to center over, put its HANDLE here
-		ofn.lpstrFilter  = "Any File\0*.*\0";
-		ofn.lpstrFile    = file_path;
-		ofn.nMaxFile     = MAX_PATH;
-		ofn.lpstrTitle   = "Choose File";
-		ofn.Flags        = file_must_exist ? OFN_FILEMUSTEXIST : 0;
+		ZeroMemory(&open_file_name_parameters, sizeof(open_file_name_parameters));
 
-		if (GetOpenFileNameA(&ofn))
+		open_file_name_parameters.lStructSize		= sizeof(open_file_name_parameters);
+		open_file_name_parameters.hwndOwner			= nullptr;
+		open_file_name_parameters.hInstance			= nullptr;
+		open_file_name_parameters.lpstrFilter		= nullptr;
+		open_file_name_parameters.lpstrCustomFilter = nullptr;
+		open_file_name_parameters.nMaxCustFilter	= 0;
+		open_file_name_parameters.nFilterIndex		= 0;
+		open_file_name_parameters.lpstrFile			= _T(file_path);
+		open_file_name_parameters.nMaxFile			= MAX_PATH;
+		open_file_name_parameters.lpstrTitle		= _T("Choose A File");
+		open_file_name_parameters.nMaxFileTitle		= 0;
+		open_file_name_parameters.lpstrInitialDir	= nullptr;
+		open_file_name_parameters.lpstrTitle		= nullptr;
+		open_file_name_parameters.Flags				= OFN_HIDEREADONLY | OFN_LONGNAMES | (file_must_exist ? OFN_FILEMUSTEXIST : 0);
+		open_file_name_parameters.nFileOffset		= 0;
+		open_file_name_parameters.nFileExtension	= 0;
+		open_file_name_parameters.lpstrDefExt		= nullptr;
+		open_file_name_parameters.lCustData			= 0;
+		open_file_name_parameters.lpfnHook			= 0;
+		open_file_name_parameters.lpTemplateName	= nullptr;
+
+		if (GetOpenFileName(&open_file_name_parameters))
 		{
 			*chosen_file = file_path;
 

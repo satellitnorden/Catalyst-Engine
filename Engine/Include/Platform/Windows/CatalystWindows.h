@@ -10,6 +10,7 @@
 	#define INITGUID
 #endif
 #include <ShlObj_core.h>
+#include <tchar.h>
 
 //These technically don't need to be public through the entire engine, but need to be included before the undef's.
 #include <audioclient.h>
