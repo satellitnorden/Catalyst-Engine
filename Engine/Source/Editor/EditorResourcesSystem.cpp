@@ -33,6 +33,11 @@ void EditorResourcesSystem::Update() NOEXCEPT
 	//Add the button for creating a model resource.
 	if (ImGui::Button("Create Model Resource"))
 	{
+		//Reset the create model resource data.
+		_CreateModelResourceData.~CreateModelResourceData();
+		new (&_CreateModelResourceData) CreateModelResourceData();
+
+		//Set the current create resource mode.
 		_CurrentCreateResourceMode = CreateResourceMode::MODEL;
 	}
 
