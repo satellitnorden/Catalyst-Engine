@@ -26,7 +26,7 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool file_must_exist, DynamicString* const RESTRICT chosen_file) NOEXCEPT;
+	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT;
 
 	/*
 	*	Browses for a folder.

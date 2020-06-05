@@ -87,7 +87,7 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 	//Have the user pick a file.
 	DynamicString chosen_file;
 
-	if (!File::BrowseForFile(false, &chosen_file))
+	if (!File::BrowseForFile(true, &chosen_file))
 	{
 		return;
 	}

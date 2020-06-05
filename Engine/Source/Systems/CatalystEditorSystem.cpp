@@ -35,7 +35,7 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	this,
 	UpdatePhase::USER_INTERFACE,
 	UpdatePhase::LOGIC,
-	false);
+	true);
 
 	//Initialize the editor selection system.
 	_EditorSelectionSystem.Initialize();

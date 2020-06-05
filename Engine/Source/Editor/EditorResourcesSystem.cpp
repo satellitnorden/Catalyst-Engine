@@ -62,7 +62,7 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			//Add the button to set the output file path/identifier.
 			if (ImGui::Button("Select File Path"))
 			{
-				File::BrowseForFile(false, &_CreateModelResourceData._OutputFilePath);
+				File::BrowseForFile(true, &_CreateModelResourceData._OutputFilePath);
 			}
 
 			//If the user has already added level of details, display them.
@@ -81,7 +81,7 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			{
 				DynamicString chosen_file;
 
-				if (File::BrowseForFile(true, &chosen_file))
+				if (File::BrowseForFile(false, &chosen_file))
 				{
 					_CreateModelResourceData._LevelOfDetailFilepaths.Emplace(chosen_file);
 				}

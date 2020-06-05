@@ -30,46 +30,53 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool file_must_exist, DynamicString* const RESTRICT chosen_file) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT
 	{
-		char file_path[MAX_PATH];
-		OPENFILENAME open_file_name_parameters;
+		bool success{ false };
 
-		ZeroMemory(&file_path, sizeof(file_path));
-		ZeroMemory(&open_file_name_parameters, sizeof(open_file_name_parameters));
-
-		open_file_name_parameters.lStructSize		= sizeof(open_file_name_parameters);
-		open_file_name_parameters.hwndOwner			= nullptr;
-		open_file_name_parameters.hInstance			= nullptr;
-		open_file_name_parameters.lpstrFilter		= nullptr;
-		open_file_name_parameters.lpstrCustomFilter = nullptr;
-		open_file_name_parameters.nMaxCustFilter	= 0;
-		open_file_name_parameters.nFilterIndex		= 0;
-		open_file_name_parameters.lpstrFile			= _T(file_path);
-		open_file_name_parameters.nMaxFile			= MAX_PATH;
-		open_file_name_parameters.lpstrTitle		= _T("Choose A File");
-		open_file_name_parameters.nMaxFileTitle		= 0;
-		open_file_name_parameters.lpstrInitialDir	= nullptr;
-		open_file_name_parameters.lpstrTitle		= nullptr;
-		open_file_name_parameters.Flags				= OFN_HIDEREADONLY | OFN_LONGNAMES | (file_must_exist ? OFN_FILEMUSTEXIST : 0);
-		open_file_name_parameters.nFileOffset		= 0;
-		open_file_name_parameters.nFileExtension	= 0;
-		open_file_name_parameters.lpstrDefExt		= nullptr;
-		open_file_name_parameters.lCustData			= 0;
-		open_file_name_parameters.lpfnHook			= 0;
-		open_file_name_parameters.lpTemplateName	= nullptr;
-
-		if (GetOpenFileName(&open_file_name_parameters))
+		IFileDialog *RESTRICT file_dialog;
+		
+		if (SUCCEEDED(::CoCreateInstance(save ? CLSID_FileSaveDialog : CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, save ? IID_IFileSaveDialog : IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&file_dialog))))
 		{
-			*chosen_file = file_path;
+			//Set the title.
+			file_dialog->SetTitle(L"Choose A File:");
 
-			return true;
+			//Don't allow files that doesn't exist if this isn't a save action.
+			if (!save)
+			{
+				DWORD current_options{ 0 };
+				file_dialog->GetOptions(&current_options);
+				file_dialog->SetOptions(current_options | FOS_FILEMUSTEXIST);
+			}
+
+			//Show the file dialog.
+			if (SUCCEEDED(file_dialog->Show(nullptr)))
+			{
+				IShellItem *RESTRICT result;
+				if (SUCCEEDED(file_dialog->GetResult(&result)))
+				{
+					PWSTR file_path{ nullptr };
+
+					if (SUCCEEDED(result->GetDisplayName(SIGDN_FILESYSPATH, &file_path)))
+					{
+						char converted_file_path[MAX_PATH];
+
+						for (uint16 i{ 0 }; i < MAX_PATH; ++i)
+						{
+							converted_file_path[i] = static_cast<char>(file_path[i]);
+						}
+
+						*chosen_file = converted_file_path;
+
+						::CoTaskMemFree(file_path);
+
+						success = true;
+					}
+				}
+			}
 		}
 
-		else
-		{
-			return false;
-		}
+		return success;
 	}
 
 	/*
