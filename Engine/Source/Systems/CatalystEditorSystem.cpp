@@ -22,10 +22,38 @@ DEFINE_SINGLETON(CatalystEditorSystem);
 */
 void CatalystEditorSystem::Initialize() NOEXCEPT
 {
+	//Define constants.
+	const ImVec4 PALETTE_MAIN_COLOR_HIGH{ 1.0f, 0.25f, 0.0f, 1.0f };
+	const ImVec4 PALETTE_MAIN_COLOR_MEDIUM{ 0.5f, 0.125f, 0.0f, 1.0f };
+	const ImVec4 PALETTE_MAIN_COLOR_LOW{ 0.25f, 0.125f * 0.5f, 0.0f, 1.0f };
+	const ImVec4 PALETTE_BACKGROUND_COLOR{ 0.01f, 0.01f, 0.01f, 1.0f };
+	const ImVec4 PALETTE_BORDER_COLOR{ 0.25f, 0.25f, 0.25f, 1.0f };
+
 	//Set up ImGui.
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
+
+	//Set up the style.
+	ImGuiStyle* style = &ImGui::GetStyle();
+
+	style->Alpha = 1.0f;
+	style->WindowRounding = 0.0f;
+	style->ChildRounding = 0.0f;
+	style->PopupRounding = 0.0f;
+	style->FrameRounding = 0.0f;
+	style->ScrollbarRounding = 0.0f;
+	style->GrabRounding = 0.0f;
+	style->TabRounding = 0.0f;
+	style->Colors[ImGuiCol_Text]					= ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	style->Colors[ImGuiCol_WindowBg]				= PALETTE_BACKGROUND_COLOR;
+	style->Colors[ImGuiCol_Border]					= PALETTE_BORDER_COLOR;
+	style->Colors[ImGuiCol_BorderShadow]			= PALETTE_BACKGROUND_COLOR;
+	style->Colors[ImGuiCol_TitleBg]					= PALETTE_MAIN_COLOR_MEDIUM;
+	style->Colors[ImGuiCol_TitleBgActive]			= PALETTE_MAIN_COLOR_HIGH;
+	style->Colors[ImGuiCol_TitleBgCollapsed]		= PALETTE_MAIN_COLOR_LOW;
+	style->Colors[ImGuiCol_Button]					= PALETTE_MAIN_COLOR_LOW;
+	style->Colors[ImGuiCol_ButtonHovered]			= PALETTE_MAIN_COLOR_MEDIUM;
+	style->Colors[ImGuiCol_ButtonActive]			= PALETTE_MAIN_COLOR_HIGH;
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
@@ -242,7 +270,7 @@ void CatalystEditorSystem::UpdateInGame() NOEXCEPT
 					| ImGuiWindowFlags_NoNav
 					| ImGuiWindowFlags_NoDecoration
 					| ImGuiWindowFlags_NoInputs);
-	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
+	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 	ImGui::SetWindowSize(ImVec2(256.0f, 64.0f));
 
 	ImGui::Text("Press ESCAPE to exit game");
@@ -289,7 +317,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 {
 	//Add the main window.
 	ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f));
+	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 	ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 	//Add the enter game button.

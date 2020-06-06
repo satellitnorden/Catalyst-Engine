@@ -579,9 +579,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcesCore.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h">
-      <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
     </ClInclude>

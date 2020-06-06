@@ -22,7 +22,7 @@ void EditorRenderingSystem::Update() NOEXCEPT
 
 	//Add the rendering window.
 	ImGui::Begin("Rendering", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(8.0f, 8.0f + 256.0f + 8.0f));
+	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
 
 	//Add the start/stop taking screenshot button.

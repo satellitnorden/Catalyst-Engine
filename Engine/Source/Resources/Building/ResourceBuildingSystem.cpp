@@ -35,7 +35,6 @@
 #include <Rendering/Native/Vertex.h>
 
 //Resources
-#include <Resources/Building/AssimpBuilder.h>
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/ResourcesCore.h>
 
@@ -99,85 +98,11 @@ void ResourceBuildingSystem::BuildResourceCollection(const ResourceCollectionBui
 }
 
 /*
-*	Writes a bone to file.
-*/
-FORCE_INLINE void WriteBoneToFile(const Bone &bone, BinaryFile<IOMode::Out> *const RESTRICT file) NOEXCEPT
-{
-	file->Write(&bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
-
-	const uint64 number_of_child_bones{ bone._Children.Size() };
-	file->Write(&number_of_child_bones, sizeof(uint64));
-
-	for (const Bone &child_bone : bone._Children)
-	{
-		WriteBoneToFile(child_bone, file);
-	}
-}
-
-/*
 *	Builds an animated model.
 */
 void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
 {
-	//What should the material be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::ANIMATED_MODEL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Build the model.
-	DynamicArray<AnimatedVertex> vertices;
-	DynamicArray<uint32> indices;
-	Skeleton skeleton;
-
-	AssimpBuilder::BuildAnimatedModel(parameters._File, &vertices, &indices, &skeleton);
-
-	//Transform all vertices and simultaneously calculate the bounding box.
-	AxisAlignedBoundingBox3 axisAlignedBoundingBox;
-
-	axisAlignedBoundingBox._Minimum = Vector3<float>(FLOAT_MAXIMUM, FLOAT_MAXIMUM, FLOAT_MAXIMUM);
-	axisAlignedBoundingBox._Maximum = Vector3<float>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
-
-	for (AnimatedVertex &vertex : vertices)
-	{
-		if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
-		{
-			vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
-		}
-
-		axisAlignedBoundingBox._Minimum = Vector3<float>::Minimum(axisAlignedBoundingBox._Minimum, vertex._Position);
-		axisAlignedBoundingBox._Maximum = Vector3<float>::Maximum(axisAlignedBoundingBox._Maximum, vertex._Position);
-
-		vertex._TextureCoordinate *= parameters._TextureCoordinateMultiplier;
-	}
-
-	//Write the axis-aligned bounding box to the file.
-	file.Write(&axisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
-
-	//Write the size of the vertices to the file.
-	const uint64 sizeOfVertices{ vertices.Size() };
-	file.Write(&sizeOfVertices, sizeof(uint64));
-
-	//Write the vertices to the file.
-	file.Write(vertices.Data(), sizeof(AnimatedVertex) * sizeOfVertices);
-
-	//Write the size of the indices to the file.
-	const uint64 sizeOfIndices{ indices.Size() };
-	file.Write(&sizeOfIndices, sizeof(uint64));
-
-	//Write the vertices to the file.
-	file.Write(indices.Data(), sizeof(uint32) * sizeOfIndices);
-
-	//Write all the bones to the file.
-	WriteBoneToFile(skeleton._RootBone, &file);
-
-	//Close the file.
-	file.Close();
+	ASSERT(false, "Not implemented!");
 }
 
 /*
@@ -185,59 +110,7 @@ void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParamete
 */
 void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT
 {
-	//What should the material be called?
-	DynamicString file_name{ parameters._Output };
-	file_name += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::ANIMATION_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Build the animation.
-	AnimationResource animation;
-	AssimpBuilder::BuildAnimation(parameters._File, &animation);
-
-	//Sort the animation keyframes.
-	for (Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : animation._Keyframes)
-	{
-		SortingAlgorithms::InsertionSort<AnimationKeyframe>
-		(
-			keyframes._Second.Begin(),
-			keyframes._Second.End(),
-			nullptr,
-			[](const void* const RESTRICT, const AnimationKeyframe* const RESTRICT first, const AnimationKeyframe* const RESTRICT second)
-			{
-				return first->_Timestamp < second->_Timestamp;
-			}
-		);
-	}
-
-	//Write the duration of the animation.
-	file.Write(&animation._Duration, sizeof(float));
-
-	//Write the number of animation keyframe channels.
-	const uint64 number_of_animation_keyframe_channels{ animation._Keyframes.Size() };
-	file.Write(&number_of_animation_keyframe_channels, sizeof(uint64));
-
-	//Write the animation keyframes.
-	for (Pair<HashString, DynamicArray<AnimationKeyframe>>& keyframes : animation._Keyframes)
-	{
-		//Write the name of the channel.
-		file.Write(&keyframes._First, sizeof(HashString));
-
-		//Write the number of animation keyframes.
-		const uint64 number_of_animation_keyframes{ keyframes._Second.Size() };
-		file.Write(&number_of_animation_keyframes, sizeof(uint64));
-
-		//Write the keyframes.
-		file.Write(keyframes._Second.Data(), sizeof(AnimationKeyframe) * number_of_animation_keyframes);
-	}
-
-	//Close the file.
-	file.Close();
+	ASSERT(false, "Not implemented!");
 }
 
 /*

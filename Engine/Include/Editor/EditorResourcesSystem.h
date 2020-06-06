@@ -22,7 +22,8 @@ private:
 	enum class CreateResourceMode : uint8
 	{
 		NONE,
-		MODEL
+		MODEL,
+		TEXTURE_2D
 	};
 
 	/*
@@ -36,7 +37,33 @@ private:
 		//The output file path.
 		DynamicString _OutputFilePath;
 
+		//The level of detail file paths.
 		DynamicArray<DynamicString> _LevelOfDetailFilepaths;
+
+	};
+
+	/*
+	*	Create texture 2D resource data class definition.
+	*/
+	class CreateTexture2DResourceData final
+	{
+
+	public:
+
+		//The output file path.
+		DynamicString _OutputFilePath;
+
+		//The file 1 file path.
+		DynamicString _File1FilePath;
+
+		//The file 2 file path.
+		DynamicString _File2FilePath;
+
+		//The file 3 file path.
+		DynamicString _File3FilePath;
+
+		//The file 4 file path.
+		DynamicString _File4FilePath;
 
 	};
 
@@ -45,6 +72,9 @@ private:
 
 	//The create model resource data.
 	CreateModelResourceData _CreateModelResourceData;
+
+	//The create texture 2D resource data.
+	CreateTexture2DResourceData _CreateTexture2DResourceData;
 
 };
 #endif

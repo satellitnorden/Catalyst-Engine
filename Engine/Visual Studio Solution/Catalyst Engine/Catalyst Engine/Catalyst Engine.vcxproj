@@ -358,7 +358,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AnimatedModelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\AnimationBuildParameters.h" />
-    <ClInclude Include="..\..\..\Include\Resources\Building\AssimpBuilder.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\LevelBuildParameters.h" />

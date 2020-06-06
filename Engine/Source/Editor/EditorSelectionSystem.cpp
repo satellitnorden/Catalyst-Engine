@@ -142,7 +142,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f, 8.0f));
+		ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f, 0.0f));
 		ImGui::SetWindowSize(ImVec2(512.0f, 256.0f));
 
 		switch (_CurrentlySelectedEntity->_Type)
@@ -187,7 +187,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				if (_DynamicModelSelectionData._IsSelectingModelResource)
 				{
 					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f - 8.0f - 256.0f, 8.0f));
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 					const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
@@ -210,7 +210,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				if (_DynamicModelSelectionData._IsSelectingMaterialResource)
 				{
 					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 8.0f - 512.0f - 8.0f - 256.0f, 8.0f));
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
 
 					const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
