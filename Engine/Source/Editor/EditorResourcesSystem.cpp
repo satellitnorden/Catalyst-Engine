@@ -30,6 +30,17 @@ void EditorResourcesSystem::Update() NOEXCEPT
 	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
 
+	//Add the button for creating a material resource.
+	if (ImGui::Button("Create Material Resource"))
+	{
+		//Reset the create material resource data.
+		_CreateMaterialResourceData.~CreateMaterialResourceData();
+		new (&_CreateMaterialResourceData) CreateMaterialResourceData();
+
+		//Set the current create resource mode.
+		_CurrentCreateResourceMode = CreateResourceMode::MATERIAL;
+	}
+
 	//Add the button for creating a model resource.
 	if (ImGui::Button("Create Model Resource"))
 	{
@@ -61,6 +72,13 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			break;
 		}
 
+		case CreateResourceMode::MATERIAL:
+		{
+			AddCreateMaterialResourceWindow();
+
+			break;
+		}
+
 		case CreateResourceMode::MODEL:
 		{
 			AddCreateModelResourceWindow();
@@ -81,6 +99,380 @@ void EditorResourcesSystem::Update() NOEXCEPT
 
 			break;
 		}
+	}
+
+	ImGui::End();
+}
+
+/*
+*	Adds the create material resource window.
+*/
+void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
+{
+	//Add the "Create Material Resource" window.
+	ImGui::Begin("Create Material Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
+	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
+
+	//If the user has already selected a file path, display it.
+	if (_CreateMaterialResourceData._OutputFilePath.Data())
+	{
+		ImGui::Text("Output File Path:");
+		ImGui::Text(_CreateMaterialResourceData._OutputFilePath.Data());
+	}
+
+	//Add the button to set the output file path/identifier.
+	if (ImGui::Button("Select Output File Path"))
+	{
+		File::BrowseForFile(true, &_CreateMaterialResourceData._OutputFilePath);
+	}
+
+	//Add the button for switching the type of material.
+	ImGui::Text("Material Type:");
+
+	switch (_CreateMaterialResourceData._Type)
+	{
+		case MaterialResource::Type::MASKED:
+		{
+			if (ImGui::Button("Masked"))
+			{
+				_CreateMaterialResourceData._Type = MaterialResource::Type::OPAQUE;
+			}
+
+			break;
+		}
+
+		case MaterialResource::Type::OPAQUE:
+		{
+			if (ImGui::Button("Opaque"))
+			{
+				_CreateMaterialResourceData._Type = MaterialResource::Type::TRANSLUCENT;
+			}
+
+			break;
+		}
+
+		case MaterialResource::Type::TRANSLUCENT:
+		{
+			if (ImGui::Button("Translucent"))
+			{
+				_CreateMaterialResourceData._Type = MaterialResource::Type::MASKED;
+			}
+
+			break;
+		}
+	}
+
+	//Add the widgets for the albedo/thickness component.
+	switch (_CreateMaterialResourceData._AlbedoThicknessType)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			if (ImGui::Button("Albedo/Thickness Component Type: Color"))
+			{
+				_CreateMaterialResourceData._AlbedoThicknessType = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			}
+
+			else
+			{
+				ImGui::ColorEdit4("Albedo/Thickness Color", &_CreateMaterialResourceData._AlbedoThicknessColor[0]);
+			}
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			if (ImGui::Button("Albedo/Thickness Component Type: Texture"))
+			{
+				_CreateMaterialResourceData._AlbedoThicknessType = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			}
+
+			else
+			{
+				ImGui::Text("Albedo/Thickness Texture: %s", _CreateMaterialResourceData._AlbedoThicknessTexture2DResource ? _CreateMaterialResourceData._AlbedoThicknessTexture2DResource->_Header._ResourceName.Data() : "Not selected");
+				
+				ImGui::BeginChild("Choose new Albedo/Thickness texture:", ImVec2(512.0f, 128.0f), true);
+
+				const HashTable<HashString, Texture2DResource *RESTRICT> &all_texture_2D_resources{ ResourceSystem::Instance->GetAllTexture2DResources() };
+
+				for (const Texture2DResource *const RESTRICT texture_2D_resource : all_texture_2D_resources.ValueIterator())
+				{
+					if (ImGui::Button(texture_2D_resource->_Header._ResourceName.Data()))
+					{
+						_CreateMaterialResourceData._AlbedoThicknessTexture2DResource = ResourceSystem::Instance->GetTexture2DResource(texture_2D_resource->_Header._ResourceIdentifier);
+
+						break;
+					}
+				}
+
+				ImGui::EndChild();
+			}
+
+			break;
+		}
+	}
+
+	//Add the widgets for the normal map/displacement component.
+	switch (_CreateMaterialResourceData._NormalMapDisplacementType)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			if (ImGui::Button("Normal Map/Displacement Component Type: Color"))
+			{
+				_CreateMaterialResourceData._NormalMapDisplacementType = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			}
+
+			else
+			{
+				ImGui::ColorEdit4("Normal Map/Displacement Color", &_CreateMaterialResourceData._NormalMapDisplacementColor[0]);
+			}
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			if (ImGui::Button("Normal Map/Displacement Component Type: Texture"))
+			{
+				_CreateMaterialResourceData._NormalMapDisplacementType = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			}
+
+			else
+			{
+				ImGui::Text("Normal Map/Displacement Texture: %s", _CreateMaterialResourceData._NormalMapDisplacementTexture2DResource ? _CreateMaterialResourceData._NormalMapDisplacementTexture2DResource->_Header._ResourceName.Data() : "Not selected");
+
+				ImGui::BeginChild("Choose new Normal Map/Displacements texture:", ImVec2(512.0f, 128.0f), true);
+
+				const HashTable<HashString, Texture2DResource *RESTRICT> &all_texture_2D_resources{ ResourceSystem::Instance->GetAllTexture2DResources() };
+
+				for (const Texture2DResource *const RESTRICT texture_2D_resource : all_texture_2D_resources.ValueIterator())
+				{
+					if (ImGui::Button(texture_2D_resource->_Header._ResourceName.Data()))
+					{
+						_CreateMaterialResourceData._NormalMapDisplacementTexture2DResource = ResourceSystem::Instance->GetTexture2DResource(texture_2D_resource->_Header._ResourceIdentifier);
+
+						break;
+					}
+				}
+
+				ImGui::EndChild();
+			}
+
+			break;
+		}
+	}
+
+	//Add the widgets for the material properties component.
+	switch (_CreateMaterialResourceData._MaterialPropertiesType)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			if (ImGui::Button("Material Properties Component Type: Color"))
+			{
+				_CreateMaterialResourceData._MaterialPropertiesType = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			}
+
+			else
+			{
+				ImGui::ColorEdit4("Material Properties Color", &_CreateMaterialResourceData._MaterialPropertiesColor[0]);
+			}
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			if (ImGui::Button("Material Properties Component Type: Texture"))
+			{
+				_CreateMaterialResourceData._MaterialPropertiesType = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			}
+
+			else
+			{
+				ImGui::Text("Material Properties Texture: %s", _CreateMaterialResourceData._MaterialPropertiesTexture2DResource ? _CreateMaterialResourceData._MaterialPropertiesTexture2DResource->_Header._ResourceName.Data() : "Not selected");
+
+				ImGui::BeginChild("Choose new Material Properties texture:", ImVec2(512.0f, 128.0f), true);
+
+				const HashTable<HashString, Texture2DResource *RESTRICT> &all_texture_2D_resources{ ResourceSystem::Instance->GetAllTexture2DResources() };
+
+				for (const Texture2DResource *const RESTRICT texture_2D_resource : all_texture_2D_resources.ValueIterator())
+				{
+					if (ImGui::Button(texture_2D_resource->_Header._ResourceName.Data()))
+					{
+						_CreateMaterialResourceData._MaterialPropertiesTexture2DResource = ResourceSystem::Instance->GetTexture2DResource(texture_2D_resource->_Header._ResourceIdentifier);
+
+						break;
+					}
+				}
+
+				ImGui::EndChild();
+			}
+
+			break;
+		}
+	}
+
+	//Add the widgets for the opacity component.
+	switch (_CreateMaterialResourceData._OpacityType)
+	{
+		case MaterialResource::MaterialResourceComponent::Type::COLOR:
+		{
+			if (ImGui::Button("Opacity Component Type: Color"))
+			{
+				_CreateMaterialResourceData._OpacityType = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			}
+
+			else
+			{
+				ImGui::ColorEdit4("Opacity Color", &_CreateMaterialResourceData._OpacityColor[0]);
+			}
+
+			break;
+		}
+
+		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+		{
+			if (ImGui::Button("Opacity Component Type: Texture"))
+			{
+				_CreateMaterialResourceData._OpacityType = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			}
+
+			else
+			{
+				ImGui::Text("Opacity Texture: %s", _CreateMaterialResourceData._OpacityTexture2DResource ? _CreateMaterialResourceData._OpacityTexture2DResource->_Header._ResourceName.Data() : "Not selected");
+
+				ImGui::BeginChild("Choose new Opacity texture:", ImVec2(512.0f, 128.0f), true);
+
+				const HashTable<HashString, Texture2DResource *RESTRICT> &all_texture_2D_resources{ ResourceSystem::Instance->GetAllTexture2DResources() };
+
+				for (const Texture2DResource *const RESTRICT texture_2D_resource : all_texture_2D_resources.ValueIterator())
+				{
+					if (ImGui::Button(texture_2D_resource->_Header._ResourceName.Data()))
+					{
+						_CreateMaterialResourceData._OpacityTexture2DResource = ResourceSystem::Instance->GetTexture2DResource(texture_2D_resource->_Header._ResourceIdentifier);
+
+						break;
+					}
+				}
+
+				ImGui::EndChild();
+			}
+
+			break;
+		}
+	}
+
+	//Add the widget for the emissive multiplier.
+	ImGui::DragFloat("Emissive Multiplier", &_CreateMaterialResourceData._EmissiveMultiplier, 0.1f, 0.0f);
+
+	//Add some padding before the "Create Material Resource" button.
+	ImGui::Text("");
+
+	//Add the create button.
+	if (ImGui::Button("Create Material Resource"))
+	{
+		//Retrieve the identifier.
+		DynamicString identifier;
+
+		for (int64 i{ static_cast<int64>(_CreateMaterialResourceData._OutputFilePath.Length()) - 1 }; i >= 0; --i)
+		{
+			if (_CreateMaterialResourceData._OutputFilePath[i] == '\\')
+			{
+				identifier = &_CreateMaterialResourceData._OutputFilePath[i + 1];
+
+				break;
+			}
+		}
+
+		//Build the material.
+		{
+			MaterialBuildParameters parameters;
+
+			parameters._Output = _CreateModelResourceData._OutputFilePath.Data();
+			parameters._ID = identifier.Data();
+			parameters._Type = _CreateMaterialResourceData._Type;
+			parameters._AlbedoThicknessComponent._Type = _CreateMaterialResourceData._AlbedoThicknessType;
+
+			switch (_CreateMaterialResourceData._AlbedoThicknessType)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					parameters._AlbedoThicknessComponent._Color = _CreateMaterialResourceData._AlbedoThicknessColor;
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					parameters._AlbedoThicknessComponent._TextureResourceIdentifier = _CreateMaterialResourceData._AlbedoThicknessTexture2DResource->_Header._ResourceIdentifier;
+
+					break;
+				}
+			}
+
+			switch (_CreateMaterialResourceData._NormalMapDisplacementType)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					parameters._NormalMapDisplacementComponent._Color = _CreateMaterialResourceData._NormalMapDisplacementColor;
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = _CreateMaterialResourceData._NormalMapDisplacementTexture2DResource->_Header._ResourceIdentifier;
+
+					break;
+				}
+			}
+
+			switch (_CreateMaterialResourceData._MaterialPropertiesType)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					parameters._MaterialPropertiesComponent._Color = _CreateMaterialResourceData._MaterialPropertiesColor;
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					parameters._MaterialPropertiesComponent._TextureResourceIdentifier = _CreateMaterialResourceData._MaterialPropertiesTexture2DResource->_Header._ResourceIdentifier;
+
+					break;
+				}
+			}
+
+			switch (_CreateMaterialResourceData._OpacityType)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					parameters._OpacityComponent._Color = _CreateMaterialResourceData._OpacityColor;
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					parameters._OpacityComponent._TextureResourceIdentifier = _CreateMaterialResourceData._OpacityTexture2DResource->_Header._ResourceIdentifier;
+
+					break;
+				}
+			}
+
+			parameters._EmissiveMultiplier = _CreateMaterialResourceData._EmissiveMultiplier;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		}
+
+		//Now load the material.
+		_CreateMaterialResourceData._OutputFilePath += ".cr";
+		ResourceSystem::Instance->LoadResource(_CreateMaterialResourceData._OutputFilePath.Data());
+
+		//No longer creating a resource.
+		_CurrentCreateResourceMode = CreateResourceMode::NONE;
 	}
 
 	ImGui::End();

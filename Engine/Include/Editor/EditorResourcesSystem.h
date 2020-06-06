@@ -11,6 +11,8 @@
 #include <Math/General/Vector.h>
 
 //Resources.
+#include <Resources/Building/MaterialBuildParameters.h>
+#include <Resources/Building/ModelBuildParameters.h>
 #include <Resources/Building/Texture2DBuildParameters.h>
 
 class EditorResourcesSystem final
@@ -29,8 +31,64 @@ private:
 	enum class CreateResourceMode : uint8
 	{
 		NONE,
+		MATERIAL,
 		MODEL,
 		TEXTURE_2D
+	};
+
+	/*
+	*	Create material resource data class definition.
+	*/
+	class CreateMaterialResourceData final
+	{
+
+	public:
+
+		//The output file path.
+		DynamicString _OutputFilePath;
+
+		//The type.
+		MaterialResource::Type _Type{ MaterialResource::Type::OPAQUE };
+
+		//The albedo/thickness type.
+		MaterialResource::MaterialResourceComponent::Type _AlbedoThicknessType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
+
+		//The albedo/thickness color.
+		Vector4<float32> _AlbedoThicknessColor;
+
+		//The albedo/thickness texture 2D resource.
+		ResourcePointer<Texture2DResource> _AlbedoThicknessTexture2DResource;
+
+		//The normal map/displacement type.
+		MaterialResource::MaterialResourceComponent::Type _NormalMapDisplacementType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
+
+		//The normal map/displacement color.
+		Vector4<float32> _NormalMapDisplacementColor;
+
+		//The normal map/displacement texture 2D resource.
+		ResourcePointer<Texture2DResource> _NormalMapDisplacementTexture2DResource;
+
+		//The material properties type.
+		MaterialResource::MaterialResourceComponent::Type _MaterialPropertiesType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
+
+		//The material properties color.
+		Vector4<float32> _MaterialPropertiesColor;
+
+		//The material properties texture 2D resource.
+		ResourcePointer<Texture2DResource> _MaterialPropertiesTexture2DResource;
+
+		//The opacity type.
+		MaterialResource::MaterialResourceComponent::Type _OpacityType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
+
+		//The opacity color.
+		Vector4<float32> _OpacityColor;
+
+		//The opacity texture 2D resource.
+		ResourcePointer<Texture2DResource> _OpacityTexture2DResource;
+
+		//The emissive multiplier.
+		float32 _EmissiveMultiplier{ 0.0f };
+
 	};
 
 	/*
@@ -92,11 +150,19 @@ private:
 	//The current create resource mode.
 	CreateResourceMode _CurrentCreateResourceMode{ CreateResourceMode::NONE };
 
+	//The create material resource data.
+	CreateMaterialResourceData _CreateMaterialResourceData;
+
 	//The create model resource data.
 	CreateModelResourceData _CreateModelResourceData;
 
 	//The create texture 2D resource data.
 	CreateTexture2DResourceData _CreateTexture2DResourceData;
+
+	/*
+	*	Adds the create material resource window.
+	*/
+	void AddCreateMaterialResourceWindow() NOEXCEPT;
 
 	/*
 	*	Adds the create model resource window.
