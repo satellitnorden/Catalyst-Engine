@@ -14,6 +14,7 @@ namespace File
 	enum class Extension : uint8
 	{
 		CR,
+		CRC,
 		JPG,
 		PNG,
 		TGA,
@@ -76,6 +77,11 @@ namespace File
 		if (strcmp(dot_position, ".cr") == 0)
 		{
 			return Extension::CR;
+		}
+
+		if (strcmp(dot_position, ".crc") == 0)
+		{
+			return Extension::CRC;
 		}
 
 		if (strcmp(dot_position, ".jpg") == 0)

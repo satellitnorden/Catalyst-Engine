@@ -11,49 +11,49 @@
 DEFINE_SINGLETON(ResourceSystem);
 
 /*
-*	Loads the resource collection with the given file path.
-*/
-void ResourceSystem::LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT
-{
-	//Load the file.
-	BinaryFile<IOMode::In> file{ file_path };
-
-	//Read the number of resources.
-	uint64 number_of_resources;
-	file.Read(&number_of_resources, sizeof(uint64));
-
-	//For each resource, load it.
-	for (uint64 i{ 0 }; i < number_of_resources; ++i)
-	{
-		LoadResource(&file);
-	}
-}
-
-/*
 *	Loads the resources contained in the given directory path.
 */
 void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NOEXCEPT
 {
 	//Iterate over all the files in the directory and load them.
-	for (const auto &resource : std::filesystem::directory_iterator(std::string(directory_path)))
+	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
-		//Get the extension for this file.
-		const File::Extension file_extension{ File::GetExtension(resource.path().string().c_str()) };
-
-		//Only load this file if it is actually a Catalyst resource.
-		if (file_extension != File::Extension::CR)
+		//If this entry is itself a directory, recursively process it.
+		if (entry.is_directory())
 		{
-			continue;
+			LoadResources(entry.path().generic_u8string().c_str());
 		}
 
-		//Open the file.
-		BinaryFile<IOMode::In> file{ resource.path().string().c_str() };
+		else
+		{
+			//Get the extension for this file.
+			const File::Extension file_extension{ File::GetExtension(entry.path().string().c_str()) };
 
-		//Load the resource.
-		LoadResource(&file);
+			//Only load this file if it is actually a Catalyst resource or a Catalyst resource collection.
+			if (file_extension == File::Extension::CR)
+			{
+				//Open the file.
+				BinaryFile<IOMode::In> file{ entry.path().string().c_str() };
 
-		//Close the file.
-		file.Close();
+				//Load the resource.
+				LoadResource(&file);
+
+				//Close the file.
+				file.Close();
+			}
+
+			if (file_extension == File::Extension::CRC)
+			{
+				//Open the file.
+				BinaryFile<IOMode::In> file{ entry.path().string().c_str() };
+
+				//Load the resource collection.
+				LoadResourceCollection(&file);
+
+				//Close the file.
+				file.Close();
+			}
+		}
 	}
 }
 
@@ -322,6 +322,22 @@ NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::FindOrCreateTextur
 	else
 	{
 		return ResourcePointer<Texture3DResource>(*resource);
+	}
+}
+
+/*
+*	Loads a resource collection from the given binary file.
+*/
+void ResourceSystem::LoadResourceCollection(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT
+{
+	//Read the number of resources.
+	uint64 number_of_resources;
+	file->Read(&number_of_resources, sizeof(uint64));
+
+	//For each resource, load it.
+	for (uint64 i{ 0 }; i < number_of_resources; ++i)
+	{
+		LoadResource(file);
 	}
 }
 

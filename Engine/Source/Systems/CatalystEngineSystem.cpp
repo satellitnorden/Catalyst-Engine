@@ -153,9 +153,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_CONFIGURATION_FINAL)
-	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineResourceCollection.crc");
+	ResourceSystem::Instance->LoadResources("Resources");
 #else
-	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection.crc");
+	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate");
 #endif
 
 	//Post-initialize all systems.

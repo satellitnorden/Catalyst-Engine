@@ -67,11 +67,6 @@ public:
 	}
 
 	/*
-	*	Loads the resource collection with the given file path.
-	*/
-	void LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT;
-
-	/*
 	*	Loads the resources contained in the given directory path.
 	*/
 	void LoadResources(const char *const RESTRICT directory_path) NOEXCEPT;
@@ -412,6 +407,11 @@ private:
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
+
+	/*
+	*	Loads a resource collection from the given binary file.
+	*/
+	void LoadResourceCollection(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT;
 
 	/*
 	*	Loads a resource from the given binary file.
