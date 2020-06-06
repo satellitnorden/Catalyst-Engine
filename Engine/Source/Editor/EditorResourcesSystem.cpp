@@ -227,7 +227,120 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			}
 
 			//Add the widget to configure the defaults.
-			ImGui::DragFloat4("Default", _CreateTexture2DResourceData._Default.Data());
+			ImGui::DragFloat4("Default", &_CreateTexture2DResourceData._Default[0]);
+
+			//Add widgets for all channel mappings.
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				ImGui::Text("Channel Mapping %u:", i);
+
+				switch (_CreateTexture2DResourceData._ChannelMappings[i]._File)
+				{
+					case Texture2DBuildParameters::File::FILE_1:
+					{
+						if (ImGui::Button("File 1"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_2;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::File::FILE_2:
+					{
+						if (ImGui::Button("File 2"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_3;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::File::FILE_3:
+					{
+						if (ImGui::Button("File 3"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_4;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::File::FILE_4:
+					{
+						if (ImGui::Button("File 4"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::DEFAULT;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::File::DEFAULT:
+					{
+						if (ImGui::Button("Default"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_1;
+						}
+
+						break;
+					}
+				}
+
+				switch (_CreateTexture2DResourceData._ChannelMappings[i]._Channel)
+				{
+					case Texture2DBuildParameters::Channel::RED:
+					{
+						if (ImGui::Button("Red"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::GREEN;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::Channel::GREEN:
+					{
+						if (ImGui::Button("Green"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::BLUE;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::Channel::BLUE:
+					{
+						if (ImGui::Button("Blue"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::ALPHA;
+						}
+
+						break;
+					}
+
+					case Texture2DBuildParameters::Channel::ALPHA:
+					{
+						if (ImGui::Button("Alpha"))
+						{
+							_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::RED;
+						}
+
+						break;
+					}
+				}
+			}
+
+			//Add the checkbox on whether or not to apply gamma correction.
+			ImGui::Checkbox("Apply Gamma Correction", &_CreateTexture2DResourceData._ApplyGammaCorrection);
+
+			//Add the button to select the base mipmap level.
+			ImGui::SetNextItemWidth(64.0f);
+			ImGui::DragInt("Base Mipmap Level", &_CreateTexture2DResourceData._BaseMipmapLevel, 1.0f, 0, 16);
+
+			//Add the button to select the number of mipmap levels.
+			ImGui::SetNextItemWidth(64.0f);
+			ImGui::DragInt("Number Of Mipmaps Level", &_CreateTexture2DResourceData._NumberOfMipmapLevels, 1.0f, 0, 16);
 
 			//Add some padding before the "Create Model Resource" button.
 			ImGui::Text("");
@@ -260,20 +373,20 @@ void EditorResourcesSystem::Update() NOEXCEPT
 					parameters._File2 = _CreateTexture2DResourceData._File2FilePath.Data();
 					parameters._File3 = _CreateTexture2DResourceData._File3FilePath.Data();
 					parameters._File4 = _CreateTexture2DResourceData._File4FilePath.Data();
-					parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
-					parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-					parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-					parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-					parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
-					parameters._ApplyGammaCorrection = true;
+					parameters._Default = _CreateTexture2DResourceData._Default;
+					parameters._ChannelMappings[0] = _CreateTexture2DResourceData._ChannelMappings[0];
+					parameters._ChannelMappings[1] = _CreateTexture2DResourceData._ChannelMappings[1];
+					parameters._ChannelMappings[2] = _CreateTexture2DResourceData._ChannelMappings[2];
+					parameters._ChannelMappings[3] = _CreateTexture2DResourceData._ChannelMappings[3];
+					parameters._ApplyGammaCorrection = _CreateTexture2DResourceData._ApplyGammaCorrection;
 					parameters._TransformFunction = nullptr;
-					parameters._BaseMipmapLevel = 1;
-					parameters._MipmapLevels = 7;
+					parameters._BaseMipmapLevel = static_cast<uint8>(_CreateTexture2DResourceData._BaseMipmapLevel);
+					parameters._MipmapLevels = static_cast<uint8>(_CreateTexture2DResourceData._NumberOfMipmapLevels);
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 				}
 
-				//Now load the model.
+				//Now load the texture 2D.
 				_CreateTexture2DResourceData._OutputFilePath += ".cr";
 				ResourceSystem::Instance->LoadResource(_CreateTexture2DResourceData._OutputFilePath.Data());
 

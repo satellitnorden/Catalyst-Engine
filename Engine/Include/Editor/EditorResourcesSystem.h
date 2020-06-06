@@ -4,7 +4,14 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/StaticArray.h>
 #include <Core/General/DynamicString.h>
+
+//Math.
+#include <Math/General/Vector.h>
+
+//Resources.
+#include <Resources/Building/Texture2DBuildParameters.h>
 
 class EditorResourcesSystem final
 {
@@ -64,6 +71,21 @@ private:
 
 		//The file 4 file path.
 		DynamicString _File4FilePath;
+
+		//The default.
+		Vector4<float32> _Default;
+
+		//The channel mappings.
+		StaticArray<Texture2DBuildParameters::ChannelMapping, 4> _ChannelMappings;
+
+		//Denotes whether or not to apply gamma correction.
+		bool _ApplyGammaCorrection{ false };
+
+		//The base mipmap level.
+		int32 _BaseMipmapLevel{ 0 };
+
+		//The number of mipmap levels.
+		int32 _NumberOfMipmapLevels{ 1 };
 
 	};
 
