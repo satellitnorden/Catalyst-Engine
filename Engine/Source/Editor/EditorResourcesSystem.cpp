@@ -389,7 +389,7 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 		{
 			MaterialBuildParameters parameters;
 
-			parameters._Output = _CreateModelResourceData._OutputFilePath.Data();
+			parameters._Output = _CreateMaterialResourceData._OutputFilePath.Data();
 			parameters._ID = identifier.Data();
 			parameters._Type = _CreateMaterialResourceData._Type;
 			parameters._AlbedoThicknessComponent._Type = _CreateMaterialResourceData._AlbedoThicknessType;
@@ -605,7 +605,7 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	//Add the button to set the file 1 file path.
 	if (ImGui::Button("Select File 1 File Path"))
 	{
-		File::BrowseForFile(true, &_CreateTexture2DResourceData._File1FilePath);
+		File::BrowseForFile(false, &_CreateTexture2DResourceData._File1FilePath);
 	}
 
 	//If the user has already selected a file path for file 2, display it.
@@ -618,7 +618,7 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	//Add the button to set the file 2 file path.
 	if (ImGui::Button("Select File 2 File Path"))
 	{
-		File::BrowseForFile(true, &_CreateTexture2DResourceData._File2FilePath);
+		File::BrowseForFile(false, &_CreateTexture2DResourceData._File2FilePath);
 	}
 
 	//If the user has already selected a file path for file 3, display it.
@@ -631,7 +631,7 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	//Add the button to set the file 3 file path.
 	if (ImGui::Button("Select File 3 File Path"))
 	{
-		File::BrowseForFile(true, &_CreateTexture2DResourceData._File3FilePath);
+		File::BrowseForFile(false, &_CreateTexture2DResourceData._File3FilePath);
 	}
 
 	//If the user has already selected a file path for file 4, display it.
@@ -644,7 +644,7 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	//Add the button to set the file 4 file path.
 	if (ImGui::Button("Select File 4 File Path"))
 	{
-		File::BrowseForFile(true, &_CreateTexture2DResourceData._File4FilePath);
+		File::BrowseForFile(false, &_CreateTexture2DResourceData._File4FilePath);
 	}
 
 	//Add the widget to configure the defaults.
@@ -653,13 +653,15 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	//Add widgets for all channel mappings.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		ImGui::Text("Channel Mapping %u:", i);
+		char buffer[64];
 
 		switch (_CreateTexture2DResourceData._ChannelMappings[i]._File)
 		{
 			case Texture2DBuildParameters::File::FILE_1:
 			{
-				if (ImGui::Button("File 1"))
+				sprintf_s(buffer, "Channel Mapping %u File: File 1", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_2;
 				}
@@ -669,7 +671,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::File::FILE_2:
 			{
-				if (ImGui::Button("File 2"))
+				sprintf_s(buffer, "Channel Mapping %u File: File 2", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_3;
 				}
@@ -679,7 +683,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::File::FILE_3:
 			{
-				if (ImGui::Button("File 3"))
+				sprintf_s(buffer, "Channel Mapping %u File: File 3", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_4;
 				}
@@ -689,7 +695,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::File::FILE_4:
 			{
-				if (ImGui::Button("File 4"))
+				sprintf_s(buffer, "Channel Mapping %u File: File 4", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::DEFAULT;
 				}
@@ -699,7 +707,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::File::DEFAULT:
 			{
-				if (ImGui::Button("Default"))
+				sprintf_s(buffer, "Channel Mapping %u File: Default", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._File = Texture2DBuildParameters::File::FILE_1;
 				}
@@ -712,7 +722,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 		{
 			case Texture2DBuildParameters::Channel::RED:
 			{
-				if (ImGui::Button("Red"))
+				sprintf_s(buffer, "Channel Mapping %u Channel: Red", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::GREEN;
 				}
@@ -722,7 +734,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::Channel::GREEN:
 			{
-				if (ImGui::Button("Green"))
+				sprintf_s(buffer, "Channel Mapping %u Channel: Green", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::BLUE;
 				}
@@ -732,7 +746,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::Channel::BLUE:
 			{
-				if (ImGui::Button("Blue"))
+				sprintf_s(buffer, "Channel Mapping %u Channel: Blue", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::ALPHA;
 				}
@@ -742,7 +758,9 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 
 			case Texture2DBuildParameters::Channel::ALPHA:
 			{
-				if (ImGui::Button("Alpha"))
+				sprintf_s(buffer, "Channel Mapping %u Channel: Alpha", i + 1);
+
+				if (ImGui::Button(buffer))
 				{
 					_CreateTexture2DResourceData._ChannelMappings[i]._Channel = Texture2DBuildParameters::Channel::RED;
 				}
