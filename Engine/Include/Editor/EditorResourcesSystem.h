@@ -98,5 +98,15 @@ private:
 	//The create texture 2D resource data.
 	CreateTexture2DResourceData _CreateTexture2DResourceData;
 
+	/*
+	*	Adds the create model resource window.
+	*/
+	void AddCreateModelResourceWindow() NOEXCEPT;
+
+	/*
+	*	Adds the create texture 2D resource window.
+	*/
+	void AddCreateTexture2DResourceWindow() NOEXCEPT;
+
 };
 #endif
