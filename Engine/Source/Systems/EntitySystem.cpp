@@ -129,7 +129,7 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
-*	Updates the entity system during the entity update phase.
+*	Updates the entity system during the ENTITY update phase.
 */
 void EntitySystem::EntityUpdate() NOEXCEPT
 {

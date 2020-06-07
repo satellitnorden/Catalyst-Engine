@@ -5,8 +5,12 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
+//Componens.
+#include <Components/Core/ComponentManager.h>
+
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/LightEntity.h>
 
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
@@ -44,6 +48,9 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	{
 		return;
 	}
+
+	//Add the scene window.
+	AddSceneWindow();
 
 	//Calculate the ray.
 	Ray ray;
@@ -85,33 +92,33 @@ void EditorSelectionSystem::Update() NOEXCEPT
 			{
 				switch (result._Type)
 				{
-				case RaycastResult::Type::DYNAMIC_MODEL:
-				{
-					SetCurrentlySelectedEntity(result._DynamicModelRaycastResult._Entity);
+					case RaycastResult::Type::DYNAMIC_MODEL:
+					{
+						SetCurrentlySelectedEntity(result._DynamicModelRaycastResult._Entity);
 
-					break;
-				}
+						break;
+					}
 
-				case RaycastResult::Type::STATIC_MODEL:
-				{
-					SetCurrentlySelectedEntity(result._StaticModelRaycastResult._Entity);
+					case RaycastResult::Type::STATIC_MODEL:
+					{
+						SetCurrentlySelectedEntity(result._StaticModelRaycastResult._Entity);
 
-					break;
-				}
+						break;
+					}
 
-				case RaycastResult::Type::TERRAIN:
-				{
-					//HWEL
+					case RaycastResult::Type::TERRAIN:
+					{
+						//HWEL
 
-					break;
-				}
+						break;
+					}
 
-				default:
-				{
-					ASSERT(false, "Invalid case!");
+					default:
+					{
+						ASSERT(false, "Invalid case!");
 
-					break;
-				}
+						break;
+					}
 				}
 			}
 
@@ -131,11 +138,41 @@ void EditorSelectionSystem::Update() NOEXCEPT
 			{
 				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
 
-				box._Minimum -= 0.1f;
-				box._Maximum += 0.1f;
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), false, false, box, 0.0f);
 
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 1.0f), true, true, box, 0.0f);
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f * 0.125f), true, false, box, 0.0f);
+				break;
+			}
+
+			case EntityType::Light:
+			{
+				LightEntity *const RESTRICT light_entity{ static_cast<LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+				switch (light_entity->GetLightType())
+				{
+					case LightType::DIRECTIONAL:
+					{
+						//Directional lights have no world transform, so just leave empty. (:
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+						const Vector3<float32> position{ static_cast<LightEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetPosition() };
+						AxisAlignedBoundingBox3 box{ position - VectorConstants::ONE, position + VectorConstants::ONE };
+
+						RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), false, false, box, 0.0f);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
 
 				break;
 			}
@@ -143,8 +180,8 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f, 0.0f));
-		ImGui::SetWindowSize(ImVec2(512.0f, 256.0f));
+		ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f, 512.0f));
+		ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
 		//Add a button for destroying the entity.
 		if (ImGui::Button("Destroy Entity")
@@ -157,7 +194,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		else if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("Press DELETE to destroy entity");
+			ImGui::Text("Hotkey: Delete");
 			ImGui::EndTooltip();
 		}
 
@@ -167,9 +204,6 @@ void EditorSelectionSystem::Update() NOEXCEPT
 			{
 				//Cache the dynamic model entity.
 				DynamicModelEntity *const RESTRICT dynamic_model_entity{ static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity) };
-
-				//Add the header text.
-				ImGui::Text("Dynamic Model");
 
 				char buffer[128];
 
@@ -203,8 +237,8 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				if (_DynamicModelSelectionData._IsSelectingModelResource)
 				{
 					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
-					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
 					const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
 
@@ -226,8 +260,8 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				if (_DynamicModelSelectionData._IsSelectingMaterialResource)
 				{
 					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
-					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
 					const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
 
@@ -283,6 +317,55 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				break;
 			}
+
+			case EntityType::Light:
+			{
+				LightEntity *const RESTRICT light_entity{ static_cast<LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+				switch (light_entity->GetLightType())
+				{
+					case LightType::DIRECTIONAL:
+					{
+						//Add a widget for modifying the color of this light.
+						{
+							Vector3<float32> color{ light_entity->GetColor() };
+
+							if (ImGui::ColorEdit3("Color", &color[0]))
+							{
+								light_entity->SetColor(color);
+							}
+						}
+
+						//Add a widget for modifying the intensity of this light.
+						{
+							float32 intensity{ light_entity->GetIntensity() };
+
+							if (ImGui::DragFloat("Intensity", &intensity))
+							{
+								light_entity->SetIntensity(intensity);
+							}
+						}
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+						//TODO: Fill in.
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				break;
+			}
 		}
 
 		ImGui::End();
@@ -290,6 +373,53 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 	//Transform the currently selected entity.
 	TransformCurrentlySelectedEntity(ray);
+}
+
+/*
+*	Adds the scene window.
+*/
+void EditorSelectionSystem::AddSceneWindow() NOEXCEPT
+{
+	//Add the level window.
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f, 0.0f));
+	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+
+	//List all dynamic model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Dynamic Model Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				SetCurrentlySelectedEntity(ComponentManager::GetDynamicModelEntities()->At(i));
+			}
+		}
+	}
+
+	//List all light entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Light Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				SetCurrentlySelectedEntity(ComponentManager::GetLightEntities()->At(i));
+			}
+		}
+	}
+
+	ImGui::End();
 }
 
 /*
@@ -322,6 +452,37 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 		case EntityType::DynamicModel:
 		{
 			world_transform = *static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
+
+			break;
+		}
+
+		case EntityType::Light:
+		{
+			const LightEntity *const RESTRICT light_entity{ static_cast<const LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+			switch (light_entity->GetLightType())
+			{
+				case LightType::DIRECTIONAL:
+				{
+					//Directional lights have no world transform, so just leave empty. (:
+
+					break;
+				}
+
+				case LightType::POINT:
+				{
+					world_transform = WorldTransform(light_entity->GetPosition(), VectorConstants::ZERO, 1.0f);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
 
 			break;
 		}
@@ -394,6 +555,37 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 		case EntityType::DynamicModel:
 		{
 			*static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->ModifyWorldTransform() = world_transform;
+
+			break;
+		}
+
+		case EntityType::Light:
+		{
+			LightEntity *const RESTRICT light_entity{ static_cast<LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+			switch (light_entity->GetLightType())
+			{
+				case LightType::DIRECTIONAL:
+				{
+					//Directional lights have no world transform, so just leave empty. (:
+
+					break;
+				}
+
+				case LightType::POINT:
+				{
+					light_entity->SetPosition(world_transform.GetAbsolutePosition());
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
 
 			break;
 		}

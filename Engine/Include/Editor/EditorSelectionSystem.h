@@ -75,6 +75,11 @@ private:
 	};
 
 	/*
+	*	Adds the scene window.
+	*/
+	void AddSceneWindow() NOEXCEPT;
+
+	/*
 	*	Sets the currently selected entity.
 	*/
 	void SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT;

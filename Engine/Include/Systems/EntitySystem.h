@@ -42,13 +42,13 @@ public:
 	*	Creates a new entity.
 	*/
 	template <class CLASS, class... ARGUMENTS>
-	RESTRICTED CLASS* const RESTRICT CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT;
+	RESTRICTED CLASS *const RESTRICT CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT;
 
 	/*
 	*	Creates initialization data for an entity.
 	*/
 	template <typename TYPE>
-	RESTRICTED TYPE* const RESTRICT CreateInitializationData() NOEXCEPT;
+	RESTRICTED TYPE *const RESTRICT CreateInitializationData() NOEXCEPT;
 
 	/*
 	*	Destroys initialization data for an entity.
@@ -181,7 +181,7 @@ private:
 	DynamicArray<Entity *RESTRICT> _AutomaticDestructionQueue;
 
 	/*
-	*	Updates the entity system during the entity update phase.
+	*	Updates the entity system during the ENTITY update phase.
 	*/
 	void EntityUpdate() NOEXCEPT;
 
