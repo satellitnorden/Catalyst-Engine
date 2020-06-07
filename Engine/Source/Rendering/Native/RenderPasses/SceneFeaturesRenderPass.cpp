@@ -39,7 +39,12 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Add the pipelines.
 	SetNumberOfPipelines(13);
 	AddPipeline(&_ParticleSystemComputePipeline);
-	AddPipeline(&_ModelSceneFeaturesGraphicsPipeline);
+
+	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
@@ -63,7 +68,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer, true);
 	_VegetationColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_ModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
+	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VelocityGraphicsPipeline.Initialize(_SceneDepthBuffer);
 
@@ -103,7 +109,12 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	_VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationColorSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Execute();
-	_ModelSceneFeaturesGraphicsPipeline.Execute();
+	
+	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 	_VelocityGraphicsPipeline.Execute();
 }

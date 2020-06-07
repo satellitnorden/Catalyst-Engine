@@ -366,6 +366,9 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 	//Add the widget for the emissive multiplier.
 	ImGui::DragFloat("Emissive Multiplier", &_CreateMaterialResourceData._EmissiveMultiplier, 0.1f, 0.0f);
 
+	//Add the widget for defining whether or not the material is double-sided.
+	ImGui::Checkbox("Double Sided", &_CreateMaterialResourceData._DoubleSided);
+
 	//Add some padding before the "Create Material Resource" button.
 	ImGui::Text("");
 
@@ -463,6 +466,7 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 			}
 
 			parameters._EmissiveMultiplier = _CreateMaterialResourceData._EmissiveMultiplier;
+			parameters._DoubleSided = _CreateMaterialResourceData._DoubleSided;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
 		}

@@ -1250,48 +1250,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelSceneFeaturesFragmentShader";
-			parameters._ID = "ModelSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelSceneFeaturesVertexShader";
-			parameters._ID = "ModelSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapFragmentShader";
 			parameters._ID = "ModelShadowMapFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapFragmentShader.frag";
@@ -1338,6 +1296,48 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._ID = "MotionBlurFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
 			parameters._Stage = ShaderStage::FRAGMENT;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesFragmentShader";
+			parameters._ID = "OpaqueModelSceneFeaturesFragmentShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesFragmentShader.frag";
+			parameters._Stage = ShaderStage::FRAGMENT;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesVertexShader";
+			parameters._ID = "OpaqueModelSceneFeaturesVertexShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesVertexShader.vert";
+			parameters._Stage = ShaderStage::VERTEX;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 		};
@@ -2467,6 +2467,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
 		};

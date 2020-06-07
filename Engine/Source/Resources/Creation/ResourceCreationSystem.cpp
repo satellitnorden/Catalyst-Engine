@@ -194,6 +194,9 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 	//Copy the emissive multiplier.
 	resource->_EmissiveMultiplier = data->_EmissiveMultiplier;
 
+	//Copy whether or not the material is double-sided.
+	resource->_DoubleSided = data->_DoubleSided;
+
 	//Register the material.
 	resource->_Index = RenderingSystem::Instance->GetMaterialSystem()->RegisterMaterial(resource);
 }

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -41,17 +41,20 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool double_sided) NOEXCEPT
 {
+	//Remember whether or not to render opaque models double-sided.
+	_DoubleSided = double_sided;
+
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelSceneFeaturesVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("OpaqueModelSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelSceneFeaturesFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("OpaqueModelSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
-	SetDepthBuffer(depthBuffer);
+	SetDepthBuffer(depth_buffer);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(5);
@@ -97,13 +100,23 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(true);
+	SetShouldClear(!_DoubleSided);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+
+	if (_DoubleSided)
+	{
+		SetCullMode(CullMode::None);
+	}
+	
+	else
+	{
+		SetCullMode(CullMode::Back);
+	}
+
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
@@ -121,7 +134,7 @@ void ModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 /*
 *	Executes this graphics pipeline.
 */
-void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -194,6 +207,12 @@ void ModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Draw all meshes.
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
+				//Skip this mesh depending on the double-sidedness.
+				if (_DoubleSided != component->_MaterialResources[i]->_DoubleSided)
+				{
+					continue;
+				}
+
 				//Cache the mesh.
 				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 

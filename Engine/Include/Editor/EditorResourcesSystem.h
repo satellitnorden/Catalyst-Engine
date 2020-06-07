@@ -54,7 +54,7 @@ private:
 		MaterialResource::MaterialResourceComponent::Type _AlbedoThicknessType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
 
 		//The albedo/thickness color.
-		Vector4<float32> _AlbedoThicknessColor;
+		Vector4<float32> _AlbedoThicknessColor{ 0.5f, 0.5f, 0.5f, 1.0f };
 
 		//The albedo/thickness texture 2D resource.
 		ResourcePointer<Texture2DResource> _AlbedoThicknessTexture2DResource;
@@ -63,7 +63,7 @@ private:
 		MaterialResource::MaterialResourceComponent::Type _NormalMapDisplacementType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
 
 		//The normal map/displacement color.
-		Vector4<float32> _NormalMapDisplacementColor;
+		Vector4<float32> _NormalMapDisplacementColor{ 0.5f, 0.5f, 1.0f, 0.5f };
 
 		//The normal map/displacement texture 2D resource.
 		ResourcePointer<Texture2DResource> _NormalMapDisplacementTexture2DResource;
@@ -72,7 +72,7 @@ private:
 		MaterialResource::MaterialResourceComponent::Type _MaterialPropertiesType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
 
 		//The material properties color.
-		Vector4<float32> _MaterialPropertiesColor;
+		Vector4<float32> _MaterialPropertiesColor{ 1.0f, 0.0f, 1.0f, 0.0 };
 
 		//The material properties texture 2D resource.
 		ResourcePointer<Texture2DResource> _MaterialPropertiesTexture2DResource;
@@ -81,13 +81,16 @@ private:
 		MaterialResource::MaterialResourceComponent::Type _OpacityType{ MaterialResource::MaterialResourceComponent::Type::COLOR };
 
 		//The opacity color.
-		Vector4<float32> _OpacityColor;
+		Vector4<float32> _OpacityColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		//The opacity texture 2D resource.
 		ResourcePointer<Texture2DResource> _OpacityTexture2DResource;
 
 		//The emissive multiplier.
 		float32 _EmissiveMultiplier{ 0.0f };
+
+		//Denotes whether or not the material is double-sided.
+		bool _DoubleSided;
 
 	};
 
@@ -131,10 +134,16 @@ private:
 		DynamicString _File4FilePath;
 
 		//The default.
-		Vector4<float32> _Default;
+		Vector4<float32> _Default{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 		//The channel mappings.
-		StaticArray<Texture2DBuildParameters::ChannelMapping, 4> _ChannelMappings;
+		StaticArray<Texture2DBuildParameters::ChannelMapping, 4> _ChannelMappings
+		{
+			Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED),
+			Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN),
+			Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE),
+			Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA)
+		};
 
 		//Denotes whether or not to apply gamma correction.
 		bool _ApplyGammaCorrection{ false };

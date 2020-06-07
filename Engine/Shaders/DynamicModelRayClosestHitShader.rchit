@@ -63,6 +63,9 @@ SurfaceProperties CalculateDynamicModelSurfaceProperties(vec3 hit_position)
 	shading_normal = mat3(final_vertex.tangent, cross(final_vertex.normal, final_vertex.tangent), final_vertex.normal) * shading_normal;
 	shading_normal = normalize(shading_normal);
 
+	//Flip the normal, if necessary.
+	shading_normal = dot(shading_normal, gl_WorldRayDirectionNV) <= 0.0f ? shading_normal : -shading_normal;
+
 	//Fill in the surface properties.
 	SurfaceProperties surface_properties;
 

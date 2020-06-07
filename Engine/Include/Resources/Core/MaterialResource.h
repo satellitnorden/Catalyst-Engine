@@ -115,4 +115,7 @@ public:
 	//The emissive multiplier.
 	float32 _EmissiveMultiplier;
 
+	//Denotes whether or not this material is double-sided.
+	bool _DoubleSided;
+
 };

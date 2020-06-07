@@ -52,13 +52,16 @@ void CatalystShaderMain()
 	shading_normal = fragment_tangent_space_matrix * shading_normal;
 	shading_normal = normalize(shading_normal);
 
-    //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_current_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_previous_world_position);
+  //Flip the normal if necessary.
+  shading_normal = gl_FrontFacing ? shading_normal : -shading_normal;
 
-    //Write the fragments.
-    scene_features_1 = albedo_thickness;
-    scene_features_2 = vec4(shading_normal, gl_FragCoord.z);
-    scene_features_3 = material_properties;
-    scene_features_4 = vec4(velocity, 0.0f, 0.0f);
-    scene = vec4(albedo_thickness.rgb * material_properties[3] * material._EmissiveMultiplier, 1.0f);
+  //Calculate the velocity.
+  vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_current_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_previous_world_position);
+
+  //Write the fragments.
+  scene_features_1 = albedo_thickness;
+  scene_features_2 = vec4(shading_normal, gl_FragCoord.z);
+  scene_features_3 = material_properties;
+  scene_features_4 = vec4(velocity, 0.0f, 0.0f);
+  scene = vec4(albedo_thickness.rgb * material_properties[3] * material._EmissiveMultiplier, 1.0f);
 }
