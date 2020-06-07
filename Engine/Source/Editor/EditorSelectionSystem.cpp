@@ -17,6 +17,7 @@
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -123,145 +124,163 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 	if (_CurrentlySelectedEntity && _CurrentlySelectedEntity->_Initialized)
 	{
-		//Render a bounding box for the currently selected entity.
-		switch (_CurrentlySelectedEntity->_Type)
+		//If the user presses the delete button, destroy the entity.
+		if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Delete) == ButtonState::PRESSED)
 		{
-			case EntityType::DynamicModel:
-			{
-				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
-
-				box._Minimum -= 0.1f;
-				box._Maximum += 0.1f;
-
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 1.0f), true, true, box, 0.0f);
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f * 0.125f), true, false, box, 0.0f);
-
-				break;
-			}
+			EntitySystem::Instance->RequestTermination(_CurrentlySelectedEntity);
+			EntitySystem::Instance->RequestDestruction(_CurrentlySelectedEntity);
 		}
 
-		//Display a screen with this entities properties.
-		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f, 0.0f));
-		ImGui::SetWindowSize(ImVec2(512.0f, 256.0f));
-
-		switch (_CurrentlySelectedEntity->_Type)
+		else
 		{
-			case EntityType::DynamicModel:
+			//Render a bounding box for the currently selected entity.
+			switch (_CurrentlySelectedEntity->_Type)
 			{
-				//Cache the dynamic model entity.
-				DynamicModelEntity *const RESTRICT dynamic_model_entity{ static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity) };
-
-				//Add the header text.
-				ImGui::Text("Dynamic Model");
-
-				char buffer[128];
-
-				sprintf_s(buffer, "Model Resource: %s", dynamic_model_entity->GetModelResource()->_Header._ResourceName.Data());
-
-				if (ImGui::Button(buffer))
+				case EntityType::DynamicModel:
 				{
-					_DynamicModelSelectionData._IsSelectingModelResource = true;
-					_DynamicModelSelectionData._IsSelectingMaterialResource = false;
+					AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
+
+					box._Minimum -= 0.1f;
+					box._Maximum += 0.1f;
+
+					RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 1.0f), true, true, box, 0.0f);
+					RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f * 0.125f), true, false, box, 0.0f);
+
+					break;
 				}
-
-				for (uint8 i{ 0 }, size{ static_cast<uint8>(dynamic_model_entity->GetModelResource()->_Meshes.Size()) }; i < size; ++i)
-				{
-					if (dynamic_model_entity->GetMaterialResources()[i])
-					{
-						char buffer[128];
-
-						sprintf_s(buffer, "Material Resource #%u: %s", i, dynamic_model_entity->GetMaterialResources()[i]->_Header._ResourceName.Data());
-
-						if (ImGui::Button(buffer))
-						{
-							_DynamicModelSelectionData._IsSelectingModelResource = false;
-							_DynamicModelSelectionData._IsSelectingMaterialResource = true;
-							_DynamicModelSelectionData._SelectedMaterialIndex = i;
-
-							break;
-						}
-					}
-				}
-
-				if (_DynamicModelSelectionData._IsSelectingModelResource)
-				{
-					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
-					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
-
-					const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
-
-					for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
-					{
-						if (ImGui::Button(model_resource->_Header._ResourceName.Data()))
-						{
-							dynamic_model_entity->SetModelResource(ResourceSystem::Instance->GetModelResource(model_resource->_Header._ResourceIdentifier));
-
-							_DynamicModelSelectionData._IsSelectingModelResource = false;
-
-							break;
-						}
-					}
-
-					ImGui::End();
-				}
-
-				if (_DynamicModelSelectionData._IsSelectingMaterialResource)
-				{
-					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-					ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
-					ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
-
-					const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
-
-					for (const MaterialResource *const RESTRICT material_resource : all_material_resources.ValueIterator())
-					{
-						if (ImGui::Button(material_resource->_Header._ResourceName.Data()))
-						{
-							dynamic_model_entity->SetMaterialResource(_DynamicModelSelectionData._SelectedMaterialIndex, ResourceSystem::Instance->GetMaterialResource(material_resource->_Header._ResourceIdentifier));
-
-							_DynamicModelSelectionData._IsSelectingMaterialResource = false;
-
-							break;
-						}
-					}
-
-					ImGui::End();
-				}
-
-				//Cache the world transform.
-				WorldTransform *const RESTRICT world_transform{ dynamic_model_entity->ModifyWorldTransform() };
-
-				//Add the position editor.
-				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
-
-				if (ImGui::DragFloat3("Position", reinterpret_cast<float32 *const RESTRICT>(&position), 0.01f))
-				{
-					world_transform->SetAbsolutePosition(position);
-				}
-
-				//Add the rotation editor.
-				Vector3<float32> rotation{ world_transform->GetRotation() };
-
-				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
-				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
-				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
-
-				if (ImGui::DragFloat3("Rotation", reinterpret_cast<float32 *const RESTRICT>(&rotation), 0.1f))
-				{
-					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
-					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
-					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
-
-					world_transform->SetRotation(rotation);
-				}
-
-				break;
 			}
-		}
 
-		ImGui::End();
+			//Display a screen with this entities properties.
+			ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f, 0.0f));
+			ImGui::SetWindowSize(ImVec2(512.0f, 256.0f));
+
+			switch (_CurrentlySelectedEntity->_Type)
+			{
+				case EntityType::DynamicModel:
+				{
+					//Cache the dynamic model entity.
+					DynamicModelEntity *const RESTRICT dynamic_model_entity{ static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+					//Add the header text.
+					ImGui::Text("Dynamic Model");
+
+					char buffer[128];
+
+					sprintf_s(buffer, "Model Resource: %s", dynamic_model_entity->GetModelResource()->_Header._ResourceName.Data());
+
+					if (ImGui::Button(buffer))
+					{
+						_DynamicModelSelectionData._IsSelectingModelResource = true;
+						_DynamicModelSelectionData._IsSelectingMaterialResource = false;
+					}
+
+					for (uint8 i{ 0 }, size{ static_cast<uint8>(dynamic_model_entity->GetModelResource()->_Meshes.Size()) }; i < size; ++i)
+					{
+						if (dynamic_model_entity->GetMaterialResources()[i])
+						{
+							char buffer[128];
+
+							sprintf_s(buffer, "Material Resource #%u: %s", i, dynamic_model_entity->GetMaterialResources()[i]->_Header._ResourceName.Data());
+
+							if (ImGui::Button(buffer))
+							{
+								_DynamicModelSelectionData._IsSelectingModelResource = false;
+								_DynamicModelSelectionData._IsSelectingMaterialResource = true;
+								_DynamicModelSelectionData._SelectedMaterialIndex = i;
+
+								break;
+							}
+						}
+					}
+
+					if (_DynamicModelSelectionData._IsSelectingModelResource)
+					{
+						ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+						ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
+						ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+
+						const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
+
+						for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
+						{
+							if (ImGui::Button(model_resource->_Header._ResourceName.Data()))
+							{
+								dynamic_model_entity->SetModelResource(ResourceSystem::Instance->GetModelResource(model_resource->_Header._ResourceIdentifier));
+
+								_DynamicModelSelectionData._IsSelectingModelResource = false;
+
+								break;
+							}
+						}
+
+						ImGui::End();
+					}
+
+					if (_DynamicModelSelectionData._IsSelectingMaterialResource)
+					{
+						ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+						ImGui::SetWindowPos(ImVec2(1'920.0f - 512.0f - 256.0f, 0.0f));
+						ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+
+						const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
+
+						for (const MaterialResource *const RESTRICT material_resource : all_material_resources.ValueIterator())
+						{
+							if (ImGui::Button(material_resource->_Header._ResourceName.Data()))
+							{
+								dynamic_model_entity->SetMaterialResource(_DynamicModelSelectionData._SelectedMaterialIndex, ResourceSystem::Instance->GetMaterialResource(material_resource->_Header._ResourceIdentifier));
+
+								_DynamicModelSelectionData._IsSelectingMaterialResource = false;
+
+								break;
+							}
+						}
+
+						ImGui::End();
+					}
+
+					//Cache the world transform.
+					WorldTransform *const RESTRICT world_transform{ dynamic_model_entity->ModifyWorldTransform() };
+
+					//Add the position editor.
+					Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+
+					if (ImGui::DragFloat3("Position", reinterpret_cast<float32 *const RESTRICT>(&position), 0.01f))
+					{
+						world_transform->SetAbsolutePosition(position);
+					}
+
+					//Add the rotation editor.
+					Vector3<float32> rotation{ world_transform->GetRotation() };
+
+					rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
+					rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
+					rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
+
+					if (ImGui::DragFloat3("Rotation", reinterpret_cast<float32 *const RESTRICT>(&rotation), 0.1f))
+					{
+						rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
+						rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
+						rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
+
+						world_transform->SetRotation(rotation);
+					}
+
+					//Add the scale editor.
+					float32 scale{ world_transform->GetScale() };
+
+					if (ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f))
+					{
+						world_transform->SetScale(scale);
+					}
+
+					break;
+				}
+			}
+
+			ImGui::End();
+		}
 	}
 
 	//Transform the currently selected entity.
