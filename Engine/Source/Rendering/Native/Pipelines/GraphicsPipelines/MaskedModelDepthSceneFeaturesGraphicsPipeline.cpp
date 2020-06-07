@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelDepthSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -14,26 +14,27 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Vertex push constant data definition.
+*	Masked model depth vertex push constant data definition.
 */
-class VertexPushConstantData final
+class MaskedModelDepthVertexPushConstantData final
 {
 
 public:
 
-	Matrix4x4 _PreviousModelMatrix;
-	Matrix4x4 _CurrentModelMatrix;
+	//The current world transform
+	Matrix4x4 _CurrentWorldTransform;
 
 };
 
 /*
-*	Fragment push constant data definition.
+*	Masked model depth fragment push constant data definition.
 */
-class FragmentPushConstantData final
+class MaskedModelDepthFragmentPushConstantData final
 {
 
 public:
 
+	//The material index.
 	uint32 _MaterialIndex;
 
 };
@@ -41,28 +42,20 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool double_sided) NOEXCEPT
+void MaskedModelDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool double_sided) NOEXCEPT
 {
 	//Remember whether or not to render opaque models double-sided.
 	_DoubleSided = double_sided;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("OpaqueModelSceneFeaturesVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("OpaqueModelSceneFeaturesFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
-
-	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(5);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -70,8 +63,8 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandl
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(MaskedModelDepthVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(MaskedModelDepthVertexPushConstantData), sizeof(MaskedModelDepthFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -134,7 +127,7 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandl
 /*
 *	Executes this graphics pipeline.
 */
-void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void MaskedModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -170,18 +163,17 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Push constants.
-				VertexPushConstantData vertexData;
+				MaskedModelDepthVertexPushConstantData vertexData;
 
-				vertexData._PreviousModelMatrix = component->_WorldTransform;
-				vertexData._CurrentModelMatrix = component->_WorldTransform;
+				vertexData._CurrentWorldTransform = component->_WorldTransform;
 
-				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(MaskedModelDepthVertexPushConstantData), &vertexData);
 
-				FragmentPushConstantData fragmentData;
+				MaskedModelDepthFragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialIndices[i];
 
-				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(MaskedModelDepthVertexPushConstantData), sizeof(MaskedModelDepthFragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
@@ -208,7 +200,7 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
+				if (component->_MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
 				{
 					continue;
 				}
@@ -223,18 +215,17 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Push constants.
-				VertexPushConstantData vertexData;
+				MaskedModelDepthVertexPushConstantData vertexData;
 
-				vertexData._PreviousModelMatrix = component->_PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				vertexData._CurrentModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				vertexData._CurrentWorldTransform = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
-				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(MaskedModelDepthVertexPushConstantData), &vertexData);
 
-				FragmentPushConstantData fragmentData;
+				MaskedModelDepthFragmentPushConstantData fragmentData;
 
 				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
-				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(MaskedModelDepthVertexPushConstantData), sizeof(MaskedModelDepthFragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);

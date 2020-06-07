@@ -395,6 +395,7 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 			parameters._Output = _CreateMaterialResourceData._OutputFilePath.Data();
 			parameters._ID = identifier.Data();
 			parameters._Type = _CreateMaterialResourceData._Type;
+
 			parameters._AlbedoThicknessComponent._Type = _CreateMaterialResourceData._AlbedoThicknessType;
 
 			switch (_CreateMaterialResourceData._AlbedoThicknessType)
@@ -414,6 +415,8 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 				}
 			}
 
+			parameters._NormalMapDisplacementComponent._Type = _CreateMaterialResourceData._NormalMapDisplacementType;
+
 			switch (_CreateMaterialResourceData._NormalMapDisplacementType)
 			{
 				case MaterialResource::MaterialResourceComponent::Type::COLOR:
@@ -431,6 +434,8 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 				}
 			}
 
+			parameters._MaterialPropertiesComponent._Type = _CreateMaterialResourceData._MaterialPropertiesType;
+
 			switch (_CreateMaterialResourceData._MaterialPropertiesType)
 			{
 				case MaterialResource::MaterialResourceComponent::Type::COLOR:
@@ -447,6 +452,8 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 					break;
 				}
 			}
+
+			parameters._OpacityComponent._Type = _CreateMaterialResourceData._OpacityType;
 
 			switch (_CreateMaterialResourceData._OpacityType)
 			{
