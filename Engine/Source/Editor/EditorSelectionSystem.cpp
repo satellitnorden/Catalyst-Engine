@@ -276,7 +276,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				//Add the scale editor.
 				float32 scale{ world_transform->GetScale() };
 
-				if (ImGui::DragFloat("Scale", &scale, 0.01f, 0.01f))
+				if (ImGui::DragFloat("Scale", &scale, 0.01f))
 				{
 					world_transform->SetScale(scale);
 				}
@@ -343,7 +343,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	//Calculate the desired position on the X axis.
 	{
 		//Cast the ray against the XZ plane that the entity lies on.
-		Plane plane{ world_position, CatalystWorldCoordinateSpace::UP };
+		Plane plane{ world_position, ray._Origin._Y >= world_position._Y ? CatalystWorldCoordinateSpace::UP : CatalystWorldCoordinateSpace::DOWN };
 
 		float32 intersection_distance;
 
@@ -369,7 +369,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	//Calculate the desired position on the Z axis.
 	{
 		//Cast the ray against the XZ plane that the entity lies on.
-		Plane plane{ world_position, CatalystWorldCoordinateSpace::UP };
+		Plane plane{ world_position, ray._Origin._Y >= world_position._Y ? CatalystWorldCoordinateSpace::UP : CatalystWorldCoordinateSpace::DOWN };
 
 		float32 intersection_distance;
 
