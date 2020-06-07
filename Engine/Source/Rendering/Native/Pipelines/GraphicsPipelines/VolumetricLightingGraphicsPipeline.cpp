@@ -88,7 +88,7 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Retrieve and set the command buffer.
-	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
+	CommandBuffer* const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
 
 	//Begin the command buffer.
@@ -109,14 +109,18 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 	data._SkyLightScreenSpacePosition = Vector2<float32>(FLOAT_MAXIMUM, FLOAT_MAXIMUM);
 
 	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-	const LightComponent * RESTRICT component{ ComponentManager::GetLightLightComponents() };
+	const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
 
 	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
 	{
 		if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
 		{
 			data._SkyLightLuminance = component->_Color * component->_Intensity;
-			data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - component->_Direction);
+
+			if (Vector3<float32>::DotProduct(component->_Direction, Perceiver::Instance->GetForwardVector()) < 0.0f)
+			{
+				data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - component->_Direction);
+			}
 
 			break;
 		}

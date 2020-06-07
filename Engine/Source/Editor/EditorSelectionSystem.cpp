@@ -353,20 +353,18 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 		}
 	}
 
-	/*
 	//Calculate the desired position on the Y axis.
 	{
 		//Cast the ray against the Y plane that the entity lies on.
-		Plane plane{ world_position, CatalystWorldCoordinateSpace::UP };
+		Plane plane{ world_position, Vector3<float32>::NormalizeXZ(ray._Origin - world_position) };
 
 		float32 intersection_distance;
 
 		if (CatalystGeometryMath::RayPlaneIntersection(ray, plane, &intersection_distance))
 		{
-			desired_position._X = (ray._Origin + ray._Direction * intersection_distance)._X;
+			desired_position._Y = (ray._Origin + ray._Direction * intersection_distance)._Y;
 		}
 	}
-	*/
 
 	//Calculate the desired position on the Z axis.
 	{
