@@ -92,6 +92,12 @@ public:
 	*/
 	void RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT;
 
+	/*
+	*	Requests the duplication of the given entity.
+	*	Initialization will happen at the next synchronous update of the entity system.
+	*/
+	RESTRICTED NO_DISCARD Entity *const RESTRICT DuplicateEntity(const Entity *const RESTRICT entity) NOEXCEPT;
+
 private:
 
 	/*
@@ -138,6 +144,33 @@ private:
 
 	};
 
+	/*
+	*	Duplication data class definition.
+	*/
+	class DuplicationData final
+	{
+
+	public:
+
+		//The entity to duplicate.
+		const Entity *const RESTRICT _EntityToDuplicate;
+
+		//The new entity.
+		Entity *const RESTRICT _NewEntity;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE DuplicationData(const Entity *const RESTRICT initial_entity_to_duplicate, Entity *const RESTRICT initial_new_entity) NOEXCEPT
+			:
+			_EntityToDuplicate(initial_entity_to_duplicate),
+			_NewEntity(initial_new_entity)
+		{
+
+		}
+
+	};
+
 	//The allocator lock.
 	Spinlock _AllocatorLock;
 
@@ -180,6 +213,12 @@ private:
 	//Container for all entities that have requested automatic destruction.
 	DynamicArray<Entity *RESTRICT> _AutomaticDestructionQueue;
 
+	//Lock for the duplication queue.
+	Spinlock _DuplicationQueueLock;
+
+	//Container for all entities that have requested duplication.
+	DynamicArray<DuplicationData> _DuplicationQueue;
+
 	/*
 	*	Updates the entity system during the ENTITY update phase.
 	*/
@@ -209,6 +248,11 @@ private:
 	*	Processes the automatic destruction queue.
 	*/
 	void ProcessAutomaticDestructionQueue() NOEXCEPT;
+
+	/*
+	*	Processes the duplication queue.
+	*/
+	void ProcessDuplicationQueue() NOEXCEPT;
 
 };
 

@@ -61,6 +61,26 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the initialization data required to duplicate this entity.
+*/
+RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT DynamicModelEntity::GetDuplicationInitializationData() const NOEXCEPT
+{
+	//Create the initialization data.
+	DynamicModelInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicModelInitializationData>() };
+
+	//Set up the initialization data.
+	data->_Properties = EntityInitializationData::Property::NONE;
+	data->_InitialWorldTransform = *GetWorldTransform();
+	data->_ModelResource = GetModelResource();
+	data->_MaterialResources = GetMaterialResources();
+	data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+	data->_SimulatePhysics = false;
+
+	//Return the initialization data.
+	return data;
+}
+
+/*
 *	Returns the model resources.
 */
 NO_DISCARD ResourcePointer<ModelResource> DynamicModelEntity::GetModelResource() const NOEXCEPT

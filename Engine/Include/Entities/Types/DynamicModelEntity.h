@@ -45,6 +45,11 @@ public:
 	}
 
 	/*
+	*	Returns the initialization data required to duplicate this entity.
+	*/
+	RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT GetDuplicationInitializationData() const NOEXCEPT;
+
+	/*
 	*	Returns the model resource.
 	*/
 	NO_DISCARD ResourcePointer<ModelResource> GetModelResource() const NOEXCEPT;

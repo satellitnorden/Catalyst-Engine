@@ -4,6 +4,16 @@
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
+//Entities.
+#include <Entities/Types/AnimatedModelEntity.h>
+#include <Entities/Types/DistanceTriggerEntity.h>
+#include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/LightEntity.h>
+#include <Entities/Types/ParticleSystemEntity.h>
+#include <Entities/Types/SoundEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
+#include <Entities/Types/VegetationEntity.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
@@ -129,6 +139,39 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
+*	Requests the duplication of the given entity.
+*	Initialization will happen at the next synchronous update of the entity system.
+*/
+RESTRICTED NO_DISCARD Entity *const RESTRICT EntitySystem::DuplicateEntity(const Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Create the new entity.
+	Entity *RESTRICT new_entity;
+
+	switch (entity->_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :								\
+		{																				\
+			new_entity = CreateEntity<VALUE ## Entity>();								\
+																						\
+			break;																		\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+
+	{
+		//Lock the duplication queue.
+		SCOPED_LOCK(_DuplicationQueueLock);
+
+		//Add to the duplication queue.
+		_DuplicationQueue.Emplace(entity, new_entity);
+	}
+
+	//Return the new entity.
+	return new_entity;
+}
+
+/*
 *	Updates the entity system during the ENTITY update phase.
 */
 void EntitySystem::EntityUpdate() NOEXCEPT
@@ -147,6 +190,9 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 
 	//Process the automatic destruction queue.
 	ProcessAutomaticDestructionQueue();
+
+	//Process the duplication queue.
+	ProcessDuplicationQueue();
 }
 
 /*
@@ -282,4 +328,23 @@ void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 			++i;
 		}
 	}
+}
+
+/*
+*	Processes the duplication queue.
+*/
+void EntitySystem::ProcessDuplicationQueue() NOEXCEPT
+{
+	//Process the duplication queue.
+	for (DuplicationData &duplication_data : _DuplicationQueue)
+	{
+		//Retrieve the duplication initialization data.
+		EntityInitializationData* const RESTRICT initialization_data{ duplication_data._EntityToDuplicate->GetDuplicationInitializationData() };
+
+		//Request the initialization for the new entity.
+		RequestInitialization(duplication_data._NewEntity, initialization_data, false);
+	}
+
+	//Clear the duplication queue.
+	_DuplicationQueue.Clear();
 }

@@ -198,6 +198,37 @@ void EditorSelectionSystem::Update() NOEXCEPT
 			ImGui::EndTooltip();
 		}
 
+		//Add a button for duplication the entity.
+		const bool wants_to_duplicate{	(InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD)
+										&& (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD) };
+		
+		Entity *RESTRICT duplicated_entity{ nullptr };
+
+		if (ImGui::Button("Duplicate Entity")
+			|| wants_to_duplicate)
+		{
+			if (!_DuplicatedEntity)
+			{
+				duplicated_entity = EntitySystem::Instance->DuplicateEntity(_CurrentlySelectedEntity);
+
+				_DuplicatedEntity = true;
+			}
+		}
+
+		else
+		{
+			_DuplicatedEntity = false;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("Hotkey: Control + D");
+			ImGui::EndTooltip();
+
+			_DuplicatedEntity = false;
+		}
+
 		switch (_CurrentlySelectedEntity->_Type)
 		{
 			case EntityType::DynamicModel:
@@ -369,6 +400,12 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		}
 
 		ImGui::End();
+
+		//The then entity was duplicated, set it to the currently selected entity.
+		if (duplicated_entity)
+		{
+			SetCurrentlySelectedEntity(duplicated_entity);
+		}
 	}
 
 	//Transform the currently selected entity.

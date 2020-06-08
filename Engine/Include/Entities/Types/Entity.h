@@ -41,4 +41,9 @@ public:
 	*/
 	bool ShouldAutomaticallyTerminate() const NOEXCEPT;
 
+	/*
+	*	Returns the initialization data required to duplicate this entity.
+	*/
+	RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT GetDuplicationInitializationData() const NOEXCEPT;
+
 };

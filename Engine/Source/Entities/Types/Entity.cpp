@@ -71,3 +71,25 @@ bool Entity::ShouldAutomaticallyTerminate() const NOEXCEPT
 
 	return false;
 }
+
+/*
+*	Returns the initialization data required to duplicate this entity.
+*/
+RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT Entity::GetDuplicationInitializationData() const NOEXCEPT
+{
+	switch (_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
+		{																										\
+			return static_cast<const VALUE ## Entity *const RESTRICT>(this)->GetDuplicationInitializationData();\
+																												\
+			break;																								\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+
+	ASSERT(false, "What happened here?");
+
+	return nullptr;
+}

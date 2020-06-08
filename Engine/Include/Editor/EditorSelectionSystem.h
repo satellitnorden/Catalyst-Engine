@@ -68,6 +68,9 @@ private:
 	//The currently selected entity override.
 	Entity *RESTRICT _CurrentlySelectedEntityOverride{ nullptr };
 
+	//Denotes if an entity was recently duplicated.
+	bool _DuplicatedEntity{ false };
+
 	union
 	{
 		//The dynamic model selection data.
