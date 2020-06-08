@@ -94,6 +94,8 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 		{
 			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
+
+			_Properties._HeightMapTexture = EMPTY_HANDLE;
 		}
 
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R_FLOAT32), &_Properties._HeightMapTexture);
@@ -109,6 +111,8 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 		{
 			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
+
+			_Properties._IndexMapTexture = EMPTY_HANDLE;
 		}
 
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::RGBA_UINT8), &_Properties._IndexMapTexture);
@@ -124,6 +128,8 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 		{
 			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
 			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
+
+			_Properties._BlendMapTexture = EMPTY_HANDLE;
 		}
 
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::RGBA_UINT8), &_Properties._BlendMapTexture);
@@ -825,16 +831,22 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 	if (_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex])
 	{
 		RenderingSystem::Instance->DestroyBuffer(&_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+
+		_TerrainRayTracingData._VertexBuffers[_TerrainRayTracingData._CurrentBufferIndex] = EMPTY_HANDLE;
 	}
 
 	if (_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex])
 	{
 		RenderingSystem::Instance->DestroyBuffer(&_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex]);
+
+		_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex] = EMPTY_HANDLE;
 	}
 
 	if (_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex])
 	{
 		RenderingSystem::Instance->DestroyAccelerationStructure(&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+
+		_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex] = EMPTY_HANDLE;
 	}
 
 	//Keep track of the indices offset.
