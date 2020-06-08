@@ -42,6 +42,55 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add button for toggling ambient occlusion mode
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode())
+	{
+		case RenderingConfiguration::AmbientOcclusionMode::NONE:
+		{
+			if (ImGui::Button("Ambient Occlusion Mode: None"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE:
+		{
+			if (ImGui::Button("Ambient Occlusion Mode: Screen Space"))
+			{
+				if (RenderingSystem::Instance->IsRayTracingSupported())
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED);
+				}
+
+				else
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::NONE);
+				}
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED:
+		{
+			if (ImGui::Button("Ambient Occlusion Mode: Ray Traced"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::NONE);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Add button for toggling indirect lighting quality.
 	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
 	{

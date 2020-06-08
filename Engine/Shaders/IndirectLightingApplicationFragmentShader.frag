@@ -115,22 +115,20 @@ void CatalystShaderMain()
 	vec3 specular_direction = reflect(view_direction, scene_features_2.xyz);
 	vec3 diffuse_direction = scene_features_2.xyz;
 
-	float diffuse_weight = scene_features_3[0] * (1.0f - scene_features_3[1]);
+	float diffuse_weight = scene_features_3[0];
 
 	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
 
-	indirect_lighting.rgb = mix(textureLod(SKY_TEXTURE, indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY, indirect_lighting.rgb, indirect_lighting.a);
+	indirect_lighting.rgb = mix(textureLod(SKY_TEXTURE, indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY, indirect_lighting.rgb, indirect_lighting.a * (1.0f - diffuse_weight));
 
 	//Calculate the indirect lighting.
-	indirect_lighting.rgb = CalculateLighting(	-view_direction,
-												scene_features_1.rgb,
-												scene_features_2.xyz,
-												scene_features_3[0],
-												scene_features_3[1],
-												scene_features_3[2],
-												scene_features_1.w,
-												-indirect_lighting_direction,
-												indirect_lighting.rgb);
+	indirect_lighting.rgb = CalculateIndirectLighting(	-view_direction,
+														scene_features_1.rgb,
+														scene_features_2.xyz,
+														scene_features_3[0],
+														scene_features_3[1],
+														scene_features_3[2],
+														indirect_lighting.rgb);
 
 	//Write the fragment.
 	scene = vec4(indirect_lighting.rgb, 1.0f);

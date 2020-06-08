@@ -96,6 +96,76 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance_direction,
 													vec3 irradiance);
 
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectBidirectionalReflectanceDistribution,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectSpecularComponent,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectNormalDistribution,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectGeometry,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectFresnel,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectDiffuseComponent,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectSpecularWeight,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance);
+
 	/*
 	*	Calculates the attenuation based on the distance to a light source and it's radius.
 	*/
@@ -385,21 +455,8 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		return CalculateFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, irradiance_direction, irradiance);
 	}
 
-	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
-													CalculatePrecomputedFresnel,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													float thickness,
-													vec3 diffuse_irradiance,
-													vec3 specular_irradiance,
-													vec2 specular_bias);
-
 	/*
-	*	Calculates precomputed lighting. Returns the radiance transmitted from the surface in the outgoing direction.
+	*	Calculates indirect lighting. Returns the radiance transmitted from the surface in the outgoing direction.
 	*
 	*	Arguments;
 	*	
@@ -409,61 +466,107 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	*	- roughness: The roughness of the surface point being shaded.
 	*	- metallic: THe metallic of the surface point being shaded.
 	*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
-	*	- thickness: The thickness of the surface point being shaded.
 	*	- irradiance: The incoming irradiance towards the surface point being shaded.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
-													CalculatePrecomputedLighting,
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectLighting,
 													vec3 outgoing_direction,
 													vec3 albedo,
 													vec3 normal,
 													float roughness,
 													float metallic,
 													float ambient_occlusion,
-													float thickness,
-													vec3 diffuse_irradiance,
-													vec3 specular_irradiance,
-													vec2 specular_bias)
+													vec3 irradiance)
 	{
-		vec3 specular_component = CalculatePrecomputedFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, thickness, diffuse_irradiance, specular_irradiance, specular_bias);
-		vec3 diffuse_component = vec3(1.0f, 1.0f, 1.0f) - specular_component;
-		diffuse_component *= 1.0f - metallic;
+		//Calculate the bidirectional reflectance distribution.
+		vec3 bidirectional_reflectance_distribution = CalculateIndirectBidirectionalReflectanceDistribution(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 
-		vec3 diffuse_irradiance_computed = diffuse_irradiance * albedo * diffuse_component;
-		vec3 specular_irradiance_computed = specular_irradiance * (specular_component * specular_bias[0] + vec3(specular_bias[1], specular_bias[1], specular_bias[1]));
-
-		return (diffuse_irradiance_computed + specular_irradiance_computed) * ambient_occlusion;
+		//Calculate the lighting.
+		return bidirectional_reflectance_distribution * irradiance * ambient_occlusion;
 	}
 
 	/*
-	*	Calculates and returns the fresnel.
-	*	
-	*	Calculated using the cook-torrance algorithm.
+	*	Calculates the indirect bidirectional reflectance distribution.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_TEN_ARGUMENTS(	vec3,
-													CalculatePrecomputedFresnel,
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectBidirectionalReflectanceDistribution,
 													vec3 outgoing_direction,
 													vec3 albedo,
 													vec3 normal,
 													float roughness,
 													float metallic,
 													float ambient_occlusion,
-													float thickness,
-													vec3 diffuse_irradiance,
-													vec3 specular_irradiance,
-													vec2 specular_bias)
+													vec3 irradiance)
 	{
-		//Calculate the surface color.
-		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);
+		//Calculate the specular component.
+		vec3 specular_component = CalculateIndirectSpecularComponent(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 
-		//Calculate the halfway vector coefficient.
-		float normal_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
+		//Calculate the diffse component.
+		vec3 diffuse_component = CalculateIndirectDiffuseComponent(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 
-		//Calculate the surface color factor.s
-		vec3 surface_color_factor = vec3(CATALYST_SHADER_FUNCTION_MAXIMUM(1.0f - roughness, surface_color[0]), CATALYST_SHADER_FUNCTION_MAXIMUM(1.0f - roughness, surface_color[1]), CATALYST_SHADER_FUNCTION_MAXIMUM(1.0f - roughness, surface_color[2]));
+		//Calculate the specular weight	
+		vec3 specular_weight = CalculateIndirectSpecularWeight(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 
-		//Calculate the fresnel.
-		return surface_color + (surface_color_factor - surface_color) * pow(CATALYST_SHADER_FUNCTION_MAXIMUM(1.0f - normal_coefficient, 0.0f), 5.0f);
+		//Calculate the diffuse weight.
+		vec3 diffuse_weight = vec3(1.0f, 1.0f, 1.0f) - specular_weight;
+
+		//Calculate the bidirectional reflective distribution.
+		return specular_component * specular_weight + diffuse_component * diffuse_weight;
+	}
+
+	/*
+	*	Calculates and returns the indirect specular component.
+	*
+	*	Calculated using the Cook-Torrance algorithm.
+	*/
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectSpecularComponent,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance)
+	{
+		//Calculate the specular component.
+		return vec3(1.0f);
+	}
+
+	/*
+	*	Calculates and returns the indirect diffuse component.
+	*
+	*	Calculated using the Lambertian Diffuse algorithm.
+	*/
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectDiffuseComponent,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance)
+	{
+		//Calculate the diffuse component.
+		return albedo * 3.14f;
+	}
+
+	/*
+	*	Calculates and returns the indirect specular weight.
+	*/
+	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+													CalculateIndirectSpecularWeight,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													vec3 irradiance)
+	{
+		//Calculate the specular weight.
+		return vec3((1.0f - roughness) * (1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f)));
 	}
 
 CATALYST_SHADER_NAMESPACE_END()
