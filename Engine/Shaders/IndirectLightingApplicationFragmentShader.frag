@@ -119,7 +119,7 @@ void CatalystShaderMain()
 
 	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
 
-	indirect_lighting.rgb = mix(textureLod(SKY_TEXTURE, indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY, indirect_lighting.rgb, indirect_lighting.a * (1.0f - diffuse_weight));
+	indirect_lighting.rgb = mix(textureLod(SKY_TEXTURE, indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY, indirect_lighting.rgb, indirect_lighting.a);
 
 	//Calculate the indirect lighting.
 	indirect_lighting.rgb = CalculateIndirectLighting(	-view_direction,

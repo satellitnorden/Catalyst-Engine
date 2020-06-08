@@ -97,7 +97,7 @@ void CatalystShaderMain()
 	denoised_indirect_lighting = total_weight == 0.0f ? current_indirect_lighting : denoised_indirect_lighting / total_weight;
 
 	//Reduce fireflies. (:
-	//denoised_indirect_lighting = mix(denoised_indirect_lighting, minimum, min(LengthSquared3(minimum - denoised_indirect_lighting), 1.0f));
+	denoised_indirect_lighting.rgb = mix(denoised_indirect_lighting.rgb, minimum, min(LengthSquared3(minimum - denoised_indirect_lighting.rgb), 1.0f));
 
 	//Write the fragment.
 	fragment = vec4(denoised_indirect_lighting.rgb, float(denoised_indirect_lighting.a > 0.0f));
