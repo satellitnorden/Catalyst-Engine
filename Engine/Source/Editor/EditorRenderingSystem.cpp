@@ -73,6 +73,55 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add button for toggling surface shadows mode
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode())
+	{
+		case RenderingConfiguration::SurfaceShadowsMode::NONE:
+		{
+			if (ImGui::Button("Surface Shadows Mode: None"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetSurfaceShadowsMode(RenderingConfiguration::SurfaceShadowsMode::RASTERIZED);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::SurfaceShadowsMode::RASTERIZED:
+		{
+			if (ImGui::Button("Surface Shadows Mode: Rasterized"))
+			{
+				if (RenderingSystem::Instance->IsRayTracingSupported())
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetSurfaceShadowsMode(RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED);
+				}
+				
+				else
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetSurfaceShadowsMode(RenderingConfiguration::SurfaceShadowsMode::NONE);
+				}
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED:
+		{
+			if (ImGui::Button("Surface Shadows Mode: Ray Traced"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetSurfaceShadowsMode(RenderingConfiguration::SurfaceShadowsMode::NONE);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Add button to toggle path tracing rendering path.
 	static bool path_tracing{ false };
 	ImGui::Checkbox("Path Tracing", &path_tracing);
