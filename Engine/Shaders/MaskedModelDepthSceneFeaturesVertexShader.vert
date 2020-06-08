@@ -18,5 +18,9 @@ void CatalystShaderMain()
 	//Pass data to the fragment shader.
 	fragment_texture_coordinate = vertex_texture_coordinate;
 
-	gl_Position = WORLD_TO_CLIP_MATRIX * CURRENT_WORLD_TRANSFORM * vec4(vertex_position, 1.0f);
+	//Calculate the current world position.
+	vec3 current_world_position = vec3(CURRENT_WORLD_TRANSFORM * vec4(vertex_position, 1.0));
+
+	//Write the position.
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(current_world_position, 1.0f);
 }
