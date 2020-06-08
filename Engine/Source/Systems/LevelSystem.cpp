@@ -37,7 +37,12 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				data->_Properties = EntityInitializationData::Property::NONE;
 				data->_InitialWorldTransform = level_entry._DynamicModelData._InitialWorldTransform;
 				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
-				data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[0]);
+
+				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[i]);
+				}
+
 				data->_ModelCollisionConfiguration._Type = level_entry._DynamicModelData._ModelCollisionConfiguration._Type;
 				data->_SimulatePhysics = level_entry._DynamicModelData._SimulatePhysics;
 				data->_ModelPhysicsSimulationData = level_entry._DynamicModelData._ModelPhysicsSimulationData;
