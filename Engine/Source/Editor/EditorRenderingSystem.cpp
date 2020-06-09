@@ -91,6 +91,37 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add button for toggling indirect lighting mode.
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode())
+	{
+		case RenderingConfiguration::IndirectLightingMode::NONE:
+		{
+			if (ImGui::Button("Indirect Lighting Mode: None"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingMode(RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE:
+		{
+			if (ImGui::Button("Indirect Lighting Mode: Screen Space"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingMode(RenderingConfiguration::IndirectLightingMode::NONE);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Add button for toggling indirect lighting quality.
 	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
 	{

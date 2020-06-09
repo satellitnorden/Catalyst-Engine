@@ -605,7 +605,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
 
 		//Calculate the roughness coefficient.
-		float roughness_coefficient = ((roughness + 1.0f) * (roughness + 1.0f)) / 8.0f;
+		float roughness_coefficient = (roughness * roughness) * 0.5f;
 
 		//Calculate the first coefficient.
 		float first_coefficient;
@@ -643,7 +643,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
 		//Calculate the fresnel.
-		return surface_color + (vec3(1.0f, 1.0f, 1.0f) - surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f), 5.0f);
+		return surface_color + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f), 5.0f);
 	}
 
 	/*
@@ -663,7 +663,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	{
 		//Define constants.
 		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_INVERSE_PI, 0.318309f);
-		CATALYST_SHADER_CONSTANT(float, CATALIST_LIGHTING_INDIRECT_DIFFUSE_BOOST, 64.0f);
+		CATALYST_SHADER_CONSTANT(float, CATALIST_LIGHTING_INDIRECT_DIFFUSE_BOOST, 32.0f);
 
 		//Calculate the diffuse component.
 		return albedo * CATALYST_LIGHTING_INVERSE_PI * CATALIST_LIGHTING_INDIRECT_DIFFUSE_BOOST;

@@ -143,15 +143,13 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 
 						vec3 sample_ray_direction = normalize(mix(sample_specular_direction, sample_diffuse_direction, diffuse_weight));
 
-						scene_radiance += CalculateLighting(-ray_direction,
-															sample_scene_features_1.rgb,
-															sample_scene_features_2.xyz,
-															sample_scene_features_3[0],
-															sample_scene_features_3[1],
-															sample_scene_features_3[2],
-															sample_scene_features_1.w,
-															-sample_ray_direction,
-															textureLod(SKY_TEXTURE, sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY);
+						scene_radiance += CalculateIndirectLighting(-ray_direction,
+																	sample_scene_features_1.rgb,
+																	sample_scene_features_2.xyz,
+																	sample_scene_features_3[0],
+																	sample_scene_features_3[1],
+																	sample_scene_features_3[2],
+																	textureLod(SKY_TEXTURE, sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY);
 					}
 
 					//Calculate the hit radiance.
