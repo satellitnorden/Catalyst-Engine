@@ -45,15 +45,15 @@ vec3 SampleWithSharpen(float edge_factor)
 {
 	vec3 original_sample = SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate);
 
-	vec3 sharpened_sample = original_sample * 9.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+	vec3 sharpened_sample = original_sample * 7.0f
 							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -0.5f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -0.5f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -0.5f
+							+ SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -0.5f;
 
 	return sharpened_sample;
 }
@@ -97,7 +97,7 @@ vec3 ApplyDithering(vec3 fragment)
 {
 	vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
-	return max(fragment + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * 0.125f * 0.125f), vec3(0.0f, 0.0f, 0.0f));
+	return clamp(fragment + ((blue_noise_texture_sample.rgb * 2.0f - 1.0f) * 0.125f * 0.125f), vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f));
 }
 
 /*
