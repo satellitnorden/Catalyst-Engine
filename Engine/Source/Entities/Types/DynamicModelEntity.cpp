@@ -41,12 +41,6 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToAbsoluteMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 
-	//Register the model collision data, if there is one.
-	if (model_initialization_data->_ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
-	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterDynamicModelCollisionConfiguration(this, model_initialization_data->_ModelCollisionConfiguration);
-	}
-
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
 }

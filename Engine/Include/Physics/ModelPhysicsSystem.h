@@ -13,7 +13,6 @@
 #include <Math/Geometry/Ray.h>
 
 //Physics.
-#include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
 #include <Physics/PhysicsCore.h>
 #include <Physics/RaycastConfiguration.h>
@@ -23,16 +22,6 @@ class ModelPhysicsSystem final
 {
 
 public:
-
-	/*
-	*	Registers dynamic model collision configuration.
-	*/
-	void RegisterDynamicModelCollisionConfiguration(DynamicModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT;
-
-	/*
-	*	Registers static model collision configuration.
-	*/
-	void RegisterStaticModelCollisionConfiguration(StaticModelEntity *const RESTRICT entity, const ModelCollisionConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Casts a ray against dynamic models.
@@ -46,10 +35,13 @@ public:
 
 private:
 
-	//Container for all dynamic model collision configurations.
-	HashTable<DynamicModelEntity *RESTRICT, ModelCollisionConfiguration> _DynamicModelCollisionConfigurations;
-
-	//Container for all static model collision configurations.
-	HashTable<StaticModelEntity *RESTRICT, ModelCollisionConfiguration> _StaticModelCollisionConfigurations;
+	/*
+	*	Casts a ray against the given model.
+	*/
+	NO_DISCARD bool CastRayModel(	const Ray &ray,
+									const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box,
+									const ResourcePointer<ModelResource> model_resource,
+									const Matrix4x4 &world_transform,
+									float32 *const RESTRICT intersection_distance) NOEXCEPT;
 
 };

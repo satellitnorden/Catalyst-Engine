@@ -40,12 +40,6 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
 
-	//Register the model collision data, if there is one.
-	if (model_initialization_data->_ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
-	{
-		PhysicsSystem::Instance->GetModelPhysicsSystem()->RegisterStaticModelCollisionConfiguration(this, model_initialization_data->_ModelCollisionConfiguration);
-	}
-
 	//Upsize the level of detail indices.
 	component._LevelOfDetailIndices.Upsize<false>(component._ModelResource->_Meshes.Size());
 

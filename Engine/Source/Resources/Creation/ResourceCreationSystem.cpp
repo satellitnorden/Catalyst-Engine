@@ -218,33 +218,33 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelRe
 		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
 		{
 			//Copy the vertices/indices.
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices = data->_Vertices[i][j];
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices = data->_Indices[i][j];
+			resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices = std::move(data->_Vertices[i][j]);
+			resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices = std::move(data->_Indices[i][j]);
 
 			//Create the buffers.
 			{
-				const void* const RESTRICT dataChunks[]{ data->_Vertices[i][j].Data() };
-				const uint64 dataSizes[]{ sizeof(Vertex) * data->_Vertices[i][j].Size() };
+				const void* const RESTRICT dataChunks[]{ resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices.Data() };
+				const uint64 dataSizes[]{ sizeof(Vertex) * resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices.Size() };
 				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._MeshLevelOfDetails[j]._VertexBuffer);
 				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._MeshLevelOfDetails[j]._VertexBuffer);
 			}
 
 			{
-				const void* const RESTRICT dataChunks[]{ data->_Indices[i][j].Data() };
-				const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices[i][j].Size() };
+				const void* const RESTRICT dataChunks[]{ resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Data() };
+				const uint64 dataSizes[]{ sizeof(uint32) * resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Size() };
 				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexBuffer);
 				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexBuffer);
 			}
 
 			//Write the index count.
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexCount = static_cast<uint32>(data->_Indices[i][j].Size());
+			resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexCount = static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Size());
 		}
 
 		//Create the bottom level acceleration structure.
 		RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	resource->_Meshes[i]._MeshLevelOfDetails[0]._VertexBuffer,
-																			static_cast<uint32>(data->_Vertices[i][0].Size()),
+																			static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[0]._Vertices.Size()),
 																			resource->_Meshes[i]._MeshLevelOfDetails[0]._IndexBuffer,
-																			static_cast<uint32>(data->_Indices[i][0].Size()),
+																			static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[0]._Indices.Size()),
 																			&resource->_Meshes[i]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure);
 	}
 }
