@@ -106,6 +106,15 @@ void DynamicModelEntity::SetMaterialResource(const uint8 index, const ResourcePo
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._MaterialResources[index] = resource;
 }
 
+
+/*
+*	Returns the level of detail index at the given mesh index.
+*/
+NO_DISCARD uint64 DynamicModelEntity::GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT
+{
+	return ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._LevelOfDetailIndices[mesh_index];
+}
+
 /*
 *	Returns the world transform.
 */

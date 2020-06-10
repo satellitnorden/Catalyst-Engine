@@ -70,6 +70,11 @@ public:
 	void SetMaterialResource(const uint8 index, const ResourcePointer<MaterialResource> resource) NOEXCEPT;
 
 	/*
+	*	Returns the level of detail index at the given mesh index.
+	*/
+	NO_DISCARD uint64 GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT;
+
+	/*
 	*	Returns the world transform.
 	*/
 	RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT GetWorldTransform() const NOEXCEPT;

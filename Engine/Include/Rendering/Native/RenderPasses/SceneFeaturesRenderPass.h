@@ -8,6 +8,9 @@
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
+#if defined(CATALYST_EDITOR)
+#include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
+#endif
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
@@ -92,6 +95,11 @@ private:
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
+
+#if defined(CATALYST_EDITOR)
+	//The editor selected model graphics pipeline.
+	EditorSelectedModelGraphicsPipeline _EditorSelectedModelGraphicsPipeline;
+#endif
 
 	//The velocity graphics pipeline.
 	VelocityGraphicsPipeline _VelocityGraphicsPipeline;

@@ -34,6 +34,14 @@ public:
 	void Update() NOEXCEPT;
 
 	/*
+	*	Returns the currently selected entity.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD Entity *const RESTRICT GetCurrentlySelectedEntity() const NOEXCEPT
+	{
+		return _CurrentlySelectedEntity;
+	}
+
+	/*
 	*	Sets the currently selected entity override.
 	*/
 	FORCE_INLINE void SetCurrentlySelectedEntityOverride(Entity *const RESTRICT value) NOEXCEPT

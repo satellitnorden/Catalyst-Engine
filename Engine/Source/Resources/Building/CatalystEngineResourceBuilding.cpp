@@ -1103,6 +1103,48 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelFragmentShader";
+			parameters._ID = "EditorSelectedModelFragmentShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelFragmentShader.frag";
+			parameters._Stage = ShaderStage::FRAGMENT;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelVertexShader";
+			parameters._ID = "EditorSelectedModelVertexShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelVertexShader.vert";
+			parameters._Stage = ShaderStage::VERTEX;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceFragmentShader";
 			parameters._ID = "EditorUserInterfaceFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";

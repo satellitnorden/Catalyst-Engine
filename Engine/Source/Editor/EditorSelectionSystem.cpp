@@ -131,53 +131,6 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 	if (_CurrentlySelectedEntity && _CurrentlySelectedEntity->_Initialized)
 	{
-		//Render a bounding box for the currently selected entity.
-		switch (_CurrentlySelectedEntity->_Type)
-		{
-			case EntityType::DynamicModel:
-			{
-				AxisAlignedBoundingBox3 box{ *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldSpaceAxisAlignedBoundingBox() };
-
-				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), false, false, box, 0.0f);
-
-				break;
-			}
-
-			case EntityType::Light:
-			{
-				LightEntity *const RESTRICT light_entity{ static_cast<LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
-
-				switch (light_entity->GetLightType())
-				{
-					case LightType::DIRECTIONAL:
-					{
-						//Directional lights have no world transform, so just leave empty. (:
-
-						break;
-					}
-
-					case LightType::POINT:
-					{
-						const Vector3<float32> position{ static_cast<LightEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetPosition() };
-						AxisAlignedBoundingBox3 box{ position - VectorConstants::ONE, position + VectorConstants::ONE };
-
-						RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D(Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f), false, false, box, 0.0f);
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
-
-				break;
-			}
-		}
-
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f, 512.0f));
