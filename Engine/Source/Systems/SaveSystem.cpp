@@ -109,7 +109,7 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 				entry._DefaultValuesCallback(save_data);
 
 				//Create the file.
-				File::Create(entry._File.Data());
+				File::CreateFile(entry._File.Data());
 
 				//Write it to file.
 				BinaryFile<IOMode::Out> file{ entry._File.Data() };

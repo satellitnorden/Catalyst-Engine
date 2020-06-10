@@ -33,7 +33,8 @@ private:
 		NONE,
 		MATERIAL,
 		MODEL,
-		TEXTURE_2D
+		TEXTURE_2D,
+		QUIXEL_MODEL
 	};
 
 	/*
@@ -156,6 +157,22 @@ private:
 
 	};
 
+	/*
+	*	Create Quixel model resource data.
+	*/
+	class CreateQuixelModelResourceData final
+	{
+
+	public:
+
+		//The output directory path.
+		DynamicString _OutputDirectoryPath;
+
+		//The directory path.
+		DynamicString _DirectoryPath;
+
+	};
+
 	//The current create resource mode.
 	CreateResourceMode _CurrentCreateResourceMode{ CreateResourceMode::NONE };
 
@@ -167,6 +184,9 @@ private:
 
 	//The create texture 2D resource data.
 	CreateTexture2DResourceData _CreateTexture2DResourceData;
+
+	//The create quixel model resource data.
+	CreateQuixelModelResourceData _CreateQuixelModelResourceData;
 
 	/*
 	*	Adds the create material resource window.
@@ -182,6 +202,11 @@ private:
 	*	Adds the create texture 2D resource window.
 	*/
 	void AddCreateTexture2DResourceWindow() NOEXCEPT;
+
+	/*
+	*	Adds the create Quixel model resource window.
+	*/
+	void AddCreateQuixelModelResourceWindow() NOEXCEPT;
 
 };
 #endif

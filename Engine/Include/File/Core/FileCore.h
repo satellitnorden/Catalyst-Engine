@@ -36,9 +36,14 @@ namespace File
 	FORCE_INLINE NO_DISCARD bool BrowseForFolder(DynamicString* const RESTRICT chosen_folder) NOEXCEPT;
 
 	/*
+	*	Creates a directory.
+	*/
+	FORCE_INLINE void CreateDirectory(const char *const RESTRICT path) NOEXCEPT;
+
+	/*
 	*	Creates a file.
 	*/
-	FORCE_INLINE void Create(const char* const RESTRICT file) NOEXCEPT;
+	FORCE_INLINE void CreateFile(const char *const RESTRICT path) NOEXCEPT;
 
 	/*
 	*	Returns if a file exists or not.

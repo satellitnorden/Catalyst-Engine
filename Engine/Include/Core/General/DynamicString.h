@@ -72,6 +72,14 @@ public:
 	}
 
 	/*
+	*	Bool operator overload.
+	*/
+	FORCE_INLINE constexpr operator bool() const NOEXCEPT
+	{
+		return _String != nullptr;
+	}
+
+	/*
 	*	Copy operator overload taking another dynamic string.
 	*/
 	FORCE_INLINE void operator=(const DynamicString &other) NOEXCEPT

@@ -63,6 +63,17 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		_CurrentCreateResourceMode = CreateResourceMode::TEXTURE_2D;
 	}
 
+	//Add the button for creating a Quixel model resource.
+	if (ImGui::Button("Create Quixel Model Resource"))
+	{
+		//Reset the create model resource data.
+		_CreateQuixelModelResourceData.~CreateQuixelModelResourceData();
+		new (&_CreateQuixelModelResourceData) CreateQuixelModelResourceData();
+
+		//Set the current create resource mode.
+		_CurrentCreateResourceMode = CreateResourceMode::QUIXEL_MODEL;
+	}
+
 	switch (_CurrentCreateResourceMode)
 	{
 		case CreateResourceMode::NONE:
@@ -89,6 +100,13 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		case CreateResourceMode::TEXTURE_2D:
 		{
 			AddCreateTexture2DResourceWindow();
+
+			break;
+		}
+
+		case CreateResourceMode::QUIXEL_MODEL:
+		{
+			AddCreateQuixelModelResourceWindow();
 
 			break;
 		}
@@ -845,5 +863,256 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 	}
 
 	ImGui::End();
+}
+
+/*
+*	Adds the create Quixel model resource window.
+*/
+void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
+{
+	/*
+	*	Create Quixel model resource temporary data class definition.
+	*/
+	class CreateQuixelModelResourceTemporaryData final
+	{
+
+	public:
+
+		//The identifier.
+		DynamicString _Identifier;
+
+		//The base mipmap level.
+		uint8 _BaseMipmapLevel;
+
+		//The number of mipmap levels.
+		uint8 _NumberOfMipmapLevels;
+
+		//The albedo texture file path.
+		DynamicString _AlbedoTextureFilePath;
+
+		//The normal map texture file path.
+		DynamicString _NormalMapTextureFilePath;
+
+		//The displacement texture file path.
+		DynamicString _DisplacementTextureFilePath;
+
+		//The roughness texture file path.
+		DynamicString _RoughnessTextureFilePath;
+
+		//The ambient occlusion texture file path.
+		DynamicString _AmbientOcclusionTextureFilePath;
+
+	};
+
+	//Add the "Create Quixel Model Resource" window.
+	ImGui::Begin("Create Quixel Model Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
+	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
+
+	//If the user has already selected an output directory path, display it.
+	if (_CreateQuixelModelResourceData._OutputDirectoryPath.Data())
+	{
+		ImGui::Text("Output Directory Path:");
+		ImGui::Text(_CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+	}
+
+	//Add the button to set the output directory path/identifier.
+	if (ImGui::Button("Select Output Directory Path"))
+	{
+		File::BrowseForFolder(&_CreateQuixelModelResourceData._OutputDirectoryPath);
+	}
+
+	//If the user has already selected a directory path, display it.
+	if (_CreateQuixelModelResourceData._DirectoryPath.Data())
+	{
+		ImGui::Text("Directory Path:");
+		ImGui::Text(_CreateQuixelModelResourceData._DirectoryPath.Data());
+	}
+
+	//Add the button to set the directory path.
+	if (ImGui::Button("Select Directroy Path"))
+	{
+		File::BrowseForFolder(&_CreateQuixelModelResourceData._DirectoryPath);
+	}
+
+	//Add some padding before the "Create Quixel Model Resource" button.
+	ImGui::Text("");
+
+	//Add the create button.
+	if (ImGui::Button("Create Quixel Model Resource"))
+	{
+		//Browse through all files in the directory path and fill in the temporary data.
+		CreateQuixelModelResourceTemporaryData temporary_data;
+
+		//Extract the identifier.
+		for (int64 i{ static_cast<int64>(_CreateQuixelModelResourceData._DirectoryPath.Length()) - 1 }; i >= 0; --i)
+		{
+			if (_CreateQuixelModelResourceData._DirectoryPath[i] == '\\')
+			{
+				temporary_data._Identifier = &_CreateQuixelModelResourceData._DirectoryPath[i + 1];
+
+				break;
+			}
+		}
+
+		//Iterate over all the files in the directory and load them.
+		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateQuixelModelResourceData._DirectoryPath.Data())))
+		{
+			ASSERT(!entry.is_directory(), "EditorResourcesSystem::AddCreateQuixelModelResourceWindow() failure!");
+
+			//Cache the file path.
+			const std::string entry_file_path{ entry.path().generic_u8string().c_str() };
+
+			//Is this the albedo texture?
+			if (entry_file_path.find("_Albedo.") != std::string::npos)
+			{
+				temporary_data._AlbedoTextureFilePath = entry_file_path.c_str();
+
+				//Determine the base/number of mipmap level(s).
+				if (entry_file_path.find("_8K_") != std::string::npos)
+				{
+					temporary_data._BaseMipmapLevel = 3;
+					temporary_data._NumberOfMipmapLevels = 10;
+				}
+
+				else
+				{
+					temporary_data._BaseMipmapLevel = 2;
+					temporary_data._NumberOfMipmapLevels = 9;
+				}
+			}
+
+			//Is this the normnal map texture?
+			if (entry_file_path.find("_Normal_") != std::string::npos)
+			{
+				temporary_data._NormalMapTextureFilePath = entry_file_path.c_str();
+			}
+
+			//Is this the displacement texture?
+			if (entry_file_path.find("_Displacement.") != std::string::npos)
+			{
+				temporary_data._DisplacementTextureFilePath = entry_file_path.c_str();
+			}
+
+			//Is this the roughness texture?
+			if (entry_file_path.find("_Roughness.") != std::string::npos)
+			{
+				temporary_data._RoughnessTextureFilePath = entry_file_path.c_str();
+			}
+
+			//Is this the ambient occlusion texture?
+			if (entry_file_path.find("_AO.") != std::string::npos)
+			{
+				temporary_data._RoughnessTextureFilePath = entry_file_path.c_str();
+			}
+		}
+
+		//Create all the directories, if needed.
+		{
+			char buffer[128];
+
+			sprintf_s(buffer, "%s\\Textures", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			File::CreateDirectory(buffer);
+
+			sprintf_s(buffer, "%s\\Textures\\%s", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			File::CreateDirectory(buffer);
+
+			sprintf_s(buffer, "%s\\Materials", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			File::CreateDirectory(buffer);
+
+			sprintf_s(buffer, "%s\\Models", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			File::CreateDirectory(buffer);
+		}
+
+		//Create the albedo/thickness texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char buffer[128];
+
+			sprintf_s(buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+
+			parameters._Output = buffer;
+			parameters._ID = temporary_data._Identifier.Data();
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._AlbedoTextureFilePath.Data();
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		}
+
+		//Create the normal map/displacement texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char buffer[128];
+
+			sprintf_s(buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+
+			parameters._Output = buffer;
+			parameters._ID = temporary_data._Identifier.Data();
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._NormalMapTextureFilePath.Data();
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = temporary_data._DisplacementTextureFilePath.Data();
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = temporary_data._DisplacementTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_4, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		}
+
+		//Create the material properties texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char buffer[128];
+
+			sprintf_s(buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+
+			parameters._Output = buffer;
+			parameters._ID = temporary_data._Identifier.Data();
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._RoughnessTextureFilePath.Data();
+			parameters._File2 = nullptr;
+			parameters._File3 = temporary_data._AmbientOcclusionTextureFilePath.Data();
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] =  temporary_data._AmbientOcclusionTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_3, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		}
+	}
+
+	ImGui::End();
+
 }
 #endif

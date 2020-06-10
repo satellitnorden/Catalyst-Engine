@@ -18,6 +18,7 @@
 
 //Undefine annoying Windows defines. Fuck Windows. I hate everything.
 #undef CopyMemory
+#undef CreateDirectory
 #undef CreateFile
 #undef CreateFont
 #undef CreateEvent

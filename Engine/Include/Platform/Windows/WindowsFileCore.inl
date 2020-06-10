@@ -128,17 +128,25 @@ namespace File
 	}
 
 	/*
+	*	Creates a directory.
+	*/
+	FORCE_INLINE void CreateDirectory(const char* const RESTRICT path) NOEXCEPT
+	{
+		CreateDirectoryA(path, nullptr);
+	}
+
+	/*
 	*	Creates a file.
 	*/
-	FORCE_INLINE void Create(const char *const RESTRICT file) NOEXCEPT
+	FORCE_INLINE void CreateFile(const char *const RESTRICT path) NOEXCEPT
 	{
-		const HANDLE file_handle{	CreateFileA(	file,
-									0,
-									0,
-									nullptr,
-									CREATE_ALWAYS,
-									FILE_ATTRIBUTE_NORMAL,
-									nullptr) };
+		const HANDLE file_handle{	CreateFileA(path,
+												0,
+												0,
+												nullptr,
+												CREATE_ALWAYS,
+												FILE_ATTRIBUTE_NORMAL,
+												nullptr) };
 
 		CloseHandle(file_handle);
 	}

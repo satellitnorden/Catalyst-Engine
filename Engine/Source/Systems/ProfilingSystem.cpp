@@ -61,6 +61,7 @@ namespace ProfilingSystemData
 */
 void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	/*
 	//Create user interface elements for all profiling entries.
 	for (const ProfilingSystemData::ProfilingEntry &entry : ProfilingSystemData::_ProfilingEntries)
 	{
@@ -80,6 +81,7 @@ void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context)
 
 		ProfilingSystemData::_UserInterfaceElements.Emplace(element);
 	}
+	*/
 }
 
 /*
