@@ -108,7 +108,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 					case RaycastResult::Type::TERRAIN:
 					{
-						//HWEL
+						SetCurrentlySelectedEntity(nullptr);
 
 						break;
 					}
