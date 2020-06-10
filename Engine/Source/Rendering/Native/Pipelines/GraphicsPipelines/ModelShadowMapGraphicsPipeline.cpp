@@ -149,11 +149,11 @@ void ModelShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_mat
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(ModelShadowMapVertexPushConstantData), &data);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount, 1);
 			}
 		}
 	}
@@ -184,11 +184,11 @@ void ModelShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_mat
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(ModelShadowMapVertexPushConstantData), &data);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount, 1);
 			}
 		}
 	}

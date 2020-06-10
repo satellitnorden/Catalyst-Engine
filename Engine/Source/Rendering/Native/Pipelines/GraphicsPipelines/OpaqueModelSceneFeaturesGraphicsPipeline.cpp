@@ -184,11 +184,11 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount, 1);
 			}
 		}
 	}
@@ -237,11 +237,11 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[component->_LevelOfDetailIndices[i]], &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[component->_LevelOfDetailIndices[i]], OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._IndexCounts[component->_LevelOfDetailIndices[i]], 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount, 1);
 			}
 		}
 	}

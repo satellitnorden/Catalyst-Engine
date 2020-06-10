@@ -13,24 +13,35 @@ class Mesh final
 
 public:
 
-	//The vertex buffers for all level of details.
-	DynamicArray<BufferHandle> _VertexBuffers;
+	/*
+	*	Mesh level of detail class definition.
+	*/
+	class MeshLevelOfDetail final
+	{
 
-	//The index buffers for all level of details.
-	DynamicArray<BufferHandle> _IndexBuffers;
+	public:
 
-	//The index counts for all level of details.
-	DynamicArray<uint32> _IndexCounts;
+		//The vertices.
+		DynamicArray<Vertex> _Vertices;
 
-	//The bottom level acceleration structure.
-	AccelerationStructureHandle _BottomLevelAccelerationStructure;
+		//The indices.
+		DynamicArray<uint32> _Indices;
 
-#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
-	//The vertices.
-	DynamicArray<Vertex> _Vertices;
+		//The vertex buffer.
+		BufferHandle _VertexBuffer;
 
-	//The indices.
-	DynamicArray<uint32> _Indices;
-#endif
+		//The index buffer.
+		BufferHandle _IndexBuffer;
+
+		//The index count.
+		uint32 _IndexCount;
+
+		//The bottom level acceleration structure.
+		AccelerationStructureHandle _BottomLevelAccelerationStructure;
+
+	};
+
+	//All the mesh level of details.
+	DynamicArray<MeshLevelOfDetail> _MeshLevelOfDetails;
 
 };

@@ -114,8 +114,8 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 		{
 			for (const Mesh &mesh : component->_ModelResource->_Meshes)
 			{
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, mesh_counter, &_RenderDataTable, mesh._VertexBuffers[0]);
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, mesh_counter, &_RenderDataTable, mesh._IndexBuffers[0]);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._VertexBuffer);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._IndexBuffer);
 
 				++mesh_counter;
 			}
@@ -138,8 +138,8 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 		{
 			for (const Mesh &mesh : component->_ModelResource->_Meshes)
 			{
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, mesh_counter, &_RenderDataTable, mesh._VertexBuffers[0]);
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(5, mesh_counter, &_RenderDataTable, mesh._IndexBuffers[0]);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._VertexBuffer);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(5, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._IndexBuffer);
 
 				++mesh_counter;
 			}
@@ -199,7 +199,7 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}
@@ -248,7 +248,7 @@ void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
 
 		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}

@@ -223,14 +223,14 @@ void VegetationSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VegetationVertexPushConstantData), sizeof(VegetationFragmentPushConstantData), &fragment_data);
 
 			//Bind the vertex/inder buffer.
-			command_buffer->BindVertexBuffer(this, 0, mesh._VertexBuffers[0], &OFFSET);
-			command_buffer->BindIndexBuffer(this, mesh._IndexBuffers[0], OFFSET);
+			command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[0]._VertexBuffer, &OFFSET);
+			command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[0]._IndexBuffer, OFFSET);
 
 			//Bind the transformations buffer.
 			command_buffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &OFFSET);
 
 			//Draw!
-			command_buffer->DrawIndexed(this, mesh._IndexCounts[0], component->_NumberOfTransformations);
+			command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[0]._IndexCount, component->_NumberOfTransformations);
 		}
 	}
 

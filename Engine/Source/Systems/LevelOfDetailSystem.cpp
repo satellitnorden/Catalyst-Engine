@@ -78,7 +78,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
 		{
 			//If the mesh used only has one level of detail, skip it.
-			if (component->_ModelResource->_Meshes[j]._VertexBuffers.Size() == 1)
+			if (component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() == 1)
 			{
 				component->_LevelOfDetailIndices[j] = 0;
 
@@ -97,7 +97,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 			distance_coefficient = 1.0f - distance_coefficient;
 
 			//Calculate the level of detail index.
-			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._VertexBuffers.Size() - 1));
+			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() - 1));
 		}
 	}
 }
@@ -123,7 +123,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
 		{
 			//If the mesh used only has one level of detail, skip it.
-			if (component->_ModelResource->_Meshes[j]._VertexBuffers.Size() == 1 || true)
+			if (component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() == 1 || true)
 			{
 				component->_LevelOfDetailIndices[j] = 0;
 
@@ -145,7 +145,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			distance_coefficient = 1.0f - distance_coefficient;
 
 			//Calculate the level of detail index.
-			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._VertexBuffers.Size() - 1));
+			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() - 1));
 		}
 	}
 }
