@@ -126,7 +126,7 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 	//Retrieve the currently selected entity.
 	const Entity *const RESTRICT currently_selected_entity{ CatalystEditorSystem::Instance->GetEditorSelectionSystem()->GetCurrentlySelectedEntity() };
 
-	if (currently_selected_entity)
+	if (currently_selected_entity && currently_selected_entity->_Initialized)
 	{
 		switch (currently_selected_entity->_Type)
 		{
