@@ -2,6 +2,9 @@
 //Header file.
 #include <Editor/EditorResourcesSystem.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -902,6 +905,9 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		//The ambient occlusion texture file path.
 		DynamicString _AmbientOcclusionTextureFilePath;
 
+		//The level of detail file paths.
+		DynamicArray<DynamicString> _LevelOfDetailFilePaths;
+
 	};
 
 	//Add the "Create Quixel Model Resource" window.
@@ -1005,7 +1011,29 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			{
 				temporary_data._RoughnessTextureFilePath = entry_file_path;
 			}
+
+			//Is this a level of detail file path?
+			if (File::GetExtension(entry_file_path.Data()) == File::Extension::FBX)
+			{
+				temporary_data._LevelOfDetailFilePaths.Emplace(entry_file_path);
+			}
 		}
+
+		ASSERT(!temporary_data._LevelOfDetailFilePaths.Empty(), "No level of detail file paths found!");
+
+		//Sort the level of detail file paths.
+		SortingAlgorithms::InsertionSort<DynamicString>(
+		temporary_data._LevelOfDetailFilePaths.Begin(),
+		temporary_data._LevelOfDetailFilePaths.End(),
+		nullptr,
+		[](const void *const RESTRICT, const DynamicString *const RESTRICT first, const DynamicString *const RESTRICT second)
+		{
+			const char* const RESTRICT yes{ first->Find("_LOD") + 5 };
+			const uint8 first_level_of_detail{ static_cast<uint8>(std::stoi(first->Find("_LOD") + 5)) };
+			const uint8 second_level_of_detail{ static_cast<uint8>(std::stoi(second->Find("_LOD") + 5)) };
+
+			return first_level_of_detail < second_level_of_detail;
+		});
 
 		//Create all the directories, if needed.
 		{
@@ -1169,6 +1197,35 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 
 			//Now load the material.
 			sprintf_s(output_file_path_buffer, "%s\\Materials\\%s_Material.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+		}
+
+		//Build the model.
+		{
+			ModelBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "%s\\Models\\%s_Model", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_Model", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+
+			for (const DynamicString &level_of_detail_file_path : temporary_data._LevelOfDetailFilePaths)
+			{
+				parameters._LevelOfDetails.Emplace(level_of_detail_file_path.Data());
+			}
+
+			parameters._Transformation = MatrixConstants::IDENTITY;
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+
+			//Now load the model.
+			sprintf_s(output_file_path_buffer, "%s\\Models\\%s_Model.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 

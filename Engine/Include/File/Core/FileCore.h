@@ -15,6 +15,7 @@ namespace File
 	{
 		CR,
 		CRC,
+		FBX,
 		JPG,
 		PNG,
 		TGA,
@@ -87,6 +88,11 @@ namespace File
 		if (strcmp(dot_position, ".crc") == 0)
 		{
 			return Extension::CRC;
+		}
+
+		if (strcmp(dot_position, ".fbx") == 0)
+		{
+			return Extension::FBX;
 		}
 
 		if (strcmp(dot_position, ".jpg") == 0)
