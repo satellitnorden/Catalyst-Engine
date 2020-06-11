@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Utilities/StringUtilities.h>
 
 class DynamicString final
 {
@@ -306,6 +307,30 @@ public:
 		//Update the string and the length.
 		_String = new_string;
 		_Length = new_length;
+	}
+
+	/*
+	*	Tries to find the given substring. If it exists, a pointer to the beginning of the substring is returned, otherwise nullptr.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Find(const char *const RESTRICT substring) const NOEXCEPT
+	{
+		const uint64 substring_length{ StringUtilities::StringLength(substring) };
+		uint64 matching_characters{ 0 };
+
+		for (uint64 i{ 0 }; i < _Length; ++i)
+		{
+			if (_String[i] == substring[matching_characters])
+			{
+				++matching_characters;
+
+				if (matching_characters == substring_length)
+				{
+					return &_String[i - matching_characters];
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 private:

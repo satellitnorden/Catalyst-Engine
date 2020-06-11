@@ -956,20 +956,20 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		}
 
 		//Iterate over all the files in the directory and load them.
-		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateQuixelModelResourceData._DirectoryPath.Data())))
+		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateQuixelModelResourceData._DirectoryPath.Data()) + "\\Raw"))
 		{
 			ASSERT(!entry.is_directory(), "EditorResourcesSystem::AddCreateQuixelModelResourceWindow() failure!");
 
 			//Cache the file path.
-			const std::string entry_file_path{ entry.path().generic_u8string().c_str() };
+			const DynamicString entry_file_path{ entry.path().generic_u8string().c_str() };
 
 			//Is this the albedo texture?
-			if (entry_file_path.find("_Albedo.") != std::string::npos)
+			if (entry_file_path.Find("_Albedo."))
 			{
-				temporary_data._AlbedoTextureFilePath = entry_file_path.c_str();
+				temporary_data._AlbedoTextureFilePath = entry_file_path;
 
 				//Determine the base/number of mipmap level(s).
-				if (entry_file_path.find("_8K_") != std::string::npos)
+				if (entry_file_path.Find("_8K_"))
 				{
 					temporary_data._BaseMipmapLevel = 3;
 					temporary_data._NumberOfMipmapLevels = 10;
@@ -983,27 +983,27 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			}
 
 			//Is this the normnal map texture?
-			if (entry_file_path.find("_Normal_") != std::string::npos)
+			if (entry_file_path.Find("_Normal_"))
 			{
-				temporary_data._NormalMapTextureFilePath = entry_file_path.c_str();
+				temporary_data._NormalMapTextureFilePath = entry_file_path;
 			}
 
 			//Is this the displacement texture?
-			if (entry_file_path.find("_Displacement.") != std::string::npos)
+			if (entry_file_path.Find("_Displacement."))
 			{
-				temporary_data._DisplacementTextureFilePath = entry_file_path.c_str();
+				temporary_data._DisplacementTextureFilePath = entry_file_path;
 			}
 
 			//Is this the roughness texture?
-			if (entry_file_path.find("_Roughness.") != std::string::npos)
+			if (entry_file_path.Find("_Roughness."))
 			{
-				temporary_data._RoughnessTextureFilePath = entry_file_path.c_str();
+				temporary_data._RoughnessTextureFilePath = entry_file_path;
 			}
 
 			//Is this the ambient occlusion texture?
-			if (entry_file_path.find("_AO.") != std::string::npos)
+			if (entry_file_path.Find("_AO."))
 			{
-				temporary_data._RoughnessTextureFilePath = entry_file_path.c_str();
+				temporary_data._RoughnessTextureFilePath = entry_file_path;
 			}
 		}
 
@@ -1028,12 +1028,14 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		{
 			Texture2DBuildParameters parameters;
 
-			char buffer[128];
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
 
-			sprintf_s(buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data());
 
-			parameters._Output = buffer;
-			parameters._ID = temporary_data._Identifier.Data();
+			parameters._ID = identifier_buffer;
 			parameters._DefaultWidth = 0;
 			parameters._DefaultHeight = 0;
 			parameters._File1 = temporary_data._AlbedoTextureFilePath.Data();
@@ -1057,12 +1059,14 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		{
 			Texture2DBuildParameters parameters;
 
-			char buffer[128];
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
 
-			sprintf_s(buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data());
 
-			parameters._Output = buffer;
-			parameters._ID = temporary_data._Identifier.Data();
+			parameters._ID = identifier_buffer;
 			parameters._DefaultWidth = 0;
 			parameters._DefaultHeight = 0;
 			parameters._File1 = temporary_data._NormalMapTextureFilePath.Data();
@@ -1086,12 +1090,14 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		{
 			Texture2DBuildParameters parameters;
 
-			char buffer[128];
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
 
-			sprintf_s(buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data());
 
-			parameters._Output = buffer;
-			parameters._ID = temporary_data._Identifier.Data();
+			parameters._ID = identifier_buffer;
 			parameters._DefaultWidth = 0;
 			parameters._DefaultHeight = 0;
 			parameters._File1 = temporary_data._RoughnessTextureFilePath.Data();
@@ -1110,6 +1116,48 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 		}
+
+		//Build the material.
+		{
+			MaterialBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "%s\\Materials\\%s_Material", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_Material", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char albedo_thickness_buffer[128];
+			sprintf_s(albedo_thickness_buffer, "%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(albedo_thickness_buffer);
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char normal_map_displcamenet_buffer[128];
+			sprintf_s(normal_map_displcamenet_buffer, "%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(normal_map_displcamenet_buffer);
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char material_properties_buffer[128];
+			sprintf_s(material_properties_buffer, "%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(material_properties_buffer);
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		}
+
+		//No longer creating a resource.
+		_CurrentCreateResourceMode = CreateResourceMode::NONE;
 	}
 
 	ImGui::End();
