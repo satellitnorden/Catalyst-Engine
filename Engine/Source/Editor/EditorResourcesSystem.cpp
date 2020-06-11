@@ -1053,6 +1053,10 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
 		//Create the normal map/displacement texture 2D.
@@ -1084,6 +1088,10 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
 		//Create the material properties texture 2D.
@@ -1115,6 +1123,10 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
 		//Build the material.
@@ -1154,6 +1166,10 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._DoubleSided = false;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+
+			//Now load the material.
+			sprintf_s(output_file_path_buffer, "%s\\Materials\\%s_Material.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
 		//No longer creating a resource.
