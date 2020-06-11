@@ -58,7 +58,7 @@ public:
 private:
 
 	//The frame allocator.
-	FrameAllocator<1'024 * 256> _FrameAllocator;
+	FrameAllocator<1'024 * 512> _FrameAllocator;
 
 	//The frame allocator lock.
 	Spinlock _FrameAllocatorLock;

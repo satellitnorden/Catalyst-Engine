@@ -138,7 +138,7 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 	};
 
 	//Define constants.
-	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 37> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
+	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 38> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
 	{
 		KeyboardButtonInputCharacterMapping(KeyboardButton::A, 'A', 'a'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::B, 'B', 'b'),
@@ -176,7 +176,8 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSeven, '7', '7'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadEight, '8', '8'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadNine, '9', '9'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadDecimal, ',', ',')
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadDecimal, ',', ','),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSubtract, '-', '-')
 	};
 
 	//Fill in ImGui's IO struct.
@@ -301,6 +302,9 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Update the editor Perceiver system.
 	_EditorPerceiverSystem.Update();
 
+	//Update the editor placement system.
+	_EditorPlacementSystem.Update();
+
 	//Update the editor rendering system.
 	_EditorRenderingSystem.Update();
 
@@ -375,6 +379,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Perceiver"))
 		{
 			_CurrentContextualWindow = ContextualWindow::PERCEIVER;
+		}
+	}
+
+	//Opens the placement window.
+	if (_CurrentContextualWindow == ContextualWindow::PLACEMENT)
+	{
+		if (ImGui::Button("Placement"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Placement"))
+		{
+			_CurrentContextualWindow = ContextualWindow::PLACEMENT;
 		}
 	}
 

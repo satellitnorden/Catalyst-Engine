@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\Include\Editor\EditorEntitySystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorLevelSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorPerceiverSystem.h" />
+    <ClInclude Include="..\..\..\Include\Editor\EditorPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorResourcesSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorSelectionSystem.h" />
@@ -470,6 +471,7 @@
     <ClCompile Include="..\..\..\Source\Editor\EditorEntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorLevelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorPerceiverSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Editor\EditorPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorResourcesSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorSelectionSystem.cpp" />

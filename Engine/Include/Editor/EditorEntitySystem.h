@@ -39,5 +39,4 @@ private:
 	void CreateEntity(const Vector3<float32> &position);
 
 };
-
 #endif
