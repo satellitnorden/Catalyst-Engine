@@ -90,7 +90,7 @@ namespace WindowsSoundSystemData
 	Thread _Thread;
 
 	//Denotes if the Windows Catalyst sound system is initialized.
-	bool _Initialized{ false };
+	Atomic<bool> _Initialized{ false };
 
 	//The audio endpoint.
 	IMMDevice *RESTRICT _AudioEndpoint{ nullptr };

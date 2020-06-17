@@ -29,11 +29,14 @@ public:
     }
 
     /*
-    *   Sets the gain.
+    *   Sets the pan.
     */
-    FORCE_INLINE void SetGain(const float32 gain) NOEXCEPT
+    FORCE_INLINE void SetPan(const float32 new_pan) NOEXCEPT
     {
-        _Gain = gain;
+        const float32 pan_normalized{ new_pan * 0.5f + 0.5f };
+
+        _LeftPanCoefficient = 1.0f - pan_normalized;
+        _RightPanCoefficient = pan_normalized;
     }
 
     /*
@@ -75,7 +78,7 @@ public:
     /*
     *   Returns the next sample.
     */
-    FORCE_INLINE int16 NextSample(const uint64 channel) NOEXCEPT
+    FORCE_INLINE float32 NextSample(const uint64 channel_index) NOEXCEPT
     {
         //If the playback position is before the beginning of the sound resource, just return.
         if (_CurrentSample < 0)
@@ -83,14 +86,22 @@ public:
             return 0;
         }
 
-        const uint64 actual_channel{ channel < _SoundResource->_Samples.Size() ? channel : 0 };
+        const uint64 actual_channel_index{ channel_index < _SoundResource->_Samples.Size() ? channel_index : 0 };
 
-        if (_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel].Size()))
+        if (_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size()))
         {
-            const int16 first_sample{ _SoundResource->_Samples[actual_channel][_CurrentSample] };
-            const int16 second_sample{ _SoundResource->_Samples[actual_channel][_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel].Size() - 1) ? _CurrentSample + 1 : _CurrentSample] };
+            const int16 first_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSample] };
+            const int16 second_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size() - 1) ? _CurrentSample + 1 : _CurrentSample] };
 
-            return static_cast<int16>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction));
+            float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction) / static_cast<float32>(INT16_MAXIMUM) };
+
+            //Apply the gain.
+            //interpolated_sample *= _Gain;
+
+            //Apply the pan.
+            interpolated_sample *= _SoundResource->_Samples.Size() == 1 ? 1.0f : (actual_channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient);
+
+            return interpolated_sample;
         }
 
         else
@@ -122,8 +133,11 @@ private:
     //The sound resource.
     ResourcePointer<SoundResource> _SoundResource;
 
-    //The gain.
-    float32 _Gain{ 1.0f };
+    //The left pan coefficient.
+    float32 _LeftPanCoefficient{ 1.0f };
+
+    //The right pan coefficient.
+    float32 _RightPanCoefficient{ 1.0f };
 
     //The playback speed.
     float32 _PlaybackSpeed{ 1.0f };

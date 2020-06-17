@@ -21,6 +21,9 @@ public:
 	//The sound resource.
 	ResourcePointer<SoundResource> _SoundResource;
 
+	//The pan.
+	float32 _Pan;
+
 	//Denotes if the sound is looping.
 	bool _IsLooping;
 
@@ -69,10 +72,10 @@ namespace SoundSystemConstants
 	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS{ 2 };
 
 	//The maximum number of queued play sounds.
-	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS{ 64 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS{ 128 };
 
 	//The maximum number of queued stop sounds.
-	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS{ 64 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS{ 128 };
 
 }
 
@@ -140,6 +143,7 @@ void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &componen
 *	Plays a sound.
 */
 void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
+							const float32 pan,
 							const bool is_looping,
 							const float32 start_time,
 							SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
@@ -148,6 +152,7 @@ void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
 	QueuedPlaySound queued_play_sound;
 
 	queued_play_sound._SoundResource = resource;
+	queued_play_sound._Pan = pan;
 	queued_play_sound._IsLooping = is_looping;
 	queued_play_sound._StartTime = start_time;
 	queued_play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
@@ -224,6 +229,7 @@ void SoundSystem::Mix() NOEXCEPT
 			PlayingSound new_playing_sound;
 
 			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound->_SoundResource);
+			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound->_Pan);
 			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound->_SoundResource->_SampleRate / GetSampleRate());
 			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound->_IsLooping);
 			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound->_StartTime * queued_play_sound->_SoundResource->_SampleRate));
@@ -263,7 +269,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 						for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
 						{
-							current_sample += static_cast<float32>(playing_sound._SoundResourcePlayer.NextSample(channel_index)) / static_cast<float32>(INT16_MAXIMUM);
+							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
 						}
 
 						//Apply the master channel mix components.
