@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+template <typename TYPE>
 class DeltaTimer final
 {
 
@@ -19,13 +20,13 @@ public:
 	/*
 	*	Updates the current time and returns the delta time.
 	*/
-	FORCE_INLINE NO_DISCARD float Update() NOEXCEPT
+	FORCE_INLINE NO_DISCARD TYPE Update() NOEXCEPT
 	{
-		const std::chrono::time_point<std::chrono::steady_clock> newTime{ std::chrono::high_resolution_clock::now() };
-		const float deltaTime{ std::chrono::duration<float>(newTime - _CurrentTime).count() };
-		_CurrentTime = newTime;
+		const std::chrono::time_point<std::chrono::steady_clock> new_time{ std::chrono::high_resolution_clock::now() };
+		const TYPE delta_time{ std::chrono::duration<TYPE>(new_time - _CurrentTime).count() };
+		_CurrentTime = new_time;
 
-		return deltaTime;
+		return delta_time;
 	}
 
 private:

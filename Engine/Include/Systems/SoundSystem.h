@@ -67,6 +67,7 @@ public:
 	*/
 	void PlaySound(	const ResourcePointer<SoundResource> resource,
 					const bool is_looping,
+					const float32 start_time,
 					SoundInstanceHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
@@ -77,10 +78,10 @@ public:
 private:
 
 	//The number of mixing buffers.
-	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 4 };
+	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
 
 	//The number of samples in each mixing buffer.
-	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 1'024 };
+	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 64 };
 
 	//The sound instance counter.
 	uint64 _SoundInstanceCounter{ 1 };

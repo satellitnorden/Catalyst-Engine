@@ -59,7 +59,7 @@ namespace CatalystEngineSystemData
 	};
 
 	//The delta timer.
-	DeltaTimer _DeltaTimer;
+	DeltaTimer<float32> _DeltaTimer;
 
 	//The current sequential update.
 	SequentialUpdate _CurrentSequentialUpdate{ static_cast<SequentialUpdate>(0) };

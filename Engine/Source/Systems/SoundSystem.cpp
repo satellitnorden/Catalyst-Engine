@@ -24,6 +24,9 @@ public:
 	//Denotes if the sound is looping.
 	bool _IsLooping;
 
+	//The start time.
+	float32 _StartTime;
+
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
 
@@ -101,7 +104,7 @@ void SoundSystem::Initialize() NOEXCEPT
 	{
 		SoundSystem::Instance->Mix();
 	});
-	_MixingThread.SetPriority(Thread::Priority::NORMAL);
+	_MixingThread.SetPriority(Thread::Priority::HIGHEST);
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	_MixingThread.SetName("Sound System - Mixing Thread");
 #endif
@@ -138,6 +141,7 @@ void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &componen
 */
 void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
 							const bool is_looping,
+							const float32 start_time,
 							SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Queue the play sound.
@@ -145,6 +149,7 @@ void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
 
 	queued_play_sound._SoundResource = resource;
 	queued_play_sound._IsLooping = is_looping;
+	queued_play_sound._StartTime = start_time;
 	queued_play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
 
 	if (handle)
@@ -221,6 +226,7 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound->_SoundResource);
 			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound->_SoundResource->_SampleRate / GetSampleRate());
 			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound->_IsLooping);
+			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound->_StartTime * queued_play_sound->_SoundResource->_SampleRate));
 			new_playing_sound._SoundInstanceHandle = queued_play_sound->_SoundInstanceHandle;
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
@@ -351,8 +357,6 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								const uint32 number_of_samples,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
-	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
-
 	//Read all samples.
 	{	
 		//Cache local values.
@@ -443,6 +447,4 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		--_MixingBuffersReady;
 		_CurrentSampleReadIndex -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
 	}
-
-	CATALYST_BENCHMARK_AVERAGE_SECTION_END("SoundSystem::SoundCallback");
 }

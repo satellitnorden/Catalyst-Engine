@@ -18,8 +18,8 @@ void TaskSystem::Initialize() NOEXCEPT
 		//Retrieve the number of hardware threads.
 		const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
 
-		//Set the number of task executors. Leave one slot open for the main thread.
-		_NumberOfTaskExecutors = number_of_hardware_threads - 1;
+		//Set the number of task executors.
+		_NumberOfTaskExecutors = number_of_hardware_threads;
 
 		//Kick off all task executor threads.
 		_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);

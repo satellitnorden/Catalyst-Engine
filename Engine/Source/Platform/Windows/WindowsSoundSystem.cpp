@@ -122,7 +122,7 @@ void SoundSystem::PlatformInitialize() NOEXCEPT
 	{
 		SoundSystem::Instance->AsynchronousUpdate();
 	});
-	WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::NORMAL);
+	WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
 #endif
@@ -204,10 +204,6 @@ uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
 */
 void SoundSystem::AsynchronousUpdate() NOEXCEPT
 {
-	//Define constants.
-	constexpr REFERENCE_TIME TIME_TO_REQUEST_IN_MILLISECONDS{ 32 };
-	constexpr REFERENCE_TIME TIME_TO_REQUEST_IN_ACTUAL_TIME{ TIME_TO_REQUEST_IN_MILLISECONDS * 10 * 1'000 };
-
 	//Define macros.
 #define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { ASSERT(false, "Windows Catalyst sound system couldn't be initialized!"); goto CLEANUP; }
 
@@ -275,7 +271,7 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 	//Initialize the audio client.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Initialize(	AUDCLNT_SHAREMODE::AUDCLNT_SHAREMODE_SHARED,
 																	0,
-																	TIME_TO_REQUEST_IN_ACTUAL_TIME,
+																	minimum_device_period,
 																	0,
 																	chosen_mix_format,
 																	nullptr));
