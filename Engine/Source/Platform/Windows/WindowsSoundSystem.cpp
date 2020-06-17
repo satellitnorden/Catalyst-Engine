@@ -101,15 +101,21 @@ namespace WindowsSoundSystemData
 	//The audio render client.
 	IAudioRenderClient *RESTRICT _AudioRenderClient{ nullptr };
 
+	//The number of channels.
+	uint8 _NumberOfChannels;
+
 	//The sample rate.
 	float32 _SampleRate;
+
+	//The number of bits per sample.
+	uint8 _NumberOfBitsPerSample;
 
 }
 
 /*
-*	Initializes the sound system.
+*	Initializes the platform.
 */
-void SoundSystem::Initialize() NOEXCEPT
+void SoundSystem::PlatformInitialize() NOEXCEPT
 {
 	//Set up the thread.
 	WindowsSoundSystemData::_Thread.SetFunction([]()
@@ -118,7 +124,7 @@ void SoundSystem::Initialize() NOEXCEPT
 	});
 	WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::NORMAL);
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	WindowsSoundSystemData::_Thread.SetName("Windows Catalyst sound system");
+	WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
 #endif
 
 	//Launch the thread!
@@ -126,9 +132,17 @@ void SoundSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Terminates the sound system.
+*	Returns if the platform is initialized.
 */
-void SoundSystem::Terminate() NOEXCEPT
+NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
+{
+	return WindowsSoundSystemData::_Initialized;
+}
+
+/*
+*	Terminates the platform.
+*/
+void SoundSystem::PlatformTerminate() NOEXCEPT
 {
 	//Wait for the thread to finish.
 	WindowsSoundSystemData::_Thread.Join();
@@ -148,13 +162,13 @@ void SoundSystem::Terminate() NOEXCEPT
 */
 uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
 {
-	//Don't do anything if the Windows Catalyst sound system isn't initialized.
+	//Don't do anything if the Windows sound system isn't initialized.
 	if (!WindowsSoundSystemData::_Initialized)
 	{
 		return 0;
 	}
 
-	return 0;
+	return WindowsSoundSystemData::_NumberOfChannels;
 }
 
 /*
@@ -162,13 +176,27 @@ uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
 */
 float32 SoundSystem::GetSampleRate() const NOEXCEPT
 {
-	//Don't do anything if the Windows Catalyst sound system isn't initialized.
+	//Don't do anything if the Windows sound system isn't initialized.
 	if (!WindowsSoundSystemData::_Initialized)
 	{
 		return 0;
 	}
 
 	return WindowsSoundSystemData::_SampleRate;
+}
+
+/*
+*	Returns the number of bits per sample.
+*/
+uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
+{
+	//Don't do anything if the Windows sound system isn't initialized.
+	if (!WindowsSoundSystemData::_Initialized)
+	{
+		return 0;
+	}
+
+	return WindowsSoundSystemData::_NumberOfBitsPerSample;
 }
 
 /*
@@ -259,8 +287,14 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetService(	WindowsSoundSystemConstants::IAudioRenderClient_IID,
 																	reinterpret_cast<void* RESTRICT* const RESTRICT>(&WindowsSoundSystemData::_AudioRenderClient)));
 
+	//Set the number of channels.
+	WindowsSoundSystemData::_NumberOfChannels = static_cast<uint8>(chosen_mix_format->nChannels);
+
 	//Set the sample rate.
 	WindowsSoundSystemData::_SampleRate = static_cast<float32>(chosen_mix_format->nSamplesPerSec);
+
+	//Set the number of bits per sample.
+	WindowsSoundSystemData::_NumberOfBitsPerSample = static_cast<uint8>(chosen_mix_format->wBitsPerSample);
 
 	//The Windows sound system is successfully initialized!
 	WindowsSoundSystemData::_Initialized = true;
