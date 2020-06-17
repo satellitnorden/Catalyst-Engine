@@ -168,6 +168,8 @@ uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
 		return 0;
 	}
 
+	ASSERT(WindowsSoundSystemData::_NumberOfChannels != 0, "Oh no!");
+
 	return WindowsSoundSystemData::_NumberOfChannels;
 }
 
@@ -182,6 +184,8 @@ float32 SoundSystem::GetSampleRate() const NOEXCEPT
 		return 0;
 	}
 
+	ASSERT(WindowsSoundSystemData::_SampleRate != 0.0f, "Oh no!");
+
 	return WindowsSoundSystemData::_SampleRate;
 }
 
@@ -195,6 +199,8 @@ uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
 	{
 		return 0;
 	}
+
+	ASSERT(WindowsSoundSystemData::_NumberOfBitsPerSample != 0, "Oh no!");
 
 	return WindowsSoundSystemData::_NumberOfBitsPerSample;
 }

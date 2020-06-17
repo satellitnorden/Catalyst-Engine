@@ -186,6 +186,12 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
+		//Need the platform to have been initialized before the mixing buffers has been initialized.
+		if (!PlatformInitialized())
+		{
+			continue;
+		}
+
 		//Remember if the thread should yield at the end of this function.
 		const bool should_yield{ _MixingBuffersReady == NUMBER_OF_MIXING_BUFFERS };
 
@@ -198,12 +204,6 @@ void SoundSystem::Mix() NOEXCEPT
 		//Initialize the mixing buffers, if necessary.
 		if (!_MixingBuffersInitialized)
 		{
-			//Need the platform to have been initialized before the mixing buffers has been initialized.
-			if (!PlatformInitialized())
-			{
-				continue;
-			}
-
 			//Initialize all mixing buffers.
 			for (uint8 i{ 0 }; i < NUMBER_OF_MIXING_BUFFERS; ++i)
 			{
