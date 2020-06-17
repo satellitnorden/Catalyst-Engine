@@ -1467,18 +1467,6 @@
     <ClInclude Include="..\..\..\Include\Concurrency\AssertLock.h">
       <Filter>Concurrency\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h">
-      <Filter>Sound\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h">
-      <Filter>Sound\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h">
-      <Filter>Sound\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h">
-      <Filter>Sound\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\DebugRenderSphereGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -1496,9 +1484,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\DistributionSystem.h">
       <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h">
-      <Filter>Sound\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ShadowsRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
@@ -1637,6 +1622,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Editor\EditorPlacementSystem.h">
       <Filter>Editor\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\ADSREnvelope.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\SoundCore.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\SoundResourcePlayer.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\SoundUtilities.h">
+      <Filter>Sound\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

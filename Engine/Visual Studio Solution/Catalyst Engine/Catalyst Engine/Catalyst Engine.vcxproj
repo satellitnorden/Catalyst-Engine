@@ -406,11 +406,11 @@
     <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />
-    <ClInclude Include="..\..\..\Include\Sound\Native\ADSREnvelope.h" />
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundCore.h" />
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundResourcePlayer.h" />
-    <ClInclude Include="..\..\..\Include\Sound\Native\SoundUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Sound\ADSREnvelope.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundResourcePlayer.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundUtilities.h" />
     <ClInclude Include="..\..\..\Include\Systems\AnimationSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEditorSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\CatalystEngineSystem.h" />

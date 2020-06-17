@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Sound.
-#include <Sound/Native/SoundCore.h>
+#include <Sound/SoundCore.h>
 
 namespace SoundUtilities
 {
@@ -12,10 +12,10 @@ namespace SoundUtilities
 	/*
 	*	Calculates the realy note duration in seconds in regards to the beats per minute.
 	*/
-	FORCE_INLINE static NO_DISCARD float CalculateNoteDuration(const NoteDuration duration, const float beats_per_minute) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float CalculateNoteDuration(const NoteDuration duration, const float32 beats_per_minute) NOEXCEPT
 	{
 		//Calculate the duration for each beat.
-		const float beat_duration{ 60.0f / beats_per_minute };
+		const float32 beat_duration{ 60.0f / beats_per_minute };
 
 		//Modify based on duration.
 		switch (duration)
