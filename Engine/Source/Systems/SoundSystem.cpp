@@ -21,6 +21,9 @@ public:
 	//The sound resource.
 	ResourcePointer<SoundResource> _SoundResource;
 
+	//The gain.
+	float32 _Gain;
+
 	//The pan.
 	float32 _Pan;
 
@@ -148,6 +151,7 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	QueuedPlaySoundRequest queued_play_sound_request;
 
 	queued_play_sound_request._SoundResource = request._SoundResource;
+	queued_play_sound_request._Gain = request._Gain;
 	queued_play_sound_request._Pan = request._Pan;
 	queued_play_sound_request._StartTime = request._StartTime;
 	queued_play_sound_request._IsLooping = request._IsLooping;
@@ -225,6 +229,7 @@ void SoundSystem::Mix() NOEXCEPT
 			PlayingSound new_playing_sound;
 
 			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
+			new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
 			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
 			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
 			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);

@@ -32,6 +32,14 @@ public:
     }
 
     /*
+    *   Sets the gain.
+    */
+    FORCE_INLINE void SetGain(const float32 new_gain) NOEXCEPT
+    {
+        _Gain = new_gain;
+    }
+
+    /*
     *   Sets the pan.
     */
     FORCE_INLINE void SetPan(const float32 new_pan) NOEXCEPT
@@ -108,7 +116,7 @@ public:
             //Apply the pan.
             interpolated_sample *= _SoundResource->_Samples.Size() == 1 ? 1.0f : (actual_channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient);
 
-            return interpolated_sample * _ADSREnvelope.NextSample();
+            return interpolated_sample * _Gain * _ADSREnvelope.NextSample();
         }
 
         else
@@ -147,6 +155,9 @@ private:
 
     //The sound resource.
     ResourcePointer<SoundResource> _SoundResource;
+
+    //The gain.
+    float32 _Gain{ 1.0f };
 
     //The left pan coefficient.
     float32 _LeftPanCoefficient{ 1.0f };

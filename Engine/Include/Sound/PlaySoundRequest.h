@@ -21,6 +21,12 @@ public:
 	ResourcePointer<SoundResource> _SoundResource;
 
 	/*
+	*	The gain.
+	*	Acts as a simple multiplier to the output sound.
+	*/
+	float32 _Gain;
+
+	/*
 	*	The pan. 
 	*	This is defined as -1.0f being full left, 1.0f being full right and 0.0f being full center.
 	*/
