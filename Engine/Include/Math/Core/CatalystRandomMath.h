@@ -50,7 +50,7 @@ public:
 	/*
 	*	Given a number between 0.0f and 1.0f, representing a chance in percent, return whether or not it succeeded.
 	*/
-	FORCE_INLINE static NO_DISCARD bool RandomChance(const float chance) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool RandomChance(const float32 chance = 0.5f) NOEXCEPT
 	{
 		return chance > RandomFloatInRange(0.0f, 1.0f);
 	}

@@ -73,6 +73,14 @@ public:
     }
 
     /*
+    *   Returns the ADSR envelope.
+    */
+    FORCE_INLINE NO_DISCARD ADSREnvelope &GetADSREnvelope() NOEXCEPT
+    {
+        return _ADSREnvelope;
+    }
+
+    /*
     *   Advances this sound player.
     */
     FORCE_INLINE void Advance() NOEXCEPT

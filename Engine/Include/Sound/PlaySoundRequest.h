@@ -49,6 +49,14 @@ public:
 	bool _IsLooping;
 
 	/*
+	*	Parameters for the ADSR envelope accompanied with every playing sound.
+	*/
+	float32 _AttackTime;
+	float32 _DecayTime;
+	float32 _SustainGain;
+	float32 _ReleaseTime;
+
+	/*
 	*	The sound instance handle.
 	*	This can be nullptr if the requestee does not need to do anything with the sound instance afterwards.
 	*/

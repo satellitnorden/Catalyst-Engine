@@ -33,6 +33,18 @@ public:
 	//Denotes if the sound is looping.
 	bool _IsLooping;
 
+	//The attack time.
+	float32 _AttackTime;
+
+	//The decay time.
+	float32 _DecayTime;
+
+	//The sustain gain.
+	float32 _SustainGain;
+
+	//The release time.
+	float32 _ReleaseTime;
+
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
 
@@ -155,6 +167,10 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	queued_play_sound_request._Pan = request._Pan;
 	queued_play_sound_request._StartTime = request._StartTime;
 	queued_play_sound_request._IsLooping = request._IsLooping;
+	queued_play_sound_request._AttackTime = request._AttackTime;
+	queued_play_sound_request._DecayTime = request._DecayTime;
+	queued_play_sound_request._SustainGain = request._SustainGain;
+	queued_play_sound_request._ReleaseTime = request._ReleaseTime;
 	queued_play_sound_request._SoundInstanceHandle = _SoundInstanceCounter++;
 
 	if (request._SoundInstance)
@@ -233,6 +249,11 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
 			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
 			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
+																					queued_play_sound_request->_DecayTime,
+																					queued_play_sound_request->_SustainGain,
+																					queued_play_sound_request->_ReleaseTime);
 			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
 			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
 
