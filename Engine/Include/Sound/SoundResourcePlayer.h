@@ -7,6 +7,9 @@
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/SoundResource.h>
 
+//Sound.
+#include <Sound/ADSREnvelope.h>
+
 class SoundResourcePlayer final
 {
 
@@ -17,7 +20,7 @@ public:
     */
     FORCE_INLINE SoundResourcePlayer() NOEXCEPT
     {
-
+        _ADSREnvelope.EnterAttackStage();
     }
 
     /*
@@ -78,6 +81,8 @@ public:
         {
             _CurrentSample = 0;
         }
+
+        _ADSREnvelope.Advance();
     }
 
     /*
@@ -88,7 +93,7 @@ public:
         //If the playback position is before the beginning of the sound resource, just return.
         if (_CurrentSample < 0)
         {
-            return 0;
+            return 0.0f;
         }
 
         const uint64 actual_channel_index{ channel_index < _SoundResource->_Samples.Size() ? channel_index : 0 };
@@ -100,20 +105,17 @@ public:
 
             float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction) / static_cast<float32>(INT16_MAXIMUM) };
 
-            //Apply the gain.
-            //interpolated_sample *= _Gain;
-
             //Apply the pan.
             interpolated_sample *= _SoundResource->_Samples.Size() == 1 ? 1.0f : (actual_channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient);
 
-            return interpolated_sample;
+            return interpolated_sample * _ADSREnvelope.NextSample();
         }
 
         else
         {
             _IsActive = false;
 
-            return 0;
+            return 0.0f;
         }
     }
 
@@ -126,11 +128,19 @@ public:
     }
 
     /*
+    *   Stops the sound resource player.
+    */
+    FORCE_INLINE void Stop() NOEXCEPT
+    {
+        _ADSREnvelope.EnterReleaseStage();
+    }
+
+    /*
     *   Returns if this sound resource player is active.
     */
     FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
     {
-        return _IsActive;
+        return _CurrentSample < 0 || (_IsActive && _ADSREnvelope.IsActive());
     }
 
 private:
@@ -158,5 +168,8 @@ private:
 
     //Denotes if this sound resource player is active.
     bool _IsActive{ true };
+
+    //The ADSR envelope.
+    ADSREnvelope _ADSREnvelope;
 
 };

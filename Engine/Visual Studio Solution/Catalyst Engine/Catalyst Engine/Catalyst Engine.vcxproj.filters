@@ -1638,6 +1638,9 @@
     <ClInclude Include="..\..\..\Include\Sound\SoundUtilities.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\PlaySoundRequest.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

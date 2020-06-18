@@ -407,6 +407,7 @@
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />
     <ClInclude Include="..\..\..\Include\Sound\ADSREnvelope.h" />
+    <ClInclude Include="..\..\..\Include\Sound\PlaySoundRequest.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundResourcePlayer.h" />

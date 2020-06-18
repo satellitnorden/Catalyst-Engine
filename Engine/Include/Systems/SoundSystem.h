@@ -8,11 +8,8 @@
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Thread.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/SoundResource.h>
-
 //Sound.
+#include <Sound/PlaySoundRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
 
@@ -65,11 +62,7 @@ public:
 	/*
 	*	Plays a sound.
 	*/
-	void PlaySound(	const ResourcePointer<SoundResource> resource,
-					const float32 pan,
-					const bool is_looping,
-					const float32 start_time,
-					SoundInstanceHandle *const RESTRICT handle) NOEXCEPT;
+	void PlaySound(const PlaySoundRequest &request) NOEXCEPT;
 
 	/*
 	*	Stops a sound.

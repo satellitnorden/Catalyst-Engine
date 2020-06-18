@@ -11,9 +11,9 @@
 DEFINE_SINGLETON(SoundSystem);
 
 /*
-*	Queued play sound class definition.
+*	Queued play sound request class definition.
 */
-class QueuedPlaySound final
+class QueuedPlaySoundRequest final
 {
 
 public:
@@ -24,11 +24,11 @@ public:
 	//The pan.
 	float32 _Pan;
 
-	//Denotes if the sound is looping.
-	bool _IsLooping;
-
 	//The start time.
 	float32 _StartTime;
+
+	//Denotes if the sound is looping.
+	bool _IsLooping;
 
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
@@ -36,9 +36,9 @@ public:
 };
 
 /*
-*	Queued stop sound class definition.
+*	Queued stop sound request class definition.
 */
-class QueuedStopSound final
+class QueuedStopSoundRequest final
 {
 
 public:
@@ -86,11 +86,11 @@ namespace SoundSystemData
 	//The queued master channel mix components.
 	AtomicQueue<SoundMixComponent, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedMasterChannelMixComponents;
 
-	//The queued play sounds.
-	AtomicQueue<QueuedPlaySound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedPlaySounds;
+	//The queued play sound requests.
+	AtomicQueue<QueuedPlaySoundRequest, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedPlaySoundRequests;
 
 	//The queued stop sounds.
-	AtomicQueue<QueuedStopSound, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedStopSounds;
+	AtomicQueue<QueuedStopSoundRequest, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedStopSoundRequests;
 
 	//The playing sounds.
 	DynamicArray<PlayingSound> _PlayingSounds;
@@ -142,27 +142,23 @@ void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &componen
 /*
 *	Plays a sound.
 */
-void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
-							const float32 pan,
-							const bool is_looping,
-							const float32 start_time,
-							SoundInstanceHandle *const RESTRICT handle) NOEXCEPT
+void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 {
-	//Queue the play sound.
-	QueuedPlaySound queued_play_sound;
+	//Queue the play sound request.
+	QueuedPlaySoundRequest queued_play_sound_request;
 
-	queued_play_sound._SoundResource = resource;
-	queued_play_sound._Pan = pan;
-	queued_play_sound._IsLooping = is_looping;
-	queued_play_sound._StartTime = start_time;
-	queued_play_sound._SoundInstanceHandle = _SoundInstanceCounter++;
+	queued_play_sound_request._SoundResource = request._SoundResource;
+	queued_play_sound_request._Pan = request._Pan;
+	queued_play_sound_request._StartTime = request._StartTime;
+	queued_play_sound_request._IsLooping = request._IsLooping;
+	queued_play_sound_request._SoundInstanceHandle = _SoundInstanceCounter++;
 
-	if (handle)
+	if (request._SoundInstance)
 	{
-		*handle = queued_play_sound._SoundInstanceHandle;
+		*request._SoundInstance = queued_play_sound_request._SoundInstanceHandle;
 	}
 
-	SoundSystemData::_QueuedPlaySounds.Push(queued_play_sound);
+	SoundSystemData::_QueuedPlaySoundRequests.Push(queued_play_sound_request);
 }
 
 /*
@@ -170,12 +166,12 @@ void SoundSystem::PlaySound(const ResourcePointer<SoundResource> resource,
 */
 void SoundSystem::StopSound(const SoundInstanceHandle handle) NOEXCEPT
 {
-	//Queue the stop sound.
-	QueuedStopSound queued_stop_sound;
+	//Queue the stop sound request.
+	QueuedStopSoundRequest queued_stop_sound_request;
 
-	queued_stop_sound._SoundInstanceHandle = handle;
+	queued_stop_sound_request._SoundInstanceHandle = handle;
 
-	SoundSystemData::_QueuedStopSounds.Push(queued_stop_sound);
+	SoundSystemData::_QueuedStopSoundRequests.Push(queued_stop_sound_request);
 }
 
 /*
@@ -223,29 +219,29 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		//Add all queued play sounds to the playing sounds.
-		while (QueuedPlaySound *const RESTRICT queued_play_sound{ SoundSystemData::_QueuedPlaySounds.Pop() })
+		//Add all queued play sound requests to the playing sounds.
+		while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
 		{
 			PlayingSound new_playing_sound;
 
-			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound->_SoundResource);
-			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound->_Pan);
-			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound->_SoundResource->_SampleRate / GetSampleRate());
-			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound->_IsLooping);
-			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound->_StartTime * queued_play_sound->_SoundResource->_SampleRate));
-			new_playing_sound._SoundInstanceHandle = queued_play_sound->_SoundInstanceHandle;
+			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
+			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
+			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
+			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
+			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
+			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
 		}
 
-		//Stop all queued stop sounds.
-		while (QueuedStopSound *const RESTRICT queued_stop_sound{ SoundSystemData::_QueuedStopSounds.Pop() })
+		//Stop all queued stop sound requests.
+		while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
 		{
 			for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
 			{
-				if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound->_SoundInstanceHandle)
+				if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
 				{
-					SoundSystemData::_PlayingSounds.EraseAt(i);
+					SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
 
 					break;
 				}

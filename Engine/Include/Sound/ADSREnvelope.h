@@ -34,14 +34,6 @@ public:
   }
 
   /*
-  * Increments the current sample.
-  */
-  FORCE_INLINE void IncrementCurrentSample() NOEXCEPT
-  {
-    ++_CurrentSample;
-  }
-
-  /*
   * Sets the sample rate.
   */
   FORCE_INLINE void SetSampleRate(const float sample_rate)
@@ -61,9 +53,95 @@ public:
   }
 
   /*
+  * Returns the current stage.
+  */
+  FORCE_INLINE NO_DISCARD Stage GetCurrentStage() const NOEXCEPT
+  {
+      return _CurrentStage;
+  }
+
+  /*
+  * Advances this envelope.
+  */
+  FORCE_INLINE void Advance() NOEXCEPT
+  {
+      ++_CurrentSample;
+  }
+
+  /*
+  * Retrieves the next sample for this envelope.
+  */
+  FORCE_INLINE float32 NextSample()
+  {
+      switch (_CurrentStage)
+      {
+          case Stage::STAGE_OFF:
+          {
+              return 0.0f;
+          }
+
+          case Stage::STAGE_ATTACK:
+          {
+              //Calculate the multiplier.
+              const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
+
+              //Check if the decay stage should be entered.
+              if (_CurrentSample >= _SamplesUntilNextStage)
+              {
+                  EnterDecayStage();
+              }
+
+              //For the attack stage, the gain is simply the multiplier.
+              return multiplier;
+          }
+
+          case Stage::STAGE_DECAY:
+          {
+              //Calculate the multiplier.
+              const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
+
+              //Check if the sustain stage should be entered.
+              if (_CurrentSample >= _SamplesUntilNextStage)
+              {
+                  EnterSustainStage();
+              }
+
+              //For the decay stage, blend in the sustain value.
+              return CatalystBaseMath::LinearlyInterpolate(1.0f, _StageValues[2], multiplier);
+          }
+
+          case Stage::STAGE_SUSTAIN:
+          {
+              //For the sustain stage, simply return the sustain value.
+              return _StageValues[2];
+          }
+
+          case Stage::STAGE_RELEASE:
+          {
+              //Calculate the multiplier.
+              const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
+
+              //Check if the off stage should be entered.
+              if (_CurrentSample >= _SamplesUntilNextStage)
+              {
+                  EnterOffStage();
+              }
+
+              //For the decay stage, blend in the sustain value.
+              return CatalystBaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, multiplier);
+          }
+
+          default:
+          {
+              return 0.0f;
+          }
+      }
+  }
+
+  /*
   * Returns if this envelope is active.
   */
-  FORCE_INLINE bool IsActive()
+  FORCE_INLINE bool IsActive() const NOEXCEPT
   {
     return _CurrentStage != Stage::STAGE_OFF;
   }
@@ -116,76 +194,6 @@ public:
     _CurrentStage = Stage::STAGE_RELEASE;
     _CurrentSample = 0;
     _SamplesUntilNextStage = static_cast<uint32>(_StageValues[3] * _SampleRate);
-  }
-
-  /*
-  * Updates this envelope, returning the current gain.
-  */
-  FORCE_INLINE float Update()
-  {
-    switch (_CurrentStage)
-    {
-      case Stage::STAGE_OFF:
-      {
-        return 0.0f;
-      }
-
-      case Stage::STAGE_ATTACK:
-      {
-        //Calculate the multiplier.
-        const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
-
-        //Check if the decay stage should be entered.
-        if (_CurrentSample >= _SamplesUntilNextStage)
-        {
-          EnterDecayStage();
-        }
-
-        //For the attack stage, the gain is simply the multiplier.
-        return multiplier;
-      }
-
-      case Stage::STAGE_DECAY:
-      {
-        //Calculate the multiplier.
-        const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
-
-        //Check if the sustain stage should be entered.
-        if (_CurrentSample >= _SamplesUntilNextStage)
-        {
-          EnterSustainStage();
-        }
-
-        //For the decay stage, blend in the sustain value.
-        return CatalystBaseMath::LinearlyInterpolate(1.0f, _StageValues[2], multiplier);
-      }
-
-      case Stage::STAGE_SUSTAIN:
-      {
-        //For the sustain stage, simply return the sustain value.
-        return _StageValues[2];
-      }
-
-      case Stage::STAGE_RELEASE:
-      {
-        //Calculate the multiplier.
-        const float multiplier{ static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage) };
-
-        //Check if the off stage should be entered.
-        if (_CurrentSample >= _SamplesUntilNextStage)
-        {
-          EnterOffStage();
-        }
-
-        //For the decay stage, blend in the sustain value.
-        return CatalystBaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, multiplier);
-      }
-
-      default:
-      {
-        return 0.0f;
-      }
-    }
   }
 
 private:
