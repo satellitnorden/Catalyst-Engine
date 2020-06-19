@@ -24,9 +24,9 @@ class ResourceBuildingSystem final
 public:
 
 	/*
-	*	Builds a resource collection.
+	*	Builds resource collections.
 	*/
-	void BuildResourceCollection(const ResourceCollectionBuildParameters &parameters) NOEXCEPT;
+	void BuildResourceCollections(const ResourceCollectionBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds an animated model.
