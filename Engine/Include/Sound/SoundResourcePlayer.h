@@ -122,7 +122,7 @@ public:
             float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction) / static_cast<float32>(INT16_MAXIMUM) };
 
             //Apply the pan.
-            interpolated_sample *= _SoundResource->_Samples.Size() == 1 ? 1.0f : (actual_channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient);
+            interpolated_sample *= channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient;
 
             return interpolated_sample * _Gain * _ADSREnvelope.NextSample();
         }
