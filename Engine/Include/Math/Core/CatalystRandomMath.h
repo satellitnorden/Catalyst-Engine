@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -14,28 +15,28 @@ public:
 	/*
 	*	Given a range, returns a floating point value in that range.
 	*/
-	FORCE_INLINE static NO_DISCARD float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 RandomFloatInRange(const float32 minimum, const float32 maximum) NOEXCEPT
 	{
-		static thread_local std::random_device randomDevice;
-		static thread_local std::mt19937 randomEngine{ randomDevice() };
+		static thread_local std::random_device random_device;
+		static thread_local std::mt19937 random_engine{ random_device() };
 
-		std::uniform_real_distribution<float> distribution{ minimum, maximum };
+		std::uniform_real_distribution<float32> distribution{ minimum, maximum };
 
-		return distribution(randomEngine);
+		return distribution(random_engine);
 	}
 
 	/*
 	*	Given a range, returns an integer value in that range.
 	*/
-	template <typename Type>
-	FORCE_INLINE static NO_DISCARD Type RandomIntegerInRange(const Type minimum, const Type maximum) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE RandomIntegerInRange(const TYPE minimum, const TYPE maximum) NOEXCEPT
 	{
-		static thread_local std::random_device randomDevice;
-		static thread_local std::mt19937 randomEngine{ randomDevice() };
+		static thread_local std::random_device random_device;
+		static thread_local std::mt19937 random_engine{ random_device() };
 
-		std::uniform_int_distribution<Type> distribution{ minimum, maximum };
+		std::uniform_int_distribution<TYPE> distribution{ minimum, maximum };
 
-		return distribution(randomEngine);
+		return distribution(random_engine);
 	}
 
 	/*
@@ -58,9 +59,27 @@ public:
 	/*
 	*	Given a range, returns a vector with each three elements randomly generated within that range.
 	*/
-	FORCE_INLINE static NO_DISCARD Vector3<float> RandomVector3InRange(const float minimum, const float maximum) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> RandomVector3InRange(const float32 minimum, const float32 maximum) NOEXCEPT
 	{
-		return Vector3<float>(RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum));
+		return Vector3<float32>(RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum), RandomFloatInRange(minimum, maximum));
+	}
+
+	/*
+	*	Randomly shuffles an array.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static void RandomShuffle(ArrayProxy<TYPE> *const RESTRICT array) NOEXCEPT
+	{
+		//Determine the number of iterations.
+		const uint64 number_of_iterations{ array->Size() };
+
+		for (uint64 i{ 0 }; i < number_of_iterations; ++i)
+		{
+			const uint64 first_index{ RandomIntegerInRange<uint64>(0, array->Size() - 1) };
+			const uint64 second_index{ RandomIntegerInRange<uint64>(0, array->Size() - 1) };
+
+			Swap(&array->At(first_index), &array->At(second_index));
+		}
 	}
 
 };

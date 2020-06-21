@@ -12,7 +12,7 @@ class ArrayProxy final
 public:
 
 	//Pointer to the beginning of the array.
-	const TYPE *RESTRICT _Array;
+	TYPE *RESTRICT _Array;
 
 	//The size of the array.
 	uint64 _Size;
@@ -31,7 +31,7 @@ public:
 	/*
 	*	Constructor taking a single value.
 	*/
-	FORCE_INLINE constexpr ArrayProxy(const TYPE &value) NOEXCEPT
+	FORCE_INLINE constexpr ArrayProxy(TYPE &value) NOEXCEPT
 		:
 		_Array(&value),
 		_Size(1)
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Constructor taking an array and size.
 	*/
-	FORCE_INLINE constexpr ArrayProxy(const TYPE *const RESTRICT array, const uint64 size) NOEXCEPT
+	FORCE_INLINE constexpr ArrayProxy(TYPE *const RESTRICT array, const uint64 size) NOEXCEPT
 		:
 		_Array(array),
 		_Size(size)
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Constructor taking a dynamic array.
 	*/
-	FORCE_INLINE constexpr ArrayProxy(const DynamicArray<TYPE> &array) NOEXCEPT
+	FORCE_INLINE constexpr ArrayProxy(DynamicArray<TYPE> &array) NOEXCEPT
 		:
 		_Array(array.Data()),
 		_Size(array.Size())
@@ -65,7 +65,7 @@ public:
 	*	Constructor taking a static array.
 	*/
 	template <uint64 LENGTH>
-	FORCE_INLINE constexpr ArrayProxy(const StaticArray<TYPE, LENGTH> &array) NOEXCEPT
+	FORCE_INLINE constexpr ArrayProxy(StaticArray<TYPE, LENGTH> &array) NOEXCEPT
 		:
 		_Array(array.Data()),
 		_Size(array.Size())
@@ -76,7 +76,7 @@ public:
 	/*
 	*	Assignment operator overload taking a single value.
 	*/
-	FORCE_INLINE constexpr void operator=(const TYPE &value) NOEXCEPT
+	FORCE_INLINE constexpr void operator=(TYPE &value) NOEXCEPT
 	{
 		new (this) ArrayProxy(value);
 	}
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Assignment operator overload taking a dynamic array.
 	*/
-	FORCE_INLINE constexpr void operator=(const DynamicArray<TYPE> &array) NOEXCEPT
+	FORCE_INLINE constexpr void operator=(DynamicArray<TYPE> &array) NOEXCEPT
 	{
 		new (this) ArrayProxy(array);
 	}
@@ -93,7 +93,7 @@ public:
 	*	Assignment operator overload taking a static array.
 	*/
 	template <uint64 LENGTH>
-	FORCE_INLINE constexpr void operator=(const StaticArray<TYPE, LENGTH> &array) NOEXCEPT
+	FORCE_INLINE constexpr void operator=(StaticArray<TYPE, LENGTH> &array) NOEXCEPT
 	{
 		new (this) ArrayProxy(array);
 	}
