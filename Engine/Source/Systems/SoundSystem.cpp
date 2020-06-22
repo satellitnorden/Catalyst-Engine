@@ -254,6 +254,7 @@ void SoundSystem::Mix() NOEXCEPT
 																					queued_play_sound_request->_DecayTime,
 																					queued_play_sound_request->_SustainGain,
 																					queued_play_sound_request->_ReleaseTime);
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
 			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
 			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
 

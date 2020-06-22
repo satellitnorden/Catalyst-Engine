@@ -20,7 +20,7 @@ public:
     */
     FORCE_INLINE SoundResourcePlayer() NOEXCEPT
     {
-        _ADSREnvelope.EnterAttackStage();
+        
     }
 
     /*
