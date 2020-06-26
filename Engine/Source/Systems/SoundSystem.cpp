@@ -208,9 +208,6 @@ void SoundSystem::Mix() NOEXCEPT
 			continue;
 		}
 
-		//Remember if the thread should yield at the end of this function.
-		const bool should_yield{ _MixingBuffersReady == NUMBER_OF_MIXING_BUFFERS };
-
 		//Cache the number of channels.
 		const uint8 number_of_channels{ GetNumberOfChannels() };
 
@@ -230,129 +227,126 @@ void SoundSystem::Mix() NOEXCEPT
 			_MixingBuffersInitialized = true;
 		}
 
-		//Add all queued master channel mix components.
-		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
-		{
-			for (uint8 i{ 0 }; i < 2; ++i)
-			{
-				_MasterChannelMixComponents[i].Emplace(*component);
-			}
-		}
-
-		//Add all queued play sound requests to the playing sounds.
-		while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
-		{
-			PlayingSound new_playing_sound;
-
-			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
-			new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
-			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
-			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
-			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
-			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
-			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
-																					queued_play_sound_request->_DecayTime,
-																					queued_play_sound_request->_SustainGain,
-																					queued_play_sound_request->_ReleaseTime);
-			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
-			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
-			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
-
-			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
-		}
-
-		//Stop all queued stop sound requests.
-		while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
-		{
-			for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
-			{
-				if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
-				{
-					SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
-
-					break;
-				}
-			}
-		}
-
 		//Make mixing buffers ready. (:
 		if (_MixingBuffersReady < NUMBER_OF_MIXING_BUFFERS)
 		{
-			while (_MixingBuffersReady < NUMBER_OF_MIXING_BUFFERS)
+			//Add all queued master channel mix components.
+			while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
 			{
-				//Write all samples.
-				uint32 current_sample_index{ 0 };
-
-				for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+				for (uint8 i{ 0 }; i < 2; ++i)
 				{
-					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+					_MasterChannelMixComponents[i].Emplace(*component);
+				}
+			}
+
+			//Add all queued play sound requests to the playing sounds.
+			while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
+			{
+				PlayingSound new_playing_sound;
+
+				new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
+				new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
+				new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
+				new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
+				new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
+				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
+				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
+					queued_play_sound_request->_DecayTime,
+					queued_play_sound_request->_SustainGain,
+					queued_play_sound_request->_ReleaseTime);
+				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
+				new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
+				new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
+
+				SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+			}
+
+			//Stop all queued stop sound requests.
+			while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
+			{
+				for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
+				{
+					if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
 					{
-						//Calculate the current sample.
-						float32 current_sample{ 0.0f };
+						SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
 
-						for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
-						{
-							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
-						}
-
-						//Apply the master channel mix components.
-						for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
-						{
-							component.Process(&current_sample);
-						}
-
-						//Write the current value.
-						switch (number_of_bits_per_sample)
-						{
-							case 8:
-							{
-								const int8 converted_sample{ static_cast<int8>(current_sample * static_cast<float32>(INT8_MAXIMUM)) };
-
-								static_cast<int8 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-								break;
-							}
-
-							case 16:
-							{
-								const int16 converted_sample{ static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)) };
-
-								static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-								break;
-							}
-
-							case 32:
-							{
-								const int32 converted_sample{ static_cast<int32>(current_sample * static_cast<float32>(INT32_MAXIMUM)) };
-
-								static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-								break;
-							}
-
-							default:
-							{
-								ASSERT(false, "Unhandled case!");
-
-								break;
-							}
-						}
+						break;
 					}
+				}
+			}
 
-					//Advance all playing sounds.
+			//Write all samples.
+			uint32 current_sample_index{ 0 };
+
+			for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+			{
+				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+				{
+					//Calculate the current sample.
+					float32 current_sample{ 0.0f };
+
 					for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
 					{
-						playing_sound._SoundResourcePlayer.Advance();
+						current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
+					}
+
+					//Apply the master channel mix components.
+					for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
+					{
+						component.Process(&current_sample);
+					}
+
+					//Write the current value.
+					switch (number_of_bits_per_sample)
+					{
+						case 8:
+						{
+							const int8 converted_sample{ static_cast<int8>(current_sample * static_cast<float32>(INT8_MAXIMUM)) };
+
+							static_cast<int8 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+							break;
+						}
+
+						case 16:
+						{
+							const int16 converted_sample{ static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)) };
+
+							static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+							break;
+						}
+
+						case 32:
+						{
+							const int32 converted_sample{ static_cast<int32>(current_sample * static_cast<float32>(INT32_MAXIMUM)) };
+
+							static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Unhandled case!");
+
+							break;
+						}
 					}
 				}
 
-				//Update the current mixing buffer write index.
-				_CurrentMixingBufferWriteIndex = (_CurrentMixingBufferWriteIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
-
-				//A new mixing buffer is ready.
-				++_MixingBuffersReady;
+				//Advance all playing sounds.
+				for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
+				{
+					playing_sound._SoundResourcePlayer.Advance();
+				}
 			}
+
+			//Update the current mixing buffer write index.
+			_CurrentMixingBufferWriteIndex = (_CurrentMixingBufferWriteIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+
+			//A new mixing buffer is ready.
+			++_MixingBuffersReady;
 		}
 
 		//Remove any inactive sounds.
@@ -369,11 +363,8 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		//Yield, if requested.
-		if (should_yield)
-		{
-			Concurrency::CurrentThread::Yield();
-		}
+		//Yield.
+		Concurrency::CurrentThread::Yield();
 	}
 }
 
