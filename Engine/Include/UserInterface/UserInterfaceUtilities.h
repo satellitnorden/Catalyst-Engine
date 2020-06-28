@@ -7,6 +7,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Rendering.
+#include <Rendering/Native/Resolution.h>
+
 //Resources.
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -115,6 +118,14 @@ namespace UserInterfaceUtilities
 				break;
 			}
 		}
+	}
+
+	/*
+	*	Calculates the normalized coordinate relative to the given resolution.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector2<float32> CalculateNormalizedCoordinate(const Vector2<uint32> coordinate, const Resolution resolution) NOEXCEPT
+	{
+		return Vector2<float32>(static_cast<float32>(coordinate._X) / static_cast<float32>(resolution._Width), static_cast<float32>(coordinate._Y) / static_cast<float32>(resolution._Height));
 	}
 
 }

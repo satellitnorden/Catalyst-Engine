@@ -149,6 +149,14 @@ public:
 	}
 
 	/*
+	*	Sets the volumetric shadows mode.
+	*/
+	FORCE_INLINE void SetVolumetricShadowsMode(const VolumetricShadowsMode value) NOEXCEPT
+	{
+		_VolumetricShadowsMode = value;
+	}
+
+	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
