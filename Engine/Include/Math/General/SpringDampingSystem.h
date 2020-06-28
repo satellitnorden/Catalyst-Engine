@@ -9,6 +9,22 @@ class SpringDampingSystem final
 public:
 
 	/*
+	*	Returns the current.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetCurrent() const NOEXCEPT
+	{
+		return _Current;
+	}
+
+	/*
+	*	Sets the current.
+	*/
+	FORCE_INLINE void SetCurrent(const float32 value) NOEXCEPT
+	{
+		_Current = value;
+	}
+
+	/*
 	*	Returns the desired value.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetDesired() const NOEXCEPT

@@ -6,16 +6,18 @@
 //Catalyst base math constants.
 namespace CatalystBaseMathConstants
 {
-	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
-	constexpr float PI{ 3.141'592f };
-	constexpr float DOUBLE_PI{ PI * 2.0f };
-	constexpr float HALF_PI{ PI * 0.5f };
-	constexpr float QUARTER_PI{ HALF_PI * 0.5f };
-	constexpr float EIGHTH_PI{ QUARTER_PI * 0.5f };
-	constexpr float SIXTEENTH_PI{ EIGHTH_PI * 0.5f };
-	constexpr float THIRTYSECONDTH_PI{ SIXTEENTH_PI * 0.5f };
-	constexpr float INVERSE_PI{ 1.0f / PI };
-	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
+	constexpr float32 DEGREES_TO_RADIANS{ 0.017'453f };
+	constexpr float32 PI{ 3.141'592f };
+	constexpr float32 DOUBLE_PI{ PI * 2.0f };
+	constexpr float32 HALF_PI{ PI * 0.5f };
+	constexpr float32 QUARTER_PI{ HALF_PI * 0.5f };
+	constexpr float32 EIGHTH_PI{ QUARTER_PI * 0.5f };
+	constexpr float32 SIXTEENTH_PI{ EIGHTH_PI * 0.5f };
+	constexpr float32 THIRTYSECONDTH_PI{ SIXTEENTH_PI * 0.5f };
+	constexpr float32 INVERSE_PI{ 1.0f / PI };
+	constexpr float32 EULERS_NUMBER{ 2.718281f };
+	constexpr float32 PHI{ 1.618033f };
+	constexpr float32 RADIANS_TO_DEGREES{ 57.295'779f };
 }
 
 class CatalystBaseMath final
