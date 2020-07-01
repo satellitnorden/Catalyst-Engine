@@ -1037,9 +1037,9 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
 template <class T>
 uint8_t AudioFile<T>::sampleToSingleByte (T sample)
 {
-    sample = clamp (sample, -1., 1.);
-    sample = (sample + 1.) / 2.;
-    return static_cast<uint8_t> (sample * 255.);
+    sample = clamp (sample, static_cast<T>(-1.0), static_cast<T>(1.0));
+    sample = (sample + static_cast<T>(1.0)) / static_cast<T>(2.0);
+    return static_cast<uint8_t> (sample * static_cast<T>(255.0));
 }
 
 //=============================================================

@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/SoundSystem.h>
 
+//File.
+#include <File/Writers/WAVWriter.h>
+
 //Sound.
 #include <Sound/SoundResourcePlayer.h>
 
@@ -195,6 +198,54 @@ void SoundSystem::StopSound(const SoundInstanceHandle handle) NOEXCEPT
 }
 
 /*
+*	Returns if the sound system is currently recording.
+*/
+NO_DISCARD bool SoundSystem::IsCurrentlyRecording() const NOEXCEPT
+{
+	return _ShouldRecord.IsSet();
+}
+
+/*
+*	Starts recording.
+*	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
+*/
+void SoundSystem::StartRecording(const float32 expected_length) NOEXCEPT
+{
+	//Reset the recording sound resource.
+	_RecordingSoundResource._Samples.Clear();
+
+	//Set up the recording sound resource.
+	_RecordingSoundResource._SampleRate = GetSampleRate();
+	_RecordingSoundResource._NumberOfChannels = GetNumberOfChannels();
+	_RecordingSoundResource._Samples.Upsize<true>(2);
+
+	//Allocate the required amount of data, if the expected length is reported.
+	if (expected_length > 0.0f)
+	{
+		_RecordingSoundResource._Samples[0].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundResource._Samples[1].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+	}
+
+	//Set the flag.
+	_ShouldRecord.Set();
+}
+
+/*
+*	Stops recording. Saves the recording to a .WAV file to the specified file path.
+*/
+void SoundSystem::StopRecording(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Clear the flag.
+	_ShouldRecord.Clear();
+
+	//Wait for the sound system to stop recording.
+	_IsRecording.Wait<WaitMode::YIELD>();
+
+	//Write the recording to the given file path.
+	WAVWriter::Write(file_path, _RecordingSoundResource);
+}
+
+/*
 *	Performs mixing.
 */
 void SoundSystem::Mix() NOEXCEPT
@@ -251,9 +302,9 @@ void SoundSystem::Mix() NOEXCEPT
 				new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
 				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
 				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
-					queued_play_sound_request->_DecayTime,
-					queued_play_sound_request->_SustainGain,
-					queued_play_sound_request->_ReleaseTime);
+																						queued_play_sound_request->_DecayTime,
+																						queued_play_sound_request->_SustainGain,
+																						queued_play_sound_request->_ReleaseTime);
 				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
 				new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
 				new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
@@ -332,6 +383,19 @@ void SoundSystem::Mix() NOEXCEPT
 
 							break;
 						}
+					}
+
+					//If the sound system is currently recording, write the mixed sample into the recording sound resource.
+					if (_ShouldRecord.IsSet())
+					{
+						_IsRecording.Set();
+
+						_RecordingSoundResource._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
+					}
+
+					else
+					{
+						_IsRecording.Clear();
 					}
 				}
 

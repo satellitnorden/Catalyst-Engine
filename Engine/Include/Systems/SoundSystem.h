@@ -5,6 +5,7 @@
 #include <Core/General/CatalystProjectConfiguration.h>
 
 //Concurrency.
+#include <Concurrency/AtomicFlag.h>
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Thread.h>
 
@@ -69,6 +70,22 @@ public:
 	*/
 	void StopSound(const SoundInstanceHandle handle) NOEXCEPT;
 
+	/*
+	*	Returns if the sound system is currently recording.
+	*/
+	NO_DISCARD bool IsCurrentlyRecording() const NOEXCEPT;
+
+	/*
+	*	Starts recording.
+	*	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
+	*/
+	void StartRecording(const float32 expected_length = 0.0f) NOEXCEPT;
+
+	/*
+	*	Stops recording. Saves the recording to a .WAV file to the specified file path.
+	*/
+	void StopRecording(const char *const RESTRICT file_path) NOEXCEPT;
+
 private:
 
 	//The number of mixing buffers.
@@ -103,6 +120,15 @@ private:
 
 	//The current sample read index.
 	uint32 _CurrentSampleReadIndex{ 0 };
+
+	//Denotes whether or not the sound system should currently record.
+	AtomicFlag _ShouldRecord;
+
+	//Denotes whether or not the sound system is currently recording.
+	AtomicFlag _IsRecording;
+
+	//The recording sound resource.
+	SoundResource _RecordingSoundResource;
 
 	/*
 	*	Initializes the platform.
