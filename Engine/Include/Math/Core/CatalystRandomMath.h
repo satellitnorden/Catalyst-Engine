@@ -13,6 +13,18 @@ class CatalystRandomMath final
 public:
 
 	/*
+	*	Returns a floating point value in the range [0.0f, 1.0f].
+	*/
+	FORCE_INLINE static NO_DISCARD float32 RandomFloat() NOEXCEPT
+	{
+		static thread_local std::random_device random_device;
+		static thread_local std::mt19937 random_engine{ random_device() };
+		static thread_local std::uniform_real_distribution<float32> distribution{ 0.0f, 1.0f };
+
+		return distribution(random_engine);
+	}
+
+	/*
 	*	Given a range, returns a floating point value in that range.
 	*/
 	FORCE_INLINE static NO_DISCARD float32 RandomFloatInRange(const float32 minimum, const float32 maximum) NOEXCEPT
