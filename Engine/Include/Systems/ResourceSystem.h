@@ -40,6 +40,11 @@ public:
 
 	}
 
+	/*
+	*	Terminates the resource system.
+	*/
+	void Terminate() NOEXCEPT;
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Returns the resource building system.

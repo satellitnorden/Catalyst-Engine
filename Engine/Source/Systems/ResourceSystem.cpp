@@ -11,6 +11,15 @@
 DEFINE_SINGLETON(ResourceSystem);
 
 /*
+*	Terminates the resource system.
+*/
+void ResourceSystem::Terminate() NOEXCEPT
+{
+	//Tell resource pointers to stop reference counting.
+	ResourcePointerData::_DoReferenceCounting = false;
+}
+
+/*
 *	Loads the resources contained in the given directory path.
 */
 void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NOEXCEPT

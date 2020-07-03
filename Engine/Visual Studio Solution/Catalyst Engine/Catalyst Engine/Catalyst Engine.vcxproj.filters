@@ -385,6 +385,9 @@
     <Filter Include="File\Include\Types">
       <UniqueIdentifier>{f69f084c-9292-495c-aec1-7beb25cb9026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Source\Core">
+      <UniqueIdentifier>{be0f9474-fcbc-4b6a-894d-c64119daa4d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -2188,6 +2191,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Editor\EditorPlacementSystem.cpp">
       <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Core\ResourcePointer.cpp">
+      <Filter>Resources\Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,12 @@
 //Resources.
 #include <Resources/Core/Resource.h>
 
+//Resource pointer data.
+namespace ResourcePointerData
+{
+	extern bool _DoReferenceCounting;
+}
+
 /*
 *	Wrapper around a pointer to a Resource, or any derived classes from it.
 *	Implements reference-counting to determine when to load/unload resources,
@@ -34,10 +40,7 @@ public:
 		:
 		_Resource(initial_resource)
 	{
-		/*
-		//Increment the resource's reference count.
-		++_Resource->_ReferenceCount;
-		*/
+		IncrementReferenceCount();
 	}
 
 	/*
@@ -45,13 +48,17 @@ public:
 	*/
 	FORCE_INLINE ~ResourcePointer() NOEXCEPT
 	{
-		/*
-		//Decrement the resource's reference count.
-		if (_Resource)
-		{
-			--_Resource->_ReferenceCount;
-		}
-		*/
+		DecrementReferenceCount();
+	}
+
+	/*
+	*	Copy operator overload.
+	*/
+	FORCE_INLINE void operator=(const ResourcePointer &other) NOEXCEPT
+	{
+		DecrementReferenceCount();
+		_Resource = other._Resource;
+		IncrementReferenceCount();
 	}
 
 	/*
@@ -82,5 +89,27 @@ private:
 
 	//The underlying resource.
 	TYPE *RESTRICT _Resource;
+
+	/*
+	*	Increments the reference count.
+	*/
+	FORCE_INLINE void IncrementReferenceCount() const NOEXCEPT
+	{
+		if (ResourcePointerData::_DoReferenceCounting && _Resource)
+		{
+			++_Resource->_ReferenceCount;
+		}
+	}
+
+	/*
+	*	Decrements the reference count.
+	*/
+	FORCE_INLINE void DecrementReferenceCount() const NOEXCEPT
+	{
+		if (ResourcePointerData::_DoReferenceCounting && _Resource)
+		{
+			--_Resource->_ReferenceCount;
+		}
+	}
 
 };

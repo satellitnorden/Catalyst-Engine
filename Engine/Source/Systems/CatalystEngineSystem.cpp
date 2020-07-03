@@ -282,6 +282,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 #endif
 	DistributionSystem::Instance->Terminate();
 	RenderingSystem::Instance->Terminate();
+	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 }
 
