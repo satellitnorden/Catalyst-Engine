@@ -331,91 +331,127 @@ void SoundSystem::Mix() NOEXCEPT
 		{
 			CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 
-			//Remember if the sound system is recording.
+			//Write all samples.
+			{
+				uint32 current_sample_index{ 0 };
+
+				for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+				{
+					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+					{
+						//Calculate the current sample.
+						float32 current_sample{ 0.0f };
+
+						for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
+						{
+							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
+						}
+
+						//Apply the master channel mix components.
+						for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
+						{
+							component.Process(&current_sample);
+						}
+
+						//Write the current value.
+						switch (number_of_bits_per_sample)
+						{
+							case 8:
+							{
+								const int8 converted_sample{ static_cast<int8>(current_sample * static_cast<float32>(INT8_MAXIMUM)) };
+
+								static_cast<int8 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+								break;
+							}
+
+							case 16:
+							{
+								const int16 converted_sample{ static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)) };
+
+								static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+								break;
+							}
+
+							case 32:
+							{
+								const int32 converted_sample{ static_cast<int32>(current_sample * static_cast<float32>(INT32_MAXIMUM)) };
+
+								static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+
+								break;
+							}
+
+							default:
+							{
+								ASSERT(false, "Unhandled case!");
+
+								break;
+							}
+						}
+					}
+
+					//Advance all playing sounds.
+					for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
+					{
+						playing_sound._SoundResourcePlayer.Advance();
+					}
+				}
+			}
+
+			//Check if the sound system should record.
 			const bool should_record{ _ShouldRecord.IsSet() };
 
-			//Set whether or not the sound is recording now.
+			//Set whether or not the sound is recording now, and if so, copy over the mixed buffer.
 			if (should_record)
 			{
 				_IsRecording.Set();
+
+				uint32 current_sample_index{ 0 };
+
+				for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+				{
+					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+					{
+						//Write the current value into the recording sound resource.
+						switch (number_of_bits_per_sample)
+						{
+							case 8:
+							{
+								ASSERT(false, "Inplement this plz!");
+
+								break;
+							}
+
+							case 16:
+							{
+								_RecordingSoundResource._Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
+
+								break;
+							}
+
+							case 32:
+							{
+								ASSERT(false, "Inplement this plz!");
+
+								break;
+							}
+
+							default:
+							{
+								ASSERT(false, "Unhandled case!");
+
+								break;
+							}
+						}
+					}
+				}
 			}
 
 			else
 			{
 				_IsRecording.Clear();
-			}
-
-			//Write all samples.
-			uint32 current_sample_index{ 0 };
-
-			for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
-			{
-				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
-				{
-					//Calculate the current sample.
-					float32 current_sample{ 0.0f };
-
-					for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
-					{
-						current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
-					}
-
-					//Apply the master channel mix components.
-					for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
-					{
-						component.Process(&current_sample);
-					}
-
-					//Write the current value.
-					switch (number_of_bits_per_sample)
-					{
-						case 8:
-						{
-							const int8 converted_sample{ static_cast<int8>(current_sample * static_cast<float32>(INT8_MAXIMUM)) };
-
-							static_cast<int8 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-							break;
-						}
-
-						case 16:
-						{
-							const int16 converted_sample{ static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)) };
-
-							static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-							break;
-						}
-
-						case 32:
-						{
-							const int32 converted_sample{ static_cast<int32>(current_sample * static_cast<float32>(INT32_MAXIMUM)) };
-
-							static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-							break;
-						}
-
-						default:
-						{
-							ASSERT(false, "Unhandled case!");
-
-							break;
-						}
-					}
-
-					//If the sound system is currently recording, write the mixed sample into the recording sound resource.
-					if (should_record)
-					{
-						_RecordingSoundResource._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
-					}
-				}
-
-				//Advance all playing sounds.
-				for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
-				{
-					playing_sound._SoundResourcePlayer.Advance();
-				}
 			}
 
 			//Update the current mixing buffer write index.
