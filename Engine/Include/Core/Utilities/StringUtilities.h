@@ -13,9 +13,12 @@ public:
 		const uint64 first_length{ StringLength(first) };
 		const uint64 second_length{ StringLength(second) };
 
-		const uint64 length{ first_length < second_length ? first_length : second_length };
+		if (first_length != second_length)
+		{
+			return false;
+		}
 
-		for (uint64 i{ 0 }; i < length; ++i)
+		for (uint64 i{ 0 }; i < first_length; ++i)
 		{
 			if (first[i] != second[i])
 			{

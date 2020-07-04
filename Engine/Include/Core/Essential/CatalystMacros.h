@@ -4,6 +4,11 @@
 #include <Core/Essential/CatalystPreDefines.h>
 
 /*
+*	Calculates the length of a C-style array.
+*/
+#define ARRAY_LENGTH(X) (sizeof(X) / sizeof(*X))
+
+/*
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
