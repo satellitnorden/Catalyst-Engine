@@ -331,6 +331,20 @@ void SoundSystem::Mix() NOEXCEPT
 		{
 			CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 
+			//Remember if the sound system is recording.
+			const bool should_record{ _ShouldRecord.IsSet() };
+
+			//Set whether or not the sound is recording now.
+			if (should_record)
+			{
+				_IsRecording.Set();
+			}
+
+			else
+			{
+				_IsRecording.Clear();
+			}
+
 			//Write all samples.
 			uint32 current_sample_index{ 0 };
 
@@ -391,16 +405,9 @@ void SoundSystem::Mix() NOEXCEPT
 					}
 
 					//If the sound system is currently recording, write the mixed sample into the recording sound resource.
-					if (_ShouldRecord.IsSet())
+					if (should_record)
 					{
-						_IsRecording.Set();
-
 						_RecordingSoundResource._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
-					}
-
-					else
-					{
-						_IsRecording.Clear();
 					}
 				}
 
