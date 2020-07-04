@@ -120,6 +120,9 @@ namespace SoundSystemData
 */
 void SoundSystem::Initialize() NOEXCEPT
 {
+	//Reserve the appropriate memory to (hopefully) avoid memory allocations in mixing thread.
+	SoundSystemData::_PlayingSounds.Reserve(1'024);
+
 	//Launch the mixing thread.
 	_MixingThread.SetFunction([]()
 	{
@@ -278,53 +281,55 @@ void SoundSystem::Mix() NOEXCEPT
 			_MixingBuffersInitialized = true;
 		}
 
+		//Add all queued master channel mix components.
+		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
+		{
+			for (uint8 i{ 0 }; i < 2; ++i)
+			{
+				_MasterChannelMixComponents[i].Emplace(*component);
+			}
+		}
+
+		//Add all queued play sound requests to the playing sounds.
+		while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
+		{
+			PlayingSound new_playing_sound;
+
+			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
+			new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
+			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
+			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
+			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
+																					queued_play_sound_request->_DecayTime,
+																					queued_play_sound_request->_SustainGain,
+																					queued_play_sound_request->_ReleaseTime);
+			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
+			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
+			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
+
+			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+		}
+
+		//Stop all queued stop sound requests.
+		while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
+		{
+			for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
+			{
+				if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
+				{
+					SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
+
+					break;
+				}
+			}
+		}
+
 		//Make mixing buffers ready. (:
 		if (_MixingBuffersReady < NUMBER_OF_MIXING_BUFFERS)
 		{
-			//Add all queued master channel mix components.
-			while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
-			{
-				for (uint8 i{ 0 }; i < 2; ++i)
-				{
-					_MasterChannelMixComponents[i].Emplace(*component);
-				}
-			}
-
-			//Add all queued play sound requests to the playing sounds.
-			while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
-			{
-				PlayingSound new_playing_sound;
-
-				new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
-				new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
-				new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
-				new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
-				new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
-																						queued_play_sound_request->_DecayTime,
-																						queued_play_sound_request->_SustainGain,
-																						queued_play_sound_request->_ReleaseTime);
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
-				new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
-				new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
-
-				SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
-			}
-
-			//Stop all queued stop sound requests.
-			while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
-			{
-				for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
-				{
-					if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
-					{
-						SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
-
-						break;
-					}
-				}
-			}
+			CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 
 			//Write all samples.
 			uint32 current_sample_index{ 0 };
@@ -411,6 +416,8 @@ void SoundSystem::Mix() NOEXCEPT
 
 			//A new mixing buffer is ready.
 			++_MixingBuffersReady;
+
+			CATALYST_BENCHMARK_AVERAGE_SECTION_END("SoundSystem::Mix()");
 		}
 
 		//Remove any inactive sounds.
