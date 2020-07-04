@@ -95,6 +95,9 @@ namespace SoundSystemConstants
 	//The maximum number of queued stop sounds.
 	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_STOP_SOUNDS{ 128 };
 
+	//The maximum number of playing sounds.
+	constexpr uint64 MAXIMUM_NUMBER_OF_PLAYING_SOUNDS{ 1'024 };
+
 }
 
 //Sound system data.
@@ -121,7 +124,7 @@ namespace SoundSystemData
 void SoundSystem::Initialize() NOEXCEPT
 {
 	//Reserve the appropriate memory to (hopefully) avoid memory allocations in mixing thread.
-	SoundSystemData::_PlayingSounds.Reserve(1'024);
+	SoundSystemData::_PlayingSounds.Reserve(SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS);
 
 	//Launch the mixing thread.
 	_MixingThread.SetFunction([]()
@@ -310,6 +313,8 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+
+			ASSERT(SoundSystemData::_PlayingSounds.Capacity() == SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS, "Growing dynamic array in SoundSystem::Mix(), this is bad!");
 		}
 
 		//Stop all queued stop sound requests.
@@ -329,7 +334,42 @@ void SoundSystem::Mix() NOEXCEPT
 		//Make mixing buffers ready. (:
 		if (_MixingBuffersReady < NUMBER_OF_MIXING_BUFFERS)
 		{
-			CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+			//Calculate the conversion multiplier.
+			float32 conversion_multiplier;
+
+			switch (number_of_bits_per_sample)
+			{
+				case 8:
+				{
+					conversion_multiplier = static_cast<float32>(INT8_MAXIMUM);
+
+					break;
+				}
+
+				case 16:
+				{
+					conversion_multiplier = static_cast<float32>(INT16_MAXIMUM);
+
+					break;
+				}
+
+				case 32:
+				{
+					conversion_multiplier = static_cast<float32>(INT32_MAXIMUM);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Unhandled case!");
+
+					break;
+				}
+			}
+
+			//Calculate the number of bytes per sample.
+			const uint32 number_of_bytes_per_sample{ static_cast<uint32>(number_of_bits_per_sample) >> 3 };
 
 			//Write all samples.
 			{
@@ -342,6 +382,7 @@ void SoundSystem::Mix() NOEXCEPT
 						//Calculate the current sample.
 						float32 current_sample{ 0.0f };
 
+						//Add all playing sounds to the current sample.
 						for (PlayingSound &playing_sound : SoundSystemData::_PlayingSounds)
 						{
 							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
@@ -354,41 +395,15 @@ void SoundSystem::Mix() NOEXCEPT
 						}
 
 						//Write the current value.
-						switch (number_of_bits_per_sample)
 						{
-							case 8:
-							{
-								const int8 converted_sample{ static_cast<int8>(current_sample * static_cast<float32>(INT8_MAXIMUM)) };
+							const int32 converted_sample{ static_cast<int32>(current_sample * conversion_multiplier) };
 
-								static_cast<int8 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
+							void *const RESTRICT conversion_destination{ static_cast<byte* const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex]) + (current_sample_index * number_of_bytes_per_sample) };
+							const void *const RESTRICT conversion_source{ &converted_sample };
 
-								break;
-							}
+							Memory::Copy(conversion_destination, conversion_source, number_of_bytes_per_sample);
 
-							case 16:
-							{
-								const int16 converted_sample{ static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)) };
-
-								static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-								break;
-							}
-
-							case 32:
-							{
-								const int32 converted_sample{ static_cast<int32>(current_sample * static_cast<float32>(INT32_MAXIMUM)) };
-
-								static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++] = converted_sample;
-
-								break;
-							}
-
-							default:
-							{
-								ASSERT(false, "Unhandled case!");
-
-								break;
-							}
+							++current_sample_index;
 						}
 					}
 
@@ -459,8 +474,6 @@ void SoundSystem::Mix() NOEXCEPT
 
 			//A new mixing buffer is ready.
 			++_MixingBuffersReady;
-
-			CATALYST_BENCHMARK_AVERAGE_SECTION_END("SoundSystem::Mix()");
 		}
 
 		//Remove any inactive sounds.
