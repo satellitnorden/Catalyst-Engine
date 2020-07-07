@@ -165,6 +165,8 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\Ray.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Sphere.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Triangle.h" />
+    <ClInclude Include="..\..\..\Include\Math\MachineLearning\NeuralNetwork.h" />
+    <ClInclude Include="..\..\..\Include\Math\MachineLearning\Neuron.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\HaltonSequence.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\HammersleySequence.h" />
     <ClInclude Include="..\..\..\Include\Math\Noise\PerlinNoise.h" />

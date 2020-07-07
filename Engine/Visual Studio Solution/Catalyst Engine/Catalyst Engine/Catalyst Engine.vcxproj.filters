@@ -388,6 +388,9 @@
     <Filter Include="Resources\Source\Core">
       <UniqueIdentifier>{be0f9474-fcbc-4b6a-894d-c64119daa4d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Include\Machine Learning">
+      <UniqueIdentifier>{ea791b1d-34ae-4cb7-be9a-20e5ddea7f0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1646,6 +1649,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\File\Writers\WAVWriter.h">
       <Filter>File\Include\Writers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\MachineLearning\NeuralNetwork.h">
+      <Filter>Math\Include\Machine Learning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\MachineLearning\Neuron.h">
+      <Filter>Math\Include\Machine Learning</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
