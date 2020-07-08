@@ -18,9 +18,6 @@ public:
 	//Type aliases.
 	using ActivationFunction = float32(*)(const float32 X);
 
-	//The layer index.
-	uint64 _LayerIndex;
-
 	//The neuron index.
 	uint64 _NeuronIndex;
 
@@ -76,18 +73,18 @@ public:
 	}
 
 	/*
-	*	Calculates the output gradients.
+	*	Calculates the output gradient.
 	*/
-	FORCE_INLINE void CalculateOutputGradients(const float32 target_value) NOEXCEPT
+	FORCE_INLINE void CalculateOutputGradient(const float32 target_value) NOEXCEPT
 	{
 		//Calculate the gradient.
 		_Gradient = (target_value - _OutputValue) * Derivative(_OutputValue);
 	}
 
 	/*
-	*	Calculates the hidden gradients.
+	*	Calculates the hidden gradient.
 	*/
-	FORCE_INLINE void CalculateHiddenGradients(const DynamicArray<Neuron> &next_layer_neurons) NOEXCEPT
+	FORCE_INLINE void CalculateHiddenGradient(const DynamicArray<Neuron> &next_layer_neurons) NOEXCEPT
 	{
 		//Calculate the DOW.
 		float32 DOW{ 0.0f };

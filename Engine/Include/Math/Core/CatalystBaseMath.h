@@ -198,7 +198,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE constexpr static NO_DISCARD TYPE IsEven(const TYPE number) NOEXCEPT
 	{
-		return Modulo(number, 2) == 0;
+		return (number & static_cast<TYPE>(1)) == 0;
 	}
 
 	/*
@@ -215,7 +215,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE constexpr static NO_DISCARD TYPE IsOdd(const TYPE number) NOEXCEPT
 	{
-		return Modulo(number, 2) != 0;
+		return (number & static_cast<TYPE>(1)) == 1;
 	}
 
 	/*

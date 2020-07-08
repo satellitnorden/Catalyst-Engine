@@ -5,6 +5,9 @@
 #include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 
+//File.
+#include <File/Core/BinaryFile.h>
+
 //Math.
 #include <Math/MachineLearning/Neuron.h>
 
@@ -56,7 +59,6 @@ public:
 		_InputLayer._Neurons.Emplace();
 		Neuron &neuron{ _InputLayer._Neurons.Back() };
 
-		neuron._LayerIndex = 0;
 		neuron._NeuronIndex = _InputLayer._Neurons.LastIndex();
 	}
 
@@ -73,7 +75,6 @@ public:
 			hidden_layer._Neurons.Emplace();
 			Neuron &neuron{ hidden_layer._Neurons.Back() };
 
-			neuron._LayerIndex = 0;
 			neuron._NeuronIndex = hidden_layer._Neurons.LastIndex();
 		}
 	}
@@ -86,7 +87,6 @@ public:
 		_OutputLayer._Neurons.Emplace();
 		Neuron &neuron{ _OutputLayer._Neurons.Back() };
 
-		neuron._LayerIndex = _HiddenLayers.Size() + 1;
 		neuron._NeuronIndex = _OutputLayer._Neurons.LastIndex();
 	}
 
@@ -170,10 +170,13 @@ public:
 		_Error /= static_cast<float32>(_OutputLayer._Neurons.Size());
 		_Error = sqrt(_Error);
 
+		//Update the average error.
+		_AverageError = CatalystBaseMath::LinearlyInterpolate(_Error, _AverageError, 0.9f);
+
 		//Calculate the output gradients for the output layer.
 		for (uint64 i{ 0 }, size{ _OutputLayer._Neurons.Size() }; i < size; ++i)
 		{
-			_OutputLayer._Neurons[i].CalculateOutputGradients(expected_output_values[i]);
+			_OutputLayer._Neurons[i].CalculateOutputGradient(expected_output_values[i]);
 		}
 
 		//Calculate the output gradients for the hidden layers.
@@ -184,7 +187,7 @@ public:
 
 			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
 			{
-				neuron.CalculateHiddenGradients(next_layer_neurons);
+				neuron.CalculateHiddenGradient(next_layer_neurons);
 			}
 		}
 
@@ -213,6 +216,14 @@ public:
 	}
 
 	/*
+	*	Returns the average error.
+	*/
+	FORCE_INLINE NO_DISCARD float32 AverageError() const NOEXCEPT
+	{
+		return _AverageError;
+	}
+
+	/*
 	*	Retrieves the outputs from the neural network.
 	*/
 	FORCE_INLINE void Retrieve(ArrayProxy<float32> *const RESTRICT outputs) NOEXCEPT
@@ -222,6 +233,95 @@ public:
 		{
 			outputs->At(i) = _OutputLayer._Neurons[i]._OutputValue;
 		}
+	}
+
+	/*
+	*	Exports the training data to the given file path.
+	*/
+	FORCE_INLINE void ExportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
+	{
+		//Open the output file.
+		BinaryFile<IOMode::Out> output_file{ file_path };
+
+		//Write all weights for all neurons.
+		for (const Neuron &neuron : _InputLayer._Neurons)
+		{
+			for (const float32 weight : neuron._Weights)
+			{
+				output_file.Write(&weight, sizeof(float32));
+			}
+		}
+
+		for (const Layer &hidden_layer : _HiddenLayers)
+		{
+			for (const Neuron &neuron : hidden_layer._Neurons)
+			{
+				for (const float32 weight : neuron._Weights)
+				{
+					output_file.Write(&weight, sizeof(float32));
+				}
+			}
+		}
+
+		for (const Neuron &neuron : _OutputLayer._Neurons)
+		{
+			for (const float32 weight : neuron._Weights)
+			{
+				output_file.Write(&weight, sizeof(float32));
+			}
+		}
+
+		//Close the output file.
+		output_file.Close();
+	}
+
+	/*
+	*	Imports the training data from the given file path.
+	*/
+	FORCE_INLINE void ImportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
+	{
+		//Open the input file.
+		BinaryFile<IOMode::In> input_file{ file_path };
+
+		//Write all weights for all neurons.
+		for (Neuron &neuron : _InputLayer._Neurons)
+		{
+			for (float32 &weight : neuron._Weights)
+			{
+				float32 imported_weight{ 0.0f };
+				input_file.Read(&imported_weight, sizeof(float32));
+
+				weight = imported_weight;
+			}
+		}
+
+		for (Layer &hidden_layer : _HiddenLayers)
+		{
+			for (Neuron &neuron : hidden_layer._Neurons)
+			{
+				for (float32 &weight : neuron._Weights)
+				{
+					float32 imported_weight{ 0.0f };
+					input_file.Read(&imported_weight, sizeof(float32));
+
+					weight = imported_weight;
+				}
+			}
+		}
+
+		for (Neuron &neuron : _OutputLayer._Neurons)
+		{
+			for (float32 &weight : neuron._Weights)
+			{
+				float32 imported_weight{ 0.0f };
+				input_file.Read(&imported_weight, sizeof(float32));
+
+				weight = imported_weight;
+			}
+		}
+
+		//Close the input file.
+		input_file.Close();
 	}
 
 	/*
@@ -260,7 +360,7 @@ public:
 
 		//Define the transform function.
 		output_file << "\t//Define the transform function." << std::endl;
-		output_file << "\tconstexpr auto TRANSFORM_FUNCTION{[](const float32 X) { " << _ActivationFunctionString << " } };" << std::endl;
+		output_file << "\tconstexpr auto TRANSFORM_FUNCTION{ [](const float32 X) { " << _ActivationFunctionString << " } };" << std::endl;
 		output_file << std::endl;
 
 		//Declare and calculate all hidden layer output values.
@@ -376,6 +476,9 @@ private:
 
 	//The error.
 	float32 _Error;
+
+	//The average error.
+	float32 _AverageError{ 0.0f };
 
 	//The activation function.
 	Neuron::ActivationFunction _ActivationFunction{ nullptr };
