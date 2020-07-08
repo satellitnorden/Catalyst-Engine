@@ -8,6 +8,12 @@
 //Math.
 #include <Math/MachineLearning/Neuron.h>
 
+//Handy macro for setting the activation function on a neural network.
+#define NEURAL_NETWORK_SET_ACTIVATION_FUNCTION(NEURAL_NETWORK, FUNCTION)										\
+{																												\
+	(NEURAL_NETWORK).SetActivationFunction([](const float32 X) { return FUNCTION; }, "return "#FUNCTION";");	\
+}
+
 /*
 *	Class representing one neural network, with as many input/intermediate/output neurons as the user specifies.
 *	Can also load/save training data to disk, to be able to load this data in when needed.
@@ -16,6 +22,15 @@ class NeuralNetwork final
 {
 
 public:
+
+	/*
+	*	Sets the activation function.
+	*/
+	FORCE_INLINE void SetActivationFunction(const Neuron::ActivationFunction activation_function, const char *const RESTRICT activation_function_string) NOEXCEPT
+	{
+		_ActivationFunction = activation_function;
+		_ActivationFunctionString = activation_function_string;
+	}
 
 	/*
 	*	Sets the learning rate.
@@ -80,6 +95,12 @@ public:
 	*/
 	FORCE_INLINE void Prepare() NOEXCEPT
 	{
+		//If the activation function isn't set, just use the default.
+		if (!_ActivationFunction)
+		{
+			NEURAL_NETWORK_SET_ACTIVATION_FUNCTION(*this, tanh(X));
+		}
+
 		//Prepare the input layer.
 		for (Neuron &neuron : _InputLayer._Neurons)
 		{
@@ -115,7 +136,7 @@ public:
 
 			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
 			{
-				neuron.FeedForward(previous_layer_neurons);
+				neuron.FeedForward(previous_layer_neurons, _ActivationFunction);
 			}
 		}
 
@@ -126,7 +147,7 @@ public:
 
 			for (Neuron &neuron : _OutputLayer._Neurons)
 			{
-				neuron.FeedForward(previous_layer_neurons);
+				neuron.FeedForward(previous_layer_neurons, _ActivationFunction);
 			}
 		}
 	}
@@ -239,7 +260,7 @@ public:
 
 		//Define the transform function.
 		output_file << "\t//Define the transform function." << std::endl;
-		output_file << "\tconstexpr auto TRANSFORM_FUNCTION{[](const float32 X) { return tanh(X); };" << std::endl;
+		output_file << "\tconstexpr auto TRANSFORM_FUNCTION{[](const float32 X) { " << _ActivationFunctionString << " } };" << std::endl;
 		output_file << std::endl;
 
 		//Declare and calculate all hidden layer output values.
@@ -355,5 +376,11 @@ private:
 
 	//The error.
 	float32 _Error;
+
+	//The activation function.
+	Neuron::ActivationFunction _ActivationFunction{ nullptr };
+
+	//The activation function string.
+	const char *RESTRICT _ActivationFunctionString{ nullptr };
 
 };

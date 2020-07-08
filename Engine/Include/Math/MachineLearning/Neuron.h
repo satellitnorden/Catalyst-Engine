@@ -15,6 +15,9 @@ class Neuron final
 
 public:
 
+	//Type aliases.
+	using ActivationFunction = float32(*)(const float32 X);
+
 	//The layer index.
 	uint64 _LayerIndex;
 
@@ -58,7 +61,7 @@ public:
 	/*
 	*	Feeds forward.
 	*/
-	FORCE_INLINE void FeedForward(const DynamicArray<Neuron> &previous_layer_neurons) NOEXCEPT
+	FORCE_INLINE void FeedForward(const DynamicArray<Neuron> &previous_layer_neurons, const ActivationFunction activation_function) NOEXCEPT
 	{
 		//Calculate the sum.
 		float32 sum{ 0.0f };
@@ -69,7 +72,7 @@ public:
 		}
 
 		//Calculate the output value.
-		_OutputValue = Transform(sum);
+		_OutputValue = activation_function(sum);
 	}
 
 	/*
@@ -113,14 +116,6 @@ public:
 			neuron._Deltas[_NeuronIndex] = new_delta;
 			neuron._Weights[_NeuronIndex] += new_delta;
 		}
-	}
-
-	/*
-	*	The transform function.
-	*/
-	FORCE_INLINE NO_DISCARD float32 Transform(const float32 value) NOEXCEPT
-	{
-		return tanh(value);
 	}
 
 	/*
