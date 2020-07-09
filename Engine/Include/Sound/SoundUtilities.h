@@ -12,22 +12,23 @@ namespace SoundUtilities
 	/*
 	*	Calculates the realy note duration in seconds in regards to the beats per minute.
 	*/
-	FORCE_INLINE static NO_DISCARD float CalculateNoteDuration(const NoteDuration duration, const float32 beats_per_minute) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE CalculateNoteDuration(const NoteDuration duration, const TYPE beats_per_minute) NOEXCEPT
 	{
 		//Calculate the duration for each beat.
-		const float32 beat_duration{ 60.0f / beats_per_minute };
+		const TYPE beat_duration{ static_cast<TYPE>(60) / beats_per_minute };
 
 		//Modify based on duration.
 		switch (duration)
 		{
 			case NoteDuration::WHOLE:
 			{
-				return beat_duration * 4.0f;
+				return beat_duration * static_cast<TYPE>(4);
 			}
 
 			case NoteDuration::HALF:
 			{
-				return beat_duration * 2.0f;
+				return beat_duration * static_cast<TYPE>(2);
 			}
 
 			case NoteDuration::QUARTER:
@@ -37,29 +38,29 @@ namespace SoundUtilities
 
 			case NoteDuration::EIGHTH:
 			{
-				return beat_duration * 0.5f;
+				return beat_duration * static_cast<TYPE>(0.5);
 			}
 
 			case NoteDuration::SIXTEENTH:
 			{
-				return beat_duration * 0.25f;
+				return beat_duration * static_cast<TYPE>(0.25);
 			}
 
 			case NoteDuration::THIRTYSECOND:
 			{
-				return beat_duration * 0.125f;
+				return beat_duration * static_cast<TYPE>(0.125);
 			}
 
 			case NoteDuration::SIXTYFOURTH:
 			{
-				return beat_duration * 0.0625f;
+				return beat_duration * static_cast<TYPE>(0.0625);
 			}
 
 			default:
 			{
 				ASSERT(false, "Invalid case!");
 
-				return 0.0f;
+				return static_cast<TYPE>(0);
 			}
 		}
 	}

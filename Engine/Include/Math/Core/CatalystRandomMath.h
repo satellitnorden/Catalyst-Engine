@@ -27,12 +27,13 @@ public:
 	/*
 	*	Given a range, returns a floating point value in that range.
 	*/
-	FORCE_INLINE static NO_DISCARD float32 RandomFloatInRange(const float32 minimum, const float32 maximum) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE RandomFloatInRange(const TYPE minimum, const TYPE maximum) NOEXCEPT
 	{
 		static thread_local std::random_device random_device;
 		static thread_local std::mt19937 random_engine{ random_device() };
 
-		std::uniform_real_distribution<float32> distribution{ minimum, maximum };
+		std::uniform_real_distribution<TYPE> distribution{ minimum, maximum };
 
 		return distribution(random_engine);
 	}
