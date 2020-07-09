@@ -89,6 +89,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Scale = type_description->_Scale;
 			element->_HorizontalAlignment = type_description->_HorizontalAlignment;
 			element->_VerticalAlignment = type_description->_VerticalAlignment;
+			element->_TextSmoothingFactor = type_description->_TextSmoothingFactor;
 			element->_Text = std::move(type_description->_Text);
 
 			_UserInterfaceElements.Emplace(element);

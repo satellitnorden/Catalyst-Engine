@@ -28,6 +28,9 @@ public:
 	//The vertical alignment.
 	TextVerticalAlignment _VerticalAlignment;
 
+	//The text smoothing factor.
+	float32 _TextSmoothingFactor;
+
 	//The text.
 	DynamicString _Text;
 

@@ -16,7 +16,8 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 20) float WIDTH_RANGE_START;
     layout (offset = 24) float WIDTH_RANGE_END;
     layout (offset = 28) float ELEMENT_ASPECT_RATIO;
-    layout (offset = 32) UserInterfaceMaterial MATERIAL;
+    layout (offset = 32) float TEXT_SMOOTHING_FACTOR;
+    layout (offset = 48) UserInterfaceMaterial MATERIAL;
 };
 
 //In parameters.
@@ -47,7 +48,7 @@ void CatalystShaderMain()
 			float distance = texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r;
 
 			//Calculate the opacity.
-			float opacity = smoothstep(0.35f, 0.5f, distance);
+			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance);
 
 			//Write the fragment.
 			fragment = vec4(vec3(1.0f), opacity);

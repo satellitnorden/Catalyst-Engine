@@ -55,6 +55,12 @@ public:
 	//The element aspect ratio.
 	float32 _ElementAspectRatio;
 
+	//The text smoothing factor.
+	float32 _TextSmoothingFactor;
+
+	//Some padding.
+	Padding<12> _Padding;
+
 	//The material.
 	UserInterfaceMaterial _Material;
 
@@ -163,7 +169,8 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				fragment_data._WidthRangeStart = 0.0f;
 				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
-				
+				fragment_data._TextSmoothingFactor = 0.0f;
+
 				switch (type_element->_CurrentState)
 				{
 					case ButtonUserInterfaceElement::State::IDLE:
@@ -214,6 +221,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				fragment_data._WidthRangeStart = 0.0f;
 				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
+				fragment_data._TextSmoothingFactor = 0.0f;
 				fragment_data._Material = type_element->_Material;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
@@ -271,6 +279,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						fragment_data._WidthRangeStart = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
 						fragment_data._WidthRangeEnd = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
 						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
+						fragment_data._TextSmoothingFactor = type_element->_TextSmoothingFactor;
 						fragment_data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_MasterTextureIndex);
 
 						command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);

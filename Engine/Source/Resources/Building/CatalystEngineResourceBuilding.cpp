@@ -2670,7 +2670,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		resourceCollectionBuildParameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
 		resourceCollectionBuildParameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate";
 
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollection(resourceCollectionBuildParameters);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(resourceCollectionBuildParameters);
 	}
 #endif
 }

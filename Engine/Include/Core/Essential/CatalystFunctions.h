@@ -1,6 +1,30 @@
 #pragma once
 
 /*
+*	Flips the endian of the given value.
+*/
+template <typename TYPE>
+FORCE_INLINE static void FlipEndian(TYPE *const RESTRICT value) NOEXCEPT
+{
+	constexpr uint64 SIZE_OF_TYPE{ sizeof(TYPE) };
+
+	union
+	{
+		TYPE output_value;
+		uint8 output_array[SIZE_OF_TYPE];
+	} source, destination;
+	
+	source.output_value = *value;
+
+	for (uint64 i{ 0 }; i < SIZE_OF_TYPE; ++i)
+	{
+		destination.output_array[i] = source.output_array[SIZE_OF_TYPE - i - 1];
+	}
+
+	*value = destination.output_value;
+}
+
+/*
 *	Decrements a float32 down towards negative infinity to the previous representable value.
 */
 FORCE_INLINE static NO_DISCARD float32 PreviousFloat32(const float32 number) NOEXCEPT

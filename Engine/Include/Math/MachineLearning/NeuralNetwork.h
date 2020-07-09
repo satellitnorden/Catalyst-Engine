@@ -359,8 +359,8 @@ public:
 		output_file << "{" << std::endl;
 
 		//Define the transform function.
-		output_file << "\t//Define the transform function." << std::endl;
-		output_file << "\tconstexpr auto TRANSFORM_FUNCTION{ [](const float32 X) { " << _ActivationFunctionString << " } };" << std::endl;
+		output_file << "\t//Define the activation function." << std::endl;
+		output_file << "\tconstexpr auto ACTIVATION_FUNCTION{ [](const float32 X){ " << _ActivationFunctionString << " } };" << std::endl;
 		output_file << std::endl;
 
 		//Declare and calculate all hidden layer output values.
@@ -375,7 +375,7 @@ public:
 			{
 				output_file << "\tconst float32 hidden_layer_" << hidden_layer_index << "_" << neuron_index << "_output_value{ ";
 
-				output_file << "TRANSFORM_FUNCTION(";
+				output_file << "ACTIVATION_FUNCTION(";
 
 				for (uint64 previous_neuron_index{ 0 }; previous_neuron_index < previous_layer_neurons.Size(); ++previous_neuron_index)
 				{
@@ -414,7 +414,7 @@ public:
 
 			output_file << "\t//Now return the final output." << std::endl;
 
-			output_file << "\treturn TRANSFORM_FUNCTION(";
+			output_file << "\treturn ACTIVATION_FUNCTION(";
 
 			//Cache the previous layer neurons.
 			const DynamicArray<Neuron> &previous_layer_neurons{ _HiddenLayers.Back()._Neurons };
