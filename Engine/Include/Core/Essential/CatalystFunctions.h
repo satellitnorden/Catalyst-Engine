@@ -25,6 +25,51 @@ FORCE_INLINE static void FlipEndian(TYPE *const RESTRICT value) NOEXCEPT
 }
 
 /*
+*	Flips the endian of the given value and the given size.
+*/
+FORCE_INLINE static void FlipEndian(void *const RESTRICT value, const uint64 size) NOEXCEPT
+{
+	//Flipping endiands only make sense in the 1-8 byte range, so assume that's what we want.
+	switch (size)
+	{
+		case 1:
+		{
+			FlipEndian(static_cast<uint8 *const RESTRICT>(value));
+
+			break;
+		}
+
+		case 2:
+		{
+			FlipEndian(static_cast<uint16 *const RESTRICT>(value));
+
+			break;
+		}
+
+		case 4:
+		{
+			FlipEndian(static_cast<uint32 *const RESTRICT>(value));
+
+			break;
+		}
+
+		case 8:
+		{
+			FlipEndian(static_cast<uint64 *const RESTRICT>(value));
+
+			break;
+		}
+
+		default:
+		{
+			//This is bad, but these functions should preferably be ASSERT-free. (:
+
+			break;
+		}
+	}
+}
+
+/*
 *	Decrements a float32 down towards negative infinity to the previous representable value.
 */
 FORCE_INLINE static NO_DISCARD float32 PreviousFloat32(const float32 number) NOEXCEPT

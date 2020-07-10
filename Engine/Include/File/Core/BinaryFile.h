@@ -77,9 +77,20 @@ public:
 	/*
 	*	Reads from this binary file.
 	*/
-	FORCE_INLINE void Read(void *RESTRICT output, const uint64 size) NOEXCEPT
+	template <bool FLIP_ENDIAN = false>
+	FORCE_INLINE void Read(void *const RESTRICT output, const uint64 size) NOEXCEPT
 	{
-		_FileStream.read(static_cast<char *RESTRICT>(output), size);
+		_FileStream.read(static_cast<char *const RESTRICT>(output), size);
+	}
+
+	/*
+	*	Template specialization for when the Read function should flip the endian.
+	*/
+	template <>
+	FORCE_INLINE void Read<true>(void *const RESTRICT output, const uint64 size) NOEXCEPT
+	{
+		Read(output, size);
+		FlipEndian(output, size);
 	}
 
 	/*

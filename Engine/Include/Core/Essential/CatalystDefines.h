@@ -118,3 +118,4 @@
 #define BYTE_MAXIMUM (UINT8_MAXIMUM)
 
 #define FLOAT32_EPSILON (std::numeric_limits<float32>::epsilon())
+#define FLOAT64_EPSILON (std::numeric_limits<float64>::epsilon())
