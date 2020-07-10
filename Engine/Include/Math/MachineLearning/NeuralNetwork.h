@@ -98,7 +98,7 @@ public:
 		//If the activation function isn't set, just use the default.
 		if (!_ActivationFunction)
 		{
-			NEURAL_NETWORK_SET_ACTIVATION_FUNCTION(*this, 1.0f / (1.0f + exp(-X));
+			NEURAL_NETWORK_SET_ACTIVATION_FUNCTION(*this, 1.0f / (1.0f + exp(-X)));
 		}
 
 		//Prepare the input layer.
