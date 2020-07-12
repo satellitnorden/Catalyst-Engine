@@ -1656,6 +1656,9 @@
     <ClInclude Include="..\..\..\Include\Math\MachineLearning\Neuron.h">
       <Filter>Math\Include\Machine Learning</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\RandomIndexer.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
