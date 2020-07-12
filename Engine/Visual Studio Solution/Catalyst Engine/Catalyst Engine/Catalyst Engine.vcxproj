@@ -472,6 +472,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\General\Perceiver.cpp" />
+    <ClCompile Include="..\..\..\Source\Distribution\NullDistributionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Distribution\SteamDistributionSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorEntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorLevelSystem.cpp" />

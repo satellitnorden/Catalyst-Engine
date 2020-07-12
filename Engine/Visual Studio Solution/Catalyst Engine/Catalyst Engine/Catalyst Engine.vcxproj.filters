@@ -2207,6 +2207,9 @@
     <ClCompile Include="..\..\..\Source\Resources\Core\ResourcePointer.cpp">
       <Filter>Resources\Source\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Distribution\NullDistributionSystem.cpp">
+      <Filter>Distribution\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\General\Vector.inl">
