@@ -33,9 +33,9 @@ public:
 	/*
 	*	Constructor taking the file path.
 	*/
-	BinaryFile(const char *RESTRICT filePath) NOEXCEPT
+	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
-		_FileStream(filePath, std::ios::in | std::ios::binary | std::ios::ate)
+		_FileStream(file_path, std::ios::in | std::ios::binary | std::ios::ate)
 	{
 		//Save the size.
 		_Size = static_cast<uint64>(_FileStream.tellg());
@@ -144,9 +144,9 @@ public:
 	/*
 	*	Constructor taking the file path.
 	*/
-	BinaryFile(const char *RESTRICT filePath) NOEXCEPT
+	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
-		_FileStream(filePath, std::ios::out | std::ios::binary)
+		_FileStream(file_path, std::ios::out | std::ios::binary)
 	{
 
 	}
@@ -154,9 +154,9 @@ public:
 	/*
 	*	Writes to this file.
 	*/
-	FORCE_INLINE void Write(const void *RESTRICT input, const uint64 size) NOEXCEPT
+	FORCE_INLINE void Write(const void *const RESTRICT input, const uint64 size) NOEXCEPT
 	{
-		_FileStream.write(static_cast<const char *RESTRICT>(input), size);
+		_FileStream.write(static_cast<const char *const RESTRICT>(input), size);
 	}
 
 	/*
