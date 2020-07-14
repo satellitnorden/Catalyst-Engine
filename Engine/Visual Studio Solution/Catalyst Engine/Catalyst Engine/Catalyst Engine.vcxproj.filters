@@ -391,6 +391,12 @@
     <Filter Include="Math\Include\Machine Learning">
       <UniqueIdentifier>{ea791b1d-34ae-4cb7-be9a-20e5ddea7f0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Inline">
+      <UniqueIdentifier>{6719fe82-0bac-4416-b481-06c5440bcfcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Inline\Algorithms">
+      <UniqueIdentifier>{b6644bbc-6410-4b8d-bc32-b6d3b1a7fb6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -2229,6 +2235,12 @@
     </None>
     <None Include="..\..\..\Include\Platform\Windows\WindowsMemory.inl">
       <Filter>Platform\Inline\Windows</Filter>
+    </None>
+    <None Include="..\..\..\Include\Core\Algorithms\RunLengthEncodingCompressionAlgorithm.inl">
+      <Filter>Core\Inline\Algorithms</Filter>
+    </None>
+    <None Include="..\..\..\Include\Core\Algorithms\CatalystCompressionAlgorithm.inl">
+      <Filter>Core\Inline\Algorithms</Filter>
     </None>
   </ItemGroup>
 </Project>

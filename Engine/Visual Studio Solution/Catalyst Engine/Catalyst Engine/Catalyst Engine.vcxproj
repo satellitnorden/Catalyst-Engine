@@ -655,6 +655,8 @@
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Include\Core\Algorithms\CatalystCompressionAlgorithm.inl" />
+    <None Include="..\..\..\Include\Core\Algorithms\RunLengthEncodingCompressionAlgorithm.inl" />
     <None Include="..\..\..\Include\Math\General\Vector.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl" />
     <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl" />
