@@ -33,4 +33,4 @@ enum class TextVerticalAlignment : uint8
 };
 
 //Type aliases.
-using ButtonUserInterfaceElementCallback = void(*)(const UserInterfaceElement *const RESTRICT);
+using ButtonUserInterfaceElementCallback = void(*)(UserInterfaceElement *const RESTRICT);
