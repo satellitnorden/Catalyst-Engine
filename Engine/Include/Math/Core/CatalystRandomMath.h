@@ -70,6 +70,25 @@ public:
 	}
 
 	/*
+	*	Given two arguments, picks a random entry and returns it.
+	*/
+	template <typename TYPE, typename ... LIST>
+	FORCE_INLINE static NO_DISCARD TYPE RandomPick(const TYPE &first, const LIST&... arguments) NOEXCEPT
+	{
+		//Define constants.
+		constexpr uint64 NUMBER_OF_ARGUMENTS{ sizeof...(LIST) + 1 };
+
+		//Store the arguments in an array.
+		TYPE array[NUMBER_OF_ARGUMENTS] = { first, arguments... };
+
+		//Randomize the index.
+		const uint64 index{ RandomIntegerInRange<uint64>(0, NUMBER_OF_ARGUMENTS - 1) };
+
+		//Return the selected element.
+		return array[index];
+	}
+
+	/*
 	*	Given a range, returns a vector with each three elements randomly generated within that range.
 	*/
 	FORCE_INLINE static NO_DISCARD Vector3<float32> RandomVector3InRange(const float32 minimum, const float32 maximum) NOEXCEPT
