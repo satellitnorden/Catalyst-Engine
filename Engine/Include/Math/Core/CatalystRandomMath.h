@@ -79,7 +79,7 @@ public:
 		constexpr uint64 NUMBER_OF_ARGUMENTS{ sizeof...(LIST) + 1 };
 
 		//Store the arguments in an array.
-		TYPE array[NUMBER_OF_ARGUMENTS] = { first, arguments... };
+		TYPE array[NUMBER_OF_ARGUMENTS]{ { first, arguments... } };
 
 		//Randomize the index.
 		const uint64 index{ RandomIntegerInRange<uint64>(0, NUMBER_OF_ARGUMENTS - 1) };
