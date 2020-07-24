@@ -70,7 +70,7 @@ public:
 	}
 
 	/*
-	*	Given two arguments, picks a random entry and returns it.
+	*	Given one or more arguments, picks a random entry and returns it.
 	*/
 	template <typename TYPE, typename ... LIST>
 	FORCE_INLINE static NO_DISCARD TYPE RandomPick(const TYPE &first, const LIST&... arguments) NOEXCEPT
