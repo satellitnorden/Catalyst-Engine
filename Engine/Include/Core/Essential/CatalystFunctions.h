@@ -70,6 +70,31 @@ FORCE_INLINE static void FlipEndian(void *const RESTRICT value, const uint64 siz
 }
 
 /*
+*	Returns the number of bits set in the given value.
+*/
+template <typename TYPE>
+FORCE_INLINE static NO_DISCARD uint8 NumberOfBitsSet(const TYPE value) NOEXCEPT
+{
+	//Define constants.
+	constexpr uint64 NUMBER_OF_BYTES{ sizeof(TYPE) };
+	constexpr uint64 NUMBER_OF_BITS{ NUMBER_OF_BYTES * 8 };
+
+	//Count the number of bits set.
+	uint8 number_of_bits_set{ 0 };
+
+	for (uint64 i{ 0 }; i < NUMBER_OF_BITS; ++i)
+	{
+		if (TEST_BIT(value, static_cast<TYPE>(BIT(i))))
+		{
+			++number_of_bits_set;
+		}
+	}
+
+	//Return the number of bits set.
+	return number_of_bits_set;
+}
+
+/*
 *	Decrements a float32 down towards negative infinity to the previous representable value.
 */
 FORCE_INLINE static NO_DISCARD float32 PreviousFloat32(const float32 number) NOEXCEPT
