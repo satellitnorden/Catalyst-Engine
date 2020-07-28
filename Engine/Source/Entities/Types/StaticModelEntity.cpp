@@ -36,12 +36,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	StaticModelComponent& component{ ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex] };
 
 	component._ModelResource = model_initialization_data->_ModelResource;
-	component._WorldTransform = model_initialization_data->_Transform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_Transform, &component._WorldSpaceAxisAlignedBoundingBox);
-	component._MaterialIndices = std::move(model_initialization_data->_MaterialIndices);
-
-	//Upsize the level of detail indices.
-	component._LevelOfDetailIndices.Upsize<false>(component._ModelResource->_Meshes.Size());
+	component._WorldTransform = model_initialization_data->_WorldTransform;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_WorldTransform.ToAbsoluteMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
+	component._MaterialResources = model_initialization_data->_MaterialResources;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
@@ -57,9 +54,33 @@ void StaticModelEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the model resources.
+*/
+NO_DISCARD ResourcePointer<ModelResource> StaticModelEntity::GetModelResource() const NOEXCEPT
+{
+	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelResource;
+}
+
+/*
+*	Returns the material resources.
+*/
+NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &StaticModelEntity::GetMaterialResources() const NOEXCEPT
+{
+	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MaterialResources;
+}
+
+/*
+*	Returns the level of detail index at the given mesh index.
+*/
+NO_DISCARD uint64 StaticModelEntity::GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT
+{
+	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._LevelOfDetailIndices[mesh_index];
+}
+
+/*
 *	Returns the world transform.
 */
-RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT StaticModelEntity::GetWorldTransform() const NOEXCEPT
+RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT StaticModelEntity::GetWorldTransform() const NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
 }
@@ -67,7 +88,7 @@ RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT StaticModelEntity::GetWorl
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -75,7 +96,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelE
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }

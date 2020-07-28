@@ -165,13 +165,13 @@ void MaskedModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				MaskedModelDepthVertexPushConstantData vertexData;
 
-				vertexData._CurrentWorldTransform = component->_WorldTransform;
+				vertexData._CurrentWorldTransform = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(MaskedModelDepthVertexPushConstantData), &vertexData);
 
 				MaskedModelDepthFragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialIndices[i];
+				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(MaskedModelDepthVertexPushConstantData), sizeof(MaskedModelDepthFragmentPushConstantData), &fragmentData);
 

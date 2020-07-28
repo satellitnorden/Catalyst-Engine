@@ -70,6 +70,9 @@ private:
 	//The terrain bottom level acceleration structure.
 	AccelerationStructureHandle _TerrainBottomAccelerationStructure{ EMPTY_HANDLE };
 
+	//The static models material indices.
+	DynamicArray<uint32> _StaticModelsMaterialindices;
+
 	//The static models material buffer.
 	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
 

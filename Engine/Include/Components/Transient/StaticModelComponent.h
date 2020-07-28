@@ -17,15 +17,15 @@ public:
 	ResourcePointer<ModelResource> _ModelResource;
 
 	//The world transform.
-	Matrix4x4 _WorldTransform;
+	WorldTransform _WorldTransform;
 
 	//The world space axis aligned bounding box.
 	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material indices.
-	DynamicArray<uint32> _MaterialIndices;
+	//The material resources.
+	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
 	//The level of detail indices.
-	DynamicArray<uint32> _LevelOfDetailIndices;
+	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;
 
 };

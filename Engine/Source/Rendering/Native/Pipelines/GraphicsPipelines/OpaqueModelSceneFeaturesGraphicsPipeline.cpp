@@ -172,14 +172,13 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				VertexPushConstantData vertexData;
 
-				vertexData._PreviousModelMatrix = component->_WorldTransform;
-				vertexData._CurrentModelMatrix = component->_WorldTransform;
+				vertexData._PreviousModelMatrix = vertexData._CurrentModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 
 				FragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialIndices[i];
+				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

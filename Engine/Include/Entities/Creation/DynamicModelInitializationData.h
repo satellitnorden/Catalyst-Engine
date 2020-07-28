@@ -9,7 +9,6 @@
 //Physics.
 #include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
-#include <Physics/PhysicsCore.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>

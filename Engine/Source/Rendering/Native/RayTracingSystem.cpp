@@ -183,7 +183,7 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 	}
 
 	//Gather the instances and the material indices.
-	DynamicArray<uint32> material_indices;
+	_StaticModelsMaterialindices.Clear();
 
 	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 	const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
@@ -192,24 +192,30 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		for (const uint32 material_index : component->_MaterialIndices)
+		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
 		{
-			material_indices.Emplace(material_index);
+			_StaticModelsMaterialindices.Emplace(component->_MaterialResources[j]->_Index);
 		}
 
 		for (const Mesh &mesh : component->_ModelResource->_Meshes)
 		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform, mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}
 	}
 
-	//Create the dynamic models material buffer.
-	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * material_indices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialBuffer);
+	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
+	if (_StaticModelsMaterialindices.Capacity() > _StaticModelsMaterialindices.Size() * 2)
+	{
+		_StaticModelsMaterialindices.Reserve(_StaticModelsMaterialindices.Size());
+	}
 
-	const void* RESTRICT data_chunks[]{ material_indices.Data() };
-	const uint64 data_sizes[]{ sizeof(uint32) * material_indices.Size() };
+	//Create the static models material buffer.
+	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _StaticModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialBuffer);
+
+	const void* RESTRICT data_chunks[]{ _StaticModelsMaterialindices.Data() };
+	const uint64 data_sizes[]{ sizeof(uint32) * _StaticModelsMaterialindices.Size() };
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_StaticModelsMaterialBuffer);
 }
 

@@ -143,7 +143,7 @@ void ModelShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_mat
 				//Push constants.
 				ModelShadowMapVertexPushConstantData data;
 
-				data._ModelToWorldMatrix = component->_WorldTransform;
+				data._ModelToWorldMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				data._WorldToLightMatrix = world_to_light_matrix;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(ModelShadowMapVertexPushConstantData), &data);

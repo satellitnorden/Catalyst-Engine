@@ -176,14 +176,13 @@ void MaskedModelColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				MaskedModelColorVertexPushConstantData vertexData;
 
-				vertexData._PreviousWorldTransform = component->_WorldTransform;
-				vertexData._CurrentWorldTransform = component->_WorldTransform;
+				vertexData._PreviousWorldTransform = vertexData._CurrentWorldTransform = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(MaskedModelColorVertexPushConstantData), &vertexData);
 
 				MaskedModelColorFragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialIndices[i];
+				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(MaskedModelColorVertexPushConstantData), sizeof(MaskedModelColorFragmentPushConstantData), &fragmentData);
 

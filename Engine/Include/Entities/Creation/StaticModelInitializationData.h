@@ -6,29 +6,30 @@
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
-//Math.
-#include <Math/General/Matrix.h>
-
 //Physics.
 #include <Physics/ModelCollisionConfiguration.h>
 
 //Resources.
+#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
+
+//World.
+#include <World/Core/WorldTransform.h>
 
 class StaticModelInitializationData final : public EntityInitializationData
 {
 
 public:
 
-	//The transform.
-	Matrix4x4 _Transform{ MatrixConstants::IDENTITY };
+	//The world transform.
+	WorldTransform _WorldTransform;
 
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 
-	//The material indices.
-	DynamicArray<uint32> _MaterialIndices;
+	//The material resources.
+	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
 	//The model collision configuration.
 	ModelCollisionConfiguration _ModelCollisionConfiguration;
