@@ -22,3 +22,11 @@ enum class NoteDuration : uint8
 	THIRTYSECOND,
 	SIXTYFOURTH
 };
+
+//Enumeration covering all note types.
+enum class NoteType : uint8
+{
+	REGULAR,
+	DOTTED,
+	TRIPLET
+};
