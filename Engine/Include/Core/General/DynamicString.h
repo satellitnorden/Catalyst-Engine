@@ -272,9 +272,17 @@ public:
 	}
 
 	/*
-	*	Returns the underlying data.
+	*	Returns the underlying data, const.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Data() const NOEXCEPT
+	{
+		return _String;
+	}
+
+	/*
+	*	Returns the underlying data, non-const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT Data() NOEXCEPT
 	{
 		return _String;
 	}

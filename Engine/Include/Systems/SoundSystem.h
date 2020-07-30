@@ -56,9 +56,14 @@ public:
 	uint8 GetNumberOfBitsPerSample() const NOEXCEPT;
 
 	/*
-	*	Adds a mix component to the master mix channel.
+	*	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 	*/
-	void AddMasterChannelMixComponent(const SoundMixComponent &component) NOEXCEPT;
+	uint64 AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT;
+
+	/*
+	*	Removes a sound mix component from the master mix channel.
+	*/
+	void RemoveMasterChannelSoundMixComponent(const uint64 identifier) NOEXCEPT;
 
 	/*
 	*	Plays a sound.

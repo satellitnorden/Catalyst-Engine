@@ -104,8 +104,12 @@ namespace SoundSystemConstants
 namespace SoundSystemData
 {
 
-	//The queued master channel mix components.
-	AtomicQueue<SoundMixComponent, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedMasterChannelMixComponents;
+	//The queued add master channel mix components.
+	AtomicQueue<SoundMixComponent, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedAddMasterChannelSoundMixComponents;
+
+	//The queued remove master channel mix components.
+	AtomicQueue<uint64, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedRemoveMasterChannelSoundMixComponents;
+
 
 	//The queued play sound requests.
 	AtomicQueue<QueuedPlaySoundRequest, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedPlaySoundRequests;
@@ -155,12 +159,24 @@ void SoundSystem::Terminate() NOEXCEPT
 }
 
 /*
-*	Adds a mix component to the master mix channel.
+*	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 */
-void SoundSystem::AddMasterChannelMixComponent(const SoundMixComponent &component) NOEXCEPT
+uint64 SoundSystem::AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT
 {
-	//Queue the master channel mix component.
-	SoundSystemData::_QueuedMasterChannelMixComponents.Push(component);
+	//Queue the master channel sound mix component.
+	SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Push(component);
+
+	//Return the unique identifier for this sound mix component.
+	return component._Identifier;
+}
+
+/*
+*	Removes a sound mix component from the master mix channel.
+*/
+void SoundSystem::RemoveMasterChannelSoundMixComponent(const uint64 identifier) NOEXCEPT
+{
+	//Queue the master channel sound mix component.
+	SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Push(identifier);
 }
 
 /*
@@ -251,6 +267,8 @@ void SoundSystem::StopRecording(const char *const RESTRICT file_path) NOEXCEPT
 	WAVWriter::Write(file_path, _RecordingSoundResource);
 }
 
+#include <Systems/InputSystem.h>
+
 /*
 *	Performs mixing.
 */
@@ -284,8 +302,25 @@ void SoundSystem::Mix() NOEXCEPT
 			_MixingBuffersInitialized = true;
 		}
 
-		//Add all queued master channel mix components.
-		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedMasterChannelMixComponents.Pop() })
+		//Remove all queued master channel sound mix components.
+		while (uint64 *const RESTRICT identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() })
+		{
+			for (uint8 i{ 0 }; i < 2; ++i)
+			{
+				for (uint64 component_index{ 0 }, size{ _MasterChannelMixComponents[i].Size() }; component_index < size; ++component_index)
+				{
+					if (_MasterChannelMixComponents[i][component_index]._Identifier == *identifier)
+					{
+						_MasterChannelMixComponents[i].EraseAt(component_index);
+
+						break;
+					}
+				}
+			}
+		}
+
+		//Add all queued master channel sound mix components.
+		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Pop() })
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
@@ -388,7 +423,6 @@ void SoundSystem::Mix() NOEXCEPT
 							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
 						}
 
-						//Apply the master channel mix components.
 						for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
 						{
 							component.Process(&current_sample);

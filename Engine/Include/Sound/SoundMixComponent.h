@@ -16,7 +16,8 @@
 
 //List of all available sound mix components.
 #define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(AutomaticGainCorrection)			\
-								SOUND_MIX_COMPONENT(Limiter)
+								SOUND_MIX_COMPONENT(Limiter)							\
+								SOUND_MIX_COMPONENT(Saturation)
 
 /*
 *	This sound mix component will automatically correct the gain of incoming samples to never exceed 1.0f.
@@ -123,6 +124,54 @@ public:
 };
 
 /*
+*	This sound mix component will apply saturation to incoming samples.
+*/
+class SaturationSoundMixComponent final
+{
+
+public:
+
+	/*
+	*	State class definition.
+	*/
+	class State final
+	{
+
+	public:
+
+		//The boost
+		float32 _Boost;
+
+	};
+
+	/*
+	*	The construct function.
+	*/
+	FORCE_INLINE static void Construct() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	The process function.
+	*/
+	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
+	{
+		//Apply the hyperbolic tangent.
+		*sample = tanh(*sample * state->_Boost);
+	}
+
+	/*
+	*	The destruct function.
+	*/
+	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
+	{
+
+	}
+
+};
+
+/*
 *	Base sound mix component.
 */
 class SoundMixComponent final
@@ -137,6 +186,12 @@ public:
 		SOUND_MIX_COMPONENTS
 #undef SOUND_MIX_COMPONENT
 	};
+
+	//The identifier.
+	uint64 _Identifier;
+
+	//The type.
+	Type _Type;
 
 	/*
 	*	Creates an automatic gain correction sound mix component.
@@ -164,9 +219,23 @@ public:
 	}
 
 	/*
+	*	Creates a saturaion sound mix component.
+	*/
+	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateSaturation(const float32 initial_boost) NOEXCEPT
+	{
+		SoundMixComponent new_component{ Type::Saturation };
+
+		new_component._SaturationState._Boost = initial_boost;
+
+		return new_component;
+	}
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE SoundMixComponent() NOEXCEPT
+		:
+		_Identifier(UniqueIdentifier())
 	{
 
 	}
@@ -176,6 +245,7 @@ public:
 	*/
 	FORCE_INLINE SoundMixComponent(const Type initial_type) NOEXCEPT
 		:
+		_Identifier(UniqueIdentifier()),
 		_Type(initial_type)
 	{
 		switch (_Type)
@@ -257,9 +327,6 @@ public:
 
 private:
 
-	//The type.
-	Type _Type;
-
 	//The state.
 	union
 	{
@@ -267,5 +334,15 @@ private:
 		SOUND_MIX_COMPONENTS
 #undef SOUND_MIX_COMPONENT
 	};
+
+	/*
+	*	Returns an unique identifier.
+	*/
+	FORCE_INLINE static NO_DISCARD uint64 UniqueIdentifier() NOEXCEPT
+	{
+		static uint64 counter{ 0 };
+
+		return counter++;
+	}
 
 };

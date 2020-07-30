@@ -60,4 +60,23 @@ public:
 		return length;
 	}
 
+	/*
+	*	Converts a string to all uppercase.
+	*/
+	FORCE_INLINE static constexpr void ToUpper(char *const RESTRICT string) NOEXCEPT
+	{
+		ToUpper(string, StringLength(string));
+	}
+
+	/*
+	*	Converts a string to all uppercase.
+	*/
+	FORCE_INLINE static constexpr void ToUpper(char *const RESTRICT string, const uint64 length) NOEXCEPT
+	{
+		for (uint64 i{ 0 }; i < length; ++i)
+		{
+			string[i] -= 32 * static_cast<char>(string[i] >= 'a' && string[i] <= 'z');
+		}
+	}
+
 };
