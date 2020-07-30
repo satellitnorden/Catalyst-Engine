@@ -103,7 +103,7 @@ private:
 	uint64 _SoundInstanceCounter{ 1 };
 
 	//Container for the master channel mix components.
-	StaticArray<DynamicArray<SoundMixComponent>, 2> _MasterChannelMixComponents;
+	DynamicArray<SoundMixComponent> _MasterChannelMixComponents;
 
 	//The mixing thread.
 	Thread _MixingThread;

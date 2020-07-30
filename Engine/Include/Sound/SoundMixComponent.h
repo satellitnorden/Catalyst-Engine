@@ -15,8 +15,9 @@
 */
 
 //List of all available sound mix components.
-#define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(AutomaticGainCorrection)			\
-								SOUND_MIX_COMPONENT(Limiter)							\
+#define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(AutomaticGainCorrection)	\
+								SOUND_MIX_COMPONENT(Gain)						\
+								SOUND_MIX_COMPONENT(Limiter)					\
 								SOUND_MIX_COMPONENT(Saturation)
 
 /*
@@ -68,6 +69,54 @@ public:
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 		PRINT_TO_OUTPUT("Automatic gain correction's gain value: " << state->_Gain << ".");
 #endif
+	}
+
+};
+
+/*
+*	This sound mix component will apply the given gain to incoming samples.
+*/
+class GainSoundMixComponent final
+{
+
+public:
+
+	/*
+	*	State class definition.
+	*/
+	class State final
+	{
+
+	public:
+
+		//The gain.
+		float32 _Gain;
+
+	};
+
+	/*
+	*	The construct function.
+	*/
+	FORCE_INLINE static void Construct() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	The process function.
+	*/
+	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
+	{
+		//Apply the gain.
+		*sample *= state->_Gain;
+	}
+
+	/*
+	*	The destruct function.
+	*/
+	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
+	{
+
 	}
 
 };
@@ -206,6 +255,18 @@ public:
 	}
 
 	/*
+	*	Creates a gain sound mix component.
+	*/
+	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateGain(const float32 initial_gain) NOEXCEPT
+	{
+		SoundMixComponent new_component{ Type::Gain };
+
+		new_component._GainState._Gain = initial_gain;
+
+		return new_component;
+	}
+
+	/*
 	*	Creates a limiter sound mix component.
 	*/
 	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateLimiter(const float32 initial_boost, const float32 initial_ceiling) NOEXCEPT
@@ -250,11 +311,12 @@ public:
 	{
 		switch (_Type)
 		{
-#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :						\
-									{												\
-										VALUE ## SoundMixComponent::Construct();	\
-																					\
-										break;										\
+#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
+									{																			\
+										PRINT_TO_OUTPUT("Constructing " << #VALUE << " sound mix component.");	\
+										VALUE ## SoundMixComponent::Construct();								\
+																												\
+										break;																	\
 									}
 
 			SOUND_MIX_COMPONENTS
@@ -277,11 +339,12 @@ public:
 	{
 		switch (_Type)
 		{
-#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :										\
-									{																\
-										VALUE ## SoundMixComponent::Destruct(&_ ## VALUE ## State);	\
-																									\
-										break;														\
+#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
+									{																			\
+										PRINT_TO_OUTPUT("Destructing " << #VALUE << " sound mix component.");	\
+										VALUE ## SoundMixComponent::Destruct(&_ ## VALUE ## State);				\
+																												\
+										break;																	\
 									}
 
 			SOUND_MIX_COMPONENTS

@@ -155,7 +155,9 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 *	Prints a message to the output in non-final builds.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
+	#define PRINT_TO_OUTPUT(MESSAGE) { std::ostringstream output; output << MESSAGE << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
+#else
+	#define PRINT_TO_OUTPUT(MESSAGE)
 #endif
 
 /*

@@ -88,7 +88,7 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 
 	//Remove the entity from the list of entities.
 	_EntitiesLock.Lock();
-	_Entities.Erase(entity);
+	_Entities.Erase<false>(entity);
 	_EntitiesLock.Unlock();
 }
 
@@ -223,7 +223,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 
 			++forceInitialized;
 
-			_InitializationQueue.EraseAt(counter);
+			_InitializationQueue.EraseAt<false>(counter);
 		}
 
 		--counter;
@@ -243,7 +243,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 
 		else
 		{
-			_InitializationQueue.Erase(*dataToInitialize);
+			_InitializationQueue.Erase<false>(*dataToInitialize);
 		}
 	}
 }
@@ -297,7 +297,7 @@ void EntitySystem::ProcessAutomaticTerminationQueue() NOEXCEPT
 		{
 			TerminateEntity(entity);
 
-			_AutomaticTerminationQueue.EraseAt(i);
+			_AutomaticTerminationQueue.EraseAt<false>(i);
 		}
 
 		else
@@ -320,7 +320,7 @@ void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 		{
 			DestroyEntity(entity);
 
-			_AutomaticDestructionQueue.EraseAt(i);
+			_AutomaticDestructionQueue.EraseAt<false>(i);
 		}
 
 		else

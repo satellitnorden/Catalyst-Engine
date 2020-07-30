@@ -334,7 +334,7 @@ void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
 			{
 				MemorySystem::Instance->TypeFree<UpdateData>(update_data[i]);
 
-				update_data.EraseAt(i);
+				update_data.EraseAt<false>(i);
 
 				break;
 			}
@@ -347,7 +347,7 @@ void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
 		{
 			if (update_data[i]->_Identifier == identifier)
 			{
-				update_data.EraseAt(i);
+				update_data.EraseAt<false>(i);
 
 				break;
 			}

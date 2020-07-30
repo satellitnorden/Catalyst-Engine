@@ -724,7 +724,7 @@ namespace VulkanRenderingSystemLogic
 					}
 				}
 
-				VulkanRenderingSystemData::_DestructionQueue.EraseAt(i);
+				VulkanRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
 			}
 
 			else

@@ -165,8 +165,8 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 				EntitySystem::Instance->RequestDestruction(entity);
 			}
 
-			data->_GridPoints.EraseAt(i);
-			data->_Entities.EraseAt(i);
+			data->_GridPoints.EraseAt<false>(i);
+			data->_Entities.EraseAt<false>(i);
 		}
 
 		else

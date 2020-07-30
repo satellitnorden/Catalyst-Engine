@@ -307,9 +307,19 @@ public:
 	}
 
 	/*
-	*	Erases the element at the specified index in the array. Does not respect order of elements.
+	*	Erases the element at the specified index in the array.
 	*/
+	template <bool RESPECT_ORDER>
 	FORCE_INLINE void EraseAt(const uint64 index) NOEXCEPT
+	{
+		
+	}
+
+	/*
+	*	EraseAt/RESPECT_ORDER == false specialization.
+	*/
+	template <>
+	FORCE_INLINE void EraseAt<false>(const uint64 index) NOEXCEPT
 	{
 		TYPE &object{ _Array[index] };
 
@@ -320,18 +330,35 @@ public:
 	}
 
 	/*
+	*	EraseAt/RESPECT_ORDER == true specialization.
+	*/
+	template <>
+	FORCE_INLINE void EraseAt<true>(const uint64 index) NOEXCEPT
+	{
+		TYPE &object{ _Array[index] };
+
+		object.~TYPE();
+
+		for (uint64 i{ index }; i < _Size - 1; ++i)
+		{
+			_Array[i] = std::move(_Array[i + 1]);
+		}
+
+		--_Size;
+	}
+
+	/*
 	*	Finds and erases an element in the array. Does not respect order of elements.
 	*/
+	template <bool RESPECT_ORDER>
 	FORCE_INLINE void Erase(const TYPE &element) NOEXCEPT
 	{
-		for (TYPE &object : *this)
+		//Find the index.
+		for (uint64 i{ 0 }; i < _Size; ++i)
 		{
-			if (object == element)
+			if (_Array[i] == element)
 			{
-				object.~TYPE();
-				object = std::move(Back());
-				
-				--_Size;
+				EraseAt<RESPECT_ORDER>(i);
 
 				return;
 			}

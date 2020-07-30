@@ -142,7 +142,7 @@ void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *cons
 		}
 	}
 
-	_UserInterfaceElements.Erase(element);
+	_UserInterfaceElements.Erase<false>(element);
 }
 
 /*

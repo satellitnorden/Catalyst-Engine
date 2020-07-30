@@ -305,16 +305,13 @@ void SoundSystem::Mix() NOEXCEPT
 		//Remove all queued master channel sound mix components.
 		while (uint64 *const RESTRICT identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() })
 		{
-			for (uint8 i{ 0 }; i < 2; ++i)
+			for (uint64 component_index{ 0 }, size{ _MasterChannelMixComponents.Size() }; component_index < size; ++component_index)
 			{
-				for (uint64 component_index{ 0 }, size{ _MasterChannelMixComponents[i].Size() }; component_index < size; ++component_index)
+				if (_MasterChannelMixComponents[component_index]._Identifier == *identifier)
 				{
-					if (_MasterChannelMixComponents[i][component_index]._Identifier == *identifier)
-					{
-						_MasterChannelMixComponents[i].EraseAt(component_index);
+					_MasterChannelMixComponents.EraseAt<false>(component_index);
 
-						break;
-					}
+					break;
 				}
 			}
 		}
@@ -322,10 +319,7 @@ void SoundSystem::Mix() NOEXCEPT
 		//Add all queued master channel sound mix components.
 		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Pop() })
 		{
-			for (uint8 i{ 0 }; i < 2; ++i)
-			{
-				_MasterChannelMixComponents[i].Emplace(*component);
-			}
+			_MasterChannelMixComponents.Emplace(*component);
 		}
 
 		//Add all queued play sound requests to the playing sounds.
@@ -423,7 +417,7 @@ void SoundSystem::Mix() NOEXCEPT
 							current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
 						}
 
-						for (SoundMixComponent &component : _MasterChannelMixComponents[channel_index])
+						for (SoundMixComponent &component : _MasterChannelMixComponents)
 						{
 							component.Process(&current_sample);
 						}
@@ -515,7 +509,7 @@ void SoundSystem::Mix() NOEXCEPT
 		{
 			if (!SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.IsActive())
 			{
-				SoundSystemData::_PlayingSounds.EraseAt(i);
+				SoundSystemData::_PlayingSounds.EraseAt<false>(i);
 			}
 
 			else

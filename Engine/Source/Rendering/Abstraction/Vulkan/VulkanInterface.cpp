@@ -262,7 +262,7 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT
 {
 	texture->Release();
-	_Vulkan2DTextures.Erase(texture);
+	_Vulkan2DTextures.Erase<false>(texture);
 	Memory::Free(texture);
 }
 
@@ -304,7 +304,7 @@ RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAc
 void VulkanInterface::DestroyAccelerationStructure(VulkanAccelerationStructure *const RESTRICT acceleration_structure) NOEXCEPT
 {
 	acceleration_structure->Release();
-	_VulkanAccelerationStructures.Erase(acceleration_structure);
+	_VulkanAccelerationStructures.Erase<false>(acceleration_structure);
 	MemorySystem::Instance->TypeFree<VulkanAccelerationStructure>(acceleration_structure);
 }
 
@@ -330,7 +330,7 @@ RESTRICTED VulkanBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDe
 void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEPT
 {
 	buffer->Release();
-	_VulkanBuffers.Erase(buffer);
+	_VulkanBuffers.Erase<false>(buffer);
 	MemorySystem::Instance->TypeFree<VulkanBuffer>(buffer);
 }
 
@@ -447,7 +447,7 @@ RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptor
 void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptor_set) NOEXCEPT
 {
 	_VulkanDescriptorPool.FreeDescriptorSet(descriptor_set->Get());
-	_VulkanDescriptorSets.Erase(descriptor_set);
+	_VulkanDescriptorSets.Erase<false>(descriptor_set);
 	MemorySystem::Instance->TypeFree<VulkanDescriptorSet>(descriptor_set);
 }
 

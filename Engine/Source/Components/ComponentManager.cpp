@@ -33,8 +33,8 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 {																																	\
 	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;														\
 																																	\
-	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
+	_ ## ENTITY_CLASS ## Entities.EraseAt<false>(componentsIndex);																	\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt<false>(componentsIndex);														\
 }
 
 /*
@@ -72,9 +72,9 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 {																																	\
 	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;														\
 																																	\
-	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
-	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EraseAt(componentsIndex);															\
+	_ ## ENTITY_CLASS ## Entities.EraseAt<false>(componentsIndex);																	\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt<false>(componentsIndex);														\
+	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EraseAt<false>(componentsIndex);														\
 }
 
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);

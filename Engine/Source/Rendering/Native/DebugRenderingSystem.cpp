@@ -96,7 +96,7 @@ void DebugRenderingSystem::PostUpdate() NOEXCEPT
 
 			if (_DebugAxisAlignedBoundingBox3DRenders[i]._CurrentLifetime >= _DebugAxisAlignedBoundingBox3DRenders[i]._MaximumLifetime)
 			{
-				_DebugAxisAlignedBoundingBox3DRenders.EraseAt(i);
+				_DebugAxisAlignedBoundingBox3DRenders.EraseAt<false>(i);
 			}
 
 			else
@@ -116,7 +116,7 @@ void DebugRenderingSystem::PostUpdate() NOEXCEPT
 
 			if (_DebugSphereRenders[i]._CurrentLifetime >= _DebugSphereRenders[i]._MaximumLifetime)
 			{
-				_DebugSphereRenders.EraseAt(i);
+				_DebugSphereRenders.EraseAt<false>(i);
 			}
 
 			else
