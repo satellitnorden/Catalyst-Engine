@@ -180,6 +180,25 @@ class SaturationSoundMixComponent final
 
 public:
 
+	//Enumeration covering all variations.
+	enum class Variation : uint8
+	{
+		/*
+		*	Applies a very smooth sigmoid curve to all incoming samples.
+		*/
+		VARIATION_1,
+
+		/*
+		*	Applies a smooth sigmoid curve to all incoming samples.
+		*/
+		VARIATION_2,
+
+		/*
+		*	Applies a less smooth sigmoid curve to all incoming samples.
+		*/
+		VARIATION_3
+	};
+
 	/*
 	*	State class definition.
 	*/
@@ -187,6 +206,9 @@ public:
 	{
 
 	public:
+
+		//The variation.
+		Variation _Variation;
 
 		//The boost
 		float32 _Boost;
@@ -206,8 +228,43 @@ public:
 	*/
 	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
 	{
-		//Apply the hyperbolic tangent.
-		*sample = tanh(*sample * state->_Boost);
+		//Define constants.
+		const static float32 SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO{ CatalystBaseMath::SquareRoot(CatalystBaseMathConstants::PI) / 2.0f };
+
+		//Apply the boost.
+		*sample *= state->_Boost;
+
+		//Apply the saturation.
+		switch (state->_Variation)
+		{
+			case Variation::VARIATION_1:
+			{
+				*sample = *sample / (1.0f + CatalystBaseMath::Absolute(*sample));
+				
+				break;
+			}
+
+			case Variation::VARIATION_2:
+			{
+				*sample = tanh(*sample);
+
+				break;
+			}
+
+			case Variation::VARIATION_3:
+			{
+				*sample = erf(SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO * *sample);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	/*
@@ -282,10 +339,11 @@ public:
 	/*
 	*	Creates a saturaion sound mix component.
 	*/
-	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateSaturation(const float32 initial_boost) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateSaturation(const SaturationSoundMixComponent::Variation initial_variation, const float32 initial_boost) NOEXCEPT
 	{
 		SoundMixComponent new_component{ Type::Saturation };
 
+		new_component._SaturationState._Variation = initial_variation;
 		new_component._SaturationState._Boost = initial_boost;
 
 		return new_component;
