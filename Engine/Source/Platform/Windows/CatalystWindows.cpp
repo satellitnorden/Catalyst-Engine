@@ -1,6 +1,6 @@
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Header file.
-#include <Platform/Windows/CatalystWindows.h>
+#include <Platform/Windows/CatalystPlatformWindows.h>
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>

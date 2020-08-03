@@ -397,6 +397,9 @@
     <Filter Include="Core\Inline\Algorithms">
       <UniqueIdentifier>{b6644bbc-6410-4b8d-bc32-b6d3b1a7fb6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform\Include\Null">
+      <UniqueIdentifier>{fb920564-1945-4c2e-9058-bc97d2d4c007}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -416,9 +419,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
-      <Filter>Platform\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h">
       <Filter>Systems\Include</Filter>
@@ -440,12 +440,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h">
-      <Filter>Platform\Include\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h">
-      <Filter>Platform\Include\Android</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h">
       <Filter>Core\Include\General</Filter>
@@ -1664,6 +1658,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\General\RandomIndexer.h">
       <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\General\CatalystPlatform.h">
+      <Filter>Platform\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystPlatformWindows.h">
+      <Filter>Platform\Include\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Android\CatalystPlatformAndroid.h">
+      <Filter>Platform\Include\Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Null\CatalystPlatformNull.h">
+      <Filter>Platform\Include\Null</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

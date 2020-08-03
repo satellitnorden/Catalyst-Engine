@@ -46,7 +46,7 @@
 #include <Core/Essential/CatalystTypes.h>
 
 //Platform.
-#include <Platform/General/Platform.h>
+#include <Platform/General/CatalystPlatform.h>
 
 //Memory.
 #include <Memory/Memory.h>

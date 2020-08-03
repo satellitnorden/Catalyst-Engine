@@ -187,9 +187,10 @@
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
-    <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Android\CatalystPlatformAndroid.h" />
+    <ClInclude Include="..\..\..\Include\Platform\General\CatalystPlatform.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Null\CatalystPlatformNull.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystPlatformWindows.h" />
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingCore.h" />
     <ClInclude Include="..\..\..\Include\Profiling\ProfilingTimer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Abstraction\Vulkan\Vulkan2DTexture.h" />
