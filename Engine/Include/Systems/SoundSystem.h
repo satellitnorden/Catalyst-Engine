@@ -76,6 +76,36 @@ public:
 	void StopSound(const SoundInstanceHandle handle) NOEXCEPT;
 
 	/*
+	*	Returns whether or not the sound system is currently muted.
+	*/
+	NO_DISCARD bool IsCurrentlyMuted() const NOEXCEPT;
+
+	/*
+	*	Mutes the sound system.
+	*/
+	void Mute() NOEXCEPT;
+
+	/*
+	*	Un-mutes the sound system.
+	*/
+	void UnMute() NOEXCEPT;
+
+	/*
+	*	Returns whether or not the sound system is currently paused.
+	*/
+	NO_DISCARD bool IsCurrentlyPaused() const NOEXCEPT;
+
+	/*
+	*	Pauses the sound system.
+	*/
+	void Pause() NOEXCEPT;
+
+	/*
+	*	Un-pauses the sound system.
+	*/
+	void UnPause() NOEXCEPT;
+
+	/*
 	*	Returns if the sound system is currently recording.
 	*/
 	NO_DISCARD bool IsCurrentlyRecording() const NOEXCEPT;
@@ -125,6 +155,12 @@ private:
 
 	//The current sample read index.
 	uint32 _CurrentSampleReadIndex{ 0 };
+
+	//Denotes whetehr or not the sound system is currently muted.
+	AtomicFlag _IsMuted;
+
+	//Denotes whetehr or not the sound system is currently paused.
+	AtomicFlag _IsPaused;
 
 	//Denotes whether or not the sound system should currently record.
 	AtomicFlag _ShouldRecord;

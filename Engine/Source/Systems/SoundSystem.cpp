@@ -220,6 +220,54 @@ void SoundSystem::StopSound(const SoundInstanceHandle handle) NOEXCEPT
 }
 
 /*
+*	Returns whether or not the sound system is currently muted.
+*/
+NO_DISCARD bool SoundSystem::IsCurrentlyMuted() const NOEXCEPT
+{
+	return _IsMuted.IsSet();
+}
+
+/*
+*	Mutes the sound system.
+*/
+void SoundSystem::Mute() NOEXCEPT
+{
+	_IsMuted.Set();
+}
+
+/*
+*	Un-mutes the sound system.
+*/
+void SoundSystem::UnMute() NOEXCEPT
+{
+	_IsMuted.Clear();
+}
+
+/*
+*	Returns whether or not the sound system is currently paused.
+*/
+NO_DISCARD bool SoundSystem::IsCurrentlyPaused() const NOEXCEPT
+{
+	return _IsPaused.IsSet();
+}
+
+/*
+*	Pauses the sound system.
+*/
+void SoundSystem::Pause() NOEXCEPT
+{
+	_IsPaused.Set();
+}
+
+/*
+*	Un-pauses the sound system.
+*/
+void SoundSystem::UnPause() NOEXCEPT
+{
+	_IsPaused.Clear();
+}
+
+/*
 *	Returns if the sound system is currently recording.
 */
 NO_DISCARD bool SoundSystem::IsCurrentlyRecording() const NOEXCEPT
@@ -267,8 +315,6 @@ void SoundSystem::StopRecording(const char *const RESTRICT file_path) NOEXCEPT
 	WAVWriter::Write(file_path, _RecordingSoundResource);
 }
 
-#include <Systems/InputSystem.h>
-
 /*
 *	Performs mixing.
 */
@@ -277,8 +323,8 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
-		//Need the platform to have been initialized before the mixing buffers has been initialized.
-		if (!PlatformInitialized())
+		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
+		if (!PlatformInitialized() || IsCurrentlyPaused())
 		{
 			continue;
 		}
@@ -532,94 +578,98 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								const uint32 number_of_samples,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
-	//Read all samples.
-	{	
-		//Cache local values.
-		uint8 local_mixing_buffer_read_index{ _CurrentMixingBufferReadIndex };
-		int32 local_mixing_buffers_ready{ _MixingBuffersReady };
-		uint32 local_sample_read_index{ _CurrentSampleReadIndex };
-
-		//Read all samples.
-		uint32 samples_read{ 0 };
-		uint32 samples_left_to_read{ number_of_samples };
-
-		while (samples_left_to_read > 0)
-		{
-			//Calculate the number of samples to read.
-			const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(NUMBER_OF_SAMPLES_PER_MIXING_BUFFER - local_sample_read_index, samples_left_to_read) };
-
-			if (local_mixing_buffers_ready > 0)
-			{
-				switch (bits_per_sample)
-				{
-					case 8:
-					{
-						void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 1 * number_of_channels };
-						const void *const RESTRICT source{ &static_cast<uint8* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels] };
-						const uint64 bytes_to_read{ number_of_samples_to_read * 1 * number_of_channels };
-
-						Memory::Copy(destination, source, bytes_to_read);
-
-						break;
-					}
-
-					case 16:
-					{
-						void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 2 * number_of_channels };
-						const void *const RESTRICT source{ &static_cast<int16* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
-						const uint64 bytes_to_read{ number_of_samples_to_read * 2 * number_of_channels };
-
-						Memory::Copy(destination, source, bytes_to_read);
-
-						break;
-					}
-
-					case 32:
-					{
-						void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
-						const void *const RESTRICT source{ &static_cast<int32* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
-						const uint64 bytes_to_read{ number_of_samples_to_read * 4 * number_of_channels };
-
-						Memory::Copy(destination, source, bytes_to_read);
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
-			}
-
-			else
-			{
-				int x = 0;
-			}
-
-			samples_read += number_of_samples_to_read;
-			samples_left_to_read -= number_of_samples_to_read;
-
-			local_sample_read_index += number_of_samples_to_read;
-
-			while (local_sample_read_index >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
-			{
-				local_mixing_buffer_read_index = (local_mixing_buffer_read_index + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
-				--local_mixing_buffers_ready;
-				local_sample_read_index -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
-			}
-		}
+	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
+	if (IsCurrentlyMuted() || IsCurrentlyPaused())
+	{
+		Memory::Set(buffer_data, 0, (bits_per_sample / 8) * number_of_channels * number_of_samples);
 	}
 
-	//Update values.
-	_CurrentSampleReadIndex += number_of_samples;
-
-	while (_CurrentSampleReadIndex >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
+	else
 	{
-		_CurrentMixingBufferReadIndex = (_CurrentMixingBufferReadIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
-		--_MixingBuffersReady;
-		_CurrentSampleReadIndex -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+		//Read all samples.
+		{	
+			//Cache local values.
+			uint8 local_mixing_buffer_read_index{ _CurrentMixingBufferReadIndex };
+			int32 local_mixing_buffers_ready{ _MixingBuffersReady };
+			uint32 local_sample_read_index{ _CurrentSampleReadIndex };
+
+			//Read all samples.
+			uint32 samples_read{ 0 };
+			uint32 samples_left_to_read{ number_of_samples };
+
+			while (samples_left_to_read > 0)
+			{
+				//Calculate the number of samples to read.
+				const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(NUMBER_OF_SAMPLES_PER_MIXING_BUFFER - local_sample_read_index, samples_left_to_read) };
+
+				if (local_mixing_buffers_ready > 0)
+				{
+					switch (bits_per_sample)
+					{
+						case 8:
+						{
+							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 1 * number_of_channels };
+							const void *const RESTRICT source{ &static_cast<uint8* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels] };
+							const uint64 bytes_to_read{ number_of_samples_to_read * 1 * number_of_channels };
+
+							Memory::Copy(destination, source, bytes_to_read);
+
+							break;
+						}
+
+						case 16:
+						{
+							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 2 * number_of_channels };
+							const void *const RESTRICT source{ &static_cast<int16* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
+							const uint64 bytes_to_read{ number_of_samples_to_read * 2 * number_of_channels };
+
+							Memory::Copy(destination, source, bytes_to_read);
+
+							break;
+						}
+
+						case 32:
+						{
+							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
+							const void *const RESTRICT source{ &static_cast<int32* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
+							const uint64 bytes_to_read{ number_of_samples_to_read * 4 * number_of_channels };
+
+							Memory::Copy(destination, source, bytes_to_read);
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
+				}
+
+				samples_read += number_of_samples_to_read;
+				samples_left_to_read -= number_of_samples_to_read;
+
+				local_sample_read_index += number_of_samples_to_read;
+
+				while (local_sample_read_index >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
+				{
+					local_mixing_buffer_read_index = (local_mixing_buffer_read_index + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+					--local_mixing_buffers_ready;
+					local_sample_read_index -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+				}
+			}
+		}
+
+		//Update values.
+		_CurrentSampleReadIndex += number_of_samples;
+
+		while (_CurrentSampleReadIndex >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
+		{
+			_CurrentMixingBufferReadIndex = (_CurrentMixingBufferReadIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+			--_MixingBuffersReady;
+			_CurrentSampleReadIndex -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+		}
 	}
 }
