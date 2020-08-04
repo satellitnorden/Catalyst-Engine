@@ -85,14 +85,29 @@ public:
 	*/
 	FORCE_INLINE void operator=(const DynamicString &other) NOEXCEPT
 	{
-		//Update the length of this string.
-		_Length = other.Length();
+		if (other._String)
+		{
+			//Update the length of this string.
+			_Length = other.Length();
 
-		//Reallocate sufficient memory for the underlying string.
-		_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), _Length + 1));
+			//Reallocate sufficient memory for the underlying string.
+			_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), _Length + 1));
 
-		//Copy the contents of the other string.
-		Memory::Copy(_String, other._String, _Length + 1);
+			//Copy the contents of the other string.
+			Memory::Copy(_String, other._String, _Length + 1);
+		}
+
+		else
+		{
+			//Free the underlying string.
+			Memory::Free(_String);
+
+			//Reset the string.
+			_String = nullptr;
+
+			//Reset the length.
+			_Length = 0;
+		}
 	}
 
 	/*

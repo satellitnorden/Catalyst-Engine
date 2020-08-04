@@ -17,6 +17,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 24) float WIDTH_RANGE_END;
     layout (offset = 28) float ELEMENT_ASPECT_RATIO;
     layout (offset = 32) float TEXT_SMOOTHING_FACTOR;
+    layout (offset = 36) float OPACITY;
     layout (offset = 48) UserInterfaceMaterial MATERIAL;
 };
 
@@ -51,7 +52,7 @@ void CatalystShaderMain()
 			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance);
 
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), opacity);
+			fragment = vec4(vec3(1.0f), opacity * OPACITY);
 
 			break;
 		}

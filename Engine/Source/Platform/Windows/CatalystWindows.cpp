@@ -144,6 +144,20 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	RegisterClassEx(&windowInfo);
 #endif
 
+#if 0 //Make fullscreen window.
+	//Create the window.
+	_Window = CreateWindow(	windowInfo.lpszClassName,
+							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
+							WS_POPUP | WS_VISIBLE,
+							CW_USEDEFAULT,
+							CW_USEDEFAULT,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
+							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
+							nullptr,
+							nullptr,
+							_Instance,
+							nullptr);
+#else
 	//Create the window.
 	_Window = CreateWindow(	windowInfo.lpszClassName,
 							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
@@ -156,6 +170,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 							nullptr,
 							_Instance,
 							nullptr);
+#endif
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	if (!_Window)
