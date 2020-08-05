@@ -37,7 +37,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(19
+	SetNumberOfPipelines(200
 #if defined(CATALYST_EDITOR)
 	+ 1
 #endif
@@ -66,6 +66,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
+	AddPipeline(&_InstancedOpaqueModelSceneFeaturesGraphicsPipeline);
+
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline);
@@ -90,6 +92,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
+	_InstancedOpaqueModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -147,6 +150,7 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
+	_InstancedOpaqueModelSceneFeaturesGraphicsPipeline.Execute();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Execute();

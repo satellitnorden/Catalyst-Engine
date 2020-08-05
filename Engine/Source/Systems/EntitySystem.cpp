@@ -8,6 +8,7 @@
 #include <Entities/Types/AnimatedModelEntity.h>
 #include <Entities/Types/DistanceTriggerEntity.h>
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/InstancedStaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/SoundEntity.h>

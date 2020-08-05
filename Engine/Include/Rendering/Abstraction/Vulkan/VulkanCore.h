@@ -12,9 +12,9 @@
 *	Turns Vulkan debugging on/off.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define VULKAN_DEBUGGING false
+	#define VULKAN_DEBUGGING (0)
 #else
-	#define VULKAN_DEBUGGING false
+	#define VULKAN_DEBUGGING (0)
 #endif
 
 /*

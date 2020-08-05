@@ -144,7 +144,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	RegisterClassEx(&windowInfo);
 #endif
 
-#if 0 //Make fullscreen window.
+#if 1 //Make fullscreen window.
 	//Create the window.
 	_Window = CreateWindow(	windowInfo.lpszClassName,
 							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),

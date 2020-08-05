@@ -56,6 +56,7 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\AnimatedModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\DistanceTriggerComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\DynamicModelComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Transient\InstancedStaticModelComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\LightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\DistanceTriggerInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\InstancedStaticModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\LightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
@@ -127,6 +129,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\DistanceTriggerEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\InstancedStaticModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\LightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
@@ -270,6 +273,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelColorSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelDepthSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelShadowMapGraphicsPipeline.h" />
@@ -486,6 +490,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\DistanceTriggerEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\InstancedStaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\LightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
@@ -559,6 +564,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelColorSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelDepthSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelShadowMapGraphicsPipeline.cpp" />
