@@ -141,6 +141,22 @@ public:
 	}
 
 	/*
+	*	Returns the motion blur intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetMotionBlurIntensity() const NOEXCEPT
+	{
+		return _MotionBlurIntensity;
+	}
+
+	/*
+	*	Sets the motion blur intensity.
+	*/
+	FORCE_INLINE void SetMotionBlurIntensity(const float32 value) NOEXCEPT
+	{
+		_MotionBlurIntensity = value;
+	}
+
+	/*
 	*	Returns the color grading texture resource.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetColorGradingTextureResource() const NOEXCEPT
@@ -181,6 +197,9 @@ private:
 
 	//The horizontal border.
 	float32 _HorizontalBorder{ 0.0f };
+
+	//The motion blur intensity.
+	float32 _MotionBlurIntensity{ 1.0f };
 
 	//The color grading texture resource.
 	ResourcePointer<Texture2DResource> _ColorGradingTextureResource;

@@ -90,7 +90,7 @@ void MotionBlurGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	MotionBlurPushConstantData data;
 
-	data._MotionBlurIntensity = 1.0f;
+	data._MotionBlurIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetMotionBlurIntensity();
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(MotionBlurPushConstantData), &data);
 
