@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STD.
+#include <functional>
+
 class Microbenchmarker final
 {
 
