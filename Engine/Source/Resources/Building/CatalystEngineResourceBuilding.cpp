@@ -27,18 +27,18 @@
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
 
-#define BUILD_ENGINE_ALL false
+#define BUILD_ENGINE_ALL (0)
 
-#define BUILD_ENGINE_CLOUD_TEXTURE false
-#define BUILD_ENGINE_FONTS false
-#define BUILD_ENGINE_OCEAN_TEXTURE false
-#define BUILD_ENGINE_BLUE_NOISE_TEXTURES false
-#define BUILD_ENGINE_SHADERS false
-#define BUILD_ENGINE_DEFAULT_SKY_TEXTURE false
-#define BUILD_ENGINE_MATERIALS false
-#define BUILD_ENGINE_MODELS false
+#define BUILD_ENGINE_CLOUD_TEXTURE (0)
+#define BUILD_ENGINE_FONTS (0)
+#define BUILD_ENGINE_OCEAN_TEXTURE (0)
+#define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
+#define BUILD_ENGINE_SHADERS (0)
+#define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
+#define BUILD_ENGINE_MATERIALS (0)
+#define BUILD_ENGINE_MODELS (0)
 
-#define BUILD_ENGINE_RESOURCE_COLLECTION false
+#define BUILD_ENGINE_RESOURCE_COLLECTION (0)
 
 /*
 *	Builds resources for the Catalyst Engine.

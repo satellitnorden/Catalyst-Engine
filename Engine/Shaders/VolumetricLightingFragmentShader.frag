@@ -38,34 +38,29 @@ void CatalystShaderMain()
 	//Calculate the sky light lighting.
 	vec3 sky_light_lighting = VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
-	//Different logic depending on if the sky light is on the screen or not.
-	if (ValidCoordinate(SKY_LIGHT_SCREEN_SPACE_POSITION))
-	{
-		//Sample the noise.
-		vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+	//Calculate the sky light influence.
+	float sky_light_influence = min(abs(0.5f - SKY_LIGHT_SCREEN_SPACE_POSITION.x) * 2.0f * abs(0.5f - SKY_LIGHT_SCREEN_SPACE_POSITION.y) * 2.0f, 1.0f);
+	sky_light_influence *= sky_light_influence;
+	sky_light_influence = 1.0f - sky_light_influence;
+
+	//Sample the noise.
+	vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
 		//Accumulate occlusion.
-		float occlusion = 0.0f;
+	float occlusion = 0.0f;
 
-		for (uint i = 0; i < 4; ++i)
-		{
-			//Calculate the sample point.
-			vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
-
-			//Accumulate occlusion.
-			occlusion += float(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_point).w > 0.0f) * 0.25f;
-		}
-
-		//Calculate the disocclusion.
-		float disocclusion = 1.0f - min(occlusion, 1.0f);
-
-		//Write the fragment.
-		fragment = vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, disocclusion), 1.0f);
-	}
-
-	else
+	for (uint i = 0; i < 4; ++i)
 	{
-		//Write the fragment.
-		fragment = vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, 0.5f), 1.0f);
+		//Calculate the sample point.
+		vec2 sample_point = mix(fragment_texture_coordinate, SKY_LIGHT_SCREEN_SPACE_POSITION, noise_sample[i]);
+
+		//Accumulate occlusion.
+		occlusion += float(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_point).w > 0.0f) * 0.25f;
 	}
+
+	//Calculate the disocclusion.
+	float disocclusion = 1.0f - min(occlusion, 1.0f);
+
+	//Write the fragment.
+	fragment = mix(vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, 0.5f), 1.0f), vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, disocclusion), 1.0f), sky_light_influence);
 }
