@@ -39,13 +39,13 @@ void ModelPhysicsSystem::CastRayStaticModels(const Ray &ray, const RaycastConfig
 	for (Entity *const RESTRICT entity : *ComponentManager::GetStaticModelEntities())
 	{
 		//Cache the relevant data.
-		const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box{ *static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox() };
-		const ResourcePointer<ModelResource> model_resource{ static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetModelResource() };
+		const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box{ *static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox() };
+		const ResourcePointer<ModelResource> model_resource{ static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetModelResource() };
 
 		//Cast the ray.
 		float32 intersection_distance{ result->_HitDistance };
 
-		if (CastRayModel(ray, world_space_axis_aligned_bounding_box, model_resource, static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetWorldTransform()->ToAbsoluteMatrix4x4(), &intersection_distance))
+		if (CastRayModel(ray, world_space_axis_aligned_bounding_box, model_resource, static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetWorldTransform()->ToAbsoluteMatrix4x4(), &intersection_distance))
 		{
 			result->_HasHit = true;
 			result->_HitDistance = intersection_distance;

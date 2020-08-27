@@ -144,33 +144,35 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	RegisterClassEx(&windowInfo);
 #endif
 
-#if 1 //Make fullscreen window.
-	//Create the window.
-	_Window = CreateWindow(	windowInfo.lpszClassName,
-							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
-							WS_POPUP | WS_VISIBLE,
-							CW_USEDEFAULT,
-							CW_USEDEFAULT,
-							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
-							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
-							nullptr,
-							nullptr,
-							_Instance,
-							nullptr);
-#else
-	//Create the window.
-	_Window = CreateWindow(	windowInfo.lpszClassName,
-							_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
-							WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
-							CW_USEDEFAULT,
-							CW_USEDEFAULT,
-							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
-							CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
-							nullptr,
-							nullptr,
-							_Instance,
-							nullptr);
-#endif
+	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen)
+	{
+		_Window = CreateWindow(	windowInfo.lpszClassName,
+								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
+								WS_POPUP | WS_VISIBLE,
+								CW_USEDEFAULT,
+								CW_USEDEFAULT,
+								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
+								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
+								nullptr,
+								nullptr,
+								_Instance,
+								nullptr);
+	}
+
+	else
+	{
+		_Window = CreateWindow(	windowInfo.lpszClassName,
+								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
+								WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
+								CW_USEDEFAULT,
+								CW_USEDEFAULT,
+								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
+								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
+								nullptr,
+								nullptr,
+								_Instance,
+								nullptr);
+	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	if (!_Window)

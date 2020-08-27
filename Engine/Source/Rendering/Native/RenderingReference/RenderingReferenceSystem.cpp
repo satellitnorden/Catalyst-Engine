@@ -25,9 +25,6 @@
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 #include <Rendering/Native/Shader/CatalystVolumetricLighting.h>
 
-//Resources.
-#include <Resources/Loading/ResourceLoader.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>

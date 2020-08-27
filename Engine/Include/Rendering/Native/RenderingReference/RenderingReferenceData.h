@@ -5,14 +5,15 @@
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
+#include <Concurrency/Task.h>
 
 //Rendering.
 #include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
 
-//Resources.
-#include<Resources/Loading/ResourceLoader.h>
+//Systems.
+#include <Systems/ResourceSystem.h>
 
 //User interface.
 #include <UserInterface/TextUserInterfaceElement.h>
@@ -77,9 +78,9 @@ public:
 	FORCE_INLINE RenderingReferenceData() NOEXCEPT
 	{
 		//Fill in the textures.
-		for (const Pair<HashString, Texture2DResource> &texture_2d_resource : ResourceLoader::GetAllTexture2DResources())
+		for (const Texture2DResource *const RESTRICT texture_2d_resource : ResourceSystem::Instance->GetAllTexture2DResources().ValueIterator())
 		{
-			_Textures[texture_2d_resource._Second._Index] = &texture_2d_resource._Second;
+			_Textures[texture_2d_resource->_Index] = texture_2d_resource;
 		}
 	}
 

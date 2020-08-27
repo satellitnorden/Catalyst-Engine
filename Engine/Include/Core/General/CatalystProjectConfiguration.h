@@ -69,6 +69,12 @@ class CatalystProjectRenderingConfiguration final
 public:
 
 	/*
+	*	Denotes if the game should start in fullscreen initially.
+	*	Recommended: true/false.
+	*/
+	bool _InitialFullScreen;
+
+	/*
 	*	The resolution.
 	*	Recommended: 1'920, 1'080.
 	*/

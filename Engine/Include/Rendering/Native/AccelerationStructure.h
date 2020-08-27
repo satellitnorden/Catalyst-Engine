@@ -200,7 +200,7 @@ private:
 			struct
 			{
 				//The axis aligned bounding boxes.
-				StaticArray<AxisAlignedBoundingBox, 2> _AxisAlignedBoundingBoxes;
+				StaticArray<AxisAlignedBoundingBox3, 2> _AxisAlignedBoundingBoxes;
 
 				//The nodes.
 				Node *RESTRICT _Nodes;
@@ -253,7 +253,7 @@ private:
 		DynamicArray<VertexData> _VertexData;
 
 		//The nodes to be split, and their axis aligned bounding boxes.
-		DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox>> _NodesToBeSplit;
+		DynamicArray<Pair<Node* const RESTRICT, AxisAlignedBoundingBox3>> _NodesToBeSplit;
 
 		//The bytes needed for the vertex data.
 		uint64 _NumberBytesNeededForVertexData{ 0 };
@@ -293,7 +293,7 @@ private:
 		_BuildData->_NumberBytesNeededForTriangleData = _Root._TriangleData.Size() * sizeof(TriangleData);
 
 		//First, calculate axis aligned bounding box for the root.
-		AxisAlignedBoundingBox root_box;
+		AxisAlignedBoundingBox3 root_box;
 
 		for (const TriangleData& triangle_data : _Root._TriangleData)
 		{
@@ -318,7 +318,7 @@ private:
 		while (!_BuildData->_NodesToBeSplit.Empty())
 		{
 			Node* const RESTRICT node{ _BuildData->_NodesToBeSplit.Back()._First };
-			const AxisAlignedBoundingBox axis_aligned_bounding_box{ _BuildData->_NodesToBeSplit.Back()._Second };
+			const AxisAlignedBoundingBox3 axis_aligned_bounding_box{ _BuildData->_NodesToBeSplit.Back()._Second };
 
 			_BuildData->_NodesToBeSplit.Pop();
 
@@ -367,11 +367,11 @@ private:
 	/*
 	*	Splits a node.
 	*/
-	FORCE_INLINE void SplitNode(const uint64 maximum_triangles_per_node, const AxisAlignedBoundingBox &box, Node* const RESTRICT node) NOEXCEPT
+	FORCE_INLINE void SplitNode(const uint64 maximum_triangles_per_node, const AxisAlignedBoundingBox3 &box, Node* const RESTRICT node) NOEXCEPT
 	{
 		//Decide on which axis the box should be split.
-		AxisAlignedBoundingBox first;
-		AxisAlignedBoundingBox second;
+		AxisAlignedBoundingBox3 first;
+		AxisAlignedBoundingBox3 second;
 
 		{
 			const float x_axis{ box._Maximum._X - box._Minimum._X };
@@ -528,7 +528,7 @@ private:
 	/*
 	*	Refit the node´s axis aligned bounding box(es).
 	*/
-	FORCE_INLINE void Refit(Node* const RESTRICT node, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	FORCE_INLINE void Refit(Node* const RESTRICT node, AxisAlignedBoundingBox3 *const RESTRICT box) NOEXCEPT
 	{
 		CopyNodeToAccelerationStructureMemory(node);
 
