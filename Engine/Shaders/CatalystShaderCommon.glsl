@@ -73,7 +73,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 392) float totalTime;
     layout (offset = 396) float windSpeed;
 
-    layout (offset = 400) float bloomIntensity;
+    layout (offset = 400) float BLOOM_INTENSITY;
 
     layout (offset = 404) float ASPECT_RATIO;
 

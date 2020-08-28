@@ -66,7 +66,10 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_InstancedOpaqueModelSceneFeaturesGraphicsPipeline);
+	for (InstancedOpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _InstancedOpaqueModelSceneFeaturesGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
@@ -92,7 +95,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
-	_InstancedOpaqueModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
+	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
 
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -150,7 +154,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
-	_InstancedOpaqueModelSceneFeaturesGraphicsPipeline.Execute();
+	for (InstancedOpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _InstancedOpaqueModelSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
 	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Execute();

@@ -31,8 +31,11 @@ namespace CatalystWindowsData
 	//Denotes whether or not the window is in focus.
 	bool _IsWindowInFocus{ true };
 
-	//Denotes whether or not the cursor is shown.
-	bool _CursorShown{ true };
+	//Denotes the cursor's requested visibility.
+	bool _CursorRequestedVisibility{ true };
+
+	//Denotes the cursor's current visibility.
+	bool _CursorCurrentVisibility{ true };
 
 	//The scroll wheel step.
 	int8 _ScrollWheelStep{ 0 };
@@ -57,6 +60,22 @@ namespace CatalystWindowsLogic
 		{
 			TranslateMessage(&message);
 			DispatchMessage(&message);
+		}
+
+		//Update the cursor.
+		if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
+		{
+			CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
+
+			if (CatalystWindowsData::_CursorRequestedVisibility)
+			{
+				while (ShowCursor(true) < 0);
+			}
+
+			else
+			{
+				while (ShowCursor(false) >= 0);
+			}
 		}
 	}
 
@@ -98,18 +117,25 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 */
 FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 {
-	if (CatalystWindowsData::_CursorShown != visibility)
+	//Set the requested visibility.
+	CatalystWindowsData::_CursorRequestedVisibility = visibility;
+
+	//If the cursor is hidden/shown from the main thread, if can be hidden/shown immediately.
+	if (Concurrency::CurrentThread::IsMainThread())
 	{
-		CatalystWindowsData::_CursorShown = visibility;
-
-		if (visibility)
+		if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
 		{
-			while (ShowCursor(true) < 0);
-		}
+			CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
 
-		else
-		{
-			while (ShowCursor(false) > 0);
+			if (CatalystWindowsData::_CursorRequestedVisibility)
+			{
+				while (ShowCursor(true) < 0);
+			}
+
+			else
+			{
+				while (ShowCursor(false) >= 0);
+			}
 		}
 	}
 }
@@ -229,7 +255,7 @@ void CatalystPlatform::ShowCursor() NOEXCEPT
 */
 bool CatalystPlatform::IsCursorShown() NOEXCEPT
 {
-	return CatalystWindowsData::_CursorShown;
+	return CatalystWindowsData::_CursorCurrentVisibility;
 }
 
 /*

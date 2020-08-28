@@ -24,11 +24,11 @@
 #include <Systems/CullingSystem.h>
 #include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
-#include <Systems/EntityPlacementSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/PlacementSystem.h>
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 #include <Systems/ProfilingSystem.h>
 #endif
@@ -80,7 +80,7 @@ namespace CatalystEngineSystemLogic
 		{
 			case CatalystEngineSystemData::SequentialUpdate::EntityPlacementSystem:
 			{
-				EntityPlacementSystem::Instance->SequentialUpdate(context);
+				PlacementSystem::Instance->SequentialUpdate(context);
 
 				break;
 			}
@@ -121,6 +121,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize the current thread's index.
 	Concurrency::CurrentThread::InitializeIndex();
 
+	//Set the main thread's index to the current thread's index.
+	Concurrency::MainThreadIndex() = Concurrency::CurrentThread::Index();
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources();
@@ -138,7 +141,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	CullingSystem::Instance->Initialize();
 	DistributionSystem::Instance->Initialize();
-	EntityPlacementSystem::Instance->Initialize();
+	PlacementSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();

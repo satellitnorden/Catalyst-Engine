@@ -1,8 +1,8 @@
 //Header file.
-#include <Systems/EntityPlacementSystem.h>
+#include <Systems/PlacementSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(EntityPlacementSystem);
+DEFINE_SINGLETON(PlacementSystem);
 
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
@@ -16,23 +16,23 @@ DEFINE_SINGLETON(EntityPlacementSystem);
 #include <Systems/TaskSystem.h>
 
 /*
-*	Initializes the entity placement system.
+*	Initializes the placement system.
 */
-void EntityPlacementSystem::Initialize() NOEXCEPT
+void PlacementSystem::Initialize() NOEXCEPT
 {
 	//Initialize the asynchronous update function.
 	_AsynchronousUpdateTask._Function = [](void *const RESTRICT)
 	{
-		EntityPlacementSystem::Instance->AsynchronousUpdate();
+		PlacementSystem::Instance->AsynchronousUpdate();
 	};
 	_AsynchronousUpdateTask._Arguments = nullptr;
 	_AsynchronousUpdateTask._ExecutableOnSameThread = false;
 }
 
 /*
-*	Updates the entity placement system during the sequential update phase.
+*	Updates the placement system during the sequential update phase.
 */
-void EntityPlacementSystem::SequentialUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void PlacementSystem::SequentialUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Is the asynchronous update task done?
 	if (!_AsynchronousUpdateTask.IsExecuted())
@@ -40,8 +40,8 @@ void EntityPlacementSystem::SequentialUpdate(const UpdateContext *const RESTRICT
 		return;
 	}
 
-	//Has any entity placement data been registered?
-	if (_EntityPlacementData.Empty())
+	//Has any placement data been registered?
+	if (_PlacementData.Empty())
 	{
 		return;
 	}
@@ -51,14 +51,14 @@ void EntityPlacementSystem::SequentialUpdate(const UpdateContext *const RESTRICT
 }
 
 /*
-*	Registers an entity placement function.
+*	Registers an placement function.
 */
-void EntityPlacementSystem::RegisterEntityPlacementFunction(const EntityPlacementType type,
-															const EntityPlacementFunction function,
-															const uint8 gridSize,
-															const float gridCellSize) NOEXCEPT
+void PlacementSystem::RegisterPlacementFunction(const EntityPlacementType type,
+												const EntityPlacementFunction function,
+												const uint8 gridSize,
+												const float gridCellSize) NOEXCEPT
 {
-	//Initialize the new entity placement data.
+	//Initialize the new placement data.
 	EntityPlacementData data;
 
 	data._Type = type;
@@ -67,30 +67,30 @@ void EntityPlacementSystem::RegisterEntityPlacementFunction(const EntityPlacemen
 	data._GridCellSize = gridCellSize;
 
 	//Put it in the container.
-	_EntityPlacementData.Emplace(data);
+	_PlacementData.Emplace(data);
 }
 
 /*
-*	Updates the entity placement system asynchronously.
+*	Updates the placement system asynchronously.
 */
-void EntityPlacementSystem::AsynchronousUpdate() NOEXCEPT
+void PlacementSystem::AsynchronousUpdate() NOEXCEPT
 {
 	//Iterate over all entity placement data and check if they need updating.
-	for (EntityPlacementData &data : _EntityPlacementData)
+	for (EntityPlacementData &data : _PlacementData)
 	{
 		//Update differently depending on if the entity placement data is two or three dimensional.
 		switch (data._Type)
 		{
-			case EntityPlacementType::TwoDimensional:
+			case EntityPlacementType::TWO_DIMENSIONAL:
 			{
-				UpdateTwoDimensionalEntityPlacementData(&data);
+				UpdateTwoDimensionalPlacementData(&data);
 
 				break;
 			}
 
-			case EntityPlacementType::ThreeDimensional:
+			case EntityPlacementType::THREE_DIMENSIONAL:
 			{
-				UpdateThreeDimensionalEntityPlacementData(&data);
+				UpdateThreeDimensionalPlacementData(&data);
 
 				break;
 			}
@@ -106,9 +106,9 @@ void EntityPlacementSystem::AsynchronousUpdate() NOEXCEPT
 }
 
 /*
-*	Updates the given two dimensional entity placement data.
+*	Updates the given two dimensional placement data.
 */
-void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
+void PlacementSystem::UpdateTwoDimensionalPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
 {
 	//Calculate the current grid point based on the perceiver's position.
 	const Vector3<float> perceiverPosition{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
@@ -145,7 +145,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 			return Vector3<float>::LengthSquaredXZ(firstPosition - perceiverPosition) < Vector3<float>::LengthSquaredXZ(secondPosition - perceiverPosition);
 		});
 
-	//Compare the grid points in the entity placement data to the wanted grid points and destroy entities if they shouldn't exist.
+	//Compare the grid points in the placement data to the wanted grid points and destroy entities if they shouldn't exist.
 	for (uint64 i{ 0 }; i < data->_GridPoints.Size();)
 	{
 		EntityPlacementData::EntityGridPoint &entityGridPoint{ data->_GridPoints[i] };
@@ -175,7 +175,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 		}
 	}
 
-	//Compare the grid points in the entity placement data to the wanted grid points and execute placement if it doesn't exist.
+	//Compare the grid points in the placement data to the wanted grid points and execute placement if it doesn't exist.
 	for (const GridPoint2 wantedGridPoint : wantedGridPoints)
 	{
 		bool gridPointExists{ false };
@@ -210,9 +210,9 @@ void EntityPlacementSystem::UpdateTwoDimensionalEntityPlacementData(EntityPlacem
 }
 
 /*
-*	Updates the given three dimensional entity placement data.
+*	Updates the given three dimensional placement data.
 */
-void EntityPlacementSystem::UpdateThreeDimensionalEntityPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
+void PlacementSystem::UpdateThreeDimensionalPlacementData(EntityPlacementData *const RESTRICT data) NOEXCEPT
 {
 	ASSERT(false, "Not implemented yet!");
 }

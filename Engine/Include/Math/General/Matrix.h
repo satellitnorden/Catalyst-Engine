@@ -430,14 +430,6 @@ public:
 	}
 
 	/*
-	*	Returns the scale.
-	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
-	{
-		return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
-	}
-
-	/*
 	*	Returns the right.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetRight() const NOEXCEPT
@@ -459,6 +451,61 @@ public:
 	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
 	{
 		return Vector3<float>(_Matrix[2]._X, _Matrix[2]._Y, _Matrix[2]._Z);
+	}
+
+	/*
+	*	Returns the rotation.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetRotation() const NOEXCEPT
+	{
+		//Check for gimbal lock.
+		if (CatalystBaseMath::Absolute(_Matrix[0][2] - -1.0f) < FLOAT32_EPSILON)
+		{
+			const float32 X{ 0.0f };
+			const float32 Y{ CatalystBaseMathConstants::HALF_PI };
+			const float32 Z{ X + CatalystBaseMath::Arctangent(_Matrix[1][0], _Matrix[2][0]) };
+
+			return Vector3<float32>(X, Y, Z);
+		}
+		
+		if (CatalystBaseMath::Absolute(_Matrix[0][2] - 1.0f) < FLOAT32_EPSILON)
+		{
+			const float32 X{ 0.0f };
+			const float32 Y{ -CatalystBaseMathConstants::HALF_PI };
+			const float32 Z{ -X + CatalystBaseMath::Arctangent(-_Matrix[1][0], -_Matrix[2][0]) };
+
+			return Vector3<float32>(X, Y, Z);
+		}
+		
+		//Two solutions exist.
+		const float32 X1{ -CatalystBaseMath::ArcSine(_Matrix[0][2]) };
+		const float32 X2{ CatalystBaseMathConstants::PI - X1 };
+
+		const float32 Y1{ CatalystBaseMath::Arctangent(_Matrix[1][2] / CatalystBaseMath::Cosine(X1), _Matrix[2][2] / CatalystBaseMath::Cosine(X1)) };
+		const float32 Y2{ CatalystBaseMath::Arctangent(_Matrix[1][2] / CatalystBaseMath::Cosine(X2), _Matrix[2][2] / CatalystBaseMath::Cosine(X2)) };
+
+		const float32 Z1{ CatalystBaseMath::Arctangent(_Matrix[0][1] / CatalystBaseMath::Cosine(X1), _Matrix[0][0] / CatalystBaseMath::Cosine(X1)) };
+		const float32 Z2{ CatalystBaseMath::Arctangent(_Matrix[0][1] / CatalystBaseMath::Cosine(X2), _Matrix[0][0] / CatalystBaseMath::Cosine(X2)) };
+
+		//Choose the "shortest" rotation to return.
+		if ((CatalystBaseMath::Absolute(X1) + CatalystBaseMath::Absolute(Y1) + CatalystBaseMath::Absolute(Z1))
+			<= (CatalystBaseMath::Absolute(X2) + CatalystBaseMath::Absolute(Y2) + CatalystBaseMath::Absolute(Z2)))
+		{
+			return Vector3<float32>(X1, Y1, Z1);
+		}
+		
+		else
+		{
+			return Vector3<float32>(X2, Y2, Z2);
+		}
+	}
+
+	/*
+	*	Returns the scale.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
+	{
+		return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
 	}
 
 	/*

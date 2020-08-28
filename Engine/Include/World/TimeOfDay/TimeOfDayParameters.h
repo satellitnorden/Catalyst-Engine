@@ -9,6 +9,6 @@ class TimeOfDayParameters final
 public:
 
 	//The time multiplier.
-	float _TimeMultiplier{ 1.0f };
+	float32 _TimeMultiplier{ 1.0f };
 
 };

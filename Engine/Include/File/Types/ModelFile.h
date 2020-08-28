@@ -8,7 +8,7 @@
 #include <Rendering/Native/Vertex.h>
 
 /*
-*	Class representing the raw data read from a model file (for example .fbx files.
+*	Class representing the raw data read from a model file (for example .fbx files).
 */
 class ModelFile final
 {

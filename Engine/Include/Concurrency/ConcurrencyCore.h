@@ -23,6 +23,16 @@ namespace Concurrency
 {
 
 	/*
+	*	Returns the main thread's index.
+	*/
+	FORCE_INLINE uint64 &MainThreadIndex() NOEXCEPT
+	{
+		static uint64 INDEX{ 0 };
+
+		return INDEX;
+	}
+
+	/*
 	*	Returns the number of hardware threads.
 	*/
 	FORCE_INLINE NO_DISCARD uint32 NumberOfHardwareThreads() NOEXCEPT;
@@ -61,6 +71,14 @@ namespace Concurrency
 			static std::atomic<uint64> INDEX_COUNTER{ 0 };
 
 			Index() = INDEX_COUNTER.fetch_add(1);
+		}
+
+		/*
+		*	Returns if the current thread is the main thread.
+		*/
+		FORCE_INLINE NO_DISCARD bool IsMainThread() NOEXCEPT
+		{
+			return Index() == Concurrency::MainThreadIndex();
 		}
 
 	}

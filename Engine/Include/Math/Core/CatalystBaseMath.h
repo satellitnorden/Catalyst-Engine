@@ -45,7 +45,7 @@ public:
 	/*
 	*	Given a number, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float Arcsine(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float ArcSine(const float number) NOEXCEPT
 	{
 		return asinf(number);
 	}

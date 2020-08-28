@@ -28,8 +28,11 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
+void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool double_sided, const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Set double sided.
+	_DoubleSided = double_sided;
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -106,7 +109,17 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBu
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::Back);
+	
+	if (_DoubleSided)
+	{
+		SetCullMode(CullMode::None);
+	}
+
+	else
+	{
+		SetCullMode(CullMode::Back);
+	}
+
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
@@ -158,6 +171,12 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			{
 				//Cache the mesh.
 				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Skip this mesh depending on the double-sidedness.
+				if (_DoubleSided != component->_MaterialResources[i]->_DoubleSided)
+				{
+					continue;
+				}
 
 				//Push constants.
 				FragmentPushConstantData data;

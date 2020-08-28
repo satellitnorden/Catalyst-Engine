@@ -76,8 +76,8 @@ private:
 	//The opaque model scene features graphics pipelines.
 	StaticArray<OpaqueModelSceneFeaturesGraphicsPipeline, 2> _OpaqueModelSceneFeaturesGraphicsPipelines;
 
-	//The instanced opaque model scene features graphics pipeline.
-	InstancedOpaqueModelSceneFeaturesGraphicsPipeline _InstancedOpaqueModelSceneFeaturesGraphicsPipeline;
+	//The instanced opaque model scene features graphics pipelines.
+	StaticArray<InstancedOpaqueModelSceneFeaturesGraphicsPipeline, 2> _InstancedOpaqueModelSceneFeaturesGraphicsPipelines;
 
 	//The vegetation depth scene features graphics pipeline.
 	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;

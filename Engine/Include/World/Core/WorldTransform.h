@@ -62,6 +62,20 @@ public:
 	}
 
 	/*
+	*	Constructor taking a Matrix4x4 transformation.
+	*/
+	FORCE_INLINE explicit WorldTransform(const Matrix4x4 &transformation) NOEXCEPT
+			:
+		_Cell(0, 0, 0),
+		_LocalPosition(transformation.GetTranslation()),
+		_Rotation(transformation.GetRotation()),
+		_Scale((transformation.GetScale()._X + transformation.GetScale()._Y + transformation.GetScale()._Z) / 3.0f) //Only supports uniform scale, so average the scales.
+	{
+		//Update the cell.
+		UpdateCell();
+	}
+
+	/*
 	*	Returns the cell.
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCell() const NOEXCEPT

@@ -448,7 +448,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
+	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
 	output_file.Write(&header, sizeof(ResourceHeader));
 
 	//Read all model files into memory.
@@ -457,7 +457,15 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 
 	for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
 	{
-		FBXReader::Read(parameters._LevelOfDetails[i], &model_files[i]);
+		if (parameters._ProceduralFunction)
+		{
+			parameters._ProceduralFunction(i, &model_files[i]);
+		}
+		
+		else
+		{
+			FBXReader::Read(parameters._LevelOfDetails[i], &model_files[i]);
+		}
 	}
 
 	//Transform all vertices in all meshes.
@@ -986,7 +994,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 				direction.Normalize();
 
 				//Sample the HDR texture.
-				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(direction._Z, direction._X), CatalystBaseMath::Arcsine(direction._Y) };
+				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
 				texture_coordinate *= INVERSE_ATAN;
 				texture_coordinate += 0.5f;
 

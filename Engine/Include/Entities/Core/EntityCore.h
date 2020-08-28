@@ -13,8 +13,8 @@ using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox3 &box, Dyna
 //Enumeration covering all entity placement types.
 enum class EntityPlacementType : uint8
 {
-	TwoDimensional,
-	ThreeDimensional
+	TWO_DIMENSIONAL,
+	THREE_DIMENSIONAL
 };
 
 //Entity types.
