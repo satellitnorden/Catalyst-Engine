@@ -117,13 +117,37 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, EntityIn
 */
 void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
-	ASSERT(entity->_Initialized, "Don't call EntityCreationSystem::RequestTermination() on entities that are not initialized!");
+	/*
+	*	If this entity is not initialized, it doesn't need termination.
+	*	But it might have been queued for initialization, so remove it from the initialization queue if that's the case.
+	*/
+	if (!entity->_Initialized)
+	{
+		//Lock the queue.
+		SCOPED_LOCK(_InitializationQueueLock);
 
-	//Lock the queue.
-	SCOPED_LOCK(_TerminationQueueLock);
+		for (uint64 i{ 0 }; i < _InitializationQueue.Size();)
+		{
+			if (entity == _InitializationQueue[i]._Entity)
+			{
+				_InitializationQueue.EraseAt<false>(i);
+			}
 
-	//Add the data.
-	_TerminationQueue.Emplace(entity);
+			else
+			{
+				++i;
+			}
+		}
+	}
+	
+	else
+	{
+		//Lock the queue.
+		SCOPED_LOCK(_TerminationQueueLock);
+
+		//Add the data.
+		_TerminationQueue.Emplace(entity);
+	}
 }
 
 /*

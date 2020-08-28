@@ -59,6 +59,9 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 */
 void InstancedStaticModelEntity::Terminate() NOEXCEPT
 {
+	//Destroy the transformations buffer.
+	RenderingSystem::Instance->DestroyBuffer(&ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents()[_ComponentsIndex]._TransformationsBuffer);
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnInstancedStaticModelComponentsIndex(_ComponentsIndex);
 }
