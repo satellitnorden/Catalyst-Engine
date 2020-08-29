@@ -151,7 +151,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		TerrainPushConstantData data;
 
-		data._WorldGridDelta = Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell();
+		data._WorldGridDelta = TerrainSystem::Instance->GetTerrainProperties()->_TerrainWorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell();
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;

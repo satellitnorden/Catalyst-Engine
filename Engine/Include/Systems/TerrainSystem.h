@@ -55,6 +55,11 @@ public:
 	}
 
 	/*
+	*	Sets the terrain world center.
+	*/
+	void SetTerrainWorldCenter(const WorldPosition &world_position) NOEXCEPT;
+
+	/*
 	*	Sets the height map.
 	*/
 	void SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT;

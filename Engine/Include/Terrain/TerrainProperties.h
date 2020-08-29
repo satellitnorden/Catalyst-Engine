@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <World/Core/WorldPosition.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
@@ -32,11 +35,17 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
+	//Denotes whether or note a terrain world center has been set.
+	bool _HasTerrainWorldCenter{ false };
+
+	//The terrain world center.
+	WorldPosition _TerrainWorldCenter;
+
 	//Denotes whether or not a height map has been set.
 	bool _HasHeightMap{ false };
 
 	//The height map.
-	Texture2D<float> _HeightMap;
+	Texture2D<float32> _HeightMap;
 
 	//The height map texture.
 	Texture2DHandle _HeightMapTexture;

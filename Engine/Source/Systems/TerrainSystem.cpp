@@ -138,6 +138,18 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 }
 
 /*
+*	Sets the terrain world center.
+*/
+void TerrainSystem::SetTerrainWorldCenter(const WorldPosition &world_position) NOEXCEPT
+{
+	//Set the terrain world center.
+	_Properties._TerrainWorldCenter = world_position;
+
+	//There is now a terrain world center!
+	_Properties._HasTerrainWorldCenter = true;
+}
+
+/*
 *	Sets the height map.
 */
 void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
@@ -370,7 +382,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
 	//If there are no maps, just return.
-	if (!_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
+	if (!_Properties._HasTerrainWorldCenter && !_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
 	{
 		return;
 	}
