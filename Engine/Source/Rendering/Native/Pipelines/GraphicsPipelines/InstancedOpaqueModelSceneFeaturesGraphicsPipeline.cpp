@@ -14,13 +14,30 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Fragment push constant data definition.
+*	Instanced opaque model scene features vertex push constant data definition.
 */
-class FragmentPushConstantData final
+class InstancedOpaqueModelSceneFeaturesVertexPushConstantData final
 {
 
 public:
 
+	//The world grid delta.
+	Vector3<int32> _WorldGridDelta;
+
+	//Some padding.
+	Padding<4> _Padding;
+
+};
+
+/*
+*	Fragment push constant data definition.
+*/
+class InstancedOpaqueModelSceneFeaturesFragmentPushConstantData final
+{
+
+public:
+
+	//The material index.
 	uint32 _MaterialIndex;
 
 };
@@ -56,8 +73,9 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool do
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), sizeof(InstancedOpaqueModelSceneFeaturesFragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(5);
@@ -179,11 +197,21 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				}
 
 				//Push constants.
-				FragmentPushConstantData data;
+				{
+					InstancedOpaqueModelSceneFeaturesVertexPushConstantData data;
 
-				data._MaterialIndex = component->_MaterialResources[i]->_Index;
+					data._WorldGridDelta = Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell();
 
-				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(FragmentPushConstantData), &data);
+					command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), &data);
+				}
+
+				{
+					InstancedOpaqueModelSceneFeaturesFragmentPushConstantData data;
+
+					data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+					command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), sizeof(InstancedOpaqueModelSceneFeaturesFragmentPushConstantData), &data);
+				}
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[0]._VertexBuffer, &OFFSET);

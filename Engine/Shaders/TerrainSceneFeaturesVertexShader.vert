@@ -8,9 +8,10 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) vec2 world_position;
-    layout (offset = 8) float patch_size;
-    layout (offset = 12) int borders;
+    layout (offset = 0) ivec3 WORLD_GRID_DELTA;
+    layout (offset = 16) vec2 world_position;
+    layout (offset = 24) float patch_size;
+    layout (offset = 28) int borders;
 };
 
 //In parameters.
@@ -101,6 +102,9 @@ void CatalystShaderMain()
 
 	//Apply the height.
 	fragmentWorldPosition.y += texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
+
+	//Apply the world grid delta.
+	fragmentWorldPosition += vec3(WORLD_GRID_DELTA) * WORLD_GRID_SIZE;
 
 	//Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = fragmentWorldPosition.xz * 0.25f;

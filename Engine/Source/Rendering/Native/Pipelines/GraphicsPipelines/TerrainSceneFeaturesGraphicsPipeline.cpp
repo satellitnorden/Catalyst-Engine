@@ -24,11 +24,17 @@ class TerrainPushConstantData final
 
 public:
 
+	//The world grid delta.
+	Vector3<int32> _WorldGridDelta;
+
+	//Some padding.
+	Padding<4> _Padding;
+
 	//The world position.
-	Vector2<float> _WorldPosition;
+	Vector2<float32> _WorldPosition;
 
 	//The patch size.
-	float _PatchSize;
+	float32 _PatchSize;
 
 	//The borders
 	int32 _Borders;
@@ -145,6 +151,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		TerrainPushConstantData data;
 
+		data._WorldGridDelta = Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell();
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;

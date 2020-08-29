@@ -100,7 +100,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     layout (offset = 472) vec2 PREVIOUS_FRAME_JITTER;
 
-    //Total size; 480
+    layout (offset = 480) ivec3 CURRENT_WORLD_GRID_CELL;
+    layout (offset = 496) float WORLD_GRID_SIZE;
+
+    //Total size; 500
 };
 
 //The render targets.
@@ -251,7 +254,6 @@ float LengthSquared3(vec3 vector)
 {
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
-
 
 /*
 *	Linear interpolation between three values.

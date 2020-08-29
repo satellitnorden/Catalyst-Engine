@@ -2,7 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/StaticArray.h>
+#include <Core/General/Padding.h>
 
 //Math.
 #include <Math/General/Matrix.h>
@@ -32,19 +32,19 @@ public:
 	float32 _TotalTime;
 	float32 _WindSpeed;
 
-	float _BloomIntensity;
+	float32 _BloomIntensity;
 
 	float32 _AspectRatio;
 
 	uint32 _CurrentBlueNoiseTextureIndex;
-	float _CurrentBlueNoiseTextureOffsetX;
-	float _CurrentBlueNoiseTextureOffsetY;
+	float32 _CurrentBlueNoiseTextureOffsetX;
+	float32 _CurrentBlueNoiseTextureOffsetY;
 
-	float _ViewDistance;
-	float _MaximumSkyTextureMipmapLevel;
-	float _Wetness;
-	float _NearPlane;
-	float _FarPlane;
+	float32 _ViewDistance;
+	float32 _MaximumSkyTextureMipmapLevel;
+	float32 _Wetness;
+	float32 _NearPlane;
+	float32 _FarPlane;
 
 	uint32 _TerrainHeightMapTextureIndex;
 	uint32 _TerrainIndexMapTextureIndex;
@@ -59,6 +59,10 @@ public:
 
 	Vector2<float32> _PreviousFramejitter;
 
+	Vector3<int32> _CurrentWorldGridCell;
+	Padding<4> _Padding1;
+	float32 _WorldGridSize;
+
 };
 
-static_assert(sizeof(DynamicUniformData) == 480, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 500, "Size of dynamic uniform data is wrong!");

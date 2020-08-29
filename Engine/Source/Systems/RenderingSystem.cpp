@@ -718,6 +718,9 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
 	_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
 
+	_DynamicUniformData._CurrentWorldGridCell = WorldSystem::Instance->GetCurrentWorldGridCell();
+	_DynamicUniformData._WorldGridSize = WorldSystem::Instance->GetWorldGridSize();
+
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 
