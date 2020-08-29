@@ -55,9 +55,9 @@ public:
 	}
 
 	/*
-	*	Sets the terrain world center.
+	*	Sets the world center.
 	*/
-	void SetTerrainWorldCenter(const WorldPosition &world_position) NOEXCEPT;
+	void SetWorldCenter(const WorldPosition &world_position) NOEXCEPT;
 
 	/*
 	*	Sets the height map.
@@ -65,29 +65,14 @@ public:
 	void SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT;
 
 	/*
-	*	Updates the height map.
-	*/
-	RESTRICTED NO_DISCARD Texture2D<float> *const RESTRICT UpdateHeightMap() NOEXCEPT;
-
-	/*
 	*	Sets the index map.
 	*/
 	void SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT;
 
 	/*
-	*	Updates the index map.
-	*/
-	RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT UpdateIndexMap() NOEXCEPT;
-
-	/*
 	*	Sets the blend map.
 	*/
 	void SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT;
-
-	/*
-	*	Updates the blend map.
-	*/
-	RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT UpdateBlendMap() NOEXCEPT;
 
 	/*
 	*	Returns the terrain patch informations.
@@ -145,15 +130,6 @@ private:
 
 	//The update.
 	TerrainUpdate _Update;
-
-	//Denotes if the height map was updated.
-	bool _HeightMapUpdated{ false };
-
-	//Denotes if the index map was updated.
-	bool _IndexMapUpdated{ false };
-
-	//Denotes if the blend map was updated.
-	bool _BlendMapUpdated{ false };
 
 	//The terrain ray tracing data.
 	TerrainRayTracingData _TerrainRayTracingData;

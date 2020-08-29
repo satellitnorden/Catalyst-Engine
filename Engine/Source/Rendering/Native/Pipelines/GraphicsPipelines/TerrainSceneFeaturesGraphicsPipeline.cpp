@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Concurrency.
+#include <Concurrency/ScopedLock.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -119,6 +122,17 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
+	//Is everything that is needed to render terrain available?
+	if (!TerrainSystem::Instance->GetTerrainProperties()->_HasWorldCenter
+		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasHeightMap
+		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasIndexMap
+		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasBlendMap)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -151,7 +165,11 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		TerrainPushConstantData data;
 
-		data._WorldGridDelta = TerrainSystem::Instance->GetTerrainProperties()->_TerrainWorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell();
+		{
+			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
+
+			data._WorldGridDelta = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell();
+		}
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;

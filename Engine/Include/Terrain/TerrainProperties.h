@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Spinlock.h>
+
 //Math.
 #include <World/Core/WorldPosition.h>
 
@@ -35,11 +38,17 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
-	//Denotes whether or note a terrain world center has been set.
-	bool _HasTerrainWorldCenter{ false };
+	//The world center lock.
+	mutable Spinlock _WorldCenterLock;
 
-	//The terrain world center.
-	WorldPosition _TerrainWorldCenter;
+	//Denotes whether or note a world center has been set.
+	bool _HasWorldCenter{ false };
+
+	//The world center.
+	WorldPosition _WorldCenter;
+
+	//The height map lock.
+	mutable Spinlock _HeightMapLock;
 
 	//Denotes whether or not a height map has been set.
 	bool _HasHeightMap{ false };
@@ -53,6 +62,9 @@ public:
 	//The height map texture index.
 	uint32 _HeightMapTextureIndex;
 
+	//The index map lock.
+	mutable Spinlock _IndexMapLock;
+
 	//Denotes whether or not an index map has been set.
 	bool _HasIndexMap{ false };
 
@@ -64,6 +76,9 @@ public:
 
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
+
+	//The blend map lock.
+	mutable Spinlock _BlendMapLock;
 
 	//Denotes whether or not a blend map has been set.
 	bool _HasBlendMap{ false };

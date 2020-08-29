@@ -84,69 +84,21 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
-
-	//Was the height map updated?
-	if (_HeightMapUpdated)
-	{
-		_HeightMapUpdated = false;
-
-		if (_Properties._HeightMapTexture)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
-
-			_Properties._HeightMapTexture = EMPTY_HANDLE;
-		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R_FLOAT32), &_Properties._HeightMapTexture);
-		_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
-	}
-
-	//Was the index map updated?
-	if (_IndexMapUpdated)
-	{
-		_IndexMapUpdated = false;
-
-		if (_Properties._IndexMapTexture)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
-
-			_Properties._IndexMapTexture = EMPTY_HANDLE;
-		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::RGBA_UINT8), &_Properties._IndexMapTexture);
-		_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
-	}
-
-	//Was the blend map updated?
-	if (_BlendMapUpdated)
-	{
-		_BlendMapUpdated = false;
-
-		if (_Properties._BlendMapTexture)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
-
-			_Properties._BlendMapTexture = EMPTY_HANDLE;
-		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::RGBA_UINT8), &_Properties._BlendMapTexture);
-		_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
-	}
 }
 
 /*
-*	Sets the terrain world center.
+*	Sets the world center.
 */
-void TerrainSystem::SetTerrainWorldCenter(const WorldPosition &world_position) NOEXCEPT
+void TerrainSystem::SetWorldCenter(const WorldPosition &world_position) NOEXCEPT
 {
-	//Set the terrain world center.
-	_Properties._TerrainWorldCenter = world_position;
+	//Lock the world center.
+	SCOPED_LOCK(_Properties._WorldCenterLock);
 
-	//There is now a terrain world center!
-	_Properties._HasTerrainWorldCenter = true;
+	//Set the world center.
+	_Properties._WorldCenter = world_position;
+
+	//There is now a world center!
+	_Properties._HasWorldCenter = true;
 }
 
 /*
@@ -154,6 +106,9 @@ void TerrainSystem::SetTerrainWorldCenter(const WorldPosition &world_position) N
 */
 void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 {
+	//Lock the height map.
+	SCOPED_LOCK(_Properties._HeightMapLock);
+
 	//Copy the height map.
 	_Properties._HeightMap = height_map;
 
@@ -168,22 +123,13 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 }
 
 /*
-*	Updates the height map.
-*/
-RESTRICTED NO_DISCARD Texture2D<float> *const RESTRICT TerrainSystem::UpdateHeightMap() NOEXCEPT
-{
-	//Remember that the height map was updated.
-	_HeightMapUpdated = true;
-
-	//Return the height map.
-	return &_Properties._HeightMap;
-}
-
-/*
 *	Sets the index map.
 */
 void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT
 {
+	//Lock the index map.
+	SCOPED_LOCK(_Properties._IndexMapLock);
+
 	//Copy the index map.
 	_Properties._IndexMap = index_map;
 
@@ -198,22 +144,13 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 }
 
 /*
-*	Updates the index map.
-*/
-RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT TerrainSystem::UpdateIndexMap() NOEXCEPT
-{
-	//Remember that the index map was updated.
-	_IndexMapUpdated = true;
-
-	//Return the index map.
-	return &_Properties._IndexMap;
-}
-
-/*
 *	Sets the blend map.
 */
 void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT
 {
+	//Lock the blend map.
+	SCOPED_LOCK(_Properties._BlendMapLock);
+
 	//Copy the blend map.
 	_Properties._BlendMap = blend_map;
 
@@ -228,18 +165,6 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 }
 
 /*
-*	Updates the blend map.
-*/
-RESTRICTED NO_DISCARD Texture2D<Vector4<uint8>> *const RESTRICT TerrainSystem::UpdateBlendMap() NOEXCEPT
-{
-	//Remember that the blend map was updated.
-	_BlendMapUpdated = true;
-
-	//Return the index map.
-	return &_Properties._BlendMap;
-}
-
-/*
 *	Returns the terrain map coordinate at the given position.
 */
 NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
@@ -248,9 +173,16 @@ NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const
 	if (_Properties._HasHeightMap)
 	{
 		//Calculate the coordinate. Assume that all maps has the same resolution.
-		const float half_resolution{ static_cast<float32>(_Properties._HeightMap.GetWidth()) * 0.5f };
-		const float full_resolution{ static_cast<float32>(_Properties._HeightMap.GetWidth()) };
+		float32 half_resolution;
+		float32 full_resolution;
 
+		{
+			SCOPED_LOCK(_Properties._HeightMapLock);
+
+			half_resolution = static_cast<float32>(_Properties._HeightMap.GetWidth()) * 0.5f;
+			full_resolution = static_cast<float32>(_Properties._HeightMap.GetWidth());
+		}
+		
 		Vector2<float32> coordinate{ (position._X - 0.5f + half_resolution) / full_resolution, (position._Z - 0.5f + half_resolution) / full_resolution };
 
 		//Clamp the coordinate.
@@ -279,7 +211,11 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
 
 		//Sample the height map.
-		*height = _Properties._HeightMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE);
+		{
+			SCOPED_LOCK(_Properties._HeightMapLock);
+
+			*height = _Properties._HeightMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE);
+		}
 
 		//Return that the retrieval succeeded.
 		return true;
@@ -334,17 +270,26 @@ bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position,
 		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
 
 		//Sample the index map.
-		const uint32 x_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float>(_Properties._IndexMap.GetWidth())) };
-		const uint32 y_coordinate{ static_cast<uint32>(coordinate._Y * static_cast<float>(_Properties._IndexMap.GetWidth())) };
+		{
+			SCOPED_LOCK(_Properties._IndexMapLock);
 
-		*indices = _Properties._IndexMap.At(x_coordinate, y_coordinate);
+			const uint32 x_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float>(_Properties._IndexMap.GetWidth())) };
+			const uint32 y_coordinate{ static_cast<uint32>(coordinate._Y * static_cast<float>(_Properties._IndexMap.GetWidth())) };
+
+			*indices = _Properties._IndexMap.At(x_coordinate, y_coordinate);
+		}
 
 		//Sample the blend map.
-		const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE) };
-		*blend = Vector4<float>(static_cast<float>(blend_map_sample._X) / static_cast<float>(UINT8_MAXIMUM),
-								static_cast<float>(blend_map_sample._Y) / static_cast<float>(UINT8_MAXIMUM),
-								static_cast<float>(blend_map_sample._Z) / static_cast<float>(UINT8_MAXIMUM),
-								static_cast<float>(blend_map_sample._W) / static_cast<float>(UINT8_MAXIMUM));
+		{
+			SCOPED_LOCK(_Properties._BlendMapLock);
+
+			const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE) };
+
+			*blend = Vector4<float32>(	static_cast<float32>(blend_map_sample._X) / static_cast<float32>(UINT8_MAXIMUM),
+										static_cast<float32>(blend_map_sample._Y) / static_cast<float32>(UINT8_MAXIMUM),
+										static_cast<float32>(blend_map_sample._Z) / static_cast<float32>(UINT8_MAXIMUM),
+										static_cast<float32>(blend_map_sample._W) / static_cast<float32>(UINT8_MAXIMUM));
+		}
 
 		//Return that the retrieval succeeded.
 		return true;
@@ -382,7 +327,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
 	//If there are no maps, just return.
-	if (!_Properties._HasTerrainWorldCenter && !_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
+	if (!_Properties._HasWorldCenter && !_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
 	{
 		return;
 	}

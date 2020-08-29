@@ -707,10 +707,22 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
 	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
-	_DynamicUniformData._TerrainHeightMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
-	_DynamicUniformData._TerrainIndexMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_IndexMapTextureIndex;
-	_DynamicUniformData._TerrainBlendMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_BlendMapTextureIndex;
-	_DynamicUniformData._TerrainMapResolution = static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
+	{
+		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_HeightMapLock);
+		_DynamicUniformData._TerrainHeightMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
+	}
+	{
+		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_IndexMapLock);
+		_DynamicUniformData._TerrainIndexMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_IndexMapTextureIndex;
+	}
+	{
+		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_BlendMapLock);
+		_DynamicUniformData._TerrainBlendMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_BlendMapTextureIndex;
+	}
+	{
+		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_HeightMapLock);
+		_DynamicUniformData._TerrainMapResolution = static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
+	}
 
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 
