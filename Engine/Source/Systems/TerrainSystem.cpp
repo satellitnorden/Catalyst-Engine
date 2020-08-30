@@ -104,8 +104,12 @@ void TerrainSystem::SetWorldCenter(const WorldPosition &world_position) NOEXCEPT
 /*
 *	Sets the height map.
 */
-void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
+void TerrainSystem::SetHeightMap(Texture2D<float32> &&height_map) NOEXCEPT
 {
+	//Create the texture.
+	Texture2DHandle new_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32), &new_texture);
+
 	//Lock the height map.
 	SCOPED_LOCK(_Properties._HeightMapLock);
 
@@ -117,10 +121,10 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	}
 
 	//Copy the height map.
-	_Properties._HeightMap = height_map;
+	_Properties._HeightMap = std::move(height_map);
 
-	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._HeightMap), TextureFormat::R_FLOAT32), &_Properties._HeightMapTexture);
+	//Set the texture.
+	_Properties._HeightMapTexture = new_texture;
 
 	//Add the texture to the global render data.
 	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
@@ -132,8 +136,12 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 /*
 *	Sets the index map.
 */
-void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT
+void TerrainSystem::SetIndexMap(Texture2D<Vector4<uint8>> &&index_map) NOEXCEPT
 {
+	//Create the texture.
+	Texture2DHandle new_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8), &new_texture);
+
 	//Lock the index map.
 	SCOPED_LOCK(_Properties._IndexMapLock);
 
@@ -145,10 +153,10 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 	}
 
 	//Copy the index map.
-	_Properties._IndexMap = index_map;
+	_Properties._IndexMap = std::move(index_map);
 
-	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._IndexMap), TextureFormat::RGBA_UINT8), &_Properties._IndexMapTexture);
+	//Set the texture.
+	_Properties._IndexMapTexture = new_texture;
 
 	//Add the texture to the global render data.
 	_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
@@ -160,8 +168,12 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 /*
 *	Sets the blend map.
 */
-void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT
+void TerrainSystem::SetBlendMap(Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT
 {
+	//Create the texture.
+	Texture2DHandle new_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8), &new_texture);
+
 	//Lock the blend map.
 	SCOPED_LOCK(_Properties._BlendMapLock);
 
@@ -173,10 +185,10 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 	}
 
 	//Copy the blend map.
-	_Properties._BlendMap = blend_map;
+	_Properties._BlendMap = std::move(blend_map);
 
-	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_Properties._BlendMap), TextureFormat::RGBA_UINT8), &_Properties._BlendMapTexture);
+	//Set the texture.
+	_Properties._BlendMapTexture = new_texture;
 
 	//Add the texture to the global render data.
 	_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);

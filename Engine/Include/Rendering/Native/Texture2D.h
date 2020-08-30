@@ -79,11 +79,21 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const Texture2D &otherTexture) NOEXCEPT
+	void operator=(const Texture2D &other) NOEXCEPT
 	{
-		_Width = otherTexture._Width;
-		_Height = otherTexture._Height;
-		_Data = otherTexture._Data;
+		_Width = other._Width;
+		_Height = other._Height;
+		_Data = other._Data;
+	}
+
+	/*
+	*	Move assignment operator overload.
+	*/
+	void operator=(Texture2D &&other) NOEXCEPT
+	{
+		_Width = other._Width;
+		_Height = other._Height;
+		_Data = std::move(other._Data);
 	}
 
 	/*

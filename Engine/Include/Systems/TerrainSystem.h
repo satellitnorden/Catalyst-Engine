@@ -62,17 +62,17 @@ public:
 	/*
 	*	Sets the height map.
 	*/
-	void SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT;
+	void SetHeightMap(Texture2D<float32> &&height_map) NOEXCEPT;
 
 	/*
 	*	Sets the index map.
 	*/
-	void SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEXCEPT;
+	void SetIndexMap(Texture2D<Vector4<uint8>> &&index_map) NOEXCEPT;
 
 	/*
 	*	Sets the blend map.
 	*/
-	void SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEXCEPT;
+	void SetBlendMap(Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT;
 
 	/*
 	*	Returns the terrain patch informations.
