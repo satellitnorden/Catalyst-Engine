@@ -109,6 +109,12 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	//Lock the height map.
 	SCOPED_LOCK(_Properties._HeightMapLock);
 
+	//If there already is a height map, destroy it.
+	if (_Properties._HasHeightMap)
+	{
+		RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
+	}
+
 	//Copy the height map.
 	_Properties._HeightMap = height_map;
 
@@ -129,6 +135,12 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 {
 	//Lock the index map.
 	SCOPED_LOCK(_Properties._IndexMapLock);
+
+	//If there already is an index map, destroy it.
+	if (_Properties._HasIndexMap)
+	{
+		RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
+	}
 
 	//Copy the index map.
 	_Properties._IndexMap = index_map;
@@ -151,6 +163,12 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 	//Lock the blend map.
 	SCOPED_LOCK(_Properties._BlendMapLock);
 
+	//If there already is a blend map, destroy it.
+	if (_Properties._HasBlendMap)
+	{
+		RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
+	}
+
 	//Copy the blend map.
 	_Properties._BlendMap = blend_map;
 
@@ -167,11 +185,20 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 /*
 *	Returns the terrain map coordinate at the given position.
 */
-NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
+NO_DISCARD Vector2<float32> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
 {
 	//Need that height map.
 	if (_Properties._HasHeightMap)
 	{
+		//Apply the world center offset.
+		Vector3<float32> offset_position;
+
+		{
+			SCOPED_LOCK(_Properties._WorldCenterLock);
+
+			offset_position = position - _Properties._WorldCenter.GetAbsolutePosition();
+		}
+
 		//Calculate the coordinate. Assume that all maps has the same resolution.
 		float32 half_resolution;
 		float32 full_resolution;
@@ -183,7 +210,7 @@ NO_DISCARD Vector2<float> TerrainSystem::GetTerrainMapCoordinateAtPosition(const
 			full_resolution = static_cast<float32>(_Properties._HeightMap.GetWidth());
 		}
 		
-		Vector2<float32> coordinate{ (position._X - 0.5f + half_resolution) / full_resolution, (position._Z - 0.5f + half_resolution) / full_resolution };
+		Vector2<float32> coordinate{ (offset_position._X - 0.5f + half_resolution) / full_resolution, (offset_position._Z - 0.5f + half_resolution) / full_resolution };
 
 		//Clamp the coordinate.
 		coordinate._X = CatalystBaseMath::Clamp<float32>(coordinate._X, 0.0f, 1.0f - FLOAT32_EPSILON);

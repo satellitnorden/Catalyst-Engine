@@ -57,7 +57,7 @@ public:
 	Texture2D<float32> _HeightMap;
 
 	//The height map texture.
-	Texture2DHandle _HeightMapTexture;
+	Texture2DHandle _HeightMapTexture{ EMPTY_HANDLE };
 
 	//The height map texture index.
 	uint32 _HeightMapTextureIndex;
@@ -72,7 +72,7 @@ public:
 	Texture2D<Vector4<uint8>> _IndexMap;
 
 	//The index map texture.
-	Texture2DHandle _IndexMapTexture;
+	Texture2DHandle _IndexMapTexture{ EMPTY_HANDLE };
 
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
@@ -87,7 +87,7 @@ public:
 	Texture2D<Vector4<uint8>> _BlendMap;
 
 	//The blend map texture.
-	Texture2DHandle _BlendMapTexture;
+	Texture2DHandle _BlendMapTexture{ EMPTY_HANDLE };
 
 	//The blend map texture index.
 	uint32 _BlendMapTextureIndex;

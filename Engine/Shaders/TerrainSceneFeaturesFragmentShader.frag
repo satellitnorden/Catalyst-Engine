@@ -15,7 +15,7 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in vec3 fragmentWorldPosition;
+layout (location = 0) in vec3 fragment_world_position;
 layout (location = 1) in vec2 fragment_height_map_texture_coordinate;
 
 //Out parameters.
@@ -48,7 +48,7 @@ void CatalystShaderMain()
 	mat3 tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);
 
     //Calculate the material texture coordinate.
-	vec2 material_texture_coordinate = fragmentWorldPosition.xz * TERRAIN_MATERIAL_COORDINATE_SCALE;
+	vec2 material_texture_coordinate = fragment_world_position.xz * TERRAIN_MATERIAL_COORDINATE_SCALE;
 
 	//Calculate the material.
 	TerrainMaterial first_material 	= CalculateTerrainMaterial(fragment_height_map_texture_coordinate, material_texture_coordinate);
@@ -67,7 +67,7 @@ void CatalystShaderMain()
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentWorldPosition);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
 
     //Write the fragments.
     sceneFeatures1 = vec4(final_material.albedo, 1.0f);

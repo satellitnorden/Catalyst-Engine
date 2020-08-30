@@ -8,7 +8,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) ivec3 WORLD_GRID_DELTA;
+	layout (offset = 0) vec3 WORLD_GRID_DELTA;
     layout (offset = 16) vec2 world_position;
     layout (offset = 24) float patch_size;
     layout (offset = 28) int borders;
@@ -19,7 +19,7 @@ layout (location = 0) in vec2 vertexPosition;
 layout (location = 1) in int vertexBorders;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentWorldPosition;
+layout (location = 0) out vec3 fragment_world_position;
 layout (location = 1) out vec2 fragment_height_map_texture_coordinate;
 
 /*
@@ -96,18 +96,20 @@ void CatalystShaderMain()
 	position.x -= VERTEX_BORDER_OFFSET_SECOND * horizontalBorderOffsetWeight;
 	position.y -= VERTEX_BORDER_OFFSET_SECOND * verticalBorderOffsetWeight;
 
-	//Write parameters to the fragment shader.
-	fragmentWorldPosition = vec3(world_position.x, 0.0f, world_position.y) + vec3(position.x, 0.0f, position.y) * patch_size;
-	fragment_height_map_texture_coordinate = (fragmentWorldPosition.xz + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
+	//Calculate the fragment world position.
+	fragment_world_position = vec3(world_position.x, 0.0f, world_position.y) + vec3(position.x, 0.0f, position.y) * patch_size;
 
-	//Apply the height.
-	fragmentWorldPosition.y += texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
+	//Calculate the fragment height map texture coordinate.
+	fragment_height_map_texture_coordinate = (fragment_world_position.xz + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
 
 	//Apply the world grid delta.
-	fragmentWorldPosition += vec3(WORLD_GRID_DELTA) * WORLD_GRID_SIZE;
+	fragment_world_position += WORLD_GRID_DELTA;
+
+	//Apply the height.
+	fragment_world_position.y += texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
 
 	//Calculate the material texture coordinate.
-	vec2 material_texture_coordinate = fragmentWorldPosition.xz * 0.25f;
+	vec2 material_texture_coordinate = fragment_world_position.xz * 0.25f;
 
 	//Calculate the displacement.
 	float first_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate, material_texture_coordinate);
@@ -121,8 +123,8 @@ void CatalystShaderMain()
 	float final_displacement = mix(blend_1, blend_2, fract(fragment_height_map_texture_coordinate.x * TERRAIN_MAP_RESOLUTION));
 
 	//Apply the displacement.
-	fragmentWorldPosition.y += mix(-0.5f, 0.5f, final_displacement);
+	fragment_world_position.y += mix(-0.5f, 0.5f, final_displacement);
 
-	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragmentWorldPosition, 1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 	
 }

@@ -26,9 +26,9 @@ class TerrainPushConstantData final
 {
 
 public:
-
+	
 	//The world grid delta.
-	Vector3<int32> _WorldGridDelta;
+	Vector3<float32> _WorldGridDelta;
 
 	//Some padding.
 	Padding<4> _Padding;
@@ -165,10 +165,15 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		TerrainPushConstantData data;
 
+		
 		{
 			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
 
-			data._WorldGridDelta = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell();
+			const Vector3<int32> grid_delta{ TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+			data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize() + TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetLocalPosition()._X;
+			data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
+			data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize() + TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetLocalPosition()._Z;
 		}
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;

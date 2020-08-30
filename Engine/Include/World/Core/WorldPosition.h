@@ -28,8 +28,8 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE explicit WorldPosition(	const Vector3<int32> &initial_cell,
-								const Vector3<float32> &initial_local_position) NOEXCEPT
+	FORCE_INLINE explicit WorldPosition(const Vector3<int32> &initial_cell,
+										const Vector3<float32> &initial_local_position) NOEXCEPT
 		:
 		_Cell(initial_cell),
 		_LocalPosition(initial_local_position)
