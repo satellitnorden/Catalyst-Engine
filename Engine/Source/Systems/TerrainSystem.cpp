@@ -112,6 +112,7 @@ void TerrainSystem::SetHeightMap(const Texture2D<float> &height_map) NOEXCEPT
 	//If there already is a height map, destroy it.
 	if (_Properties._HasHeightMap)
 	{
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
 		RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
 	}
 
@@ -139,6 +140,7 @@ void TerrainSystem::SetIndexMap(const Texture2D<Vector4<uint8>> &index_map) NOEX
 	//If there already is an index map, destroy it.
 	if (_Properties._HasIndexMap)
 	{
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
 		RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
 	}
 
@@ -166,6 +168,7 @@ void TerrainSystem::SetBlendMap(const Texture2D<Vector4<uint8>> &blend_map) NOEX
 	//If there already is a blend map, destroy it.
 	if (_Properties._HasBlendMap)
 	{
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
 		RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
 	}
 
@@ -359,8 +362,8 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 		return;
 	}
 
-	//Get the current perceiver position.
-	const Vector3<float> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
+	//Cache the current perceiver position.
+	const Vector3<float32> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
 	//Calculate the perceiver grid point.
 	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_perceiver_position, _Properties._PatchSize) };

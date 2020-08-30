@@ -9,9 +9,11 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) vec2 world_position;
-    layout (offset = 8) float patch_size;
-    layout (offset = 12) int borders;
+	layout (offset = 0) vec3 WORLD_GRID_DELTA;
+    layout (offset = 16) vec2 WORLD_POSITION;
+    layout (offset = 24) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
+    layout (offset = 32) float patch_size;
+    layout (offset = 36) int borders;
 };
 
 //In parameters.
@@ -67,7 +69,7 @@ void CatalystShaderMain()
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA);
 
     //Write the fragments.
     sceneFeatures1 = vec4(final_material.albedo, 1.0f);

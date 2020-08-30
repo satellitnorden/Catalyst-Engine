@@ -36,6 +36,9 @@ public:
 	//The world position.
 	Vector2<float32> _WorldPosition;
 
+	//The height map coordinate offset.
+	Vector2<float32> _HeightMapCoordinateOffset;
+
 	//The patch size.
 	float32 _PatchSize;
 
@@ -165,17 +168,22 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Push constants.
 		TerrainPushConstantData data;
 
-		
 		{
 			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
 
-			const Vector3<int32> grid_delta{ TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell() };
+			const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
-			data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize() + TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetLocalPosition()._X;
+			data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize();
 			data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
-			data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize() + TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetLocalPosition()._Z;
+			data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
 		}
 		data._WorldPosition = information._WorldPosition;
+		{
+			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
+
+			data._HeightMapCoordinateOffset._X = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._X;
+			data._HeightMapCoordinateOffset._Y = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._Z;
+		}
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
 
