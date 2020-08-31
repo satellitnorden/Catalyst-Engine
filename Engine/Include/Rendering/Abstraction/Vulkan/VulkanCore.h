@@ -21,9 +21,9 @@
 *	Turns Vulkan timestamps on/off.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define VULKAN_TIMESTAMPS_ENABLED true
+	#define VULKAN_TIMESTAMPS_ENABLED (0)
 #else
-	#define VULKAN_TIMESTAMPS_ENABLED false
+	#define VULKAN_TIMESTAMPS_ENABLED (0)
 #endif
 
 #if VULKAN_DEBUGGING

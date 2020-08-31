@@ -45,6 +45,12 @@ public:
 	//The borders
 	int32 _Borders;
 
+	//The vertex border offset first.
+	float32 _VertexBorderOffsetFirst;
+
+	//The vertex border offset second.
+	float32 _VertexBorderOffsetSecond;
+
 };
 
 /*
@@ -186,6 +192,8 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		}
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
+		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1);
+		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1) / 2);
 
 		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainPushConstantData), &data);
 

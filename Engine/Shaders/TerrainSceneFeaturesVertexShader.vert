@@ -1,23 +1,21 @@
 //Includes.
 #include "CatalystTerrainUtilities.glsl"
 
-//Constants.
-#define VERTEX_BORDER_OFFSET_FIRST (1.0f / (64.0f))
-#define VERTEX_BORDER_OFFSET_SECOND (1.0f / (32.0f))
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
     layout (offset = 16) vec2 WORLD_POSITION;
     layout (offset = 24) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
-    layout (offset = 32) float patch_size;
-    layout (offset = 36) int borders;
+    layout (offset = 32) float PATCH_SIZE;
+    layout (offset = 36) int BORDERS;
+    layout (offset = 40) float VERTEX_BORDER_OFFSET_FIRST;
+    layout (offset = 44) float VERTEX_BORDER_OFFSET_SECOND;
 };
 
 //In parameters.
-layout (location = 0) in vec2 vertexPosition;
-layout (location = 1) in int vertexBorders;
+layout (location = 0) in vec2 vertex_position;
+layout (location = 1) in int vertex_borders;
 
 //Out parameters.
 layout (location = 0) out vec3 fragment_world_position;
@@ -37,10 +35,30 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
 
 	//Retrieve the 4 displacement values.
-	float displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
-	float displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	float displacement_1 = 0.5f;
+	float displacement_2 = 0.5f;
+	float displacement_3 = 0.5f;
+	float displacement_4 = 0.5f;
+
+	if (TEST_BIT(material_1._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	{
+		displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	}
+	
+	if (TEST_BIT(material_2._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	{
+		displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	}
+
+	if (TEST_BIT(material_3._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	{
+		displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	}
+	
+	if (TEST_BIT(material_4._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	{
+		displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+	}
 
 	//Retrieve the blend map.
 	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
@@ -69,36 +87,36 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 void CatalystShaderMain()
 {
 	//Set the position.
-	vec2 position = vertexPosition.xy;
+	vec2 position = vertex_position.xy;
 
 	//Calculate the horizontal border offset multiplier.
-	float isUpperMultiplier = float((vertexBorders & BIT(0)) & (borders & BIT(0)));
-	float isLowerMultiplier = float((vertexBorders & BIT(4)) & (borders & BIT(4)));
+	float isUpperMultiplier = float((vertex_borders & BIT(0)) & (BORDERS & BIT(0)));
+	float isLowerMultiplier = float((vertex_borders & BIT(4)) & (BORDERS & BIT(4)));
 	float horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
 
 	//Calculate the vertical border offset multiplier.
-	float isRightMultiplier = float((vertexBorders & BIT(2)) & (borders & BIT(2)));
-	float isLeftMultiplier = float((vertexBorders & BIT(6)) & (borders & BIT(6)));
+	float isRightMultiplier = float((vertex_borders & BIT(2)) & (BORDERS & BIT(2)));
+	float isLeftMultiplier = float((vertex_borders & BIT(6)) & (BORDERS & BIT(6)));
 	float verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
 
 	position.x -= VERTEX_BORDER_OFFSET_FIRST * horizontalBorderOffsetWeight;
 	position.y -= VERTEX_BORDER_OFFSET_FIRST * verticalBorderOffsetWeight;
 
 	//Calculate the horizontal border offset multiplier.
-	isUpperMultiplier = float((vertexBorders & BIT(1)) & (borders & BIT(1)));
-	isLowerMultiplier = float((vertexBorders & BIT(5)) & (borders & BIT(5)));
+	isUpperMultiplier = float((vertex_borders & BIT(1)) & (BORDERS & BIT(1)));
+	isLowerMultiplier = float((vertex_borders & BIT(5)) & (BORDERS & BIT(5)));
 	horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
 
 	//Calculate the vertical border offset multiplier.
-	isRightMultiplier = float((vertexBorders & BIT(3)) & (borders & BIT(3)));
-	isLeftMultiplier = float((vertexBorders & BIT(7)) & (borders & BIT(7)));
+	isRightMultiplier = float((vertex_borders & BIT(3)) & (BORDERS & BIT(3)));
+	isLeftMultiplier = float((vertex_borders & BIT(7)) & (BORDERS & BIT(7)));
 	verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
 
 	position.x -= VERTEX_BORDER_OFFSET_SECOND * horizontalBorderOffsetWeight;
 	position.y -= VERTEX_BORDER_OFFSET_SECOND * verticalBorderOffsetWeight;
 
 	//Calculate the fragment world position.
-	fragment_world_position = vec3(WORLD_POSITION.x, 0.0f, WORLD_POSITION.y) + vec3(position.x, 0.0f, position.y) * patch_size;
+	fragment_world_position = vec3(WORLD_POSITION.x, 0.0f, WORLD_POSITION.y) + vec3(position.x, 0.0f, position.y) * PATCH_SIZE;
 
 	//Calculate the fragment height map texture coordinate.
 	fragment_height_map_texture_coordinate = (fragment_world_position.xz - HEIGHT_MAP_COORDINATE_OFFSET + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;

@@ -87,6 +87,14 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 }
 
 /*
+*	Sets the maximum quad tree depth.
+*/
+void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
+{
+	_Properties._MaximumQuadTreeDepth = value;
+}
+
+/*
 *	Sets the world center.
 */
 void TerrainSystem::SetWorldCenter(const WorldPosition &world_position) NOEXCEPT
@@ -447,8 +455,21 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 		}
 	}
 
+	//Find the highest depth of any node.
+	uint8 highest_depth{ 0 };
+
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		FindHighestDepth(_QuadTree._RootNodes[i], &highest_depth);
+	}
+
 	//Check if a node should be combined.
-	for (uint8 depth{ _Properties._MaximumQuadTreeDepth }; depth > 0; --depth)
+	for (uint8 depth{ highest_depth }; depth > 0; --depth)
 	{
 		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 		{
@@ -674,6 +695,25 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEX
 		node->_ChildNodes[i]._ChildNodes = nullptr;
 		node->_ChildNodes[i]._Minimum = Vector2<float>(positions[i]._X - (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z - (_Properties._PatchSize * patch_size_multiplier * 0.5f));
 		node->_ChildNodes[i]._Maximum = Vector2<float>(positions[i]._X + (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z + (_Properties._PatchSize * patch_size_multiplier * 0.5f));
+	}
+}
+
+/*
+*	Finds the highest depth.
+*/
+void TerrainSystem::FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *const RESTRICT highest_depth) NOEXCEPT
+{
+	if (node._Subdivided)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			FindHighestDepth(node._ChildNodes[i], highest_depth);
+		}
+	}
+
+	else
+	{
+		*highest_depth = CatalystBaseMath::Maximum<uint8>(*highest_depth, node._Depth);
 	}
 }
 

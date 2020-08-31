@@ -402,6 +402,14 @@ public:
 	}
 
 	/*
+	*	Generates a value with derivatives in the range [0.0f, 1.0f] at the given 2D coordinates, with octaves.
+	*/
+	FORCE_INLINE static NO_DISCARD float32 GenerateNormalizedDerivativesOctaved2D(const Vector2<float32> &coordinates, const ArrayProxy<Vector2<float32>> &offsets, const uint8 octaves, const float32 lacunarity, const float32 gain, const float32 derivative_weight, const float32 seed = 0.0f) NOEXCEPT
+	{
+		return GenerateDerivativesOctaved2D(coordinates, offsets, octaves, lacunarity, gain, derivative_weight, seed) * 0.5f + 0.5f;
+	}
+
+	/*
 	*	Generates a value in the range [0.0f, 1.0f] at the 2D given coordinates, with octaves.
 	*/
 	FORCE_INLINE static NO_DISCARD float32 GenerateNormalizedOctaves2D(const Vector2<float32>& coordinate, const ArrayProxy<Vector2<float32>>& offsets, const uint8 octaves, const float32 lacunarity = 2.0f, const float32 gain = 0.5f) NOEXCEPT

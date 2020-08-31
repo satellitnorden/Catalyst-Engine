@@ -75,7 +75,8 @@ public:
 			const Vector3<float> middlePoint{ MiddlePoint(node) };
 			const float length{ CatalystBaseMath::Maximum<float>(CatalystBaseMath::Absolute(middlePoint._X - position._X), CatalystBaseMath::Absolute(middlePoint._Z - position._Z)) };
 
-			return length > properties._PatchSize * PatchSizeMultiplier(node);
+			return	node._Depth > properties._MaximumQuadTreeDepth
+					|| length > properties._PatchSize * PatchSizeMultiplier(node);
 		}
 	}
 

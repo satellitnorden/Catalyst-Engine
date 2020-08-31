@@ -55,6 +55,11 @@ public:
 	}
 
 	/*
+	*	Sets the maximum quad tree depth.
+	*/
+	void SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT;
+
+	/*
 	*	Sets the world center.
 	*/
 	void SetWorldCenter(const WorldPosition &world_position) NOEXCEPT;
@@ -178,6 +183,11 @@ private:
 	*	Subdivides a node.
 	*/
 	void SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Finds the highest depth.
+	*/
+	void FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *const RESTRICT highest_depth) NOEXCEPT;
 
 	/*
 	*	Traverses the quad tree, calculates new borders for all nodes and fills in the update.
