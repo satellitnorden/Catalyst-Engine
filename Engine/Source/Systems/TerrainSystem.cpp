@@ -25,7 +25,7 @@ DEFINE_SINGLETON(TerrainSystem);
 void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
 {
 	//Copy over the properties.
-	_Properties._PatchSize = CatalystEngineSystem::Instance->GetProjectConfiguration()->_WorldConfiguration._WorldGridSize;
+	_Properties._PatchSize = configuration._PatchSize;
 	_Properties._PatchResolution = configuration._PatchResolution;
 	_Properties._MaximumQuadTreeDepth = configuration._MaximumQuadTreeDepth;
 

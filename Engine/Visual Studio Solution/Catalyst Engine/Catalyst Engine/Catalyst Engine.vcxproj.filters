@@ -400,6 +400,9 @@
     <Filter Include="Platform\Include\Null">
       <UniqueIdentifier>{fb920564-1945-4c2e-9058-bc97d2d4c007}</UniqueIdentifier>
     </Filter>
+    <Filter Include="User Interface\Source">
+      <UniqueIdentifier>{3d650680-d008-409c-a268-054579d9255b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1683,6 +1686,9 @@
     <ClInclude Include="..\..\..\Include\Systems\PlacementSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceScene.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2239,6 +2245,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\PlacementSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp">
+      <Filter>User Interface\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

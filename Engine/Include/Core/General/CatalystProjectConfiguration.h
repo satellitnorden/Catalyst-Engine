@@ -114,6 +114,13 @@ class CatalystProjectTerrainConfiguration final
 public:
 
 	/*
+	*	The patch size.
+	*	Defines the size of each root node patch.
+	*	Recommended: 1'024.0f.
+	*/
+	float32 _PatchSize;
+
+	/*
 	*	The patch resolution.
 	*	Defines the resolution of the terrain plane.
 	*	Higher resolutions means better quality for displacement, but worse performance.

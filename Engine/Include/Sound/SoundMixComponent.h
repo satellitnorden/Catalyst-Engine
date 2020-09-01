@@ -66,9 +66,7 @@ public:
 	*/
 	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
 	{
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-		PRINT_TO_OUTPUT("Automatic gain correction's gain value: " << state->_Gain << ".");
-#endif
+		
 	}
 
 };
