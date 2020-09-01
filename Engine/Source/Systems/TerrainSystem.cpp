@@ -95,6 +95,102 @@ void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
 }
 
 /*
+*	Sets all of the terrain data at once.
+*/
+void TerrainSystem::SetTerrainData(	const WorldPosition &world_position,
+									Texture2D<float32> &&height_map,
+									Texture2D<Vector4<uint8>> &&index_map,
+									Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT
+{
+	//Create the new textures.
+	Texture2DHandle new_height_map_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32), &new_height_map_texture);
+
+	Texture2DHandle new_index_map_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8), &new_index_map_texture);
+
+	Texture2DHandle new_blend_map_texture;
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8), &new_blend_map_texture);
+
+	//Lock all the terrain data.
+	ScopedLock<Spinlock> scoped_lock_1{ _Properties._WorldCenterLock };
+	ScopedLock<Spinlock> scoped_lock_2{ _Properties._HeightMapLock };
+	ScopedLock<Spinlock> scoped_lock_3{ _Properties._IndexMapLock };
+	ScopedLock<Spinlock> scoped_lock_4{ _Properties._BlendMapLock };
+
+	{
+		//Set the world center.
+		_Properties._WorldCenter = world_position;
+
+		//There is now a world center!
+		_Properties._HasWorldCenter = true;
+	}
+
+	{
+		//If there already is a height map, destroy it.
+		if (_Properties._HasHeightMap)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
+		}
+
+		//Copy the height map.
+		_Properties._HeightMap = std::move(height_map);
+
+		//Set the texture.
+		_Properties._HeightMapTexture = new_height_map_texture;
+
+		//Add the texture to the global render data.
+		_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
+
+		//There is now a height map!
+		_Properties._HasHeightMap = true;
+	}
+
+	{
+		//If there already is an index map, destroy it.
+		if (_Properties._HasIndexMap)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
+		}
+
+		//Copy the index map.
+		_Properties._IndexMap = std::move(index_map);
+
+		//Set the texture.
+		_Properties._IndexMapTexture = new_index_map_texture;
+
+		//Add the texture to the global render data.
+		_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
+
+		//There is now an index map!
+		_Properties._HasIndexMap = true;
+	}
+
+	{
+		//If there already is a blend map, destroy it.
+		if (_Properties._HasBlendMap)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
+		}
+
+		//Copy the blend map.
+		_Properties._BlendMap = std::move(blend_map);
+
+		//Set the texture.
+		_Properties._BlendMapTexture = new_blend_map_texture;
+
+		//Add the texture to the global render data.
+		_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
+
+		//There is now a blend map!
+		_Properties._HasBlendMap = true;
+	}
+}
+
+/*
 *	Sets the world center.
 */
 void TerrainSystem::SetWorldCenter(const WorldPosition &world_position) NOEXCEPT

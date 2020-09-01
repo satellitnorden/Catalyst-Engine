@@ -60,6 +60,14 @@ public:
 	void SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT;
 
 	/*
+	*	Sets all of the terrain data at once.
+	*/
+	void SetTerrainData(const WorldPosition &world_position,
+						Texture2D<float32> &&height_map,
+						Texture2D<Vector4<uint8>> &&index_map,
+						Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT;
+
+	/*
 	*	Sets the world center.
 	*/
 	void SetWorldCenter(const WorldPosition &world_position) NOEXCEPT;
