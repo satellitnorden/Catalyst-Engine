@@ -62,5 +62,5 @@ void CatalystShaderMain()
 	float disocclusion = 1.0f - min(occlusion, 1.0f);
 
 	//Write the fragment.
-	fragment = mix(vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, 0.5f), 1.0f), vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, disocclusion), 1.0f), sky_light_influence);
+	fragment = vec4(mix(ambient_lighting, ambient_lighting + sky_light_lighting, mix(1.0f, disocclusion, sky_light_influence)), 1.0f);
 }
