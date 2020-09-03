@@ -1689,6 +1689,9 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceScene.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\Interpolator.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -156,6 +156,7 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\Interpolator.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h" />
     <ClInclude Include="..\..\..\Include\Math\General\RandomIndexer.h" />
