@@ -369,7 +369,6 @@ public:
 		{
 #define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
 									{																			\
-										PRINT_TO_OUTPUT("Constructing " << #VALUE << " sound mix component.");	\
 										VALUE ## SoundMixComponent::Construct();								\
 																												\
 										break;																	\
@@ -397,7 +396,6 @@ public:
 		{
 #define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
 									{																			\
-										PRINT_TO_OUTPUT("Destructing " << #VALUE << " sound mix component.");	\
 										VALUE ## SoundMixComponent::Destruct(&_ ## VALUE ## State);				\
 																												\
 										break;																	\

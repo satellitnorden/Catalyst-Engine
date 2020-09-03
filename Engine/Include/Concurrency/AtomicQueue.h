@@ -10,6 +10,13 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 
+//Constants.
+#if defined(CATALYST_CONFIGURATION_FINAL)
+	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (0)
+#else
+	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (1)
+#endif
+
 //Enumeration for all atomic queue modes.
 enum class AtomicQueueMode : uint8
 {
@@ -55,6 +62,12 @@ public:
 
 		//Increment the last index.
 		_LastIndex.store((current_last_index + 1) & (SIZE - 1), std::memory_order_release);
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		++_NumberOfQueuedItems;
+
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+#endif
 	}
 
 	/*
@@ -78,6 +91,10 @@ public:
 		//Increment the first index.
 		_FirstIndex.store((current_first_index + 1) & (SIZE - 1), std::memory_order_release);
 
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		--_NumberOfQueuedItems;
+#endif
+
 		//Return the value.
 		return current_first_value;
 	}
@@ -92,6 +109,11 @@ private:
 
 	//The last index in the queue.
 	Atomic<uint64> _LastIndex{ 0 };
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+	//The number of queued items.
+	Atomic<uint64> _NumberOfQueuedItems{ 0 };
+#endif
 
 };
 
@@ -119,6 +141,12 @@ public:
 
 		//Increment the last index.
 		_LastIndex.store((current_last_index + 1) & (SIZE - 1), std::memory_order_release);
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		++_NumberOfQueuedItems;
+
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+#endif
 	}
 
 	/*
@@ -143,6 +171,10 @@ public:
 			new_first_index = old_first_index < (SIZE - 1) ? old_first_index + 1 : 0;
 		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index, std::memory_order_release));
 
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		--_NumberOfQueuedItems;
+#endif
+
 		return &_Queue[old_first_index];
 	}
 
@@ -156,6 +188,11 @@ private:
 
 	//The last index in the queue.
 	Atomic<uint64> _LastIndex{ 0 };
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+	//The number of queued items.
+	Atomic<uint64> _NumberOfQueuedItems{ 0 };
+#endif
 
 };
 
@@ -191,6 +228,12 @@ public:
 		uint64 new_last_index{ (expected_last_index + 1) & (SIZE - 1) };
 
 		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index, std::memory_order_release));
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		++_NumberOfQueuedItems;
+
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+#endif
 	}
 
 	/*
@@ -214,6 +257,10 @@ public:
 		//Increment the first index.
 		_FirstIndex.store((current_first_index + 1) & (SIZE - 1), std::memory_order_release);
 
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		--_NumberOfQueuedItems;
+#endif
+
 		//Return the value.
 		return current_first_value;
 	}
@@ -231,6 +278,11 @@ private:
 
 	//The last index in the queue.
 	Atomic<uint64> _LastIndex{ 0 };
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+	//The number of queued items.
+	Atomic<uint64> _NumberOfQueuedItems{ 0 };
+#endif
 
 };
 
@@ -266,6 +318,12 @@ public:
 		uint64 new_last_index{ expected_last_index < (SIZE - 1) ? expected_last_index + 1 : 0 };
 
 		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index, std::memory_order_release));
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		++_NumberOfQueuedItems;
+
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+#endif
 	}
 
 	/*
@@ -290,6 +348,10 @@ public:
 			new_first_index = old_first_index < (SIZE - 1) ? old_first_index + 1 : 0;
 		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index, std::memory_order_release));
 
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+		--_NumberOfQueuedItems;
+#endif
+
 		return &_Queue[old_first_index];
 	}
 
@@ -306,5 +368,10 @@ private:
 
 	//The last index in the queue.
 	Atomic<uint64> _LastIndex{ 0 };
+
+#if VALIDATE_NUMBER_OF_QUEUED_ITEMS
+	//The number of queued items.
+	Atomic<uint64> _NumberOfQueuedItems{ 0 };
+#endif
 
 };

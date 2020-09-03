@@ -44,9 +44,17 @@ public:
 	}
 
 	/*
-	*	Sets a new target.
+	*	Sets the target.
 	*/
-	FORCE_INLINE void SetNewTarget(const float32 new_target) NOEXCEPT
+	FORCE_INLINE void SetTarget(const float32 value) NOEXCEPT
+	{
+		_Target = value;
+	}
+
+	/*
+	*	Updates the target.
+	*/
+	FORCE_INLINE void UpdateTarget(const float32 new_target) NOEXCEPT
 	{
 		_CurrentTime = 0.0f;
 		_Current = _Target;

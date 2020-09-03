@@ -87,7 +87,7 @@ namespace SoundSystemConstants
 {
 
 	//The maximum number of queued master channel mix components.
-	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS{ 2 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS{ 8 };
 
 	//The maximum number of queued play sounds.
 	constexpr uint32 MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS{ 128 };
@@ -109,7 +109,6 @@ namespace SoundSystemData
 
 	//The queued remove master channel mix components.
 	AtomicQueue<uint64, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_MASTER_CHANNEL_MIX_COMPONENTS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedRemoveMasterChannelSoundMixComponents;
-
 
 	//The queued play sound requests.
 	AtomicQueue<QueuedPlaySoundRequest, SoundSystemConstants::MAXIMUM_NUMBER_OF_QUEUED_PLAY_SOUNDS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _QueuedPlaySoundRequests;
