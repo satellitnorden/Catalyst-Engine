@@ -112,6 +112,23 @@ namespace WindowsSoundSystemData
 
 }
 
+//Windows sound system logic.
+namespace WindowsSoundSystemLogic
+{
+
+	/*
+	*	Calculates the optimal device period.
+	*/
+	NO_DISCARD REFERENCE_TIME CalculateOptimalDevicePeriod(const DWORD sample_rate) NOEXCEPT
+	{
+		return static_cast<REFERENCE_TIME>(	/* Seconds */static_cast<float32>(SoundSystem::NUMBER_OF_SAMPLES_PER_MIXING_BUFFER) / static_cast<float32>(sample_rate)
+											/* Milliseconds */ * 1'000.0f
+											/* Nanoseconds */ * 1'000'000.0f
+											/* REFERENCE_TIME (100 nanoseconds) */ / 100.0f);
+	}
+
+}
+
 /*
 *	Initializes the platform.
 */
@@ -219,6 +236,7 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 	uint32 buffer_size{ 0 };
 	REFERENCE_TIME default_device_period{ 0 };
 	REFERENCE_TIME minimum_device_period{ 0 };
+	REFERENCE_TIME optimal_device_period{ 0 };
 	uint32 current_padding{ 0 };
 	uint32 number_of_samples_available{ 0 };
 	BYTE *RESTRICT buffer_data{ nullptr };
@@ -274,10 +292,13 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 	//Retrieve the default and minimum device period.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetDevicePeriod(&default_device_period, &minimum_device_period));
 
+	//Calculate the optimal device period.
+	optimal_device_period = WindowsSoundSystemLogic::CalculateOptimalDevicePeriod(chosen_mix_format->nSamplesPerSec);
+
 	//Initialize the audio client.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Initialize(	AUDCLNT_SHAREMODE::AUDCLNT_SHAREMODE_SHARED,
 																	0,
-																	minimum_device_period,
+																	CatalystBaseMath::Maximum<REFERENCE_TIME>(minimum_device_period, optimal_device_period),
 																	0,
 																	chosen_mix_format,
 																	nullptr));

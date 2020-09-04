@@ -19,6 +19,12 @@ class SoundSystem final
 
 public:
 
+	//The number of mixing buffers.
+	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
+
+	//The number of samples in each mixing buffer.
+	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
+
 	//Declare the singleton.
 	DECLARE_SINGLETON(SoundSystem);
 
@@ -122,12 +128,6 @@ public:
 	void StopRecording(const char *const RESTRICT file_path) NOEXCEPT;
 
 private:
-
-	//The number of mixing buffers.
-	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
-
-	//The number of samples in each mixing buffer.
-	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
 
 	//The sound instance counter.
 	uint64 _SoundInstanceCounter{ 1 };
