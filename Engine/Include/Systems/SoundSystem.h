@@ -23,7 +23,7 @@ public:
 	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
 
 	//The number of samples in each mixing buffer.
-	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
+	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 256 };
 
 	//Declare the singleton.
 	DECLARE_SINGLETON(SoundSystem);
