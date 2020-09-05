@@ -1715,9 +1715,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
     </ClCompile>
@@ -2251,6 +2248,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp">
       <Filter>User Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystPlatformWindows.cpp">
+      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Native/Resolution.h>
+
 //Windows.
 #include <Windows.h>
 #if !defined(INITGUID)
@@ -76,6 +79,11 @@ public:
 	*	Returns whether or not the window is in focus.
 	*/
 	static bool IsWindowInFocus() NOEXCEPT;
+
+	/*
+	*	Returns the default resolution.
+	*/
+	static Resolution GetDefaultResolution() NOEXCEPT;
 
 	/*
 	*	Hides the cursor.

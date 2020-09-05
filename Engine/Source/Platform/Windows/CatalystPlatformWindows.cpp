@@ -235,6 +235,29 @@ bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
 }
 
 /*
+*	Returns the default resolution.
+*/
+Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT
+{
+	//Retrieve the desktop window.
+	const HWND desktop_window{ GetDesktopWindow() };
+
+	if (!desktop_window)
+	{
+		ASSERT(false, "Panik!");
+
+		return Resolution(1'920, 1'080);
+	}
+
+	//Get the window rectangle.
+	RECT window_rectangle;
+	GetWindowRect(desktop_window, &window_rectangle);
+
+	//Return the resolution.
+	return Resolution(window_rectangle.right, window_rectangle.bottom);
+}
+
+/*
 *	Hides the cursor.
 */
 void CatalystPlatform::HideCursor() NOEXCEPT

@@ -503,7 +503,7 @@
     <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystPlatformWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsSoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsThread.cpp" />
