@@ -175,7 +175,7 @@ namespace File
 	*/
 	FORCE_INLINE void Delete(const char *const RESTRICT file) NOEXCEPT
 	{
-		DeleteFile(file);
+		DeleteFileA(file);
 	}
 
 	/*
