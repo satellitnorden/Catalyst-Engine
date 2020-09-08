@@ -38,7 +38,7 @@ void CatalystShaderMain()
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO) * vec4(1.0f, 1.0f, 1.0f, OPACITY);
 
 			break;
 		}

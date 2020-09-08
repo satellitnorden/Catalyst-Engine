@@ -23,4 +23,7 @@ public:
 	//The maximum of the screen space axis aligned box.
 	Vector2<float32> _Maximum;
 
+	//The opacity.
+	float32 _Opacity;
+
 };

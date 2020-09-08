@@ -48,6 +48,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Type = UserInterfaceElementType::BUTTON;
 			element->_Minimum = type_description->_Minimum;
 			element->_Maximum = type_description->_Maximum;
+			element->_Opacity = type_description->_Opacity;
 			element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
 			element->_StartHoveredCallback = type_description->_StartHoveredCallback;
 			element->_StopHoveredCallback = type_description->_StopHoveredCallback;
@@ -70,6 +71,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Type = UserInterfaceElementType::IMAGE;
 			element->_Minimum = type_description->_Minimum;
 			element->_Maximum = type_description->_Maximum;
+			element->_Opacity = type_description->_Opacity;
 			element->_Material = type_description->_Material;
 
 			_UserInterfaceElements.Emplace(element);
@@ -85,6 +87,7 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 			element->_Type = UserInterfaceElementType::TEXT;
 			element->_Minimum = type_description->_Minimum;
 			element->_Maximum = type_description->_Maximum;
+			element->_Opacity = type_description->_Opacity;
 			element->_FontResource = type_description->_FontResource;
 			element->_Scale = type_description->_Scale;
 			element->_HorizontalAlignment = type_description->_HorizontalAlignment;

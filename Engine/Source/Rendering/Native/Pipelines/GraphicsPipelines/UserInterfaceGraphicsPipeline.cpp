@@ -173,7 +173,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				fragment_data._TextSmoothingFactor = 0.0f;
-				fragment_data._Opacity = 1.0f;
+				fragment_data._Opacity = type_element->_Opacity;
 
 				switch (type_element->_CurrentState)
 				{
@@ -226,7 +226,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				fragment_data._WidthRangeEnd = 1.0f;
 				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
 				fragment_data._TextSmoothingFactor = 0.0f;
-				fragment_data._Opacity = 1.0f;
+				fragment_data._Opacity = type_element->_Opacity;
 				fragment_data._Material = type_element->_Material;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);

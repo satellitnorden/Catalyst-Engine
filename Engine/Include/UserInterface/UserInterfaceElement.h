@@ -18,9 +18,12 @@ public:
 	UserInterfaceElementType _Type;
 
 	//The minimum of the screen space axis aligned box.
-	Vector2<float> _Minimum;
+	Vector2<float32> _Minimum;
 
 	//The maximum of the screen space axis aligned box.
-	Vector2<float> _Maximum;
+	Vector2<float32> _Maximum;
+
+	//The opacity.
+	float32 _Opacity;
 
 };
