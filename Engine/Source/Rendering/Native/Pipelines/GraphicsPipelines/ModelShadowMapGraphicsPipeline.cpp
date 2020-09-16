@@ -81,7 +81,7 @@ void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_bu
 	SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
-	SetShouldClear(true);
+	SetShouldClear(false);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

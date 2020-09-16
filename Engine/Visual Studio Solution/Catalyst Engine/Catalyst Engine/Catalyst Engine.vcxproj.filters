@@ -1692,6 +1692,9 @@
     <ClInclude Include="..\..\..\Include\Math\General\Interpolator.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TerrainShadowMapGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2251,6 +2254,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystPlatformWindows.cpp">
       <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainShadowMapGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

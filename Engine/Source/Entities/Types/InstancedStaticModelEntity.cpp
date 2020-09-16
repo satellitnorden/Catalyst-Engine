@@ -49,6 +49,7 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 	RenderingUtilities::CreateTransformationsBuffer(transformations, &component._TransformationsBuffer);
 
 	component._NumberOfTransformations = static_cast<uint32>(transformations.Size());
+	component._ModelFlags = model_initialization_data->_ModelFlags;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<InstancedStaticModelInitializationData>(data);

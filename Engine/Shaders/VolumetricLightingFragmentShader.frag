@@ -46,7 +46,7 @@ void CatalystShaderMain()
 	//Sample the noise.
 	vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
 
-		//Accumulate occlusion.
+	//Accumulate occlusion.
 	float occlusion = 0.0f;
 
 	for (uint i = 0; i < 4; ++i)

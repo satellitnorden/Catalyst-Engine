@@ -44,7 +44,9 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), &_ShadowMapDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(3 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(4 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+
+	AddPipeline(&_TerrainShadowMapGraphicsPipeline);
 	AddPipeline(&_ModelShadowMapGraphicsPipeline);
 	AddPipeline(&_RasterizedShadowsGraphicsPipeline);
 	AddPipeline(&_ShadowsRayTracingPipeline);
@@ -55,6 +57,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
+	_TerrainShadowMapGraphicsPipeline.Initialize(_ShadowMapDepthBuffer);
 	_ModelShadowMapGraphicsPipeline.Initialize(_ShadowMapDepthBuffer);
 	_RasterizedShadowsGraphicsPipeline.Initialize();
 	_ShadowsRayTracingPipeline.Initialize();
@@ -102,8 +105,8 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			{
 				const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 
-				const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + component->_Direction * view_distance + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, CatalystWorldCoordinateSpace::UP) };
-				const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, -SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, 0.0f, view_distance * 2.0f) };
+				const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -component->_Direction * view_distance * 0.5f + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + component->_Direction * view_distance * 0.5f + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, CatalystWorldCoordinateSpace::UP) };
+				const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, -SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, 0.0f, view_distance) };
 
 				world_to_light_matrix = projection_matrix * light_matrix;
 
@@ -111,6 +114,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			}
 		}
 
+		_TerrainShadowMapGraphicsPipeline.Execute(world_to_light_matrix);
 		_ModelShadowMapGraphicsPipeline.Execute(world_to_light_matrix);
 		_RasterizedShadowsGraphicsPipeline.Execute(world_to_light_matrix);
 		_ShadowsRayTracingPipeline.SetIncludeInRender(false);
@@ -118,6 +122,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED)
 	{
+		_TerrainShadowMapGraphicsPipeline.SetIncludeInRender(false);
 		_ModelShadowMapGraphicsPipeline.SetIncludeInRender(false);
 		_RasterizedShadowsGraphicsPipeline.SetIncludeInRender(false);
 		_ShadowsRayTracingPipeline.Execute();

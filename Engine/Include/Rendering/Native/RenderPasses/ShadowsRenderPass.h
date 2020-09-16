@@ -8,6 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -28,6 +29,9 @@ private:
 
 	//The shadow map depth buffer.
 	DepthBufferHandle _ShadowMapDepthBuffer;
+
+	//The terrain shadow graphics pipeline.
+	TerrainShadowMapGraphicsPipeline _TerrainShadowMapGraphicsPipeline;
 
 	//The model shadow map graphics pipeline.
 	ModelShadowMapGraphicsPipeline _ModelShadowMapGraphicsPipeline;

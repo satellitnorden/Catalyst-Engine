@@ -29,4 +29,7 @@ public:
 	//The number of transformations.
 	uint32 _NumberOfTransformations;
 
+	//The model flags.
+	ModelFlags _ModelFlags;
+
 };

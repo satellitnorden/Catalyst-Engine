@@ -170,6 +170,15 @@ enum class MemoryProperty : uint8
 
 ENUMERATION_BIT_OPERATIONS(MemoryProperty);
 
+//Enumeration covering all models flags.
+enum class ModelFlags : uint32
+{
+	NONE = 0,
+	IS_VEGETATION = BIT(0)
+};
+
+ENUMERATION_BIT_OPERATIONS(ModelFlags);
+
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {

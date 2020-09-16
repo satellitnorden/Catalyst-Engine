@@ -2132,6 +2132,48 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowFragmentShader";
+			parameters._ID = "TerrainShadowFragmentShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowFragmentShader.frag";
+			parameters._Stage = ShaderStage::FRAGMENT;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowVertexShader";
+			parameters._ID = "TerrainShadowVertexShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowVertexShader.vert";
+			parameters._Stage = ShaderStage::VERTEX;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
 			parameters._ID = "ToneMappingFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";

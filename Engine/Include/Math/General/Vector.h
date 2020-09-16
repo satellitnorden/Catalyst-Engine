@@ -941,6 +941,39 @@ public:
 	}
 
 	/*
+	*	Returns a normalized on the X and Y axis version of this vector.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector3 NormalizedXY() const NOEXCEPT
+	{
+		Vector3 copy{ *this };
+		copy.NormalizeXY();
+
+		return copy;
+	}
+
+	/*
+	*	Returns a normalized on the X and Z axis version of this vector.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector3 NormalizedXZ() const NOEXCEPT
+	{
+		Vector3 copy{ *this };
+		copy.NormalizeXZ();
+
+		return copy;
+	}
+
+	/*
+	*	Returns a normalized on the Y and Z axis version of this vector.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector3 NormalizedYZ() const NOEXCEPT
+	{
+		Vector3 copy{ *this };
+		copy.NormalizeYZ();
+
+		return copy;
+	}
+
+	/*
 	*	Returns whether or not this vector is normalized.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD bool IsNormalized() const NOEXCEPT
