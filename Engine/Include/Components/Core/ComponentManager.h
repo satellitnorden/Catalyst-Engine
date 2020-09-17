@@ -14,7 +14,6 @@
 #include <Components/Transient/ParticleSystemRenderComponent.h>
 #include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/StaticModelComponent.h>
-#include <Components/Transient/VegetationComponent.h>
 
 /*
 *	Declares an entity class with one component.
@@ -56,6 +55,5 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Vegetation, VegetationComponent);
 
 };

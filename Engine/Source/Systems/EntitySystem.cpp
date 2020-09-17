@@ -13,7 +13,6 @@
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
-#include <Entities/Types/VegetationEntity.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>

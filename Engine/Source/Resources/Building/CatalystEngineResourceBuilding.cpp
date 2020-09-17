@@ -38,7 +38,7 @@
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
 
-#define BUILD_ENGINE_RESOURCE_COLLECTION (0)
+#define BUILD_ENGINE_RESOURCE_COLLECTION (1)
 
 /*
 *	Builds resources for the Catalyst Engine.
@@ -1334,6 +1334,48 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsFragmentShader";
+			parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
+			parameters._Stage = ShaderStage::FRAGMENT;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsVertexShader";
+			parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
+			parameters._Stage = ShaderStage::VERTEX;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesFragmentShader";
 			parameters._ID = "MaskedModelColorSceneFeaturesFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesFragmentShader.frag";
@@ -2219,258 +2261,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceVertexShader";
 			parameters._ID = "UserInterfaceVertexShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationColorSceneFeaturesFragmentShader";
-			parameters._ID = "VegetationColorSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationColorSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationColorSceneFeaturesVertexShader";
-			parameters._ID = "VegetationColorSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationColorSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationDepthSceneFeaturesFragmentShader";
-			parameters._ID = "VegetationDepthSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationDepthSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationDepthSceneFeaturesVertexShader";
-			parameters._ID = "VegetationDepthSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationDepthSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesFragmentShader";
-			parameters._ID = "VegetationImpostorColorSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesGeometryShader";
-			parameters._ID = "VegetationImpostorColorSceneFeaturesGeometryShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesGeometryShader.geom";
-			parameters._Stage = ShaderStage::GEOMETRY;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorColorSceneFeaturesVertexShader";
-			parameters._ID = "VegetationImpostorColorSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorColorSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesFragmentShader";
-			parameters._ID = "VegetationImpostorDepthSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesGeometryShader";
-			parameters._ID = "VegetationImpostorDepthSceneFeaturesGeometryShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesGeometryShader.geom";
-			parameters._Stage = ShaderStage::GEOMETRY;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationImpostorDepthSceneFeaturesVertexShader";
-			parameters._ID = "VegetationImpostorDepthSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationImpostorDepthSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationOpaqueSceneFeaturesFragmentShader";
-			parameters._ID = "VegetationOpaqueSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationOpaqueSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VegetationOpaqueSceneFeaturesVertexShader";
-			parameters._ID = "VegetationOpaqueSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VegetationOpaqueSceneFeaturesVertexShader.vert";
 			parameters._Stage = ShaderStage::VERTEX;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

@@ -25,8 +25,7 @@ enum class EntityPlacementType : uint8
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\
 						ENTITY_TYPE(Sound)					\
-						ENTITY_TYPE(StaticModel)			\
-						ENTITY_TYPE(Vegetation)
+						ENTITY_TYPE(StaticModel)
 
 //Enumeration covering all entity types.
 enum class EntityType : uint8

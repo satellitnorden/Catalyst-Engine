@@ -36,14 +36,6 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 	};
 	_DynamicModelsLevelOfDetailTask._Arguments = nullptr;
 	_DynamicModelsLevelOfDetailTask._ExecutableOnSameThread = true;
-
-	//Initialize the vegetation level of detail task.
-	_VegetationLevelOfDetailTask._Function = [](void *const RESTRICT)
-	{
-		LevelOfDetailSystem::Instance->LevelOfDetailVegetation();
-	};
-	_VegetationLevelOfDetailTask._Arguments = nullptr;
-	_VegetationLevelOfDetailTask._ExecutableOnSameThread = true;
 }
 
 /*
@@ -54,7 +46,6 @@ void LevelOfDetailSystem::RenderUpdate(const UpdateContext *const RESTRICT conte
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_StaticModelsLevelOfDetailTask);
 	TaskSystem::Instance->ExecuteTask(&_DynamicModelsLevelOfDetailTask);
-	TaskSystem::Instance->ExecuteTask(&_VegetationLevelOfDetailTask);
 }
 
 /*
@@ -146,32 +137,6 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 
 			//Calculate the level of detail index.
 			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() - 1));
-		}
-	}
-}
-
-/*
-*	Calculates level of detail for vegetation.
-*/
-void LevelOfDetailSystem::LevelOfDetailVegetation() const NOEXCEPT
-{
-	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
-
-	//Iterate over all vegetation components and calculate their level of detail.
-	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };
-	VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_vegetation_components; ++i, ++component)
-	{
-		if (Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox, perceiver_position)) < component->_ImpostorDistanceSquared)
-		{
-			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Full;
-		}
-		
-		else
-		{
-			component->_LevelOfDetail = VegetationComponent::LevelOfDetail::Impostor;
 		}
 	}
 }

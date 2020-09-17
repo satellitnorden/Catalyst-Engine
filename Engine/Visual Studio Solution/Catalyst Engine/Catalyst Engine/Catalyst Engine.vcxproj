@@ -62,7 +62,6 @@
     <ClInclude Include="..\..\..\Include\Components\Transient\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\SoundComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\Transient\StaticModelComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Transient\VegetationComponent.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AssertLock.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\Atomic.h" />
     <ClInclude Include="..\..\..\Include\Concurrency\AtomicFlag.h" />
@@ -123,7 +122,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\SoundInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\StaticModelInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Creation\VegetationInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\AnimatedModelEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\DistanceTriggerEntity.h" />
@@ -134,7 +132,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\SoundEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\StaticModelEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Types\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\File\Core\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\File\Core\FileCore.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\FBXReader.h" />
@@ -275,6 +272,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelSceneFeaturesGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelShadowsGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelColorSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelDepthSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ModelShadowMapGraphicsPipeline.h" />
@@ -300,11 +298,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TerrainShadowMapGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorColorSceneFeaturesGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorDepthSceneFeaturesGraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.h" />
@@ -499,7 +492,6 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Types\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp" />
@@ -569,6 +561,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelSceneFeaturesGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelShadowsGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelColorSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelDepthSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ModelShadowMapGraphicsPipeline.cpp" />
@@ -594,11 +587,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainShadowMapGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorColorSceneFeaturesGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorDepthSceneFeaturesGraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingGraphicsPipeline.cpp" />

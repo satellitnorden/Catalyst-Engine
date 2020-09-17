@@ -18,11 +18,6 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationImpostorColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationImpostorDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VegetationSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -78,24 +73,6 @@ private:
 
 	//The instanced opaque model scene features graphics pipelines.
 	StaticArray<InstancedOpaqueModelSceneFeaturesGraphicsPipeline, 2> _InstancedOpaqueModelSceneFeaturesGraphicsPipelines;
-
-	//The vegetation depth scene features graphics pipeline.
-	VegetationDepthSceneFeaturesGraphicsPipeline _VegetationDepthSceneFeaturesGraphicsPipeline;
-
-	//The vegetation impostor depth scene features graphics pipeline.
-	VegetationImpostorDepthSceneFeaturesGraphicsPipeline _VegetationImpostorDepthSceneFeaturesGraphicsPipeline;
-
-	//The vegetation opaque single sided scene features graphics pipeline.
-	VegetationSceneFeaturesGraphicsPipeline _VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline;
-
-	//The vegetation opaque double sided scene features graphics pipeline.
-	VegetationSceneFeaturesGraphicsPipeline _VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline;
-
-	//The vegetation color scene features graphics pipeline.
-	VegetationColorSceneFeaturesGraphicsPipeline _VegetationColorSceneFeaturesGraphicsPipeline;
-
-	//The vegetation impostor color scene features graphics pipeline.
-	VegetationImpostorColorSceneFeaturesGraphicsPipeline _VegetationImpostorColorSceneFeaturesGraphicsPipeline;
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;

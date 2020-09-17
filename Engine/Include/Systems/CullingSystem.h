@@ -41,30 +41,14 @@ public:
 		_TerrainCullingTask.Wait<WaitMode::YIELD>();
 	}
 
-	/*
-	*	Waits for vegetation culling to finish executing.
-	*/
-	FORCE_INLINE void WaitForVegetationCulling() const NOEXCEPT
-	{
-		_VegetationCullingTask.Wait<WaitMode::YIELD>();
-	}
-
 private:
 
 	//The terrain culling task.
 	Task _TerrainCullingTask;
 
-	//The vegetation culling task.
-	Task _VegetationCullingTask;
-
 	/*
 	*	Culls terrain.
 	*/
 	void CullTerrain() const NOEXCEPT;
-
-	/*
-	*	Culls vegetation.
-	*/
-	void CullVegetation() const NOEXCEPT;
 
 };

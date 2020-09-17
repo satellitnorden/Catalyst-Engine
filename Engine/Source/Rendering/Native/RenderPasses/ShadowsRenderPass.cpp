@@ -112,11 +112,16 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_TerrainShadowMapGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
 
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		AddPipeline(&_TerrainShadowMapGraphicsPipelines[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 8; ++i)
+	{
+		AddPipeline(&_InstancedOpaqueModelShadowsGraphicsPipelines[i]);
 	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -136,6 +141,16 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		_TerrainShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_InstancedOpaqueModelShadowsGraphicsPipelines[i].Initialize(false, _ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_InstancedOpaqueModelShadowsGraphicsPipelines[4 + i].Initialize(true, _ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
 	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -213,6 +228,16 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
+			_InstancedOpaqueModelShadowsGraphicsPipelines[i].Execute(i, current_shadow_uniform_data._WorldToLightMatrices[i]);
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_InstancedOpaqueModelShadowsGraphicsPipelines[4 + i].Execute(i, current_shadow_uniform_data._WorldToLightMatrices[i]);
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
 			_ModelShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
 		}
 		
@@ -225,6 +250,11 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
 			_TerrainShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+
+		for (uint8 i{ 0 }; i < 8; ++i)
+		{
+			_InstancedOpaqueModelShadowsGraphicsPipelines[i].SetIncludeInRender(false);
 		}
 
 		for (uint8 i{ 0 }; i < 4; ++i)

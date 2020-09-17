@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/ShadowUniformData.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
@@ -48,6 +49,9 @@ private:
 
 	//The terrain shadow graphics pipelines.
 	StaticArray<TerrainShadowMapGraphicsPipeline, 4> _TerrainShadowMapGraphicsPipelines;
+
+	//The instanced opaque model shadows graphics pipelines.
+	StaticArray<InstancedOpaqueModelShadowsGraphicsPipeline, 8> _InstancedOpaqueModelShadowsGraphicsPipelines;
 
 	//The model shadow map graphics pipelines.
 	StaticArray<ModelShadowMapGraphicsPipeline, 4> _ModelShadowMapGraphicsPipelines;

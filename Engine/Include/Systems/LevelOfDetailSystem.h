@@ -49,14 +49,6 @@ public:
 		_DynamicModelsLevelOfDetailTask.Wait<WaitMode::YIELD>();
 	}
 
-	/*
-	*	Waits for vegetation level of detail to finish executing.
-	*/
-	FORCE_INLINE void WaitForVegetationLevelOfDetail() const NOEXCEPT
-	{
-		_VegetationLevelOfDetailTask.Wait<WaitMode::YIELD>();
-	}
-
 private:
 
 	//The static models level of detail task.
@@ -64,9 +56,6 @@ private:
 
 	//The dynamic models level of detail task.
 	Task _DynamicModelsLevelOfDetailTask;
-
-	//The vegetation level of detail task.
-	Task _VegetationLevelOfDetailTask;
 
 	/*
 	*	Calculates level of detail for static models.
@@ -77,10 +66,5 @@ private:
 	*	Calculates level of detail for dynamice models.
 	*/
 	void LevelOfDetailDynamicModels() const NOEXCEPT;
-
-	/*
-	*	Calculates level of detail for vegetation.
-	*/
-	void LevelOfDetailVegetation() const NOEXCEPT;
 
 };

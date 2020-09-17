@@ -71,12 +71,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_VegetationDepthSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_VegetationImpostorDepthSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_VegetationColorSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_VegetationImpostorColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
 	AddPipeline(&_EditorSelectedModelGraphicsPipeline);
@@ -98,12 +92,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
 	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
 
-	_VegetationDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer, false);
-	_VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer, true);
-	_VegetationColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
@@ -160,14 +148,8 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	}
 
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationDepthSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
 	_TerrainSceneFeaturesGraphicsPipeline.Execute();
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationOpaqueSingleSidedSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationOpaqueDoubleSidedSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationColorSceneFeaturesGraphicsPipeline.Execute();
-	_VegetationImpostorColorSceneFeaturesGraphicsPipeline.Execute();
 	
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 #if defined(CATALYST_EDITOR)

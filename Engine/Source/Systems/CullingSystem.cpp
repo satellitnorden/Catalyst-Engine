@@ -29,14 +29,6 @@ void CullingSystem::Initialize() NOEXCEPT
 	};
 	_TerrainCullingTask._Arguments = nullptr;
 	_TerrainCullingTask._ExecutableOnSameThread = true;
-
-	//Initialize the vegetation culling task.
-	_VegetationCullingTask._Function = [](void *const RESTRICT)
-	{
-		CullingSystem::Instance->CullVegetation();
-	};
-	_VegetationCullingTask._Arguments = nullptr;
-	_VegetationCullingTask._ExecutableOnSameThread = true;
 }
 
 /*
@@ -46,7 +38,6 @@ void CullingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NO
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_TerrainCullingTask);
-	TaskSystem::Instance->ExecuteTask(&_VegetationCullingTask);
 }
 
 /*
@@ -65,23 +56,5 @@ void CullingSystem::CullTerrain() const NOEXCEPT
 	for (uint64 i{ 0 }; i < number_of_patch_informations; ++i)
 	{
 		patch_render_informations->At(i)._Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, patch_informations->At(i)._AxisAlignedBoundingBox);
-	}
-}
-
-/*
-*	Culls vegetation.
-*/
-void CullingSystem::CullVegetation() const NOEXCEPT
-{	
-	//Cache the frustum planes.
-	const StaticArray<Vector4<float>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
-
-	//Iterate over all vegetation entities and determine their visibility.
-	const uint64 number_of_vegetation_components{ ComponentManager::GetNumberOfVegetationComponents() };
-	VegetationComponent *RESTRICT vegetation_component{ ComponentManager::GetVegetationVegetationComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_vegetation_components; ++i, ++vegetation_component)
-	{
-		vegetation_component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, vegetation_component->_WorldSpaceAxisAlignedBoundingBox);
 	}
 }
