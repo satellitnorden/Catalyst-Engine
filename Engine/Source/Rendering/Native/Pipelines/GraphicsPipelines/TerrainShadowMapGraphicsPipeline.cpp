@@ -10,7 +10,6 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
-#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -58,7 +57,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
+void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const RenderTargetHandle render_target) NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("TerrainShadowVertexShader")));
@@ -72,7 +71,7 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SHADOW_MAP));
+	AddOutputRenderTarget(render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
@@ -157,9 +156,6 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 	//Bind the vertex/index buffer.
 	command_buffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
 	command_buffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
-
-	//Wait for terrain culling to finish.
-	CullingSystem::Instance->WaitForTerrainCulling();
 
 	//Iterate over all terrain patches and render them.
 	for (const TerrainPatchRenderInformation &information : *TerrainSystem::Instance->GetTerrainPatchRenderInformations())

@@ -6,10 +6,12 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
+//Shadow uniform data.
+layout (std140, set = 1, binding = 0) uniform ShadowUniformData
 {
-	layout (offset = 0) mat4 WORLD_TO_LIGHT_MATRIX;
+    layout (offset = 0) mat4 WORLD_TO_LIGHT_MATRICES[4];
+    layout (offset = 256) uint SHADOW_MAP_RENDER_TARGET_INDICES[4];
+    layout (offset = 320) float SHADOW_MAP_CASCADE_DISTANCES_SQUARED[4];
 };
 
 //In parameters.
@@ -26,12 +28,27 @@ void CatalystShaderMain()
 	//Calculate the world position.
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
 
+	//Calculate the shadow map index.
+	uint shadow_map_index = 0;
+
+	{
+		float distance_squared = LengthSquared3(world_position - PERCEIVER_WORLD_POSITION);
+
+		for (uint i = 1; i < 4; ++i)
+		{
+			if (distance_squared > SHADOW_MAP_CASCADE_DISTANCES_SQUARED[i])
+			{
+				shadow_map_index = i;
+			}
+		}
+	}
+
 	//Calculate the shadow map coordinate and depth.
 	vec2 shadow_map_coordinate;
 	float shadow_map_depth;
 
 	{
-		vec4 light_space_position = WORLD_TO_LIGHT_MATRIX * vec4(world_position, 1.0f);
+		vec4 light_space_position = WORLD_TO_LIGHT_MATRICES[shadow_map_index] * vec4(world_position, 1.0f);
 		shadow_map_coordinate = light_space_position.xy * 0.5f + 0.5f;
 		shadow_map_depth = light_space_position.z;
 	}
@@ -70,10 +87,9 @@ void CatalystShaderMain()
 
 	for (uint i = 0; i < SHADOW_MAP_SAMPLES; ++i)
 	{
-
 		vec2 offset_shadow_map_coordinate = shadow_map_coordinate + shadow_map_offsets[i] * SHADOW_MAP_OFFSET;
 
-		float actual_shadow_map_depth = texture(sampler2D(RENDER_TARGETS[SHADOW_MAP_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), offset_shadow_map_coordinate).x;
+		float actual_shadow_map_depth = texture(sampler2D(GLOBAL_TEXTURES[SHADOW_MAP_RENDER_TARGET_INDICES[shadow_map_index]], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), offset_shadow_map_coordinate).x;
 
 		shadow_factor += ValidCoordinate(offset_shadow_map_coordinate) ? float(shadow_map_depth < actual_shadow_map_depth + SHADOW_MAP_BIAS) : 1.0f;
 	}

@@ -22,10 +22,13 @@ class InstancedOpaqueModelSceneFeaturesVertexPushConstantData final
 public:
 
 	//The world grid delta.
-	Vector3<int32> _WorldGridDelta;
+	Vector3<float32> _WorldGridDelta;
 
 	//Some padding.
 	Padding<4> _Padding;
+
+	//The model flags.
+	uint32 _ModelFlags;
 
 };
 
@@ -200,7 +203,14 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				{
 					InstancedOpaqueModelSceneFeaturesVertexPushConstantData data;
 
-					data._WorldGridDelta = Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell();
+					const Vector3<int32> delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+					}
+
+					data._ModelFlags = static_cast<uint32>(component->_ModelFlags);
 
 					command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), &data);
 				}

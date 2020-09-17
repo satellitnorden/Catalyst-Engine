@@ -1,7 +1,12 @@
+//Includes.
+#include "CatalystModelCore.glsl"
+#include "CatalystVegetationCore.glsl"
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) ivec3 WORLD_GRID_DELTA;
+    layout (offset = 0) vec3 WORLD_GRID_DELTA;
+    layout (offset = 16) uint MODEL_FLAGS;
 };
 
 //In parameters.
@@ -18,13 +23,22 @@ layout (location = 4) out vec2 fragment_texture_coordinate;
 
 void CatalystShaderMain()
 {
+	//Calculate the tangent/bitangent/normal.
 	vec3 tangent = normalize(vec3(vertex_transformation * vec4(vertex_tangent, 0.0f)));
 	vec3 bitangent = normalize(vec3(vertex_transformation * vec4(cross(vertex_normal, vertex_tangent), 0.0f)));
 	vec3 normal = normalize(vec3(vertex_transformation * vec4(vertex_normal, 0.0f)));
 
+	//Pass data to the fragment shader.
 	fragment_tangent_space_matrix = mat3(tangent, bitangent, normal);
-	fragment_world_position = vec3(vertex_transformation * vec4(vertex_position, 1.0f)) + vec3(WORLD_GRID_DELTA) * WORLD_GRID_SIZE;
+	fragment_world_position = vec3(vertex_transformation * vec4(vertex_position, 1.0f)) + WORLD_GRID_DELTA;
 	fragment_texture_coordinate = vertex_texture_coordinate;
+
+	//Apply model flags, if necessary.
+	if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
+	{
+		//Apply the wind displacement.
+		fragment_world_position += CalculateWindDisplacement(vertex_transformation[3].xyz, fragment_world_position, normal, 0.5f, 0.5f, 0.5f) * vertex_position.y;
+	}
 
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 }

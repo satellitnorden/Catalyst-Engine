@@ -30,7 +30,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
+void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const RenderTargetHandle render_target) NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelShadowMapVertexShader")));
@@ -44,7 +44,7 @@ void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_bu
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SHADOW_MAP));
+	AddOutputRenderTarget(render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

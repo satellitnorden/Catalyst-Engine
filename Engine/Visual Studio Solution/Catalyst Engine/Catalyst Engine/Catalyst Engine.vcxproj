@@ -358,6 +358,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystToneMapping.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ShadowUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Texture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Texture3D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\TextureCube.h" />

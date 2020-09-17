@@ -7,12 +7,27 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(ShadowsRenderPass);
+
+//Shadow render pass constants.
+namespace ShadowRenderPassConstants
+{
+	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCES
+	{
+		16.0f,
+		64.0f,
+		256.0f,
+		1'024.0f
+	};
+}
 
 /*
 *	Default constructor.
@@ -40,14 +55,75 @@ ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 */
 void ShadowsRenderPass::Initialize() NOEXCEPT
 {
-	//Create the shadow map depth buffer.
-	RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), &_ShadowMapDepthBuffer);
+	//Create the shadow map depth buffers.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), &_ShadowMapDepthBuffers[i]);
+	}
+
+	//Create the shadow map render targets.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_FLOAT32, &_ShadowMapRenderTargets[i]);
+	}
+
+	//Add the shadow map render targets to the global render data.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_ShadowMapRenderTargetIndices[i] = RenderingSystem::Instance->AddTextureToGlobalRenderData(_ShadowMapRenderTargets[i]);
+	}
+
+	//Allocate the appropriate size for the shadow uniform data and set initial values.
+	_ShadowUniformData.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (ShadowUniformData &shadow_uniform_data : _ShadowUniformData)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			shadow_uniform_data._ShadowMapRenderTargetIndices[i] = _ShadowMapRenderTargetIndices[i];
+		}
+		
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			shadow_uniform_data._ShadowMapCascadeDistancesSquared[i] = ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCES[i] * ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCES[i];
+		}
+	}
+
+	//Create the shadow uniform data buffers.
+	_ShadowUniformDataBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (BufferHandle &shadow_uniform_data_buffer : _ShadowUniformDataBuffers)
+	{
+		RenderingSystem::Instance->CreateBuffer(sizeof(ShadowUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &shadow_uniform_data_buffer);
+	}
+
+	//Create the shadow uniform data render data tables.
+	_ShadowUniformDataRenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (RenderDataTableHandle &shadow_uniform_data_render_data_table : _ShadowUniformDataRenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::SHADOW), &shadow_uniform_data_render_data_table);
+	}
+
+	//Bind all the shadow uniform data buffers to the render data tables.
+	for (uint8 i{ 0 }; i < RenderingSystem::Instance->GetNumberOfFramebuffers(); ++i)
+	{
+		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &_ShadowUniformDataRenderDataTables[i], _ShadowUniformDataBuffers[i]);
+	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(4 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_TerrainShadowMapGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
 
-	AddPipeline(&_TerrainShadowMapGraphicsPipeline);
-	AddPipeline(&_ModelShadowMapGraphicsPipeline);
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		AddPipeline(&_TerrainShadowMapGraphicsPipelines[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		AddPipeline(&_ModelShadowMapGraphicsPipelines[i]);
+	}
+
 	AddPipeline(&_RasterizedShadowsGraphicsPipeline);
 	AddPipeline(&_ShadowsRayTracingPipeline);
 
@@ -57,8 +133,16 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
-	_TerrainShadowMapGraphicsPipeline.Initialize(_ShadowMapDepthBuffer);
-	_ModelShadowMapGraphicsPipeline.Initialize(_ShadowMapDepthBuffer);
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_TerrainShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_ModelShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
+	}
+
 	_RasterizedShadowsGraphicsPipeline.Initialize();
 	_ShadowsRayTracingPipeline.Initialize();
 	_ShadowsSpatialDenoisingGraphicsPipelines[0].Initialize(CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
@@ -81,7 +165,12 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 void ShadowsRenderPass::Execute() NOEXCEPT
 {	
 	//Define constants.
-	constexpr float32 SHADOW_MAP_COVERAGE{ 64.0f };
+	
+
+	//Cache data that will be used.
+	ShadowUniformData &current_shadow_uniform_data{ _ShadowUniformData[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+	BufferHandle &current_shadow_uniform_data_buffer{ _ShadowUniformDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+	RenderDataTableHandle &current_shadow_uniform_data_render_data_table{ _ShadowUniformDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::NONE)
@@ -93,9 +182,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RASTERIZED)
 	{
-		//Calculate the world to light matrix. Only include the directional light, for now.
-		Matrix4x4 world_to_light_matrix{ MatrixConstants::IDENTITY };
-
+		//Calculate the world to light matrices.
 		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
 		const LightComponent * RESTRICT component{ ComponentManager::GetLightLightComponents() };
 
@@ -103,27 +190,48 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		{
 			if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
 			{
-				const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
-
-				const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -component->_Direction * view_distance * 0.5f + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + component->_Direction * view_distance * 0.5f + Perceiver::Instance->GetForwardVector() * SHADOW_MAP_COVERAGE, CatalystWorldCoordinateSpace::UP) };
-				const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, -SHADOW_MAP_COVERAGE, SHADOW_MAP_COVERAGE, 0.0f, view_distance) };
-
-				world_to_light_matrix = projection_matrix * light_matrix;
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					current_shadow_uniform_data._WorldToLightMatrices[i] = RenderingUtilities::CalculateDirectionalLightMatrix(ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCES[i] * 8.0f, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, component->_Direction);
+				}
 
 				break;
 			}
 		}
 
-		_TerrainShadowMapGraphicsPipeline.Execute(world_to_light_matrix);
-		_ModelShadowMapGraphicsPipeline.Execute(world_to_light_matrix);
-		_RasterizedShadowsGraphicsPipeline.Execute(world_to_light_matrix);
+		//Upload the shadow uniform data.
+		const void *const RESTRICT data_chunks[]{ &current_shadow_uniform_data };
+		const uint64 data_sizes[]{ sizeof(ShadowUniformData) };
+
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_shadow_uniform_data_buffer);
+
+		//Render all cascades.
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_TerrainShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_ModelShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
+		}
+		
+		_RasterizedShadowsGraphicsPipeline.Execute(current_shadow_uniform_data_render_data_table);
 		_ShadowsRayTracingPipeline.SetIncludeInRender(false);
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED)
 	{
-		_TerrainShadowMapGraphicsPipeline.SetIncludeInRender(false);
-		_ModelShadowMapGraphicsPipeline.SetIncludeInRender(false);
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_TerrainShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_ModelShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+
 		_RasterizedShadowsGraphicsPipeline.SetIncludeInRender(false);
 		_ShadowsRayTracingPipeline.Execute();
 	}

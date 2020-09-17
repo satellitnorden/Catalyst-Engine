@@ -134,6 +134,7 @@ enum class CommonRenderDataTableLayout : uint8
 {
 	Global,
 	ParticleSystem,
+	SHADOW,
 
 	NumberOfCommonRenderDataTableLayouts
 };
@@ -276,11 +277,6 @@ enum class RenderTarget : uint8
 	*	Contains the second temporal anti aliasing buffer.
 	*/
 	TEMPORAL_ANTI_ALIASING_BUFFER_2,
-
-	/*
-	*	Contains the shadow map.
-	*/
-	SHADOW_MAP,
 
 	/*
 	*	Intermediate render target.

@@ -19,6 +19,6 @@ public:
 	/*
 	*	Executes this graphics pipeline.
 	*/
-	void Execute(const Matrix4x4 &world_to_light_matrix) NOEXCEPT;
+	void Execute(const RenderDataTableHandle current_render_data_table) NOEXCEPT;
 
 };

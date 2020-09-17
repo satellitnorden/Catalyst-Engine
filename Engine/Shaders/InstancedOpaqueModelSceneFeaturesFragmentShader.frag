@@ -6,7 +6,7 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 16) uint material_index;
+    layout (offset = 20) uint material_index;
 };
 
 //In parameters.

@@ -9,19 +9,6 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Rasterized shadows fragment push constant data definition.
-*/
-class RasterizedShadowsFragmentPushConstantData final
-{
-
-public:
-
-	//The world to light matrix.
-	Matrix4x4 _WorldToLightMatrix;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
 void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
@@ -38,12 +25,9 @@ void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(RasterizedShadowsFragmentPushConstantData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::SHADOW));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -73,7 +57,7 @@ void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
 /*
 *	Executes this graphics pipeline.
 */
-void RasterizedShadowsGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_matrix) NOEXCEPT
+void RasterizedShadowsGraphicsPipeline::Execute(const RenderDataTableHandle current_render_data_table) NOEXCEPT
 {
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
@@ -87,13 +71,7 @@ void RasterizedShadowsGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-
-	//Push constants.
-	RasterizedShadowsFragmentPushConstantData data;
-
-	data._WorldToLightMatrix = world_to_light_matrix;
-
-	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(RasterizedShadowsFragmentPushConstantData), &data);
+	command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

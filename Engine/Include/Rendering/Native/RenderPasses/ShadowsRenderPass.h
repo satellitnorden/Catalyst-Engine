@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/ShadowUniformData.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
@@ -27,14 +28,29 @@ public:
 
 private:
 
-	//The shadow map depth buffer.
-	DepthBufferHandle _ShadowMapDepthBuffer;
+	//The shadow map depth buffers.
+	StaticArray<DepthBufferHandle, 4> _ShadowMapDepthBuffers;
 
-	//The terrain shadow graphics pipeline.
-	TerrainShadowMapGraphicsPipeline _TerrainShadowMapGraphicsPipeline;
+	//The shadow map render targets
+	StaticArray<RenderTargetHandle, 4> _ShadowMapRenderTargets;
 
-	//The model shadow map graphics pipeline.
-	ModelShadowMapGraphicsPipeline _ModelShadowMapGraphicsPipeline;
+	//The shadow map render target indices.
+	StaticArray<uint32, 4> _ShadowMapRenderTargetIndices;
+
+	//The shadow uniform data.
+	DynamicArray<ShadowUniformData> _ShadowUniformData;
+
+	//The shadow uniform data buffers.
+	DynamicArray<BufferHandle> _ShadowUniformDataBuffers;
+
+	//The shadow uniform data render data tables.
+	DynamicArray<RenderDataTableHandle> _ShadowUniformDataRenderDataTables;
+
+	//The terrain shadow graphics pipelines.
+	StaticArray<TerrainShadowMapGraphicsPipeline, 4> _TerrainShadowMapGraphicsPipelines;
+
+	//The model shadow map graphics pipelines.
+	StaticArray<ModelShadowMapGraphicsPipeline, 4> _ModelShadowMapGraphicsPipelines;
 
 	//The rasterized shadows graphics pipeline.
 	RasterizedShadowsGraphicsPipeline _RasterizedShadowsGraphicsPipeline;

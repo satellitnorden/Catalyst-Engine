@@ -72,6 +72,19 @@ public:
 	}
 
 	/*
+	*	Calculates a directional light matrix from the given parameters.
+	*/
+	FORCE_INLINE static Matrix4x4 CalculateDirectionalLightMatrix(	const float32 coverage,
+																	const float32 depth,
+																	const Vector3<float32> &light_direction) NOEXCEPT
+	{
+		const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -light_direction * depth * 0.5f + Perceiver::Instance->GetForwardVector() * coverage * 0.5f, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + light_direction * depth * 0.5f + Perceiver::Instance->GetForwardVector() * coverage * 0.5f, CatalystWorldCoordinateSpace::UP) };
+		const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-coverage * 0.5f, coverage * 0.5f, -coverage * 0.5f, coverage * 0.5f, 0.0f, depth) };
+
+		return projection_matrix * light_matrix;
+	}
+
+	/*
 	*	Calculates the ray direction from a screen coordinate.
 	*/
 	FORCE_INLINE static Vector3<float> CalculateRayDirectionFromScreenCoordinate(const Vector2<float>& screen_coordinate) NOEXCEPT
