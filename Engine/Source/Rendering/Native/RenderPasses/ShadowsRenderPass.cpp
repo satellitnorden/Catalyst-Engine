@@ -207,7 +207,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			{
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					current_shadow_uniform_data._WorldToLightMatrices[i] = RenderingUtilities::CalculateDirectionalLightMatrix(ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCES[i] * 8.0f, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, component->_Direction);
+					current_shadow_uniform_data._WorldToLightMatrices[i] = RenderingUtilities::CalculateDirectionalLightMatrix(ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCES[i] * 4.0f, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, component->_Direction);
 				}
 
 				break;
