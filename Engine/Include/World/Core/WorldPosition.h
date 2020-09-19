@@ -41,7 +41,7 @@ public:
 	/*
 	*	Constructor taking the local position.
 	*/
-	FORCE_INLINE explicit WorldPosition(	const Vector3<float32> &initial_local_position) NOEXCEPT
+	FORCE_INLINE explicit WorldPosition(const Vector3<float32> &initial_local_position) NOEXCEPT
 		:
 		_Cell(0, 0, 0),
 		_LocalPosition(initial_local_position)

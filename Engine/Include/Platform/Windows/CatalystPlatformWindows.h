@@ -26,9 +26,11 @@
 #undef CreateFont
 #undef CreateEvent
 #undef CreateSemaphore
+#undef FAR
 #undef GetCurrentTime
 #undef INFINITE
 #undef MemoryBarrier
+#undef NEAR
 #undef OPAQUE
 #undef far
 #undef max

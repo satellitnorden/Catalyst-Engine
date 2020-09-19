@@ -35,6 +35,8 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 	const InstancedStaticModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const InstancedStaticModelInitializationData *const RESTRICT>(data) };
 	InstancedStaticModelComponent &component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents()[_ComponentsIndex] };
 
+	ASSERT(!model_initialization_data->_WorldTransforms.Empty(), "Trying to add instanced static model entity without any transforms!");
+
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 

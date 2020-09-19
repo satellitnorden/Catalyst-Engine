@@ -113,6 +113,15 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const Vector2 &other) const NOEXCEPT
+	{
+		return	_X == other._X
+				&& _Y == other._Y;
+	}
+
+	/*
 	*	Negative operator overload.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector2 operator-() const NOEXCEPT
