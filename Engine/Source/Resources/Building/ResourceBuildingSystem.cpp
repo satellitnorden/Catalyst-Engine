@@ -1271,6 +1271,23 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 		}
 	}
 
+#if 0 //Print average color.
+	//Calculate the average color.
+	Vector4<float32> average_color{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+	for (uint32 Y{ 0 }; Y < mip_chain[parameters._BaseMipmapLevel].GetHeight(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < mip_chain[parameters._BaseMipmapLevel].GetWidth(); ++X)
+		{
+			average_color += mip_chain[parameters._BaseMipmapLevel].At(X, Y);
+		}
+	}
+
+	average_color /= static_cast<float32>(mip_chain[parameters._BaseMipmapLevel].GetWidth() * mip_chain[parameters._BaseMipmapLevel].GetHeight());
+
+	PRINT_TO_OUTPUT("Average color for " << parameters._ID << ": " << average_color._R << "f, " << average_color._G << "f, " << average_color._B << "f, " << average_color._A << "f");
+#endif
+
 	//What should the file be called?
 	DynamicString file_name{ parameters._Output };
 	file_name += ".cr";
