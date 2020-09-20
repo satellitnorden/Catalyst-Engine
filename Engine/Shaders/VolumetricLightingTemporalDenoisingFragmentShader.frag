@@ -19,7 +19,7 @@ layout (location = 1) out vec4 volumetric_lighting;
 void main()
 {
 	//Calculate the unjittered screen coordinate.
-	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
+	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
 
 	//Sample the current volumetric lighting texture.
 	vec4 current_volumetric_lighting_texture_sampler = texture(current_volumetric_lighting_texture, unjittered_screen_coordinate);

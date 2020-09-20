@@ -218,7 +218,7 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 										surface_properties.material_properties[2],
 										1.0f,
 										-indirect_lighting_direction,
-										texture(SKY_TEXTURE, indirect_lighting_direction).rgb * SKY_INTENSITY);
+										SampleSky(indirect_lighting_direction, 0.0f));
 		}
 	}
 	
@@ -232,7 +232,7 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 									surface_properties.material_properties[2],
 									1.0f,
 									-indirect_lighting_direction,
-									texture(SKY_TEXTURE, indirect_lighting_direction).rgb * SKY_INTENSITY);
+									SampleSky(indirect_lighting_direction, 0.0f));
 	}
 }
 

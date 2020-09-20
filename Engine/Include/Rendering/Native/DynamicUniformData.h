@@ -21,9 +21,15 @@ public:
 	Vector4<float32> _PerceiverForwardVector;
 	Vector4<float32> _PerceiverWorldPosition;
 
+	Vector4<float32> _UpperSkyColor;
+	Vector4<float32> _LowerSkyColor;
+
+	Vector4<int32> _CurrentWorldGridCell;
+
 	Vector2<float32> _ScaledResolution;
 	Vector2<float32> _InverseScaledResolution;
 	Vector2<float32> _CurrentFrameJitter;
+	Vector2<float32> _PreviousFramejitter;
 
 	float32 _DeltaTime;
 	float32 _GlobalRandomSeed1;
@@ -51,18 +57,15 @@ public:
 	uint32 _TerrainBlendMapTextureIndex;
 	float32 _TerrainMapResolution;
 
+	uint32 _SkyMode;
 	float32 _SkyIntensity;
 
 	float32 _VolumetricLightingDistance;
 	float32 _VolumetricLightingHeight;
 	float32 _VolumetricLightingThickness;
 
-	Vector2<float32> _PreviousFramejitter;
-
-	Vector3<int32> _CurrentWorldGridCell;
-	Padding<4> _Padding1;
 	float32 _WorldGridSize;
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 500, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 536, "Size of dynamic uniform data is wrong!");

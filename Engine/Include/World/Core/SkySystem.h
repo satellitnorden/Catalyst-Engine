@@ -20,10 +20,42 @@ class SkySystem final
 
 public:
 
+	//Enumeration covering all sky modes.
+	enum class SkyMode : uint8
+	{
+		GRADIENT,
+		TEXTURE
+	};
+
 	/*
 	*	Post-initializes the sky system.
 	*/
 	void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Returns the sky mode.
+	*/
+	FORCE_INLINE NO_DISCARD SkyMode GetSkyMode() const NOEXCEPT
+	{
+		return _SkyMode;
+	}
+
+	/*
+	*	Returns the sky gradient.
+	*/
+	FORCE_INLINE NO_DISCARD const SkyGradient &GetSkyGradient() const NOEXCEPT
+	{
+		return _SkyGradient;
+	}
+
+	/*
+	*	Sets the sky gradient.
+	*/
+	FORCE_INLINE void SetSkyGradient(const SkyGradient &value) NOEXCEPT
+	{
+		_SkyMode = SkyMode::GRADIENT;
+		_SkyGradient = value;
+	}
 
 	/*
 	*	Returns the sky texture.
@@ -38,6 +70,7 @@ public:
 	*/
 	FORCE_INLINE void SetSkyTexture(const ResourcePointer<TextureCubeResource> value) NOEXCEPT
 	{
+		_SkyMode = SkyMode::TEXTURE;
 		_SkyTexture = value;
 	}
 
@@ -58,6 +91,12 @@ public:
 	}
 
 private:
+
+	//The sky mode.
+	SkyMode _SkyMode{ SkyMode::TEXTURE };
+
+	//The sky gradient.
+	SkyGradient _SkyGradient;
 
 	//The sky texture.
 	ResourcePointer<TextureCubeResource> _SkyTexture;

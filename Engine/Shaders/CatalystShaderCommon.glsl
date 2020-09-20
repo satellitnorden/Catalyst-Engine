@@ -62,48 +62,52 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 320) vec3 PERCEIVER_FORWARD_VECTOR;
     layout (offset = 336) vec3 PERCEIVER_WORLD_POSITION;
 
-    layout (offset = 352) vec2 SCALED_RESOLUTION;
-    layout (offset = 360) vec2 INVERSE_SCALED_RESOLUTION;
-    layout (offset = 368) vec2 currentFrameJitter;
+    layout (offset = 352) vec3 UPPER_SKY_COLOR;
+    layout (offset = 368) vec3 LOWER_SKY_COLOR;
 
-    layout (offset = 376) float DELTA_TIME;
-    layout (offset = 380) float globalRandomSeed1;
-    layout (offset = 384) float globalRandomSeed2;
-    layout (offset = 388) float globalRandomSeed3;
-    layout (offset = 392) float totalTime;
-    layout (offset = 396) float windSpeed;
+    layout (offset = 384) ivec3 CURRENT_WORLD_GRID_CELL;
 
-    layout (offset = 400) float BLOOM_INTENSITY;
+    layout (offset = 400) vec2 SCALED_RESOLUTION;
+    layout (offset = 408) vec2 INVERSE_SCALED_RESOLUTION;
+    layout (offset = 416) vec2 CURRENT_FRAME_JITTER;
+    layout (offset = 424) vec2 PREVIOUS_FRAME_JITTER;
 
-    layout (offset = 404) float ASPECT_RATIO;
+    layout (offset = 432) float DELTA_TIME;
+    layout (offset = 436) float globalRandomSeed1;
+    layout (offset = 440) float globalRandomSeed2;
+    layout (offset = 444) float globalRandomSeed3;
+    layout (offset = 448) float totalTime;
+    layout (offset = 452) float windSpeed;
 
-    layout (offset = 408) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 412) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 416) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 456) float BLOOM_INTENSITY;
 
-    layout (offset = 420) float VIEW_DISTANCE;
-    layout (offset = 424) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
-    layout (offset = 428) float WETNESS;
-    layout (offset = 432) float NEAR_PLANE;
-    layout (offset = 436) float FAR_PLANE;
+    layout (offset = 460) float ASPECT_RATIO;
 
-    layout (offset = 440) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 444) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 448) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 452) float TERRAIN_MAP_RESOLUTION;
+    layout (offset = 464) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 468) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 472) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 456) float SKY_INTENSITY;
+    layout (offset = 476) float VIEW_DISTANCE;
+    layout (offset = 480) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
+    layout (offset = 484) float WETNESS;
+    layout (offset = 488) float NEAR_PLANE;
+    layout (offset = 492) float FAR_PLANE;
 
-    layout (offset = 460) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 464) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 468) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 496) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 500) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 504) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 508) float TERRAIN_MAP_RESOLUTION;
 
-    layout (offset = 472) vec2 PREVIOUS_FRAME_JITTER;
+    layout (offset = 512) uint SKY_MODE;
+    layout (offset = 516) float SKY_INTENSITY;
 
-    layout (offset = 480) ivec3 CURRENT_WORLD_GRID_CELL;
-    layout (offset = 496) float WORLD_GRID_SIZE;
+    layout (offset = 520) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 524) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 528) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    //Total size; 500
+    layout (offset = 532) float WORLD_GRID_SIZE;
+
+    //Total size; 536
 };
 
 //The render targets.
@@ -179,18 +183,39 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 }
 
 /*
+*   Samples the sky.
+*/
+vec3 SampleSky(vec3 direction, float mip_level)
+{
+	switch (SKY_MODE)
+	{
+		//Gradient.
+		case 0:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f) * SKY_INTENSITY;
+		}
+
+		//Texture.
+		case 1:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb * SKY_INTENSITY;
+		}
+	}
+}
+
+/*
 *   Calculates volumetric ambient lighting.
 */
 vec3 CalculateVolumetricAmbientLighting()
 {
     vec3 ambient_lighting = vec3(0.0f);
 
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
-    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * textureLod(SKY_TEXTURE, vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * 0.166f * SKY_INTENSITY;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(-1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(1.0f, 0.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, -1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, 1.0f, 0.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
+    ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
 
     return ambient_lighting;
 }
@@ -298,28 +323,6 @@ void SampleHammersleyHemisphereSample(uint index, out vec3 direction, out float 
 
     direction = hemisphere_sample.xyz;
     length = hemisphere_sample.w;
-}
-
-/*
-*   Samples the sky diffuse.
-*/
-vec3 SampleSkyDiffuse(vec3 normal)
-{
-    return textureLod(SKY_TEXTURE, normal, MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f).rgb * SKY_INTENSITY;
-}
-
-/*
-*   Samples the sky specular.
-*/
-vec3 SampleSkySpecular(vec3 view_direction, vec3 normal, float roughness, float metallic)
-{
-    //Calculate the reflection vector.
-    vec3 reflection_vector = reflect(view_direction, normal);
-
-    //Calculate the mipmap level
-    float mipmap_level = roughness * (1.0f - metallic) * (MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f);
-
-    return textureLod(SKY_TEXTURE, reflection_vector, mipmap_level).rgb * SKY_INTENSITY;
 }
 
 /*

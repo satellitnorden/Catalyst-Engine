@@ -12,10 +12,10 @@ class SkyGradient final
 public:
 
 	//The upper sky color.
-	Vector3<float> _UpperSkyColor;
+	Vector3<float32> _UpperSkyColor;
 
 	//The lower sky color.
-	Vector3<float> _LowerSkyColor;
+	Vector3<float32> _LowerSkyColor;
 
 	/*
 	*	Default constructor.
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr SkyGradient(const Vector3<float> &initial_upper_sky_color, const Vector3<float> &initial_lower_sky_color) NOEXCEPT
+	FORCE_INLINE constexpr SkyGradient(const Vector3<float32> &initial_upper_sky_color, const Vector3<float32> &initial_lower_sky_color) NOEXCEPT
 		:
 		_UpperSkyColor(initial_upper_sky_color),
 		_LowerSkyColor(initial_lower_sky_color)
@@ -47,7 +47,7 @@ public:
 	/*
 	*	Multiplication by scalar operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD SkyGradient operator*(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD SkyGradient operator*(const float32 scalar) const NOEXCEPT
 	{
 		return SkyGradient(_UpperSkyColor * scalar, _LowerSkyColor * scalar);
 	}

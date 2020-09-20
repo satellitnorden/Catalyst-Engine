@@ -1153,11 +1153,11 @@ public:
 	/*
 	*	Constructor taking a Vector3 as argument.
 	*/
-	FORCE_INLINE constexpr Vector4(const Vector3<float> &otherVector) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const Vector3<TYPE> &other) NOEXCEPT
 		:
-		_X(otherVector._X),
-		_Y(otherVector._Y),
-		_Z(otherVector._Z),
+		_X(other._X),
+		_Y(other._Y),
+		_Z(other._Z),
 		_W(static_cast<TYPE>(1))
 	{
 
@@ -1166,11 +1166,11 @@ public:
 	/*
 	*	Constructor taking a Vector3 and a scalar as argument.
 	*/
-	FORCE_INLINE constexpr Vector4(const Vector3<float> &otherVector, const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr Vector4(const Vector3<TYPE> &other, const TYPE scalar) NOEXCEPT
 		:
-		_X(otherVector._X),
-		_Y(otherVector._Y),
-		_Z(otherVector._Z),
+		_X(other._X),
+		_Y(other._Y),
+		_Z(other._Z),
 		_W(scalar)
 	{
 

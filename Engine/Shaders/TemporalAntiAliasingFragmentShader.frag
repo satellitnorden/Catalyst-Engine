@@ -48,7 +48,7 @@ void CatalystShaderMain()
 	if (WEIGHT_OVERRIDE_WEIGHT == 0.0f)
 	{
 		//Calculate the unjittered screen coordinate.
-		vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
+		vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
 
 		//Sample the current frame texture.
 		vec4 current_frame_texture_sampler = texture(current_frame_texture, unjittered_screen_coordinate);

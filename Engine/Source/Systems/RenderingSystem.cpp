@@ -691,6 +691,11 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetWorldTransform().GetLocalPosition();
 
+	_DynamicUniformData._UpperSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._UpperSkyColor;
+	_DynamicUniformData._LowerSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._LowerSkyColor;
+
+	_DynamicUniformData._CurrentWorldGridCell = WorldSystem::Instance->GetCurrentWorldGridCell();
+
 	_DynamicUniformData._ScaledResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._PreviousFramejitter = _DynamicUniformData._CurrentFrameJitter;
@@ -733,13 +738,13 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		_DynamicUniformData._TerrainMapResolution = static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
 	}
 
+	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 
 	_DynamicUniformData._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
 	_DynamicUniformData._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
 	_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
 
-	_DynamicUniformData._CurrentWorldGridCell = WorldSystem::Instance->GetCurrentWorldGridCell();
 	_DynamicUniformData._WorldGridSize = WorldSystem::Instance->GetWorldGridSize();
 
 	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };

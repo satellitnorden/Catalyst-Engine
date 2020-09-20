@@ -42,7 +42,7 @@ float NeighborhoodWeight(float previous, float minimum, float maximum)
 void CatalystShaderMain()
 {
 	//Calculate the unjittered screen coordinate.
-	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - currentFrameJitter;
+	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
 
 	//Sample the current ambient occlusion texture.
 	vec4 current_ambient_occlusion_texture_sampler = texture(sampler2D(RENDER_TARGETS[CURRENT_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate);

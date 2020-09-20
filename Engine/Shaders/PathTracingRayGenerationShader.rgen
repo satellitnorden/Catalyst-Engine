@@ -108,7 +108,7 @@ void CatalystShaderMain()
 	
 	else
 	{
-		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(texture(SKY_TEXTURE, ray_direction).rgb * SKY_INTENSITY, 1.0f));
+		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(SampleSky(ray_direction, 0.0f), 1.0f));
 		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 0.0f, 0.0f), 0.0f));
 		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), depth));
 		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(0.0f, 0.0f, 0.0f, 0.0f));

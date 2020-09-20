@@ -16,5 +16,5 @@ void CatalystShaderMain()
    vec3 view_direction = CalculateRayDirection(fragment_texture_coordinate);
 
    //Write the fragment.
-   fragment = textureLod(SKY_TEXTURE, view_direction, 0.0f) * SKY_INTENSITY;
+   fragment = vec4(SampleSky(view_direction, 0.0f), 1.0f);
 }

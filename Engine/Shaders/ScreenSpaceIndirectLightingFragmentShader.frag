@@ -149,7 +149,7 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 																	sample_scene_features_3[0],
 																	sample_scene_features_3[1],
 																	sample_scene_features_3[2],
-																	textureLod(SKY_TEXTURE, sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight).rgb * SKY_INTENSITY);
+																	SampleSky(sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
 					}
 
 					//Calculate the hit radiance.

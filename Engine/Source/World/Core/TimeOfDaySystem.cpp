@@ -10,6 +10,39 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
+#include <Systems/WorldSystem.h>
+
+//Time of dat system constants.
+namespace TimeOfDaySystemConstants
+{
+	constexpr uint8 SKY_GRADIENT_LOOKUP_SIZE{ 8 };
+	constexpr StaticArray<SkyGradient, SKY_GRADIENT_LOOKUP_SIZE> SKY_GRADIENT_LOOKUP
+	{
+		//00.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.5f, Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.25f),
+
+		//03.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f) * 0.125f * 0.25f, Vector3<float32>(1.0f, 1.0f, 0.75f) * 0.125f * 0.25f),
+
+		//06.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f) * 0.25f, Vector3<float32>(1.0f, 0.5f, 0.25f) * 0.25f),
+
+		//09.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.75f, 1.0f) * 0.5f, Vector3<float32>(1.0f, 0.75f, 0.5f) * 0.5f),
+
+		//12.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f), Vector3<float32>(1.0f, 1.0f, 1.0f)),
+
+		//15.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f), Vector3<float32>(1.0f, 0.75f, 0.5f)),
+
+		//18.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f), Vector3<float32>(1.0f, 0.25f, 0.0625f)),
+
+		//21.00.
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.5f, Vector3<float32>(0.25f, 0.5f, 0.75f) * 0.125f * 0.25f)
+	};
+}
 
 /*
 *	Enables the time of day system.
@@ -66,7 +99,7 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
 	//Update the current time of day.
-	_CurrentTimeOfDay +=delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
+	_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
 
 	//Wrap around.
 	while (_CurrentTimeOfDay >= 24.0f)
@@ -76,6 +109,9 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 
 	//Update the sky light.
 	UpdateSkyLight();
+
+	//Update the sky.
+	UpdateSky();
 }
 
 /*
@@ -178,4 +214,29 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 			_SkyLight->SetIntensity(DAY_SKY_INTENSITY * sky_luminance_alpha);
 		}
 	}
+}
+
+/*
+*	Updates the sky.
+*/
+void TimeOfDaySystem::UpdateSky() NOEXCEPT
+{
+	//If the time of day system shouldn't control the sky, just quit already.
+	if (!_TimeOfDayParameters._ControlSky)
+	{
+		return;
+	}
+
+	//Calculate the indices and the alpha.
+	uint8 first_index;
+	uint8 second_index;
+	float32 alpha;
+
+	{
+		first_index = static_cast<uint8>((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP_SIZE));
+		second_index = first_index == TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP_SIZE - 1 ? 0 : first_index + 1;
+		alpha = CatalystBaseMath::Fractional((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP_SIZE));
+	}
+
+	WorldSystem::Instance->GetSkySystem()->SetSkyGradient(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[first_index], TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[second_index], alpha));
 }

@@ -65,7 +65,7 @@ void CatalystShaderMain()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = fragment_texture_coordinate - currentFrameJitter - PREVIOUS_FRAME_JITTER - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy;
+	vec2 previous_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER - PREVIOUS_FRAME_JITTER - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy;
 
 	//Sample the previous indirect lighting texture.
 	vec4 previous_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_2], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
