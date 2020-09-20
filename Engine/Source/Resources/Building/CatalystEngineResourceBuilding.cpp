@@ -38,7 +38,7 @@
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
 
-#define BUILD_ENGINE_RESOURCE_COLLECTION (1)
+#define BUILD_ENGINE_RESOURCE_COLLECTION (0)
 
 /*
 *	Builds resources for the Catalyst Engine.

@@ -29,10 +29,10 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	//Retrieve the 4 materials to blend between.
 	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
-	Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
-	Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
-	Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
-	Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
+	Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * 255.0f)];
+	Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * 255.0f)];
+	Material material_3 = GLOBAL_MATERIALS[uint(index_map[2] * 255.0f)];
+	Material material_4 = GLOBAL_MATERIALS[uint(index_map[3] * 255.0f)];
 
 	//Retrieve the 4 displacement values.
 	float displacement_1 = 0.5f;
@@ -40,24 +40,24 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	float displacement_3 = 0.5f;
 	float displacement_4 = 0.5f;
 
-	if (TEST_BIT(material_1._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	if (TEST_BIT(material_1._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))
 	{
-		displacement_1 = texture(sampler2D(GLOBAL_TEXTURES[material_1._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+		displacement_1 = max(texture(sampler2D(GLOBAL_TEXTURES[material_1._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w, TERRAIN_MINIMUM_DISPLACEMENT);
 	}
 	
-	if (TEST_BIT(material_2._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	if (TEST_BIT(material_2._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))
 	{
-		displacement_2 = texture(sampler2D(GLOBAL_TEXTURES[material_2._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+		displacement_2 = max(texture(sampler2D(GLOBAL_TEXTURES[material_2._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w, TERRAIN_MINIMUM_DISPLACEMENT);
 	}
 
-	if (TEST_BIT(material_3._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	if (TEST_BIT(material_3._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))
 	{
-		displacement_3 = texture(sampler2D(GLOBAL_TEXTURES[material_3._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+		displacement_3 = max(texture(sampler2D(GLOBAL_TEXTURES[material_3._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w, TERRAIN_MINIMUM_DISPLACEMENT);
 	}
 	
-	if (TEST_BIT(material_4._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))
+	if (TEST_BIT(material_4._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))
 	{
-		displacement_4 = texture(sampler2D(GLOBAL_TEXTURES[material_4._MaterialProperties], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w;
+		displacement_4 = max(texture(sampler2D(GLOBAL_TEXTURES[material_4._NormalMapDisplacement], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX]), material_texture_coordinate).w, TERRAIN_MINIMUM_DISPLACEMENT);
 	}
 
 	//Retrieve the blend map.
@@ -69,8 +69,8 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	blend_map[2] *= STRENGTHEN_DISPLACEMENT(displacement_3);
 	blend_map[3] *= STRENGTHEN_DISPLACEMENT(displacement_4);
 
-	//Renormalize the blend map.
-	float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+    //Renormalize the blend map.
+    float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
 
 	blend_map[0] *= inverse_sum;
 	blend_map[1] *= inverse_sum;

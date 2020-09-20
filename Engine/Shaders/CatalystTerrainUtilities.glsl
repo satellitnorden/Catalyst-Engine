@@ -7,6 +7,7 @@
 //Constants.
 #define STRENGTHEN_DISPLACEMENT(X) (X * X * X)
 #define TERRAIN_MATERIAL_COORDINATE_SCALE (0.25f)
+#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
 
 /*
 *   Terrain material struct definition.
@@ -26,10 +27,10 @@ TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec
     //Retrieve the 4 materials to blend between.
     vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
-    Material material_1 = GLOBAL_MATERIALS[int(index_map[0] * 255.0f)];
-    Material material_2 = GLOBAL_MATERIALS[int(index_map[1] * 255.0f)];
-    Material material_3 = GLOBAL_MATERIALS[int(index_map[2] * 255.0f)];
-    Material material_4 = GLOBAL_MATERIALS[int(index_map[3] * 255.0f)];
+    Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * 255.0f)];
+    Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * 255.0f)];
+    Material material_3 = GLOBAL_MATERIALS[uint(index_map[2] * 255.0f)];
+    Material material_4 = GLOBAL_MATERIALS[uint(index_map[3] * 255.0f)];
 
     //Evalute the materials.
     vec4 material_1_albedo_thickness;
@@ -79,6 +80,11 @@ TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec
                         material_4_normal_map_displacement,
                         material_4_material_properties,
                         material_4_opacity);
+
+    material_1_normal_map_displacement.w = max(material_1_normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT);
+    material_2_normal_map_displacement.w = max(material_2_normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT);
+    material_3_normal_map_displacement.w = max(material_3_normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT);
+    material_4_normal_map_displacement.w = max(material_4_normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT);
 
     //Retrieve the blend map.
     vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
