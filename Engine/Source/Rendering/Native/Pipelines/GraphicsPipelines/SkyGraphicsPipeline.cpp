@@ -1,6 +1,12 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -8,6 +14,28 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
+
+/*
+*	Sky push constant data class definition.
+*/
+class SkyPushConstantData final
+{
+
+public:
+
+	//The sky light direction.
+	Vector3<float32> _SkyLightDirection;
+
+	//Some padding.
+	Padding<4> _Padding1;
+
+	//The sky light radiance.
+	Vector3<float32> _SkyLightRadiance;
+	
+	//Some padding.
+	Padding<4> _Padding2;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -31,6 +59,10 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(SkyPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -74,6 +106,30 @@ void SkyGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+
+	//Push constants.
+	SkyPushConstantData data;
+
+	data._SkyLightDirection = CatalystWorldCoordinateSpace::DOWN;
+	data._SkyLightRadiance = VectorConstants::ZERO;
+
+	{
+		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		{
+			if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
+			{
+				data._SkyLightDirection = -component->_Direction;
+				data._SkyLightRadiance = component->_Color * component->_Intensity;
+
+				break;
+			}
+		}
+	}
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(SkyPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
