@@ -8,6 +8,9 @@ class VolumetricLightingProperties final
 
 public:
 
+	//Denotes whether or not volumetric lighting is enabled.
+	bool _Enabled{ true };
+
 	//The distance.
 	float32 _Distance{ 1'024.0f };
 

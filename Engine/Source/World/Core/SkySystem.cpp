@@ -16,32 +16,32 @@ namespace SkySystemConstants
 	constexpr StaticArray<SkyGradient, SKY_GRADIENT_LOOKUP_SIZE> SKY_GRADIENT_LOOKUP
 	{
 		//00.00.
-		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.5f, Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.25f),
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.5f, Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.125f * 0.25f),
 
 		//03.00.
-		SkyGradient(Vector3<float>(0.0f, 0.5f, 1.0f) * 0.125f * 0.25f, Vector3<float>(1.0f, 1.0f, 0.75f) * 0.125f * 0.25f),
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f) * 0.125f * 0.25f, Vector3<float32>(1.0f, 1.0f, 0.75f) * 0.125f * 0.25f),
 
 		//06.00.
-		SkyGradient(Vector3<float>(0.0f, 0.5f, 1.0f) * 0.25f, Vector3<float>(1.0f, 0.5f, 0.25f) * 0.25f),
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f) * 0.25f, Vector3<float32>(1.0f, 0.5f, 0.25f) * 0.25f),
 
 		//09.00.
-		SkyGradient(Vector3<float>(0.0f, 0.75f, 1.0f) * 0.5f, Vector3<float>(1.0f, 0.75f, 0.5f) * 0.5f),
+		SkyGradient(Vector3<float32>(0.0f, 0.75f, 1.0f) * 0.5f, Vector3<float32>(1.0f, 0.75f, 0.5f) * 0.5f),
 
 		//12.00.
-		SkyGradient(Vector3<float>(0.0f, 0.5f, 1.0f), Vector3<float>(1.0f, 1.0f, 1.0f)),
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f), Vector3<float32>(1.0f, 1.0f, 1.0f)),
 
 		//15.00.
-		SkyGradient(Vector3<float>(0.0f, 0.5f, 1.0f), Vector3<float>(1.0f, 0.75f, 0.5f)),
+		SkyGradient(Vector3<float32>(0.0f, 0.5f, 1.0f), Vector3<float32>(1.0f, 0.75f, 0.5f)),
 
 		//18.00.
-		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f), Vector3<float>(1.0f, 0.25f, 0.0625f)),
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f), Vector3<float32>(1.0f, 0.25f, 0.0625f)),
 
 		//21.00.
-		SkyGradient(Vector3<float>(0.0f, 0.25f, 1.0f) * 0.125f * 0.5f, Vector3<float>(0.25f, 0.5f, 0.75f) * 0.125f * 0.25f)
+		SkyGradient(Vector3<float32>(0.0f, 0.25f, 1.0f) * 0.125f * 0.5f, Vector3<float32>(0.25f, 0.5f, 0.75f) * 0.125f * 0.25f)
 	};
 
 	constexpr uint8 STAR_INTENSITY_LOOKUP_SIZE{ 8 };
-	constexpr StaticArray<float, STAR_INTENSITY_LOOKUP_SIZE> STAR_STRENGTH_LOOKUP
+	constexpr StaticArray<float32, STAR_INTENSITY_LOOKUP_SIZE> STAR_STRENGTH_LOOKUP
 	{
 		1.0f, //00.00
 		0.5f, //03.00

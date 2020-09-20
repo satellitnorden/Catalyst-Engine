@@ -79,7 +79,8 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
 	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN
+		|| !WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled)
 	{
 		SetEnabled(false);
 
