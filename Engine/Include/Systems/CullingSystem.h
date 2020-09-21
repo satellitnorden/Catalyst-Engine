@@ -34,6 +34,22 @@ public:
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Waits for dynamic models culling to finish executing.
+	*/
+	FORCE_INLINE void WaitForDynamicModelsCulling() const NOEXCEPT
+	{
+		_DynamicModelsCullingTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
+	*	Waits for static models culling to finish executing.
+	*/
+	FORCE_INLINE void WaitForStaticModelsCulling() const NOEXCEPT
+	{
+		_StaticModelsCullingTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
 	*	Waits for terrain culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForTerrainCulling() const NOEXCEPT
@@ -43,8 +59,24 @@ public:
 
 private:
 
+	//The dynamic models culling task.
+	Task _DynamicModelsCullingTask;
+
+	//The static models culling task.
+	Task _StaticModelsCullingTask;
+
 	//The terrain culling task.
 	Task _TerrainCullingTask;
+
+	/*
+	*	Culls dynamic models.
+	*/
+	void CullDynamicModels() const NOEXCEPT;
+
+	/*
+	*	Culls static models.
+	*/
+	void CullStaticModels() const NOEXCEPT;
 
 	/*
 	*	Culls terrain.

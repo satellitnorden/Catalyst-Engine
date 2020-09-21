@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -152,17 +153,26 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw static models
+	//Draw static models.
 	{
 		//Cache relevant data.
 		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		//Wait for static models culling to finish.
+		CullingSystem::Instance->WaitForStaticModelsCulling();
 
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
 
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
+			//Skip this model depending on visibility.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
 			//Draw all meshes.
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
@@ -198,11 +208,20 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
+		//Wait for dynamic models culling to finish.
+		CullingSystem::Instance->WaitForDynamicModelsCulling();
+
 		//Wait for dynamic models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
 
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
+			//Skip this model depending on visibility.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
 			//Draw all meshes.
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{

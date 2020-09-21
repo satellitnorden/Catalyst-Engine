@@ -186,6 +186,14 @@ public:
 	}
 
 	/*
+	*	Converts this world transform into a local Matrix4x4.
+	*/
+	FORCE_INLINE NO_DISCARD Matrix4x4 ToLocalMatrix4x4() const NOEXCEPT
+	{
+		return Matrix4x4(_LocalPosition , _Rotation, Vector3<float32>(_Scale));
+	}
+
+	/*
 	*	Converts this world transform into an absolute Matrix4x4.
 	*/
 	FORCE_INLINE NO_DISCARD Matrix4x4 ToAbsoluteMatrix4x4() const NOEXCEPT

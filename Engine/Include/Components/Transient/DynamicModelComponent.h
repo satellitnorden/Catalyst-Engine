@@ -52,6 +52,9 @@ public:
 	//Denotes the update flags.
 	UpdateFlag _UpdateFlags{ static_cast<UpdateFlag>(0) };
 
+	//Denotes whether or not this dynamic model is visible.
+	bool _Visibility;
+
 };
 
 //Define enumeration bit operations.

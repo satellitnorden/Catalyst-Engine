@@ -37,7 +37,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._WorldTransform = model_initialization_data->_WorldTransform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_WorldTransform.ToAbsoluteMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_WorldTransform.ToLocalMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 
 	//Destroy the initialization data.

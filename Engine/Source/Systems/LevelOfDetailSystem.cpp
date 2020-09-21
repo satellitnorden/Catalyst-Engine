@@ -82,7 +82,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 			//Calculate the distance coefficient.
 			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
 
-			//Modify the distance coefficient a bit to "flatten the curve", since squared distances are being used..
+			//Modify the distance coefficient a bit to "flatten the curve", since squared distances are being used.
 			distance_coefficient = 1.0f - distance_coefficient;
 			distance_coefficient *= distance_coefficient;
 			distance_coefficient = 1.0f - distance_coefficient;
