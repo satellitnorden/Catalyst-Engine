@@ -23,6 +23,9 @@ public:
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
+	//The cell.
+	Vector3<int32> _Cell;
+
 	//The transformations buffer.
 	BufferHandle _TransformationsBuffer;
 

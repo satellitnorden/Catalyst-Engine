@@ -40,12 +40,29 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 
+	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
+
+	for (const WorldTransform &world_transform : model_initialization_data->_WorldTransforms)
+	{
+		for (uint8 i{ 0 }; i < 3; ++i)
+		{
+			average_cell[i] += static_cast<float32>(world_transform.GetCell()[i]);
+		}
+	}
+
+	average_cell /= static_cast<float32>(model_initialization_data->_WorldTransforms.Size());
+
+	for (uint8 i{ 0 }; i < 3; ++i)
+	{
+		component._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
+	}
+
 	DynamicArray<Matrix4x4> transformations;
 	transformations.Reserve(model_initialization_data->_WorldTransforms.Size());
 
 	for (const WorldTransform &world_transform : model_initialization_data->_WorldTransforms)
 	{
-		transformations.Emplace(world_transform.ToAbsoluteMatrix4x4());
+		transformations.Emplace(world_transform.ToRelativeMatrix4x4(component._Cell));
 	}
 
 	RenderingUtilities::CreateTransformationsBuffer(transformations, &component._TransformationsBuffer);

@@ -203,7 +203,7 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				{
 					InstancedOpaqueModelSceneFeaturesVertexPushConstantData data;
 
-					const Vector3<int32> delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
+					const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
