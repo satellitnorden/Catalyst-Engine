@@ -247,6 +247,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\MaterialSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Mesh.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ModelFadeData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />

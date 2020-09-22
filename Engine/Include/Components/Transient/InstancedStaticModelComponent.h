@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>
@@ -11,6 +10,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/ModelFadeData.h>
 
 class InstancedStaticModelComponent final
 {
@@ -34,5 +34,8 @@ public:
 
 	//The model flags.
 	ModelFlags _ModelFlags;
+
+	//The model fade data.
+	Optional<ModelFadeData> _ModelFadeData;
 
 };

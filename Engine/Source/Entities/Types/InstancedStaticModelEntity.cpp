@@ -69,6 +69,7 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 
 	component._NumberOfTransformations = static_cast<uint32>(transformations.Size());
 	component._ModelFlags = model_initialization_data->_ModelFlags;
+	component._ModelFadeData = model_initialization_data->_ModelFadeData;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<InstancedStaticModelInitializationData>(data);

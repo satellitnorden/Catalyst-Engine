@@ -1,18 +1,22 @@
 //Includes.
 #include "CatalystMaterialCore.glsl"
-
-layout (early_fragment_tests) in;
+#include "CatalystTransparency.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 20) uint material_index;
+    layout (offset = 0) vec3 WORLD_GRID_DELTA;
+    layout (offset = 16) uint MODEL_FLAGS;
+    layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
+    layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
+    layout (offset = 28) uint MATERIAL_INDEX;
 };
 
 //In parameters.
 layout (location = 0) in mat3 fragment_tangent_space_matrix;
 layout (location = 3) in vec3 fragment_world_position;
 layout (location = 4) in vec2 fragment_texture_coordinate;
+layout (location = 5) in float fragment_fade_out_opacity;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_1;
@@ -35,8 +39,8 @@ vec2 CalculateScreenCoordinate(mat4 given_matrix, vec3 world_position)
 
 void CatalystShaderMain()
 {
-   	//Retrieve the material.
-	Material material = GLOBAL_MATERIALS[material_index];
+  //Retrieve the material.
+	Material material = GLOBAL_MATERIALS[MATERIAL_INDEX];
 
 	//Evaluate the material.
 	vec4 albedo_thickness;
@@ -63,4 +67,10 @@ void CatalystShaderMain()
   scene_features_3 = material_properties;
   scene_features_4 = vec4(velocity, 0.0f, 0.0f);
   scene = vec4(albedo_thickness.rgb * material_properties[3] * material._EmissiveMultiplier, 1.0f);
+
+  //Discard based on fade out opacity.
+  if (fragment_fade_out_opacity < 1.0f && ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), fragment_fade_out_opacity))
+  {
+    discard;
+  }
 }

@@ -16,7 +16,7 @@
 /*
 *	Instanced opaque model scene features vertex push constant data definition.
 */
-class InstancedOpaqueModelSceneFeaturesVertexPushConstantData final
+class InstancedOpaqueModelSceneFeaturesPushConstantData final
 {
 
 public:
@@ -30,15 +30,11 @@ public:
 	//The model flags.
 	uint32 _ModelFlags;
 
-};
+	//The start fade out distance, squared.
+	float32 _StartFadeOutDistanceSquared;
 
-/*
-*	Fragment push constant data definition.
-*/
-class InstancedOpaqueModelSceneFeaturesFragmentPushConstantData final
-{
-
-public:
+	//The end fade out distance, squared.
+	float32 _EndFadeOutDistanceSquared;
 
 	//The material index.
 	uint32 _MaterialIndex;
@@ -76,9 +72,8 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool do
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), sizeof(InstancedOpaqueModelSceneFeaturesFragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(InstancedOpaqueModelSceneFeaturesPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(5);
@@ -201,7 +196,7 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 				//Push constants.
 				{
-					InstancedOpaqueModelSceneFeaturesVertexPushConstantData data;
+					InstancedOpaqueModelSceneFeaturesPushConstantData data;
 
 					const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
@@ -212,15 +207,20 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 					data._ModelFlags = static_cast<uint32>(component->_ModelFlags);
 
-					command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), &data);
-				}
+					if (component->_ModelFadeData)
+					{
+						data._StartFadeOutDistanceSquared = component->_ModelFadeData.Get()._StartFadeOutDistance * component->_ModelFadeData.Get()._StartFadeOutDistance;
+						data._EndFadeOutDistanceSquared = component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance;
+					}
 
-				{
-					InstancedOpaqueModelSceneFeaturesFragmentPushConstantData data;
+					else
+					{
+						data._StartFadeOutDistanceSquared = data._EndFadeOutDistanceSquared = FLOAT32_MAXIMUM;
+					}
 
 					data._MaterialIndex = component->_MaterialResources[i]->_Index;
 
-					command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(InstancedOpaqueModelSceneFeaturesVertexPushConstantData), sizeof(InstancedOpaqueModelSceneFeaturesFragmentPushConstantData), &data);
+					command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(InstancedOpaqueModelSceneFeaturesPushConstantData), &data);
 				}
 
 				//Bind the vertex/inder buffer.

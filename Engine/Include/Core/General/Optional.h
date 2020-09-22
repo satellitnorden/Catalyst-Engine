@@ -55,6 +55,22 @@ public:
 		return _Value;
 	}
 
+	/*
+	*	Returns the underlying value, const.
+	*/
+	FORCE_INLINE NO_DISCARD const TYPE& Get() const NOEXCEPT
+	{
+		return _Value;
+	}
+
+	/*
+	*	Returns the underlying value, non-const.
+	*/
+	FORCE_INLINE NO_DISCARD TYPE& Get() NOEXCEPT
+	{
+		return _Value;
+	}
+
 private:
 
 	//The value.

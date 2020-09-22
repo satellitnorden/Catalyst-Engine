@@ -11,6 +11,9 @@
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//Rendering.
+#include <Rendering/Native/ModelFadeData.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
@@ -30,5 +33,8 @@ public:
 
 	//The model flags.
 	ModelFlags _ModelFlags;
+
+	//The model fade data.
+	Optional<ModelFadeData> _ModelFadeData;
 
 };
