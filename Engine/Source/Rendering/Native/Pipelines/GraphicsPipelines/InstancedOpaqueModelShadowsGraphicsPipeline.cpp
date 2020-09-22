@@ -234,7 +234,7 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Execute(const uint8 cascade_in
 
 					data._WorldToLightMatrix = world_to_light_matrix;
 
-					const Vector3<int32> delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
+					const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{

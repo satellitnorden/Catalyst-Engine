@@ -40,5 +40,17 @@ void CatalystShaderMain()
 		fragment_world_position += CalculateWindDisplacement(vertex_transformation[3].xyz, fragment_world_position, normal, 0.5f, 0.5f, 0.5f) * vertex_position.y;
 	}
 
+	if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_SNAP_TO_TERRAIN) && vertex_position.y == 0.0f)
+	{
+		//Calculate the absolute world position.
+		vec3 absolute_world_position = fragment_world_position + (vec3(CURRENT_WORLD_GRID_CELL) * WORLD_GRID_SIZE);
+
+		//Calculate the height map texture coordinate.
+		vec2 height_map_texture_coordinate = (absolute_world_position.xz - HEIGHT_MAP_COORDINATE_OFFSET + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
+
+		//Apply the height.
+		fragment_world_position.y = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate).x + WORLD_GRID_DELTA.y;
+	}
+
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 }

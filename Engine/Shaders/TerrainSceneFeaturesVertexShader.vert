@@ -6,11 +6,10 @@ layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
     layout (offset = 16) vec2 WORLD_POSITION;
-    layout (offset = 24) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
-    layout (offset = 32) float PATCH_SIZE;
-    layout (offset = 36) int BORDERS;
-    layout (offset = 40) float VERTEX_BORDER_OFFSET_FIRST;
-    layout (offset = 44) float VERTEX_BORDER_OFFSET_SECOND;
+    layout (offset = 24) float PATCH_SIZE;
+    layout (offset = 28) int BORDERS;
+    layout (offset = 32) float VERTEX_BORDER_OFFSET_FIRST;
+    layout (offset = 36) float VERTEX_BORDER_OFFSET_SECOND;
 };
 
 //In parameters.

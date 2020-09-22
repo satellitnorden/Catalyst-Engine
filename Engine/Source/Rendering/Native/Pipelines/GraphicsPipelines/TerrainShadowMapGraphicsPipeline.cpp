@@ -37,9 +37,6 @@ public:
 	//The world position.
 	Vector2<float32> _WorldPosition;
 
-	//The height map coordinate offset.
-	Vector2<float32> _HeightMapCoordinateOffset;
-
 	//The patch size.
 	float32 _PatchSize;
 
@@ -174,12 +171,6 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 			data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
 		}
 		data._WorldPosition = information._WorldPosition;
-		{
-			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
-
-			data._HeightMapCoordinateOffset._X = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._X;
-			data._HeightMapCoordinateOffset._Y = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._Z;
-		}
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
 		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1);

@@ -31,6 +31,8 @@ public:
 	Vector2<float32> _CurrentFrameJitter;
 	Vector2<float32> _PreviousFramejitter;
 
+	Vector2<float32> _HeightMapCoordinateOffset;
+
 	float32 _DeltaTime;
 	float32 _GlobalRandomSeed1;
 	float32 _GlobalRandomSeed2;
@@ -68,4 +70,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 536, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 544, "Size of dynamic uniform data is wrong!");

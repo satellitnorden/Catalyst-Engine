@@ -72,42 +72,44 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 416) vec2 CURRENT_FRAME_JITTER;
     layout (offset = 424) vec2 PREVIOUS_FRAME_JITTER;
 
-    layout (offset = 432) float DELTA_TIME;
-    layout (offset = 436) float globalRandomSeed1;
-    layout (offset = 440) float globalRandomSeed2;
-    layout (offset = 444) float globalRandomSeed3;
-    layout (offset = 448) float totalTime;
-    layout (offset = 452) float windSpeed;
+    layout (offset = 432) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
 
-    layout (offset = 456) float BLOOM_INTENSITY;
+    layout (offset = 440) float DELTA_TIME;
+    layout (offset = 444) float globalRandomSeed1;
+    layout (offset = 448) float globalRandomSeed2;
+    layout (offset = 452) float globalRandomSeed3;
+    layout (offset = 456) float totalTime;
+    layout (offset = 460) float windSpeed;
 
-    layout (offset = 460) float ASPECT_RATIO;
+    layout (offset = 464) float BLOOM_INTENSITY;
 
-    layout (offset = 464) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 468) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 472) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 468) float ASPECT_RATIO;
 
-    layout (offset = 476) float VIEW_DISTANCE;
-    layout (offset = 480) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
-    layout (offset = 484) float WETNESS;
-    layout (offset = 488) float NEAR_PLANE;
-    layout (offset = 492) float FAR_PLANE;
+    layout (offset = 472) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 476) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 480) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 496) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 500) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 504) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 508) float TERRAIN_MAP_RESOLUTION;
+    layout (offset = 484) float VIEW_DISTANCE;
+    layout (offset = 488) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
+    layout (offset = 492) float WETNESS;
+    layout (offset = 496) float NEAR_PLANE;
+    layout (offset = 500) float FAR_PLANE;
 
-    layout (offset = 512) uint SKY_MODE;
-    layout (offset = 516) float SKY_INTENSITY;
+    layout (offset = 504) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 508) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 512) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 516) float TERRAIN_MAP_RESOLUTION;
 
-    layout (offset = 520) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 524) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 528) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 520) uint SKY_MODE;
+    layout (offset = 524) float SKY_INTENSITY;
 
-    layout (offset = 532) float WORLD_GRID_SIZE;
+    layout (offset = 528) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 532) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 536) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    //Total size; 536
+    layout (offset = 540) float WORLD_GRID_SIZE;
+
+    //Total size; 544
 };
 
 //The render targets.

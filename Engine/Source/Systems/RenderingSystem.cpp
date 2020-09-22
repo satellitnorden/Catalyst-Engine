@@ -701,6 +701,13 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._PreviousFramejitter = _DynamicUniformData._CurrentFrameJitter;
 	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
 
+	{
+		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
+
+		_DynamicUniformData._HeightMapCoordinateOffset._X = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._X;
+		_DynamicUniformData._HeightMapCoordinateOffset._Y = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._Z;
+	}
+
 	//Update floats.
 	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
 	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
