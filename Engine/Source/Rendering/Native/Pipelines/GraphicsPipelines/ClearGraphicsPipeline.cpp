@@ -18,7 +18,7 @@ void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOE
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("FastApproximateAntiAliasingFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ClearFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

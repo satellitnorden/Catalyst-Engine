@@ -169,6 +169,18 @@ void MaskedModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Draw all meshes.
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
+				{
+					continue;
+				}
+
+				//Skip this mesh depending on the double-sidedness.
+				if (_DoubleSided != component->_MaterialResources[i]->_DoubleSided)
+				{
+					continue;
+				}
+
 				//Cache the mesh.
 				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
 
