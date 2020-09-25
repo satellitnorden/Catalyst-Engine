@@ -127,7 +127,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	//Get the number of user interface elements.
 	const uint64 number_of_user_interface_elements{ UserInterfaceSystem::Instance->GetUserInterfaceElements()->Size() };
 
-	//If there's no to render, then... Don't.
+	//If there's none to render, then... Don't.
 	if (number_of_user_interface_elements == 0)
 	{
 		SetIncludeInRender(false);
@@ -151,6 +151,12 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	//Render all user interface elements.
 	for (const UserInterfaceElement *const RESTRICT element : *UserInterfaceSystem::Instance->GetUserInterfaceElements())
 	{
+		//Don't render this if it isn't visible. (:
+		if (element->_Opacity <= 0.0f)
+		{
+			continue;
+		}
+
 		//Render differently based on the type.
 		switch (element->_Type)
 		{

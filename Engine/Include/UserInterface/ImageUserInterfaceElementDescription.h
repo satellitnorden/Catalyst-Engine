@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Native/UserInterfaceMaterial.h>
+
 //User interface.
 #include <UserInterface/UserInterfaceElementDescription.h>
 

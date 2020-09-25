@@ -31,9 +31,6 @@ public:
 	//The text smoothing factor.
 	float32 _TextSmoothingFactor;
 
-	//The opacity.
-	float32 _Opacity;
-
 	//The text.
 	DynamicString _Text;
 
