@@ -1680,6 +1680,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelFadeData.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\MIDIDevice.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

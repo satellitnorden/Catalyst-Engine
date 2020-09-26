@@ -223,6 +223,25 @@ uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
 }
 
 /*
+*	Queries for MIDI devices.
+*/
+void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
+{
+	const uint32 number_of_midi_devices{ midiInGetNumDevs() };
+
+	midi_devices->Reserve(number_of_midi_devices);
+
+	for (uint32 i{ 0 }; i < number_of_midi_devices; ++i)
+	{
+		MIDIINCAPS capabilities;
+		midiInGetDevCaps(i, &capabilities, sizeof(MIDIINCAPS));
+
+		midi_devices->At(i)._Index = i;
+		midi_devices->At(i)._Name = capabilities.szPname;
+	}
+}
+
+/*
 *	The asynchronous update function.
 */
 void SoundSystem::AsynchronousUpdate() NOEXCEPT

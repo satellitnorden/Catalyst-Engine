@@ -10,6 +10,7 @@
 #include <Concurrency/Thread.h>
 
 //Sound.
+#include <Sound/MIDIDevice.h>
 #include <Sound/PlaySoundRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
@@ -126,6 +127,11 @@ public:
 	*	Stops recording. Saves the recording to a .WAV file to the specified file path.
 	*/
 	void StopRecording(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Queries for MIDI devices.
+	*/
+	void QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT;
 
 private:
 
