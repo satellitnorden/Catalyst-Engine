@@ -41,6 +41,11 @@ public:
 	float32 _StartTime;
 
 	/*
+	*	Denotes the playback rate.
+	*/
+	float32 _PlaybackRate;
+
+	/*
 	*	Denotes whether or not the sound is looping.
 	*	Looping sounds needs to be explicitly stopped for them to ever stop.
 	*	For non-looping sound, they can be played and forgotten about,

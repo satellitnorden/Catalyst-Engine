@@ -33,6 +33,9 @@ public:
 	//The start time.
 	float32 _StartTime;
 
+	//Denotes the playback rate.
+	float32 _PlaybackRate;
+
 	//Denotes if the sound is looping.
 	bool _IsLooping;
 
@@ -190,6 +193,7 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	queued_play_sound_request._Gain = request._Gain;
 	queued_play_sound_request._Pan = request._Pan;
 	queued_play_sound_request._StartTime = request._StartTime;
+	queued_play_sound_request._PlaybackRate = request._PlaybackRate;
 	queued_play_sound_request._IsLooping = request._IsLooping;
 	queued_play_sound_request._AttackTime = request._AttackTime;
 	queued_play_sound_request._DecayTime = request._DecayTime;
@@ -375,7 +379,7 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
 			new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
 			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
-			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate());
+			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate() * queued_play_sound_request->_PlaybackRate);
 			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
 			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(GetSampleRate());
 			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(queued_play_sound_request->_AttackTime,
