@@ -371,7 +371,8 @@ void SoundSystem::AsynchronousUpdate() NOEXCEPT
 
 		else
 		{
-			Concurrency::CurrentThread::Yield();
+			//Sleep for some time.
+			Concurrency::CurrentThread::SleepFor(1'000);
 		}
 	}
 

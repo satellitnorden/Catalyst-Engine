@@ -567,8 +567,11 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		//Yield.
-		Concurrency::CurrentThread::Yield();
+		if (_MixingBuffersReady == NUMBER_OF_MIXING_BUFFERS)
+		{
+			//Sleep for some time.
+			Concurrency::CurrentThread::SleepFor(1'000);
+		}
 	}
 }
 

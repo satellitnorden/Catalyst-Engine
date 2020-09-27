@@ -54,6 +54,11 @@ namespace Concurrency
 		FORCE_INLINE void Yield() NOEXCEPT;
 
 		/*
+		*	Puts the current thread to sleep for N amount of nanoseconds.
+		*/
+		FORCE_INLINE void SleepFor(const uint64 number_of_nanoseconds) NOEXCEPT;
+
+		/*
 		*	Returns the current thread's index.
 		*/
 		FORCE_INLINE uint64 &Index() NOEXCEPT
