@@ -45,14 +45,12 @@ public:
     FORCE_INLINE void SetPan(const float32 new_pan) NOEXCEPT
     {
         //Define constants.
-        constexpr float32 SQUARE_ROOT_OF_TWO_OVER_TWO{ 0.70710678118f };
-
         const float32 angle{ CatalystBaseMath::DegreesToRadians(45.0f) * new_pan };
         const float32 angle_sine{ CatalystBaseMath::Sine(angle) };
         const float32 angle_cosine{ CatalystBaseMath::Cosine(angle) };
 
-        _LeftPanCoefficient = SQUARE_ROOT_OF_TWO_OVER_TWO * (angle_cosine - angle_sine);
-        _RightPanCoefficient = SQUARE_ROOT_OF_TWO_OVER_TWO * (angle_cosine + angle_sine);
+        _LeftPanCoefficient = angle_cosine - angle_sine;
+        _RightPanCoefficient = angle_cosine + angle_sine;
     }
 
     /*
