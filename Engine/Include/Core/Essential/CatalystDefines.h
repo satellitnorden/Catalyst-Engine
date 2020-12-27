@@ -46,6 +46,15 @@
 #endif
 
 /*
+*	Turns off the given warning.
+*/
+#if defined(CATALYST_MSVC)
+	#define DISABLE_WARNING(WARNING_NUMBER) __pragma(warning(disable : WARNING_NUMBER))
+#else
+	#define DISABLE_WARNING(WARNING_NUMBER)
+#endif
+
+/*
 *	Turns optimizations on.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
