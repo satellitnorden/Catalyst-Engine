@@ -142,6 +142,7 @@ class MidiFile {
 		MidiEvent*       addEvent                  (int aTrack, MidiEvent& mfevent);
 		void			 addEvent                  (const int32 track,
 													const int32 tick,
+													const int32 channel,
 													const int32 duration,
 													const int32 note_number,
 													const int32 velocity);

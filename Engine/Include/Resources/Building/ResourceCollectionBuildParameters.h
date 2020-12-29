@@ -15,4 +15,7 @@ public:
 	//The folder in which to search for resource files.
 	const char* RESTRICT _Folder;
 
+	//The maximum file size.
+	uint64 _MaximumFileSize;
+
 };

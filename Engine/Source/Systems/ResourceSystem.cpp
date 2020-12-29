@@ -339,12 +339,8 @@ NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::FindOrCreateTextur
 */
 void ResourceSystem::LoadResourceCollection(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT
 {
-	//Read the number of resources.
-	uint64 number_of_resources;
-	file->Read(&number_of_resources, sizeof(uint64));
-
-	//For each resource, load it.
-	for (uint64 i{ 0 }; i < number_of_resources; ++i)
+	//While the file hasn't reached the end, load the resources in the resource collection.
+	while (!file->HasReachedEndOfFile())
 	{
 		LoadResource(file);
 	}

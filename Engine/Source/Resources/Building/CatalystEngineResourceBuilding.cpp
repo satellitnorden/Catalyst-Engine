@@ -2560,12 +2560,13 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
-		ResourceCollectionBuildParameters resourceCollectionBuildParameters;
+		ResourceCollectionBuildParameters parameters;
 
-		resourceCollectionBuildParameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
-		resourceCollectionBuildParameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
+		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate";
+		parameters._MaximumFileSize = 1'000'000'000;
 
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(resourceCollectionBuildParameters);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
 	}
 #endif
 }

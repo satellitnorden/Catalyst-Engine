@@ -48,34 +48,21 @@
 #include <ThirdParty/stb_image_resize.h>
 
 /*
-*	Counts the resources.
+*	Builds the resource collection recursively.
 */
-FORCE_INLINE void CountResource(const char *const RESTRICT directory_path, uint64 *const RESTRICT number_of_resources)
+void BuildResourceCollectionsRecursive(	const ResourceCollectionBuildParameters &parameters,
+										const char *const RESTRICT directory_path,
+										BinaryFile<IOMode::Out> *RESTRICT *RESTRICT current_file,
+										uint64 *const RESTRICT file_counter,
+										uint64 *const RESTRICT current_file_size) NOEXCEPT
 {
+	//Iterate over all files in the folder.
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
+		//If this is a directory, call this function again recursively.
 		if (entry.is_directory())
 		{
-			CountResource(entry.path().generic_u8string().c_str(), number_of_resources);
-		}
-		
-		else
-		{
-			++(*number_of_resources);
-		}
-	}
-}
-
-/*
-*	Adds the resources.
-*/
-FORCE_INLINE void AddResources(const char *const RESTRICT directory_path, BinaryFile<IOMode::Out> *const RESTRICT file) NOEXCEPT
-{
-	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
-	{
-		if (entry.is_directory())
-		{
-			AddResources(entry.path().generic_u8string().c_str(), file);
+			BuildResourceCollectionsRecursive(parameters, entry.path().generic_u8string().c_str(), current_file, file_counter, current_file_size);
 		}
 
 		else
@@ -86,18 +73,38 @@ FORCE_INLINE void AddResources(const char *const RESTRICT directory_path, Binary
 			//Get the size of the resource file.
 			const uint64 resource_file_size{ resource_file.Size() };
 
+			//Create another resource collection file, if needed.
+			if (*current_file_size + resource_file_size >= parameters._MaximumFileSize)
+			{
+				//Close and delete the current file.
+				(*current_file)->Close();
+				delete (*current_file);
+
+				//Create a new file.
+				char buffer[MAX_PATH];
+				sprintf_s(buffer, "%s_%llu.crc", parameters._Output, (*file_counter)++);
+
+				(*current_file) = new BinaryFile<IOMode::Out>(buffer);
+
+				//Reset the current file size.
+				(*current_file_size) = 0;
+			}
+
 			//Read the data in the resource file.
 			void *RESTRICT resource_file_data{ Memory::Allocate(resource_file_size) };
 			resource_file.Read(resource_file_data, resource_file_size);
 
 			//Write the resource file data to the resource collection file.
-			file->Write(resource_file_data, resource_file_size);
+			(*current_file)->Write(resource_file_data, resource_file_size);
 
 			//Free the resource file data.
 			Memory::Free(resource_file_data);
 
 			//Close the resource file.
 			resource_file.Close();
+
+			//Update the current file size.
+			(*current_file_size) += resource_file_size;
 		}
 	}
 }
@@ -107,26 +114,21 @@ FORCE_INLINE void AddResources(const char *const RESTRICT directory_path, Binary
 */
 void ResourceBuildingSystem::BuildResourceCollections(const ResourceCollectionBuildParameters &parameters) NOEXCEPT
 {
-	//What should the collection be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".crc";
+	//Set up variables.
+	uint64 file_counter{ 0 };
+	uint64 current_file_size{ 0 };
 
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
+	//Create the first file.
+	char buffer[MAX_PATH];
+	sprintf_s(buffer, "%s_%llu.crc", parameters._Output, file_counter++);
 
-	//Count the number of resources in the folder.
-	uint64 number_of_resources{ 0 };
+	BinaryFile<IOMode::Out> *RESTRICT current_file{ new BinaryFile<IOMode::Out>(buffer) };
 
-	CountResource(parameters._Folder, &number_of_resources);
-
-	//Write the number of resources in the resource collection.
-	file.Write(&number_of_resources, sizeof(uint64));
-
-	//Add the resources.
-	AddResources(parameters._Folder, &file);
+	//Build the resource collections recursively.
+	BuildResourceCollectionsRecursive(parameters, parameters._Folder, &current_file, &file_counter, &current_file_size);
 
 	//Close the file.
-	file.Close();
+	current_file->Close();
 }
 
 /*

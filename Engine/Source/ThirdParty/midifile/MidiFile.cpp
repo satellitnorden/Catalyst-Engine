@@ -1541,6 +1541,7 @@ MidiEvent* MidiFile::addEvent(int aTrack, MidiEvent& mfevent) {
 
 void MidiFile::addEvent(const int32 track,
 						const int32 tick,
+						const int32 channel,
 						const int32 duration,
 						const int32 note_number,
 						const int32 velocity)
@@ -1560,7 +1561,7 @@ void MidiFile::addEvent(const int32 track,
 
 		message.reserve(3);
 
-		message.push_back(9 << 4);
+		message.push_back(channel | (9 << 4));
 		message.push_back(note_number);
 		message.push_back(velocity);
 
@@ -1576,7 +1577,7 @@ void MidiFile::addEvent(const int32 track,
 
 		message.reserve(3);
 
-		message.push_back(8 << 4);
+		message.push_back(channel | (8 << 4));
 		message.push_back(note_number);
 		message.push_back(0);
 
