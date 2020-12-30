@@ -133,6 +133,11 @@ public:
 	*/
 	void QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT;
 
+	/*
+	*	Opens a MIDI device.
+	*/
+	void OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+
 private:
 
 	//The sound instance counter.

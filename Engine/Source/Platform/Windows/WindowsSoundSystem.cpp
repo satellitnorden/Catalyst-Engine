@@ -229,15 +229,46 @@ void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi
 {
 	const uint32 number_of_midi_devices{ midiInGetNumDevs() };
 
-	midi_devices->Reserve(number_of_midi_devices);
-
 	for (uint32 i{ 0 }; i < number_of_midi_devices; ++i)
 	{
 		MIDIINCAPS capabilities;
-		midiInGetDevCaps(i, &capabilities, sizeof(MIDIINCAPS));
 
-		midi_devices->At(i)._Index = i;
-		midi_devices->At(i)._Name = capabilities.szPname;
+		if (midiInGetDevCaps(i, &capabilities, sizeof(MIDIINCAPS)) == MMSYSERR_NOERROR)
+		{
+			midi_devices->Emplace();
+
+			midi_devices->Back()._Handle = nullptr;
+			midi_devices->Back()._Index = i;
+			midi_devices->Back()._Name = capabilities.szPname;
+		}
+	}
+}
+
+void CALLBACK MidiInProc(
+	HMIDIIN   hMidiIn,
+	UINT      wMsg,
+	DWORD_PTR dwInstance,
+	DWORD_PTR dwParam1,
+	DWORD_PTR dwParam2
+)
+{
+	BREAKPOINT();
+}
+
+/*
+*	Opens a MIDI device.
+*/
+void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT
+{
+	midi_device->_Handle = new HMIDIIN();
+
+	if (midiInOpen(	static_cast<HMIDIIN* const RESTRICT>(midi_device->_Handle),
+					midi_device->_Index,
+					(DWORD_PTR)MidiInProc,
+					static_cast<DWORD_PTR>(0),
+					CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+	{
+		BREAKPOINT();
 	}
 }
 

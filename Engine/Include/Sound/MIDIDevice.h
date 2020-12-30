@@ -9,6 +9,9 @@ class MIDIDevice final
 
 public:
 
+	//The handle to the MIDI device. Will be nullptr until the MIDI device has been opened.
+	void *RESTRICT _Handle;
+
 	//The index.
 	uint32 _Index;
 
