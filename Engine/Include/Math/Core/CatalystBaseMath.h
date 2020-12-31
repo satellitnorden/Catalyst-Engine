@@ -196,9 +196,18 @@ public:
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE IsEven(const TYPE number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool IsEven(const TYPE number) NOEXCEPT
 	{
 		return (number & static_cast<TYPE>(1)) == 0;
+	}
+
+	/*
+	*	Returns if a given integer is a multiple of another integer.
+	*/
+	template <typename FIRST, typename SECOND>
+	FORCE_INLINE constexpr static NO_DISCARD bool IsMultipleOf(const FIRST number, const SECOND multiple) NOEXCEPT
+	{
+		return Modulo(number, multiple) == 0;
 	}
 
 	/*
