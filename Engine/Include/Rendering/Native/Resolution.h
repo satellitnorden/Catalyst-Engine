@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/Core/CatalystBaseMath.h>
+
 class Resolution final
 {
 
@@ -45,7 +48,15 @@ public:
 	}
 
 	/*
-	*	Multiplication operator overload.
+	*	Multiplication by float32 operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Resolution operator*(const float32 scalar) NOEXCEPT
+	{
+		return Resolution(CatalystBaseMath::Round<uint32>(static_cast<float32>(_Width) * scalar), CatalystBaseMath::Round<uint32>(static_cast<float32>(_Height) * scalar));
+	}
+
+	/*
+	*	Multiplication by uint32 operator overload.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Resolution operator*(const uint32 scalar) NOEXCEPT
 	{

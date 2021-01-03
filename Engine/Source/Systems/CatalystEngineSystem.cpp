@@ -218,7 +218,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 		{
 			Concurrency::CurrentThread::SleepFor(static_cast<uint64>(seconds_to_sleep * 1'000'000'000.0));
 
-			_DeltaTime = preferred_frame_time;
+			_DeltaTime = CatalystBaseMath::Minimum(_DeltaTime + CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 		}
 	}
 
