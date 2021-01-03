@@ -15,10 +15,56 @@
 */
 
 //List of all available sound mix components.
-#define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(AutomaticGainCorrection)	\
+#define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(None)						\
+								SOUND_MIX_COMPONENT(AutomaticGainCorrection)	\
 								SOUND_MIX_COMPONENT(Gain)						\
 								SOUND_MIX_COMPONENT(Limiter)					\
+								SOUND_MIX_COMPONENT(Reverb)						\
 								SOUND_MIX_COMPONENT(Saturation)
+
+/*
+*	This sound mix component is just empty... Like me. ):
+*/
+class NoneSoundMixComponent final
+{
+
+public:
+
+	/*
+	*	State class definition.
+	*/
+	class State final
+	{
+
+	public:
+
+	};
+
+	/*
+	*	The construct function.
+	*/
+	FORCE_INLINE static void Construct() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	The process function.
+	*/
+	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	The destruct function.
+	*/
+	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
+	{
+
+	}
+
+};
 
 /*
 *	This sound mix component will automatically correct the gain of incoming samples to never exceed 1.0f.
@@ -171,6 +217,41 @@ public:
 };
 
 /*
+*	This sound mix component applies reverb. (:
+*/
+class ReverbSoundMixComponent final
+{
+
+public:
+
+	/*
+	*	State class definition.
+	*/
+	class State final
+	{
+
+	public:
+
+	};
+
+	/*
+	*	The construct function.
+	*/
+	static void Construct() NOEXCEPT;
+
+	/*
+	*	The process function.
+	*/
+	static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT;
+
+	/*
+	*	The destruct function.
+	*/
+	static void Destruct(State *const RESTRICT state) NOEXCEPT;
+
+};
+
+/*
 *	This sound mix component will apply saturation to incoming samples.
 */
 class SaturationSoundMixComponent final
@@ -295,7 +376,7 @@ public:
 	uint64 _Identifier;
 
 	//The type.
-	Type _Type;
+	Type _Type{ Type::None };
 
 	/*
 	*	Creates an automatic gain correction sound mix component.

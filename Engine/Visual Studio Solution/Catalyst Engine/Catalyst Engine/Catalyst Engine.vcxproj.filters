@@ -403,6 +403,9 @@
     <Filter Include="User Interface\Source">
       <UniqueIdentifier>{3d650680-d008-409c-a268-054579d9255b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound\Source">
+      <UniqueIdentifier>{e2d5e013-b324-4642-acdd-937c1ffd188e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -2230,6 +2233,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelShadowsGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Sound\SoundMixComponent.cpp">
+      <Filter>Sound\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

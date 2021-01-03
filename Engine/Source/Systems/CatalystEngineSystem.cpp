@@ -8,6 +8,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Concurrency.
+#include <Concurrency/ConcurrencyCore.h>
+
 //Profiling.
 #include <Profiling/ProfilingCore.h>
 
@@ -182,7 +185,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	//Define constants.
-	constexpr float MAXIMUM_DELTA_TIME{ 0.1f };
+	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
 
 	//Update the total frames.
 	++_TotalFrames;
@@ -192,6 +195,32 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 	//Update the delta time.
 	_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
+
+	//Retrieve the preferred frame time.
+	float32 preferred_frame_time;
+
+	if (CatalystPlatform::IsWindowInFocus())
+	{
+		preferred_frame_time = _ProjectConfiguration._RenderingConfiguration._FocusedFrameTime;
+	}
+
+	else
+	{
+		preferred_frame_time = _ProjectConfiguration._RenderingConfiguration._UnfocusedFrameTime;
+	}
+
+	//If the preferred frame time has been set, sleep for the appropriate amount of time to keep that frame time.
+	if (preferred_frame_time > 0.0f)
+	{
+		const float64 seconds_to_sleep{ static_cast<float64>(preferred_frame_time) - static_cast<float64>(_DeltaTime) };
+
+		if (seconds_to_sleep > 0.0)
+		{
+			Concurrency::CurrentThread::SleepFor(static_cast<uint64>(seconds_to_sleep * 1'000'000'000.0));
+
+			_DeltaTime = preferred_frame_time;
+		}
+	}
 
 	//Construct the update context.
 	UpdateContext context;

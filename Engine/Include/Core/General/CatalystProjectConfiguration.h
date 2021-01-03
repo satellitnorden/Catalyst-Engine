@@ -69,6 +69,18 @@ class CatalystProjectRenderingConfiguration final
 public:
 
 	/*
+	*	Denotes the focused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.
+	*	Recommended: 0.016f
+	*/
+	float32 _FocusedFrameTime;
+
+	/*
+	*	Denotes the unfocused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.
+	*	Recommended: 0.1f
+	*/
+	float32 _UnfocusedFrameTime;
+
+	/*
 	*	Denotes if the game should start in fullscreen initially.
 	*	Recommended: true/false.
 	*/

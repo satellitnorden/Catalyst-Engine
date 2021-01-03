@@ -632,6 +632,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Core\ResourcePointer.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoadingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Sound\SoundMixComponent.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEditorSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEngineSystem.cpp" />
