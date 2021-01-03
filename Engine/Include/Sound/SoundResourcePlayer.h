@@ -32,6 +32,14 @@ public:
     }
 
     /*
+    *   Returns the gain.
+    */
+    FORCE_INLINE NO_DISCARD float32 GetGain() const NOEXCEPT
+    {
+        return _Gain;
+    }
+
+    /*
     *   Sets the gain.
     */
     FORCE_INLINE void SetGain(const float32 new_gain) NOEXCEPT
