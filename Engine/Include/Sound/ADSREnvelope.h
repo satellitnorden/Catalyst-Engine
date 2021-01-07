@@ -29,7 +29,7 @@ public:
   {
     _StageValues[0] = 0.001f; //ATTACK TIME
     _StageValues[1] = 0.01f; //DECAY TIME
-    _StageValues[2] = 0.9f; //SUSTAIN GAIN
+    _StageValues[2] = 1.0f; //SUSTAIN GAIN
     _StageValues[3] = 0.01f; //RELEASE TIME
   }
 
@@ -66,6 +66,47 @@ public:
   FORCE_INLINE void Advance() NOEXCEPT
   {
       ++_CurrentSample;
+  }
+
+  /*
+  * Calculates the current multiplier.
+  */
+  FORCE_INLINE NO_DISCARD float32 CalculateCurrentMultiplier() const NOEXCEPT
+  {
+      switch (_CurrentStage)
+      {
+          case Stage::STAGE_OFF:
+          {
+              return 0.0f;
+          }
+
+          case Stage::STAGE_ATTACK:
+          {
+              return static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage);
+          }
+
+          case Stage::STAGE_DECAY:
+          {
+              return CatalystBaseMath::LinearlyInterpolate(1.0f, _StageValues[2], static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
+          }
+
+          case Stage::STAGE_SUSTAIN:
+          {
+              return _StageValues[2];
+          }
+
+          case Stage::STAGE_RELEASE:
+          {
+              return CatalystBaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
+          }
+
+          default:
+          {
+              ASSERT(false, "Invalid case!");
+
+              return 0.0f;
+          }
+      }
   }
 
   /*

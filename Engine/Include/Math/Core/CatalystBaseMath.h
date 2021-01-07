@@ -331,6 +331,14 @@ public:
 		return output;
 	}
 
+	/*
+	*	Rounds the given integer number to the nearest multiple of the given multiple.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE RoundToNearestMultipleOf(const TYPE number, const TYPE multiple) NOEXCEPT
+	{
+		return ((number + multiple / 2) / multiple) * multiple;
+	}
 
 	/*
 	*	Scales a value from one range to another.

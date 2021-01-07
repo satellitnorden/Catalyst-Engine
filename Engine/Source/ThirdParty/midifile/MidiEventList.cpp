@@ -470,6 +470,8 @@ int MidiEventList::markSequence(int sequence) {
 	return sequence;
 }
 
+OPTIMIZATIONS_OFF;
+
 void MidiEventList::FixOverlappingNotes()
 {
 	for (int32 i{ 0 }; i < getEventCount(); ++i)
@@ -480,7 +482,7 @@ void MidiEventList::FixOverlappingNotes()
 		{
 			if (MidiEvent *const RESTRICT note_off_event{ note_on_event.getLinkedEvent() })
 			{
-				ASSERT(note_on_event[1] == (*note_off_event)[1], "Oh no...");
+				ASSERT(note_on_event.getKeyNumber() == note_off_event->getKeyNumber(), "Oh no...");
 
 				if (note_off_event->isNoteOff())
 				{
@@ -490,14 +492,24 @@ void MidiEventList::FixOverlappingNotes()
 
 						if (note_on_event != other_event
 							&& other_event.isNoteOn()
-							&& note_on_event[1] == other_event[1]
+							&& note_on_event.getKeyNumber() == other_event.getKeyNumber()
 							&& note_on_event.tick < other_event.tick
-							&& note_off_event->tick > other_event.tick)
+							&& note_off_event->tick >= other_event.tick)
 						{
-							note_off_event->tick = other_event.tick;
+							note_off_event->tick = other_event.tick - 1;
 						}
 					}
 				}
+
+				else
+				{
+					ASSERT(false, "Oh no...");
+				}
+			}
+
+			else
+			{
+				ASSERT(false, "Oh no...");
 			}
 		}
 	}

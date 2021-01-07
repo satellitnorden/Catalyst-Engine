@@ -79,7 +79,15 @@ public:
     }
 
     /*
-    *   Returns the ADSR envelope.
+    *   Returns the ADSR envelope, const.
+    */
+    FORCE_INLINE NO_DISCARD const ADSREnvelope &GetADSREnvelope() const NOEXCEPT
+    {
+        return _ADSREnvelope;
+    }
+
+    /*
+    *   Returns the ADSR envelope, non-const.
     */
     FORCE_INLINE NO_DISCARD ADSREnvelope &GetADSREnvelope() NOEXCEPT
     {
