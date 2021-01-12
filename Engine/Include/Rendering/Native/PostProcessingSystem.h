@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Optional.h>
 
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
@@ -172,6 +173,22 @@ public:
 		_ColorGradingTextureResource = resource;
 	}
 
+	/*
+	*	Returns the temporal anti aliasing weight override.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetTemporalAntiAliasingWeightOverride() const NOEXCEPT
+	{
+		return _TemporalAntiAliasingWeightOverride;
+	}
+	
+	/*
+	*	Sets the temporal anti aliasing weight override.
+	*/
+	FORCE_INLINE void SetTemporalAntiAliasingWeightOverride(const float32 value) NOEXCEPT
+	{
+		_TemporalAntiAliasingWeightOverride = value;
+	}
+
 private:
 
 	//The brightness.
@@ -203,5 +220,8 @@ private:
 
 	//The color grading texture resource.
 	ResourcePointer<Texture2DResource> _ColorGradingTextureResource;
+
+	//The temporal anti aliasing weight override.
+	Optional<float32> _TemporalAntiAliasingWeightOverride;
 
 };
