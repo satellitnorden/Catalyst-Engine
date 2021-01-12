@@ -5,9 +5,13 @@
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 //Constants.
-#define PATH_TRACING_SAMPLES (1)
-#define VOLUMETRIC_LIGHTING_SAMPLES (2)
 #define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint NUMBER_OF_SAMPLES;
+};
 
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	scene_image;
@@ -46,7 +50,7 @@ void CatalystShaderMain()
 	float hit_distance = 0.0f;
 	vec4 material_properties = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	for (uint i = 0; i < PATH_TRACING_SAMPLES; ++i)
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		//Sample the noise texture.
 		path_tracing_ray_payload.random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
@@ -86,11 +90,11 @@ void CatalystShaderMain()
 	}
 
 	//Normalize the output data.
-	radiance /= float(PATH_TRACING_SAMPLES);
-	albedo /= float(PATH_TRACING_SAMPLES);
-	shading_normal /= float(PATH_TRACING_SAMPLES);
-	hit_distance /= float(PATH_TRACING_SAMPLES);
-	material_properties /= float(PATH_TRACING_SAMPLES);
+	radiance /= float(NUMBER_OF_SAMPLES);
+	albedo /= float(NUMBER_OF_SAMPLES);
+	shading_normal /= float(NUMBER_OF_SAMPLES);
+	hit_distance /= float(NUMBER_OF_SAMPLES);
+	material_properties /= float(NUMBER_OF_SAMPLES);
 
 	//Calculate the velocity.
 	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * hit_distance;
@@ -100,145 +104,10 @@ void CatalystShaderMain()
 	vec4 clip_space_position = WORLD_TO_CLIP_MATRIX * vec4(hit_position, 1.0f);
 	float depth = clip_space_position.z / clip_space_position.w;
 
-	//Apply volumetric lighting.
-	vec3 volumetric_lighting = vec3(0.0f);
-	float volumetric_lighting_opacity = 0.0f;
-
-	if (true)
-	{
-		//Calculate the volumetric hit distance.
-		float volumetric_hit_distance = min(hit_distance, VOLUMETRIC_LIGHTING_DISTANCE);
-
-		for (int i = 0; i < VOLUMETRIC_LIGHTING_SAMPLES; ++i)
-		{
-			//Sample the noise.
-			vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), PATH_TRACING_SAMPLES + i);
-
-			//Calculate the volumetric particle hit position.
-			vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_hit_distance * noise_sample[0];
-
-			//Calculate all lights.
-			for (int light_index = 0; light_index < NUMBER_OF_LIGHTS; ++light_index)
-			{
-				Light light = UnpackLight(light_index);
-
-				switch (light.light_type)
-				{
-					case LIGHT_TYPE_DIRECTIONAL:
-					{
-						//Alter the direction a bit to simulare soft shadows.
-						vec3 light_direction = normalize(light.position_or_direction + vec3(noise_sample.xyz * 2.0f - 1.0f) * 0.01f);
-
-						//Trace the visibility.
-						visibility = 0.0f;
-
-						traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								1, 																							//missIndex
-								volumetric_particle_hit_position, 															//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light_direction,																			//direction
-								CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
-								1 																							//payload
-								);
-
-						if (visibility == 1.0f)
-						{
-							volumetric_lighting += light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
-						}
-
-						break;
-					}
-
-					case LIGHT_TYPE_POINT:
-					{
-						/*
-						//Calculate the light direction.
-						vec3 light_direction = hit_position - (light.position_or_direction + light.size * vec3(path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f));
-
-						//Calculate the distance to the light.
-						float distance_to_light = LengthSquared3(light_direction);
-
-						//Only calculate lighting if the the world position is within the light's radius.
-						if (distance_to_light < light.radius * light.radius)
-						{
-							//Perform the square root.
-							distance_to_light = sqrt(distance_to_light);
-
-							//Normalize the light direction.
-							float distance_to_light_reciprocal = 1.0f / distance_to_light;
-							light_direction *= distance_to_light_reciprocal;
-
-							//Trace the visibility.
-							visibility = 0.0f;
-
-							traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
-									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-									0xff, 																						//cullMask
-									0, 																							//sbtRecordOffset
-									0, 																							//sbtRecordStride
-									1, 																							//missIndex
-									hit_position, 																				//origin
-									CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-									-light_direction,																			//direction
-									distance_to_light,																			//Tmax
-									1 																							//payload
-									);
-
-							if (visibility == 1.0f)
-							{
-								//Calculate the attenuation.
-								float attenuation = CalculateAttenuation(distance_to_light, light.radius);
-
-								direct_lighting += CalculateLighting(	-gl_WorldRayDirectionNV,
-																		surface_properties.albedo,
-																		surface_properties.shading_normal,
-																		surface_properties.material_properties[0],
-																		surface_properties.material_properties[1],
-																		surface_properties.material_properties[2],
-																		1.0f,
-																		light_direction,
-																		light.color * light.intensity) * attenuation;
-							}
-							
-						}
-						*/
-
-						break;
-					}
-				}
-			}
-		}
-
-		//Normalize the volumetric lighting.
-		volumetric_lighting /= float(VOLUMETRIC_LIGHTING_SAMPLES);		
-
-		//Add the ambient lighting.
-		volumetric_lighting += CalculateVolumetricAmbientLighting();
-
-		//Calculate the volumetric lighting opacity.
-		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
-	}
-
 	//Write to the images.
-	if (hit_distance < VIEW_DISTANCE)
-	{
-		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(mix(radiance, volumetric_lighting, volumetric_lighting_opacity), 1.0f));
-		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(albedo, 0.0f));
-		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(shading_normal, depth));
-		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), material_properties);
-		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
-	}
-	
-	else
-	{
-		imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(mix(SampleSky(ray_direction, 0.0f), volumetric_lighting, volumetric_lighting_opacity), 1.0f));
-		imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 0.0f, 0.0f), 0.0f));
-		imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(vec3(0.0f, 1.0f, 0.0f), depth));
-		imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), vec4(0.0f, 0.0f, 0.0f, 0.0f));
-		imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
-	}
+	imageStore(scene_image, 			ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
+	imageStore(scene_features_1_image, 	ivec2(gl_LaunchIDNV.xy), vec4(albedo, 0.0f));
+	imageStore(scene_features_2_image, 	ivec2(gl_LaunchIDNV.xy), vec4(shading_normal, depth));
+	imageStore(scene_features_3_image, 	ivec2(gl_LaunchIDNV.xy), material_properties);
+	imageStore(scene_features_4_image, 	ivec2(gl_LaunchIDNV.xy), vec4(velocity, 0.0f, 0.0f));
 }

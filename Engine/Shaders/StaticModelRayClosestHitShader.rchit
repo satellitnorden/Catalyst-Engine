@@ -6,6 +6,10 @@
 #include "CatalystTerrainUtilities.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
+
+//Constants.
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
 
 /*
 *	Surface properties struct definition.
@@ -19,7 +23,7 @@ struct SurfaceProperties
 
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
-layout(location = 1) rayPayloadInNV float visibility;
+layout(location = 1) rayPayloadNV float visibility;
 hitAttributeNV vec3 hit_attribute;
 
 /*
@@ -312,8 +316,66 @@ void CatalystShaderMain()
 	//Calculate the indirect lighting.
 	lighting += CalculateIndirectLighting(current_recursion_depth, hit_position, surface_properties);
 
+	//Calculate the volumetric lighting.
+	vec3 volumetric_lighting = vec3(0.0f);
+	float volumetric_lighting_opacity = 0.0f;
+
+	{
+		//Calculate the volumetric hit distance.
+		float volumetric_hit_distance = min(gl_HitTNV, VOLUMETRIC_LIGHTING_DISTANCE);
+
+		//Sample the noise.
+		vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
+
+		//Calculate the volumetric particle hit position.
+		vec3 volumetric_particle_hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * volumetric_hit_distance * noise_sample[0];
+
+		//Calculate all lights.
+		for (int light_index = 0; light_index < NUMBER_OF_LIGHTS; ++light_index)
+		{
+			Light light = UnpackLight(light_index);
+
+			switch (light.light_type)
+			{
+				case LIGHT_TYPE_DIRECTIONAL:
+				{
+					//Trace the visibility.
+					visibility = 0.0f;
+
+					traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							1, 																							//missIndex
+							volumetric_particle_hit_position, 															//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light.position_or_direction,																//direction
+							CATALYST_RAY_TRACING_T_MAXIMUM,																//Tmax
+							1 																							//payload
+							);
+
+					volumetric_lighting += light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * visibility;
+
+					break;
+				}
+
+				case LIGHT_TYPE_POINT:
+				{
+					break;
+				}
+			}
+		}	
+
+		//Add the ambient lighting.
+		volumetric_lighting += CalculateVolumetricAmbientLighting();
+
+		//Calculate the volumetric lighting opacity.
+		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+	}
+
 	//Write to the ray payload.
-	path_tracing_ray_payload.radiance 				= lighting;
+	path_tracing_ray_payload.radiance 				= mix(lighting, volumetric_lighting, volumetric_lighting_opacity);
 	path_tracing_ray_payload.albedo 				= surface_properties.albedo;
 	path_tracing_ray_payload.shading_normal 		= surface_properties.shading_normal;
 	path_tracing_ray_payload.hit_distance 			= gl_HitTNV;

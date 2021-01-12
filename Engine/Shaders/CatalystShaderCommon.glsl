@@ -267,6 +267,14 @@ uint Hash3(uvec3 seed)
 }
 
 /*
+*   Given a number, returns the inverse square of that number.
+*/
+ float InverseSquare(float number)
+{
+    return 1.0f - ((1.0f - number) * (1.0f - number));
+}
+
+/*
 *   Returns the length of a vector with two components squared.
 */
 float LengthSquared2(vec2 vector)

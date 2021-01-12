@@ -15,6 +15,19 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Path tracing push constant data definition.
+*/
+class PathTracingPushConstantData final
+{
+
+public:
+
+	//The number of samples.
+	uint32 _NumberOfSamples;
+
+};
+
+/*
 *	Initializes this ray tracing pipeline.
 */
 void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
@@ -51,6 +64,10 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	SetNumberOfMissShaders(2);
 	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingRayMissShader")));
 	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::RAY_GENERATION, 0, sizeof(PathTracingPushConstantData));
 }
 
 /*
@@ -81,6 +98,13 @@ void PathTracingRayTracingPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
+
+	//Push constants.
+	PathTracingPushConstantData data;
+
+	data._NumberOfSamples = 1;
+
+	command_buffer->PushConstants(this, ShaderStage::RAY_GENERATION, 0, sizeof(PathTracingPushConstantData), &data);
 
 	//Trace rays!
 	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(0)._Width, RenderingSystem::Instance->GetScaledResolution(0)._Height);
