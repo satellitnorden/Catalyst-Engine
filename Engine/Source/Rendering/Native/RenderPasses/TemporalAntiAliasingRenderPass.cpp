@@ -75,8 +75,8 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 	{
 		_NumberOfAccumulations = 0;
 
-		weight_override = 0.0f;
-		weight_override_weight = 0.0f;
+		weight_override = 0.8f;
+		weight_override_weight = 1.0f;
 	}
 
 	//Execute the current buffer, don't include the rest.
