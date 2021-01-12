@@ -42,14 +42,14 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 
 		case LightType::POINT:
 		{
-			light_component._Position = light_initialization_data->_Position;
+			light_component._WorldPosition = light_initialization_data->_WorldPosition;
 
 			break;
 		}
 	}
 
 	light_component._Color = light_initialization_data->_Color;
-	light_component._LightType = static_cast<uint32>(light_initialization_data->_LightType);
+	light_component._LightType = light_initialization_data->_LightType;
 	light_component._LightProperties = light_initialization_data->_LightProperties;
 	light_component._Intensity = light_initialization_data->_Intensity;
 	light_component._Radius = light_initialization_data->_Radius;
@@ -89,23 +89,23 @@ void LightEntity::SetDirection(const Vector3<float32>& direction) NOEXCEPT
 }
 
 /*
-*	Returns the position of this light.
+*	Returns the world position of this light.
 */
-Vector3<float32> LightEntity::GetPosition() const NOEXCEPT
+NO_DISCARD const WorldPosition &LightEntity::GetWorldPosition() const NOEXCEPT
 {
 	ASSERT(GetLightType() == LightType::POINT, "Position is only used for point lights!");
 
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position;
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._WorldPosition;
 }
 
 /*
-*	Sets the position of this light.
+*	Sets the world position of this light.
 */
-void LightEntity::SetPosition(const Vector3<float32> &position) NOEXCEPT
+void LightEntity::SetWorldPosition(const WorldPosition &world_position) NOEXCEPT
 {
 	ASSERT(GetLightType() == LightType::POINT, "Position is only used for point lights!");
 
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Position = position;
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._WorldPosition = world_position;
 }
 
 /*
@@ -129,7 +129,7 @@ void LightEntity::SetColor(const Vector3<float32> &color) NOEXCEPT
 */
 LightType LightEntity::GetLightType() const NOEXCEPT
 {
-	return static_cast<LightType>(ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType);
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType;
 }
 
 /*
@@ -137,7 +137,7 @@ LightType LightEntity::GetLightType() const NOEXCEPT
 */
 void LightEntity::SetLightType(const LightType type) NOEXCEPT
 {
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType = static_cast<uint32>(type);
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType = type;
 }
 
 /*

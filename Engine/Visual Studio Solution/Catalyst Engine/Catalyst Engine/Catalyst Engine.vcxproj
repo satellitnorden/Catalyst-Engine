@@ -345,6 +345,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\SamplerProperties.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystLighting.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h" />
@@ -625,6 +626,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\UserInterfaceRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\ShaderLightComponent.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Building\CatalystEngineResourceBuilding.cpp" />
@@ -657,6 +659,7 @@
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\World\Core\WorldPosition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Core\Algorithms\CatalystCompressionAlgorithm.inl" />

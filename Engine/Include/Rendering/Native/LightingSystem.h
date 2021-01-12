@@ -10,6 +10,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/ShaderLightComponent.h>
 
 class LightingSystem final
 {
@@ -55,6 +56,9 @@ private:
 
 	//The light data buffer sizes.
 	DynamicArray<uint64> _LightDataBufferSizes;
+
+	//The shader light components.
+	DynamicArray<ShaderLightComponent> _ShaderLightComponents;
 
 	/*
 	*	Creates the render data table layout.

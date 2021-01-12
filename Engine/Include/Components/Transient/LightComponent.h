@@ -12,6 +12,9 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class LightComponent final
 {
 
@@ -22,15 +25,15 @@ public:
 		//The direction. Used for directional lights.
 		Vector3<float32> _Direction;
 
-		//The position. Used for point lights.
-		Vector3<float32> _Position;
+		//The world position. Used for point lights.
+		WorldPosition _WorldPosition;
 	};
 
 	//The color.
 	Vector3<float32> _Color;
 
 	//The light type.
-	uint32 _LightType;
+	LightType _LightType;
 
 	//The light properties.
 	uint32 _LightProperties;
@@ -44,17 +47,14 @@ public:
 	//The size.
 	float32 _Size;
 
-	//Padding.
-	Padding<4> _Padding;
-
 	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE LightComponent() NOEXCEPT
 		:
-		_Position(VectorConstants::ZERO),
+		_WorldPosition(VectorConstants::ZERO),
 		_Color(VectorConstants::ZERO),
-		_LightType(static_cast<uint32>(LightType::POINT)),
+		_LightType(LightType::POINT),
 		_LightProperties(0),
 		_Intensity(0.0f),
 		_Radius(0.0f),
@@ -79,7 +79,14 @@ public:
 
 			case LightType::POINT:
 			{
-				_Position = other._Position;
+				_WorldPosition = other._WorldPosition;
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
 
 				break;
 			}
@@ -94,5 +101,3 @@ public:
 	}
 
 };
-
-static_assert(sizeof(LightComponent) == 48, "Light components must be exactly 48 bytes!");

@@ -91,9 +91,19 @@ void LightingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) N
 			current_light_data_buffer_size = number_of_lights;
 		}
 
+		//Update the shader light components.
+		_ShaderLightComponents.Clear();
+		
+		const LightComponent *RESTRICT light_component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_lights; ++i, ++light_component)
+		{
+			_ShaderLightComponents.Emplace(*light_component);
+		}
+
 		//Upload the light data to the buffer.
-		const void *const RESTRICT data_chunks[]{ ComponentManager::GetLightLightComponents() };
-		const uint64 data_sizes[]{ sizeof(LightComponent) * number_of_lights };
+		const void *const RESTRICT data_chunks[]{ _ShaderLightComponents.Data() };
+		const uint64 data_sizes[]{ sizeof(ShaderLightComponent) * number_of_lights };
 
 		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_light_data_buffer);
 

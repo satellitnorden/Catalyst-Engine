@@ -12,6 +12,9 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class LightEntity : public Entity
 {
 
@@ -63,14 +66,14 @@ public:
 	void SetDirection(const Vector3<float32>& direction) NOEXCEPT;
 
 	/*
-	*	Returns the position of this light.
+	*	Returns the world position of this light.
 	*/
-	Vector3<float32> GetPosition() const NOEXCEPT;
+	NO_DISCARD const WorldPosition &GetWorldPosition() const NOEXCEPT;
 
 	/*
-	*	Sets the position of this light.
+	*	Sets the world position of this light.
 	*/
-	void SetPosition(const Vector3<float32> &position) NOEXCEPT;
+	void SetWorldPosition(const WorldPosition &world_position) NOEXCEPT;
 
 	/*
 	*	Returns the color of this light.

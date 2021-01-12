@@ -2,9 +2,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
-//Entities.
-#include <Entities/Creation/EntityInitializationData.h>
+//Components.
+#include <Components/Transient/LightComponent.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -15,10 +16,7 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
-//World.
-#include <World/Core/WorldPosition.h>
-
-class LightInitializationData final : public EntityInitializationData
+class ShaderLightComponent final
 {
 
 public:
@@ -29,14 +27,14 @@ public:
 		Vector3<float32> _Direction;
 
 		//The world position. Used for point lights.
-		WorldPosition _WorldPosition;
+		Vector3<float32> _WorldPosition;
 	};
 
 	//The color.
 	Vector3<float32> _Color;
 
 	//The light type.
-	LightType _LightType;
+	uint32 _LightType;
 
 	//The light properties.
 	uint32 _LightProperties;
@@ -50,14 +48,17 @@ public:
 	//The size.
 	float32 _Size;
 
+	//Padding.
+	Padding<4> _Padding;
+
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE LightInitializationData() NOEXCEPT
+	FORCE_INLINE ShaderLightComponent() NOEXCEPT
 		:
 		_WorldPosition(VectorConstants::ZERO),
 		_Color(VectorConstants::ZERO),
-		_LightType(LightType::POINT),
+		_LightType(static_cast<uint32>(LightType::POINT)),
 		_LightProperties(0),
 		_Intensity(0.0f),
 		_Radius(0.0f),
@@ -66,4 +67,11 @@ public:
 
 	}
 
+	/*
+	*	Copy by LightComponent constructor.
+	*/
+	ShaderLightComponent(const LightComponent& light_component) NOEXCEPT;
+
 };
+
+static_assert(sizeof(ShaderLightComponent) == 48, "Light components must be exactly 48 bytes!");

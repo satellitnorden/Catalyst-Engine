@@ -10,7 +10,7 @@ namespace LightingConstants
 }
 
 //Enumeration covering all light types.
-enum class LightType : uint8
+enum class LightType : uint32
 {
 	DIRECTIONAL,
 	POINT

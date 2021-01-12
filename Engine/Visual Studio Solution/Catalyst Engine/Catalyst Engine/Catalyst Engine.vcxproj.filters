@@ -1686,6 +1686,9 @@
     <ClInclude Include="..\..\..\Include\Sound\MIDIDevice.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderLightComponent.h">
+      <Filter>Rendering\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2236,6 +2239,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Sound\SoundMixComponent.cpp">
       <Filter>Sound\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\Core\WorldPosition.cpp">
+      <Filter>World\Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\ShaderLightComponent.cpp">
+      <Filter>Rendering\Source\Native</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

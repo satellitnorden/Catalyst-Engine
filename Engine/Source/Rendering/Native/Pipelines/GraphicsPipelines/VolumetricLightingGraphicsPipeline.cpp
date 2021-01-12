@@ -113,7 +113,7 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
 	{
-		if (component->_LightType == static_cast<uint32>(LightType::DIRECTIONAL))
+		if (component->_LightType == LightType::DIRECTIONAL)
 		{
 			data._SkyLightLuminance = component->_Color * component->_Intensity;
 
