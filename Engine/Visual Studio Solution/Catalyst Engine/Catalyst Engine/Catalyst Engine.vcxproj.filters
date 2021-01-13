@@ -1128,9 +1128,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.h">
-      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\SaveSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
@@ -1689,6 +1686,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ShaderLightComponent.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracedIndirectLightingRayTracingPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2015,9 +2015,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingTemporalDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp">
-      <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\SaveSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -2245,6 +2242,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\ShaderLightComponent.cpp">
       <Filter>Rendering\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracedIndirectLightingRayTracingPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

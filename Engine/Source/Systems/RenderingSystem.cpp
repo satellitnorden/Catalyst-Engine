@@ -411,6 +411,7 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4)]);
+	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);

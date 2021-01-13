@@ -209,6 +209,11 @@ enum class RenderTarget : uint8
 	SCENE_FEATURES_4,
 
 	/*
+	*	Contains the albedo in the RGB channels and the material index in the A channel at half resolution.
+	*/
+	SCENE_FEATURES_1_HALF,
+
+	/*
 	*	Contains the shading normal in the RGB channels and the depth in the A channel at half resolution.
 	*/
 	SCENE_FEATURES_2_HALF,

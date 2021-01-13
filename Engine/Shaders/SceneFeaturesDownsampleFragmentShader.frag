@@ -5,9 +5,10 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Out parameters.
-layout (location = 0) out vec4 scene_features_2_half;
-layout (location = 1) out vec4 scene_features_3_half;
-layout (location = 2) out vec4 scene_features_4_half;
+layout (location = 0) out vec4 scene_features_1_half;
+layout (location = 1) out vec4 scene_features_2_half;
+layout (location = 2) out vec4 scene_features_3_half;
+layout (location = 3) out vec4 scene_features_4_half;
 
 void CatalystShaderMain()
 {
@@ -25,6 +26,7 @@ void CatalystShaderMain()
     	&& scene_features_2_sample_1.w > scene_features_2_sample_3.w
     	&& scene_features_2_sample_1.w > scene_features_2_sample_4.w)
     {
+        scene_features_1_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, -texel_offset.y));
     	scene_features_2_half = scene_features_2_sample_1;
         scene_features_3_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, -texel_offset.y));
         scene_features_4_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, -texel_offset.y));
@@ -33,6 +35,7 @@ void CatalystShaderMain()
     else if (	scene_features_2_sample_2.w > scene_features_2_sample_3.w
     			&& scene_features_2_sample_2.w > scene_features_2_sample_4.w)
     {
+        scene_features_1_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, texel_offset.y));
     	scene_features_2_half = scene_features_2_sample_2;
         scene_features_3_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, texel_offset.y));
         scene_features_4_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(-texel_offset.x, texel_offset.y));
@@ -40,6 +43,7 @@ void CatalystShaderMain()
 
     else if (scene_features_2_sample_3.w > scene_features_2_sample_4.w)
     {
+        scene_features_1_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, -texel_offset.y));
     	scene_features_2_half = scene_features_2_sample_3;
         scene_features_3_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, -texel_offset.y));
         scene_features_4_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, -texel_offset.y));
@@ -47,6 +51,7 @@ void CatalystShaderMain()
 
     else
     {
+        scene_features_1_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, texel_offset.y));
     	scene_features_2_half = scene_features_2_sample_4;
         scene_features_3_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, texel_offset.y));
         scene_features_4_half = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + vec2(texel_offset.x, texel_offset.y));

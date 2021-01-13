@@ -1901,9 +1901,51 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		{
 			ShaderBuildParameters parameters;
 
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedIndirectLightingRayGenerationShader";
+			parameters._ID = "RayTracedIndirectLightingRayGenerationShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedIndirectLightingRayGenerationShader.rgen";
+			parameters._Stage = ShaderStage::RAY_GENERATION;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedShadowsRayGenerationShader";
 			parameters._ID = "RayTracedShadowsRayGenerationShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedShadowsRayGenerationShader.rgen";
+			parameters._Stage = ShaderStage::RAY_GENERATION;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			ShaderBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedVolumetricLightingRayGenerationShader";
+			parameters._ID = "RayTracedVolumetricLightingRayGenerationShader";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedVolumetricLightingRayGenerationShader.rgen";
 			parameters._Stage = ShaderStage::RAY_GENERATION;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -2388,27 +2430,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._ID = "VolumetricLightingFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingFragmentShader.frag";
 			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingRayGenerationShader";
-			parameters._ID = "VolumetricLightingRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 		};

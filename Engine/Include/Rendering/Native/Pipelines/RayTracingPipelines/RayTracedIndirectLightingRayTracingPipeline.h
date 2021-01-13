@@ -5,9 +5,10 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
 
-class IndirectLightingRayTracingPipeline final : public RayTracingPipeline
+class RayTracedIndirectLightingRayTracingPipeline final : public RayTracingPipeline
 {
 
 public:
@@ -15,7 +16,7 @@ public:
 	/*
 	*	Initializes this ray tracing pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const RenderingConfiguration::IndirectLightingQuality quality) NOEXCEPT;
 
 	/*
 	*	Executes this ray tracing pipeline.
@@ -23,6 +24,9 @@ public:
 	void Execute() NOEXCEPT;
 
 private:
+
+	//The indirect lighting quality.
+	RenderingConfiguration::IndirectLightingQuality _IndirectLightingQuality;
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;

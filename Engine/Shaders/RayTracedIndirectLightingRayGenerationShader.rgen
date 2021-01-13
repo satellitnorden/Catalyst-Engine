@@ -1,0 +1,114 @@
+//Includes.
+#include "CatalystLightingData.glsl"
+#include "CatalystRayTracingCore.glsl"
+#include "CatalystRayTracingData.glsl"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
+
+//Constants.
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
+
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint NUMBER_OF_SAMPLES;
+};
+
+//Descriptor set data.
+layout (set = 3, binding = 0, rgba32f) 	uniform image2D 	indirect_lighting_image;
+layout (set = 3, binding = 1, rgba8) 	uniform image2D 	scene_features_1_image;
+layout (set = 3, binding = 2, rgba32f) 	uniform image2D 	scene_features_2_image;
+layout (set = 3, binding = 3, rgba8) 	uniform image2D 	scene_features_3_image;
+
+//In parameters.
+layout(location = 0) rayPayloadNV PathTracingRayPayload path_tracing_ray_payload;
+
+void CatalystShaderMain() 
+{
+	//Load the scene features.
+	vec4 scene_features_1 = imageLoad(scene_features_1_image, ivec2(gl_LaunchIDNV.xy));
+	vec4 scene_features_2 = imageLoad(scene_features_2_image, ivec2(gl_LaunchIDNV.xy));
+	vec4 scene_features_3 = imageLoad(scene_features_3_image, ivec2(gl_LaunchIDNV.xy));
+
+	vec3 albedo = scene_features_1.rgb;
+	vec3 shading_normal = scene_features_2.xyz;
+	float depth = scene_features_2.w;
+	float roughness = scene_features_3.x;
+	float metallic = scene_features_3.y;
+	float ambient_occlusion = scene_features_3.z;
+
+	//Calculate the diffuse weight.
+	float diffuse_weight = roughness * (1.0f - metallic);
+
+	//Calculate the screen coordinate.
+	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+
+	//Generate the view direction.
+	vec3 view_direction = CalculateRayDirection(screen_coordinate);
+
+	//Calculate the world position.
+	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+
+	//Accumulate the output data.
+	vec3 radiance = vec3(0.0f, 0.0f, 0.0f);
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		//Sample the noise texture.
+		path_tracing_ray_payload.random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
+
+		//Sample the random hemisphere sample.
+		vec3 random_hemisphere_direction;
+		float random_length;
+
+		SampleHammersleyHemisphereSample(uint(path_tracing_ray_payload.random_noise.w * 64.0f) + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y) + i, random_hemisphere_direction, random_length);
+
+		path_tracing_ray_payload.random_hemisphere_sample = vec4(random_hemisphere_direction, random_length);
+
+		//Calculate the indirect lighting direction.
+		vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
+
+		//Flip the direction, if needed.
+		indirect_lighting_direction = dot(indirect_lighting_direction, shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
+
+		//Calculate the reflection direction.
+		vec3 reflection_direction = reflect(view_direction, shading_normal);
+
+		//Blend the random hemisphere direction and the reflection direction based on the material properties.
+		indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, diffuse_weight));
+
+		//Reset the payload.
+		path_tracing_ray_payload.current_recursion_depth = UINT32_MAXIMUM; //Force the closest hit shaders to never fire any more rays.
+		path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
+
+		//Fire the ray!
+		traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE,			//topLevel
+				gl_RayFlagsOpaqueNV, 						//rayFlags
+				0xff, 										//cullMask
+				0, 											//sbtRecordOffset
+				0, 											//sbtRecordStride
+				0, 											//missIndex
+				world_position, 							//origin
+				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
+				indirect_lighting_direction, 				//direction
+				VIEW_DISTANCE, 								//Tmax
+				0 											//payload
+				);
+
+		radiance += CalculateLighting(	-view_direction,
+										albedo,
+										shading_normal,
+										roughness,
+										metallic,
+										ambient_occlusion,
+										1.0f,
+										-indirect_lighting_direction,
+										path_tracing_ray_payload.radiance);
+	}
+
+	//Normalize the output data.
+	radiance /= float(NUMBER_OF_SAMPLES);
+
+	//Write to the image.
+	imageStore(indirect_lighting_image, ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
+}

@@ -30,7 +30,7 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingRayGenerationShader")));
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedVolumetricLightingRayGenerationShader")));
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);

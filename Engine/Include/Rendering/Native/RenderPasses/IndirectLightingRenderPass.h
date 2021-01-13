@@ -9,7 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceIndirectLightingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/RayTracingPipelines/IndirectLightingRayTracingPipeline.h>
+#include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracedIndirectLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class IndirectLightingRenderPass final : public RenderPass
@@ -33,8 +33,8 @@ private:
 	//The screen space indirect lighting graphics pipelines.
 	StaticArray<ScreenSpaceIndirectLightingGraphicsPipeline, 2> _ScreenSpaceIndirectLightingGraphicsPipelines;
 
-	//The indirect lighting ray tracing pipeline.
-	IndirectLightingRayTracingPipeline _IndirectLightingRayTracingPipeline;
+	//The ray tracedindirect lighting ray tracing pipelines.
+	StaticArray<RayTracedIndirectLightingRayTracingPipeline, 2> _RayTracedIndirectLightingRayTracingPipelines;
 
 	//The indirect lighting spatial denoising graphics pipelines.
 	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, NUMBER_OF_SPATIAL_DENOISING_PASSES * 2 * 2> _IndirectLightingSpatialDenoisingGraphicsPipelines;

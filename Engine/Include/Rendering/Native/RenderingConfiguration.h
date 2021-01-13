@@ -27,7 +27,8 @@ public:
 	enum class IndirectLightingMode : uint8
 	{
 		NONE,
-		SCREEN_SPACE
+		SCREEN_SPACE,
+		RAY_TRACED
 	};
 
 	//Enumeration covering all indirect lighting qualities.

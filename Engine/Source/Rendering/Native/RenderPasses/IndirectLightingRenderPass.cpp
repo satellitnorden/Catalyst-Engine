@@ -34,14 +34,17 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(_ScreenSpaceIndirectLightingGraphicsPipelines.Size() + 1 + _IndirectLightingSpatialDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(_ScreenSpaceIndirectLightingGraphicsPipelines.Size() + _RayTracedIndirectLightingRayTracingPipelines.Size() + _IndirectLightingSpatialDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
 	for (ScreenSpaceIndirectLightingGraphicsPipeline &pipeline : _ScreenSpaceIndirectLightingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_IndirectLightingRayTracingPipeline);
+	for (RayTracedIndirectLightingRayTracingPipeline &pipeline : _RayTracedIndirectLightingRayTracingPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	for (IndirectLightingSpatialDenoisingGraphicsPipeline& pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
 	{
@@ -58,7 +61,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_ScreenSpaceIndirectLightingGraphicsPipelines[0].Initialize(RenderingConfiguration::IndirectLightingQuality::LOW);
 	_ScreenSpaceIndirectLightingGraphicsPipelines[1].Initialize(RenderingConfiguration::IndirectLightingQuality::HIGH);
-	_IndirectLightingRayTracingPipeline.Initialize();
+	_RayTracedIndirectLightingRayTracingPipelines[0].Initialize(RenderingConfiguration::IndirectLightingQuality::LOW);
+	_RayTracedIndirectLightingRayTracingPipelines[1].Initialize(RenderingConfiguration::IndirectLightingQuality::HIGH);
 
 	for (uint8 i{ 0 }; i < NUMBER_OF_SPATIAL_DENOISING_PASSES; ++i)
 	{
@@ -152,7 +156,10 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 			pipeline.SetIncludeInRender(false);
 		}
 
-		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
+		for (RayTracedIndirectLightingRayTracingPipeline &pipeline : _RayTracedIndirectLightingRayTracingPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
@@ -183,7 +190,44 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 			}
 		}
 
-		_IndirectLightingRayTracingPipeline.SetIncludeInRender(false);
+		for (RayTracedIndirectLightingRayTracingPipeline &pipeline : _RayTracedIndirectLightingRayTracingPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+	}
+
+	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
+	{
+		for (ScreenSpaceIndirectLightingGraphicsPipeline &pipeline : _ScreenSpaceIndirectLightingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+
+		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
+		{
+			case RenderingConfiguration::IndirectLightingQuality::LOW:
+			{
+				_RayTracedIndirectLightingRayTracingPipelines[0].Execute();
+				_RayTracedIndirectLightingRayTracingPipelines[1].SetIncludeInRender(false);
+
+				break;
+			}
+
+			case RenderingConfiguration::IndirectLightingQuality::HIGH:
+			{
+				_RayTracedIndirectLightingRayTracingPipelines[0].SetIncludeInRender(false);
+				_RayTracedIndirectLightingRayTracingPipelines[1].Execute();
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	if (!RenderingSystem::Instance->IsTakingScreenshot()
