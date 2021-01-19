@@ -1105,7 +1105,8 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
 			parameters._ID = "DynamicModelRayClosestHitShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DynamicModelRayClosestHitShader.rchit";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
+			parameters._Defines.Emplace("DYNAMIC_MODELS");
 			parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -1233,27 +1234,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._ID = "IndirectLightingApplicationFragmentShader";
 			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingApplicationFragmentShader.frag";
 			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingRayGenerationShader";
-			parameters._ID = "IndirectLightingRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 		};
@@ -2134,7 +2114,8 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\StaticModelRayClosestHitShader";
 			parameters._ID = "StaticModelRayClosestHitShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\StaticModelRayClosestHitShader.rchit";
+			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
+			parameters._Defines.Emplace("STATIC_MODELS");
 			parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

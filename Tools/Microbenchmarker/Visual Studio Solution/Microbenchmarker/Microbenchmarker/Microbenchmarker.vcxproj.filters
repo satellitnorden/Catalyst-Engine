@@ -77,9 +77,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\StaticModelEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\VegetationEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\PhysicallyBasedLighting.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -95,7 +92,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystPlatformWindows.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\WindowsInputSystem.cpp">
@@ -287,6 +284,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedOpaqueModelShadowsGraphicsPipeline.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\MaskedModelColorSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -353,25 +353,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\TerrainShadowMapGraphicsPipeline.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\ToneMappingGraphicsPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationColorSceneFeaturesGraphicsPipeline.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationDepthSceneFeaturesGraphicsPipeline.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorColorSceneFeaturesGraphicsPipeline.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationImpostorDepthSceneFeaturesGraphicsPipeline.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VegetationSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\GraphicsPipelines\VelocityGraphicsPipeline.cpp">
@@ -392,10 +380,10 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\IndirectLightingRayTracingPipeline.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\PathTracingRayTracingPipeline.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracedIndirectLightingRayTracingPipeline.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\Pipelines\RayTracingPipelines\RayTracingPipeline.cpp">
@@ -482,6 +470,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\RenderPasses\VolumetricLightingRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Native\ShaderLightComponent.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanCommandBuffer.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -503,6 +494,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\Loading\ResourceLoadingSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Sound\SoundMixComponent.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\AnimationSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -516,9 +510,6 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\DistributionSystem.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityPlacementSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntitySystem.cpp">
@@ -537,6 +528,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\PhysicsSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\PlacementSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\ProfilingSystem.cpp">
@@ -584,13 +578,34 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\imgui_widgets.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\midifile\Binasc.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\midifile\MidiEvent.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\midifile\MidiEventList.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\midifile\MidiFile.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\midifile\MidiMessage.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\StbImageImplementation.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\UserInterface\UserInterfaceScene.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\World\Core\SkySystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\World\Core\TimeOfDaySystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\World\Core\WorldPosition.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

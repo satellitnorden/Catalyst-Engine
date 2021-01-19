@@ -4,9 +4,6 @@
 #include "CatalystRayTracingData.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
-
 //In parameters.
 layout(location = 0) rayPayloadInNV PathTracingRayPayload path_tracing_ray_payload;
 layout(location = 1) rayPayloadNV float visibility;
@@ -55,7 +52,7 @@ void CatalystShaderMain()
 							1 																							//payload
 							);
 
-					volumetric_lighting += light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * visibility;
+					volumetric_lighting += light.color * light.intensity * VOLUMETRIC_LIGHTING_BASE_COLOR * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * visibility;
 
 					break;
 				}
@@ -71,7 +68,7 @@ void CatalystShaderMain()
 		volumetric_lighting += CalculateVolumetricAmbientLighting();
 
 		//Calculate the volumetric lighting opacity.
-		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, gl_WorldRayOriginNV.y);
 	}
 
 	//Write to the ray payload.

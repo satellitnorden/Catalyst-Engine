@@ -40,20 +40,20 @@ void CatalystShaderMain()
 	//Calculate the screen coordinate.
 	vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
 
-	//Generate the ray direction.
-	vec3 ray_direction = CalculateRayDirection(screen_coordinate);
-
 	//Accumulate the output data.
 	vec3 radiance = vec3(0.0f, 0.0f, 0.0f);
 	vec3 albedo = vec3(0.0f, 0.0f, 0.0f);
 	vec3 shading_normal = vec3(0.0f, 1.0f, 0.0f);
-	float hit_distance = 0.0f;
+	vec3 hit_position = vec3(0.0f);
 	vec4 material_properties = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		//Sample the noise texture.
 		path_tracing_ray_payload.random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
+
+		//Generate the ray direction.
+		vec3 ray_direction = CalculateRayDirection(screen_coordinate + vec2(path_tracing_ray_payload.random_noise.xy * 2.0f - 1.0f) * INVERSE_SCALED_RESOLUTION * 0.5f);
 
 		//Sample the random hemisphere sample.
 		vec3 random_hemisphere_direction;
@@ -85,7 +85,7 @@ void CatalystShaderMain()
 		radiance += path_tracing_ray_payload.radiance;
 		albedo += path_tracing_ray_payload.albedo;
 		shading_normal += path_tracing_ray_payload.shading_normal;
-		hit_distance += path_tracing_ray_payload.hit_distance;
+		hit_position += PERCEIVER_WORLD_POSITION + ray_direction * path_tracing_ray_payload.hit_distance;
 		material_properties += path_tracing_ray_payload.material_properties;
 	}
 
@@ -93,11 +93,10 @@ void CatalystShaderMain()
 	radiance /= float(NUMBER_OF_SAMPLES);
 	albedo /= float(NUMBER_OF_SAMPLES);
 	shading_normal /= float(NUMBER_OF_SAMPLES);
-	hit_distance /= float(NUMBER_OF_SAMPLES);
+	hit_position /= float(NUMBER_OF_SAMPLES);
 	material_properties /= float(NUMBER_OF_SAMPLES);
 
 	//Calculate the velocity.
-	vec3 hit_position = PERCEIVER_WORLD_POSITION + ray_direction * hit_distance;
 	vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, hit_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, hit_position);
 
 	//Calculate the depth.

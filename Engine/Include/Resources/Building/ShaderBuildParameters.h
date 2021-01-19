@@ -20,6 +20,9 @@ public:
 	//The file path.
 	const char *RESTRICT _FilePath{ nullptr };
 
+	//The defines.
+	DynamicArray<const char *const RESTRICT> _Defines;
+
 	//The shader stage.
 	ShaderStage _Stage;
 

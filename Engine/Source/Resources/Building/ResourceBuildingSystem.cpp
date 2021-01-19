@@ -549,6 +549,9 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 */
 void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT
 {
+	//Keeps track of the number of temporary shader files created, to avoid naming collisions.
+	static uint64 TEMPORARY_SHADER_FILE_COUNTER{ 0 };
+
 	//Determine the compiled file path.
 	DynamicString compiled_file_path{ parameters._ID };
 	compiled_file_path += ".compiled";
@@ -574,6 +577,12 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 			file_string.assign(	(std::istreambuf_iterator<char>(file)),
 								std::istreambuf_iterator<char>());
 
+			//Add the defines.
+			for (const char* const RESTRICT define : parameters._Defines)
+			{
+				file_string = std::string("#define ") + define + std::string("\n") + file_string;
+			}
+
 			//Add the header data.
 			{
 				file_string = "#version 460 \n#extension GL_GOOGLE_include_directive : enable \n#include \"CatalystShaderCommon.glsl\" \n" + file_string;
@@ -591,6 +600,12 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 			//Determine the temporary shader file path.
 			temporary_shader_file_path = parameters._FilePath;
+
+			char buffer[32];
+			sprintf_s(buffer, "%llu", TEMPORARY_SHADER_FILE_COUNTER++);
+
+			temporary_shader_file_path += buffer;
+
 			temporary_shader_file_path += ".glsl";
 
 			//Write the compiler-ready version to a new temporary file.

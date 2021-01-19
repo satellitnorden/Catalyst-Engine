@@ -8,9 +8,6 @@
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
-
 /*
 *	Surface properties struct definition.
 */
@@ -32,9 +29,15 @@ hitAttributeNV vec3 hit_attribute;
 SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 {
 	//Unpack the vertices making up the triangle.
+#if defined(STATIC_MODELS)
 	Vertex vertex_1 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3]);
 	Vertex vertex_2 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 1]);
 	Vertex vertex_3 = UnpackStaticModelVertex(gl_InstanceCustomIndexNV, STATIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].STATIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 2]);
+#elif defined(DYNAMIC_MODELS)
+	Vertex vertex_1 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3]);
+	Vertex vertex_2 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 1]);
+	Vertex vertex_3 = UnpackDynamicModelVertex(gl_InstanceCustomIndexNV, DYNAMIC_MODEL_INDEX_BUFFERS[gl_InstanceCustomIndexNV].DYNAMIC_MODEL_INDEX_DATA[gl_PrimitiveID * 3 + 2]);
+	#endif
 
 	//Calculate the final vertex using the barycentric coordinates.
 	vec3 barycentric_coordinates = vec3(1.0f - hit_attribute.x - hit_attribute.y, hit_attribute.x, hit_attribute.y);
@@ -52,7 +55,11 @@ SurfaceProperties CalculateStaticModelSurfaceProperties(vec3 hit_position)
 	final_vertex.tangent = normalize(gl_ObjectToWorldNV * vec4(final_vertex.tangent, 0.0f));
 
 	//Retrieve the material.
+#if defined(STATIC_MODELS)
 	Material material = GLOBAL_MATERIALS[UnpackStaticModelMaterialindex(gl_InstanceCustomIndexNV)];
+#elif defined(DYNAMIC_MODELS)
+	Material material = GLOBAL_MATERIALS[UnpackDynamicModelMaterialindex(gl_InstanceCustomIndexNV)];
+#endif
 
 	//Evaluate the material.
 	vec4 albedo_thickness;
@@ -355,7 +362,7 @@ void CatalystShaderMain()
 							1 																							//payload
 							);
 
-					volumetric_lighting += light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * visibility;
+					volumetric_lighting += light.color * light.intensity * VOLUMETRIC_LIGHTING_BASE_COLOR * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * visibility;
 
 					break;
 				}

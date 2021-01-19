@@ -11,7 +11,7 @@
 //STD.
 #include <unordered_map>
 
-#define ELEMENTS (100)
+#define ELEMENTS (64)
 
 HashTable<uint64, uint64> first_hash_table;
 std::unordered_map<uint64, uint64> second_hash_table;
@@ -20,30 +20,30 @@ void FillHashTables() NOEXCEPT
 {
 	for (uint64 i{ 0 }; i < ELEMENTS; ++i)
 	{
-		first_hash_table.Add(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM), CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM));
+		
 	}
 
 	for (uint64 i{ 0 }; i < ELEMENTS; ++i)
 	{
-		second_hash_table.emplace(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM), CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM));
+		
 	}
 }
 
 void Function1() NOEXCEPT
 {
-	volatile uint64* find{ first_hash_table.Find(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM)) };
+	first_hash_table.Add(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM), CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM));
 }
 
 void Function2() NOEXCEPT
 {
-	volatile auto find{ second_hash_table.find(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM)) };
+	second_hash_table.emplace(CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM), CatalystRandomMath::RandomIntegerInRange<uint64>(0, UINT64_MAXIMUM));
 }
 
 int main() NOEXCEPT
 {
 	FillHashTables();
 
-	Microbenchmarker::StartBenchmark(1'000'000'000, Function1, Function2);
+	Microbenchmarker::StartBenchmark(100'000'000, Function1, Function2);
 
 	return EXIT_SUCCESS;
 }
