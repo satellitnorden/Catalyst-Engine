@@ -211,11 +211,35 @@ public:
 	}
 
 	/*
+	*	Returns the back of this dynamic array, const.
+	*/
+	FORCE_INLINE const TYPE &Back() const NOEXCEPT
+	{
+		return _Array[LastIndex()];
+	}
+
+	/*
+	*	Returns the back of this dynamic array, non-const.
+	*/
+	FORCE_INLINE TYPE &Back() NOEXCEPT
+	{
+		return _Array[LastIndex()];
+	}
+
+	/*
 	*	Returns if the array is empty or not.
 	*/
 	FORCE_INLINE NO_DISCARD constexpr bool Empty() const NOEXCEPT
 	{
 		return _Size == 0;
+	}
+
+	/*
+	*	Returns the last index if this dynamic array.
+	*/
+	FORCE_INLINE uint64 LastIndex() const NOEXCEPT
+	{
+		return _Size - 1;
 	}
 
 	/*

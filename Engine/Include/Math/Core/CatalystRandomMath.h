@@ -17,8 +17,7 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD float32 RandomFloat() NOEXCEPT
 	{
-		static thread_local std::random_device random_device;
-		static thread_local std::mt19937 random_engine{ random_device() };
+		static thread_local std::mt19937 random_engine{ std::random_device{}() };
 		static thread_local std::uniform_real_distribution<float32> distribution{ 0.0f, 1.0f };
 
 		return distribution(random_engine);
@@ -30,8 +29,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static NO_DISCARD TYPE RandomFloatInRange(const TYPE minimum, const TYPE maximum) NOEXCEPT
 	{
-		static thread_local std::random_device random_device;
-		static thread_local std::mt19937 random_engine{ random_device() };
+		static thread_local std::mt19937 random_engine{ std::random_device{}() };
 
 		std::uniform_real_distribution<TYPE> distribution{ minimum, maximum };
 
@@ -44,8 +42,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static NO_DISCARD TYPE RandomIntegerInRange(const TYPE minimum, const TYPE maximum) NOEXCEPT
 	{
-		static thread_local std::random_device random_device;
-		static thread_local std::mt19937 random_engine{ random_device() };
+		static thread_local std::mt19937 random_engine{ std::random_device{}() };
 
 		std::uniform_int_distribution<TYPE> distribution{ minimum, maximum };
 
@@ -112,6 +109,45 @@ public:
 
 			Swap(&array->At(first_index), &array->At(second_index));
 		}
+	}
+
+	/*
+	*	Returns a random element in the given array based on the given weights.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE& WeightedRandomElement(const ArrayProxy<TYPE> &elements, const ArrayProxy<float32> &weights) NOEXCEPT
+	{
+		ASSERT(elements.Size() == weights.Size(), "Both elements and weights needs to be of the same size!");
+
+		//Calculate the sum.
+		float32 sum{ 0.0f };
+
+		for (const float32 weight : weights)
+		{
+			sum += weight;
+		}
+
+		//Randomize the value.
+		float32 random_value{ RandomFloatInRange(0.0f, sum) };
+
+		//Calculate the random element.
+		for (uint64 i{ 0 }, size{ elements.Size() }; i < size; ++i)
+		{
+			if (random_value < weights[i])
+			{
+				return elements[i];
+			}
+
+			else
+			{
+				random_value -= weights[i];
+			}
+		}
+
+		ASSERT(false, "Oh no!");
+
+		//Should never get here, but might due to floating point rounding error. If so, the last element is most likely the correct one.
+		return elements.Back();
 	}
 
 };
