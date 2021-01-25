@@ -17,6 +17,7 @@ namespace File
 		CRC,
 		FBX,
 		JPG,
+		MID,
 		PNG,
 		TGA,
 		WAV,
@@ -98,6 +99,11 @@ namespace File
 		if (strcmp(dot_position, ".jpg") == 0)
 		{
 			return Extension::JPG;
+		}
+
+		if (strcmp(dot_position, ".mid") == 0)
+		{
+			return Extension::MID;
 		}
 
 		if (strcmp(dot_position, ".png") == 0)
