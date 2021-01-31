@@ -37,7 +37,7 @@ public:
 	/*
 	*	Given a number, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArcCosine(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 ArcCosine(const float32 number) NOEXCEPT
 	{
 		return acosf(number);
 	}
@@ -45,7 +45,7 @@ public:
 	/*
 	*	Given a number, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float ArcSine(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 ArcSine(const float32 number) NOEXCEPT
 	{
 		return asinf(number);
 	}
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Given a number, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float Arctangent(const float number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 Arctangent(const float32 number) NOEXCEPT
 	{
 		return atanf(number);
 	}
@@ -61,7 +61,7 @@ public:
 	/*
 	*	Given two numbers, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float Arctangent(const float number1, const float number2) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 Arctangent(const float32 number1, const float32 number2) NOEXCEPT
 	{
 		return atan2f(number1, number2);
 	}
@@ -70,7 +70,7 @@ public:
 	*	Given a value in the range [0.0f, 1.0f] and a bias in the range [0.0f, 1.0f],
 	*	biases the value either towards 0.0f if bias is < 0.5f or towards 1.0f if bias is >= 0.5f.
 	*/
-	FORCE_INLINE static NO_DISCARD float Bias(const float value, const float bias) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 Bias(const float32 value, const float32 bias) NOEXCEPT
 	{
 		return bias >= 0.5f ? LinearlyInterpolate(value, InverseSquare(value), (bias - 0.5f) * 2.0f) : LinearlyInterpolate(value, Square(value), bias * 2.0f);
 	}
@@ -79,7 +79,7 @@ public:
 	*	Rounds a number up to the nearest integer.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Ceiling(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Ceiling(const float32 number) NOEXCEPT
 	{
 		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number + 1.0f)) : static_cast<TYPE>(static_cast<int32>(number));
 	}
@@ -96,7 +96,7 @@ public:
 	/*
 	*	Given an angle, returns the cosecant of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Cosecant(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Cosecant(const float32 angle) NOEXCEPT
 	{
 		return 1.0f / Sine(angle);
 	}
@@ -104,9 +104,9 @@ public:
 	/*
 	*	Given an angle, returns the cosine of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Cosine(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Cosine(const float32 angle) NOEXCEPT
 	{
-		const float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
+		const float32 temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
 
 		return	1.0f
 				- PowerOf(temporary, 2) * InverseFactorial(2)
@@ -122,7 +122,7 @@ public:
 	/*
 	*	Given an angle, returns the cotangent of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Cotangent(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Cotangent(const float32 angle) NOEXCEPT
 	{
 		return Cosine(angle) / Sine(angle);
 	}
@@ -130,7 +130,7 @@ public:
 	/*
 	*	Given a number in degrees, return it in radians.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float DegreesToRadians(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 DegreesToRadians(const float32 number) NOEXCEPT
 	{
 		return number * CatalystBaseMathConstants::DEGREES_TO_RADIANS;
 	}
@@ -138,7 +138,7 @@ public:
 	/*
 	*	Generates the exponential of a number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Exponential(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Exponential(const float32 number) NOEXCEPT
 	{
 		return	1.0f
 				+ number
@@ -163,31 +163,31 @@ public:
 	*	Rounds a number down to the nearest integer.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Floor(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Floor(const float32 number) NOEXCEPT
 	{
 		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number)) : static_cast<TYPE>(static_cast<int32>(number - 1.0f));
 	}
 
 	/*
-	*	Given a float, return the fractional part of that float.
+	*	Given a float32, return the fractional part of that float32.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Fractional(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Fractional(const float32 number) NOEXCEPT
 	{
-		return number - static_cast<float>(static_cast<int32>(number));
+		return number - static_cast<float32>(static_cast<int32>(number));
 	}
 
 	/*
 	*	Given an integral number, return the inverse factorial of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float InverseFactorial(const uint8 number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 InverseFactorial(const uint8 number) NOEXCEPT
 	{
-		return 1.0f / static_cast<float>(Factorial(number));
+		return 1.0f / static_cast<float32>(Factorial(number));
 	}
 
 	/*
 	*	Given a number, returns the inverse square of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float InverseSquare(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 InverseSquare(const float32 number) NOEXCEPT
 	{
 		return 1.0f - Square(1.0f - number);
 	}
@@ -213,7 +213,7 @@ public:
 	/*
 	*	Returns whether or not a floating point number is NaN (not a number).
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool IsNaN(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool IsNaN(const float32 number) NOEXCEPT
 	{
 		return !(number == number);
 	}
@@ -222,7 +222,7 @@ public:
 	*	Returns whether or not an integer is odd or not.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE IsOdd(const TYPE number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool IsOdd(const TYPE number) NOEXCEPT
 	{
 		return (number & static_cast<TYPE>(1)) == 1;
 	}
@@ -237,10 +237,10 @@ public:
 	}
 
 	/*
-	*	Linearly interpolate between two float values.
+	*	Linearly interpolate between two values.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE LinearlyInterpolate(const TYPE A, const TYPE B, const float alpha) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD TYPE LinearlyInterpolate(const TYPE A, const TYPE B, const float32 alpha) NOEXCEPT
 	{
 		return (A * (1.0f - alpha)) + (B * alpha);
 	}
@@ -276,14 +276,14 @@ public:
 	*	Given a number and an exponent, returns the power of the exponent.
 	*	 Builds on the assumption that the exponent will always be non-zero.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float PowerOf(const float number, const uint8 exponent) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 PowerOf(const float32 number, const uint8 exponent) NOEXCEPT
 	{
 		if (UNLIKELY(exponent == 0))
 		{
 			return 1.0f;
 		}
 
-		const float temporary{ PowerOf(number, exponent >> 1) };
+		const float32 temporary{ PowerOf(number, exponent >> 1) };
 
 		if (IsEven(exponent))
 		{
@@ -299,16 +299,16 @@ public:
 	/*
 	*	Given a number in radians, return it in degrees.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float RadiansToDegrees(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 RadiansToDegrees(const float32 number) NOEXCEPT
 	{
 		return number * CatalystBaseMathConstants::RADIANS_TO_DEGREES;
 	}
 
 	/*
-	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
+	*	Rounds a float32 to the nearest integral value, with halfway cases rounded away from zero.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Round(const float value) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Round(const float32 value) NOEXCEPT
 	{
 		return value >= 0.0f ? static_cast<TYPE>(static_cast<int32>(value + 0.5f)) : static_cast<TYPE>(static_cast<int32>(value - 0.5f));
 	}
@@ -343,7 +343,7 @@ public:
 	/*
 	*	Scales a value from one range to another.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Scale(const float value, const float originalMinimum, const float originalMaximum, const float newMinimum, const float newMaximum) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Scale(const float32 value, const float32 originalMinimum, const float32 originalMaximum, const float32 newMinimum, const float32 newMaximum) NOEXCEPT
 	{
 		return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
 	}
@@ -351,7 +351,7 @@ public:
 	/*
 	*	Given an angle, returns the secant of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Secant(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Secant(const float32 angle) NOEXCEPT
 	{
 		return 1.0f / Cosine(angle);
 	}
@@ -359,30 +359,16 @@ public:
 	/*
 	*	Given a number, returns the signum of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Signum(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Signum(const float32 number) NOEXCEPT
 	{
-		return static_cast<float>((number > 0.0f) - (number < 0.0f));
+		return static_cast<float32>((number > 0.0f) - (number < 0.0f));
 	}
 
 	/*
 	*	Given an angle, returns the sine of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Sine(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Sine(const float32 angle) NOEXCEPT
 	{
-		/*
-		float temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
-
-		return	temporary
-				- PowerOf(temporary, 3) * InverseFactorial(3)
-				+ PowerOf(temporary, 5) * InverseFactorial(5)
-				- PowerOf(temporary, 7) * InverseFactorial(7)
-				+ PowerOf(temporary, 9) * InverseFactorial(9)
-				- PowerOf(temporary, 11) * InverseFactorial(11)
-				+ PowerOf(temporary, 13) * InverseFactorial(13)
-				- PowerOf(temporary, 15) * InverseFactorial(15)
-				+ PowerOf(temporary, 17) * InverseFactorial(17);
-		*/
-
 		/*
 		*	Due to the implementation of Sine/Cosine (using Taylor Series), it's slightly cheaper
 		*	to redirect Sine to Cosine since it uses slighlty lower exponents for PowerOf().
@@ -394,9 +380,9 @@ public:
 	*	Given a number and a number of derivaties, generate a smooth number.
 	*/
 	template <uint64 Derivatives>
-	FORCE_INLINE constexpr static NO_DISCARD float SmoothStep(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 SmoothStep(const float32 number) NOEXCEPT
 	{
-		float smoothedNumber = number;
+		float32 smoothedNumber = number;
 
 		for (uint64 i = 0; i < Derivatives; ++i)
 		{
@@ -409,7 +395,7 @@ public:
 	/*
 	*	Given a number, returns the square of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Square(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Square(const float32 number) NOEXCEPT
 	{
 		return number * number;
 	}
@@ -417,7 +403,7 @@ public:
 	/*
 	*	Given a number, returns the square root.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float SquareRoot(float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 SquareRoot(float32 number) NOEXCEPT
 	{
 		if (number == 0.0f)
 		{
@@ -434,8 +420,8 @@ public:
 			number *= 2.0f;
 		}
 
-		float approximation{ (1.0f + number) * 0.5f };
-		float target{ 0.0f };
+		float32 approximation{ (1.0f + number) * 0.5f };
+		float32 target{ 0.0f };
 
 		while (approximation != target)
 		{
@@ -449,7 +435,7 @@ public:
 	/*
 	*	Given an angle, return the tangent of the angle.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Tangent(const float angle) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 Tangent(const float32 angle) NOEXCEPT
 	{
 		return Sine(angle) / Cosine(angle);
 	}
@@ -457,10 +443,10 @@ public:
 	/*
 	*	Wraps a number around the given range.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float WrapAround(const float number, const float minimumRange, const float maximumRange) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float32 WrapAround(const float32 number, const float32 minimumRange, const float32 maximumRange) NOEXCEPT
 	{
-		float temporary{ number };
-		const float whole_range{ maximumRange - minimumRange };
+		float32 temporary{ number };
+		const float32 whole_range{ maximumRange - minimumRange };
 
 		while (temporary < minimumRange)
 		{
