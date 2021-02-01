@@ -31,6 +31,7 @@ namespace ResourceConstants
 	constexpr HashString LEVEL_TYPE_IDENTIFIER{ "Level" };
 	constexpr HashString MATERIAL_TYPE_IDENTIFIER{ "Material" };
 	constexpr HashString MODEL_TYPE_IDENTIFIER{ "Model" };
+	constexpr HashString RAW_DATA_TYPE_IDENTIFIER{ "RawData" };
 	constexpr HashString SHADER_TYPE_IDENTIFIER{ "Shader" };
 	constexpr HashString SOUND_TYPE_IDENTIFIER{ "Sound" };
 	constexpr HashString TEXTURE_CUBE_TYPE_IDENTIFIER{ "TextureCube" };

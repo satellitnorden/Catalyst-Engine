@@ -545,6 +545,33 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 }
 
 /*
+*	Builds a raw data.
+*/
+void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &parameters) NOEXCEPT
+{
+	//What should the output file path name be?
+	DynamicString output_file_path_name{ parameters._Output };
+	output_file_path_name += ".cr";
+
+	//Open the output file to be written to.
+	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::RAW_DATA_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
+	output_file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the data size.
+	const uint64 data_size{ sizeof(byte) * parameters._Data->Size() };
+	output_file.Write(&data_size, sizeof(uint64));
+
+	//Write the data.
+	output_file.Write(parameters._Data->Data(), data_size);
+
+	//Close the output file.
+	output_file.Close();
+}
+
+/*
 *	Builds a shader.
 */
 void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT

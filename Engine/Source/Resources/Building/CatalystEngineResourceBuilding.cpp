@@ -37,6 +37,7 @@
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
+#define BUILD_ENGINE_MISCELLANEOUS (0)
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION (0)
 
@@ -2551,6 +2552,56 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_MISCELLANEOUS
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Gather the data.
+			DynamicArray<byte> data;
+
+			std::ifstream lookup_file{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Miscellaneous\\PI Decimal Lookup.txt" };
+
+			if (lookup_file.is_open())
+			{
+				char next_byte;
+
+				while (!lookup_file.eof())
+				{
+					lookup_file.read(&next_byte, sizeof(char));
+
+					if (next_byte != ' ')
+					{
+						data.Emplace(static_cast<byte>(next_byte - '0'));
+					}
+				}
+
+				lookup_file.close();
+			}
+
+			else
+			{
+				ASSERT(false, "Couldn't open PI decimal lookup file!");
+			}
+
+			//Build the raw data.
+			RawDataBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PI_Decimal_Lookup";
+			parameters._ResourceIdentifier = "PI_Decimal_Lookup";
+			parameters._Data = &data;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRawData(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+#endif
+
 	//Wait for all tasks to finish.
 	TaskSystem::Instance->WaitForAllTasksToFinish();
 
@@ -2560,7 +2611,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters parameters;
 

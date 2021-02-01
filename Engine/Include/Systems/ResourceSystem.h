@@ -12,6 +12,7 @@
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
+#include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
@@ -230,6 +231,24 @@ public:
 	NO_DISCARD ResourcePointer<ModelResource> FindOrCreateModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns the raw data resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		RawDataResource *const RESTRICT *const RESTRICT resource{ _RawDataResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<RawDataResource>(*resource);
+	}
+
+	/*
+	*	Returns or creates the raw data resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<RawDataResource> FindOrCreateRawDataResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns all model resources.
 	*/
 	FORCE_INLINE NO_DISCARD const HashTable<HashString, ModelResource *RESTRICT> &GetAllModelResources() const NOEXCEPT
@@ -397,6 +416,9 @@ private:
 
 	//Container for all model resources.
 	HashTable<HashString, ModelResource *RESTRICT> _ModelResources;
+
+	//Container for all raw data resources.
+	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;
 
 	//Container for all shader resources.
 	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;

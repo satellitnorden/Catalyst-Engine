@@ -136,6 +136,7 @@
     <ClInclude Include="..\..\..\Include\File\Core\FileCore.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\FBXReader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\JPGReader.h" />
+    <ClInclude Include="..\..\..\Include\File\Readers\MP4Reader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\PNGReader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h" />
     <ClInclude Include="..\..\..\Include\File\Types\ModelFile.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Interpolator.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\PIDecimalGenerator.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Quaternion.h" />
     <ClInclude Include="..\..\..\Include\Math\General\RandomIndexer.h" />
     <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h" />
@@ -375,6 +377,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\LevelBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\MaterialBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ModelBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\RawDataBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceBuildingSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ResourceCollectionBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\ShaderBuildParameters.h" />
@@ -388,6 +391,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\LevelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\MaterialResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ModelResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\RawDataResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Resource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourceHeader.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\ResourcePointer.h" />
@@ -397,6 +401,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture2DResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\Texture3DResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\TextureCubeResource.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Core\VideoResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Creation\ResourceCreationSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimatedModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\AnimationData.h" />
@@ -404,6 +409,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\LevelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\MaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ModelData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Loading\RawDataData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ResourceLoadingSystem.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\ShaderData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\SoundData.h" />

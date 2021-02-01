@@ -1689,6 +1689,24 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\RayTracedIndirectLightingRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Readers\MP4Reader.h">
+      <Filter>File\Include\Readers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\VideoResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\PIDecimalGenerator.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Core\RawDataResource.h">
+      <Filter>Resources\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\RawDataBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\RawDataData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

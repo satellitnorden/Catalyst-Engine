@@ -186,6 +186,23 @@ void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> *const RESTRICT fil
 }
 
 /*
+*	Given a file, load raw data data.
+*/
+void ResourceLoadingSystem::LoadRawData(BinaryFile<IOMode::In> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT
+{
+	//Read the data size.
+	uint64 data_size;
+	file->Read(&data_size, sizeof(uint64));
+
+	//Reserve the appropriate amount of memory.
+	data->_Data.Upsize<false>(data_size);
+
+	//Read the data.
+	file->Read(data->_Data.Data(), data_size);
+
+}
+
+/*
 *	Given a file, load shader data.
 */
 void ResourceLoadingSystem::LoadShader(BinaryFile<IOMode::In> *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT

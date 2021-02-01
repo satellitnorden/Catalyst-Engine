@@ -250,6 +250,15 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelRe
 }
 
 /*
+*	Creates a raw data.
+*/
+void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT
+{
+	//Move the data.
+	resource->_Data = std::move(data->_Data);
+}
+
+/*
 *	Creates a shader.
 */
 void ResourceCreationSystem::CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT

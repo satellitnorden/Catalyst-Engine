@@ -11,6 +11,7 @@
 #include <Resources/Building/LevelBuildParameters.h>
 #include <Resources/Building/MaterialBuildParameters.h>
 #include <Resources/Building/ModelBuildParameters.h>
+#include <Resources/Building/RawDataBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
@@ -57,6 +58,11 @@ public:
 	*	Builds a model.
 	*/
 	void BuildModel(const ModelBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a raw data.
+	*/
+	void BuildRawData(const RawDataBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a shader.
