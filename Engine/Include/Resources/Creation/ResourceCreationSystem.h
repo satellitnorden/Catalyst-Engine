@@ -19,6 +19,7 @@
 #include <Resources/Core/Texture2DResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
+#include <Resources/Core/VideoResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
@@ -31,6 +32,7 @@
 #include <Resources/Loading/Texture2DData.h>
 #include <Resources/Loading/Texture3DData.h>
 #include <Resources/Loading/TextureCubeData.h>
+#include <Resources/Loading/VideoData.h>
 
 class ResourceCreationSystem final
 {
@@ -96,5 +98,10 @@ public:
 	*	Creates a texture cube.
 	*/
 	void CreateTextureCube(TextureCubeData *const RESTRICT data, TextureCubeResource *const RESTRICT resource) NOEXCEPT;
+
+	/*
+	*	Creates a video.
+	*/
+	void CreateVideo(VideoData *const RESTRICT data, VideoResource *const RESTRICT resource) NOEXCEPT;
 
 };

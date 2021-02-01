@@ -107,14 +107,26 @@ namespace VulkanRenderingSystemLogic
 	/*
 	*	Concatenates all secondary command buffers into the previous one.
 	*/
-	void ConcatenateCommandBuffers() NOEXCEPT
+	void ConcatenateCommandBuffers(DynamicArray<RenderPass *RESTRICT> &override_render_passes) NOEXCEPT
 	{
 		//Begin the current primary command buffer.
 		VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer() };
 		currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
-		for (const RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
+		ArrayProxy<RenderPass *RESTRICT> render_passes_proxy;
+
+		if (!override_render_passes.Empty())
+		{
+			render_passes_proxy = override_render_passes;
+		}
+
+		else
+		{
+			render_passes_proxy = *RenderPassManager::GetRenderPasses();
+		}
+
+		for (const RenderPass *const RESTRICT renderPass : render_passes_proxy)
 		{
 			if (!renderPass->IsEnabled())
 			{
@@ -1614,7 +1626,7 @@ void RenderingSystem::BeginFrame() NOEXCEPT
 void RenderingSystem::EndFrame() NOEXCEPT
 {
 	//Concatenate all secondary command buffers into the previous one.
-	VulkanRenderingSystemLogic::ConcatenateCommandBuffers();
+	VulkanRenderingSystemLogic::ConcatenateCommandBuffers(_OverrideRenderPasses);
 
 	//End the current command buffer.
 	VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer()->End();

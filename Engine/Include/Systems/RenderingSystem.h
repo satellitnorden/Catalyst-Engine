@@ -29,6 +29,7 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
+#include <Rendering/Native/RenderPasses/RenderPass.h>
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 #endif
@@ -195,6 +196,11 @@ public:
 	{
 		return &_RayTracingSystem;
 	}
+
+	/*
+	*	Adds an override render pass. This will be executed instead of the engine's own render passes, completely overriding all rendering.
+	*/
+	void AddOverrideRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	/*
@@ -457,6 +463,8 @@ private:
 
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
+
+	DynamicArray<RenderPass *RESTRICT> _OverrideRenderPasses;
 
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	//The rendering reference system.

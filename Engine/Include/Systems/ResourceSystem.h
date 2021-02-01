@@ -19,6 +19,7 @@
 #include <Resources/Core/Texture2DResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
+#include <Resources/Core/VideoResource.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	#include <Resources/Building/ResourceBuildingSystem.h>
 #endif
@@ -335,6 +336,32 @@ public:
 	}
 
 	/*
+	*	Returns the video resource with the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD ResourcePointer<VideoResource> GetVideoResource(const HashString identifier) NOEXCEPT
+	{
+		//Find the resource.
+		VideoResource *const RESTRICT *const RESTRICT resource{ _VideoResources.Find(identifier) };
+
+		ASSERT(resource, "Couldn't find resource!");
+
+		return ResourcePointer<VideoResource>(*resource);
+	}
+
+	/*
+	*	Returns or creates the video resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<VideoResource> FindOrCreateVideoResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns all video resources.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, VideoResource *RESTRICT> &GetAllVideoResources() const NOEXCEPT
+	{
+		return _VideoResources;
+	}
+
+	/*
 	*	Returns the texture 2D resource with the given identifier.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetTexture2DResource(const HashString identifier) NOEXCEPT
@@ -428,6 +455,9 @@ private:
 
 	//Container for all texture cube resources.
 	HashTable<HashString, TextureCubeResource *RESTRICT> _TextureCubeResources;
+
+	//Container for all video resources.
+	HashTable<HashString, VideoResource *RESTRICT> _VideoResources;
 
 	//Container for all texture 2D resources.
 	HashTable<HashString, Texture2DResource *RESTRICT> _Texture2DResources;

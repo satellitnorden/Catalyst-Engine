@@ -18,6 +18,7 @@
 #include <Resources/Building/Texture2DBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
 #include <Resources/Building/TextureCubeBuildParameters.h>
+#include <Resources/Building/VideoBuildParameters.h>
 
 class ResourceBuildingSystem final
 {
@@ -87,7 +88,12 @@ public:
 	/*
 	*	Builds a texture 3D.
 	*/
-	void BuildTexture3D(const Texture3DBuildParameters& parameters) NOEXCEPT;
+	void BuildTexture3D(const Texture3DBuildParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Builds a video.
+	*/
+	void BuildVideo(const VideoBuildParameters &parameters) NOEXCEPT;
 
 };
 #endif

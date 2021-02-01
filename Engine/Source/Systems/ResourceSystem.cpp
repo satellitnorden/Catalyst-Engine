@@ -312,6 +312,29 @@ NO_DISCARD ResourcePointer<TextureCubeResource> ResourceSystem::FindOrCreateText
 }
 
 /*
+*	Returns or creates the video resource with the given identifier.
+*/
+NO_DISCARD ResourcePointer<VideoResource> ResourceSystem::FindOrCreateVideoResource(const HashString identifier) NOEXCEPT
+{
+	//Find the resource.
+	VideoResource *const RESTRICT *const RESTRICT resource{ _VideoResources.Find(identifier) };
+
+	if (!resource)
+	{
+		//If the resource couldn't be found, create it.
+		VideoResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<VideoResource>()) VideoResource() };
+		_VideoResources.Add(identifier, new_resource);
+
+		return ResourcePointer<VideoResource>(new_resource);
+	}
+
+	else
+	{
+		return ResourcePointer<VideoResource>(*resource);
+	}
+}
+
+/*
 *	Returns or creates the texture 2D resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<Texture2DResource> ResourceSystem::FindOrCreateTexture2DResource(const HashString identifier) NOEXCEPT
@@ -793,6 +816,41 @@ void ResourceSystem::LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) N
 
 			//Create the resource.
 			_ResourceCreationSystem.CreateTexture3D(&data, new_resource);
+
+			//Register that the resource is now loaded.
+			new_resource->_LoadState = ResourceLoadState::LOADED;
+
+			break;
+		}
+
+		case ResourceConstants::VIDEO_TYPE_IDENTIFIER:
+		{
+			/*
+			*	Find or allocate the new resource.
+			*	The resource might have been created already by other dependant resources, but not loaded yet.
+			*/
+			VideoResource *RESTRICT new_resource;
+
+			if (VideoResource *const RESTRICT *const RESTRICT found_resource{ _VideoResources.Find(header._ResourceIdentifier) })
+			{
+				new_resource = *found_resource;
+			}
+
+			else
+			{
+				new_resource = new (MemorySystem::Instance->TypeAllocate<VideoResource>()) VideoResource();
+				_VideoResources.Add(header._ResourceIdentifier, new_resource);
+			}
+
+			//Set the resource header.
+			new_resource->_Header = header;
+
+			//Load the resource.
+			VideoData data;
+			_ResourceLoadingSystem.LoadVideo(file, &data);
+
+			//Create the resource.
+			_ResourceCreationSystem.CreateVideo(&data, new_resource);
 
 			//Register that the resource is now loaded.
 			new_resource->_LoadState = ResourceLoadState::LOADED;

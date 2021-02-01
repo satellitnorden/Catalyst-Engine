@@ -385,6 +385,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture2DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\Texture3DBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Building\TextureCubeBuildParameters.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Building\VideoBuildParameters.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimatedModelResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\AnimationResource.h" />
     <ClInclude Include="..\..\..\Include\Resources\Core\FontResource.h" />
@@ -416,6 +417,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\Texture2DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\Texture3DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\TextureCubeData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Loading\VideoData.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />

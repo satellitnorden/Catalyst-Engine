@@ -169,9 +169,10 @@ namespace MP4Reader
 				{
 					for (int32 X{ 0 }; X < current_frame->width; ++X)
 					{
-						new_frame._Data.At(X, Y) = Vector3<uint8>(	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
+						new_frame._Data.At(X, Y) = Vector4<uint8>(	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
 																	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
-																	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X]);
+																	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
+																	255);
 					}
 				}
 

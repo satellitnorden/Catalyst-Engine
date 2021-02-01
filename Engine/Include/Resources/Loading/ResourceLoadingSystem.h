@@ -21,6 +21,7 @@
 #include <Resources/Loading/Texture2DData.h>
 #include <Resources/Loading/Texture3DData.h>
 #include <Resources/Loading/TextureCubeData.h>
+#include <Resources/Loading/VideoData.h>
 
 //Sound.
 #include <Sound/SoundCore.h>
@@ -89,6 +90,11 @@ public:
 	*	Given a file, load texture cube data.
 	*/
 	void LoadTextureCube(BinaryFile<IOMode::In> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Given a file, load video data.
+	*/
+	void LoadVideo(BinaryFile<IOMode::In> *const RESTRICT file, VideoData *const RESTRICT data) NOEXCEPT;
 
 
 };

@@ -37,4 +37,5 @@ namespace ResourceConstants
 	constexpr HashString TEXTURE_CUBE_TYPE_IDENTIFIER{ "TextureCube" };
 	constexpr HashString TEXTURE_2D_TYPE_IDENTIFIER{ "Texture2D" };
 	constexpr HashString TEXTURE_3D_TYPE_IDENTIFIER{ "Texture3D" };
+	constexpr HashString VIDEO_TYPE_IDENTIFIER{ "Video" };
 }

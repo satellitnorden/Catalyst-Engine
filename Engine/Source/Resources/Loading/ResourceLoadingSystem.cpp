@@ -326,3 +326,32 @@ void ResourceLoadingSystem::LoadTextureCube(BinaryFile<IOMode::In> *const RESTRI
 		file->Read(data->_Data[i].Data(), (data->_Resolution >> i) * (data->_Resolution >> i) * 4 * 6 * sizeof(float32));
 	}
 }
+
+/*
+*	Given a file, load video data.
+*/
+void ResourceLoadingSystem::LoadVideo(BinaryFile<IOMode::In> *const RESTRICT file, VideoData *const RESTRICT data) NOEXCEPT
+{
+	//Read the width.
+	file->Read(&data->_Width, sizeof(uint32));
+
+	//Read the height.
+	file->Read(&data->_Height, sizeof(uint32));
+
+	//Read the number of frames.
+	uint64 number_of_frames;
+	file->Read(&number_of_frames, sizeof(uint64));
+
+	//Upsize the frame data accordingly.
+	data->_Frames.Upsize<true>(number_of_frames);
+
+	//Read all frames.
+	for (uint64 i{ 0 }; i < number_of_frames; ++i)
+	{	
+		//Initialize the frame.
+		data->_Frames[i]._Data.Initialize(data->_Width, data->_Height);
+
+		//Read the frame.
+		file->Read(data->_Frames[i]._Data.Data(), sizeof(Vector4<uint8>) * data->_Width * data->_Height);
+	}
+}

@@ -42,21 +42,32 @@ namespace RenderingSystemLogic
 	FORCE_INLINE void InitializeRenderPasses() NOEXCEPT
 	{
 		//Initialize all render passes.
-		for (RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
+		for (RenderPass *const RESTRICT render_pass : *RenderPassManager::GetRenderPasses())
 		{
-			renderPass->Initialize();
+			render_pass->Initialize();
 		}
 	}
 
 	/*
 	*	Executes all render passes.
 	*/
-	FORCE_INLINE void ExecuteRenderPasses() NOEXCEPT
+	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &override_render_passes) NOEXCEPT
 	{
 		//Executes all render passes.
-		for (RenderPass *const RESTRICT renderPass : *RenderPassManager::GetRenderPasses())
+		if (!override_render_passes.Empty())
 		{
-			renderPass->Execute();
+			for (RenderPass *const RESTRICT render_pass : override_render_passes)
+			{
+				render_pass->Execute();
+			}
+		}
+
+		else
+		{
+			for (RenderPass *const RESTRICT render_pass : *RenderPassManager::GetRenderPasses())
+			{
+				render_pass->Execute();
+			}
 		}
 	}
 
@@ -186,7 +197,7 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 	AnimationSystem::Instance->RenderUpdate(context);
 
 	//Execute all render passes.
-	RenderingSystemLogic::ExecuteRenderPasses();
+	RenderingSystemLogic::ExecuteRenderPasses(_OverrideRenderPasses);
 
 	//End the frame.
 	EndFrame();
@@ -210,6 +221,16 @@ NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
 {
 	return _RayTracingSystem.DoesRayTracingDataExist();
+}
+
+/*
+*	Adds an override render pass. This will be executed instead of the engine's own render passes, completely overriding all rendering.
+*/
+void RenderingSystem::AddOverrideRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT
+{
+	render_pass->Initialize();
+
+	_OverrideRenderPasses.Emplace(render_pass);
 }
 
 /*

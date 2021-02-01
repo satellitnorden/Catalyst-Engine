@@ -19,6 +19,7 @@
 #include <File/Core/BinaryFile.h>
 #include <File/Readers/FBXReader.h>
 #include <File/Readers/JPGReader.h>
+#include <File/Readers/MP4Reader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
 
@@ -576,8 +577,10 @@ void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &paramete
 */
 void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT
 {
-	//Keeps track of the number of temporary shader files created, to avoid naming collisions.
-	static uint64 TEMPORARY_SHADER_FILE_COUNTER{ 0 };
+	//Determine the temporary shader file path.
+	DynamicString temporary_shader_file_path{ "C:\\Github\\Catalyst-Engine\\Engine\\Shaders\\" };
+	temporary_shader_file_path += parameters._ID;
+	temporary_shader_file_path += ".glsl";
 
 	//Determine the compiled file path.
 	DynamicString compiled_file_path{ parameters._ID };
@@ -586,9 +589,6 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	//Determine the temporary batch file path.
 	DynamicString temporary_batch_file_path{ parameters._ID };
 	temporary_batch_file_path += ".bat";
-
-	//Remember the name of the temporary shader file path.
-	DynamicString temporary_shader_file_path;
 
 	//First, compile the shader.
 	{
@@ -625,17 +625,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 				}
 			}
 
-			//Determine the temporary shader file path.
-			temporary_shader_file_path = parameters._FilePath;
-
-			char buffer[32];
-			sprintf_s(buffer, "%llu", TEMPORARY_SHADER_FILE_COUNTER++);
-
-			temporary_shader_file_path += buffer;
-
-			temporary_shader_file_path += ".glsl";
-
-			//Write the compiler-ready version to a new temporary file.
+			//Write the compiler-ready version to the temporary shader file.
 			std::ofstream shader_file{ temporary_shader_file_path.Data() };
 
 			shader_file << file_string;
@@ -1393,5 +1383,48 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 
 	//Write the data.
 	file.Write(parameters._Texture->Data(), width * height * depth * sizeof(Vector4<byte>));
+
+	//Close the output file.
+	file.Close();
+}
+
+/*
+*	Builds a video.
+*/
+void ResourceBuildingSystem::BuildVideo(const VideoBuildParameters &parameters) NOEXCEPT
+{
+	//Read the video resource.
+	VideoResource video_resource;
+	MP4Reader::Read(parameters._FilePath, &video_resource);
+
+	//What should the output file path be?
+	DynamicString output_file_path{ parameters._Output };
+	output_file_path += ".cr";
+
+	//Open the output file to be written to.
+	BinaryFile<IOMode::Out> output_file{ output_file_path.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::VIDEO_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
+	output_file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the width.
+	output_file.Write(&video_resource._Width, sizeof(uint32));
+
+	//Write the height.
+	output_file.Write(&video_resource._Height, sizeof(uint32));
+
+	//Write the number of frames.
+	const uint64 number_of_frames{ video_resource._Frames.Size() };
+	output_file.Write(&number_of_frames, sizeof(uint64));
+
+	//Write the frames.
+	for (const VideoResource::Frame &frame : video_resource._Frames)
+	{
+		output_file.Write(frame._Data.Data(), sizeof(Vector4<uint8>) * video_resource._Width * video_resource._Height);
+	}
+
+	//Close the output file.
+	output_file.Close();
 }
 #endif

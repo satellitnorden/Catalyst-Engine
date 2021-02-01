@@ -331,3 +331,16 @@ void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT d
 	//Create the texture cube.
 	RenderingSystem::Instance->CreateTextureCube(*data, &resource->_TextureCubeHandle);
 }
+
+/*
+*	Creates a video.
+*/
+void ResourceCreationSystem::CreateVideo(VideoData *const RESTRICT data, VideoResource *const RESTRICT resource) NOEXCEPT
+{
+	//Copy the width/height.
+	resource->_Width = data->_Width;
+	resource->_Height = data->_Height;
+
+	//Move the frames.
+	resource->_Frames = std::move(data->_Frames);
+}

@@ -1707,6 +1707,12 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\RawDataData.h">
       <Filter>Resources\Include\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Building\VideoBuildParameters.h">
+      <Filter>Resources\Include\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Loading\VideoData.h">
+      <Filter>Resources\Include\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

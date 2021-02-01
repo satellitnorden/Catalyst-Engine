@@ -27,7 +27,7 @@ public:
 	public:
 
 		//The data.
-		Texture2D<Vector3<uint8>> _Data;
+		Texture2D<Vector4<uint8>> _Data;
 
 	};
 
