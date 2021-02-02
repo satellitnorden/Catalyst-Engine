@@ -337,9 +337,11 @@ void ResourceCreationSystem::CreateTextureCube(TextureCubeData *const RESTRICT d
 */
 void ResourceCreationSystem::CreateVideo(VideoData *const RESTRICT data, VideoResource *const RESTRICT resource) NOEXCEPT
 {
-	//Copy the width/height.
+	//Copy the width/height/frames per second/frames per second reciprocal.
 	resource->_Width = data->_Width;
 	resource->_Height = data->_Height;
+	resource->_FramesPerSecond = data->_FramesPerSecond;
+	resource->_FramesPerSecondReciprocal = data->_FramesPerSecondReciprocal;
 
 	//Move the frames.
 	resource->_Frames = std::move(data->_Frames);

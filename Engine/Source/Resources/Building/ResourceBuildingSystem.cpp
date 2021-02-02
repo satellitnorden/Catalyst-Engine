@@ -1414,6 +1414,12 @@ void ResourceBuildingSystem::BuildVideo(const VideoBuildParameters &parameters) 
 	//Write the height.
 	output_file.Write(&video_resource._Height, sizeof(uint32));
 
+	//Write the frames per second.
+	output_file.Write(&video_resource._FramesPerSecond, sizeof(float32));
+
+	//Write the frames per second reciprocal.
+	output_file.Write(&video_resource._FramesPerSecondReciprocal, sizeof(float32));
+
 	//Write the number of frames.
 	const uint64 number_of_frames{ video_resource._Frames.Size() };
 	output_file.Write(&number_of_frames, sizeof(uint64));

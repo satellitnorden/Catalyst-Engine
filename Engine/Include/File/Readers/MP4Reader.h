@@ -15,6 +15,7 @@ extern "C"
 {
 #include <ThirdParty/libavcodec/avcodec.h>
 #include <ThirdParty/libavformat/avformat.h>
+#include <ThirdParty/libswscale/swscale.h>
 }
 
 namespace MP4Reader
@@ -159,23 +160,57 @@ namespace MP4Reader
 
 				video_resource->_Width = current_frame->width;
 				video_resource->_Height = current_frame->height;
+				video_resource->_FramesPerSecond = static_cast<float32>(video_stream->avg_frame_rate.num / 1'000);
+				video_resource->_FramesPerSecondReciprocal = 1.0f / video_resource->_FramesPerSecond;
 
 				video_resource->_Frames.Emplace();
 				VideoResource::Frame& new_frame{ video_resource->_Frames.Back() };
 				
 				new_frame._Data.Initialize(current_frame->width, current_frame->height);
 
+				SwsContext* const RESTRICT sws_context{	sws_getContext(	current_frame->width,
+																		current_frame->height,
+																		video_codec_context->pix_fmt,
+																		current_frame->width,
+																		current_frame->height,
+																		AV_PIX_FMT_RGB0,
+																		SWS_BILINEAR,
+																		nullptr,
+																		nullptr,
+																		nullptr) };
+
+				if (!sws_context)
+				{
+					ASSERT(false, "sws_getContext() failed.");
+
+					return false;
+				}
+
+				uint8 *const RESTRICT destination_data{ new uint8[current_frame->width * current_frame->height * 4] };
+				uint8 *const RESTRICT destionation_proxy[4]{ destination_data, nullptr, nullptr, nullptr };
+				int32 destination_linesizes[4]{ current_frame->width * 4, 0, 0, 0 };
+
+				sws_scale(	sws_context,
+							current_frame->data,
+							current_frame->linesize,
+							0,
+							current_frame->height,
+							destionation_proxy,
+							destination_linesizes);
+
 				for (int32 Y{ 0 }; Y < current_frame->height; ++Y)
 				{
 					for (int32 X{ 0 }; X < current_frame->width; ++X)
 					{
-						new_frame._Data.At(X, Y) = Vector4<uint8>(	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
-																	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
-																	current_frame->data[0][((current_frame->height - 1) - Y) * current_frame->linesize[0] + X],
-																	255);
+						new_frame._Data.At(X, Y) = Vector4<uint8>(	destination_data[(Y * current_frame->width + X) * 4 + 0],
+																	destination_data[(Y * current_frame->width + X) * 4 + 1],
+																	destination_data[(Y * current_frame->width + X) * 4 + 2],
+																	destination_data[(Y * current_frame->width + X) * 4 + 3]);
 					}
 				}
 
+				delete destination_data;
+				sws_freeContext(sws_context);
 				av_packet_unref(current_packet);
 			}
 

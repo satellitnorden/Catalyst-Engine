@@ -338,6 +338,12 @@ void ResourceLoadingSystem::LoadVideo(BinaryFile<IOMode::In> *const RESTRICT fil
 	//Read the height.
 	file->Read(&data->_Height, sizeof(uint32));
 
+	//Read the frames per second.
+	file->Read(&data->_FramesPerSecond, sizeof(float32));
+
+	//Read the frames per second reciprocal.
+	file->Read(&data->_FramesPerSecondReciprocal, sizeof(float32));
+
 	//Read the number of frames.
 	uint64 number_of_frames;
 	file->Read(&number_of_frames, sizeof(uint64));

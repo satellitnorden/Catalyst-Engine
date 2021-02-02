@@ -37,6 +37,12 @@ public:
 	//The height.
 	uint32 _Height;
 
+	//The frames per second.
+	float32 _FramesPerSecond;
+
+	//The frames per second reciprocal.
+	float32 _FramesPerSecondReciprocal;
+
 	//The frames.
 	DynamicArray<Frame> _Frames;
 
