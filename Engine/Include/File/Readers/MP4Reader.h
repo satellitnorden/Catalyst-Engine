@@ -165,8 +165,10 @@ namespace MP4Reader
 
 				video_resource->_Frames.Emplace();
 				VideoResource::Frame& new_frame{ video_resource->_Frames.Back() };
-				
-				new_frame._Data.Initialize(current_frame->width, current_frame->height);
+
+				new_frame._DataX.Initialize(current_frame->width, current_frame->height);
+				new_frame._DataY.Initialize(current_frame->width, current_frame->height);
+				new_frame._DataZ.Initialize(current_frame->width, current_frame->height);
 
 				SwsContext* const RESTRICT sws_context{	sws_getContext(	current_frame->width,
 																		current_frame->height,
@@ -202,10 +204,9 @@ namespace MP4Reader
 				{
 					for (int32 X{ 0 }; X < current_frame->width; ++X)
 					{
-						new_frame._Data.At(X, Y) = Vector4<uint8>(	destination_data[(Y * current_frame->width + X) * 4 + 0],
-																	destination_data[(Y * current_frame->width + X) * 4 + 1],
-																	destination_data[(Y * current_frame->width + X) * 4 + 2],
-																	destination_data[(Y * current_frame->width + X) * 4 + 3]);
+						new_frame._DataX.At(X, Y) = destination_data[(Y * current_frame->width + X) * 4 + 0];
+						new_frame._DataY.At(X, Y) = destination_data[(Y * current_frame->width + X) * 4 + 1];
+						new_frame._DataZ.At(X, Y) = destination_data[(Y * current_frame->width + X) * 4 + 2];
 					}
 				}
 

@@ -355,9 +355,13 @@ void ResourceLoadingSystem::LoadVideo(BinaryFile<IOMode::In> *const RESTRICT fil
 	for (uint64 i{ 0 }; i < number_of_frames; ++i)
 	{	
 		//Initialize the frame.
-		data->_Frames[i]._Data.Initialize(data->_Width, data->_Height);
+		data->_Frames[i]._DataX.Initialize(data->_Width, data->_Height);
+		data->_Frames[i]._DataY.Initialize(data->_Width, data->_Height);
+		data->_Frames[i]._DataZ.Initialize(data->_Width, data->_Height);
 
 		//Read the frame.
-		file->Read(data->_Frames[i]._Data.Data(), sizeof(Vector4<uint8>) * data->_Width * data->_Height);
+		file->Read(data->_Frames[i]._DataX.Data(), sizeof(uint8) * data->_Width * data->_Height);
+		file->Read(data->_Frames[i]._DataY.Data(), sizeof(uint8) * data->_Width * data->_Height);
+		file->Read(data->_Frames[i]._DataZ.Data(), sizeof(uint8) * data->_Width * data->_Height);
 	}
 }

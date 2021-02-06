@@ -1427,7 +1427,9 @@ void ResourceBuildingSystem::BuildVideo(const VideoBuildParameters &parameters) 
 	//Write the frames.
 	for (const VideoResource::Frame &frame : video_resource._Frames)
 	{
-		output_file.Write(frame._Data.Data(), sizeof(Vector4<uint8>) * video_resource._Width * video_resource._Height);
+		output_file.Write(frame._DataX.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
+		output_file.Write(frame._DataY.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
+		output_file.Write(frame._DataZ.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
 	}
 
 	//Close the output file.
