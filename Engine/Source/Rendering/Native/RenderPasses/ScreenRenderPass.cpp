@@ -13,7 +13,7 @@ DEFINE_SINGLETON(ScreenRenderPass);
 ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::SCREEN);
+	SetStage(NativeRenderPassStage::SCREEN);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

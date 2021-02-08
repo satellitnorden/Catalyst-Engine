@@ -35,7 +35,7 @@ namespace ShadowRenderPassConstants
 ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::SHADOWS);
+	SetStage(NativeRenderPassStage::SHADOWS);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

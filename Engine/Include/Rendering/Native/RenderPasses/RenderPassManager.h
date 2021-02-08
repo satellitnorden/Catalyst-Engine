@@ -16,9 +16,9 @@ public:
 	/*
 	*	Returns the render passes.
 	*/
-	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassStage::NUMBER_OF_RENDER_PASS_STAGES)> *const RESTRICT GetRenderPasses() NOEXCEPT
+	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(NativeRenderPassStage::NUMBER_OF_RENDER_PASS_STAGES)> *const RESTRICT GetRenderPasses() NOEXCEPT
 	{
-		static StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassStage::NUMBER_OF_RENDER_PASS_STAGES)> renderPasses;
+		static StaticArray<RenderPass *RESTRICT, UNDERLYING(NativeRenderPassStage::NUMBER_OF_RENDER_PASS_STAGES)> renderPasses;
 
 		return &renderPasses;
 	}

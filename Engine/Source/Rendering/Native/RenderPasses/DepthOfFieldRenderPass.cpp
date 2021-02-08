@@ -13,7 +13,7 @@ DEFINE_SINGLETON(DepthOfFieldRenderPass);
 DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::DEPTH_OF_FIELD);
+	SetStage(NativeRenderPassStage::DEPTH_OF_FIELD);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

@@ -366,6 +366,30 @@ public:
 	}
 
 	/*
+	*	Inserts an element at the given index.
+	*/
+	FORCE_INLINE void Insert(const TYPE &element, const uint64 index) NOEXCEPT
+	{
+		//Does additional memory need to be allocated?
+		if (_Size == _Capacity)
+		{
+			Reserve(_Capacity + 1);
+		}
+
+		//Copy all elements after the index.
+		for (uint64 i{ _Size }; i > index; --i)
+		{
+			_Array[i] = _Array[i - 1];
+		}
+
+		//Insert the element.
+		_Array[index] = element;
+
+		//Update the size.
+		++_Size;
+	}
+
+	/*
 	*	Returns a (linearly) interpolated element, float32 overload.
 	*/
 	FORCE_INLINE TYPE Interpolate(const float32 index) const NOEXCEPT

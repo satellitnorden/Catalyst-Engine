@@ -13,7 +13,7 @@ DEFINE_SINGLETON(IndirectLightingRenderPass);
 IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::INDIRECT_LIGHTING);
+	SetStage(NativeRenderPassStage::INDIRECT_LIGHTING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

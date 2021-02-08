@@ -13,7 +13,7 @@ DEFINE_SINGLETON(UserInterfaceRenderPass);
 UserInterfaceRenderPass::UserInterfaceRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::USER_INTERFACE);
+	SetStage(NativeRenderPassStage::USER_INTERFACE);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

@@ -58,10 +58,10 @@ using TextureCubeHandle = void *RESTRICT;
 constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
-*	Enumeration covering all render pass stages.
+*	Enumeration covering all native render pass stages.
 *	The order of the stages define in what order they will execute in.
 */
-enum class RenderPassStage : uint8
+enum class NativeRenderPassStage : uint8
 {
 	SCENE_FEATURES,
 	OCEAN,
@@ -92,7 +92,22 @@ enum class RenderPassStage : uint8
 #endif
 	SCREEN,
 	
-	NUMBER_OF_RENDER_PASS_STAGES
+	NUMBER_OF_RENDER_PASS_STAGES,
+	NONE
+};
+
+//Enumeration covering all custom render pass orderings.
+enum class CustomRenderPassOrdering : uint8
+{
+	BEFORE,
+	AFTER
+};
+
+//Enumeration covering all custom render pass modes.
+enum class CustomRenderPassMode : uint8
+{
+	ADD,
+	OVERRIDE
 };
 
 //Enumeration covering all blend factors.

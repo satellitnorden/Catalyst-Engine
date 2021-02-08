@@ -13,7 +13,7 @@ DEFINE_SINGLETON(PathTracingRenderPass);
 PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::PATH_TRACING);
+	SetStage(NativeRenderPassStage::PATH_TRACING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

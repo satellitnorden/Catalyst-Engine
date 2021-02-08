@@ -17,7 +17,7 @@ DEFINE_SINGLETON(DebugRenderingRenderPass);
 DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::DEBUG_RENDERING);
+	SetStage(NativeRenderPassStage::DEBUG_RENDERING);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

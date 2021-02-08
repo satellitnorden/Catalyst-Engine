@@ -13,7 +13,7 @@ DEFINE_SINGLETON(SceneFeaturesRenderPass);
 SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::SCENE_FEATURES);
+	SetStage(NativeRenderPassStage::SCENE_FEATURES);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

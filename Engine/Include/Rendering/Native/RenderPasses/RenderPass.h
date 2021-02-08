@@ -44,7 +44,7 @@ public:
 	/*
 	*	Returns the stage.
 	*/
-	FORCE_INLINE NO_DISCARD RenderPassStage GetStage() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD NativeRenderPassStage GetStage() const NOEXCEPT
 	{
 		return _Stage;
 	}
@@ -78,7 +78,7 @@ protected:
 	/*
 	*	Sets the stage.
 	*/
-	void SetStage(const RenderPassStage stage) NOEXCEPT;
+	void SetStage(const NativeRenderPassStage stage) NOEXCEPT;
 
 	/*
 	*	Sets the initialization function.
@@ -118,7 +118,7 @@ private:
 	bool _Enabled{ true };
 
 	//The stage.
-	RenderPassStage _Stage;
+	NativeRenderPassStage _Stage{ NativeRenderPassStage::NONE };
 
 	//The initialization function.
 	InitializationFunction _InitializationFunction;

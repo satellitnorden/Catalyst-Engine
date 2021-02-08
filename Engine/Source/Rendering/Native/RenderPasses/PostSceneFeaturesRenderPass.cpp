@@ -13,7 +13,7 @@ DEFINE_SINGLETON(PostSceneFeaturesRenderPass);
 PostSceneFeaturesRenderPass::PostSceneFeaturesRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::POST_SCENE_FEATURES);
+	SetStage(NativeRenderPassStage::POST_SCENE_FEATURES);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

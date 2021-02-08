@@ -4,7 +4,7 @@
 //Rendering.
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
 
-void RenderPass::SetStage(const RenderPassStage stage) NOEXCEPT
+void RenderPass::SetStage(const NativeRenderPassStage stage) NOEXCEPT
 {
 	//Set the stage.
 	_Stage = stage;

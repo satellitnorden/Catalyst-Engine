@@ -39,10 +39,10 @@ namespace RenderingSystemLogic
 	/*
 	*	Initializes all render passes.
 	*/
-	FORCE_INLINE void InitializeRenderPasses() NOEXCEPT
+	FORCE_INLINE void InitializeRenderPasses(const DynamicArray<RenderPass *RESTRICT> render_passes) NOEXCEPT
 	{
 		//Initialize all render passes.
-		for (RenderPass *const RESTRICT render_pass : *RenderPassManager::GetRenderPasses())
+		for (RenderPass *const RESTRICT render_pass : render_passes)
 		{
 			render_pass->Initialize();
 		}
@@ -51,23 +51,12 @@ namespace RenderingSystemLogic
 	/*
 	*	Executes all render passes.
 	*/
-	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &override_render_passes) NOEXCEPT
+	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> render_passes) NOEXCEPT
 	{
 		//Executes all render passes.
-		if (!override_render_passes.Empty())
+		for (RenderPass *const RESTRICT render_pass : render_passes)
 		{
-			for (RenderPass *const RESTRICT render_pass : override_render_passes)
-			{
-				render_pass->Execute();
-			}
-		}
-
-		else
-		{
-			for (RenderPass *const RESTRICT render_pass : *RenderPassManager::GetRenderPasses())
-			{
-				render_pass->Execute();
-			}
+			render_pass->Execute();
 		}
 	}
 
@@ -165,8 +154,16 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
 
+	//Fill up the render passes container.
+	_RenderPasses.Reserve(UNDERLYING(NativeRenderPassStage::NUMBER_OF_RENDER_PASS_STAGES));
+
+	for (RenderPass *const RESTRICT native_render_pass : *RenderPassManager::GetRenderPasses())
+	{
+		_RenderPasses.Emplace(native_render_pass);
+	}
+
 	//Initialize all render passes.
-	RenderingSystemLogic::InitializeRenderPasses();
+	RenderingSystemLogic::InitializeRenderPasses(_RenderPasses);
 }
 
 /*
@@ -197,7 +194,7 @@ void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) 
 	AnimationSystem::Instance->RenderUpdate(context);
 
 	//Execute all render passes.
-	RenderingSystemLogic::ExecuteRenderPasses(_OverrideRenderPasses);
+	RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses);
 
 	//End the frame.
 	EndFrame();
@@ -224,13 +221,85 @@ NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
 }
 
 /*
-*	Adds an override render pass. This will be executed instead of the engine's own render passes, completely overriding all rendering.
+*	Adds a custom render pass.
 */
-void RenderingSystem::AddOverrideRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT
+void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT
 {
-	render_pass->Initialize();
+	//Find the custom render pass index and insert the custom render pass.
+	uint64 custom_render_pass_index{ UINT64_MAXIMUM };
 
-	_OverrideRenderPasses.Emplace(render_pass);
+	for (uint64 i{ 0 }, size{ _RenderPasses.Size() }; i < size; ++i)
+	{
+		if (_RenderPasses[i]->GetStage() == anchor)
+		{
+			switch (ordering)
+			{
+				case CustomRenderPassOrdering::BEFORE:
+				{
+					custom_render_pass_index = i;
+
+					_RenderPasses.Insert(render_pass, custom_render_pass_index);
+
+					break;
+				}
+
+				case CustomRenderPassOrdering::AFTER:
+				{
+					custom_render_pass_index = i + 1;
+
+					_RenderPasses.Insert(render_pass, custom_render_pass_index);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			break;
+		}
+	}
+
+	//Couldn't find the custom render pass index?
+	if (custom_render_pass_index == UINT64_MAXIMUM)
+	{
+		ASSERT(false, "Couldn't find custom render pass index!");
+
+		return;
+	}
+
+	//Apply the mode.
+	switch (mode)
+	{
+		case CustomRenderPassMode::ADD:
+		{
+			//Nothing to do here.
+
+			break;
+		}
+
+		case CustomRenderPassMode::OVERRIDE:
+		{
+			//Remove all previous render passes before the anchor index.
+			for (uint64 i{ 0 }; i < custom_render_pass_index; ++i)
+			{
+				_RenderPasses.EraseAt<true>(0);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 }
 
 /*

@@ -198,9 +198,9 @@ public:
 	}
 
 	/*
-	*	Adds an override render pass. This will be executed instead of the engine's own render passes, completely overriding all rendering.
+	*	Adds a custom render pass.
 	*/
-	void AddOverrideRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT;
+	void AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	/*
@@ -464,7 +464,8 @@ private:
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
 
-	DynamicArray<RenderPass *RESTRICT> _OverrideRenderPasses;
+	//Container for all the render passes.
+	DynamicArray<RenderPass *RESTRICT> _RenderPasses;
 
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	//The rendering reference system.
