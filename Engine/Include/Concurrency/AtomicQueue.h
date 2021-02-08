@@ -14,7 +14,7 @@
 #if defined(CATALYST_CONFIGURATION_FINAL)
 	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (0)
 #else
-	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (1)
+	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (0)
 #endif
 
 //Enumeration for all atomic queue modes.

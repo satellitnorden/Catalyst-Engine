@@ -300,6 +300,9 @@ void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass
 			break;
 		}
 	}
+
+	//Initialize the render pass.
+	render_pass->Initialize();
 }
 
 /*
