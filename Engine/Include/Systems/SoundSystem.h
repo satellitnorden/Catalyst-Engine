@@ -121,12 +121,12 @@ public:
 	*	Starts recording.
 	*	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
 	*/
-	void StartRecording(const float32 expected_length = 0.0f) NOEXCEPT;
+	void StartRecording(SoundResource *const RESTRICT recording_sound_resource, const float32 expected_length = 0.0f) NOEXCEPT;
 
 	/*
 	*	Stops recording. Saves the recording to a .WAV file to the specified file path.
 	*/
-	void StopRecording(const char *const RESTRICT file_path) NOEXCEPT;
+	void StopRecording() NOEXCEPT;
 
 	/*
 	*	Queries for MIDI devices.
@@ -180,7 +180,7 @@ private:
 	AtomicFlag _IsRecording;
 
 	//The recording sound resource.
-	SoundResource _RecordingSoundResource;
+	SoundResource *RESTRICT _RecordingSoundResource;
 
 	/*
 	*	Initializes the platform.

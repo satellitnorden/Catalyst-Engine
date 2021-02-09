@@ -282,21 +282,24 @@ NO_DISCARD bool SoundSystem::IsCurrentlyRecording() const NOEXCEPT
 *	Starts recording.
 *	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
 */
-void SoundSystem::StartRecording(const float32 expected_length) NOEXCEPT
+void SoundSystem::StartRecording(SoundResource *const RESTRICT recording_sound_resource, const float32 expected_length) NOEXCEPT
 {
+	//Set the recording sound resource.
+	_RecordingSoundResource = recording_sound_resource;
+
 	//Reset the recording sound resource.
-	_RecordingSoundResource._Samples.Clear();
+	_RecordingSoundResource->_Samples.Clear();
 
 	//Set up the recording sound resource.
-	_RecordingSoundResource._SampleRate = GetSampleRate();
-	_RecordingSoundResource._NumberOfChannels = GetNumberOfChannels();
-	_RecordingSoundResource._Samples.Upsize<true>(2);
+	_RecordingSoundResource->_SampleRate = GetSampleRate();
+	_RecordingSoundResource->_NumberOfChannels = GetNumberOfChannels();
+	_RecordingSoundResource->_Samples.Upsize<true>(2);
 
 	//Allocate the required amount of data, if the expected length is reported.
 	if (expected_length > 0.0f)
 	{
-		_RecordingSoundResource._Samples[0].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
-		_RecordingSoundResource._Samples[1].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundResource->_Samples[0].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundResource->_Samples[1].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
 	}
 
 	//Set the flag.
@@ -306,16 +309,13 @@ void SoundSystem::StartRecording(const float32 expected_length) NOEXCEPT
 /*
 *	Stops recording. Saves the recording to a .WAV file to the specified file path.
 */
-void SoundSystem::StopRecording(const char *const RESTRICT file_path) NOEXCEPT
+void SoundSystem::StopRecording() NOEXCEPT
 {
 	//Clear the flag.
 	_ShouldRecord.Clear();
 
 	//Wait for the sound system to stop recording.
 	_IsRecording.Wait<WaitMode::YIELD>();
-
-	//Write the recording to the given file path.
-	WAVWriter::Write(file_path, _RecordingSoundResource);
 }
 
 /*
@@ -518,7 +518,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 							case 16:
 							{
-								_RecordingSoundResource._Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
+								_RecordingSoundResource->_Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
 
 								break;
 							}
