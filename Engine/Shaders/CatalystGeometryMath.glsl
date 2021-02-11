@@ -19,6 +19,65 @@ struct Ray
 
 };
 
+////////////
+// PLANES //
+////////////
+
+/*
+*   Plane struct definition.
+*/
+struct Plane
+{
+
+    //The position.
+    vec3 _Position;
+
+    //The normal.
+    vec3 _Normal;
+
+};
+
+//Ray/plane intersection constants.
+#define RAY_PLANE_INTERSECTION_RESULT_NO_HIT (0)
+#define RAY_PLANE_INTERSECTION_RESULT_HIT (1)
+
+/*
+*   Ray/plane intersection result struct definition.
+*/
+struct RayPlaneIntersectionResult
+{
+
+    //The result.
+    uint _Result;
+
+    //The closest hit distance. Only set if _Result is RAY_PLANE_INTERSECTION_RESULT_HIT.
+    float _HitDistance;
+
+};
+
+/*
+*   Performs a ray/plane intersection.
+*/
+RayPlaneIntersectionResult RayPlaneIntersection(Ray ray, Plane plane)
+{
+    RayPlaneIntersectionResult result;
+
+    if (dot(ray._Direction, plane._Normal) >= 0.0f)
+    {
+        result._Result = RAY_PLANE_INTERSECTION_RESULT_NO_HIT;
+
+        return result;
+    }
+
+    else
+    {
+        result._Result = RAY_PLANE_INTERSECTION_RESULT_HIT;
+        result._HitDistance = dot(plane._Position - ray._Origin, plane._Normal) / dot(ray._Direction, plane._Normal);
+
+        return result;
+    }
+}
+
 /////////////
 // SPHERES //
 /////////////
