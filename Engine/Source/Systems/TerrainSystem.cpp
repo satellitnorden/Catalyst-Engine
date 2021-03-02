@@ -74,6 +74,14 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 }
 
 /*
+*	Terminates the terrain system.
+*/
+void TerrainSystem::Terminate() NOEXCEPT
+{
+
+}
+
+/*
 *	Updates the terrain system during the sequential update phase.
 */
 void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT

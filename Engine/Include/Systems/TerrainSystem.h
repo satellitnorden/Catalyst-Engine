@@ -42,6 +42,11 @@ public:
 	void Initialize(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
 
 	/*
+	*	Terminates the terrain system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Updates the terrain system during the sequential update phase.
 	*/
 	void SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;

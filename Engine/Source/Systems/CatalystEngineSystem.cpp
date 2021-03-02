@@ -313,10 +313,13 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystEditorSystem::Instance->Terminate();
 #endif
 	DistributionSystem::Instance->Terminate();
-	RenderingSystem::Instance->Terminate();
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
+	TerrainSystem::Instance->Terminate();
 	WorldSystem::Instance->Terminate();
+
+	//Terminate the rendering system last, currently it might cause crashes, so make sure systems that save to disk do that first at least as to not lose data.
+	RenderingSystem::Instance->Terminate();
 }
 
 /*

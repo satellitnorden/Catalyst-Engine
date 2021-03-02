@@ -845,1622 +845,852 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_SHADERS
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionApplicationFragmentShader";
+		parameters._ID = "AmbientOcclusionApplicationFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionApplicationFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionApplicationFragmentShader";
-			parameters._ID = "AmbientOcclusionApplicationFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionApplicationFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionSpatialDenoisingFragmentShader";
-			parameters._ID = "AmbientOcclusionSpatialDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionSpatialDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionSpatialDenoisingFragmentShader";
+		parameters._ID = "AmbientOcclusionSpatialDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionSpatialDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionTemporalDenoisingFragmentShader";
+		parameters._ID = "AmbientOcclusionTemporalDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionTemporalDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionTemporalDenoisingFragmentShader";
-			parameters._ID = "AmbientOcclusionTemporalDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionTemporalDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesFragmentShader";
+		parameters._ID = "AnimatedModelSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesFragmentShader";
-			parameters._ID = "AnimatedModelSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesVertexShader";
-			parameters._ID = "AnimatedModelSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesVertexShader";
+		parameters._ID = "AnimatedModelSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AxisAlignedBoundingBox3DVertexShader";
-			parameters._ID = "AxisAlignedBoundingBox3DVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AxisAlignedBoundingBox3DVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AxisAlignedBoundingBox3DVertexShader";
+		parameters._ID = "AxisAlignedBoundingBox3DVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AxisAlignedBoundingBox3DVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\BloomIsolationFragmentShader";
-			parameters._ID = "BloomIsolationFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\BloomIsolationFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\BloomIsolationFragmentShader";
+		parameters._ID = "BloomIsolationFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\BloomIsolationFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ClearFragmentShader";
+		parameters._ID = "ClearFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ClearFragmentShader";
-			parameters._ID = "ClearFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugRenderFragmentShader";
+		parameters._ID = "DebugRenderFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugRenderFragmentShader";
-			parameters._ID = "DebugRenderFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldApplicationFragmentShader";
-			parameters._ID = "DepthOfFieldApplicationFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldApplicationFragmentShader";
+		parameters._ID = "DepthOfFieldApplicationFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldBokehBlurFragmentShader";
-			parameters._ID = "DepthOfFieldBokehBlurFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldBokehBlurFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldBokehBlurFragmentShader";
+		parameters._ID = "DepthOfFieldBokehBlurFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldBokehBlurFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingFragmentShader";
-			parameters._ID = "DirectLightingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingFragmentShader";
+		parameters._ID = "DirectLightingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
-			parameters._ID = "DynamicModelRayClosestHitShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
-			parameters._Defines.Emplace("DYNAMIC_MODELS");
-			parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
+		parameters._ID = "DynamicModelRayClosestHitShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
+		parameters._Defines.Emplace("DYNAMIC_MODELS");
+		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelFragmentShader";
-			parameters._ID = "EditorSelectedModelFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelFragmentShader";
+		parameters._ID = "EditorSelectedModelFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelVertexShader";
+		parameters._ID = "EditorSelectedModelVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelVertexShader";
-			parameters._ID = "EditorSelectedModelVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceFragmentShader";
+		parameters._ID = "EditorUserInterfaceFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceFragmentShader";
-			parameters._ID = "EditorUserInterfaceFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceVertexShader";
-			parameters._ID = "EditorUserInterfaceVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceVertexShader";
+		parameters._ID = "EditorUserInterfaceVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FastApproximateAntiAliasingFragmentShader";
-			parameters._ID = "FastApproximateAntiAliasingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FastApproximateAntiAliasingFragmentShader";
+		parameters._ID = "FastApproximateAntiAliasingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingApplicationFragmentShader";
-			parameters._ID = "IndirectLightingApplicationFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingApplicationFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingApplicationFragmentShader";
+		parameters._ID = "IndirectLightingApplicationFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingApplicationFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingSpatialDenoisingFragmentShader";
+		parameters._ID = "IndirectLightingSpatialDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingSpatialDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingSpatialDenoisingFragmentShader";
-			parameters._ID = "IndirectLightingSpatialDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingSpatialDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingTemporalDenoisingFragmentShader";
-			parameters._ID = "IndirectLightingTemporalDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingTemporalDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingTemporalDenoisingFragmentShader";
+		parameters._ID = "IndirectLightingTemporalDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingTemporalDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesFragmentShader";
+		parameters._ID = "InstancedOpaqueModelSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesFragmentShader";
-			parameters._ID = "InstancedOpaqueModelSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesVertexShader";
+		parameters._ID = "InstancedOpaqueModelSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesVertexShader";
-			parameters._ID = "InstancedOpaqueModelSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsFragmentShader";
-			parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsFragmentShader";
+		parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsVertexShader";
-			parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsVertexShader";
+		parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesFragmentShader";
-			parameters._ID = "MaskedModelColorSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesFragmentShader";
+		parameters._ID = "MaskedModelColorSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesVertexShader";
+		parameters._ID = "MaskedModelColorSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesVertexShader";
-			parameters._ID = "MaskedModelColorSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesFragmentShader";
+		parameters._ID = "MaskedModelDepthSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesFragmentShader";
-			parameters._ID = "MaskedModelDepthSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesVertexShader";
-			parameters._ID = "MaskedModelDepthSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesVertexShader";
+		parameters._ID = "MaskedModelDepthSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapFragmentShader";
-			parameters._ID = "ModelShadowMapFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapFragmentShader";
+		parameters._ID = "ModelShadowMapFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapVertexShader";
-			parameters._ID = "ModelShadowMapVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapVertexShader";
+		parameters._ID = "ModelShadowMapVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MotionBlurFragmentShader";
+		parameters._ID = "MotionBlurFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MotionBlurFragmentShader";
-			parameters._ID = "MotionBlurFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesFragmentShader";
+		parameters._ID = "OpaqueModelSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesFragmentShader";
-			parameters._ID = "OpaqueModelSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesVertexShader";
-			parameters._ID = "OpaqueModelSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesVertexShader";
+		parameters._ID = "OpaqueModelSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesFragmentShader";
-			parameters._ID = "OceanSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesFragmentShader";
+		parameters._ID = "OceanSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesVertexShader";
-			parameters._ID = "OceanSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesVertexShader";
+		parameters._ID = "OceanSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemComputeShader";
+		parameters._ID = "ParticleSystemComputeShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemComputeShader.comp";
+		parameters._Stage = ShaderStage::COMPUTE;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemComputeShader";
-			parameters._ID = "ParticleSystemComputeShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemComputeShader.comp";
-			parameters._Stage = ShaderStage::COMPUTE;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
+		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
-			parameters._ID = "ParticleSystemMaskedColorSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
-			parameters._ID = "ParticleSystemMaskedColorSceneFeaturesGeometryShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
-			parameters._Stage = ShaderStage::GEOMETRY;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
+		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesGeometryShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
+		parameters._Stage = ShaderStage::GEOMETRY;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
-			parameters._ID = "ParticleSystemMaskedColorSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
+		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
-			parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
+		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
-			parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
-			parameters._Stage = ShaderStage::GEOMETRY;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
+		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
+		parameters._Stage = ShaderStage::GEOMETRY;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
-			parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
+		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PassthroughFragmentShader";
+		parameters._ID = "PassthroughFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PassthroughFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PassthroughFragmentShader";
-			parameters._ID = "PassthroughFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PassthroughFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayGenerationShader";
+		parameters._ID = "PathTracingRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayGenerationShader";
-			parameters._ID = "PathTracingRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayMissShader";
-			parameters._ID = "PathTracingRayMissShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayMissShader.rmiss";
-			parameters._Stage = ShaderStage::RAY_MISS;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayMissShader";
+		parameters._ID = "PathTracingRayMissShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayMissShader.rmiss";
+		parameters._Stage = ShaderStage::RAY_MISS;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PostProcessingFragmentShader";
-			parameters._ID = "PostProcessingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PostProcessingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PostProcessingFragmentShader";
+		parameters._ID = "PostProcessingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PostProcessingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RasterizedShadowsFragmentShader";
-			parameters._ID = "RasterizedShadowsFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RasterizedShadowsFragmentShader";
+		parameters._ID = "RasterizedShadowsFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
+		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
-			parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedIndirectLightingRayGenerationShader";
-			parameters._ID = "RayTracedIndirectLightingRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedIndirectLightingRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedIndirectLightingRayGenerationShader";
+		parameters._ID = "RayTracedIndirectLightingRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedIndirectLightingRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedShadowsRayGenerationShader";
+		parameters._ID = "RayTracedShadowsRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedShadowsRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedShadowsRayGenerationShader";
-			parameters._ID = "RayTracedShadowsRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedShadowsRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedVolumetricLightingRayGenerationShader";
+		parameters._ID = "RayTracedVolumetricLightingRayGenerationShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedVolumetricLightingRayGenerationShader.rgen";
+		parameters._Stage = ShaderStage::RAY_GENERATION;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedVolumetricLightingRayGenerationShader";
-			parameters._ID = "RayTracedVolumetricLightingRayGenerationShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedVolumetricLightingRayGenerationShader.rgen";
-			parameters._Stage = ShaderStage::RAY_GENERATION;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RenderingReferenceFragmentShader";
-			parameters._ID = "RenderingReferenceFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RenderingReferenceFragmentShader";
+		parameters._ID = "RenderingReferenceFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ResampleFragmentShader";
-			parameters._ID = "ResampleFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ResampleFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ResampleFragmentShader";
+		parameters._ID = "ResampleFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ResampleFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SceneFeaturesDownsampleFragmentShader";
-			parameters._ID = "SceneFeaturesDownsampleFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SceneFeaturesDownsampleFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SceneFeaturesDownsampleFragmentShader";
+		parameters._ID = "SceneFeaturesDownsampleFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SceneFeaturesDownsampleFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceAmbientOcclusionFragmentShader";
+		parameters._ID = "ScreenSpaceAmbientOcclusionFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceAmbientOcclusionFragmentShader";
-			parameters._ID = "ScreenSpaceAmbientOcclusionFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
+		parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
-			parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ShadowsSpatialDenoisingFragmentShader";
-			parameters._ID = "ShadowsSpatialDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ShadowsSpatialDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ShadowsSpatialDenoisingFragmentShader";
+		parameters._ID = "ShadowsSpatialDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ShadowsSpatialDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
-			parameters._ID = "SkyFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
+		parameters._ID = "SkyFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SphereVertexShader";
-			parameters._ID = "SphereVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SphereVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SphereVertexShader";
+		parameters._ID = "SphereVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SphereVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\StaticModelRayClosestHitShader";
-			parameters._ID = "StaticModelRayClosestHitShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
-			parameters._Defines.Emplace("STATIC_MODELS");
-			parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\StaticModelRayClosestHitShader";
+		parameters._ID = "StaticModelRayClosestHitShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
+		parameters._Defines.Emplace("STATIC_MODELS");
+		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TemporalAntiAliasingFragmentShader";
-			parameters._ID = "TemporalAntiAliasingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TemporalAntiAliasingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TemporalAntiAliasingFragmentShader";
+		parameters._ID = "TemporalAntiAliasingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TemporalAntiAliasingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainRayClosestHitShader";
+		parameters._ID = "TerrainRayClosestHitShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainRayClosestHitShader.rchit";
+		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainRayClosestHitShader";
-			parameters._ID = "TerrainRayClosestHitShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainRayClosestHitShader.rchit";
-			parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesFragmentShader";
+		parameters._ID = "TerrainSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesFragmentShader";
-			parameters._ID = "TerrainSceneFeaturesFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesVertexShader";
-			parameters._ID = "TerrainSceneFeaturesVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesVertexShader";
+		parameters._ID = "TerrainSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowFragmentShader";
-			parameters._ID = "TerrainShadowFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowFragmentShader";
+		parameters._ID = "TerrainShadowFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowVertexShader";
-			parameters._ID = "TerrainShadowVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowVertexShader";
+		parameters._ID = "TerrainShadowVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
+		parameters._ID = "ToneMappingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
-			parameters._ID = "ToneMappingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceFragmentShader";
+		parameters._ID = "UserInterfaceFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceFragmentShader";
-			parameters._ID = "UserInterfaceFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceVertexShader";
-			parameters._ID = "UserInterfaceVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceVertexShader";
+		parameters._ID = "UserInterfaceVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VelocityFragmentShader";
-			parameters._ID = "VelocityFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VelocityFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VelocityFragmentShader";
+		parameters._ID = "VelocityFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VelocityFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ViewportVertexShader";
-			parameters._ID = "ViewportVertexShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
-			parameters._Stage = ShaderStage::VERTEX;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ViewportVertexShader";
+		parameters._ID = "ViewportVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VisibilityRayMissShader";
+		parameters._ID = "VisibilityRayMissShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VisibilityRayMissShader.rmiss";
+		parameters._Stage = ShaderStage::RAY_MISS;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VisibilityRayMissShader";
-			parameters._ID = "VisibilityRayMissShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VisibilityRayMissShader.rmiss";
-			parameters._Stage = ShaderStage::RAY_MISS;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
+		ShaderBuildParameters parameters;
 
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingApplicationFragmentShader";
+		parameters._ID = "VolumetricLightingApplicationFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingApplicationFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingApplicationFragmentShader";
-			parameters._ID = "VolumetricLightingApplicationFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingApplicationFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingFragmentShader";
-			parameters._ID = "VolumetricLightingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingFragmentShader";
+		parameters._ID = "VolumetricLightingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
+		ShaderBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingSpatialDenoisingFragmentShader";
-			parameters._ID = "VolumetricLightingSpatialDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingSpatialDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingSpatialDenoisingFragmentShader";
+		parameters._ID = "VolumetricLightingSpatialDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingSpatialDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 
 	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			ShaderBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingTemporalDenoisingFragmentShader";
-			parameters._ID = "VolumetricLightingTemporalDenoisingFragmentShader";
-			parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingTemporalDenoisingFragmentShader.frag";
-			parameters._Stage = ShaderStage::FRAGMENT;
+		ShaderBuildParameters parameters;
 
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingTemporalDenoisingFragmentShader";
+		parameters._ID = "VolumetricLightingTemporalDenoisingFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingTemporalDenoisingFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
 
-		TaskSystem::Instance->ExecuteTask(&task);
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
 #endif
 

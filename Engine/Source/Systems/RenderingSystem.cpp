@@ -110,7 +110,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ModelSystem.Initialize();
 
 	//Set the far plane of the perceiver.
-	Perceiver::Instance->SetFarPlane(configuration._ViewDistance);
+	Perceiver::Instance->SetFarPlane(configuration._ViewDistance * 2.0f);
 
 	//Pre-initialize the rendering system.
 	PreInitialize();

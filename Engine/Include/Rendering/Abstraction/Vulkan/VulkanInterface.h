@@ -105,7 +105,7 @@ public:
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::COMPUTE);
 	}
 
 	/*
@@ -113,7 +113,7 @@ public:
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::GRAPHICS);
 	}
 
 	/*
@@ -121,7 +121,7 @@ public:
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::PRESENT);
 	}
 
 	/*
@@ -129,7 +129,7 @@ public:
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER);
 	}
 
 	/*

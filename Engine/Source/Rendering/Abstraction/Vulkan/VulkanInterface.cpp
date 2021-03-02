@@ -68,10 +68,10 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::COMPUTE)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::GRAPHICS)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::PRESENT)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER)->WaitIdle();
 
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : _Vulkan2DTextures)
@@ -340,7 +340,7 @@ void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEP
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
-	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Compute));
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::COMPUTE));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
 	_VulkanCommandPools.Emplace(newCommandPool);
@@ -354,7 +354,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeComma
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
-	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
 	_VulkanCommandPools.Emplace(newCommandPool);
@@ -368,7 +368,7 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsComm
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool{ new (Memory::Allocate(sizeof(VulkanCommandPool))) VulkanCommandPool() };
-	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::TRANSFER));
 
 	SCOPED_LOCK(_VulkanCommandPoolsLock);
 

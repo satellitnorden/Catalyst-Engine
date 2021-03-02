@@ -77,10 +77,22 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 void Vulkan2DTexture::Release() NOEXCEPT
 {
 	//Destroy the Vulkan image view.
-	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
+	ASSERT(_VulkanImageView, "Double deletion detected!");
+
+	if (_VulkanImageView)
+	{
+		vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
+		_VulkanImageView = nullptr;
+	}
 
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
+	ASSERT(_VulkanDeviceMemory, "Double deletion detected!");
+
+	if (_VulkanDeviceMemory)
+	{
+		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
+		_VulkanDeviceMemory = nullptr;
+	}
 
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);

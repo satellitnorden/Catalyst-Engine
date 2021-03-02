@@ -12,11 +12,14 @@ class SaveEntry final
 
 public:
 
-	//The file to the save that will be read from/written to disk.
-	DynamicString _File;
+	//The file path to the save that will be read from/written to disk.
+	DynamicString _FilePath;
 
 	//The save mask. This is used to determine which saves should be saved.
 	uint64 _SaveMask;
+
+	//The current version callback. This will be called to determine the current version of the save file.
+	CurrentVersionCallback _CurrentVersionCallback;
 
 	//The default values callback. This will be called when no save file was present and default values needs to be filled in.
 	DefaultValuesCallback _DefaultValuesCallback;

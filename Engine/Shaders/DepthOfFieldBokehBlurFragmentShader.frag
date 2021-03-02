@@ -1,6 +1,5 @@
 //Includes.
 #include "CatalystPackingUtilities.glsl"
-#include "CatalystShaderPhysicallyBasedLighting.glsl"
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.

@@ -42,7 +42,13 @@ void VulkanRayTracingPipeline::Release() NOEXCEPT
 	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipelineLayout, nullptr);
 
 	//Destroy the pipeline.
-	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
+	ASSERT(_VulkanPipeline, "Double deletion detected!");
+
+	if (_VulkanPipeline)
+	{
+		vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
+		_VulkanPipeline = nullptr;
+	}
 }
 
 /*

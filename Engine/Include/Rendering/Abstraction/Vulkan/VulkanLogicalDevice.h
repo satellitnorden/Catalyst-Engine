@@ -18,11 +18,12 @@ public:
 	//Enumeration covering all queue types.
 	enum class QueueType : uint8
 	{
-		Compute,
-		Graphics,
-		Present,
-		Transfer,
-		NumberOfQueueTypes
+		COMPUTE,
+		GRAPHICS,
+		PRESENT,
+		TRANSFER,
+
+		NUMBER_OF_QUEUE_TYPES
 	};
 
 	/*
@@ -56,10 +57,10 @@ private:
 	VkDevice _VulkanLogicalDevice;
 
 	//The queue family indices.
-	StaticArray<uint32, UNDERLYING(QueueType::NumberOfQueueTypes)> _QueueFamilyIndices;
+	StaticArray<uint32, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueFamilyIndices;
 
 	//The queues.
-	StaticArray<VulkanQueue *RESTRICT, UNDERLYING(QueueType::NumberOfQueueTypes)> _Queues;
+	StaticArray<VulkanQueue *RESTRICT, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _Queues;
 
 	/*
 	*	Creates the device queue create infos.
