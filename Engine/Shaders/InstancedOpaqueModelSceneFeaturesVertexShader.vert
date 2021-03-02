@@ -56,6 +56,7 @@ void CatalystShaderMain()
 
 	if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_SNAP_TO_TERRAIN))
 	{
+		/*
 		//Calculate the absolute world position.
 		vec3 absolute_world_position = fragment_world_position + (vec3(CURRENT_WORLD_GRID_CELL) * WORLD_GRID_SIZE);
 
@@ -67,6 +68,7 @@ void CatalystShaderMain()
 
 		//Apply the difference.
 		fragment_world_position.y = terrain_height + vertex_position.y + WORLD_GRID_DELTA.y;
+		*/
 	}
 
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);

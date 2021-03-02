@@ -8,6 +8,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//World.
+#include <World/Core/WorldPosition.h>
+
 class CatalystProjectGeneralConfiguration final
 {
 
@@ -125,6 +128,10 @@ class CatalystProjectTerrainConfiguration final
 
 public:
 
+	//Type aliases.
+	using TerrainHeightFunction = float32(*)(const WorldPosition &world_position);
+	using TerrainMaterialFunction = void(*)(const WorldPosition &world_position, Vector4<uint8> *const RESTRICT indices, Vector4<uint8> *const RESTRICT weights);
+
 	/*
 	*	The patch size.
 	*	Defines the size of each root node patch.
@@ -148,6 +155,27 @@ public:
 	*	Recommended: 8.
 	*/
 	uint8 _MaximumQuadTreeDepth;
+
+	/*
+	*	The terrain height function.
+	*	Responsible for calculating the height at a given world position.
+	*	Recommended: A valid pointer to a function generating height.
+	*/
+	TerrainHeightFunction _TerrainHeightFunction;
+
+	/*
+	*	The terrain material function.
+	*	Responsible for calculating the material at a given world position.
+	*	Recommended: A valid pointer to a function generating material.
+	*/
+	TerrainMaterialFunction _TerrainMaterialFunction;
+
+	/*
+	*	The terrain data save folder.
+	*	This is where terrain data will be saved to disk between sessions, for faster loading when the height/material functions don't change.
+	*	Recommended: A valid string containing a file path to a folder where the terrain data will be saved.
+	*/
+	DynamicString _TerrainDataSaveFolder;
 
 	/*
 	*	Default constructor.

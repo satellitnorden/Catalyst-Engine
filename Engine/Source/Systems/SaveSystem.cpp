@@ -65,6 +65,9 @@ void SaveSystem::RegisterSaveEntry(const SaveEntry &entry) NOEXCEPT
 
 	//Request a load for the new entry.
 	RequestLoad(entry._SaveMask);
+
+	//Process the saves immediately, so that all initial data gets loaded when the game starts.
+	ProcessSaves();
 }
 
 /*

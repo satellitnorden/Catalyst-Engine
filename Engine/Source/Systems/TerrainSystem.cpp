@@ -28,6 +28,9 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	_Properties._PatchSize = configuration._PatchSize;
 	_Properties._PatchResolution = configuration._PatchResolution;
 	_Properties._MaximumQuadTreeDepth = configuration._MaximumQuadTreeDepth;
+	_Properties._TerrainHeightFunction = configuration._TerrainHeightFunction;
+	_Properties._TerrainMaterialFunction = configuration._TerrainMaterialFunction;
+	_Properties._TerrainDataSaveFolder = configuration._TerrainDataSaveFolder;
 
 	//Set the function for the update task.
 	_UpdateTask._Function = [](void* const RESTRICT)
@@ -46,20 +49,20 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 													&vertices,
 													&indices);
 
-	StaticArray<void* RESTRICT, 2> bufferData;
+	StaticArray<void* RESTRICT, 2> buffer_data;
 
-	bufferData[0] = vertices.Data();
-	bufferData[1] = indices.Data();
+	buffer_data[0] = vertices.Data();
+	buffer_data[1] = indices.Data();
 
-	StaticArray<uint64, 2> bufferDataSizes;
+	StaticArray<uint64, 2> buffer_data_sizes;
 
-	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
-	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
+	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
+	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
 
-	RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_Properties._Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(bufferData.Data(), bufferDataSizes.Data(), 2, &_Properties._Buffer);
+	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_Properties._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &_Properties._Buffer);
 
-	_Properties._IndexOffset = bufferDataSizes[0];
+	_Properties._IndexOffset = buffer_data_sizes[0];
 	_Properties._IndexCount = static_cast<uint32>(indices.Size());
 
 	//Initialize the quad tree.
@@ -95,217 +98,11 @@ void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
 }
 
 /*
-*	Sets all of the terrain data at once.
-*/
-void TerrainSystem::SetTerrainData(	const WorldPosition &world_position,
-									Texture2D<float32> &&height_map,
-									Texture2D<Vector4<uint8>> &&index_map,
-									Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT
-{
-	//Create the new textures.
-	Texture2DHandle new_height_map_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32), &new_height_map_texture);
-
-	Texture2DHandle new_index_map_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8), &new_index_map_texture);
-
-	Texture2DHandle new_blend_map_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8), &new_blend_map_texture);
-
-	//Lock all the terrain data.
-	ScopedLock<Spinlock> scoped_lock_1{ _Properties._WorldCenterLock };
-	ScopedLock<Spinlock> scoped_lock_2{ _Properties._HeightMapLock };
-	ScopedLock<Spinlock> scoped_lock_3{ _Properties._IndexMapLock };
-	ScopedLock<Spinlock> scoped_lock_4{ _Properties._BlendMapLock };
-
-	{
-		//Set the world center.
-		_Properties._WorldCenter = world_position;
-
-		//There is now a world center!
-		_Properties._HasWorldCenter = true;
-	}
-
-	{
-		//If there already is a height map, destroy it.
-		if (_Properties._HasHeightMap)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
-		}
-
-		//Copy the height map.
-		_Properties._HeightMap = std::move(height_map);
-
-		//Set the texture.
-		_Properties._HeightMapTexture = new_height_map_texture;
-
-		//Add the texture to the global render data.
-		_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
-
-		//There is now a height map!
-		_Properties._HasHeightMap = true;
-	}
-
-	{
-		//If there already is an index map, destroy it.
-		if (_Properties._HasIndexMap)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
-		}
-
-		//Copy the index map.
-		_Properties._IndexMap = std::move(index_map);
-
-		//Set the texture.
-		_Properties._IndexMapTexture = new_index_map_texture;
-
-		//Add the texture to the global render data.
-		_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
-
-		//There is now an index map!
-		_Properties._HasIndexMap = true;
-	}
-
-	{
-		//If there already is a blend map, destroy it.
-		if (_Properties._HasBlendMap)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
-		}
-
-		//Copy the blend map.
-		_Properties._BlendMap = std::move(blend_map);
-
-		//Set the texture.
-		_Properties._BlendMapTexture = new_blend_map_texture;
-
-		//Add the texture to the global render data.
-		_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
-
-		//There is now a blend map!
-		_Properties._HasBlendMap = true;
-	}
-}
-
-/*
-*	Sets the world center.
-*/
-void TerrainSystem::SetWorldCenter(const WorldPosition &world_position) NOEXCEPT
-{
-	//Lock the world center.
-	SCOPED_LOCK(_Properties._WorldCenterLock);
-
-	//Set the world center.
-	_Properties._WorldCenter = world_position;
-
-	//There is now a world center!
-	_Properties._HasWorldCenter = true;
-}
-
-/*
-*	Sets the height map.
-*/
-void TerrainSystem::SetHeightMap(Texture2D<float32> &&height_map) NOEXCEPT
-{
-	//Create the texture.
-	Texture2DHandle new_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32), &new_texture);
-
-	//Lock the height map.
-	SCOPED_LOCK(_Properties._HeightMapLock);
-
-	//If there already is a height map, destroy it.
-	if (_Properties._HasHeightMap)
-	{
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._HeightMapTextureIndex);
-		RenderingSystem::Instance->DestroyTexture2D(&_Properties._HeightMapTexture);
-	}
-
-	//Copy the height map.
-	_Properties._HeightMap = std::move(height_map);
-
-	//Set the texture.
-	_Properties._HeightMapTexture = new_texture;
-
-	//Add the texture to the global render data.
-	_Properties._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._HeightMapTexture);
-
-	//There is now a height map!
-	_Properties._HasHeightMap = true;
-}
-
-/*
-*	Sets the index map.
-*/
-void TerrainSystem::SetIndexMap(Texture2D<Vector4<uint8>> &&index_map) NOEXCEPT
-{
-	//Create the texture.
-	Texture2DHandle new_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8), &new_texture);
-
-	//Lock the index map.
-	SCOPED_LOCK(_Properties._IndexMapLock);
-
-	//If there already is an index map, destroy it.
-	if (_Properties._HasIndexMap)
-	{
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._IndexMapTextureIndex);
-		RenderingSystem::Instance->DestroyTexture2D(&_Properties._IndexMapTexture);
-	}
-
-	//Copy the index map.
-	_Properties._IndexMap = std::move(index_map);
-
-	//Set the texture.
-	_Properties._IndexMapTexture = new_texture;
-
-	//Add the texture to the global render data.
-	_Properties._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._IndexMapTexture);
-
-	//There is now an index map!
-	_Properties._HasIndexMap = true;
-}
-
-/*
-*	Sets the blend map.
-*/
-void TerrainSystem::SetBlendMap(Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT
-{
-	//Create the texture.
-	Texture2DHandle new_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8), &new_texture);
-
-	//Lock the blend map.
-	SCOPED_LOCK(_Properties._BlendMapLock);
-
-	//If there already is a blend map, destroy it.
-	if (_Properties._HasBlendMap)
-	{
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_Properties._BlendMapTextureIndex);
-		RenderingSystem::Instance->DestroyTexture2D(&_Properties._BlendMapTexture);
-	}
-
-	//Copy the blend map.
-	_Properties._BlendMap = std::move(blend_map);
-
-	//Set the texture.
-	_Properties._BlendMapTexture = new_texture;
-
-	//Add the texture to the global render data.
-	_Properties._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_Properties._BlendMapTexture);
-
-	//There is now a blend map!
-	_Properties._HasBlendMap = true;
-}
-
-/*
 *	Returns the terrain map coordinate at the given position.
 */
 NO_DISCARD Vector2<float32> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
 {
+	/*
 	//Need that height map.
 	if (_Properties._HasHeightMap)
 	{
@@ -340,6 +137,7 @@ NO_DISCARD Vector2<float32> TerrainSystem::GetTerrainMapCoordinateAtPosition(con
 	}
 
 	else
+	*/
 	{
 		return Vector2<float>(0.0f, 0.0f);
 	}
@@ -350,30 +148,24 @@ NO_DISCARD Vector2<float32> TerrainSystem::GetTerrainMapCoordinateAtPosition(con
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
-	//If there's a height map, sample it.
-	if (_Properties._HasHeightMap)
+	if (!_Properties._TerrainHeightFunction)
 	{
-		//Calculate the coordinate.
-		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
-
-		//Sample the height map.
+		if (height)
 		{
-			SCOPED_LOCK(_Properties._HeightMapLock);
-
-			*height = _Properties._HeightMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE);
+			*height = 0.0f;
 		}
 
-		//Return that the retrieval succeeded.
-		return true;
+		return false;
 	}
-	
-	//Otherwise, just set to zero.
+
 	else
 	{
-		*height = 0.0f;
+		if (height)
+		{
+			*height = _Properties._TerrainHeightFunction(WorldPosition(position));
+		}
 
-		//Return that the retrieval failed.
-		return false;
+		return true;
 	}
 }
 
@@ -383,17 +175,17 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, f
 bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
 {
 	//Calculate the normal.
-	float left;
-	float right;
-	float down;
-	float up;
+	float32 left;
+	float32 right;
+	float32 down;
+	float32 up;
 
-	GetTerrainHeightAtPosition(position + Vector3<float>(-1.0f, 0.0f, 0.0f), &left);
-	GetTerrainHeightAtPosition(position + Vector3<float>(1.0f, 0.0f, 0.0f), &right);
-	GetTerrainHeightAtPosition(position + Vector3<float>(0.0f, 0.0f, -1.0f), &down);
-	GetTerrainHeightAtPosition(position + Vector3<float>(0.0f, 0.0f, 1.0f), &up);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(-1.0f, 0.0f, 0.0f), &left);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(1.0f, 0.0f, 0.0f), &right);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, -1.0f), &down);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, 1.0f), &up);
 
-	*normal = Vector3<float>::Normalize(Vector3<float>(left - right, 2.0f, down - up));
+	*normal = Vector3<float32>::Normalize(Vector3<float32>(left - right, 2.0f, down - up));
 
 	if (height)
 	{
@@ -405,50 +197,6 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, V
 }
 
 /*
-*	Returns the terrain material at the given position.
-*/
-bool TerrainSystem::GetTerrainMaterialAtPosition(const Vector3<float> &position, Vector4<uint8> *const RESTRICT indices, Vector4<float> *const RESTRICT blend, const void *const RESTRICT context) const NOEXCEPT
-{
-	//If there's a index and blend map, sample them.
-	if (_Properties._HasIndexMap && _Properties._HasBlendMap)
-	{
-		//Calculate the coordinate.
-		const Vector2<float> coordinate{ GetTerrainMapCoordinateAtPosition(position) };
-
-		//Sample the index map.
-		{
-			SCOPED_LOCK(_Properties._IndexMapLock);
-
-			const uint32 x_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float>(_Properties._IndexMap.GetWidth())) };
-			const uint32 y_coordinate{ static_cast<uint32>(coordinate._Y * static_cast<float>(_Properties._IndexMap.GetWidth())) };
-
-			*indices = _Properties._IndexMap.At(x_coordinate, y_coordinate);
-		}
-
-		//Sample the blend map.
-		{
-			SCOPED_LOCK(_Properties._BlendMapLock);
-
-			const Vector4<uint8> blend_map_sample{ _Properties._BlendMap.Sample(coordinate, AddressMode::CLAMP_TO_EDGE) };
-
-			*blend = Vector4<float32>(	static_cast<float32>(blend_map_sample._X) / static_cast<float32>(UINT8_MAXIMUM),
-										static_cast<float32>(blend_map_sample._Y) / static_cast<float32>(UINT8_MAXIMUM),
-										static_cast<float32>(blend_map_sample._Z) / static_cast<float32>(UINT8_MAXIMUM),
-										static_cast<float32>(blend_map_sample._W) / static_cast<float32>(UINT8_MAXIMUM));
-		}
-
-		//Return that the retrieval succeeded.
-		return true;
-	}
-
-	else
-	{
-		//Return that the retrieval failed.
-		return false;
-	}
-}
-
-/*
 *	Processes the update.
 */
 void TerrainSystem::ProcessUpdate() NOEXCEPT
@@ -456,6 +204,14 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	//Just copy the updated informations over.
 	_PatchInformations = std::move(_Update._PatchInformations);
 	_PatchRenderInformations = std::move(_Update._PatchRenderInformations);
+
+	for (Pair<Texture2DHandle, uint32> &texture_to_remove : _Update._TexturesToRemove)
+	{
+		RenderingSystem::Instance->DestroyTexture2D(&texture_to_remove._First);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(texture_to_remove._Second);
+	}
+
+	_Update._TexturesToRemove.Clear();
 
 	if (RenderingSystem::Instance->IsRayTracingActive())
 	{
@@ -472,8 +228,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 */
 void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 {
-	//If there are no maps, just return.
-	if (!_Properties._HasWorldCenter && !_Properties._HasHeightMap || !_Properties._HasIndexMap || !_Properties._HasBlendMap)
+	//If there are no proper functions, just return.
+	if (!_Properties._TerrainHeightFunction || !_Properties._TerrainMaterialFunction)
 	{
 		return;
 	}
@@ -645,10 +401,9 @@ void TerrainSystem::AddRootNode(const GridPoint2 grid_point) NOEXCEPT
 			_QuadTree._RootGridPoints[i] = grid_point;
 			_QuadTree._RootNodes[i]._Depth = 0;
 			_QuadTree._RootNodes[i]._Borders = 0;
-			_QuadTree._RootNodes[i]._Subdivided = false;
-			_QuadTree._RootNodes[i]._ChildNodes = nullptr;
 			_QuadTree._RootNodes[i]._Minimum = Vector2<float>(grid_point_world_position._X - (_Properties._PatchSize * 0.5f), grid_point_world_position._Z - (_Properties._PatchSize * 0.5f));
 			_QuadTree._RootNodes[i]._Maximum = Vector2<float>(grid_point_world_position._X + (_Properties._PatchSize * 0.5f), grid_point_world_position._Z + (_Properties._PatchSize * 0.5f));
+			GenerateMaps(&_QuadTree._RootNodes[i]);
 
 			break;
 		}
@@ -661,69 +416,60 @@ void TerrainSystem::AddRootNode(const GridPoint2 grid_point) NOEXCEPT
 void TerrainSystem::RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, remove it's children as well.
-	if (node->_Subdivided)
+	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
 			RemoveNode(&node->_ChildNodes[i]);
 		}
 
-		Memory::Free(node->_ChildNodes);
-
-		node->_Subdivided = false;
+		node->_ChildNodes.Clear();
 	}
+
+	//Destroy the maps.
+	DestroyMaps(node);
 }
 
 /*
-*	Checks combination of a node. Returns whether or not the node was combined.
+*	Checks combination of a node.
 */
-bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
-	if (node->_Subdivided)
+	if (node->IsSubdivided())
 	{
 		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, perceiverPosition))
 		{
 			CombineNode(node);
-
-			return true;
 		}
 
 		else
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				if (CheckCombination(depth, perceiverPosition, &node->_ChildNodes[i]))
-				{
-					return true;
-				}
+				CheckCombination(depth, perceiverPosition, &node->_ChildNodes[i]);
 			}
 		}
 	}
-
-	return false;
 }
 
 /*
-*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
+*	Checks subdivisions of a node.
 */
-bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//Don't go further down than the depth.
 	if (node->_Depth > depth)
 	{
-		return false;
+		return;
 	}
 
 	//If this node is already subdivided, check all of it's child nodes.
-	if (node->_Subdivided)
+	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			if (CheckSubdivision(depth, perceiverPosition, &node->_ChildNodes[i]))
-			{
-				return true;
-			}
+			CheckSubdivision(depth, perceiverPosition, &node->_ChildNodes[i]);
 		}
 	}
 
@@ -733,12 +479,8 @@ bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& pe
 		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(_Properties, *node, perceiverPosition))
 		{
 			SubdivideNode(node);
-
-			return true;
 		}
 	}
-
-	return false;
 }
 
 /*
@@ -746,12 +488,14 @@ bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& pe
 */
 void TerrainSystem::CombineNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
-	//Set the node back to not subdivided.
-	node->_Subdivided = false;
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		DestroyMaps(&node->_ChildNodes[i]);
+	}
 
-	Memory::Free(node->_ChildNodes);
+	node->_ChildNodes.Clear();
 
-	node->_ChildNodes = nullptr;
+	GenerateMaps(node);
 }
 
 /*
@@ -759,38 +503,38 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCE
 */
 void TerrainSystem::SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
-	const float patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
+	DestroyMaps(node);
 
-	const StaticArray<Vector3<float>, 4> positions
+	const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
+
+	const StaticArray<Vector3<float32>, 4> positions
 	{
-		Vector3<float>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
 						0.0f,
 						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f),
 
-		Vector3<float>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
 						0.0f,
 						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f),
 
-		Vector3<float>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
 						0.0f,
 						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f),
 
-		Vector3<float>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
 						0.0f,
 						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f)
 	};
 
-	node->_Subdivided = true;
-	node->_ChildNodes = static_cast<TerrainQuadTreeNode* const RESTRICT>(Memory::Allocate(sizeof(TerrainQuadTreeNode) * 4));
+	node->_ChildNodes.Upsize<true>(4);
 
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		node->_ChildNodes[i]._Depth = node->_Depth + 1;
 		node->_ChildNodes[i]._Borders = 0;
-		node->_ChildNodes[i]._Subdivided = false;
-		node->_ChildNodes[i]._ChildNodes = nullptr;
 		node->_ChildNodes[i]._Minimum = Vector2<float>(positions[i]._X - (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z - (_Properties._PatchSize * patch_size_multiplier * 0.5f));
 		node->_ChildNodes[i]._Maximum = Vector2<float>(positions[i]._X + (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z + (_Properties._PatchSize * patch_size_multiplier * 0.5f));
+		GenerateMaps(&node->_ChildNodes[i]);
 	}
 }
 
@@ -799,7 +543,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEX
 */
 void TerrainSystem::FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *const RESTRICT highest_depth) NOEXCEPT
 {
-	if (node._Subdivided)
+	if (node.IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
@@ -831,7 +575,7 @@ void TerrainSystem::CalculateNewBorders() NOEXCEPT
 void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, calculate new borders for it's child nodes.
-	if (node->_Subdivided)
+	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
@@ -915,7 +659,7 @@ void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode* const RESTRICT node
 void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, generate patch informations for it's children instead.
-	if (node->_Subdivided)
+	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
@@ -926,9 +670,9 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 	else
 	{
 		//Calculate the world position.
-		const float patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
+		const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-		const Vector3<float> world_position{	node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+		const Vector3<float32> world_position{	node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
 												0.0f,
 												node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f };
 
@@ -939,11 +683,16 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 		TerrainPatchInformation &information{ _Update._PatchInformations.Back() };
 		TerrainPatchRenderInformation &render_information{ _Update._PatchRenderInformations.Back() };
 
-		information._AxisAlignedBoundingBox._Minimum = Vector3<float>(node->_Minimum._X, -FLOAT_MAXIMUM, node->_Minimum._Y);
-		information._AxisAlignedBoundingBox._Maximum = Vector3<float>(node->_Maximum._X, FLOAT_MAXIMUM, node->_Maximum._Y);
-		render_information._WorldPosition = Vector2<float>(world_position._X, world_position._Z);
+		information._AxisAlignedBoundingBox._Minimum = Vector3<float32>(node->_Minimum._X, -FLOAT_MAXIMUM, node->_Minimum._Y);
+		information._AxisAlignedBoundingBox._Maximum = Vector3<float32>(node->_Maximum._X, FLOAT_MAXIMUM, node->_Maximum._Y);
+		render_information._WorldPosition = Vector2<float32>(world_position._X, world_position._Z);
 		render_information._PatchSize = _Properties._PatchSize * patch_size_multiplier;
 		render_information._Borders = node->_Borders;
+		render_information._HeightMapTextureIndex = node->_HeightMapTextureIndex;
+		render_information._HeightMapResolution = node->_HeightMap.GetResolution();
+		render_information._MaterialMapsResolution = node->_IndexMap.GetResolution();
+		render_information._IndexMapTextureIndex = node->_IndexMapTextureIndex;
+		render_information._BlendMapTextureIndex = node->_BlendMapTextureIndex;
 		render_information._Visibility = false;
 	}
 }
@@ -1094,4 +843,96 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 																		_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex],
 																		static_cast<uint32>(master_indices.Size()),
 																		&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+}
+
+/*
+*	Generates the maps for the given node.
+*/
+void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	//Calculate the height/index map resolution.
+	const uint32 height_map_resolution{ _Properties._PatchResolution };
+	const uint32 material_maps_resolution{ _Properties._PatchResolution };
+
+	//Initialize the height/index/blend maps.
+	node->_HeightMap.Initialize(height_map_resolution);
+	node->_IndexMap.Initialize(material_maps_resolution);
+	node->_BlendMap.Initialize(material_maps_resolution);
+
+	//Generate the height map.
+	for (uint32 Y{ 0 }; Y < height_map_resolution; ++Y)
+	{
+		for (uint32 X{ 0 }; X < height_map_resolution; ++X)
+		{
+			//Calculate the normalized coordinate.
+			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(height_map_resolution - 1), static_cast<float32>(Y) / static_cast<float32>(height_map_resolution - 1) };
+
+			//Calculate the world position.
+			const WorldPosition world_position{ Vector3<float32>(
+												CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
+												0.0f,
+												CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
+												) };
+
+			//Generate the height.
+			node->_HeightMap.At(X, Y) = _Properties._TerrainHeightFunction(world_position);
+		}
+	}
+
+	//Generate the material map.
+	for (uint32 Y{ 0 }; Y < material_maps_resolution; ++Y)
+	{
+		for (uint32 X{ 0 }; X < material_maps_resolution; ++X)
+		{
+			//Calculate the normalized coordinate.
+			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(material_maps_resolution - 1), static_cast<float32>(Y) / static_cast<float32>(material_maps_resolution - 1) };
+
+			//Calculate the world position.
+			const WorldPosition world_position{ Vector3<float32>(
+												CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
+												0.0f,
+												CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
+												) };
+
+			//Generate the materials.
+			_Properties._TerrainMaterialFunction(world_position, &node->_IndexMap.At(X, Y), &node->_BlendMap.At(X, Y));
+		}
+	}
+
+	//Create the height/index/blend textures.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_HeightMap), TextureFormat::R_FLOAT32), &node->_HeightMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_IndexMap), TextureFormat::RGBA_UINT8), &node->_IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_BlendMap), TextureFormat::RGBA_UINT8), &node->_BlendMapTexture);
+
+	//Add the height/index/blend textures to the global render data.
+	node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
+	node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
+	node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
+}
+
+/*
+*	Destroys the maps for the given node.
+*/
+void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	if (node->_HeightMapTexture)
+	{
+		_Update._TexturesToRemove.Emplace(node->_HeightMapTexture, node->_HeightMapTextureIndex);
+
+		node->_HeightMapTexture = EMPTY_HANDLE;
+	}
+	
+	if (node->_IndexMapTexture)
+	{
+		_Update._TexturesToRemove.Emplace(node->_IndexMapTexture, node->_IndexMapTextureIndex);
+
+		node->_IndexMapTexture = EMPTY_HANDLE;
+	}
+
+	if (node->_BlendMapTexture)
+	{
+		_Update._TexturesToRemove.Emplace(node->_BlendMapTexture, node->_BlendMapTextureIndex);
+
+		node->_BlendMapTexture = EMPTY_HANDLE;
+	}
 }

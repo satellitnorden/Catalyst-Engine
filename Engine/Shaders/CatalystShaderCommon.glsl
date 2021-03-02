@@ -95,10 +95,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 496) float NEAR_PLANE;
     layout (offset = 500) float FAR_PLANE;
 
-    layout (offset = 504) uint TERRAIN_HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 508) uint TERRAIN_INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 512) uint TERRAIN_BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 516) float TERRAIN_MAP_RESOLUTION;
+    layout (offset = 504) uint UNUSED_1;
+    layout (offset = 508) uint UNUSED_2;
+    layout (offset = 512) uint UNUSED_3;
+    layout (offset = 516) float UNUSED_4;
 
     layout (offset = 520) uint SKY_MODE;
     layout (offset = 524) float SKY_INTENSITY;

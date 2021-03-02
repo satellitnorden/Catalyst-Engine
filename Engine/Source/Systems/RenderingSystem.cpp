@@ -795,12 +795,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._PreviousFramejitter = _DynamicUniformData._CurrentFrameJitter;
 	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
 
-	{
-		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
-
-		_DynamicUniformData._HeightMapCoordinateOffset._X = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._X;
-		_DynamicUniformData._HeightMapCoordinateOffset._Y = TerrainSystem::Instance->GetTerrainProperties()->_WorldCenter.GetAbsolutePosition()._Z;
-	}
+	_DynamicUniformData._HeightMapCoordinateOffset._X = 0.0f;
+	_DynamicUniformData._HeightMapCoordinateOffset._Y = 0.0f;
 
 	//Update floats.
 	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
@@ -822,22 +818,10 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
 	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
-	{
-		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_HeightMapLock);
-		_DynamicUniformData._TerrainHeightMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_HeightMapTextureIndex;
-	}
-	{
-		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_IndexMapLock);
-		_DynamicUniformData._TerrainIndexMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_IndexMapTextureIndex;
-	}
-	{
-		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_BlendMapLock);
-		_DynamicUniformData._TerrainBlendMapTextureIndex = TerrainSystem::Instance->GetTerrainProperties()->_BlendMapTextureIndex;
-	}
-	{
-		SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_HeightMapLock);
-		_DynamicUniformData._TerrainMapResolution = static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_HeightMap.GetWidth());
-	}
+	_DynamicUniformData._TerrainHeightMapTextureIndex = 0;
+	_DynamicUniformData._TerrainIndexMapTextureIndex = 0;
+	_DynamicUniformData._TerrainBlendMapTextureIndex = 0;
+	_DynamicUniformData._TerrainMapResolution = 0;
 
 	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();

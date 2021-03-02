@@ -65,7 +65,7 @@ public:
 	*/
 	static bool ShouldBeCombined(const TerrainProperties &properties, const TerrainQuadTreeNode &node, const Vector3<float> &position) NOEXCEPT
 	{
-		if (node._Subdivided && node._ChildNodes->_Subdivided)
+		if (node.IsSubdivided() && node._ChildNodes.Data()->IsSubdivided())
 		{
 			return false;
 		}
@@ -115,7 +115,7 @@ private:
 	*/
 	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTreeNode &node, const Vector3<float> &position) NOEXCEPT
 	{
-		if (node._Subdivided)
+		if (node.IsSubdivided())
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{

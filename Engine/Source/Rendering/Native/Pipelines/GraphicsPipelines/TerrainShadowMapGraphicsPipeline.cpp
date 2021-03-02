@@ -49,6 +49,12 @@ public:
 	//The vertex border offset second.
 	float32 _VertexBorderOffsetSecond;
 
+	//The height map texture index.
+	uint32 _HeightMapTextureIndex;
+
+	//The index map texture index.
+	uint32 _IndexMapTextureIndex;
+
 };
 
 /*
@@ -127,10 +133,9 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 	constexpr uint64 OFFSET{ 0 };
 
 	//Is everything that is needed to render terrain available?
-	if (!TerrainSystem::Instance->GetTerrainProperties()->_HasWorldCenter
-		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasHeightMap
-		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasIndexMap
-		|| !TerrainSystem::Instance->GetTerrainProperties()->_HasBlendMap)
+	//Is everything that is needed to render terrain available?
+	if (!TerrainSystem::Instance->GetTerrainProperties()->_TerrainHeightFunction
+		|| !TerrainSystem::Instance->GetTerrainProperties()->_TerrainMaterialFunction)
 	{
 		SetIncludeInRender(false);
 
@@ -161,20 +166,17 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 		TerrainShadowPushConstantData data;
 
 		data._WorldToLightMatrix = world_to_light_matrix;
-		{
-			SCOPED_LOCK(TerrainSystem::Instance->GetTerrainProperties()->_WorldCenterLock);
-
-			const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
-
-			data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize();
-			data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
-			data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
-		}
+		const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
+		data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize();
+		data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
+		data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
 		data._WorldPosition = information._WorldPosition;
 		data._PatchSize = information._PatchSize;
 		data._Borders = information._Borders;
 		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1);
 		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1) / 2);
+		data._HeightMapTextureIndex = information._HeightMapTextureIndex;
+		data._IndexMapTextureIndex = information._IndexMapTextureIndex;
 
 		command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData), &data);
 

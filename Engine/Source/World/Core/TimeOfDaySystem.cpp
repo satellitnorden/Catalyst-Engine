@@ -1,6 +1,10 @@
 //Header file.
 #include <World/Core/TimeOfDaySystem.h>
 
+//File.
+#include <File/Core/FileCore.h>
+#include <File/Core/BinaryFile.h>
+
 //Entities.
 #include <Entities/Creation/LightInitializationData.h>
 
@@ -45,17 +49,56 @@ namespace TimeOfDaySystemConstants
 }
 
 /*
+*	Terminates the time of day system.
+*/
+void TimeOfDaySystem::Terminate() NOEXCEPT
+{
+	//If the time of day system was enabled, save save data.
+	if (_Enabled)
+	{
+		DynamicString time_of_day_save_data_file_path{ _TimeOfDayParameters._SaveFolder };
+		time_of_day_save_data_file_path += "\\TimeOfDaySaveData.save";
+
+		BinaryFile<IOMode::Out> time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
+
+		time_of_day_save_data_file.Write(&_CurrentTimeOfDay, sizeof(float32));
+
+		time_of_day_save_data_file.Close();
+	}
+}
+
+/*
 *	Enables the time of day system.
 */
-void TimeOfDaySystem::Enable(const float32 time_of_day, const TimeOfDayParameters& time_of_day_parameters) NOEXCEPT
+void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) NOEXCEPT
 {
 	ASSERT(!_Enabled, "Enabling the time of day system twice!");
 
-	//The time of day system is now enabled!
-	_Enabled = true;
+	//Try to load the time of day data, if it exists.
+	bool loaded_save_data{ false };
 
-	//Set the current time of day.
-	_CurrentTimeOfDay = time_of_day;
+	if (time_of_day_parameters._SaveFolder.Length() > 0)
+	{
+		DynamicString time_of_day_save_data_file_path{ time_of_day_parameters._SaveFolder };
+		time_of_day_save_data_file_path += "\\TimeOfDaySaveData.save";
+
+		if (File::Exists(time_of_day_save_data_file_path.Data()))
+		{
+			BinaryFile<IOMode::In> time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
+
+			time_of_day_save_data_file.Read(&_CurrentTimeOfDay, sizeof(float32));
+
+			time_of_day_save_data_file.Close();
+
+			loaded_save_data = true;
+		}
+	}
+
+	//Set initial data, if save data wasn't loaded.
+	if (!loaded_save_data)
+	{
+		_CurrentTimeOfDay = time_of_day_parameters._InitialTimeOfDay;
+	}
 
 	//Set the time of day parameters.
 	_TimeOfDayParameters = time_of_day_parameters;
@@ -86,6 +129,9 @@ void TimeOfDaySystem::Enable(const float32 time_of_day, const TimeOfDayParameter
 	UpdatePhase::PRE,
 	UpdatePhase::RENDER,
 	false);
+
+	//The time of day system is now enabled!
+	_Enabled = true;
 }
 
 /*

@@ -60,34 +60,6 @@ public:
 	void SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT;
 
 	/*
-	*	Sets all of the terrain data at once.
-	*/
-	void SetTerrainData(const WorldPosition &world_position,
-						Texture2D<float32> &&height_map,
-						Texture2D<Vector4<uint8>> &&index_map,
-						Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT;
-
-	/*
-	*	Sets the world center.
-	*/
-	void SetWorldCenter(const WorldPosition &world_position) NOEXCEPT;
-
-	/*
-	*	Sets the height map.
-	*/
-	void SetHeightMap(Texture2D<float32> &&height_map) NOEXCEPT;
-
-	/*
-	*	Sets the index map.
-	*/
-	void SetIndexMap(Texture2D<Vector4<uint8>> &&index_map) NOEXCEPT;
-
-	/*
-	*	Sets the blend map.
-	*/
-	void SetBlendMap(Texture2D<Vector4<uint8>> &&blend_map) NOEXCEPT;
-
-	/*
 	*	Returns the terrain patch informations.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD DynamicArray<TerrainPatchInformation>* const RESTRICT GetTerrainPatchInformations() NOEXCEPT
@@ -106,23 +78,18 @@ public:
 	/*
 	*	Returns the terrain map coordinate at the given position.
 	*/
-	NO_DISCARD Vector2<float> GetTerrainMapCoordinateAtPosition(const Vector3<float> &position) const NOEXCEPT;
+	NO_DISCARD Vector2<float32> GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain height at the given position.
 	*/
-	bool GetTerrainHeightAtPosition(const Vector3<float>& position, float* const RESTRICT height, const void* const RESTRICT context = nullptr) const NOEXCEPT;
+	bool GetTerrainHeightAtPosition(const Vector3<float32> &position, float32 *const RESTRICT height, const void *const RESTRICT context = nullptr) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain normal at the given position.
 	*	Can optionally retrieve the height at the same time.
 	*/
-	bool GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height = nullptr, const void* const RESTRICT context = nullptr) const NOEXCEPT;
-
-	/*
-	*	Returns the terrain material at the given position.
-	*/
-	bool GetTerrainMaterialAtPosition(const Vector3<float> &position, Vector4<uint8> *const RESTRICT indices, Vector4<float> *const RESTRICT blend, const void *const RESTRICT context = nullptr) const NOEXCEPT;
+	bool GetTerrainNormalAtPosition(const Vector3<float32>& position, Vector3<float32> *const RESTRICT normal, float32 *const RESTRICT height = nullptr, const void *const RESTRICT context = nullptr) const NOEXCEPT;
 
 private:
 
@@ -173,14 +140,14 @@ private:
 	void RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
-	*	Checks combination of a node. Returns whether or not the node was combined.
+	*	Checks combination of a node.
 	*/
-	bool CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+	void CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
-	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
+	*	Checks subdivisions of a node.
 	*/
-	bool CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+	void CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Combines a node.
@@ -216,5 +183,15 @@ private:
 	*	Updates the terrain ray tracing data.
 	*/
 	void UpdateTerrainRayTracingData() NOEXCEPT;
+
+	/*
+	*	Generates the maps for the given node.
+	*/
+	void GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Destroys the maps for the given node.
+	*/
+	void DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 };

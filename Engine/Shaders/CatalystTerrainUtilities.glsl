@@ -22,10 +22,10 @@ struct TerrainMaterial
 /*
 *   Calculates the terrain material.
 */
-TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate)
+TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate, uint index_map_texture_index, uint blend_map_texture_index)
 {
     //Retrieve the 4 materials to blend between.
-    vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+    vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[index_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
     Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * 255.0f)];
     Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * 255.0f)];
@@ -87,7 +87,7 @@ TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec
     material_4_normal_map_displacement.w = max(material_4_normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT);
 
     //Retrieve the blend map.
-    vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+    vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[blend_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
     //Alter the blend values based on the displacement values.
     blend_map[0] *= STRENGTHEN_DISPLACEMENT(material_1_normal_map_displacement.w);

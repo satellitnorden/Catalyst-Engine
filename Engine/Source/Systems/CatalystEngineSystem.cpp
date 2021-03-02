@@ -159,7 +159,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_CONFIGURATION_FINAL)
-	ResourceSystem::Instance->LoadResources("Engine Resources");
+	ResourceSystem::Instance->LoadResources("EngineResources");
 #else
 	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate");
 #endif
@@ -316,6 +316,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	RenderingSystem::Instance->Terminate();
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
+	WorldSystem::Instance->Terminate();
 }
 
 /*

@@ -6,6 +6,9 @@
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
+//Constants.
+#define TERRAIN_MAP_RESOLUTION (33)
+
 /*
 *	Surface properties struct definition.
 */
@@ -36,10 +39,10 @@ SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
 	vec2 material_texture_coordinate = hit_position.xz * 0.25f;
 
 	//Calculate the material.
-	TerrainMaterial first_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate);
-	TerrainMaterial second_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(0.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
-	TerrainMaterial third_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 0.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
-	TerrainMaterial fourth_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate);
+	TerrainMaterial first_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate, material_texture_coordinate, 0, 0);
+	TerrainMaterial second_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(0.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate, 0, 0);
+	TerrainMaterial third_material 	= CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 0.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate, 0, 0);
+	TerrainMaterial fourth_material = CalculateTerrainMaterial(terrain_map_texture_coordinate + vec2(1.0f, 1.0f) / TERRAIN_MAP_RESOLUTION, material_texture_coordinate, 0, 0);
 
 	TerrainMaterial blend_1 = BlendTerrainMaterial(first_material, second_material, fract(terrain_map_texture_coordinate.y * TERRAIN_MAP_RESOLUTION));
 	TerrainMaterial blend_2 = BlendTerrainMaterial(third_material, fourth_material, fract(terrain_map_texture_coordinate.y * TERRAIN_MAP_RESOLUTION));
@@ -51,9 +54,9 @@ SurfaceProperties CalculateTerrainSurfaceProperties(vec3 hit_position)
 	//Calculate the surrounding heights.
 	#define OFFSET (1.0f / TERRAIN_MAP_RESOLUTION)
 
-	float center_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate).x;
-	float right_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
-	float up_height = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
+	float center_height = texture(sampler2D(GLOBAL_TEXTURES[0], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate).x;
+	float right_height = texture(sampler2D(GLOBAL_TEXTURES[0], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(OFFSET, 0.0f)).x;
+	float up_height = texture(sampler2D(GLOBAL_TEXTURES[0], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), terrain_map_texture_coordinate + vec2(0.0f, OFFSET)).x;
 
 	//Calculate the terrain tangent space matrix.
 	mat3 terrain_tangent_space_matrix = CalculateTerrainTangentSpaceMatrix(center_height, right_height, up_height);

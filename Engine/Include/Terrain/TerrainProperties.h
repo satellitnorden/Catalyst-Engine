@@ -20,6 +20,10 @@ class TerrainProperties final
 
 public:
 
+	//Type aliases.
+	using TerrainHeightFunction = float32(*)(const WorldPosition &world_position);
+	using TerrainMaterialFunction = void(*)(const WorldPosition &world_position, Vector4<uint8> *const RESTRICT indices, Vector4<uint8> *const RESTRICT weights);
+
 	//The patch size.
 	float32 _PatchSize;
 
@@ -29,6 +33,15 @@ public:
 	//The maximum quad tree depth.
 	uint8 _MaximumQuadTreeDepth;
 
+	//The terrain height function.
+	TerrainHeightFunction _TerrainHeightFunction;
+
+	//The terrain material function.
+	TerrainMaterialFunction _TerrainMaterialFunction;
+
+	//The terrain data save folder.
+	DynamicString _TerrainDataSaveFolder;
+
 	//The buffer.
 	BufferHandle _Buffer;
 
@@ -37,59 +50,5 @@ public:
 
 	//The index count.
 	uint32 _IndexCount;
-
-	//The world center lock.
-	mutable Spinlock _WorldCenterLock;
-
-	//Denotes whether or note a world center has been set.
-	bool _HasWorldCenter{ false };
-
-	//The world center.
-	WorldPosition _WorldCenter;
-
-	//The height map lock.
-	mutable Spinlock _HeightMapLock;
-
-	//Denotes whether or not a height map has been set.
-	bool _HasHeightMap{ false };
-
-	//The height map.
-	Texture2D<float32> _HeightMap;
-
-	//The height map texture.
-	Texture2DHandle _HeightMapTexture{ EMPTY_HANDLE };
-
-	//The height map texture index.
-	uint32 _HeightMapTextureIndex;
-
-	//The index map lock.
-	mutable Spinlock _IndexMapLock;
-
-	//Denotes whether or not an index map has been set.
-	bool _HasIndexMap{ false };
-
-	//The index map.
-	Texture2D<Vector4<uint8>> _IndexMap;
-
-	//The index map texture.
-	Texture2DHandle _IndexMapTexture{ EMPTY_HANDLE };
-
-	//The index map texture index.
-	uint32 _IndexMapTextureIndex;
-
-	//The blend map lock.
-	mutable Spinlock _BlendMapLock;
-
-	//Denotes whether or not a blend map has been set.
-	bool _HasBlendMap{ false };
-
-	//The blend map.
-	Texture2D<Vector4<uint8>> _BlendMap;
-
-	//The blend map texture.
-	Texture2DHandle _BlendMapTexture{ EMPTY_HANDLE };
-
-	//The blend map texture index.
-	uint32 _BlendMapTextureIndex;
 
 };

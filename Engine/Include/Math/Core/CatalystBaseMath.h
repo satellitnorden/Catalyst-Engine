@@ -204,10 +204,10 @@ public:
 	/*
 	*	Returns if a given integer is a multiple of another integer.
 	*/
-	template <typename FIRST, typename SECOND>
-	FORCE_INLINE constexpr static NO_DISCARD bool IsMultipleOf(const FIRST number, const SECOND multiple) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD bool IsMultipleOf(const TYPE number, const TYPE multiple) NOEXCEPT
 	{
-		return Modulo(number, multiple) == 0;
+		return Modulo(number, multiple) == static_cast<TYPE>(0);
 	}
 
 	/*

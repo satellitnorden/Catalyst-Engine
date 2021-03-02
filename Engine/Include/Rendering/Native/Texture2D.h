@@ -236,14 +236,30 @@ public:
 	}
 
 	/*
-	*	Returns the width of the texture.
+	*	Returns the resolution of this texture. Assumes that _Width == _Height.
 	*/
-	uint32 GetWidth() const NOEXCEPT { return _Width; }
+	FORCE_INLINE NO_DISCARD uint32 GetResolution() const NOEXCEPT
+	{
+		ASSERT(_Width == _Height, "_Width/_Height mismatch!");
+
+		return _Width;
+	}
 
 	/*
-	*	Returns the height of the texture.
+	*	Returns the width of this texture.
 	*/
-	uint32 GetHeight() const NOEXCEPT { return _Height; }
+	FORCE_INLINE NO_DISCARD uint32 GetWidth() const NOEXCEPT
+	{
+		return _Width;
+	}
+
+	/*
+	*	Returns the height of this texture.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetHeight() const NOEXCEPT
+	{
+		return _Height;
+	}
 
 private:
 

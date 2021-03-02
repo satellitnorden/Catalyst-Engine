@@ -599,13 +599,35 @@ int eventcompare(const void* a, const void* b) {
 	MidiEvent& aevent = **((MidiEvent**)a);
 	MidiEvent& bevent = **((MidiEvent**)b);
 
-	if (aevent.tick > bevent.tick) {
+	if (aevent.tick > bevent.tick)
+	{
 		// aevent occurs after bevent
 		return +1;
-	} else if (aevent.tick < bevent.tick) {
+	}
+	
+	else if (aevent.tick < bevent.tick) {
 		// aevent occurs before bevent
 		return -1;
-	} else if ((aevent.seq != 0) && (bevent.seq != 0) && (aevent.seq > bevent.seq)) {
+	}
+	
+	//If both events are note-ons/note-offs, and they have the same tick, sort by note value.
+	if ((aevent.isNoteOn() || aevent.isNoteOff()) && (bevent.isNoteOn() || bevent.isNoteOff()))
+	{
+		if (aevent.tick == bevent.tick)
+		{
+			if (aevent[1] > bevent[1])
+			{
+				return +1;
+			}
+
+			else if (aevent[1] < bevent[1])
+			{
+				return -1;
+			}
+		}
+	}
+	
+	if ((aevent.seq != 0) && (bevent.seq != 0) && (aevent.seq > bevent.seq)) {
 		// aevent sequencing state occurs after bevent
 		// see MidiEventList::markSequence()
 		return +1;

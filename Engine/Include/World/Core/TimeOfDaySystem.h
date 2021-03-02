@@ -16,9 +16,14 @@ class TimeOfDaySystem final
 public:
 
 	/*
+	*	Terminates the time of day system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Enables the time of day system.
 	*/
-	void Enable(const float32 time_of_day, const TimeOfDayParameters &time_of_day_parameters) NOEXCEPT;
+	void Enable(const TimeOfDayParameters &time_of_day_parameters) NOEXCEPT;
 
 	/*
 	*	Returns the current time of day.

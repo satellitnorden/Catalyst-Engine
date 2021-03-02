@@ -19,6 +19,9 @@ public:
 	//The patch render informations.
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
 
+	//The textures to remove.
+	DynamicArray<Pair<Texture2DHandle, uint32>> _TexturesToRemove;
+
 	/*
 	*	Default constructor
 	*/

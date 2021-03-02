@@ -63,6 +63,15 @@ void WorldSystem::PostInitialize() NOEXCEPT
 }
 
 /*
+*	Terminates the world system.
+*/
+void WorldSystem::Terminate() NOEXCEPT
+{
+	//Terminate the time of day system.
+	_TimeOfDaySystem.Terminate();
+}
+
+/*
 *	Returns the current world grid cell.
 */
 NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NOEXCEPT

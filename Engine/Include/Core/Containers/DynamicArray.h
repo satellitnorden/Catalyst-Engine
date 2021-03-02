@@ -100,6 +100,30 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator==(const DynamicArray &other) const NOEXCEPT
+	{
+		if (_Size == other._Size)
+		{
+			for (uint64 i{ 0 }; i < _Size; ++i)
+			{
+				if (_Array[i] != other._Array[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE const TYPE &operator[](const uint64 index) const NOEXCEPT

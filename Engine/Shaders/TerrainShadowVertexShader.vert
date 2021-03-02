@@ -1,6 +1,9 @@
 //Includes.
 #include "CatalystTerrainUtilities.glsl"
 
+//Constants.
+#define TERRAIN_MAP_RESOLUTION (33)
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -11,6 +14,8 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 92) int BORDERS;
     layout (offset = 96) float VERTEX_BORDER_OFFSET_FIRST;
     layout (offset = 100) float VERTEX_BORDER_OFFSET_SECOND;
+    layout (offset = 104) uint HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 108) uint INDEX_MAP_TEXTURE_INDEX;
 };
 
 //In parameters.
@@ -23,7 +28,7 @@ layout (location = 1) in int vertex_borders;
 float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate)
 {
 	//Retrieve the 4 materials to blend between.
-	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+	vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[INDEX_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
 	Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * 255.0f)];
 	Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * 255.0f)];
@@ -57,7 +62,8 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 	}
 
 	//Retrieve the blend map.
-	vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+	//vec4 blend_map = texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_BLEND_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
+	vec4 blend_map = vec4(1.0f, 0.0f, 0.0f, 0.0f);
 
 	//Alter the blend values based on the displacement values.
 	blend_map[0] *= STRENGTHEN_DISPLACEMENT(displacement_1);
@@ -115,10 +121,10 @@ void CatalystShaderMain()
 	vec3 world_position = vec3(WORLD_POSITION.x, 0.0f, WORLD_POSITION.y) + vec3(position.x, 0.0f, position.y) * PATCH_SIZE;
 
 	//Calculate the height map texture coordinate.
-	vec2 height_map_texture_coordinate = (world_position.xz - HEIGHT_MAP_COORDINATE_OFFSET + (TERRAIN_MAP_RESOLUTION * 0.5f)) / TERRAIN_MAP_RESOLUTION;
+	vec2 height_map_texture_coordinate = vertex_position.xy;
 
 	//Apply the height.
-	world_position.y += texture(sampler2D(GLOBAL_TEXTURES[TERRAIN_HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate).x;
+	world_position.y += texture(sampler2D(GLOBAL_TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate).x;
 
 	//Calculate the material texture coordinate.
 	vec2 material_texture_coordinate = world_position.xz * 0.25f;

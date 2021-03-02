@@ -39,6 +39,11 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
+	*	Terminates the world system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Returns the world grid size.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetWorldGridSize() const NOEXCEPT
