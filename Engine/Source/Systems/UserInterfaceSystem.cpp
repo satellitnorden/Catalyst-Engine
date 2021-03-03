@@ -154,6 +154,38 @@ void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *cons
 */
 void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 {
+	//Process the deactivation queue.
+	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DeactivationQueue.Pop() })
+	{
+		if ((*scene)->GetIsActive())
+		{
+			(*scene)->OnDeactivated();
+
+			_CurrentUserInterfaceScenes.Erase<false>(*scene);
+
+			(*scene)->SetIsActive(false);
+		}
+	}
+
+	//Process the activation queue.
+	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _ActivationQueue.Pop() })
+	{
+		if (!(*scene)->GetIsActive())
+		{
+			_CurrentUserInterfaceScenes.Emplace(*scene);
+
+			(*scene)->OnActivated();
+
+			(*scene)->SetIsActive(true);
+		}
+	}
+
+	//Update all the current scenes.
+	for (UserInterfaceScene *const RESTRICT scene : _CurrentUserInterfaceScenes)
+	{
+		scene->Update();
+	}
+
 	//Cache the input data.
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
 	const Vector2<float32> mouse_position{ InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY };
