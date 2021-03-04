@@ -68,6 +68,7 @@ protected:
 	FORCE_INLINE void SetHorizontalSubdivision(const uint32 value) NOEXCEPT
 	{
 		_HorizontalSubdivision = value;
+		_HorizontalSubdivisionReciprocal = 1.0f / static_cast<float32>(_HorizontalSubdivision);
 	}
 
 	/*
@@ -76,6 +77,7 @@ protected:
 	FORCE_INLINE void SetVerticalSubdivision(const uint32 value) NOEXCEPT
 	{
 		_VerticalSubdivision = value;
+		_VerticalSubdivisionReciprocal = 1.0f / static_cast<float32>(_VerticalSubdivision);
 	}
 
 	/*
@@ -95,11 +97,10 @@ protected:
 	}
 
 	/*
-	*	Adds a button on the given row/column.
+	*	Adds a button.
 	*/
-	void AddButton(	const uint32 vertical_index,
-					const uint32 horizontal_index,
-					const uint32 number_of_elements_vertically,
+	void AddButton(	const Vector2<uint32> &minimum_cell,
+					const Vector2<uint32> &maximum_cell,
 					const ButtonUserInterfaceElementCallback start_pressed_callback,
 					const char *const RESTRICT text,
 					UserInterfaceElement *RESTRICT *const RESTRICT button_element = nullptr,
@@ -108,9 +109,11 @@ protected:
 	/*
 	*	Adds a progress bar.
 	*/
-	RESTRICTED UserInterfaceProgressBar *const RESTRICT AddProgressBar(	const uint32 vertical_index,
-																		const uint32 horizontal_index,
-																		const uint32 number_of_elements_vertically) NOEXCEPT;
+	RESTRICTED UserInterfaceProgressBar *const RESTRICT AddProgressBar(	const Vector2<uint32> &minimum_cell,
+																		const Vector2<uint32> &maximum_cell,
+																		const char *const RESTRICT text = "",
+																		UserInterfaceMaterial *const RESTRICT bottom_material_override = nullptr,
+																		UserInterfaceMaterial *const RESTRICT top_material_override = nullptr) NOEXCEPT;
 
 private:
 
@@ -120,8 +123,14 @@ private:
 	//The horizontal subdivision.
 	uint32 _HorizontalSubdivision;
 
+	//The horizontal subdivision reciprocal.
+	float32 _HorizontalSubdivisionReciprocal;
+
 	//The vertical subdivision.
 	uint32 _VerticalSubdivision;
+
+	//The vertical subdivision reciprocal.
+	float32 _VerticalSubdivisionReciprocal;
 
 	//The progress bar bottom material.
 	UserInterfaceMaterial _ProgressBarBottomMaterial;
@@ -136,19 +145,10 @@ private:
 	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
 
 	/*
-	*	Calculates the bounding box for the given row/column.
+	*	Calculates the bounding box for the given minimum/maximum cell.
 	*/
-	void CalculateBoundingBox(	const Vector2<uint32> &in_minimum,
-								const Vector2<uint32> &in_maximum,
-								Vector2<float32> *const RESTRICT out_minimum,
-								Vector2<float32> *const RESTRICT out_maximum) NOEXCEPT;
-
-	/*
-	*	Calculates the bounding box for the given row/column.
-	*/
-	void CalculateBoundingBox(	const uint32 vertical_index,
-								const uint32 horizontal_index,
-								const uint32 number_of_elements_vertically,
+	void CalculateBoundingBox(	const Vector2<uint32> &minimum_cell,
+								const Vector2<uint32> &maximum_cell,
 								Vector2<float32> *const RESTRICT minimum,
 								Vector2<float32> *const RESTRICT maximum) NOEXCEPT;
 

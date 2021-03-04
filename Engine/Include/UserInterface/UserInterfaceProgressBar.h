@@ -8,6 +8,7 @@
 
 //User interface.
 #include <UserInterface/ImageUserInterfaceElement.h>
+#include <UserInterface/TextUserInterfaceElement.h>
 
 class UserInterfaceProgressBar final
 {
@@ -20,7 +21,8 @@ public:
 	UserInterfaceProgressBar(	const Vector2<float32> initial_minimum,
 								const Vector2<float32> initial_maximum,
 								const UserInterfaceMaterial &initial_bottom_material,
-								const UserInterfaceMaterial &initial_top_material) NOEXCEPT;
+								const UserInterfaceMaterial &initial_top_material,
+								const char *const RESTRICT text) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -40,6 +42,11 @@ public:
 	*/
 	void SetCurrentProgress(const float32 value) NOEXCEPT;
 
+	/*
+	*	Sets the text.
+	*/
+	void SetText(const char *const RESTRICT text) NOEXCEPT;
+
 private:
 
 	//The bottom element.
@@ -47,6 +54,9 @@ private:
 
 	//The top element.
 	ImageUserInterfaceElement *RESTRICT _TopElement;
+
+	//The text element.
+	TextUserInterfaceElement *RESTRICT _TextElement;
 
 	//The current progress.
 	float32 _CurrentProgress{ 0.0f };

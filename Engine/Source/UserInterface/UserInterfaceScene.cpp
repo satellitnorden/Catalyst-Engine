@@ -13,9 +13,7 @@
 //User interface scene constants.
 namespace UserInterfaceSceneConstants
 {
-	constexpr Resolution BASE_RESOLUTION{ 3'840, 2'160 };
-	constexpr uint32 PADDING{ 16 };
-	constexpr uint32 COLUMN_HEIGHT{ 64 };
+	constexpr float32 PADDING{ 0.001'25f };
 	constexpr Vector4<float32> IDLE_BUTTON_PRIMARY_COLOR{ 1.0f, 1.0f, 1.0f, 0.01f };
 	constexpr Vector4<float32> IDLE_BUTTON_CHECKED_PRIMARY_COLOR{ 1.0f, 1.0f, 1.0f, 0.5f };
 	constexpr Vector4<float32> HOVERED_BUTTON_PRIMARY_COLOR{ 1.0f, 1.0f, 1.0f, 0.25f };
@@ -25,7 +23,6 @@ namespace UserInterfaceSceneConstants
 	constexpr Vector4<float32> HOVERED_BUTTON_SECONDARY_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f };
 	constexpr Vector4<float32> PRESSED_BUTTON_SECONDARY_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f };
 	constexpr float32 BUTTON_BORDER_OFFSET{ 0.0025f };
-	constexpr float32 CHECKBOX_BORDER_OFFSET{ 0.0175f };
 }
 
 /*
@@ -34,8 +31,8 @@ namespace UserInterfaceSceneConstants
 UserInterfaceScene::UserInterfaceScene() NOEXCEPT
 {
 	//Set up default values.
-	_HorizontalSubdivision = 32;
-	_VerticalSubdivision = 16;
+	SetHorizontalSubdivision(33);
+	SetVerticalSubdivision(33);
 
 	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 1.0f));
 	_ProgressBarBottomMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
@@ -65,11 +62,10 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 }
 
 /*
-*	Adds a button on the given row/column.
+*	Adds a button.
 */
-void UserInterfaceScene::AddButton(	const uint32 vertical_index,
-									const uint32 horizontal_index,
-									const uint32 number_of_elements_vertically,
+void UserInterfaceScene::AddButton(	const Vector2<uint32> &minimum_cell,
+									const Vector2<uint32> &maximum_cell,
 									const ButtonUserInterfaceElementCallback start_pressed_callback,
 									const char *const RESTRICT text,
 									UserInterfaceElement *RESTRICT *const RESTRICT button_element,
@@ -79,7 +75,7 @@ void UserInterfaceScene::AddButton(	const uint32 vertical_index,
 	Vector2<float32> minimum;
 	Vector2<float32> maximum;
 
-	CalculateBoundingBox(vertical_index, horizontal_index, number_of_elements_vertically, &minimum, &maximum);
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
 	//Add the button.
 	{
@@ -142,21 +138,24 @@ void UserInterfaceScene::AddButton(	const uint32 vertical_index,
 /*
 *	Adds a progress bar.
 */
-RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgressBar(	const uint32 vertical_index,
-																						const uint32 horizontal_index,
-																						const uint32 number_of_elements_vertically) NOEXCEPT
+RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgressBar(	const Vector2<uint32> &minimum_cell,
+																						const Vector2<uint32> &maximum_cell,
+																						const char *const RESTRICT text,
+																						UserInterfaceMaterial *const RESTRICT bottom_material_override,
+																						UserInterfaceMaterial *const RESTRICT top_material_override) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
 	Vector2<float32> maximum;
 
-	CalculateBoundingBox(vertical_index, horizontal_index, number_of_elements_vertically, &minimum, &maximum);
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
 	//Allocate the progress bar.
 	UserInterfaceProgressBar* const RESTRICT new_progress_bar{ new UserInterfaceProgressBar(minimum,
-		maximum,
-																							_ProgressBarBottomMaterial,
-																							_ProgressBarTopMaterial) };
+																							maximum,
+																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
+																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
+																							text) };
 
 	//Add the progress bar to the container.
 	_ProgressBars.Emplace(new_progress_bar);
@@ -166,40 +165,16 @@ RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgr
 }
 
 /*
-*	Calculates the bounding box for the given row/column.
+*	Calculates the bounding box for the given minimum/maximum cell.
 */
-void UserInterfaceScene::CalculateBoundingBox(	const Vector2<uint32> &in_minimum,
-												const Vector2<uint32> &in_maximum,
-												Vector2<float32> *const RESTRICT out_minimum,
-												Vector2<float32> *const RESTRICT out_maximum) NOEXCEPT
+void UserInterfaceScene::CalculateBoundingBox(	const Vector2<uint32>& minimum_cell,
+												const Vector2<uint32>& maximum_cell,
+												Vector2<float32>* const RESTRICT minimum,
+												Vector2<float32>* const RESTRICT maximum) NOEXCEPT
 {
+	minimum->_X = static_cast<float32>(minimum_cell._X) * _HorizontalSubdivisionReciprocal + UserInterfaceSceneConstants::PADDING;
+	minimum->_Y = static_cast<float32>(minimum_cell._Y) * _VerticalSubdivisionReciprocal + UserInterfaceSceneConstants::PADDING;
 
-}
-
-/*
-*	Calculates the bounding box for the given row/column.
-*/
-void UserInterfaceScene::CalculateBoundingBox(	const uint32 vertical_index,
-												const uint32 horizontal_index,
-												const uint32 number_of_elements_vertically,
-												Vector2<float32> *const RESTRICT minimum,
-												Vector2<float32> *const RESTRICT maximum) NOEXCEPT
-{
-	//Calculate the width for each element on the row.
-	const uint32 element_width{ ((UserInterfaceSceneConstants::BASE_RESOLUTION._Width - UserInterfaceSceneConstants::PADDING) / number_of_elements_vertically) - UserInterfaceSceneConstants::PADDING };
-
-	//Calculate the minimum.
-	Vector2<uint32> integer_minimum;
-
-	integer_minimum._X = UserInterfaceSceneConstants::PADDING + ((element_width + UserInterfaceSceneConstants::PADDING) * horizontal_index);
-	integer_minimum._Y = UserInterfaceSceneConstants::BASE_RESOLUTION._Height - UserInterfaceSceneConstants::PADDING - UserInterfaceSceneConstants::COLUMN_HEIGHT - ((UserInterfaceSceneConstants::PADDING + UserInterfaceSceneConstants::COLUMN_HEIGHT) * vertical_index);
-
-	//Calculate the maximum.
-	Vector2<uint32> integer_maximum;
-
-	integer_maximum._X = integer_minimum._X + element_width;
-	integer_maximum._Y = integer_minimum._Y + UserInterfaceSceneConstants::COLUMN_HEIGHT;
-
-	*minimum = UserInterfaceUtilities::CalculateNormalizedCoordinate(integer_minimum, UserInterfaceSceneConstants::BASE_RESOLUTION);
-	*maximum = UserInterfaceUtilities::CalculateNormalizedCoordinate(integer_maximum, UserInterfaceSceneConstants::BASE_RESOLUTION);
+	maximum->_X = static_cast<float32>(maximum_cell._X + 1) * _HorizontalSubdivisionReciprocal - UserInterfaceSceneConstants::PADDING;
+	maximum->_Y = static_cast<float32>(maximum_cell._Y + 1) * _VerticalSubdivisionReciprocal - UserInterfaceSceneConstants::PADDING;
 }
