@@ -38,8 +38,14 @@ void VulkanRenderTarget::Release() NOEXCEPT
 	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
 
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
+	ASSERT(_VulkanDeviceMemory, "Double deletion detected!");
 
+	if (_VulkanDeviceMemory)
+	{
+		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
+		_VulkanDeviceMemory = nullptr;
+	}
+	
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
 }

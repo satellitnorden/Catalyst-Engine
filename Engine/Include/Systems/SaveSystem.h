@@ -83,4 +83,14 @@ private:
 	*/
 	void ProcessSaves() NOEXCEPT;
 
+	/*
+	*	Loads a single entry.
+	*/
+	void LoadSingleEntry(const SaveEntry &entry) NOEXCEPT;
+
+	/*
+	*	Saves a single entry.
+	*/
+	void SaveSingleEntry(const SaveEntry &entry) NOEXCEPT;
+
 };

@@ -74,10 +74,12 @@ void VulkanInterface::Release() NOEXCEPT
 	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER)->WaitIdle();
 
 	//Release all Vulkan 2D textures.
-	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : _Vulkan2DTextures)
+	for (Vulkan2DTexture *RESTRICT &vulkan_2D_texture : _Vulkan2DTextures)
 	{
-		vulkan2DTexture->Release();
-		Memory::Free(vulkan2DTexture);
+		ASSERT(vulkan_2D_texture, "Double deletion detected!");
+		vulkan_2D_texture->Release();
+		Memory::Free(vulkan_2D_texture);
+		vulkan_2D_texture = nullptr;
 	}
 
 	//Release all Vulkan 3D textures.

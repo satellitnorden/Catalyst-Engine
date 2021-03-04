@@ -66,11 +66,8 @@ void SaveSystem::RegisterSaveEntry(const SaveEntry &entry) NOEXCEPT
 	//Add the save entry.
 	_SaveEntries.Emplace(entry);
 
-	//Request a load for the new entry.
-	RequestLoad(entry._SaveMask);
-
-	//Process the saves immediately, so that all initial data gets loaded when the game starts.
-	ProcessSaves();
+	//Load the entry immediately, so that all initial data gets loaded when the game starts.
+	LoadSingleEntry(entry);
 }
 
 /*
@@ -102,84 +99,102 @@ void SaveSystem::ProcessSaves() NOEXCEPT
 		//Does this save entry need to be loaded?
 		if (entry._SaveMask & _ProcessLoadsMask)
 		{
-			//Does the file exist?
-			if (!File::Exists(entry._FilePath.Data()))
-			{			
-				//Construct the save header.
-				SaveHeader save_header;
-
-				save_header._Version = entry._CurrentVersionCallback();
-
-				//Determine the size required for the save.
-				const uint64 size{ entry._SaveSizeCallback() };
-
-				//Allocate the memory required for the save.
-				void *const RESTRICT save_data{ Memory::Allocate(sizeof(SaveHeader) + size) };
-
-				//Set the default values.
-				entry._DefaultValuesCallback(AdvancePointer(save_data, sizeof(SaveHeader)));
-
-				//Create the file.
-				File::CreateFile(entry._FilePath.Data());
-
-				//Write it to file.
-				BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
-				file.Write(&save_header, sizeof(SaveHeader));
-				file.Write(AdvancePointer(save_data, sizeof(SaveHeader)), size);
-				file.Close();
-
-				//Call the load callback.
-				entry._LoadCallback(save_header._Version, AdvancePointer(save_data, sizeof(SaveHeader)));
-
-				//Free the memory.
-				Memory::Free(save_data);
-			}
-
-			else
-			{
-				//Open the file.
-				BinaryFile<IOMode::In> file{ entry._FilePath.Data() };
-
-				//Allocate the memory required for the save.
-				void* const RESTRICT save_data{ Memory::Allocate(file.Size()) };
-
-				//Read the saved data.
-				file.Read(save_data, file.Size());
-				file.Close();
-
-				//Call the load callback.
-				entry._LoadCallback(static_cast<SaveHeader *const RESTRICT>(save_data)->_Version, AdvancePointer(save_data, sizeof(SaveHeader)));
-
-				//Free the memory.
-				Memory::Free(save_data);
-			}
+			LoadSingleEntry(entry);
 		}
 
 		//Does this save entry need to be saved?
 		if (entry._SaveMask & _ProcessSavesMask)
 		{
-			//Construct the save header.
-			SaveHeader save_header;
-
-			save_header._Version = entry._CurrentVersionCallback();
-
-			//Determine the size required for the save.
-			const uint64 size{ entry._SaveSizeCallback() };
-
-			//Allocate the memory required for the save.
-			void *const RESTRICT save_data{ Memory::Allocate(sizeof(SaveHeader) + size) };
-
-			//Call the save callback.
-			entry._SaveCallback(AdvancePointer(save_data, sizeof(SaveHeader)));
-
-			//Write it to file.
-			BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
-			file.Write(&save_header, sizeof(SaveHeader));
-			file.Write(AdvancePointer(save_data, sizeof(SaveHeader)), size);
-			file.Close();
-
-			//Free the memory.
-			Memory::Free(save_data);
+			SaveSingleEntry(entry);
 		}
 	}
+}
+
+
+
+/*
+*	Loads a single entry.
+*/
+void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
+{
+	//Does the file exist?
+	if (!File::Exists(entry._FilePath.Data()))
+	{			
+		//Construct the save header.
+		SaveHeader save_header;
+
+		save_header._Version = entry._CurrentVersionCallback();
+
+		//Determine the size required for the save.
+		const uint64 size{ entry._SaveSizeCallback() };
+
+		//Allocate the memory required for the save.
+		void *const RESTRICT save_data{ Memory::Allocate(size) };
+
+		//Set the default values.
+		entry._DefaultValuesCallback(save_data);
+
+		//Create the file.
+		File::CreateFile(entry._FilePath.Data());
+
+		//Write it to file.
+		BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
+		file.Write(&save_header, sizeof(SaveHeader));
+		file.Write(save_data, size);
+		file.Close();
+
+		//Call the load callback.
+		entry._LoadCallback(save_header._Version, save_data);
+
+		//Free the memory.
+		Memory::Free(save_data);
+	}
+
+	else
+	{
+		//Open the file.
+		BinaryFile<IOMode::In> file{ entry._FilePath.Data() };
+
+		//Allocate the memory required for the save.
+		void* const RESTRICT save_data{ Memory::Allocate(file.Size()) };
+
+		//Read the saved data.
+		file.Read(save_data, file.Size());
+		file.Close();
+
+		//Call the load callback.
+		entry._LoadCallback(static_cast<SaveHeader *const RESTRICT>(save_data)->_Version, AdvancePointer(save_data, sizeof(SaveHeader)));
+
+		//Free the memory.
+		Memory::Free(save_data);
+	}
+}
+
+/*
+*	Saves a single entry.
+*/
+void SaveSystem::SaveSingleEntry(const SaveEntry &entry) NOEXCEPT
+{
+	//Construct the save header.
+	SaveHeader save_header;
+
+	save_header._Version = entry._CurrentVersionCallback();
+
+	//Determine the size required for the save.
+	const uint64 size{ entry._SaveSizeCallback() };
+
+	//Allocate the memory required for the save.
+	void *const RESTRICT save_data{ Memory::Allocate(size) };
+
+	//Call the save callback.
+	entry._SaveCallback(save_data);
+
+	//Write it to file.
+	BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
+	file.Write(&save_header, sizeof(SaveHeader));
+	file.Write(save_data, size);
+	file.Close();
+
+	//Free the memory.
+	Memory::Free(save_data);
 }

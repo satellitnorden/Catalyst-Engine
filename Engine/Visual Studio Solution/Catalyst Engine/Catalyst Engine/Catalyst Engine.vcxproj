@@ -470,6 +470,7 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceProgressBar.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceScene.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceUtilities.h" />
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
@@ -664,6 +665,7 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceProgressBar.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
