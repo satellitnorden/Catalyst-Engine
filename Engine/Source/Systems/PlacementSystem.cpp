@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/PlacementSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(PlacementSystem);
-
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 #include <Core/General/Perceiver.h>
@@ -14,6 +11,9 @@ DEFINE_SINGLETON(PlacementSystem);
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/TaskSystem.h>
+
+//Singleton definition.
+DEFINE_SINGLETON(PlacementSystem);
 
 /*
 *	Initializes the placement system.
@@ -193,7 +193,7 @@ void PlacementSystem::UpdateTwoDimensionalPlacementData(EntityPlacementData *con
 			//Calculate the axis aligned bounding box.
 			const Vector3<float32> wanted_grid_Point_world_position{ GridPoint2::GridPointToWorldPosition(wanted_grid_point, data->_GridCellSize) };
 
-			AxisAlignedBoundingBox3 box;
+			AxisAlignedBoundingBox3D box;
 
 			box._Minimum._X = wanted_grid_Point_world_position._X - data->_GridCellSize * 0.5f;
 			box._Minimum._Y = 0.0f;

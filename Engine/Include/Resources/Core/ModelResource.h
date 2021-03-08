@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
 //Rendering.
 #include <Rendering/Native/Mesh.h>
@@ -19,7 +19,7 @@ class ModelResource final : public Resource
 public:
 
 	//The model space axis-aligned bounding box.
-	AxisAlignedBoundingBox3 _ModelSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _ModelSpaceAxisAlignedBoundingBox;
 
 	//Container for all the meshes.
 	DynamicArray<Mesh> _Meshes;

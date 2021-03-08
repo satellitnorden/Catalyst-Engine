@@ -41,7 +41,7 @@ public:
 	WorldTransform _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;

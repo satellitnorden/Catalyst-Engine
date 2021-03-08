@@ -30,7 +30,7 @@ void DebugRenderingSystem::Initialize() NOEXCEPT
 void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox3D(	const Vector4<float32> &color,
 																const bool depth_test,
 																const bool wireframe,
-																const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
+																const AxisAlignedBoundingBox3D &axis_aligned_bounding_box_3D,
 																const float32 lifetime) NOEXCEPT
 {
 	//Add the debug axis aligned bounding box 3D render.

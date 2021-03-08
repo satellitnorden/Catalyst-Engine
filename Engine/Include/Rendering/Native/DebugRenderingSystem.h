@@ -9,7 +9,7 @@
 #include <Concurrency/Spinlock.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Sphere.h>
 
 class DebugRenderingSystem final
@@ -48,7 +48,7 @@ public:
 		DebugRender _DebugRender;
 
 		//The axis aligned bounding box 3D.
-		AxisAlignedBoundingBox3 _AxisAlignedBoundingBox3D;
+		AxisAlignedBoundingBox3D _AxisAlignedBoundingBox3D;
 
 		//The current lifetime.
 		float32 _CurrentLifetime;
@@ -94,7 +94,7 @@ public:
 	void DebugRenderAxisAlignedBoundingBox3D(	const Vector4<float32> &color,
 												const bool depth_test,
 												const bool wireframe,
-												const AxisAlignedBoundingBox3 &axis_aligned_bounding_box_3D,
+												const AxisAlignedBoundingBox3D &axis_aligned_bounding_box_3D,
 												const float32 lifetime) NOEXCEPT;
 
 	/*

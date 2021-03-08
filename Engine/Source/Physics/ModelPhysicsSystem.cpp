@@ -15,7 +15,7 @@ void ModelPhysicsSystem::CastRayDynamicModels(const Ray &ray, const RaycastConfi
 	for (Entity *const RESTRICT entity : *ComponentManager::GetDynamicModelEntities())
 	{
 		//Cache the relevant data.
-		const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box{ *static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox() };
+		const AxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box{ *static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox() };
 		const ResourcePointer<ModelResource> model_resource{ static_cast<const DynamicModelEntity *const RESTRICT>(entity)->GetModelResource() };
 	
 		//Cast the ray.
@@ -39,7 +39,7 @@ void ModelPhysicsSystem::CastRayStaticModels(const Ray &ray, const RaycastConfig
 	for (Entity *const RESTRICT entity : *ComponentManager::GetStaticModelEntities())
 	{
 		//Cache the relevant data.
-		const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box{ *static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox() };
+		const AxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box{ static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetWorldSpaceAxisAlignedBoundingBox()->GetAbsoluteAxisAlignedBoundingBox() };
 		const ResourcePointer<ModelResource> model_resource{ static_cast<const StaticModelEntity *const RESTRICT>(entity)->GetModelResource() };
 
 		//Cast the ray.
@@ -59,7 +59,7 @@ void ModelPhysicsSystem::CastRayStaticModels(const Ray &ray, const RaycastConfig
 *	Casts a ray against the given model.
 */
 NO_DISCARD bool ModelPhysicsSystem::CastRayModel(	const Ray &ray,
-													const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box,
+													const AxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 													const ResourcePointer<ModelResource> model_resource,
 													const Matrix4x4 &world_transform,
 													float32 *const RESTRICT intersection_distance) NOEXCEPT

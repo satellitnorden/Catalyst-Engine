@@ -190,16 +190,18 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 	uint32 mesh_counter{ 0 };
 
-	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+	for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
 	{
-		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
+		for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 		{
-			_StaticModelsMaterialindices.Emplace(component->_MaterialResources[j]->_Index);
-		}
+			if (!TEST_BIT(component->_MeshesVisibleMask, BIT(mesh_index)))
+			{
+				continue;
+			}
 
-		for (const Mesh &mesh : component->_ModelResource->_Meshes)
-		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_StaticModelsMaterialindices.Emplace(component->_MaterialResources[mesh_index]->_Index);
+
+			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}

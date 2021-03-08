@@ -11,7 +11,6 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystRandomMath.h>
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/Noise/HaltonSequence.h>
 #include <Math/Noise/HammersleySequence.h>
 

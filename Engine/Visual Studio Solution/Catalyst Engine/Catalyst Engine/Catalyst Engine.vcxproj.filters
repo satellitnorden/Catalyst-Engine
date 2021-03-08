@@ -558,9 +558,6 @@
     <ClInclude Include="..\..\..\Include\Math\Noise\ValueNoise.h">
       <Filter>Math\Include\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h">
-      <Filter>Math\Include\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
@@ -1716,6 +1713,15 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceProgressBar.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceText.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Core\WorldSpaceAxisAlignedBoundingBox3D.h">
+      <Filter>World\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox3D.h">
+      <Filter>Math\Include\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2274,6 +2280,9 @@
       <Filter>Rendering\Source\Native\Pipelines\Ray Tracing Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceProgressBar.cpp">
+      <Filter>User Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceText.cpp">
       <Filter>User Interface\Source</Filter>
     </ClCompile>
   </ItemGroup>

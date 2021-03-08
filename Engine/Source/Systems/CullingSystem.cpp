@@ -85,7 +85,7 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 		}
 
 		//Cache the world space axis aligned bounding box.
-		AxisAlignedBoundingBox3 world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox };
+		AxisAlignedBoundingBox3D world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox };
 
 		//Need to transform the world space axis aligned bounding box to the perceiver's cell.
 		{
@@ -119,7 +119,7 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
 		//Cache the world space axis aligned bounding box.
-		AxisAlignedBoundingBox3 world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox };
+		AxisAlignedBoundingBox3D world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
 
 		//Need to transform the world space axis aligned bounding box to the perceiver's cell.
 		{

@@ -25,7 +25,7 @@
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Noise/HaltonSequence.h>
 #include <Math/Noise/HammersleySequence.h>
 
@@ -494,7 +494,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	//Determine the model space axis aligned bounding box.
 	{
 		//Iterate over all vertices in all meshes and expand the bounding box.
-		AxisAlignedBoundingBox3 aixs_aligned_bounding_box;
+		AxisAlignedBoundingBox3D aixs_aligned_bounding_box;
 
 		for (ModelFile &model_file : model_files)
 		{
@@ -508,7 +508,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 		}
 
 		//Write the axis-aligned bounding box to the file.
-		output_file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3));
+		output_file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3D));
 	}
 
 	//Write the number of meshes.

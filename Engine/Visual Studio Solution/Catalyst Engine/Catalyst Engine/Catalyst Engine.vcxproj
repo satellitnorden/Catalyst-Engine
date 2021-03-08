@@ -161,7 +161,7 @@
     <ClInclude Include="..\..\..\Include\Math\General\RandomIndexer.h" />
     <ClInclude Include="..\..\..\Include\Math\General\SpringDampingSystem.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Vector.h" />
-    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox.h" />
+    <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox3D.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\Capsule.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\Geometry\GridPoint3.h" />
@@ -472,11 +472,13 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceProgressBar.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceScene.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceText.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceUtilities.h" />
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldPosition.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\WorldSpaceAxisAlignedBoundingBox3D.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h" />
     <ClInclude Include="..\..\..\Include\World\Environment\VolumetricLightingProperties.h" />
     <ClInclude Include="..\..\..\Include\World\Level\LevelEntry.h" />
@@ -667,6 +669,7 @@
     <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceProgressBar.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp" />
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceText.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\WorldPosition.cpp" />

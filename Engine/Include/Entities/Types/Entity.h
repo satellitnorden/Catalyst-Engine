@@ -9,7 +9,6 @@
 #include <Entities/Creation/EntityInitializationData.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
 #include <Math/General/Matrix.h>
 
 class Entity

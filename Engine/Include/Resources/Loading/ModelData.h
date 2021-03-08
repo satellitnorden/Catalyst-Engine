@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
 //Rendering.
 #include <Rendering/Native/Vertex.h>
@@ -16,7 +16,7 @@ class ModelData final
 public:
 
 	//The axis aligned bounding box.
-	AxisAlignedBoundingBox3 _AxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _AxisAlignedBoundingBox;
 
 	//The number of meshes.
 	uint64 _NumberOfMeshes;

@@ -136,7 +136,7 @@ RESTRICTED NO_DISCARD WorldTransform *const RESTRICT DynamicModelEntity::ModifyW
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -144,7 +144,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModel
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	//Does the world space axis aligned bounding box need to be updated?
 	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))

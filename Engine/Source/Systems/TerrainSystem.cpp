@@ -221,6 +221,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 
 	_Update._TexturesToRemove.Clear();
 
+	/*
 	if (RenderingSystem::Instance->IsRayTracingActive())
 	{
 		//Update the terrain top level acceleration structure.
@@ -229,6 +230,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 		//Update the current buffer index.
 		_TerrainRayTracingData._CurrentBufferIndex ^= static_cast<uint8>(1);
 	}
+	*/
 }
 
 /*

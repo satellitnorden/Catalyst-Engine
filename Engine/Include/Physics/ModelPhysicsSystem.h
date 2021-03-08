@@ -39,7 +39,7 @@ private:
 	*	Casts a ray against the given model.
 	*/
 	NO_DISCARD bool CastRayModel(	const Ray &ray,
-									const AxisAlignedBoundingBox3 &world_space_axis_aligned_bounding_box,
+									const AxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 									const ResourcePointer<ModelResource> model_resource,
 									const Matrix4x4 &world_transform,
 									float32 *const RESTRICT intersection_distance) NOEXCEPT;

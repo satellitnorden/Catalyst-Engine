@@ -9,7 +9,7 @@
 #include <Animation/Skeleton.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
 class AnimatedModelData final
 {
@@ -17,7 +17,7 @@ class AnimatedModelData final
 public:
 
 	//The axis-aligned bounding box.
-	AxisAlignedBoundingBox3 _AxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _AxisAlignedBoundingBox;
 
 	//The vertices of this model.
 	DynamicArray<AnimatedVertex> _Vertices;

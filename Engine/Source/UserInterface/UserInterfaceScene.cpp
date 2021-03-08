@@ -54,6 +54,14 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 
 	_ProgressBars.Clear();
 
+	//Free all texts.
+	for (UserInterfaceText *const RESTRICT text : _Texts)
+	{
+		delete text;
+	}
+
+	_Texts.Clear();
+
 	//Destroy all elements.
 	for (UserInterfaceElement *const RESTRICT element : _UserInterfaceElements)
 	{
@@ -162,6 +170,31 @@ RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgr
 
 	//Return the progress bar.
 	return new_progress_bar;
+}
+
+/*
+*	Adds a text.
+*/
+RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const Vector2<uint32>& minimum_cell,
+																			const Vector2<uint32> &maximum_cell,
+																			const char *const RESTRICT text) NOEXCEPT
+{
+	//Calculate the bounding box.
+	Vector2<float32> minimum;
+	Vector2<float32> maximum;
+
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
+
+	//Allocate the text.
+	UserInterfaceText* const RESTRICT new_text{ new UserInterfaceText(	minimum,
+																		maximum,
+																		text) };
+
+	//Add the text to the container.
+	_Texts.Emplace(new_text);
+
+	//Return the text.
+	return new_text;
 }
 
 /*

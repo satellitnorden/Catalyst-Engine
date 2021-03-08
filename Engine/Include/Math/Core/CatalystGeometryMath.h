@@ -5,7 +5,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Capsule.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
@@ -46,7 +46,7 @@ public:
 	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3 &box1, const AxisAlignedBoundingBox3 &box2) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3D &box1, const AxisAlignedBoundingBox3D &box2) NOEXCEPT
 	{
 		return	box1._Minimum._X <= box2._Maximum._X
 				&& box1._Maximum._X >= box2._Minimum._X
@@ -60,7 +60,7 @@ public:
 	*	Performs a ray-box intersection and returns whether or not there was an intersection.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(	const Ray &ray,
-																		const AxisAlignedBoundingBox3 &box,
+																		const AxisAlignedBoundingBox3D &box,
 																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		//Find the minimum/maximum.

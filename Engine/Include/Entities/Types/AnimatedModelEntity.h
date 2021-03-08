@@ -54,11 +54,11 @@ public:
 	/*
 	*	Returns the model space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 	/*
 	*	Returns the world space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 };

@@ -37,8 +37,12 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._WorldTransform = model_initialization_data->_WorldTransform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_WorldTransform.ToLocalMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
+	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_WorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	component._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(component._WorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+	component._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(component._WorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
+	component._MeshesVisibleMask = UINT8_MAXIMUM;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
@@ -70,11 +74,35 @@ NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstan
 }
 
 /*
-*	Returns the level of detail index at the given mesh index.
+*	Shows the mesh(es) with the specified mask.
 */
-NO_DISCARD uint64 StaticModelEntity::GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT
+void StaticModelEntity::ShowMesh(const uint8 mask) NOEXCEPT
 {
-	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._LevelOfDetailIndices[mesh_index];
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask |= mask;
+}
+
+/*
+*	Returns whether or not all of the mesh(es) at the specified mask is shown.
+*/
+NO_DISCARD bool StaticModelEntity::AreAllMeshesShown(const uint8 mask) NOEXCEPT
+{
+	return (ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask & mask) == mask;
+}
+
+/*
+*	Returns whether or not any the mesh(es) at the specified mask is shown.
+*/
+NO_DISCARD bool StaticModelEntity::IsAnyMeshesShown(const uint8 mask) NOEXCEPT
+{
+	return static_cast<bool>(ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask & mask);
+}
+
+/*
+*	Hides the mesh(es) with the specified mask.
+*/
+void StaticModelEntity::HideMesh(const uint8 mask) NOEXCEPT
+{
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask &= ~mask;
 }
 
 /*
@@ -88,7 +116,7 @@ RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT StaticModelEntity::Ge
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT StaticModelEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -96,7 +124,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelE
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT StaticModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }

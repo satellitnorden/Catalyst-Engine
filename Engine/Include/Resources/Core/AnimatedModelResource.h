@@ -8,7 +8,7 @@
 #include <Animation/Skeleton.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -22,7 +22,7 @@ class AnimatedModelResource final : public Resource
 public:
 
 	//The model space axis-aligned bounding box.
-	AxisAlignedBoundingBox3 _ModelSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _ModelSpaceAxisAlignedBoundingBox;
 
 	//The vertex buffer.
 	BufferHandle _VertexBuffer;

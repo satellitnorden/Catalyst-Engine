@@ -31,7 +31,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<IOMode::In> *const RESTRICT file, 
 void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<IOMode::In> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
 {
 	//Read the axis-aligned bounding box
-	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
+	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D));
 
 	//Read the number of vertices.
 	uint64 number_of_vertices;
@@ -148,7 +148,7 @@ void ResourceLoadingSystem::LoadMaterial(BinaryFile<IOMode::In> *const RESTRICT 
 void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT
 {
 	//Read the axis-aligned bounding box
-	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3));
+	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D));
 
 	//Read the number of meshes.
 	file->Read(&data->_NumberOfMeshes, sizeof(uint64));

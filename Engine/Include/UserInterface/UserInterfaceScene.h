@@ -7,6 +7,7 @@
 //User interface.
 #include <UserInterface/UserInterfaceElement.h>
 #include <UserInterface/UserInterfaceProgressBar.h>
+#include <UserInterface/UserInterfaceText.h>
 
 class UserInterfaceScene
 {
@@ -115,6 +116,13 @@ protected:
 																		UserInterfaceMaterial *const RESTRICT bottom_material_override = nullptr,
 																		UserInterfaceMaterial *const RESTRICT top_material_override = nullptr) NOEXCEPT;
 
+	/*
+	*	Adds a text.
+	*/
+	RESTRICTED UserInterfaceText *const RESTRICT AddText(	const Vector2<uint32> &minimum_cell,
+															const Vector2<uint32> &maximum_cell,
+															const char *const RESTRICT text = "") NOEXCEPT;
+
 private:
 
 	//Denotes whether or not this scene is active.
@@ -140,6 +148,9 @@ private:
 
 	//The progress bars.
 	DynamicArray<UserInterfaceProgressBar *const RESTRICT> _ProgressBars;
+
+	//The texts.
+	DynamicArray<UserInterfaceText *const RESTRICT> _Texts;
 
 	//Container for all the user interface elements.
 	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;

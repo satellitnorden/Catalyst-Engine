@@ -165,7 +165,7 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
 
-		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
 		{
 			//Skip this model depending on visibility.
 			if (!component->_Visibility)
@@ -174,22 +174,28 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			}
 
 			//Draw all meshes.
-			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 			{
+				//Skip this mesh if it's hidden.
+				if (!TEST_BIT(component->_MeshesVisibleMask, BIT(mesh_index)))
+				{
+					continue;
+				}
+
 				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
+				if (component->_MaterialResources[mesh_index]->_Type != MaterialResource::Type::OPAQUE)
 				{
 					continue;
 				}
 
 				//Skip this mesh depending on the double-sidedness.
-				if (_DoubleSided != component->_MaterialResources[i]->_DoubleSided)
+				if (_DoubleSided != component->_MaterialResources[mesh_index]->_DoubleSided)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh& mesh{ component->_ModelResource->_Meshes[i] };
+				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
 
 				//Push constants.
 				VertexPushConstantData vertexData;
@@ -200,16 +206,16 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 				FragmentPushConstantData fragmentData;
 
-				fragmentData._MaterialIndex = component->_MaterialResources[i]->_Index;
+				fragmentData._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer, &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer, OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount, 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
 			}
 		}
 	}

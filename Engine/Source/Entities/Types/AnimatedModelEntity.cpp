@@ -91,7 +91,7 @@ RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT AnimatedModelEntity::GetWorldTra
 /*
 *	Returns the model space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT AnimatedModelEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox;
 }
@@ -99,7 +99,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedMode
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT AnimatedModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT AnimatedModelEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	return &ComponentManager::GetAnimatedModelAnimatedModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }

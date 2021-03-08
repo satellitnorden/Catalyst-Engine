@@ -21,7 +21,7 @@ public:
 	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox3 _WorldSpaceAxisAlignedBoundingBox;
+	AxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The previous world transform.
 	Matrix4x4 _PreviousWorldTransform;

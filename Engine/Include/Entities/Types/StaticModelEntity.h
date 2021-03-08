@@ -12,6 +12,7 @@
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
 
 class StaticModelEntity : public Entity
@@ -65,9 +66,24 @@ public:
 	NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &GetMaterialResources() const NOEXCEPT;
 
 	/*
-	*	Returns the level of detail index at the given mesh index.
+	*	Shows the mesh(es) with the specified mask.
 	*/
-	NO_DISCARD uint64 GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT;
+	void ShowMesh(const uint8 mask) NOEXCEPT;
+
+	/*
+	*	Returns whether or not all of the mesh(es) at the specified mask is shown.
+	*/
+	NO_DISCARD bool AreAllMeshesShown(const uint8 mask) NOEXCEPT;
+
+	/*
+	*	Returns whether or not any the mesh(es) at the specified mask is shown.
+	*/
+	NO_DISCARD bool IsAnyMeshesShown(const uint8 mask) NOEXCEPT;
+
+	/*
+	*	Hides the mesh(es) with the specified mask.
+	*/
+	void HideMesh(const uint8 mask) NOEXCEPT;
 
 	/*
 	*	Returns the world transform.
@@ -77,11 +93,11 @@ public:
 	/*
 	*	Returns the model space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT;
 
 	/*
 	*	Returns the world space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3 *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+	RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
 
 };
