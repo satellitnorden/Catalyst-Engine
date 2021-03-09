@@ -20,28 +20,24 @@
 #include <UserInterface/UserInterfaceUtilities.h>
 
 /*
-*	User interface vertex push constant data definition.
+*	User interface push constant data definition.
 */
-class UserInterfaceVertexPushConstantData final
+class UserInterfacePushConstantData final
 {
 
 public:
+
+	//The material.
+	UserInterfaceMaterial _Material;
+
+	//The color.
+	Vector4<float32> _Color;
 
 	//The minimum of the screen space axis aligned box.
 	Vector2<float32> _Minimum;
 
 	//The maximum of the screen space axis aligned box.
 	Vector2<float32> _Maximum;
-
-};
-
-/*
-*	User interface fragment push constant data definition.
-*/
-class UserInterfaceFragmentPushConstantData final
-{
-
-public:
 
 	//The type.
 	uint32 _Type;
@@ -57,15 +53,6 @@ public:
 
 	//The text smoothing factor.
 	float32 _TextSmoothingFactor;
-
-	//The opacity.
-	float32 _Opacity;
-
-	//Some padding.
-	Padding<8> _Padding;
-
-	//The material.
-	UserInterfaceMaterial _Material;
 
 };
 
@@ -90,9 +77,8 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData));
-	AddPushConstantRange(ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -165,47 +151,42 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				const ButtonUserInterfaceElement *const RESTRICT type_element{ static_cast<const ButtonUserInterfaceElement *const RESTRICT>(element) };
 
 				//Push constants.
-				UserInterfaceVertexPushConstantData vertex_data;
-
-				vertex_data._Minimum = type_element->_Minimum;
-				vertex_data._Maximum = type_element->_Maximum;
-
-				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
-
-				UserInterfaceFragmentPushConstantData fragment_data;
-
-				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::BUTTON);
-				fragment_data._WidthRangeStart = 0.0f;
-				fragment_data._WidthRangeEnd = 1.0f;
-				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
-				fragment_data._TextSmoothingFactor = 0.0f;
-				fragment_data._Opacity = type_element->_Opacity;
+				UserInterfacePushConstantData data;
 
 				switch (type_element->_CurrentState)
 				{
 					case ButtonUserInterfaceElement::State::IDLE:
 					{
-						fragment_data._Material = type_element->_IdleMaterial;
+						data._Material = type_element->_IdleMaterial;
 
 						break;
 					}
 
 					case ButtonUserInterfaceElement::State::HOVERED:
 					{
-						fragment_data._Material = type_element->_HoveredMaterial;
+						data._Material = type_element->_HoveredMaterial;
 
 						break;
 					}
 
 					case ButtonUserInterfaceElement::State::PRESSED:
 					{
-						fragment_data._Material = type_element->_PressedMaterial;
+						data._Material = type_element->_PressedMaterial;
 
 						break;
 					}
 				}
 
-				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+				data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
+				data._Minimum = type_element->_Minimum;
+				data._Maximum = type_element->_Maximum;
+				data._Type = static_cast<uint32>(UserInterfaceElementType::BUTTON);
+				data._WidthRangeStart = 0.0f;
+				data._WidthRangeEnd = 1.0f;
+				data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
+				data._TextSmoothingFactor = 0.0f;
+
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
 
 				//Draw!
 				command_buffer->Draw(this, 4, 1);
@@ -218,24 +199,19 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				const ImageUserInterfaceElement *const RESTRICT type_element{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
 
 				//Push constants.
-				UserInterfaceVertexPushConstantData vertex_data;
+				UserInterfacePushConstantData data;
 
-				vertex_data._Minimum = type_element->_Minimum;
-				vertex_data._Maximum = type_element->_Maximum;
+				data._Material = type_element->_Material;
+				data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
+				data._Minimum = type_element->_Minimum;
+				data._Maximum = type_element->_Maximum;
+				data._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
+				data._WidthRangeStart = 0.0f;
+				data._WidthRangeEnd = 1.0f;
+				data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
+				data._TextSmoothingFactor = 0.0f;
 
-				command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
-
-				UserInterfaceFragmentPushConstantData fragment_data;
-
-				fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
-				fragment_data._WidthRangeStart = 0.0f;
-				fragment_data._WidthRangeEnd = 1.0f;
-				fragment_data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
-				fragment_data._TextSmoothingFactor = 0.0f;
-				fragment_data._Opacity = type_element->_Opacity;
-				fragment_data._Material = type_element->_Material;
-
-				command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
 
 				//Draw!
 				command_buffer->Draw(this, 4, 1);
@@ -274,27 +250,21 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					if (character != '\n')
 					{
 						//Push constants.
-						UserInterfaceVertexPushConstantData vertex_data;
+						UserInterfacePushConstantData data;
 
-						vertex_data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
-						vertex_data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_FontResource->_CharacterDescriptions[character]._Size._Y - type_element->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
+						data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_MasterTextureIndex);
+						data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
+						data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
+						data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_FontResource->_CharacterDescriptions[character]._Size._Y - type_element->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
+						data._Maximum._X = data._Minimum._X + type_element->_FontResource->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
+						data._Maximum._Y = data._Minimum._Y + type_element->_FontResource->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
+						data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
+						data._WidthRangeStart = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
+						data._WidthRangeEnd = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
+						data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
+						data._TextSmoothingFactor = type_element->_TextSmoothingFactor;
 
-						vertex_data._Maximum._X = vertex_data._Minimum._X + type_element->_FontResource->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
-						vertex_data._Maximum._Y = vertex_data._Minimum._Y + type_element->_FontResource->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
-
-						command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(UserInterfaceVertexPushConstantData), &vertex_data);
-
-						UserInterfaceFragmentPushConstantData fragment_data;
-
-						fragment_data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
-						fragment_data._WidthRangeStart = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
-						fragment_data._WidthRangeEnd = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
-						fragment_data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
-						fragment_data._TextSmoothingFactor = type_element->_TextSmoothingFactor;
-						fragment_data._Opacity = type_element->_Opacity;
-						fragment_data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_MasterTextureIndex);
-
-						command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(UserInterfaceVertexPushConstantData), sizeof(UserInterfaceFragmentPushConstantData), &fragment_data);
+						command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
 
 						//Draw!
 						command_buffer->Draw(this, 4, 1);

@@ -172,4 +172,4 @@ private:
 
 };
 
-static_assert(sizeof(UserInterfaceMaterial) == 16, "Size of user interface should be 16 bytes to be optimal for GPU arrays!");
+static_assert(sizeof(UserInterfaceMaterial) == 16, "Size of user interface material should be 16 bytes to be optimal for GPU arrays!");

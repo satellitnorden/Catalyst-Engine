@@ -12,13 +12,15 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 16) uint TYPE;
-    layout (offset = 20) float WIDTH_RANGE_START;
-    layout (offset = 24) float WIDTH_RANGE_END;
-    layout (offset = 28) float ELEMENT_ASPECT_RATIO;
-    layout (offset = 32) float TEXT_SMOOTHING_FACTOR;
-    layout (offset = 36) float OPACITY;
-    layout (offset = 48) UserInterfaceMaterial MATERIAL;
+    layout (offset = 0) UserInterfaceMaterial MATERIAL;
+    layout (offset = 16) vec4 COLOR;
+    layout (offset = 32) vec2 MINIMUM;
+    layout (offset = 40) vec2 MAXIMUM;
+    layout (offset = 48) uint TYPE;
+    layout (offset = 52) float WIDTH_RANGE_START;
+    layout (offset = 56) float WIDTH_RANGE_END;
+    layout (offset = 60) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
 };
 
 //In parameters.
@@ -38,7 +40,7 @@ void CatalystShaderMain()
 		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO) * vec4(1.0f, 1.0f, 1.0f, OPACITY);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO) * COLOR;
 
 			break;
 		}
@@ -52,7 +54,7 @@ void CatalystShaderMain()
 			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance);
 
 			//Write the fragment.
-			fragment = vec4(vec3(1.0f), opacity * OPACITY);
+			fragment = vec4(COLOR.rgb, opacity * COLOR.a);
 
 			break;
 		}

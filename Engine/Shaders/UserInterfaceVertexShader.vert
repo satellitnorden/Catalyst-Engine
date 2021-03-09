@@ -1,8 +1,18 @@
+//Includes.
+#include "CatalystUserInterfaceCore.glsl"
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) vec2 minimum;
-    layout (offset = 8) vec2 maximum;
+    layout (offset = 0) UserInterfaceMaterial MATERIAL;
+    layout (offset = 16) vec4 COLOR;
+    layout (offset = 32) vec2 MINIMUM;
+    layout (offset = 40) vec2 MAXIMUM;
+    layout (offset = 48) uint TYPE;
+    layout (offset = 52) float WIDTH_RANGE_START;
+    layout (offset = 56) float WIDTH_RANGE_END;
+    layout (offset = 60) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
 };
 
 //Out parameters.
@@ -19,7 +29,7 @@ void CatalystShaderMain()
     fragment_texture_coordinate.y = 1.0f - y;
     
     //Calculate the viewport coordinates.
-    vec2 viewport_coordinates = vec2(mix(minimum.x,  maximum.x, x), 1.0f - mix(minimum.y, maximum.y, y));
+    vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), 1.0f - mix(MINIMUM.y, MAXIMUM.y, y));
 
     //Write the position.
     gl_Position = vec4(viewport_coordinates.x * 2.0f - 1.0f, viewport_coordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
