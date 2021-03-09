@@ -140,6 +140,6 @@ void CatalystShaderMain()
     //Write the fragments.
     scene_features_1 = vec4(albedo, 0.0f);
     scene_features_2 = vec4(normal, gl_FragCoord.z);
-    scene_features_3 = mix(vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(1.0f, 0.0f, 1.0f, 0.0f), foam_weight);
+    scene_features_3 = mix(vec4(0.125f, 0.0f, 1.0f, 0.0f), vec4(0.25f, 0.0f, 1.0f, 0.0f), foam_weight);
     scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }

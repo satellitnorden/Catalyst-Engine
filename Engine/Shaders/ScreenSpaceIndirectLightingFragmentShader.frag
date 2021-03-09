@@ -208,6 +208,14 @@ void CatalystShaderMain()
 	//Normalize the indirect lighting.
 	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
 	
+	//Calculate the lighting.
+	indirect_lighting = CalculateIndirectLighting(	-view_direction,
+													scene_features_1.rgb,
+													scene_features_2.xyz,
+													scene_features_3[0],
+													scene_features_3[1],
+													scene_features_3[2],
+													indirect_lighting);
 
     //Write the fragment
     fragment = vec4(indirect_lighting, min(total_weight, 1.0f));

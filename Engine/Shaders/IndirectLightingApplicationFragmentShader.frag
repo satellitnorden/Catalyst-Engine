@@ -128,18 +128,15 @@ void CatalystShaderMain()
 
 	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
 
-	indirect_lighting.rgb = mix(SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight), indirect_lighting.rgb, indirect_lighting.a);
+	vec3 sky_lighting = CalculateIndirectLighting(	-view_direction,
+													scene_features_1.rgb,
+													scene_features_2.xyz,
+													scene_features_3[0],
+													scene_features_3[1],
+													scene_features_3[2],
+													SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
 
-	//Calculate the indirect lighting.
-	/*
-	indirect_lighting.rgb = CalculateIndirectLighting(	-view_direction,
-														scene_features_1.rgb,
-														scene_features_2.xyz,
-														scene_features_3[0],
-														scene_features_3[1],
-														scene_features_3[2],
-														indirect_lighting.rgb);
-	*/
+	indirect_lighting.rgb = mix(sky_lighting, indirect_lighting.rgb, indirect_lighting.a);
 
 	//Write the fragment.
 	scene = vec4(indirect_lighting.rgb, 1.0f);
