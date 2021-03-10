@@ -12,6 +12,7 @@
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Instanced opaque model scene features vertex push constant data definition.

@@ -1722,6 +1722,21 @@
     <ClInclude Include="..\..\..\Include\Math\Geometry\AxisAlignedBoundingBox3D.h">
       <Filter>Math\Include\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\Transient\InstancedImpostorComponent.h">
+      <Filter>Components\Include\Transient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\InstancedImpostorInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\InstancedImpostorEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedImpostorColorSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2284,6 +2299,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceText.cpp">
       <Filter>User Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\Core\WorldTransform.cpp">
+      <Filter>World\Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\InstancedImpostorEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedImpostorColorSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedImpostorDepthSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

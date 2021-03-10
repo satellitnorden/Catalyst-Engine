@@ -13,6 +13,7 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/TerrainSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainVertex.h>

@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Post-initializes the ray tracing system.

@@ -51,6 +51,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_InstancedImpostorDepthSceneFeaturesGraphicsPipeline);
 
 	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
 	{
@@ -58,6 +59,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_InstancedImpostorColorSceneFeaturesGraphicsPipeline);
 
 	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
 
@@ -83,9 +85,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_MaskedModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_MaskedModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_MaskedModelColorSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_MaskedModelColorSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
@@ -132,10 +136,14 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
+	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
+
 	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}
+
+	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Execute();
 
 	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
 	{

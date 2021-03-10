@@ -14,6 +14,7 @@
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Model shadow map vertex push constant data definition.

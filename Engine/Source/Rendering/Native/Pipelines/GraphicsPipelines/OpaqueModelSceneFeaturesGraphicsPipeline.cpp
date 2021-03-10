@@ -13,6 +13,7 @@
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Vertex push constant data definition.

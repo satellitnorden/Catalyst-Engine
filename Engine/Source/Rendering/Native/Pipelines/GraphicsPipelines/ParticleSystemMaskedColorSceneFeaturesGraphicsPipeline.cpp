@@ -12,6 +12,7 @@
 #include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Particle system masked color geometry push constant data definition.

@@ -13,6 +13,7 @@
 //Systems.
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CullingSystem);

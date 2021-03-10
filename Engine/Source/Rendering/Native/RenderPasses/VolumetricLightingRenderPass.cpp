@@ -3,6 +3,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(VolumetricLightingRenderPass);

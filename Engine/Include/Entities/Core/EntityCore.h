@@ -21,6 +21,7 @@ enum class EntityPlacementType : uint8
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
 						ENTITY_TYPE(DistanceTrigger)		\
 						ENTITY_TYPE(DynamicModel)			\
+						ENTITY_TYPE(InstancedImpostor)		\
 						ENTITY_TYPE(InstancedStaticModel)	\
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\

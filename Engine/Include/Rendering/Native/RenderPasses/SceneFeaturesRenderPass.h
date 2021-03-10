@@ -10,6 +10,8 @@
 #if defined(CATALYST_EDITOR)
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 #endif
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorColorSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelDepthSceneFeaturesGraphicsPipeline.h>
@@ -59,11 +61,17 @@ private:
 	//The particle system masked depth graphics pipeline.
 	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
 
+	//The instanced impostor depth scene features graphics pipeline.
+	InstancedImpostorDepthSceneFeaturesGraphicsPipeline _InstancedImpostorDepthSceneFeaturesGraphicsPipeline;
+
 	//The masked model color scene features graphics pipelines.
 	StaticArray<MaskedModelColorSceneFeaturesGraphicsPipeline, 2> _MaskedModelColorSceneFeaturesGraphicsPipelines;
 
 	//The particle system masked color graphics pipeline.
 	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
+
+	//The instanced impostor color scene features graphics pipeline.
+	InstancedImpostorColorSceneFeaturesGraphicsPipeline _InstancedImpostorColorSceneFeaturesGraphicsPipeline;
 
 	//The terrain scene features graphics pipeline.
 	TerrainSceneFeaturesGraphicsPipeline _TerrainSceneFeaturesGraphicsPipeline;

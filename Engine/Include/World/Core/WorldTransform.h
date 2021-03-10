@@ -7,8 +7,8 @@
 #include <Math/General/Matrix.h>
 #include <Math/General/Vector.h>
 
-//Systems.
-#include <Systems/WorldSystem.h>
+//World.
+#include <World/Core/WorldPosition.h>
 
 class WorldTransform final
 {
@@ -20,8 +20,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform() NOEXCEPT
 		:
-		_Cell(0, 0, 0),
-		_LocalPosition(0.0f, 0.0f, 0.0f),
+		_WorldPosition(),
 		_Rotation(0.0f, 0.0f, 0.0f),
 		_Scale(1.0f)
 	{
@@ -36,13 +35,11 @@ public:
 											const Vector3<float32> &initial_rotation,
 											const float32 initial_scale) NOEXCEPT
 		:
-		_Cell(initial_cell),
-		_LocalPosition(initial_local_position),
+		_WorldPosition(initial_cell, initial_local_position),
 		_Rotation(initial_rotation),
 		_Scale(initial_scale)
 	{
-		//Update the cell.
-		UpdateCell();
+
 	}
 
 	/*
@@ -52,13 +49,11 @@ public:
 											const Vector3<float32> &initial_rotation,
 											const float32 initial_scale) NOEXCEPT
 		:
-		_Cell(0, 0, 0),
-		_LocalPosition(initial_local_position),
+		_WorldPosition(initial_local_position),
 		_Rotation(initial_rotation),
 		_Scale(initial_scale)
 	{
-		//Update the cell.
-		UpdateCell();
+
 	}
 
 	/*
@@ -66,13 +61,19 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(const Matrix4x4 &transformation) NOEXCEPT
 			:
-		_Cell(0, 0, 0),
-		_LocalPosition(transformation.GetTranslation()),
+		_WorldPosition(),
 		_Rotation(transformation.GetRotation()),
 		_Scale((transformation.GetScale()._X + transformation.GetScale()._Y + transformation.GetScale()._Z) / 3.0f) //Only supports uniform scale, so average the scales.
 	{
-		//Update the cell.
-		UpdateCell();
+
+	}
+
+	/*
+	*	Returns the world position.
+	*/
+	FORCE_INLINE NO_DISCARD const WorldPosition& GetWorldPosition() const NOEXCEPT
+	{
+		return _WorldPosition;
 	}
 
 	/*
@@ -80,7 +81,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCell() const NOEXCEPT
 	{
-		return _Cell;
+		return _WorldPosition.GetCell();
 	}
 
 	/*
@@ -88,7 +89,7 @@ public:
 	*/
 	FORCE_INLINE void SetCell(const Vector3<int32> &value) NOEXCEPT
 	{
-		_Cell = value;
+		_WorldPosition.SetCell(value);
 	}
 
 	/*
@@ -96,7 +97,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetLocalPosition() const NOEXCEPT
 	{
-		return _LocalPosition;
+		return _WorldPosition.GetLocalPosition();;
 	}
 
 	/*
@@ -104,9 +105,7 @@ public:
 	*/
 	FORCE_INLINE void SetLocalPosition(const Vector3<float32> &value) NOEXCEPT
 	{
-		_LocalPosition = value;
-
-		UpdateCell();
+		_WorldPosition.SetLocalPosition(value);
 	}
 
 	/*
@@ -114,9 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetAbsolutePosition() const NOEXCEPT
 	{	
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		return _LocalPosition + Vector3<float32>(static_cast<float32>(_Cell._X), static_cast<float32>(_Cell._Y), static_cast<float32>(_Cell._Z)) * world_grid_size;
+		return _WorldPosition.GetAbsolutePosition();
 	}
 
 	/*
@@ -124,10 +121,7 @@ public:
 	*/
 	FORCE_INLINE void SetAbsolutePosition(const Vector3<float32>& value) NOEXCEPT
 	{
-		_Cell = Vector3<int32>(0, 0, 0);
-		_LocalPosition = value;
-
-		UpdateCell();
+		_WorldPosition.SetAbsolutePosition(value);
 	}
 
 	/*
@@ -135,11 +129,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetRelativePosition(const Vector3<int32> &cell) const NOEXCEPT
 	{	
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		const Vector3<int32> delta{ _Cell - cell };
-
-		return _LocalPosition + Vector3<float32>(static_cast<float32>(delta._X), static_cast<float32>(delta._Y), static_cast<float32>(delta._Z)) * world_grid_size;
+		return _WorldPosition.GetRelativePosition(cell);
 	}
 
 	/*
@@ -147,10 +137,7 @@ public:
 	*/
 	FORCE_INLINE void SetRelativePosition(const Vector3<int32> &cell, const Vector3<float32> &value) NOEXCEPT
 	{
-		_Cell = cell;
-		_LocalPosition = value;
-
-		UpdateCell();
+		_WorldPosition.SetRelativePosition(cell, value);
 	}
 
 	/*
@@ -190,88 +177,28 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Matrix4x4 ToLocalMatrix4x4() const NOEXCEPT
 	{
-		return Matrix4x4(_LocalPosition , _Rotation, Vector3<float32>(_Scale));
+		return Matrix4x4(_WorldPosition.GetLocalPosition() , _Rotation, Vector3<float32>(_Scale));
 	}
 
 	/*
 	*	Converts this world transform into an absolute Matrix4x4.
 	*/
-	FORCE_INLINE NO_DISCARD Matrix4x4 ToAbsoluteMatrix4x4() const NOEXCEPT
-	{
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		return Matrix4x4(_LocalPosition + Vector3<float32>(static_cast<float32>(_Cell._X), static_cast<float32>(_Cell._Y), static_cast<float32>(_Cell._Z)) * world_grid_size, _Rotation, Vector3<float32>(_Scale));
-	}
+	NO_DISCARD Matrix4x4 ToAbsoluteMatrix4x4() const NOEXCEPT;
 
 	/*
 	*	Converts this world transform into a relative Matrix4x4 as seen from the given cell.
 	*/
-	FORCE_INLINE NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32> &cell) const NOEXCEPT
-	{
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-
-		const Vector3<int32> delta{ _Cell - cell };
-
-		return Matrix4x4(_LocalPosition + Vector3<float32>(static_cast<float32>(delta._X), static_cast<float32>(delta._Y), static_cast<float32>(delta._Z)) * world_grid_size, _Rotation, Vector3<float32>(_Scale));
-	}
+	NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32>& cell) const NOEXCEPT;
 
 private:
 
-	//The cell.
-	Vector3<int32> _Cell;
-
-	//The local position.
-	Vector3<float32> _LocalPosition;
+	//The world position.
+	WorldPosition _WorldPosition;
 
 	//The rotation.
 	Vector3<float32> _Rotation;
 
 	//The scale.
 	float32 _Scale;
-
-	/*
-	*	Updates the cell.
-	*/
-	FORCE_INLINE void UpdateCell() NOEXCEPT
-	{
-		const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-		const float32 half_world_grid_size{ world_grid_size * 0.5f };
-
-		while (_LocalPosition._X < -half_world_grid_size)
-		{
-			_LocalPosition._X += world_grid_size;
-			--_Cell._X;
-		}
-
-		while (_LocalPosition._X > half_world_grid_size)
-		{
-			_LocalPosition._X -= world_grid_size;
-			++_Cell._X;
-		}
-
-		while (_LocalPosition._Y < -half_world_grid_size)
-		{
-			_LocalPosition._Y += world_grid_size;
-			--_Cell._Y;
-		}
-
-		while (_LocalPosition._Y > half_world_grid_size)
-		{
-			_LocalPosition._Y -= world_grid_size;
-			++_Cell._Y;
-		}
-
-		while (_LocalPosition._Z < -half_world_grid_size)
-		{
-			_LocalPosition._Z += world_grid_size;
-			--_Cell._Z;
-		}
-
-		while (_LocalPosition._Z > half_world_grid_size)
-		{
-			_LocalPosition._Z -= world_grid_size;
-			++_Cell._Z;
-		}
-	}
 
 };

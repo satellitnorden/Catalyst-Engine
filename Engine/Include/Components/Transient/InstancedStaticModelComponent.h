@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Optional.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>

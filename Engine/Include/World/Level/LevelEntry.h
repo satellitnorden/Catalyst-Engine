@@ -2,10 +2,15 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
+#include <Core/General/HashString.h>
 
 //Physics.
 #include <Physics/ModelCollisionConfiguration.h>
 #include <Physics/ModelPhysicsSimulationData.h>
+
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
