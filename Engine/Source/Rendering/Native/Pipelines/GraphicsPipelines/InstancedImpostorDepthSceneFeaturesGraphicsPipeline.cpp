@@ -40,6 +40,18 @@ public:
 	//The material index.
 	uint32 _MaterialIndex;
 
+	//The start fade in distance.
+	float32 _StartFadeInDistance;
+
+	//The end fade in distance.
+	float32 _EndFadeInDistance;
+
+	//The start fade out distance.
+	float32 _StartFadeOutDistance;
+
+	//The end fade out distance.
+	float32 _EndFadeOutDistance;
+
 };
 
 /*
@@ -158,6 +170,10 @@ void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 				data._WholeWidth = component->_Dimensions._X;
 				data._Height = component->_Dimensions._Y;
 				data._MaterialIndex = component->_MaterialResource->_Index;
+				data._StartFadeInDistance = component->_StartFadeInDistance;
+				data._EndFadeInDistance = component->_EndFadeInDistance;
+				data._StartFadeOutDistance = component->_StartFadeOutDistance;
+				data._EndFadeOutDistance = component->_EndFadeOutDistance;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(InstancedImpostorDepthSceneFeaturesPushConstantData), &data);
 			}

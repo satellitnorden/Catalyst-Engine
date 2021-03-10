@@ -6,6 +6,10 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 20) float WHOLE_WIDTH;
     layout (offset = 24) float HEIGHT;
     layout (offset = 28) uint MATERIAL_INDEX;
+    layout (offset = 32) float START_FADE_IN_DISTANCE;
+    layout (offset = 36) float END_FADE_IN_DISTANCE;
+    layout (offset = 40) float START_FADE_OUT_DISTANCE;
+    layout (offset = 44) float END_FADE_OUT_DISTANCE;
 };
 
 //In parameters.
@@ -13,6 +17,7 @@ layout (location = 0) in vec3 vertex_position;
 
 //Out parameters.
 layout (location = 0) out vec2 fragment_texture_coordinate;
+layout (location = 1) out float fragment_fade_opacity;
 
 void CatalystShaderMain()
 {
@@ -29,8 +34,12 @@ void CatalystShaderMain()
 
     //Calculate the forward vector.
     vec3 forward_vector = PERCEIVER_WORLD_POSITION - world_position;
+
+	//Calculate the distance to perceiver and normalize the forward vector.
     forward_vector.y = 0.0f;
-    forward_vector = normalize(forward_vector);
+    float distance_to_perceiver = length(forward_vector);
+    float distance_to_perceiver_reciprocal = 1.0f / distance_to_perceiver;
+    forward_vector *= distance_to_perceiver_reciprocal;
 
     //Calculate the right vector.
     vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));
@@ -38,6 +47,14 @@ void CatalystShaderMain()
     //Modify the world position.
     world_position += (right_vector * HALF_WIDTH + -right_vector * WHOLE_WIDTH * x);
     world_position.y += HEIGHT * y;
+
+    //Calculate the fragment fade opacity.
+    float fade_in_range = END_FADE_IN_DISTANCE - START_FADE_IN_DISTANCE;
+    float fade_in = clamp(distance_to_perceiver - START_FADE_IN_DISTANCE, 0.0f, fade_in_range) / fade_in_range;
+    float fade_out_range = END_FADE_OUT_DISTANCE - START_FADE_OUT_DISTANCE;
+    float fade_out = 1.0f - (clamp(distance_to_perceiver - START_FADE_OUT_DISTANCE, 0.0f, fade_out_range) / fade_out_range);
+
+    fragment_fade_opacity = min(fade_in, fade_out);
 
     //Write the vertex.
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);

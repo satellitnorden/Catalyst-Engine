@@ -39,6 +39,10 @@ void InstancedImpostorEntity::Initialize(EntityInitializationData *const RESTRIC
 
 	component._MaterialResource = type_initialization_data->_MaterialResource;
 	component._Dimensions = type_initialization_data->_Dimensions;
+	component._StartFadeInDistance = type_initialization_data->_StartFadeInDistance;
+	component._EndFadeInDistance = type_initialization_data->_EndFadeInDistance;
+	component._StartFadeOutDistance = type_initialization_data->_StartFadeOutDistance;
+	component._EndFadeOutDistance = type_initialization_data->_EndFadeOutDistance;
 
 	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
 

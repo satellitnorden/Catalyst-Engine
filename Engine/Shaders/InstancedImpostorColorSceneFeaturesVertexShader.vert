@@ -27,8 +27,12 @@ void CatalystShaderMain()
 
     //Calculate the forward vector.
     vec3 forward_vector = PERCEIVER_WORLD_POSITION - world_position;
+    
+    //Calculate the distance and normalized the forward vector.
     forward_vector.y = 0.0f;
-    forward_vector = normalize(forward_vector);
+    float distance_to_perceiver = length(forward_vector);
+    float distance_to_perceiver_reciprocal = 1.0f / distance_to_perceiver;
+    forward_vector *= distance_to_perceiver_reciprocal;
 
     //Calculate the right vector.
     vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));

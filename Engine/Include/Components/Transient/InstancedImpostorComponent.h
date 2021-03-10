@@ -25,6 +25,18 @@ public:
 	//The cell.
 	Vector3<int32> _Cell;
 
+	//The start fade in distance.
+	float32 _StartFadeInDistance;
+
+	//The end fade in distance.
+	float32 _EndFadeInDistance;
+
+	//The start fade out distance.
+	float32 _StartFadeOutDistance;
+
+	//The end fade out distance.
+	float32 _EndFadeOutDistance;
+
 	//The transformations buffer.
 	BufferHandle _TransformationsBuffer;
 
