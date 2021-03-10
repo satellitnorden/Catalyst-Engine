@@ -2,7 +2,10 @@
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec3 WORLD_GRID_DELTA;
-    layout (offset = 16) uint MATERIAL_INDEX;
+    layout (offset = 16) float HALF_WIDTH;
+    layout (offset = 20) float WHOLE_WIDTH;
+    layout (offset = 24) float HEIGHT;
+    layout (offset = 28) uint MATERIAL_INDEX;
 };
 
 //In parameters.
@@ -22,7 +25,20 @@ void CatalystShaderMain()
     fragment_texture_coordinate.y = 1.0f - y;
 
     //Calculate the world position.
-    vec3 world_position = vec3(vertex_position.x + (-1.0f + x * 2.0f), vertex_position.y + (y * 2.0f), vertex_position.z);
-    
+    vec3 world_position = vertex_position + WORLD_GRID_DELTA;
+
+    //Calculate the forward vector.
+    vec3 forward_vector = PERCEIVER_WORLD_POSITION - world_position;
+    forward_vector.y = 0.0f;
+    forward_vector = normalize(forward_vector);
+
+    //Calculate the right vector.
+    vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));
+
+    //Modify the world position.
+    world_position += (right_vector * HALF_WIDTH + -right_vector * WHOLE_WIDTH * x);
+    world_position.y += HEIGHT * y;
+
+    //Write the vertex.
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
 }

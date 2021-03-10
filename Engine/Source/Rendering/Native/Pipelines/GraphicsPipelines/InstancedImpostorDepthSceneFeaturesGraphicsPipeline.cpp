@@ -28,6 +28,15 @@ public:
 	//Some padding.
 	Padding<4> _Padding;
 
+	//The half width.
+	float32 _HalfWidth;
+
+	//The whole width.
+	float32 _WholeWidth;
+
+	//The height.
+	float32 _Height;
+
 	//The material index.
 	uint32 _MaterialIndex;
 
@@ -77,7 +86,7 @@ void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Depth
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::None);
+	SetCullMode(CullMode::Back);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
@@ -89,7 +98,7 @@ void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const Depth
 	SetStencilCompareMask(0);
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetTopology(Topology::TriangleList);
+	SetTopology(Topology::TriangleFan);
 }
 
 /*
@@ -145,6 +154,9 @@ void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 					data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
 				}
 
+				data._HalfWidth = component->_Dimensions._X * 0.5f;
+				data._WholeWidth = component->_Dimensions._X;
+				data._Height = component->_Dimensions._Y;
 				data._MaterialIndex = component->_MaterialResource->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(InstancedImpostorDepthSceneFeaturesPushConstantData), &data);

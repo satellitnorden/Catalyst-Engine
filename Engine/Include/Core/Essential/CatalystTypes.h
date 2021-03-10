@@ -40,5 +40,4 @@ static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could t
 *	Special types.
 */
 #include <Core/General/Float16.h>
-
-using float16 = Float16;
+#include <Core/General/NormalizedFloat.h>

@@ -90,11 +90,13 @@
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystMacros.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystPreDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Essential\CatalystTypes.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\Any.h" />
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DynamicString.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Float16.h" />
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\NormalizedFloat.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Optional.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h" />

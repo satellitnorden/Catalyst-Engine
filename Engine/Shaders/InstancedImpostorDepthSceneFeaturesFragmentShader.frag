@@ -5,7 +5,10 @@
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) vec3 WORLD_GRID_DELTA;
-    layout (offset = 16) uint MATERIAL_INDEX;
+    layout (offset = 16) float HALF_WIDTH;
+    layout (offset = 20) float WHOLE_WIDTH;
+    layout (offset = 24) float HEIGHT;
+    layout (offset = 28) uint MATERIAL_INDEX;
 };
 
 //In parameters.

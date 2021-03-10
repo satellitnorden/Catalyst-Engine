@@ -121,6 +121,14 @@ public:
 	}
 
 	/*
+	*	Returns the dimensions.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> Dimensions() const NOEXCEPT
+	{
+		return _Maximum - _Minimum;
+	}
+
+	/*
 	*	Expands this axis aligned bounding box with the position.
 	*/
 	FORCE_INLINE constexpr void Expand(const Vector3<float32> &position) NOEXCEPT

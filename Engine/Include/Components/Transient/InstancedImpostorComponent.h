@@ -19,6 +19,9 @@ public:
 	//The material resource.
 	ResourcePointer<MaterialResource> _MaterialResource;
 
+	//The dimensions.
+	Vector2<float32> _Dimensions;
+
 	//The cell.
 	Vector3<int32> _Cell;
 

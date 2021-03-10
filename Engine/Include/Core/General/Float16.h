@@ -207,3 +207,6 @@ public:
 	}
 
 };
+
+//Type aliases.
+using float16 = Float16;

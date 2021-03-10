@@ -1737,6 +1737,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Any.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\NormalizedFloat.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -38,6 +38,7 @@ void InstancedImpostorEntity::Initialize(EntityInitializationData *const RESTRIC
 	ASSERT(!type_initialization_data->_WorldPositions.Empty(), "Trying to add instanced impostor entity without any positions!");
 
 	component._MaterialResource = type_initialization_data->_MaterialResource;
+	component._Dimensions = type_initialization_data->_Dimensions;
 
 	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
 

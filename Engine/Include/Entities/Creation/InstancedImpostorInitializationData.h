@@ -21,6 +21,9 @@ public:
 	//The material resource.
 	ResourcePointer<MaterialResource> _MaterialResource;
 
+	//The dimensions.
+	Vector2<float32> _Dimensions;
+
 	//The world positions.
 	DynamicArray<WorldPosition> _WorldPositions;
 
