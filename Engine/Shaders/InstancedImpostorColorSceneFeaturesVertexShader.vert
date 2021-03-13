@@ -12,9 +12,10 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec3 vertex_position;
 
 //Out parameters.
-layout (location = 0) out vec3 fragment_world_position;
-layout (location = 1) out vec3 fragment_normal;
-layout (location = 2) out vec2 fragment_texture_coordinate;
+layout (location = 0) out mat3 fragment_tangent_space_matrix;
+layout (location = 3) out vec3 fragment_world_position;
+layout (location = 4) out vec3 fragment_normal;
+layout (location = 5) out vec2 fragment_texture_coordinate;
 
 void CatalystShaderMain()
 {
@@ -40,6 +41,9 @@ void CatalystShaderMain()
     //Modify the world position.
     world_position += (right_vector * HALF_WIDTH + -right_vector * WHOLE_WIDTH * x);
     world_position.y += HEIGHT * y;
+
+    //Set the fragment tangent space matrix.
+    fragment_tangent_space_matrix = mat3(right_vector, vec3(0.0f, 1.0f, 0.0f), forward_vector);
 
     //Set the fragment world position.
     fragment_world_position = world_position;

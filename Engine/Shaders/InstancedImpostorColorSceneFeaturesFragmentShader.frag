@@ -12,9 +12,10 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in vec3 fragment_world_position;
-layout (location = 1) in vec3 fragment_normal;
-layout (location = 2) in vec2 fragment_texture_coordinate;
+layout (location = 0) in mat3 fragment_tangent_space_matrix;
+layout (location = 3) in vec3 fragment_world_position;
+layout (location = 4) in vec3 fragment_normal;
+layout (location = 5) in vec2 fragment_texture_coordinate;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_1;
@@ -49,13 +50,9 @@ void CatalystShaderMain()
   EvaluateMaterial(material, fragment_texture_coordinate, albedo_thickness, normal_map_displacement, material_properties, opacity);
 
   //Calculate the shading normal.
-  /*
   vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
-  shading_normal = mat3(vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)) * shading_normal;
+  shading_normal = fragment_tangent_space_matrix * shading_normal;
   shading_normal = normalize(shading_normal);
-  */
-
-  vec3 shading_normal = fragment_normal;
 
   //Calculate the velocity.
   vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
