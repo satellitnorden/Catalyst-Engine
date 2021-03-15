@@ -302,6 +302,14 @@ public:
 	}
 
 	/*
+	*	Returns if this vector contains all zeros.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsZero() const NOEXCEPT
+	{
+		return _X == static_cast<TYPE>(0) && _Y == static_cast<TYPE>(0);
+	}
+
+	/*
 	*	Returns the length of the vector.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
@@ -855,6 +863,14 @@ public:
 	}
 
 	/*
+	*	Returns if this vector contains all zeros.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsZero() const NOEXCEPT
+	{
+		return _X == static_cast<TYPE>(0) && _Y == static_cast<TYPE>(0) && _Z == static_cast<TYPE>(0);
+	}
+
+	/*
 	*	Returns the length of the vector.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
@@ -1360,6 +1376,14 @@ public:
 		_Y /= otherVector._Y;
 		_Z /= otherVector._Z;
 		_W /= otherVector._W;
+	}
+
+	/*
+	*	Returns if this vector contains all zeros.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsZero() const NOEXCEPT
+	{
+		return _X == static_cast<TYPE>(0) && _Y == static_cast<TYPE>(0) && _Z == static_cast<TYPE>(0) && _W == static_cast<TYPE>(0);
 	}
 
 	/*

@@ -69,9 +69,6 @@ public:
 
 private:
 
-	//Container for all user interface elements.
-	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
-
 	//The current Clairvoyant user interface scenes.
 	DynamicArray<UserInterfaceScene *RESTRICT> _CurrentUserInterfaceScenes;
 
@@ -81,19 +78,12 @@ private:
 	//The deactivation queue.
 	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DeactivationQueue;
 
+	//Container for all user interface elements.
+	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
+
 	/*
 	*	Updates the user interface system during the user interface update phase.
 	*/
 	void UserInterfaceUpdate() NOEXCEPT;
-
-	/*
-	*	Chooses a default gamepad selected button.
-	*/
-	void ChooseDefaultGamepadSelectedButton() NOEXCEPT;
-
-	/*
-	*	Chooses a new gamepad selected button in the given direction.
-	*/
-	void ChooseNewGamepadSelectedButton(const Vector2<float32> &direction) NOEXCEPT;
 
 };

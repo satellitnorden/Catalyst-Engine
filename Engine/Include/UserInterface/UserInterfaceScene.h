@@ -5,7 +5,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //User interface.
-#include <UserInterface/UserInterfaceElement.h>
+#include <UserInterface/UserInterfaceButton.h>
+#include <UserInterface/UserInterfaceImage.h>
 #include <UserInterface/UserInterfaceProgressBar.h>
 #include <UserInterface/UserInterfaceText.h>
 
@@ -51,10 +52,7 @@ public:
 	/*
 	*	Callback for when this user interface scene is activated updated
 	*/
-	FORCE_INLINE virtual void Update() NOEXCEPT
-	{
-
-	}
+	virtual void Update() NOEXCEPT;
 
 	/*
 	*	Callback for when this user interface scene is deactivated.
@@ -100,12 +98,20 @@ protected:
 	/*
 	*	Adds a button.
 	*/
-	void AddButton(	const Vector2<uint32> &minimum_cell,
-					const Vector2<uint32> &maximum_cell,
-					const ButtonUserInterfaceElementCallback start_pressed_callback,
-					const char *const RESTRICT text,
-					UserInterfaceElement *RESTRICT *const RESTRICT button_element = nullptr,
-					UserInterfaceElement *RESTRICT *const RESTRICT text_element = nullptr) NOEXCEPT;
+	RESTRICTED UserInterfaceButton *const RESTRICT AddButton(	const Vector2<uint32> &minimum_cell,
+																const Vector2<uint32> &maximum_cell,
+																const UserInterfaceButton::Callback start_pressed_callback,
+																UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
+																UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
+																UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
+																const char *const RESTRICT text = "") NOEXCEPT;
+
+	/*
+	*	Adds an image.
+	*/
+	RESTRICTED UserInterfaceImage *const RESTRICT AddImage(	const Vector2<uint32> &minimum_cell,
+															const Vector2<uint32> &maximum_cell,
+															const UserInterfaceMaterial &material) NOEXCEPT;
 
 	/*
 	*	Adds a progress bar.
@@ -121,7 +127,8 @@ protected:
 	*/
 	RESTRICTED UserInterfaceText *const RESTRICT AddText(	const Vector2<uint32> &minimum_cell,
 															const Vector2<uint32> &maximum_cell,
-															const char *const RESTRICT text = "") NOEXCEPT;
+															const char *const RESTRICT text = "",
+															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER) NOEXCEPT;
 
 private:
 
@@ -140,20 +147,32 @@ private:
 	//The vertical subdivision reciprocal.
 	float32 _VerticalSubdivisionReciprocal;
 
+	//The button idle material.
+	UserInterfaceMaterial _ButtonIdleMaterial;
+
+	//The button hovered material.
+	UserInterfaceMaterial _ButtonHoveredMaterial;
+
+	//The button pressed material.
+	UserInterfaceMaterial _ButtonPressedMaterial;
+
 	//The progress bar bottom material.
 	UserInterfaceMaterial _ProgressBarBottomMaterial;
 
 	//The progress bar top material.
 	UserInterfaceMaterial _ProgressBarTopMaterial;
 
+	//The buttons.
+	DynamicArray<UserInterfaceButton *const RESTRICT> _Buttons;
+
+	//The images.
+	DynamicArray<UserInterfaceImage *const RESTRICT> _Images;
+
 	//The progress bars.
 	DynamicArray<UserInterfaceProgressBar *const RESTRICT> _ProgressBars;
 
 	//The texts.
 	DynamicArray<UserInterfaceText *const RESTRICT> _Texts;
-
-	//Container for all the user interface elements.
-	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
 
 	/*
 	*	Calculates the bounding box for the given minimum/maximum cell.
@@ -162,5 +181,10 @@ private:
 								const Vector2<uint32> &maximum_cell,
 								Vector2<float32> *const RESTRICT minimum,
 								Vector2<float32> *const RESTRICT maximum) NOEXCEPT;
+
+	/*
+	*	Updates buttons.
+	*/
+	void UpdateButtons() NOEXCEPT;
 
 };

@@ -19,7 +19,8 @@ public:
 	*/
 	UserInterfaceText(	const Vector2<float32> initial_minimum,
 						const Vector2<float32> initial_maximum,
-						const char *const RESTRICT text) NOEXCEPT;
+						const char *const RESTRICT text,
+						const TextHorizontalAlignment horizontal_alignment) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -41,5 +42,8 @@ private:
 
 	//The element.
 	TextUserInterfaceElement *RESTRICT _Element;
+
+	//The horizontal alignment.
+	TextHorizontalAlignment _HorizontalAlignment;
 
 };
