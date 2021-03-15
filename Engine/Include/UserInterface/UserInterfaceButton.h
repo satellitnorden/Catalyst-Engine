@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElement.h>
+#include <UserInterface/ImageUserInterfaceElement.h>
 #include <UserInterface/TextUserInterfaceElement.h>
 
 class UserInterfaceButton final
@@ -72,10 +72,7 @@ public:
 	/*
 	*	Sets the current state.
 	*/
-	FORCE_INLINE void SetCurrentState(const State value) NOEXCEPT
-	{
-		_CurrentState = value;
-	}
+	void SetCurrentState(const State value) NOEXCEPT;
 
 	/*
 	*	On start hovered callback.
@@ -177,8 +174,8 @@ private:
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };
 
-	//The button element.
-	ButtonUserInterfaceElement *RESTRICT _ButtonElement;
+	//The image element.
+	ImageUserInterfaceElement *RESTRICT _ImageElement;
 
 	//The text element.
 	TextUserInterfaceElement *RESTRICT _TextElement;

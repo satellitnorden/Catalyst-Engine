@@ -6,7 +6,7 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElementDescription.h>
+#include <UserInterface/ImageUserInterfaceElementDescription.h>
 #include <UserInterface/TextUserInterfaceElementDescription.h>
 
 /*
@@ -36,23 +36,22 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	_StartPressedCallback = initial_start_pressed_callback;
 	_StopPressedCallback = initial_stop_pressed_callback;
 
-	//Add the button element.
+	//Set the materials.
+	_IdleMaterial = initial_idle_material;
+	_HoveredMaterial = initial_hovered_material;
+	_PressedMaterial = initial_pressed_material;
+
+	//Add the image element.
 	{
-		ButtonUserInterfaceElementDescription description;
+		ImageUserInterfaceElementDescription description;
 
-		description._Type = UserInterfaceElementType::BUTTON;
-		description._Minimum = _Minimum;
-		description._Maximum = _Maximum;
+		description._Type = UserInterfaceElementType::IMAGE;
+		description._Minimum = initial_minimum;
+		description._Maximum = initial_maximum;
 		description._Opacity = 1.0f;
-		description._StartHoveredCallback = nullptr;
-		description._StopHoveredCallback = nullptr;
-		description._StartPressedCallback = nullptr;
-		description._StopPressedCallback = nullptr;
-		description._IdleMaterial = initial_idle_material;
-		description._HoveredMaterial = initial_hovered_material;
-		description._PressedMaterial = initial_pressed_material;
+		description._Material = initial_idle_material;
 
-		_ButtonElement = static_cast<ButtonUserInterfaceElement *const RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_ImageElement = static_cast<ImageUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
 	}
 
 	//Set the text.
@@ -65,11 +64,50 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 UserInterfaceButton::~UserInterfaceButton() NOEXCEPT
 {
 	//Destroy the elements.
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_ButtonElement);
+	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_ImageElement);
 
 	if (_TextElement)
 	{
 		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TextElement);
+	}
+}
+
+/*
+*	Sets the current state.
+*/
+void UserInterfaceButton::SetCurrentState(const State value) NOEXCEPT
+{
+	_CurrentState = value;
+
+	switch (_CurrentState)
+	{
+		case State::IDLE:
+		{
+			_ImageElement->_Material = _IdleMaterial;
+
+			break;
+		}
+
+		case State::HOVERED:
+		{
+			_ImageElement->_Material = _HoveredMaterial;
+
+			break;
+		}
+
+		case State::PRESSED:
+		{
+			_ImageElement->_Material = _PressedMaterial;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
 	}
 }
 
