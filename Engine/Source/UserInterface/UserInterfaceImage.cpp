@@ -6,8 +6,7 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElementDescription.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/ImageUserInterfacePrimitiveDescription.h>
 
 /*
 *	Default constructor.
@@ -16,17 +15,17 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 													const Vector2<float32> initial_maximum,
 													const UserInterfaceMaterial &initial_material) NOEXCEPT
 {
-	//Create the element.
+	//Create the primitive.
 	{
-		ImageUserInterfaceElementDescription description;
+		ImageUserInterfacePrimitiveDescription description;
 
-		description._Type = UserInterfaceElementType::IMAGE;
+		description._Type = UserInterfacePrimitiveType::IMAGE;
 		description._Minimum = initial_minimum;
 		description._Maximum = initial_maximum;
 		description._Opacity = 1.0f;
 		description._Material = initial_material;
 
-		_Element = static_cast<ImageUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 }
 
@@ -35,6 +34,6 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 */
 UserInterfaceImage::~UserInterfaceImage() NOEXCEPT
 {
-	//Destroy the element.
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_Element);
+	//Destroy the primitive.
+	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_Primitive);
 }

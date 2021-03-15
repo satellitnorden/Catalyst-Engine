@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 
 //User interface.
-#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
 
 class UserInterfaceText final
 {
@@ -40,8 +40,8 @@ private:
 	//The maximum.
 	Vector2<float32> _Maximum;
 
-	//The element.
-	TextUserInterfaceElement *RESTRICT _Element;
+	//The primitive.
+	TextUserInterfacePrimitive *RESTRICT _Primitive;
 
 	//The horizontal alignment.
 	TextHorizontalAlignment _HorizontalAlignment;

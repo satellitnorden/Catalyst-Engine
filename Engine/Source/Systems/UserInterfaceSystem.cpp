@@ -7,12 +7,10 @@
 #include <Systems/MemorySystem.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElement.h>
-#include <UserInterface/ButtonUserInterfaceElementDescription.h>
-#include <UserInterface/ImageUserInterfaceElement.h>
-#include <UserInterface/ImageUserInterfaceElementDescription.h>
-#include <UserInterface/TextUserInterfaceElement.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/ImageUserInterfacePrimitive.h>
+#include <UserInterface/ImageUserInterfacePrimitiveDescription.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
+#include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(UserInterfaceSystem);
@@ -34,71 +32,48 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Creates a user interface element.
+*	Creates a user interface primitive.
 */
-RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT
+RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem::CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description) NOEXCEPT
 {
 	switch (description->_Type)
 	{
-		case UserInterfaceElementType::BUTTON:
+		case UserInterfacePrimitiveType::IMAGE:
 		{
-			ButtonUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<ButtonUserInterfaceElement>()) ButtonUserInterfaceElement() };
-			const ButtonUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ButtonUserInterfaceElementDescription* const RESTRICT>(description) };
+			ImageUserInterfacePrimitive *const RESTRICT primitive{ new (MemorySystem::Instance->TypeAllocate<ImageUserInterfacePrimitive>()) ImageUserInterfacePrimitive() };
+			const ImageUserInterfacePrimitiveDescription *const RESTRICT type_description{ static_cast<const ImageUserInterfacePrimitiveDescription *const RESTRICT>(description) };
 
-			element->_Type = UserInterfaceElementType::BUTTON;
-			element->_Minimum = type_description->_Minimum;
-			element->_Maximum = type_description->_Maximum;
-			element->_Opacity = type_description->_Opacity;
-			element->_CurrentState = ButtonUserInterfaceElement::State::IDLE;
-			element->_StartHoveredCallback = type_description->_StartHoveredCallback;
-			element->_StopHoveredCallback = type_description->_StopHoveredCallback;
-			element->_StartPressedCallback = type_description->_StartPressedCallback;
-			element->_StopPressedCallback = type_description->_StopPressedCallback;
-			element->_IdleMaterial = type_description->_IdleMaterial;
-			element->_HoveredMaterial = type_description->_HoveredMaterial;
-			element->_PressedMaterial = type_description->_PressedMaterial;
+			primitive->_Type = UserInterfacePrimitiveType::IMAGE;
+			primitive->_Minimum = type_description->_Minimum;
+			primitive->_Maximum = type_description->_Maximum;
+			primitive->_Opacity = type_description->_Opacity;
+			primitive->_Material = type_description->_Material;
 
-			_UserInterfaceElements.Emplace(element);
+			_UserInterfacePrimitives.Emplace(primitive);
 
-			return element;
+			return primitive;
 		}
 
-		case UserInterfaceElementType::IMAGE:
+		case UserInterfacePrimitiveType::TEXT:
 		{
-			ImageUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<ImageUserInterfaceElement>()) ImageUserInterfaceElement() };
-			const ImageUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const ImageUserInterfaceElementDescription *const RESTRICT>(description) };
+			TextUserInterfacePrimitive *const RESTRICT primitive{ new (MemorySystem::Instance->TypeAllocate<TextUserInterfacePrimitive>()) TextUserInterfacePrimitive() };
+			const TextUserInterfacePrimitiveDescription *const RESTRICT type_description{ static_cast<const TextUserInterfacePrimitiveDescription *const RESTRICT>(description) };
 
-			element->_Type = UserInterfaceElementType::IMAGE;
-			element->_Minimum = type_description->_Minimum;
-			element->_Maximum = type_description->_Maximum;
-			element->_Opacity = type_description->_Opacity;
-			element->_Material = type_description->_Material;
+			primitive->_Type = UserInterfacePrimitiveType::TEXT;
+			primitive->_Minimum = type_description->_Minimum;
+			primitive->_Maximum = type_description->_Maximum;
+			primitive->_Opacity = type_description->_Opacity;
+			primitive->_FontResource = type_description->_FontResource;
+			primitive->_Scale = type_description->_Scale;
+			primitive->_HorizontalAlignment = type_description->_HorizontalAlignment;
+			primitive->_VerticalAlignment = type_description->_VerticalAlignment;
+			primitive->_TextSmoothingFactor = type_description->_TextSmoothingFactor;
+			primitive->_Opacity = type_description->_Opacity;
+			primitive->_Text = std::move(type_description->_Text);
 
-			_UserInterfaceElements.Emplace(element);
+			_UserInterfacePrimitives.Emplace(primitive);
 
-			return element;
-		}
-
-		case UserInterfaceElementType::TEXT:
-		{
-			TextUserInterfaceElement *const RESTRICT element{ new (MemorySystem::Instance->TypeAllocate<TextUserInterfaceElement>()) TextUserInterfaceElement() };
-			const TextUserInterfaceElementDescription *const RESTRICT type_description{ static_cast<const TextUserInterfaceElementDescription *const RESTRICT>(description) };
-
-			element->_Type = UserInterfaceElementType::TEXT;
-			element->_Minimum = type_description->_Minimum;
-			element->_Maximum = type_description->_Maximum;
-			element->_Opacity = type_description->_Opacity;
-			element->_FontResource = type_description->_FontResource;
-			element->_Scale = type_description->_Scale;
-			element->_HorizontalAlignment = type_description->_HorizontalAlignment;
-			element->_VerticalAlignment = type_description->_VerticalAlignment;
-			element->_TextSmoothingFactor = type_description->_TextSmoothingFactor;
-			element->_Opacity = type_description->_Opacity;
-			element->_Text = std::move(type_description->_Text);
-
-			_UserInterfaceElements.Emplace(element);
-
-			return element;
+			return primitive;
 		}
 
 		default:
@@ -111,29 +86,22 @@ RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT UserInterfaceSystem::
 }
 
 /*
-*	Destroys a user interface element.
+*	Destroys a user interface primitive.
 */
-void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT
+void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *const RESTRICT primitive) NOEXCEPT
 {
-	switch (element->_Type)
+	switch (primitive->_Type)
 	{
-		case UserInterfaceElementType::BUTTON:
+		case UserInterfacePrimitiveType::IMAGE:
 		{
-			MemorySystem::Instance->TypeFree<ButtonUserInterfaceElement>(static_cast<ButtonUserInterfaceElement *const RESTRICT>(element));
+			MemorySystem::Instance->TypeFree<ImageUserInterfacePrimitive>(static_cast<ImageUserInterfacePrimitive *const RESTRICT>(primitive));
 
 			break;
 		}
 
-		case UserInterfaceElementType::IMAGE:
+		case UserInterfacePrimitiveType::TEXT:
 		{
-			MemorySystem::Instance->TypeFree<ImageUserInterfaceElement>(static_cast<ImageUserInterfaceElement *const RESTRICT>(element));
-
-			break;
-		}
-
-		case UserInterfaceElementType::TEXT:
-		{
-			MemorySystem::Instance->TypeFree<TextUserInterfaceElement>(static_cast<TextUserInterfaceElement *const RESTRICT>(element));
+			MemorySystem::Instance->TypeFree<TextUserInterfacePrimitive>(static_cast<TextUserInterfacePrimitive *const RESTRICT>(primitive));
 
 			break;
 		}
@@ -146,7 +114,7 @@ void UserInterfaceSystem::DestroyUserInterfaceElement(UserInterfaceElement *cons
 		}
 	}
 
-	_UserInterfaceElements.Erase<false>(element);
+	_UserInterfacePrimitives.Erase<false>(primitive);
 }
 
 /*

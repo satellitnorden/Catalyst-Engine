@@ -6,8 +6,8 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElementDescription.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/ImageUserInterfacePrimitiveDescription.h>
+#include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
 /*
 *	Default constructor.
@@ -18,29 +18,29 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 													const UserInterfaceMaterial &initial_top_material,
 													const char *const RESTRICT text) NOEXCEPT
 {
-	//Create the bottom and top element.
+	//Create the bottom and top primitive.
 	{
-		ImageUserInterfaceElementDescription description;
+		ImageUserInterfacePrimitiveDescription description;
 
-		description._Type = UserInterfaceElementType::IMAGE;
+		description._Type = UserInterfacePrimitiveType::IMAGE;
 		description._Minimum = initial_minimum;
 		description._Maximum = initial_maximum;
 		description._Opacity = 1.0f;
 		description._Material = initial_bottom_material;
 
-		_BottomElement = static_cast<ImageUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_BottomPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	{
-		ImageUserInterfaceElementDescription description;
+		ImageUserInterfacePrimitiveDescription description;
 
-		description._Type = UserInterfaceElementType::IMAGE;
+		description._Type = UserInterfacePrimitiveType::IMAGE;
 		description._Minimum = initial_minimum;
 		description._Maximum = Vector2<float32>(initial_minimum._X, initial_maximum._Y);
 		description._Opacity = 1.0f;
 		description._Material = initial_top_material;
 
-		_TopElement = static_cast<ImageUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_TopPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -52,13 +52,13 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 */
 UserInterfaceProgressBar::~UserInterfaceProgressBar() NOEXCEPT
 {
-	//Destroy the elements.
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_BottomElement);
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TopElement);
+	//Destroy the primitives.
+	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_BottomPrimitive);
+	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_TopPrimitive);
 
-	if (_TextElement)
+	if (_TextPrimitive)
 	{
-		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TextElement);
+		UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_TextPrimitive);
 	}
 }
 
@@ -70,8 +70,8 @@ void UserInterfaceProgressBar::SetCurrentProgress(const float32 value) NOEXCEPT
 	//Set the current progress.
 	_CurrentProgress = value;
 
-	//Update the bounding box for the top element.
-	_TopElement->_Maximum._X = CatalystBaseMath::LinearlyInterpolate(_BottomElement->_Minimum._X, _BottomElement->_Maximum._X, _CurrentProgress);
+	//Update the bounding box for the top primitive.
+	_TopPrimitive->_Maximum._X = CatalystBaseMath::LinearlyInterpolate(_BottomPrimitive->_Minimum._X, _BottomPrimitive->_Maximum._X, _CurrentProgress);
 }
 
 /*
@@ -81,13 +81,13 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 {
 	if (text && text != "")
 	{
-		if (!_TextElement)
+		if (!_TextPrimitive)
 		{
-			TextUserInterfaceElementDescription description;
+			TextUserInterfacePrimitiveDescription description;
 
-			description._Type = UserInterfaceElementType::TEXT;
-			description._Minimum = _BottomElement->_Minimum;
-			description._Maximum = _BottomElement->_Maximum;
+			description._Type = UserInterfacePrimitiveType::TEXT;
+			description._Minimum = _BottomPrimitive->_Minimum;
+			description._Maximum = _BottomPrimitive->_Maximum;
 			description._Opacity = 1.0f;
 			description._FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
 			description._Scale = 0.015f;
@@ -96,22 +96,22 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
-			_TextElement = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
 		{
-			_TextElement->_Text = text;
+			_TextPrimitive->_Text = text;
 		}
 	}
 
 	else
 	{
-		if (_TextElement)
+		if (_TextPrimitive)
 		{
-			UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TextElement);
+			UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_TextPrimitive);
 		}
 
-		_TextElement = nullptr;
+		_TextPrimitive = nullptr;
 	}
 }

@@ -9,13 +9,13 @@
 //User interface.
 #include <UserInterface/UserInterfaceCore.h>
 
-class UserInterfaceElement
+class UserInterfacePrimitive
 {
 
 public:
 
 	//The type.
-	UserInterfaceElementType _Type;
+	UserInterfacePrimitiveType _Type;
 
 	//The minimum of the screen space axis aligned box.
 	Vector2<float32> _Minimum;

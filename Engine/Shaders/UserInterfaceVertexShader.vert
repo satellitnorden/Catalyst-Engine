@@ -11,7 +11,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 48) uint TYPE;
     layout (offset = 52) float WIDTH_RANGE_START;
     layout (offset = 56) float WIDTH_RANGE_END;
-    layout (offset = 60) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 60) float PRIMITIVE_ASPECT_RATIO;
     layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
 };
 

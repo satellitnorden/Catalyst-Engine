@@ -7,9 +7,9 @@
 #include <Rendering/Native/UserInterfaceMaterial.h>
 
 //User interface.
-#include <UserInterface/UserInterfaceElementDescription.h>
+#include <UserInterface/UserInterfacePrimitiveDescription.h>
 
-class ImageUserInterfaceElementDescription final : public UserInterfaceElementDescription
+class ImageUserInterfacePrimitiveDescription final : public UserInterfacePrimitiveDescription
 {
 
 public:

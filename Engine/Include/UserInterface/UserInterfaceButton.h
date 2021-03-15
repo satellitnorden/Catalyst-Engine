@@ -7,8 +7,8 @@
 #include <Math/General/Vector.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElement.h>
-#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/ImageUserInterfacePrimitive.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
 
 class UserInterfaceButton final
 {
@@ -174,10 +174,10 @@ private:
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };
 
-	//The image element.
-	ImageUserInterfaceElement *RESTRICT _ImageElement;
+	//The image primitive.
+	ImageUserInterfacePrimitive *RESTRICT _ImagePrimitive;
 
-	//The text element.
-	TextUserInterfaceElement *RESTRICT _TextElement;
+	//The text primitive.
+	TextUserInterfacePrimitive *RESTRICT _TextPrimitive;
 
 };

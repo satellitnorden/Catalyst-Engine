@@ -837,19 +837,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ModelSystem.h">
       <Filter>Rendering\Include\Native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElement.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceElementDescription.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElementDescription.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfaceElement.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\UserInterfaceGraphicsPipeline.h">
@@ -866,12 +854,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\FontBuildParameters.h">
       <Filter>Resources\Include\Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElement.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfaceElementDescription.h">
-      <Filter>User Interface\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\TemporalAntiAliasingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1226,12 +1208,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElement.h">
-      <Filter>User Interface\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\UserInterface\ButtonUserInterfaceElementDescription.h">
-      <Filter>User Interface\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Noise\HammersleySequence.h">
       <Filter>Math\Include\Noise</Filter>
@@ -1747,6 +1723,24 @@
       <Filter>User Interface\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceButton.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfacePrimitive.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\ImageUserInterfacePrimitiveDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfacePrimitive.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfacePrimitiveDescription.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfacePrimitive.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfacePrimitiveDescription.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
   </ItemGroup>

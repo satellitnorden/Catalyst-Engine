@@ -7,8 +7,8 @@
 #include <Math/General/Vector.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElement.h>
-#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/ImageUserInterfacePrimitive.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
 
 class UserInterfaceProgressBar final
 {
@@ -49,14 +49,14 @@ public:
 
 private:
 
-	//The bottom element.
-	ImageUserInterfaceElement *RESTRICT _BottomElement;
+	//The bottom primitive.
+	ImageUserInterfacePrimitive *RESTRICT _BottomPrimitive;
 
-	//The top element.
-	ImageUserInterfaceElement *RESTRICT _TopElement;
+	//The top primitive.
+	ImageUserInterfacePrimitive *RESTRICT _TopPrimitive;
 
-	//The text element.
-	TextUserInterfaceElement *RESTRICT _TextElement;
+	//The text primitive.
+	TextUserInterfacePrimitive *RESTRICT _TextPrimitive;
 
 	//The current progress.
 	float32 _CurrentProgress{ 0.0f };

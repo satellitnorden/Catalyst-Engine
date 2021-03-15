@@ -2,9 +2,8 @@
 #include "CatalystUserInterfaceCore.glsl"
 
 //Constants.
-#define USER_INTERFACE_ELEMENT_TYPE_BUTTON (0)
-#define USER_INTERFACE_ELEMENT_TYPE_IMAGE (1)
-#define USER_INTERFACE_ELEMENT_TYPE_TEXT (2)
+#define USER_INTERFACE_PRIMITIVE_TYPE_IMAGE (0)
+#define USER_INTERFACE_PRIMITIVE_TYPE_TEXT (1)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -19,7 +18,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 48) uint TYPE;
     layout (offset = 52) float WIDTH_RANGE_START;
     layout (offset = 56) float WIDTH_RANGE_END;
-    layout (offset = 60) float ELEMENT_ASPECT_RATIO;
+    layout (offset = 60) float PRIMITIVE_ASPECT_RATIO;
     layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
 };
 
@@ -36,16 +35,15 @@ void CatalystShaderMain()
 
 	switch (TYPE)
 	{
-		case USER_INTERFACE_ELEMENT_TYPE_BUTTON:
-		case USER_INTERFACE_ELEMENT_TYPE_IMAGE:
+		case USER_INTERFACE_PRIMITIVE_TYPE_IMAGE:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO) * COLOR;
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;
 
 			break;
 		}
 
-		case USER_INTERFACE_ELEMENT_TYPE_TEXT:
+		case USER_INTERFACE_PRIMITIVE_TYPE_TEXT:
 		{
 			//Sample the distance.
 			float distance = texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r;
@@ -62,7 +60,7 @@ void CatalystShaderMain()
 		default:
 		{
 			//Write the fragment.
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, ELEMENT_ASPECT_RATIO);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO);
 
 			break;
 		}

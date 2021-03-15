@@ -14,9 +14,8 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/ButtonUserInterfaceElement.h>
-#include <UserInterface/ImageUserInterfaceElement.h>
-#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/ImageUserInterfacePrimitive.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
 #include <UserInterface/UserInterfaceUtilities.h>
 
 /*
@@ -48,8 +47,8 @@ public:
 	//The width range end.
 	float32 _WidthRangeEnd;
 
-	//The element aspect ratio.
-	float32 _ElementAspectRatio;
+	//The primitive aspect ratio.
+	float32 _PrimitiveAspectRatio;
 
 	//The text smoothing factor.
 	float32 _TextSmoothingFactor;
@@ -110,11 +109,11 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 */
 void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 {
-	//Get the number of user interface elements.
-	const uint64 number_of_user_interface_elements{ UserInterfaceSystem::Instance->GetUserInterfaceElements()->Size() };
+	//Get the number of user interface primitives.
+	const uint64 number_of_user_interface_primitives{ UserInterfaceSystem::Instance->GetUserInterfacePrimitives()->Size() };
 
 	//If there's none to render, then... Don't.
-	if (number_of_user_interface_elements == 0)
+	if (number_of_user_interface_primitives == 0)
 	{
 		SetIncludeInRender(false);
 
@@ -134,56 +133,33 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data table.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Render all user interface elements.
-	for (const UserInterfaceElement *const RESTRICT element : *UserInterfaceSystem::Instance->GetUserInterfaceElements())
+	//Render all user interface primitives.
+	for (const UserInterfacePrimitive *const RESTRICT primitive : *UserInterfaceSystem::Instance->GetUserInterfacePrimitives())
 	{
 		//Don't render this if it isn't visible. (:
-		if (element->_Opacity <= 0.0f)
+		if (primitive->_Opacity <= 0.0f)
 		{
 			continue;
 		}
 
 		//Render differently based on the type.
-		switch (element->_Type)
+		switch (primitive->_Type)
 		{
-			case UserInterfaceElementType::BUTTON:
+			case UserInterfacePrimitiveType::IMAGE:
 			{
-				const ButtonUserInterfaceElement *const RESTRICT type_element{ static_cast<const ButtonUserInterfaceElement *const RESTRICT>(element) };
+				const ImageUserInterfacePrimitive *const RESTRICT type_primitive{ static_cast<const ImageUserInterfacePrimitive *const RESTRICT>(primitive) };
 
 				//Push constants.
 				UserInterfacePushConstantData data;
 
-				switch (type_element->_CurrentState)
-				{
-					case ButtonUserInterfaceElement::State::IDLE:
-					{
-						data._Material = type_element->_IdleMaterial;
-
-						break;
-					}
-
-					case ButtonUserInterfaceElement::State::HOVERED:
-					{
-						data._Material = type_element->_HoveredMaterial;
-
-						break;
-					}
-
-					case ButtonUserInterfaceElement::State::PRESSED:
-					{
-						data._Material = type_element->_PressedMaterial;
-
-						break;
-					}
-				}
-
-				data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
-				data._Minimum = type_element->_Minimum;
-				data._Maximum = type_element->_Maximum;
-				data._Type = static_cast<uint32>(UserInterfaceElementType::BUTTON);
+				data._Material = type_primitive->_Material;
+				data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, primitive->_Opacity);
+				data._Minimum = type_primitive->_Minimum;
+				data._Maximum = type_primitive->_Maximum;
+				data._Type = static_cast<uint32>(UserInterfacePrimitiveType::IMAGE);
 				data._WidthRangeStart = 0.0f;
 				data._WidthRangeEnd = 1.0f;
-				data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
+				data._PrimitiveAspectRatio = (type_primitive->_Maximum._X - type_primitive->_Minimum._X) / (type_primitive->_Maximum._Y - type_primitive->_Minimum._Y);
 				data._TextSmoothingFactor = 0.0f;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
@@ -194,57 +170,32 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 				break;
 			}
 
-			case UserInterfaceElementType::IMAGE:
+			case UserInterfacePrimitiveType::TEXT:
 			{
-				const ImageUserInterfaceElement *const RESTRICT type_element{ static_cast<const ImageUserInterfaceElement *const RESTRICT>(element) };
-
-				//Push constants.
-				UserInterfacePushConstantData data;
-
-				data._Material = type_element->_Material;
-				data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
-				data._Minimum = type_element->_Minimum;
-				data._Maximum = type_element->_Maximum;
-				data._Type = static_cast<uint32>(UserInterfaceElementType::IMAGE);
-				data._WidthRangeStart = 0.0f;
-				data._WidthRangeEnd = 1.0f;
-				data._ElementAspectRatio = (type_element->_Maximum._X - type_element->_Minimum._X) / (type_element->_Maximum._Y - type_element->_Minimum._Y);
-				data._TextSmoothingFactor = 0.0f;
-
-				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
-
-				//Draw!
-				command_buffer->Draw(this, 4, 1);
-
-				break;
-			}
-
-			case UserInterfaceElementType::TEXT:
-			{
-				const TextUserInterfaceElement *const RESTRICT type_element{ static_cast<const TextUserInterfaceElement *const RESTRICT>(element) };
+				const TextUserInterfacePrimitive *const RESTRICT type_primitive{ static_cast<const TextUserInterfacePrimitive *const RESTRICT>(primitive) };
 
 				//Calculate the aligned minimum/maximum.
 				Vector2<float32> aligned_minimum;
 				Vector2<float32> aligned_maximum;
 
-				UserInterfaceUtilities::CalculateAlignedBoundingBox(type_element->_Minimum,
-																	type_element->_Maximum,
-																	type_element->_FontResource,
-																	type_element->_Text,
-																	type_element->_Scale,
-																	type_element->_HorizontalAlignment,
-																	type_element->_VerticalAlignment,
+				UserInterfaceUtilities::CalculateAlignedBoundingBox(type_primitive->_Minimum,
+																	type_primitive->_Maximum,
+																	type_primitive->_FontResource,
+																	type_primitive->_Text,
+																	type_primitive->_Scale,
+																	type_primitive->_HorizontalAlignment,
+																	type_primitive->_VerticalAlignment,
 																	&aligned_minimum,
 																	&aligned_maximum);
 
 				//Draw all characters.
 				float32 current_offset_X{ 0.0f };
-				float32 current_offset_Y{ aligned_maximum._Y - aligned_minimum._Y - type_element->_Scale };
+				float32 current_offset_Y{ aligned_maximum._Y - aligned_minimum._Y - type_primitive->_Scale };
 
-				for (uint64 i{ 0 }, length{ type_element->_Text.Length() }; i < length; ++i)
+				for (uint64 i{ 0 }, length{ type_primitive->_Text.Length() }; i < length; ++i)
 				{
 					//Cache the chartacter.
-					const char character{ type_element->_Text[i] };
+					const char character{ type_primitive->_Text[i] };
 
 					//Only draw if it´s a valid character.
 					if (character != '\n')
@@ -252,17 +203,17 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						//Push constants.
 						UserInterfacePushConstantData data;
 
-						data._Material.SetPrimaryTextureIndex(type_element->_FontResource->_MasterTextureIndex);
-						data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, element->_Opacity);
-						data._Minimum._X = aligned_minimum._X + current_offset_X + type_element->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_element->_Scale;
-						data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_element->_FontResource->_CharacterDescriptions[character]._Size._Y - type_element->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_element->_Scale;
-						data._Maximum._X = data._Minimum._X + type_element->_FontResource->_CharacterDescriptions[character]._Size._X * type_element->_Scale;
-						data._Maximum._Y = data._Minimum._Y + type_element->_FontResource->_CharacterDescriptions[character]._Size._Y * type_element->_Scale;
-						data._Type = static_cast<uint32>(UserInterfaceElementType::TEXT);
-						data._WidthRangeStart = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
-						data._WidthRangeEnd = type_element->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
-						data._ElementAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
-						data._TextSmoothingFactor = type_element->_TextSmoothingFactor;
+						data._Material.SetPrimaryTextureIndex(type_primitive->_FontResource->_MasterTextureIndex);
+						data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, type_primitive->_Opacity);
+						data._Minimum._X = aligned_minimum._X + current_offset_X + type_primitive->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_primitive->_Scale;
+						data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y - type_primitive->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_primitive->_Scale;
+						data._Maximum._X = data._Minimum._X + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._X * type_primitive->_Scale;
+						data._Maximum._Y = data._Minimum._Y + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y * type_primitive->_Scale;
+						data._Type = static_cast<uint32>(UserInterfacePrimitiveType::TEXT);
+						data._WidthRangeStart = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
+						data._WidthRangeEnd = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
+						data._PrimitiveAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
+						data._TextSmoothingFactor = type_primitive->_TextSmoothingFactor;
 
 						command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
 
@@ -284,9 +235,9 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					{
 						float32 temporary_offset_X{ current_offset_X };
 
-						for (uint64 j{ i + 1 }; j < length && type_element->_Text[j] != ' '; ++j)
+						for (uint64 j{ i + 1 }; j < length && type_primitive->_Text[j] != ' '; ++j)
 						{
-							temporary_offset_X += type_element->_FontResource->_CharacterDescriptions[type_element->_Text[j]]._Advance * type_element->_Scale;
+							temporary_offset_X += type_primitive->_FontResource->_CharacterDescriptions[type_primitive->_Text[j]]._Advance * type_primitive->_Scale;
 
 							if (temporary_offset_X >= aligned_maximum._X - aligned_minimum._X)
 							{
@@ -301,12 +252,12 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					if (should_wrap_around)
 					{
 						current_offset_X = 0.0f;
-						current_offset_Y -= type_element->_Scale;
+						current_offset_Y -= type_primitive->_Scale;
 					}
 
 					else
 					{
-						current_offset_X += type_element->_FontResource->_CharacterDescriptions[character]._Advance * type_element->_Scale;
+						current_offset_X += type_primitive->_FontResource->_CharacterDescriptions[character]._Advance * type_primitive->_Scale;
 					}
 				}
 

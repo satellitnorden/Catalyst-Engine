@@ -9,8 +9,8 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/TextUserInterfaceElement.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
+#include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
 //Profiling system data.
 namespace ProfilingSystemData
@@ -51,8 +51,8 @@ namespace ProfilingSystemData
 	//Container for all profiling entries.
 	DynamicArray<ProfilingEntry> _ProfilingEntries;
 
-	//Container for all user interface elements for all profiling entries.
-	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
+	//Container for all user interface primitives for all profiling entries.
+	DynamicArray<UserInterfacePrimitive *RESTRICT> _UserInterfacePrimitives;
 
 }
 
@@ -61,27 +61,7 @@ namespace ProfilingSystemData
 */
 void ProfilingSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	/*
-	//Create user interface elements for all profiling entries.
-	for (const ProfilingSystemData::ProfilingEntry &entry : ProfilingSystemData::_ProfilingEntries)
-	{
-		TextUserInterfaceElementDescription description;
-
-		description._Type = UserInterfaceElementType::TEXT;
-		description._Minimum = Vector2<float>(0.01f, 0.89f);
-		description._Maximum = Vector2<float>(0.99f, 0.99f);
-		description._FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
-
-		char buffer[64];
-		sprintf_s(buffer, " - %f milliseconds", entry._Duration);
-
-		description._Text = entry._Name + buffer;
-
-		UserInterfaceElement *const RESTRICT element{ UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description) };
-
-		ProfilingSystemData::_UserInterfaceElements.Emplace(element);
-	}
-	*/
+	
 }
 
 /*
@@ -92,12 +72,12 @@ void ProfilingSystem::PostUpdate(const UpdateContext *const RESTRICT context) NO
 	//Clear all profiling entries and their associated data.
 	ProfilingSystemData::_ProfilingEntries.Clear();
 
-	for (UserInterfaceElement *const RESTRICT element : ProfilingSystemData::_UserInterfaceElements)
+	for (UserInterfacePrimitive *const RESTRICT primitive : ProfilingSystemData::_UserInterfacePrimitives)
 	{
-		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(element);
+		UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(primitive);
 	}
 
-	ProfilingSystemData::_UserInterfaceElements.Clear();
+	ProfilingSystemData::_UserInterfacePrimitives.Clear();
 }
 
 /*

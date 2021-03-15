@@ -6,7 +6,7 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
 /*
 *	Default constructor.
@@ -32,10 +32,10 @@ UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 */
 UserInterfaceText::~UserInterfaceText() NOEXCEPT
 {
-	//Destroy the element.
-	if (_Element)
+	//Destroy the primitive.
+	if (_Primitive)
 	{
-		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_Element);
+		UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_Primitive);
 	}
 }
 
@@ -46,11 +46,11 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 {
 	if (text && text != "")
 	{
-		if (!_Element)
+		if (!_Primitive)
 		{
-			TextUserInterfaceElementDescription description;
+			TextUserInterfacePrimitiveDescription description;
 
-			description._Type = UserInterfaceElementType::TEXT;
+			description._Type = UserInterfacePrimitiveType::TEXT;
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
@@ -61,22 +61,22 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
-			_Element = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+			_Primitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
 		{
-			_Element->_Text = text;
+			_Primitive->_Text = text;
 		}
 	}
 
 	else
 	{
-		if (_Element)
+		if (_Primitive)
 		{
-			UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_Element);
+			UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_Primitive);
 		}
 
-		_Element = nullptr;
+		_Primitive = nullptr;
 	}
 }

@@ -6,11 +6,6 @@
 #include <Systems/InputSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
-//User interface.
-#include <UserInterface/ButtonUserInterfaceElementDescription.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
-#include <UserInterface/UserInterfaceUtilities.h>
-
 //User interface scene constants.
 namespace UserInterfaceSceneConstants
 {
@@ -297,7 +292,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 				//First of all, find the currently gamepad selected button.
 				UserInterfaceButton *RESTRICT currently_gamepad_selected_button{ nullptr };
 
-				//Update the state of all button user interface elements and call the callbacks if necessary.
+				//Update the state of all button user interface primitives and call the callbacks if necessary.
 				for (UserInterfaceButton *const RESTRICT button : _Buttons)
 				{
 					//Remember the currently gamepad selected button.

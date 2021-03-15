@@ -9,9 +9,9 @@
 #include <Resources/Core/ResourcePointer.h>
 
 //User interface.
-#include <UserInterface/UserInterfaceElement.h>
+#include <UserInterface/UserInterfacePrimitiveDescription.h>
 
-class TextUserInterfaceElement final : public UserInterfaceElement
+class TextUserInterfacePrimitiveDescription final : public UserInterfacePrimitiveDescription
 {
 
 public:

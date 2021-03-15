@@ -7,7 +7,7 @@
 #include <Math/General/Vector.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElement.h>
+#include <UserInterface/ImageUserInterfacePrimitive.h>
 
 class UserInterfaceImage final
 {
@@ -28,7 +28,7 @@ public:
 
 private:
 
-	//The element.
-	ImageUserInterfaceElement *RESTRICT _Element;
+	//The primitive.
+	ImageUserInterfacePrimitive *RESTRICT _Primitive;
 
 };

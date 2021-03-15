@@ -8,8 +8,8 @@
 #include <Concurrency/AtomicQueue.h>
 
 //User interface.
-#include <UserInterface/UserInterfaceElement.h>
-#include <UserInterface/UserInterfaceElementDescription.h>
+#include <UserInterface/UserInterfacePrimitive.h>
+#include <UserInterface/UserInterfacePrimitiveDescription.h>
 #include <UserInterface/UserInterfaceScene.h>
 
 class UserInterfaceSystem final
@@ -34,21 +34,21 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Creates a user interface element.
+	*	Creates a user interface primitive.
 	*/
-	RESTRICTED NO_DISCARD UserInterfaceElement *const RESTRICT CreateUserInterfaceElement(const UserInterfaceElementDescription *const RESTRICT description) NOEXCEPT;
+	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description) NOEXCEPT;
 
 	/*
-	*	Destroys a user interface element.
+	*	Destroys a user interface primitive.
 	*/
-	void DestroyUserInterfaceElement(UserInterfaceElement *const RESTRICT element) NOEXCEPT;
+	void DestroyUserInterfacePrimitive(UserInterfacePrimitive *const RESTRICT primitive) NOEXCEPT;
 
 	/*
-	*	Returns the user interface elements.
+	*	Returns the user interface primitives.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<UserInterfaceElement *RESTRICT> *const RESTRICT GetUserInterfaceElements() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT GetUserInterfacePrimitives() const NOEXCEPT
 	{
-		return &_UserInterfaceElements;
+		return &_UserInterfacePrimitives;
 	}
 
 	/*
@@ -78,8 +78,8 @@ private:
 	//The deactivation queue.
 	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DeactivationQueue;
 
-	//Container for all user interface elements.
-	DynamicArray<UserInterfaceElement *RESTRICT> _UserInterfaceElements;
+	//Container for all user interface primitives.
+	DynamicArray<UserInterfacePrimitive *RESTRICT> _UserInterfacePrimitives;
 
 	/*
 	*	Updates the user interface system during the user interface update phase.

@@ -3,17 +3,13 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Forward declarations.
-class UserInterfaceElement;
-
-//Enumeration covering all user interface element types.
-enum class UserInterfaceElementType : uint8
+//Enumeration covering all user interface primitive types.
+enum class UserInterfacePrimitiveType : uint8
 {
-	BUTTON,
 	IMAGE,
 	TEXT,
 
-	NUMBER_OF_USER_INTERFACE_ELEMENT_TYPES
+	NUMBER_OF_USER_INTERFACE_PRIMITIVE_TYPES
 };
 
 //Enumeration cover all text horizontal alignments.
@@ -31,6 +27,3 @@ enum class TextVerticalAlignment : uint8
 	CENTER,
 	BOTTOM
 };
-
-//Type aliases.
-using ButtonUserInterfaceElementCallback = void(*)(UserInterfaceElement *const RESTRICT);

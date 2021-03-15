@@ -6,8 +6,8 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.
-#include <UserInterface/ImageUserInterfaceElementDescription.h>
-#include <UserInterface/TextUserInterfaceElementDescription.h>
+#include <UserInterface/ImageUserInterfacePrimitiveDescription.h>
+#include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
 /*
 *	Default constructor.
@@ -41,17 +41,17 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	_HoveredMaterial = initial_hovered_material;
 	_PressedMaterial = initial_pressed_material;
 
-	//Add the image element.
+	//Add the image Primitive.
 	{
-		ImageUserInterfaceElementDescription description;
+		ImageUserInterfacePrimitiveDescription description;
 
-		description._Type = UserInterfaceElementType::IMAGE;
+		description._Type = UserInterfacePrimitiveType::IMAGE;
 		description._Minimum = initial_minimum;
 		description._Maximum = initial_maximum;
 		description._Opacity = 1.0f;
 		description._Material = initial_idle_material;
 
-		_ImageElement = static_cast<ImageUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -63,12 +63,12 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 */
 UserInterfaceButton::~UserInterfaceButton() NOEXCEPT
 {
-	//Destroy the elements.
-	UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_ImageElement);
+	//Destroy the primitives.
+	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_ImagePrimitive);
 
-	if (_TextElement)
+	if (_TextPrimitive)
 	{
-		UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TextElement);
+		UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_TextPrimitive);
 	}
 }
 
@@ -83,21 +83,21 @@ void UserInterfaceButton::SetCurrentState(const State value) NOEXCEPT
 	{
 		case State::IDLE:
 		{
-			_ImageElement->_Material = _IdleMaterial;
+			_ImagePrimitive->_Material = _IdleMaterial;
 
 			break;
 		}
 
 		case State::HOVERED:
 		{
-			_ImageElement->_Material = _HoveredMaterial;
+			_ImagePrimitive->_Material = _HoveredMaterial;
 
 			break;
 		}
 
 		case State::PRESSED:
 		{
-			_ImageElement->_Material = _PressedMaterial;
+			_ImagePrimitive->_Material = _PressedMaterial;
 
 			break;
 		}
@@ -118,11 +118,11 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 {
 	if (text && text != "")
 	{
-		if (!_TextElement)
+		if (!_TextPrimitive)
 		{
-			TextUserInterfaceElementDescription description;
+			TextUserInterfacePrimitiveDescription description;
 
-			description._Type = UserInterfaceElementType::TEXT;
+			description._Type = UserInterfacePrimitiveType::TEXT;
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
@@ -133,22 +133,22 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
-			_TextElement = static_cast<TextUserInterfaceElement *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfaceElement(&description));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
 		{
-			_TextElement->_Text = text;
+			_TextPrimitive->_Text = text;
 		}
 	}
 
 	else
 	{
-		if (_TextElement)
+		if (_TextPrimitive)
 		{
-			UserInterfaceSystem::Instance->DestroyUserInterfaceElement(_TextElement);
+			UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_TextPrimitive);
 		}
 
-		_TextElement = nullptr;
+		_TextPrimitive = nullptr;
 	}
 }
