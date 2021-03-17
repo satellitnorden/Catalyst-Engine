@@ -860,9 +860,15 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 */
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
+	//Define constants.
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 128 };
+
+	//Calculate the patch size.
+	const float32 patch_size{ _Properties._PatchSize * TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
+
 	//Calculate the height/index map resolution.
 	const uint32 height_map_resolution{ _Properties._PatchResolution };
-	const uint32 material_maps_resolution{ _Properties._PatchResolution };
+	const uint32 material_maps_resolution{ CatalystBaseMath::Minimum<uint32>(CatalystBaseMath::Round<uint32>(patch_size), MAXIMUM_MATERIAL_MAPS_RESOLUTION) };
 
 	//Initialize the height/index/blend maps.
 	node->_HeightMap.Initialize(height_map_resolution);

@@ -219,7 +219,7 @@ vec3 CalculateVolumetricAmbientLighting()
     ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, 0.0f, -1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
     ambient_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SampleSky(vec3(0.0f, 0.0f, 1.0f), MAX_SKY_TEXTURE_MIPMAP_LEVEL - 1.0f) * 0.166f;
 
-    return ambient_lighting;
+    return ambient_lighting * 0.5f;
 }
 
 /*

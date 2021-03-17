@@ -25,6 +25,36 @@ public:
 	}
 
 	/*
+	*	Constructor taking three uint8's. Initializes the alpha channel to 1.0f.
+	*/
+	FORCE_INLINE constexpr Color(const uint8 R, const uint8 G, const uint8 B) NOEXCEPT
+		:
+		_Data(Pack(Vector4<uint8>(R, G, B, 255)))
+	{
+
+	}
+
+	/*
+	*	Constructor taking a Vector3<uint8>. Initializes the alpha channel to 1.0f.
+	*/
+	FORCE_INLINE constexpr Color(const Vector3<uint8> &initial_color) NOEXCEPT
+		:
+		_Data(Pack(Vector4<uint8>(initial_color, 255)))
+	{
+
+	}
+
+	/*
+	*	Constructor taking a Vector4<uint8>.
+	*/
+	FORCE_INLINE constexpr Color(const Vector4<uint8> &initial_color) NOEXCEPT
+		:
+		_Data(Pack(initial_color))
+	{
+
+	}
+
+	/*
 	*	Constructor taking a Vector3<float32>. Initializes the alpha channel to 1.0f.
 	*/
 	FORCE_INLINE constexpr Color(const Vector3<float32> &initial_color) NOEXCEPT
@@ -79,7 +109,7 @@ public:
 	/*
 	*	Applies gamma correction to this color.
 	*/
-	FORCE_INLINE void ApplyGammaCorrection() NOEXCEPT
+	FORCE_INLINE Color ApplyGammaCorrection() NOEXCEPT
 	{
 		const Vector4<float32> unpacked{ Unpack(_Data) };
 		float32 first{ 0.0f };
@@ -101,12 +131,29 @@ public:
 		corrected._W = unpacked._W;
 
 		_Data = Pack(corrected);
+
+		return *this;
 	}
 
 private:
 
 	//The underlying data.
 	uint32 _Data;
+
+	/*
+	*	Packs a Vector4<uint8> into a uint32.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD uint32 Pack(const Vector4<uint8> &color) const NOEXCEPT
+	{
+		uint32 output{ 0 };
+
+		output |= static_cast<uint32>(color._R);
+		output |= static_cast<uint32>(color._G) << 8;
+		output |= static_cast<uint32>(color._B) << 16;
+		output |= static_cast<uint32>(color._A) << 24;
+
+		return output;
+	}
 
 	/*
 	*	Packs a Vector4<float32> into a uint32.
