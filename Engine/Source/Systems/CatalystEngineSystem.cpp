@@ -157,6 +157,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	UserInterfaceSystem::Instance->Initialize();
 	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 
+	//Initialize the game system.
+	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_CONFIGURATION_FINAL)
 	ResourceSystem::Instance->LoadResources("EngineResources");
@@ -167,13 +170,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitialize();
+	TerrainSystem::Instance->PostInitialize(_ProjectConfiguration._TerrainConfiguration);
 	WorldSystem::Instance->PostInitialize();
 #if defined(CATALYST_EDITOR)
 	RenderingSystem::Instance->EditorPostInitialize();
 #endif
-
-	//Initialize the game system.
-	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
 	CatalystEngineSystemData::_DeltaTimer.Reset();
@@ -315,7 +316,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	DistributionSystem::Instance->Terminate();
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
-	TerrainSystem::Instance->Terminate();
 	WorldSystem::Instance->Terminate();
 
 	//Terminate the rendering system last, currently it might cause crashes, so make sure systems that save to disk do that first at least as to not lose data.

@@ -1743,6 +1743,15 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfacePrimitiveDescription.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TerrainHeightGenerationComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TerrainMaterialsGenerationComputePipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Compute Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystSimplexNoise.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2323,6 +2332,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceButton.cpp">
       <Filter>User Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainGenerationComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainHeightGenerationComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainMaterialsGenerationComputePipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

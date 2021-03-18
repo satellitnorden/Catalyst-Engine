@@ -11,6 +11,10 @@
 //Math.
 #include <Math/Geometry/GridPoint2.h>
 
+//Rendering.
+#include <Rendering/Native/Pipelines/ComputePipelines/TerrainHeightGenerationComputePipeline.h>
+#include <Rendering/Native/Pipelines/ComputePipelines/TerrainMaterialsGenerationComputePipeline.h>
+
 //Terrain.
 #include <Terrain/TerrainCore.h>
 #include <Terrain/TerrainPatchInformation.h>
@@ -42,9 +46,9 @@ public:
 	void Initialize(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
 
 	/*
-	*	Terminates the terrain system.
+	*	Post-initializes the terrain system.
 	*/
-	void Terminate() NOEXCEPT;
+	void PostInitialize(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Updates the terrain system during the sequential update phase.
@@ -118,6 +122,21 @@ private:
 
 	//The terrain ray tracing data.
 	TerrainRayTracingData _TerrainRayTracingData;
+
+	//Denotes if terrain generation is running.
+	bool _TerrainGenerationRunning{ false };
+
+	//The commandbuffer.
+	CommandBuffer *RESTRICT _CommandBuffer{ nullptr };
+
+	//The terrain generation event.
+	EventHandle _TerrainGenerationEvent;
+
+	//The terrain height generation compute pipeline.
+	TerrainHeightGenerationComputePipeline _TerrainHeightGenerationComputePipeline;
+
+	//The terrain materials generation compute pipeline.
+	TerrainMaterialsGenerationComputePipeline _TerrainMaterialsGenerationComputePipeline;
 
 	/*
 	*	Processes the update.
@@ -198,5 +217,10 @@ private:
 	*	Destroys the maps for the given node.
 	*/
 	void DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Finishes terrain generation.
+	*/
+	void FinishTerrainGeneration() NOEXCEPT;
 
 };

@@ -974,12 +974,50 @@ RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::AllocateCom
 }
 
 /*
+*	Submits a command buffer.
+*/
+void RenderingSystem::SubmitCommandBuffer(const CommandBuffer* const RESTRICT command_buffer) NOEXCEPT
+{
+	VulkanInterface::Instance->GetComputeQueue()->Submit(	*static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()),
+															0,
+															nullptr,
+															0,
+															0,
+															nullptr,
+															VK_NULL_HANDLE);
+}
+
+/*
 *	Creates a depth buffer.
 */
 void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the depth buffer.
 	*handle = static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(VkExtent2D{ resolution._Width, resolution._Height }));
+}
+
+/*
+*	Creates an event.
+*/
+void RenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
+{
+	*handle = static_cast<EventHandle>(VulkanInterface::Instance->CreateEvent());
+}
+
+/*
+*	Resets an event.
+*/
+void RenderingSystem::ResetEvent(EventHandle handle) NOEXCEPT
+{
+	static_cast<VulkanEvent *const RESTRICT>(handle)->Reset();
+}
+
+/*
+*	Waits for an event.
+*/
+void RenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
+{
+	static_cast<VulkanEvent *const RESTRICT>(handle)->WaitFor();
 }
 
 /*
@@ -1390,7 +1428,8 @@ void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *
 																						data._TextureDataContainer._TextureChannels,
 																						data._TextureDataContainer._TextureTexelSize,
 																						data._TextureDataContainer._TextureData.Data(),
-																						VulkanTranslationUtilities::GetVulkanFormat(data._TextureFormat)));
+																						VulkanTranslationUtilities::GetVulkanFormat(data._TextureFormat),
+																						VulkanTranslationUtilities::GetVulkanImageUsage(data._TextureUsage)));
 }
 
 /*
@@ -1537,7 +1576,7 @@ void RenderingSystem::EditorPostInitialize() NOEXCEPT
 		imgui_init_info.Instance = VulkanInterface::Instance->GetInstance().Get();
 		imgui_init_info.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
 		imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
-		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics);
+		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS);
 		imgui_init_info.Queue = VulkanInterface::Instance->GetGraphicsQueue()->Get();
 		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
 		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();

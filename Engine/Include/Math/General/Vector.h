@@ -29,6 +29,15 @@ public:
 
 		struct
 		{
+			//The X component.
+			TYPE x;
+
+			//The Y component.
+			TYPE y;
+		};
+
+		struct
+		{
 			//The R component.
 			TYPE _R;
 
@@ -388,6 +397,18 @@ public:
 
 			//The Z component.
 			TYPE _Z;
+		};
+
+		struct
+		{
+			//The X component.
+			TYPE x;
+
+			//The Y component.
+			TYPE y;
+
+			//The Z component.
+			TYPE z;
 		};
 
 		struct
@@ -1097,6 +1118,21 @@ public:
 
 			//The W component.
 			TYPE _W;
+		};
+
+		struct
+		{
+			//The X component.
+			TYPE x;
+
+			//The Y component.
+			TYPE y;
+
+			//The Z component.
+			TYPE z;
+
+			//The W component.
+			TYPE w;
 		};
 
 		struct

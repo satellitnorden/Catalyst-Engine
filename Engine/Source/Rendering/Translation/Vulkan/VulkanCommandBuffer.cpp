@@ -240,6 +240,15 @@ void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, Shade
 }
 
 /*
+*	Sets an event.
+*/
+void CommandBuffer::SetEvent(const Pipeline *const RESTRICT pipeline, const EventHandle event) NOEXCEPT
+{
+	reinterpret_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandSetEvent(	static_cast<VulkanEvent* const RESTRICT>(event)->Get(),
+																								VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
+}
+
+/*
 *	Traces rays.
 */
 void CommandBuffer::TraceRays(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height) NOEXCEPT

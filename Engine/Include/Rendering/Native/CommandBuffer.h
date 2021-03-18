@@ -98,6 +98,11 @@ public:
 	void PushConstants(const Pipeline *const RESTRICT pipeline, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Sets an event.
+	*/
+	void SetEvent(const Pipeline *const RESTRICT pipeline, const EventHandle event) NOEXCEPT;
+
+	/*
 	*	Traces rays.
 	*/
 	void TraceRays(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height) NOEXCEPT;

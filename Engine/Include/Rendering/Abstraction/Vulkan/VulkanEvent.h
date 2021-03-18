@@ -37,6 +37,11 @@ public:
 	*/
 	void Set() NOEXCEPT;
 
+	/*
+	*	Waits for this vulkan event.
+	*/
+	void WaitFor() NOEXCEPT;
+
 private:
 
 	//The underlying Vulkan event.

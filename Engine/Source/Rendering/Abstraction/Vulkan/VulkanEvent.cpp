@@ -46,6 +46,14 @@ void VulkanEvent::Set() NOEXCEPT
 }
 
 /*
+*	Waits for this vulkan event.
+*/
+void VulkanEvent::WaitFor() NOEXCEPT
+{
+	while (vkGetEventStatus(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanEvent) == VK_EVENT_RESET);
+}
+
+/*
 *	Creates an event create info.
 */
 void VulkanEvent::CreateEventCreateInfo(VkEventCreateInfo &eventCreateInfo) const NOEXCEPT

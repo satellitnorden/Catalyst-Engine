@@ -17,6 +17,7 @@
 	using vec2 = Vector2<float>;
 	using vec3 = Vector3<float>;
 	using vec4 = Vector4<float>;
+	using uvec3 = Vector3<uint32>;
 
 	/*
 	*	Cross product helper function.
@@ -68,6 +69,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_DOT_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
 	DotProductHelper(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the floor function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1, OUTPUT_TYPE) \
+	CatalystBaseMath::Floor<OUTPUT_TYPE>(ARGUMENT_1)
 
 	/*
 	*	Calls the linear interpolation function.
@@ -178,6 +185,11 @@
 	#define CATALYST_SHADER_NAMESPACE_END()	\
 	}
 
+	/*
+	*	Defines an output argument.
+	*/
+	#define CATALYST_SHADER_OUTPUT_ARGUMENT(ARGUMENT_TYPE, ARGUMENT_NAME) ARGUMENT_TYPE &ARGUMENT_NAME
+
 #endif
 
 #if defined(CATALYST_SHADER_LANGUAGE_GLSL)
@@ -205,6 +217,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_DOT_PRODUCT(ARGUMENT_1, ARGUMENT_2) \
 	dot(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the floor function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1, OUTPUT_TYPE) \
+	floor(ARGUMENT_1)
 
 	/*
 	*	Calls the linear interpolation function.
@@ -311,6 +329,11 @@
 	*	Defines the end of a namespace.
 	*/
 	#define CATALYST_SHADER_NAMESPACE_END()
+
+	/*
+	*	Defines an output argument.
+	*/
+	#define CATALYST_SHADER_OUTPUT_ARGUMENT(ARGUMENT_TYPE, ARGUMENT_NAME) out ARGUMENT_TYPE ARGUMENT_NAME
 
 #endif
 

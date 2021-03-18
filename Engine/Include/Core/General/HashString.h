@@ -83,6 +83,16 @@ public:
 		return _Hash;
 	}
 
+	/*
+	*	Returns if this hash string is empty.
+	*/
+	FORCE_INLINE NO_DISCARD bool Empty() const NOEXCEPT
+	{
+		static HashString EMPTY_HASH_STRING{ "" };
+
+		return *this == EMPTY_HASH_STRING;
+	}
+
 private:
 
 	//The underlying hash.

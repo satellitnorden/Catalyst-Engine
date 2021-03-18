@@ -43,6 +43,7 @@ using AccelerationStructureHandle = void *RESTRICT;
 using BufferHandle = void *RESTRICT;
 using CommandPoolHandle = void *RESTRICT;
 using DepthBufferHandle = void *RESTRICT;
+using EventHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;
@@ -481,6 +482,13 @@ enum class TextureFormat : uint8
 	R_FLOAT32,
 	RG_FLOAT32,
 	RGBA_FLOAT32
+};
+
+//Enumeration covering all texture usages.
+enum class TextureUsage : uint8
+{
+	NONE,
+	STORAGE
 };
 
 /*

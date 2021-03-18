@@ -264,12 +264,32 @@ public:
 	/*
 	*	Returns a global command buffer from the global command pool.
 	*/
-	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetGlobalCommandBuffer( const CommandBufferLevel level) NOEXCEPT;
+	RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT GetGlobalCommandBuffer(const CommandBufferLevel level) NOEXCEPT;
+
+	/*
+	*	Submits a command buffer.
+	*/
+	void SubmitCommandBuffer(const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.
 	*/
 	void CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Creates an event.
+	*/
+	void CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Resets an event.
+	*/
+	void ResetEvent(EventHandle handle) NOEXCEPT;
+
+	/*
+	*	Waits for an event.
+	*/
+	void WaitForEvent(EventHandle handle) NOEXCEPT;
 
 	/*
 	*	Creates a Shader.

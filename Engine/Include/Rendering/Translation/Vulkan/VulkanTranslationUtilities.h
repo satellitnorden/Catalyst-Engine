@@ -231,6 +231,21 @@ public:
 	}
 
 	/*
+	*	Given a texture usage, returns the corresponding Vulkan image usage.
+	*/
+	static VkImageUsageFlags GetVulkanImageUsage(const TextureUsage usage) NOEXCEPT
+	{
+		VkImageUsageFlags flags{ 0 };
+
+		if (usage == TextureUsage::STORAGE)
+		{
+			flags |= VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
+		}
+
+		return flags;
+	}
+
+	/*
 	*	Given a memory property, returns the corresponding Vulkan memory property.
 	*/
 	static VkMemoryPropertyFlags GetVulkanMemoryProperty(const MemoryProperty property) NOEXCEPT

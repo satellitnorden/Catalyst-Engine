@@ -61,7 +61,7 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 
 	//Create the master texture.
 	Texture2DHandle master_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData, data->_MasterTextureWidth, data->_MasterTextureHeight, 1), TextureFormat::R_UINT8), &master_texture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData, data->_MasterTextureWidth, data->_MasterTextureHeight, 1), TextureFormat::R_UINT8, TextureUsage::NONE), &master_texture);
 
 	resource->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(master_texture);
 }
@@ -284,7 +284,7 @@ void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundRe
 void ResourceCreationSystem::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT
 {
 	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8), &resource->_Texture2DHandle);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &resource->_Texture2DHandle);
 
 	//Add the texture to the global render data.
 	resource->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(resource->_Texture2DHandle);
@@ -317,7 +317,7 @@ void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data,
 	Texture3D<Vector4<byte>> temporary_texture{ data->_Width, data->_Height, data->_Depth, data->_Data[0].Data() };
 
 	//Create the texture!
-	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8), &resource->_Texture3DHandle);
+	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &resource->_Texture3DHandle);
 }
 
 /*

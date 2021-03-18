@@ -259,6 +259,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\ParticleInstanceData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TerrainHeightGenerationComputePipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\ComputePipelines\TerrainMaterialsGenerationComputePipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\Core\Pipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionApplicationGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionSpatialDenoisingGraphicsPipeline.h" />
@@ -359,6 +361,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystLighting.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderConstants.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystShaderCore.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystSimplexNoise.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystToneMapping.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h" />
@@ -562,6 +565,9 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\ModelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\ParticleSystemComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainGenerationComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainHeightGenerationComputePipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainMaterialsGenerationComputePipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\Core\Pipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionApplicationGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\AmbientOcclusionSpatialDenoisingGraphicsPipeline.cpp" />

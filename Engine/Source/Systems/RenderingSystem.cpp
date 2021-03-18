@@ -615,7 +615,7 @@ void RenderingSystem::InitializeDefaultTexture() NOEXCEPT
 {
 	//Create the default texture 2D.
 	StaticArray<byte, 4> default_texture_2d_data{ static_cast<byte>(255), static_cast<byte>(0), static_cast<byte>(0), static_cast<byte>(255) };
-	CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::RGBA_UINT8), &_DefaultTexture2D);
+	CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &_DefaultTexture2D);
 }
 
 /*

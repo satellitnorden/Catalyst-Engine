@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 #include <Core/General/DynamicString.h>
+#include <Core/General/HashString.h>
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
@@ -169,6 +170,22 @@ public:
 	*	Recommended: A valid pointer to a function generating material.
 	*/
 	TerrainMaterialFunction _TerrainMaterialFunction;
+
+	/*
+	*	The terrain height generation shader identifier.
+	*	The (compute) shader that runs the terrain height generation on the GPU.
+	*	If empty, terrain height generation will run on the CPU, which will be decidely slower.
+	*	Recommended: A valid resource identifier to a shader resource.
+	*/
+	HashString _TerrainHeightGenerationShaderIdentifier;
+
+	/*
+	*	The terrain materials generation shader identifier.
+	*	The (compute) shader that runs the terrain materials generation on the GPU.
+	*	If empty, terrain materials generation will run on the CPU, which will be decidely slower.
+	*	Recommended: A valid resource identifier to a shader resource.
+	*/
+	HashString _TerrainMaterialsGenerationShaderIdentifier;
 
 	/*
 	*	The terrain data save folder.
