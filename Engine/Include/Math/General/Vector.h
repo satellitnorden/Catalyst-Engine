@@ -66,6 +66,14 @@ public:
 	}
 
 	/*
+	*	Returns the floored vector of the given vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector2 Floor(const Vector2 &value) NOEXCEPT
+	{
+		return Vector2(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y));
+	}
+
+	/*
 	*	Given a vector, return it's length.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector2 &vector) NOEXCEPT
@@ -449,6 +457,14 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 	{
 		return Vector3{ firstVector._Y * secondVector._Z - firstVector._Z * secondVector._Y, firstVector._Z * secondVector._X - firstVector._X * secondVector._Z, firstVector._X * secondVector._Y - firstVector._Y * secondVector._X };
+	}
+
+	/*
+	*	Returns the floored vector of the given vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Floor(const Vector3 &value) NOEXCEPT
+	{
+		return Vector3(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y), CatalystBaseMath::Floor<TYPE>(value._Z));
 	}
 
 	/*
@@ -1154,6 +1170,14 @@ public:
 		TYPE _Data[4];
 
 	};
+
+	/*
+	*	Returns the floored vector of the given vector.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector4 Floor(const Vector4 &value) NOEXCEPT
+	{
+		return Vector4(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y), CatalystBaseMath::Floor<TYPE>(value._Z), CatalystBaseMath::Floor<TYPE>(value._W));
+	}
 
 	/*
 	*	Linearly interpolate between two Vector4 values.

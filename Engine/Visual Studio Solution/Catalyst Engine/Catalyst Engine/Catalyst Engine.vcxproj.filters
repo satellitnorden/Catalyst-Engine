@@ -1752,6 +1752,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystSimplexNoise.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystValueNoise.h">
+      <Filter>Rendering\Include\Native\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -22,6 +22,9 @@ public:
 	//The maximum bounds.
 	Vector2<float32> _MaximumBounds;
 
+	//The dimensions
+	uint32 _Dimensions;
+
 };
 
 /*
@@ -54,6 +57,7 @@ void TerrainMaterialsGenerationComputePipeline::Initialize(const ResourcePointer
 void TerrainMaterialsGenerationComputePipeline::Execute(const Vector2<float32> minimum_bounds,
 														const Vector2<float32> maximum_bounds,
 														const uint32 dimensions,
+														const Texture2DHandle normal_texture,
 														const Texture2DHandle indices_texture,
 														const Texture2DHandle blend_texture,
 														CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
@@ -62,8 +66,9 @@ void TerrainMaterialsGenerationComputePipeline::Execute(const Vector2<float32> m
 	RenderDataTableHandle render_data_table;
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &render_data_table, indices_texture);
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &render_data_table, blend_texture);
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &render_data_table, normal_texture);
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &render_data_table, indices_texture);
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &render_data_table, blend_texture);
 
 	_RenderDataTables.Emplace(render_data_table);
 
@@ -78,6 +83,7 @@ void TerrainMaterialsGenerationComputePipeline::Execute(const Vector2<float32> m
 
 	data._MinimumBounds = minimum_bounds;
 	data._MaximumBounds = maximum_bounds;
+	data._Dimensions = dimensions;
 
 	command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(TerrainMaterialsGenerationPushConstantData), &data);
 
@@ -103,10 +109,11 @@ void TerrainMaterialsGenerationComputePipeline::DestroyRenderDataTables() NOEXCE
 */
 void TerrainMaterialsGenerationComputePipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::COMPUTE),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::COMPUTE)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::COMPUTE),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageImage, 1, ShaderStage::COMPUTE)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);

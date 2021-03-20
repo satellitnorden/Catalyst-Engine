@@ -729,8 +729,9 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 		render_information._PatchSize = _Properties._PatchSize * patch_size_multiplier;
 		render_information._Borders = node->_Borders;
 		render_information._HeightMapTextureIndex = node->_HeightMapTextureIndex;
-		render_information._HeightMapResolution = node->_HeightMap.GetResolution();
-		render_information._MaterialMapsResolution = node->_IndexMap.GetResolution();
+		render_information._HeightMapResolution = node->_HeightMapResolution;
+		render_information._MaterialMapsResolution = node->_MaterialMapsResolution;
+		render_information._NormalMapTextureIndex = node->_NormalMapTextureIndex;
 		render_information._IndexMapTextureIndex = node->_IndexMapTextureIndex;
 		render_information._BlendMapTextureIndex = node->_BlendMapTextureIndex;
 		render_information._Visibility = false;
@@ -891,7 +892,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 128 };
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 512 };
 
 	//Initialize the command buffer, if needed.
 	if (!_TerrainGenerationRunning
@@ -906,36 +907,37 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 	//Calculate the patch size.
 	const float32 patch_size{ _Properties._PatchSize * TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-	//Calculate the height/index map resolution.
-	const uint32 height_map_resolution{ _Properties._PatchResolution };
-	const uint32 material_maps_resolution{ CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, MAXIMUM_MATERIAL_MAPS_RESOLUTION) };
+	//Calculate the height/material map(s) resolution.
+	node->_HeightMapResolution = _Properties._PatchResolution;
+	node->_MaterialMapsResolution = CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, MAXIMUM_MATERIAL_MAPS_RESOLUTION);
 
 	//Initialize the height/index/blend maps.
-	node->_HeightMap.Initialize(height_map_resolution);
-	node->_IndexMap.Initialize(material_maps_resolution);
-	node->_BlendMap.Initialize(material_maps_resolution);
+	Texture2D<float32> height_map{ node->_HeightMapResolution };
+	Texture2D<Vector4<uint8>> normal_map{ node->_MaterialMapsResolution };
+	Texture2D<Vector4<uint8>> index_map{ node->_MaterialMapsResolution };
+	Texture2D<Vector4<uint8>> blend_map{ node->_MaterialMapsResolution };
 
 	//Generate the height map.
 	if (_TerrainHeightGenerationComputePipeline.IsInitialized())
 	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
 		node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
 
 		_TerrainHeightGenerationComputePipeline.Execute(node->_Minimum,
 														node->_Maximum,
-														height_map_resolution,
+														node->_HeightMapResolution,
 														node->_HeightMapTexture,
 														_CommandBuffer);
 	}
 
 	else
 	{
-		for (uint32 Y{ 0 }; Y < height_map_resolution; ++Y)
+		for (uint32 Y{ 0 }; Y < node->_HeightMapResolution; ++Y)
 		{
-			for (uint32 X{ 0 }; X < height_map_resolution; ++X)
+			for (uint32 X{ 0 }; X < node->_HeightMapResolution; ++X)
 			{
 				//Calculate the normalized coordinate.
-				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(height_map_resolution - 1), static_cast<float32>(Y) / static_cast<float32>(height_map_resolution - 1) };
+				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_HeightMapResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_HeightMapResolution - 1) };
 
 				//Calculate the world position.
 				const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
@@ -944,26 +946,29 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 																		) };
 
 				//Generate the height.
-				node->_HeightMap.At(X, Y) = _Properties._TerrainHeightFunction(world_position);
+				height_map.At(X, Y) = _Properties._TerrainHeightFunction(world_position);
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
 		
 		node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
 	}
 
 	if (_TerrainMaterialsGenerationComputePipeline.IsInitialized())
 	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_BlendMap), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
 
+		node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
 		node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
 		node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
 
 		_TerrainMaterialsGenerationComputePipeline.Execute(	node->_Minimum,
 															node->_Maximum,
-															material_maps_resolution,
+															node->_MaterialMapsResolution,
+															node->_NormalMapTexture,
 															node->_IndexMapTexture,
 															node->_BlendMapTexture,
 															_CommandBuffer);
@@ -971,13 +976,13 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 
 	else
 	{
-		//Generate the material map.
-		for (uint32 Y{ 0 }; Y < material_maps_resolution; ++Y)
+		//Generate the material maps.
+		for (uint32 Y{ 0 }; Y < node->_MaterialMapsResolution; ++Y)
 		{
-			for (uint32 X{ 0 }; X < material_maps_resolution; ++X)
+			for (uint32 X{ 0 }; X < node->_MaterialMapsResolution; ++X)
 			{
 				//Calculate the normalized coordinate.
-				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(material_maps_resolution - 1), static_cast<float32>(Y) / static_cast<float32>(material_maps_resolution - 1) };
+				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_MaterialMapsResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_MaterialMapsResolution - 1) };
 
 				//Calculate the world position.
 				const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
@@ -985,14 +990,25 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 																		CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
 																		) };
 
+				//Generate the normal.
+				Vector3<float32> terrain_normal;
+				GetTerrainNormalAtPosition(world_position.GetAbsolutePosition(), &terrain_normal);
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					normal_map.At(X, Y)[i] = static_cast<uint8>((terrain_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
+				}
+
 				//Generate the materials.
-				_Properties._TerrainMaterialFunction(world_position, &node->_IndexMap.At(X, Y), &node->_BlendMap.At(X, Y));
+				_Properties._TerrainMaterialFunction(world_position, &index_map.At(X, Y), &blend_map.At(X, Y));
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(node->_BlendMap), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
 
+		node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
 		node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
 		node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
 	}
@@ -1008,6 +1024,13 @@ void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 		_Update._TexturesToRemove.Emplace(node->_HeightMapTexture, node->_HeightMapTextureIndex);
 
 		node->_HeightMapTexture = EMPTY_HANDLE;
+	}
+
+	if (node->_NormalMapTexture)
+	{
+		_Update._TexturesToRemove.Emplace(node->_NormalMapTexture, node->_NormalMapTextureIndex);
+
+		node->_NormalMapTexture = EMPTY_HANDLE;
 	}
 	
 	if (node->_IndexMapTexture)

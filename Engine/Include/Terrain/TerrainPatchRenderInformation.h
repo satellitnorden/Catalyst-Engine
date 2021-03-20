@@ -29,6 +29,9 @@ public:
 	//The material maps resolution.
 	uint32 _MaterialMapsResolution;
 
+	//The normal map texture index.
+	uint32 _NormalMapTextureIndex;
+
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
 

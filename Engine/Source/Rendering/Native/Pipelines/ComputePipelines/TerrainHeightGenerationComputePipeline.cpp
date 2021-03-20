@@ -22,6 +22,9 @@ public:
 	//The maximum bounds.
 	Vector2<float32> _MaximumBounds;
 
+	//The dimensions
+	uint32 _Dimensions;
+
 };
 
 /*
@@ -76,6 +79,7 @@ void TerrainHeightGenerationComputePipeline::Execute(	const Vector2<float32> min
 
 	data._MinimumBounds = minimum_bounds;
 	data._MaximumBounds = maximum_bounds;
+	data._Dimensions = dimensions;
 
 	command_buffer->PushConstants(this, ShaderStage::COMPUTE, 0, sizeof(TerrainHeightGenerationPushConstantData), &data);
 

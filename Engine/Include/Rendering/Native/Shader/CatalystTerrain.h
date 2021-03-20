@@ -28,11 +28,10 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystTerrain)
 	/*
 	*	For use in terrain generation compute shaders. Calculate the current absolute world position from the global invocation ID.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_FOUR_ARGUMENTS(vec3, CalculateTerrainAbsoluteWorldPosition, uvec3 global_invocation_id, uvec3 number_of_work_groups, vec2 minimum_bounds, vec2 maximum_bounds)
+	CATALYST_SHADER_FUNCTION_RETURN_FOUR_ARGUMENTS(vec3, CalculateTerrainAbsoluteWorldPosition, uvec3 global_invocation_id, uint dimensions, vec2 minimum_bounds, vec2 maximum_bounds)
 	{
-		float X = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(minimum_bounds.x, maximum_bounds.x, float(global_invocation_id.x) / float(number_of_work_groups.x - 1));
-		float Z = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(minimum_bounds.y, maximum_bounds.y, float(global_invocation_id.y) / float(number_of_work_groups.y - 1));
-
+		float X = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(minimum_bounds.x, maximum_bounds.x, (float(global_invocation_id.x) / float(dimensions - 1)));
+		float Z = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(minimum_bounds.y, maximum_bounds.y, (float(global_invocation_id.y) / float(dimensions - 1)));
 
 		return vec3(X, 0.0f, Z);
 	}

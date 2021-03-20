@@ -71,10 +71,10 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	//Gather all unique indices and how many queues will be created from them.
 	Map<uint32, uint8> queue_family_indices;
 
-	++queue_family_indices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::COMPUTE)];
-	++queue_family_indices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS)];
-	++queue_family_indices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::PRESENT)];
-	++queue_family_indices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::TRANSFER)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::COMPUTE)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::PRESENT)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::TRANSFER)];
 
 	for (const Pair<uint32, uint8> &unique_queue_family_index : queue_family_indices)
 	{

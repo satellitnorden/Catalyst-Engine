@@ -16,11 +16,12 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 32) float VERTEX_BORDER_OFFSET_FIRST;
     layout (offset = 36) float VERTEX_BORDER_OFFSET_SECOND;
     layout (offset = 40) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 52) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
-    layout (offset = 56) float METER_PER_HEIGHT_MAP_TEXEL;
-    layout (offset = 60) float MATERIAL_MAPS_RESOLOLUTION;
+    layout (offset = 44) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 48) uint INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 52) uint BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 56) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
+    layout (offset = 60) float METER_PER_HEIGHT_MAP_TEXEL;
+    layout (offset = 64) float MATERIAL_MAPS_RESOLOLUTION;
 };
 
 //In parameters.
@@ -44,37 +45,15 @@ vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPositio
   return viewSpacePosition.xy * 0.5f + 0.5f;
 }
 
-/*
-*	Samples the height at the given coordinate.
-*/
-float SampleHeight(vec2 coordinate)
-{
-	return texture(sampler2D(GLOBAL_TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).x;
-}
-
 void CatalystShaderMain()
 {
+	//Retrieve the normal.
+	vec3 normal = texture(sampler2D(GLOBAL_TEXTURES[NORMAL_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).xyz;
+	normal = normal * 2.0f - 1.0f;
+
 	//Calculate the tangent space matrix.
-	vec2 left_coordinate = fragment_height_map_texture_coordinate + vec2(-HEIGHT_MAP_RESOLOLUTION_RECIPROCAL, 0.0f);
-	vec2 right_coordinate = fragment_height_map_texture_coordinate + vec2(HEIGHT_MAP_RESOLOLUTION_RECIPROCAL, 0.0f);
-	vec2 down_coordinate = fragment_height_map_texture_coordinate + vec2(0.0f, -HEIGHT_MAP_RESOLOLUTION_RECIPROCAL);
-	vec2 up_coordinate = fragment_height_map_texture_coordinate + vec2(0.0f, HEIGHT_MAP_RESOLOLUTION_RECIPROCAL);
-
-	float left_height = SampleHeight(left_coordinate);
-	float right_height = SampleHeight(right_coordinate);
-	float down_height = SampleHeight(down_coordinate);
-	float up_height = SampleHeight(up_coordinate);
-
-	float left_overflow = (abs(clamp(left_coordinate.x, -HEIGHT_MAP_RESOLOLUTION_RECIPROCAL, 0.0f)) * 33.0f);
-	float right_overflow = (clamp(right_coordinate.x - 1.0f, 0.0f, HEIGHT_MAP_RESOLOLUTION_RECIPROCAL) * 33.0f);
-	float down_overflow = (abs(clamp(down_coordinate.y, -HEIGHT_MAP_RESOLOLUTION_RECIPROCAL, 0.0f)) * 33.0f);
-	float up_overflow = (clamp(up_coordinate.y - 1.0f, 0.0f, HEIGHT_MAP_RESOLOLUTION_RECIPROCAL) * 33.0f);
-
-	vec3 tangent = normalize(vec3(mix(METER_PER_HEIGHT_MAP_TEXEL, 0.0f, right_overflow), right_height, 0.0f) - vec3(mix(-METER_PER_HEIGHT_MAP_TEXEL, 0.0f, left_overflow), left_height, 0.0f));
-	vec3 bitangent = normalize(vec3(0.0f, up_height, mix(METER_PER_HEIGHT_MAP_TEXEL, 0.0f, down_overflow)) - vec3(0.0f, down_height, mix(-METER_PER_HEIGHT_MAP_TEXEL, 0.0f, up_overflow)));
-	vec3 normal = normalize(cross(tangent, bitangent));
-
-	normal = dot(normal, vec3(0.0f, 1.0f, 0.0f)) >= 0.0f ? normal : -normal;
+	vec3 tangent = cross(normal, vec3(0.0f, 0.0f, 1.0f));
+	vec3 bitangent = cross(tangent, normal);
 
 	mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
 

@@ -28,8 +28,8 @@ public:
 	//The maximum world position of this node.
 	Vector2<float32> _Maximum;
 
-	//The height map.
-	Texture2D<float32> _HeightMap;
+	//The height map resolution.
+	uint32 _HeightMapResolution;
 
 	//The height map texture.
 	Texture2DHandle _HeightMapTexture;
@@ -37,17 +37,20 @@ public:
 	//The height map texture index.
 	uint32 _HeightMapTextureIndex;
 
-	//The index map.
-	Texture2D<Vector4<uint8>> _IndexMap;
+	//The material maps resolution.
+	uint32 _MaterialMapsResolution;
+
+	//The normal map texture.
+	Texture2DHandle _NormalMapTexture;
+
+	//The normal map texture index.
+	uint32 _NormalMapTextureIndex;
 
 	//The index map texture.
 	Texture2DHandle _IndexMapTexture;
 
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
-
-	//The blend map.
-	Texture2D<Vector4<uint8>> _BlendMap;
 
 	//The blend map texture.
 	Texture2DHandle _BlendMapTexture;

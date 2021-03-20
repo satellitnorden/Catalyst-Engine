@@ -17,6 +17,7 @@
 	using vec2 = Vector2<float>;
 	using vec3 = Vector3<float>;
 	using vec4 = Vector4<float>;
+	using uvec2 = Vector2<uint32>;
 	using uvec3 = Vector3<uint32>;
 
 	/*
@@ -35,6 +36,24 @@
 	FORCE_INLINE NO_DISCARD float32 DotProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
 	{
 		return TYPE::DotProduct(value_1, value_2);
+	}
+
+	/*
+	*	Floor helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD TYPE FloorHelper(const TYPE value) NOEXCEPT
+	{
+		return TYPE::Floor(value);
+	}
+
+	/*
+	*	Floor helper function specialization for float32.
+	*/
+	template <>
+	FORCE_INLINE NO_DISCARD float32 FloorHelper<float32>(const float32 value) NOEXCEPT
+	{
+		return CatalystBaseMath::Floor<float32>(value);
 	}
 
 	/*
@@ -73,8 +92,14 @@
 	/*
 	*	Calls the floor function.
 	*/
-	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1, OUTPUT_TYPE) \
-	CatalystBaseMath::Floor<OUTPUT_TYPE>(ARGUMENT_1)
+	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1) \
+	FloorHelper(ARGUMENT_1)
+
+	/*
+	*	Calls the fractional function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_FRACTIONAL(ARGUMENT) \
+	CatalystBaseMath::Fractional(ARGUMENT)
 
 	/*
 	*	Calls the linear interpolation function.
@@ -99,6 +124,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
 	NormalizeHelper(ARGUMENT_1)
+
+	/*
+	*	Calls the sine function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SINE(ARGUMENT) \
+	CatalystBaseMath::Sine(ARGUMENT)
 
 	/*
 	*	Calls the smoothstep function.
@@ -190,6 +221,11 @@
 	*/
 	#define CATALYST_SHADER_OUTPUT_ARGUMENT(ARGUMENT_TYPE, ARGUMENT_NAME) ARGUMENT_TYPE &ARGUMENT_NAME
 
+	/*
+	*	Defines the shader function prefix.
+	*/
+	#define CATALYST_SHADER_FUNCTION_PREFIX FORCE_INLINE
+
 #endif
 
 #if defined(CATALYST_SHADER_LANGUAGE_GLSL)
@@ -221,8 +257,14 @@
 	/*
 	*	Calls the floor function.
 	*/
-	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1, OUTPUT_TYPE) \
+	#define CATALYST_SHADER_FUNCTION_FLOOR(ARGUMENT_1) \
 	floor(ARGUMENT_1)
+
+	/*
+	*	Calls the fractional function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_FRACTIONAL(ARGUMENT) \
+	fract(ARGUMENT)
 
 	/*
 	*	Calls the linear interpolation function.
@@ -247,6 +289,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
 	normalize(ARGUMENT_1)
+
+	/*
+	*	Calls the sine function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SINE(ARGUMENT) \
+	sin(ARGUMENT)
 
 	/*
 	*	Calls the smoothstep function.
@@ -335,6 +383,72 @@
 	*/
 	#define CATALYST_SHADER_OUTPUT_ARGUMENT(ARGUMENT_TYPE, ARGUMENT_NAME) out ARGUMENT_TYPE ARGUMENT_NAME
 
+	/*
+	*	Defines the shader function prefix.
+	*/
+	#define CATALYST_SHADER_FUNCTION_PREFIX
+
 #endif
+
+///////////////////////
+// Shared functions. //
+///////////////////////
+
+/*
+*	Converts float bits to uint bits.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX uint CatalystShaderFloatBitsToUint(float value)
+{
+#if defined(CATALYST_SHADER_LANGUAGE_CXX)
+	uint output;
+
+	Memory::Copy(&output, &value, sizeof(uint));
+
+	return output;
+#endif
+
+#if defined(CATALYST_SHADER_LANGUAGE_GLSL)
+	return floatBitsToUint(value);
+#endif
+}
+
+/*
+*	Returns the hash of the given seed.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX uint CatalystShaderHash1(uint seed)
+{
+	seed = (seed ^ 61u) ^ (seed >> 16u);
+	seed *= 9u;
+	seed = seed ^ (seed >> 4u);
+	seed *= 0x27d4eb2du;
+	seed = seed ^ (seed >> 15u);
+	return seed;
+}
+
+/*
+*   Returns the inverse square of the given number.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderInverseSquare(float number)
+{
+	return 1.0f - ((1.0f - number) * (1.0f - number));
+}
+
+/*
+*	Returns a random float with the given coordinate.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderRandomFloat(vec2 coordinate)
+{
+	uint hash = CatalystShaderHash1(CatalystShaderFloatBitsToUint(coordinate.x)) ^ CatalystShaderHash1(CatalystShaderFloatBitsToUint(coordinate.y)) ^ CatalystShaderHash1(CatalystShaderFloatBitsToUint(coordinate.x + coordinate.y));
+
+	return float(hash) * (2.328306437080797e-10f);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderSmoothStep(float number)
+{
+	return number * number * (3.0f - 2.0f * number);
+}
 
 #endif

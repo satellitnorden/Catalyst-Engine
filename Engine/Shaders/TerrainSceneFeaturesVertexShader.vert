@@ -11,11 +11,12 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 32) float VERTEX_BORDER_OFFSET_FIRST;
     layout (offset = 36) float VERTEX_BORDER_OFFSET_SECOND;
     layout (offset = 40) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 52) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
-    layout (offset = 56) float METER_PER_HEIGHT_MAP_TEXEL;
-    layout (offset = 60) float MATERIAL_MAPS_RESOLOLUTION;
+    layout (offset = 44) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 48) uint INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 52) uint BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 56) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
+    layout (offset = 60) float METER_PER_HEIGHT_MAP_TEXEL;
+    layout (offset = 64) float MATERIAL_MAPS_RESOLOLUTION;
 };
 
 //In parameters.

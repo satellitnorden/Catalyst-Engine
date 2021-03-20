@@ -21,6 +21,7 @@ public:
 	void Execute(	const Vector2<float32> minimum_bounds,
 					const Vector2<float32> maximum_bounds,
 					const uint32 dimensions,
+					const Texture2DHandle normal_texture,
 					const Texture2DHandle indices_texture,
 					const Texture2DHandle blend_texture,
 					CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;

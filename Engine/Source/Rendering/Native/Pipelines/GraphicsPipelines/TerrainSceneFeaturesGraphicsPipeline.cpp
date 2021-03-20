@@ -52,6 +52,9 @@ public:
 	//The height map texture index.
 	uint32 _HeightMapTextureIndex;
 
+	//The normal map texture index.
+	uint32 _NormalMapTextureIndex;
+
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
 
@@ -202,6 +205,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		data._Borders = information._Borders;
 		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution);
 		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution) / 2);
+		data._NormalMapTextureIndex = information._NormalMapTextureIndex;
 		data._HeightMapTextureIndex = information._HeightMapTextureIndex;
 		data._IndexMapTextureIndex = information._IndexMapTextureIndex;
 		data._BlendMapTextureIndex = information._BlendMapTextureIndex;
