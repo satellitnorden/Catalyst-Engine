@@ -56,6 +56,12 @@ public:
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
 
+	//The blend map texture index.
+	uint32 _BlendMapTextureIndex;
+
+	//The material maps resolution
+	float32 _MaterialMapsResolution;
+
 };
 
 /*
@@ -86,12 +92,16 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(2);
+	SetNumberOfVertexInputAttributeDescriptions(3);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										offsetof(TerrainVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(TerrainVertex, _TextureCoordinate));
+	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32SignedInt,
 										offsetof(TerrainVertex, _Borders));
@@ -178,6 +188,8 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1) / 2);
 		data._HeightMapTextureIndex = information._HeightMapTextureIndex;
 		data._IndexMapTextureIndex = information._IndexMapTextureIndex;
+		data._BlendMapTextureIndex = information._BlendMapTextureIndex;
+		data._MaterialMapsResolution = static_cast<float32>(information._MaterialMapsResolution);
 
 		command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData), &data);
 

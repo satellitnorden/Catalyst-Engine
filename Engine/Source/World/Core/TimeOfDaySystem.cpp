@@ -252,7 +252,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
 	constexpr float32 NIGHT_SKY_INTENSITY{ 2.25f };
-	constexpr float32 DAY_SKY_INTENSITY{ 9.25f };
+	constexpr float32 DAY_SKY_INTENSITY{ 8.75f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
