@@ -894,6 +894,8 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 	//Define constants.
 	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 512 };
 
+	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+
 	//Initialize the command buffer, if needed.
 	if (!_TerrainGenerationRunning
 		&& (_TerrainHeightGenerationComputePipeline.IsInitialized() || _TerrainMaterialsGenerationComputePipeline.IsInitialized()))
@@ -1012,6 +1014,10 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 		node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
 		node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
 	}
+
+	FinishTerrainGeneration();
+
+	CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainSystem::GenerateMaps()");
 }
 
 /*
