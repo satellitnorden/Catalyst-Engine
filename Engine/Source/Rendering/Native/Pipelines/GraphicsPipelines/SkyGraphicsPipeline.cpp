@@ -122,7 +122,7 @@ void SkyGraphicsPipeline::Execute() NOEXCEPT
 			if (component->_LightType == LightType::DIRECTIONAL)
 			{
 				data._SkyLightDirection = -component->_Direction;
-				data._SkyLightRadiance = component->_Color * component->_Intensity * 2.0f;
+				data._SkyLightRadiance = component->_Color * component->_Intensity * 4.0f;
 
 				break;
 			}

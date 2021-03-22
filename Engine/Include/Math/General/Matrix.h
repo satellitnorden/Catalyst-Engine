@@ -192,20 +192,27 @@ public:
 	/*
 	*	Calculates an orthographic projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Orthographic(const float32 left, const float32 right, const float32 bottom, const float32 top, const float32 near, const float32 far) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Orthographic(const float32 left_plane, const float32 right_plane, const float32 bottom_plane, const float32 top_plane, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
-		Matrix4x4 result;
+		return Matrix4x4(	-(2.0f / (right_plane - left_plane)),
+							0.0f,
+							0.0f,
+							0.0f,
 
-		result._Matrix[0]._X = 2.0f / (right - left);
-		result._Matrix[1]._Y = 2.0f / (top - bottom);
-		result._Matrix[2]._Z = -1.0f / (far - near);
-		result._Matrix[3]._X = -(right + left) / (right - left);
-		result._Matrix[3]._Y = -(top + bottom) / (top - bottom);
-		result._Matrix[3]._Z = -near / (far - near);
+							0.0f,
+							2.0f / (bottom_plane - top_plane),
+							0.0f,
+							0.0f,
 
-		result._Matrix[1]._Y *= -1.0f;
+							0.0f,
+							0.0f,
+							1.0f / (near_plane - far_plane),
+							0.0f,
 
-		return result;
+							-(-(right_plane + left_plane) / (right_plane - left_plane)),
+							-(bottom_plane + top_plane) / (bottom_plane - top_plane),
+							near_plane / (near_plane - far_plane),
+							1.0f);
 	}
 
 	/*
@@ -213,31 +220,55 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Perspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
-		Matrix4x4 result{ 0.0f };
+		const float32 f{ 1.0f / CatalystBaseMath::Tangent(field_of_view * 0.5f) };
 
-		result._Matrix[0]._X = -field_of_view;
-		result._Matrix[1]._Y = -aspect_ratio;
-		result._Matrix[2]._Z = far_plane / (near_plane - far_plane);
-		result._Matrix[2]._W = -1.0f;
-		result._Matrix[3]._Z = (near_plane * far_plane) / (near_plane - far_plane);
+		return Matrix4x4(	-(f / aspect_ratio),
+							0.0f,
+							0.0f,
+							0.0f,
 
-		return result;
+							0.0f,
+							-f,
+							0.0f,
+							0.0f,
+
+							0.0f,
+							0.0f,
+							far_plane / (near_plane - far_plane),
+							-1.0f,
+
+							0.0f,
+							0.0f,
+							(near_plane * far_plane) / (near_plane - far_plane),
+							0.0f);
 	}
 
 	/*
 	*	Calculates a reverse perspective projection matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 farPlane) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
-		Matrix4x4 result{ 0.0f };
+		const float32 f{ 1.0f / CatalystBaseMath::Tangent(field_of_view * 0.5f) };
 
-		result._Matrix[0]._X = -field_of_view;
-		result._Matrix[1]._Y = -aspect_ratio;
-		result._Matrix[2]._Z = -(farPlane / (near_plane - farPlane)) - 1.0f;
-		result._Matrix[2]._W = -1.0f;
-		result._Matrix[3]._Z = -((near_plane * farPlane) / (near_plane - farPlane));
+		return Matrix4x4(	-(f / aspect_ratio),
+							0.0f,
+							0.0f,
+							0.0f,
 
-		return result;
+							0.0f,
+							-f,
+							0.0f,
+							0.0f,
+
+							0.0f,
+							0.0f,
+							-(far_plane / (near_plane - far_plane)) - 1.0f,
+							-1.0f,
+
+							0.0f,
+							0.0f,
+							-((near_plane * far_plane) / (near_plane - far_plane)),
+							0.0f);
 	}
 
 	/*
@@ -266,6 +297,31 @@ public:
 	FORCE_INLINE constexpr Matrix4x4(const float scalar) NOEXCEPT
 		:
 		_Matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
+	{
+
+	}
+
+	/*
+	*	Constructor taking the sixteen scalars as arguments.
+	*/
+	FORCE_INLINE constexpr Matrix4x4(	const float32 _1_1,
+										const float32 _1_2,
+										const float32 _1_3,
+										const float32 _1_4,
+										const float32 _2_1,
+										const float32 _2_2,
+										const float32 _2_3,
+										const float32 _2_4,
+										const float32 _3_1,
+										const float32 _3_2,
+										const float32 _3_3,
+										const float32 _3_4,
+										const float32 _4_1,
+										const float32 _4_2,
+										const float32 _4_3,
+										const float32 _4_4) NOEXCEPT
+		:
+		_Matrix{ { _1_1, _1_2, _1_3, _1_4 }, { _2_1, _2_2, _2_3, _2_4 }, { _3_1, _3_2, _3_3, _3_4 }, { _4_1, _4_2, _4_3, _4_4 } }
 	{
 
 	}

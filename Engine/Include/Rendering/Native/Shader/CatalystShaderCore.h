@@ -144,6 +144,12 @@
 	CatalystBaseMath::Square(ARGUMENT)
 
 	/*
+	*	Calls the squareroot function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SQUAREROOT(ARGUMENT) \
+	CatalystBaseMath::SquareRoot(ARGUMENT)
+
+	/*
 	*	Defines a function with a return value and one argument.
 	*/
 	#define CATALYST_SHADER_FUNCTION_RETURN_ONE_ARGUMENT(RETURN_TYPE, FUNCTION_NAME, ARGUMENT_1) \
@@ -307,6 +313,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_SQUARE(ARGUMENT) \
 	Square(ARGUMENT)
+
+	/*
+	*	Calls the squareroot function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_SQUAREROOT(ARGUMENT) \
+	sqrt(ARGUMENT)
 
 	/*
 	*	Defines a function with a return value and one argument.

@@ -95,6 +95,12 @@ void Vulkan2DTexture::Release() NOEXCEPT
 	}
 
 	//Destroy the Vulkan image.
-	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
+	ASSERT(_VulkanImage, "Double deletion detected!");
+
+	if (_VulkanImage)
+	{
+		vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
+		_VulkanImage = nullptr;
+	}
 }
 #endif

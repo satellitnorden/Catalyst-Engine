@@ -40,12 +40,13 @@ void CatalystShaderMain()
   //Cache the blue noise. 
   
   vec4 blue_noise = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+  float noise_sample = clamp(blue_noise[0], 0.01f, 0.99f);
 
   //Conditionally discard.
   if (fragment_fade_opacity < 1.0f && 
       (opacity < 0.5f
       || fragment_fade_opacity == 0.0f
-      || fragment_fade_opacity < blue_noise[0]))
+      || fragment_fade_opacity < noise_sample))
   {
     discard;
   }

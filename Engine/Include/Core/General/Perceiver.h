@@ -248,7 +248,7 @@ private:
 	WorldTransform _WorldTransform;
 
 	//The field of view.
-	float32 _FieldOfView{ CatalystBaseMath::DegreesToRadians(60.0f) };
+	float32 _FieldOfView{ 60.0f };
 
 	//The near plane.
 	float32 _NearPlane{ 0.1f };

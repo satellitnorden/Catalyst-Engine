@@ -11,6 +11,9 @@
 
 CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 
+	//Define constants.
+	CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT, 0.001f);
+
 	//Forward declarations.
 	CATALYST_SHADER_FUNCTION_RETURN_NINE_ARGUMENTS(	vec3,
 													CalculateBidirectionalReflectanceDistribution,
@@ -271,8 +274,8 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 numerator = normal_distribution * geometry * fresnel;
 
 		//Calculate the denominator.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f);
-		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 
 		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(4.0f * outgoing_direction_coefficient * irradiance_direction_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
 
@@ -311,7 +314,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float numerator = roughness_squared;
 
 		//Calculate the denominator.
-		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, halfway_vector), 0.0f);
+		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, halfway_vector), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 		float halfway_vector_coefficient_squared = halfway_vector_coefficient * halfway_vector_coefficient;
 		float denominator_coefficient = halfway_vector_coefficient_squared * (roughness_squared - 1.0f) + 1.0f;
 
@@ -342,10 +345,10 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
 
 		//Calculate the outgoing direction coefficient.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 
 		//Calculate the irradiance direction coefficient.
-		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
+		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 
 		//Calculate the roughness coefficient.
 		float roughness_coefficient = ((roughness + 1.0f) * (roughness + 1.0f)) / 8.0f;
@@ -404,7 +407,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 halfway_vector = CATALYST_SHADER_FUNCTION_NORMALIZE(outgoing_direction + -irradiance_direction);
 
 		//Calculate the halfway vector coefficient.
-		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(halfway_vector, outgoing_direction), 0.0f);
+		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(halfway_vector, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 
 		//Calculate the fresnel coefficient.
 		float fresnel_coefficient = (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient);
@@ -541,7 +544,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 numerator = normal_distribution * geometry * fresnel;
 
 		//Calculate the denominator.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(4.0f * outgoing_direction_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
 
 		//Calculate the specular component.
@@ -574,7 +577,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float numerator = roughness_squared;
 
 		//Calculate the denominator.
-		float view_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
+		float view_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 		float view_vector_coefficient_squared = view_vector_coefficient * view_vector_coefficient;
 		float denominator_coefficient = view_vector_coefficient_squared * (roughness_squared - 1.0f) + 1.0f;
 
@@ -603,7 +606,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
 
 		//Calculate the outgoing direction coefficient.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
 
 		//Calculate the roughness coefficient.
 		float roughness_coefficient = (roughness * roughness) * 0.5f;
@@ -644,7 +647,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
 		//Calculate the fresnel.
-		return surface_color + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f), 5.0f);
+		return surface_color + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT), 5.0f);
 	}
 
 	/*

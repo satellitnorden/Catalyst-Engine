@@ -2,8 +2,8 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define SKY_LIGHT_ANCHOR (0.98050f) //0.0025f step.
-#define SKY_LIGHT_SIZE (0.0075) //0.0025f step.
+#define SKY_LIGHT_ANCHOR (0.98075f) //0.0025f step.
+#define SKY_LIGHT_SIZE (0.0075f) //0.0025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -33,5 +33,5 @@ void CatalystShaderMain()
    float sky_light_influence = smoothstep(SKY_LIGHT_ANCHOR - SKY_LIGHT_SIZE, SKY_LIGHT_ANCHOR + SKY_LIGHT_SIZE, dot(view_direction, SKY_LIGHT_DIRECTION));
 
    //Write the fragment.
-   fragment = vec4(mix(sky_sample, SKY_LIGHT_RADIANCE, sky_light_influence), 1.0f);
+   fragment = vec4(mix(sky_sample, max(SKY_LIGHT_RADIANCE, sky_sample), sky_light_influence), 1.0f);
 }
