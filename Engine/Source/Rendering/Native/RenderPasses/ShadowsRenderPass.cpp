@@ -20,7 +20,7 @@ DEFINE_SINGLETON(ShadowsRenderPass);
 //Shadow render pass constants.
 namespace ShadowRenderPassConstants
 {
-	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 0.975f };
+	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 0.900f };
 	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 9.25f };
 	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
@@ -36,7 +36,7 @@ namespace ShadowRenderPassConstants
 FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_index, const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 BOUNDING_BOX_EXPANSION{ 12.00f };
+	constexpr float32 BOUNDING_BOX_EXPANSION{ 12.25f };
 
 	//Calculate the perceiver matrix.
 	const Vector3<float32> perceiver_local_position{ Perceiver::Instance->GetWorldTransform().GetLocalPosition() };

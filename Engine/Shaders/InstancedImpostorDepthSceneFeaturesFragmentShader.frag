@@ -43,10 +43,9 @@ void CatalystShaderMain()
   float noise_sample = clamp(blue_noise[0], 0.01f, 0.99f);
 
   //Conditionally discard.
-  if (fragment_fade_opacity < 1.0f && 
-      (opacity < 0.5f
+  if (opacity < 0.5f
       || fragment_fade_opacity == 0.0f
-      || fragment_fade_opacity < noise_sample))
+      || fragment_fade_opacity < noise_sample)
   {
     discard;
   }
