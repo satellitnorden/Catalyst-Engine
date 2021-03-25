@@ -17,16 +17,6 @@ class EntityPlacementData final
 
 public:
 
-	//Entity grid point union.
-	union EntityGridPoint
-	{
-		GridPoint2 _GridPoint2;
-		GridPoint3 _GridPoint3;
-	};
-
-	//The type.
-	EntityPlacementType _Type;
-
 	//The function.
 	EntityPlacementFunction _Function;
 
@@ -37,7 +27,7 @@ public:
 	float _GridCellSize;
 
 	//Container for all grid points.
-	DynamicArray<EntityGridPoint> _GridPoints;
+	DynamicArray<GridPoint2> _GridPoints;
 
 	//Container for all entities.
 	DynamicArray<DynamicArray<Entity *RESTRICT>> _Entities;

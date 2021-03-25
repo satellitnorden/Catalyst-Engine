@@ -54,7 +54,7 @@ namespace CatalystEngineSystemData
 	//Enumeration covering all sequential updates.
 	enum class SequentialUpdate : uint8
 	{
-		EntityPlacementSystem,
+		PlacementSystem,
 		SaveSystem,
 		TerrainSystem,
 
@@ -81,9 +81,9 @@ namespace CatalystEngineSystemLogic
 		//Execute the sequential update.
 		switch (CatalystEngineSystemData::_CurrentSequentialUpdate)
 		{
-			case CatalystEngineSystemData::SequentialUpdate::EntityPlacementSystem:
+			case CatalystEngineSystemData::SequentialUpdate::PlacementSystem:
 			{
-				PlacementSystem::Instance->SequentialUpdate(context);
+				PlacementSystem::Instance->SequentialUpdate();
 
 				break;
 			}

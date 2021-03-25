@@ -47,6 +47,7 @@
 #include FT_FREETYPE_H
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
+#include <ThirdParty/shaderc/shaderc.h>
 
 /*
 *	Builds the resource collection recursively.
@@ -577,6 +578,272 @@ void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &paramete
 */
 void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT
 {
+#if 0 //Use new way. (:
+	//Create a compiler-ready version of the file.
+	std::string shader_source;
+
+	{
+		std::ifstream file{ parameters._FilePath };
+
+		file.seekg(0, std::ios::end);   
+		shader_source.reserve(file.tellg());
+		file.seekg(0, std::ios::beg);
+
+		shader_source.assign(	std::istreambuf_iterator<char>(file),
+								std::istreambuf_iterator<char>());
+
+		//Add the defines.
+		for (const char* const RESTRICT define : parameters._Defines)
+		{
+			shader_source = std::string("#define ") + define + std::string("\n") + shader_source;
+		}
+
+		//Add the header data.
+		{
+			shader_source = "#version 460 \n#include \"C:\\Github\\Catalyst-Engine\\Engine\\Shaders\\CatalystShaderCommon.glsl\" \n" + shader_source;
+		}
+
+		//Replace "CatalystShaderMain" with "main".
+		{
+			size_t position{ shader_source.find("CatalystShaderMain") };
+
+			if (position != std::string::npos)
+			{
+				shader_source.replace(position, strlen("CatalystShaderMain"), "main");
+			}
+		}
+	}
+
+	//Initialize the compiler.
+	shaderc_compiler_t compiler{ shaderc_compiler_initialize() };
+
+	//Initialize the options.
+	shaderc_compile_options_t options{ shaderc_compile_options_initialize() };
+
+	//Set the source language.
+	shaderc_compile_options_set_source_language(options, shaderc_source_language::shaderc_source_language_glsl);
+
+	//Set the optimization level.
+	shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_performance);
+
+	//Determine the shader kind.
+	shaderc_shader_kind shader_kind;
+
+	switch (parameters._Stage)
+	{
+		case ShaderStage::COMPUTE:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_compute_shader;
+
+			break;
+		}
+
+		case ShaderStage::FRAGMENT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_fragment_shader;
+
+			break;
+		}
+
+		case ShaderStage::GEOMETRY:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_geometry_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_ANY_HIT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_anyhit_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_CLOSEST_HIT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_closesthit_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_GENERATION:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_raygen_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_INTERSECTION:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_intersection_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_MISS:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_miss_shader;
+
+			break;
+		}
+
+		case ShaderStage::TESSELLATION_CONTROL:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_tess_control_shader;
+
+			break;
+		}
+
+		case ShaderStage::TESSELLATION_EVALUATION:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_tess_evaluation_shader;
+
+			break;
+		}
+
+		case ShaderStage::VERTEX:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_vertex_shader;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set up the include resolve function.
+	auto include_resolve_function{ [](void* user_data, const char* requested_source, int type, const char* requesting_source, size_t include_depth)
+	{
+		//Allocate the result.
+		shaderc_include_result *const RESTRICT result{static_cast<shaderc_include_result *const RESTRICT>(Memory::Allocate(sizeof(shaderc_include_result)))};
+
+		//Fill in the result.
+		result->source_name = requested_source;
+		result->source_name_length = strlen(requested_source);
+
+		//Get the absolute path of the requesting source.
+		std::string absolute_requesting_source{ std::filesystem::absolute(requesting_source).generic_string() };
+
+		//Replace "/" with "\\".
+		{
+			for (;;)
+			{
+				size_t position{ absolute_requesting_source.find("/") };
+
+				if (position == std::string::npos)
+				{
+					break;
+				}
+
+				absolute_requesting_source.replace(position, 1, "\\");
+			}
+		}
+
+		{
+			size_t position{ absolute_requesting_source.find_last_of("\\") };
+			absolute_requesting_source.erase(position, absolute_requesting_source.size() - position);
+		}
+
+		//Change the working directory temporarily.
+		std::filesystem::path default_working_directory{ std::filesystem::current_path() };
+
+		//Set the working directory to the requesting source.
+		std::filesystem::current_path(absolute_requesting_source);
+
+		//Open the file.
+		std::ifstream file{ requested_source };
+
+		std::string include_source;
+
+		file.seekg(0, std::ios::end);   
+		include_source.reserve(file.tellg());
+		file.seekg(0, std::ios::beg);
+
+		include_source.assign(	std::istreambuf_iterator<char>(file),
+								std::istreambuf_iterator<char>());
+
+		//Close the file.
+		file.close();
+
+		//Reset the working directory.
+		std::filesystem::current_path(default_working_directory);
+
+		//Allocate the necessary data for the include content.
+		result->content = static_cast<const char* const RESTRICT>(Memory::Allocate(include_source.size()));
+		Memory::Copy(result->content, include_source.data(), include_source.size());
+		result->content_length = include_source.size();
+
+		//Return the result.
+		return result;
+	} };
+
+	//Set up the include result release function.
+	auto include_result_release_function{ [](void* user_data, shaderc_include_result* include_result)
+	{
+		//Free the content.
+		Memory::Free(include_result->content);
+
+		//Free the result.
+		Memory::Free(include_result);
+	} };
+
+	//Set the include callbacks.
+	shaderc_compile_options_set_include_callbacks(options, include_resolve_function, include_result_release_function, nullptr);
+
+	//Compile!
+	shaderc_compilation_result_t result{ shaderc_compile_into_spv(compiler, shader_source.c_str(), shader_source.size(), shader_kind, parameters._FilePath, "main", options) };
+
+	//Check for errors.
+	if (shaderc_result_get_num_errors(result) > 0)
+	{
+		ASSERT(false, shaderc_result_get_error_message(result));
+	}
+
+	//What should the resource be called?
+	DynamicString file_name{ parameters._Output };
+	file_name += ".cr";
+
+	//Open the file to be written to.
+	BinaryFile<IOMode::Out> file{ file_name.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
+	file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the stage.
+	file.Write(&parameters._Stage, sizeof(ShaderStage));
+
+	//Write the size of the compiled file.
+	const uint64 compiled_file_size{ shaderc_result_get_length(result) };
+	file.Write(&compiled_file_size, sizeof(uint64));
+
+	//Read the data.
+	DynamicArray<byte> data;
+	data.Upsize<false>(compiled_file_size);
+
+	Memory::Copy(data.Data(), shaderc_result_get_bytes(result), compiled_file_size);
+
+	//Write the data.
+	file.Write(data.Data(), compiled_file_size);
+
+
+	//Close the file.
+	file.Close();
+
+	//Release the result.
+	shaderc_result_release(result);
+
+	//Release the options.
+	shaderc_compile_options_release(options);
+
+	//Release the compiler.
+	shaderc_compiler_release(compiler);
+#else
 	//Determine the temporary shader file path.
 	DynamicString temporary_shader_file_path{ "C:\\Github\\Catalyst-Engine\\Engine\\Shaders\\" };
 	temporary_shader_file_path += parameters._ID;
@@ -877,6 +1144,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 	//Delete the compiled file.
 	File::Delete(compiled_file_path.Data());
+#endif
 }
 
 /*

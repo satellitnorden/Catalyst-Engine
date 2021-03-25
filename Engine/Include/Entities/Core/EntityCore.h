@@ -10,13 +10,6 @@ class Entity;
 //Type aliases.
 using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox3D &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);
 
-//Enumeration covering all entity placement types.
-enum class EntityPlacementType : uint8
-{
-	TWO_DIMENSIONAL,
-	THREE_DIMENSIONAL
-};
-
 //Entity types.
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
 						ENTITY_TYPE(DistanceTrigger)		\

@@ -20,8 +20,8 @@ DEFINE_SINGLETON(ShadowsRenderPass);
 //Shadow render pass constants.
 namespace ShadowRenderPassConstants
 {
-	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 0.900f };
-	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 9.25f };
+	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 0.850f };
+	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 9.00f };
 	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
 		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
@@ -36,7 +36,7 @@ namespace ShadowRenderPassConstants
 FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_index, const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 BOUNDING_BOX_EXPANSION{ 12.25f };
+	constexpr float32 BOUNDING_BOX_EXPANSION{ 14.50f };
 
 	//Calculate the perceiver matrix.
 	const Vector3<float32> perceiver_local_position{ Perceiver::Instance->GetWorldTransform().GetLocalPosition() };
@@ -96,6 +96,8 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 	float32 maxX{ -FLOAT32_MAXIMUM };
 	float32 minY{ FLOAT32_MAXIMUM };
 	float32 maxY{ -FLOAT32_MAXIMUM };
+	float32 minZ{ FLOAT32_MAXIMUM };
+	float32 maxZ{ -FLOAT32_MAXIMUM };
 
 	for (uint8 i{ 0 }; i < 8; ++i)
 	{
@@ -106,6 +108,8 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 		maxX = CatalystBaseMath::Maximum<float32>(maxX, light_space_corner._X);
 		minY = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Y);
 		maxY = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Y);
+		minZ = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Z);
+		maxZ = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Z);
 	}
 
 	//Cache the view distance.
@@ -113,6 +117,8 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 
 	//Calculate the projection matrix.
 	Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, view_distance * -0.5f, view_distance * 0.5f) };
+	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION, maxZ * BOUNDING_BOX_EXPANSION) };
+	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION, view_distance * 0.5f) };
 
 	return projection_matrix * light_matrix;
 }

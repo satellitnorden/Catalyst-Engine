@@ -29,6 +29,17 @@ public:
 	}
 
 	/*
+	*	Construct taking the minimum/maximum values.
+	*/
+	FORCE_INLINE explicit WorldSpaceAxisAlignedBoundingBox3D(const WorldPosition &initial_minimum, const WorldPosition &initial_maximum) NOEXCEPT
+		:
+		_Minimum(initial_minimum),
+		_Maximum(initial_maximum)
+	{
+
+	}
+
+	/*
 	*	Returns the local axis aligned bounding box.
 	*/
 	FORCE_INLINE NO_DISCARD AxisAlignedBoundingBox3D GetLocalAxisAlignedBoundingBox() const NOEXCEPT

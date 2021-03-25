@@ -463,4 +463,22 @@ CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderSmoothStep(float number)
 	return number * number * (3.0f - 2.0f * number);
 }
 
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderSmootherStep(float number)
+{
+	return number * number * number * (number * (number * 6.0f - 15.0f) + 10.0f);
+}
+
+/*
+*   Returns a smoothed number in the given range.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX float CatalystShaderRealSmoothStep(float number, float minimum, float maximum)
+{
+	number = CATALYST_SHADER_FUNCTION_CLAMP((number - minimum) / (maximum - minimum), 0.0f, 1.0f);
+
+	return number * number * (3.0f - 2.0f * number);
+}
+
 #endif
